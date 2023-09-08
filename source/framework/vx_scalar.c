@@ -25,16 +25,22 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr);
 
 static vx_status ownDestructScalar(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar scalar = (vx_scalar)ref;
 
     if(scalar->base.type == (vx_enum)VX_TYPE_SCALAR)
     {
         if(scalar->base.obj_desc!=NULL)
         {
-            ownObjDescFree((tivx_obj_desc_t**)&scalar->base.obj_desc);
+            status = ownObjDescFree((tivx_obj_desc_t**)&scalar->base.obj_desc);
+
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Scalar object descriptor free failed!\n");
+            }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 
 static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)

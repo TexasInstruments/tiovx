@@ -368,6 +368,7 @@ static vx_status ownAllocDistributionBuffer(vx_reference ref)
 
 static vx_status ownDestructDistribution(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
 #ifdef LDRA_UNTESTABLE_CODE
@@ -381,14 +382,25 @@ static vx_status ownDestructDistribution(vx_reference ref)
         {
             if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
-                tivxMemBufferFree(
+                status = tivxMemBufferFree(
                     &obj_desc->mem_ptr, obj_desc->mem_size);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Distribution buffer free failed!\n");
+                }
             }
 
-            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Distribution object descriptor free failed!\n");
+                }
+            }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 
 

@@ -303,14 +303,20 @@ static vx_status ownAllocThresholdBuffer(vx_reference ref)
 
 static vx_status ownDestructThreshold(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
+
     if(ref->type == (vx_enum)VX_TYPE_THRESHOLD)
     {
         if(ref->obj_desc!=NULL)
         {
-            ownObjDescFree((tivx_obj_desc_t**)&ref->obj_desc);
+            status = ownObjDescFree((tivx_obj_desc_t**)&ref->obj_desc);
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Threshold object descriptor free failed!\n");
+            }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 
 

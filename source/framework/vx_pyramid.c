@@ -455,6 +455,7 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
 
 static vx_status ownDestructPyramid(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_pyramid prmd = (vx_pyramid)ref;
     vx_uint32 i = 0;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
@@ -466,12 +467,17 @@ static vx_status ownDestructPyramid(vx_reference ref)
         if ((NULL != prmd->img[i]) &&
             (vxGetStatus((vx_reference)prmd->img[i]) == (vx_status)VX_SUCCESS))
         {
-            /* increment the internal counter on the image, not the
+            /* decrement the internal counter on the image, not the
                external one */
             ownDecrementReference((vx_reference)prmd->img[i], (vx_enum)VX_INTERNAL);
 
-            ownReleaseReferenceInt((vx_reference *)&prmd->img[i],
-                (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
+            status = ownReleaseReferenceInt((vx_reference *)&prmd->img[i],
+                    (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Pyramid level %d release failed\n", i);
+                break;
+            }
         }
     }
 
@@ -479,10 +485,14 @@ static vx_status ownDestructPyramid(vx_reference ref)
     {
         if(prmd->base.obj_desc!=NULL)
         {
-            ownObjDescFree((tivx_obj_desc_t**)&prmd->base.obj_desc);
+            status = ownObjDescFree((tivx_obj_desc_t**)&prmd->base.obj_desc);
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Pyramid object descriptor free failed\n");
+            }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 
 static vx_status ownInitPyramid(vx_pyramid prmd)

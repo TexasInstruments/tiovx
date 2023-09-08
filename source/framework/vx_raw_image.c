@@ -166,6 +166,7 @@ static vx_status ownIsFreeSubimageAvailable(tivx_raw_image image)
 
 static vx_status ownDestructRawImage(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
     uint16_t exp_idx;
     tivx_raw_image raw_image = (tivx_raw_image)ref;
@@ -182,18 +183,37 @@ static vx_status ownDestructRawImage(vx_reference ref)
                 {
                     if(obj_desc->mem_ptr[exp_idx].host_ptr != (uint64_t)(uintptr_t)NULL)
                     {
-                        tivxMemBufferFree(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx]);
+                        status = tivxMemBufferFree(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx]);
+                        if ((vx_status)VX_SUCCESS != status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "Raw Image buffer free failed!\n");
+                            break;
+                        }
                     }
                 }
             }
-            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Raw Image object descriptor free failed!\n");
+                }
+            }
         }
-        if (NULL != raw_image->parent)
+        if ((vx_status)VX_SUCCESS == status)
         {
-            ownReleaseReferenceInt((vx_reference *)&raw_image->parent, TIVX_TYPE_RAW_IMAGE, (vx_enum)VX_INTERNAL, NULL);
+            if (NULL != raw_image->parent)
+            {
+                status = ownReleaseReferenceInt((vx_reference *)&raw_image->parent, TIVX_TYPE_RAW_IMAGE, (vx_enum)VX_INTERNAL, NULL);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Raw Image reference release failed!\n");
+                }
+            }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 
 vx_status ownDeriveRawImageBufferPointers(vx_reference ref)

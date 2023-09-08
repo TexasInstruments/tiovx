@@ -383,6 +383,7 @@ static vx_status ownAllocLutBuffer(vx_reference ref)
 
 static vx_status ownDestructLut(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
     if(ref->type == (vx_enum)VX_TYPE_LUT)
@@ -392,13 +393,24 @@ static vx_status ownDestructLut(vx_reference ref)
         {
             if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
-                tivxMemBufferFree(
+                status = tivxMemBufferFree(
                     &obj_desc->mem_ptr, obj_desc->mem_size);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "LUT buffer free failed!\n");
+                }
             }
 
-            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "LUT object descriptor free failed!\n");
+                }
+            }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 

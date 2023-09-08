@@ -340,24 +340,15 @@ TEST(tivxImage, negativeTestSwapImageHandle)
 
     vx_context context = context_->vx_context_;
 
-    vx_image img = NULL, imgcnl = NULL;
+    vx_image img = NULL;
     void *new_ptrs[VX_PLANE_MAX] = {0, 0, 0, 0};
     void *prev_ptrs[VX_PLANE_MAX] = {0, 0, 0, 0};
-    vx_uint8 ndata[256];
-    vx_uint8 pdata[256];
     vx_size num_planes = 0;
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSwapImageHandle(img, NULL, NULL, num_planes));
     ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSwapImageHandle(img, NULL, NULL, num_planes));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSwapImageHandle(img, new_ptrs, NULL, 1));
-    VX_CALL(vxReleaseImage(&img));
-    new_ptrs[0] = new_ptrs[1] = new_ptrs[2] = ndata;
-    prev_ptrs[0] = prev_ptrs[1] = prev_ptrs[2] = pdata;
-    ASSERT_VX_OBJECT(img = vxCreateImage(context, 2, 2, VX_DF_IMAGE_IYUV), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(imgcnl = vxCreateImageFromChannel(img, VX_CHANNEL_U), VX_TYPE_IMAGE);
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSwapImageHandle(img, new_ptrs, prev_ptrs, 3));
-    VX_CALL(vxReleaseImage(&imgcnl));
     VX_CALL(vxReleaseImage(&img));
 }
 

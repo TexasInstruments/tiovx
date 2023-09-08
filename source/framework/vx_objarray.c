@@ -25,7 +25,7 @@ static vx_status ownInitObjArrayFromObject(
 static vx_status ownAllocObjectArrayBuffer(vx_reference ref);
 static vx_status ownAddRefToObjArray(vx_context context,
             vx_object_array objarr, vx_reference ref, uint32_t i);
-static void ownReleaseRefFromObjArray(
+static vx_status ownReleaseRefFromObjArray(
             vx_object_array objarr, uint32_t num_items);
 
 static vx_bool ownIsValidObject(vx_enum type)
@@ -329,7 +329,12 @@ static vx_status ownInitObjArrayFromObject(
     {
         for (; i > 0u; i--)
         {
-            ownReleaseRefFromObjArray(objarr, i);
+            status = ownReleaseRefFromObjArray(objarr, i);
+            if(status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Releasing reference from object array failed\n");
+                break;
+            }
         }
     }
 
@@ -369,9 +374,10 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
    return status;
 }
 
-static void ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t num_items)
+static vx_status ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t num_items)
 {
     uint32_t i;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     for (i = 0; i < num_items; i ++)
     {
@@ -381,13 +387,21 @@ static void ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t num_items
                external one */
             ownDecrementReference(objarr->ref[i], (vx_enum)VX_INTERNAL);
 
-            vxReleaseReference(&objarr->ref[i]);
+            status = vxReleaseReference(&objarr->ref[i]);
+
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Release object array element %d failed!\n", i);
+                break;
+            }
         }
     }
+    return status;
 }
 
 static vx_status ownDestructObjArray(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_object_array objarr = (vx_object_array)ref;
 
     if(objarr->base.type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
@@ -397,12 +411,20 @@ static vx_status ownDestructObjArray(vx_reference ref)
             tivx_obj_desc_object_array_t *obj_desc =
                 (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
-            ownReleaseRefFromObjArray(objarr, obj_desc->num_items);
+            status = ownReleaseRefFromObjArray(objarr, obj_desc->num_items);
 
-            ownObjDescFree(&objarr->base.obj_desc);
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                status = ownObjDescFree(&objarr->base.obj_desc);
+
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Object array object descriptor release failed!\n");
+                }
+            }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 
 static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)

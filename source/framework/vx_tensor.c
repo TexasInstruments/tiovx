@@ -109,6 +109,7 @@ static vx_status ownAllocTensorBuffer(vx_reference ref)
 
 static vx_status ownDestructTensor(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
     if(ref->type == (vx_enum)VX_TYPE_TENSOR)
@@ -118,14 +119,29 @@ static vx_status ownDestructTensor(vx_reference ref)
         {
             if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
-                tivxMemBufferFree(
+                status = tivxMemBufferFree(
                     &obj_desc->mem_ptr, obj_desc->mem_size);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Tensor memory buffer free failed!\n");
+                }
+                else
+                {
+                    status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Tensor object descriptor free failed!\n");
+                    }
+                }
             }
-
-            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+        }
+        else
+        {
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+            VX_PRINT(VX_ZONE_ERROR, "Tensor object descriptor is NULL!\n");
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 
 

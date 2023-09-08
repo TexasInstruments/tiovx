@@ -128,6 +128,7 @@ static vx_bool ownIsValidSuperNode(tivx_super_node super_node)
 
 static vx_status ownDestructSuperNode(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_super_node_t *obj_desc = NULL;
     tivx_super_node super_node = (tivx_super_node)ref;
 
@@ -135,14 +136,26 @@ static vx_status ownDestructSuperNode(vx_reference ref)
     {
         obj_desc = (tivx_obj_desc_super_node_t *)ref->obj_desc;
 
-        vxRemoveNode(&super_node->node);
+        status = vxRemoveNode(&super_node->node);
 
-        if(obj_desc!=NULL)
+        if ((vx_status)VX_SUCCESS != status)
         {
-            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            VX_PRINT(VX_ZONE_ERROR, "Remove node failed!\n");
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            if(obj_desc!=NULL)
+            {
+                status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Super node object descriptor free failed!\n");
+                }
+            }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 
 static void ownInitSuperNode(tivx_super_node super_node, vx_node nodes[], uint32_t num_nodes)

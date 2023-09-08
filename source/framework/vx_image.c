@@ -224,6 +224,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
 
 static vx_status ownDestructImage(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *obj_desc = NULL;
     uint16_t plane_idx;
     vx_image image = (vx_image)ref;
@@ -247,17 +248,35 @@ static vx_status ownDestructImage(vx_reference ref)
                     }
                     size += obj_desc->mem_size[plane_idx];
 
-                    tivxMemBufferFree(&obj_desc->mem_ptr[0], size);
+                    status = tivxMemBufferFree(&obj_desc->mem_ptr[0], size);
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Image buffer free failed!\n");
+                    }
                 }
             }
-            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Image object descriptor free failed!\n");
+                }
+            }
         }
-        if (NULL != image->parent)
+        if ((vx_status)VX_SUCCESS == status)
         {
-            ownReleaseReferenceInt((vx_reference *)&image->parent, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_INTERNAL, NULL);
+            if (NULL != image->parent)
+            {
+                status = ownReleaseReferenceInt((vx_reference *)&image->parent, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_INTERNAL, NULL);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Image parent object release failed!\n");
+                }
+            }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 
 static vx_status ownAllocImageBuffer(vx_reference ref)

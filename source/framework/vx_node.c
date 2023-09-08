@@ -84,15 +84,28 @@ static vx_status ownDestructNode(vx_reference ref)
                 }
             }
         }
-        for(pipe_id=0; pipe_id<node->pipeline_depth; pipe_id++)
+        if (status == (vx_status)VX_SUCCESS)
         {
-            if(node->obj_desc[pipe_id]!=NULL)
+            for(pipe_id=0; pipe_id<node->pipeline_depth; pipe_id++)
             {
-                ownObjDescFree((tivx_obj_desc_t**)&node->obj_desc[pipe_id]);
-            }
-            if(node->obj_desc_cmd[pipe_id]!=NULL)
-            {
-                ownObjDescFree((tivx_obj_desc_t**)&node->obj_desc_cmd[pipe_id]);
+                if(node->obj_desc[pipe_id]!=NULL)
+                {
+                    status = ownObjDescFree((tivx_obj_desc_t**)&node->obj_desc[pipe_id]);
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Node object descriptor free failed!\n");
+                        break;
+                    }
+                }
+                if(node->obj_desc_cmd[pipe_id]!=NULL)
+                {
+                    status = ownObjDescFree((tivx_obj_desc_t**)&node->obj_desc_cmd[pipe_id]);
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Node command object descriptor free failed!\n");
+                        break;
+                    }
+                }
             }
         }
     }

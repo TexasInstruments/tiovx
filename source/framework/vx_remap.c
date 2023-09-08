@@ -24,6 +24,7 @@ static vx_status ownAllocRemapBuffer(vx_reference ref);
 
 static vx_status ownDestructRemap(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_remap_t *obj_desc = NULL;
 
     if(ref->type == (vx_enum)VX_TYPE_REMAP)
@@ -34,13 +35,24 @@ static vx_status ownDestructRemap(vx_reference ref)
         {
             if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
-                tivxMemBufferFree(&obj_desc->mem_ptr, obj_desc->mem_size);
+                status = tivxMemBufferFree(&obj_desc->mem_ptr, obj_desc->mem_size);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Remap memory buffer free failed!\n");
+                }
             }
 
-            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Remap object descriptor free failed!\n");
+                }
+            }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 
 static tivx_remap_point_t *ownGetRemapPoint(const tivx_obj_desc_remap_t *obj_desc, vx_uint32 dst_x, vx_uint32 dst_y)
