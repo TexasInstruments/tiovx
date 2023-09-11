@@ -13,6 +13,7 @@ BUILD_BAM?=no
 # Flags to enable disable, groups of conformance tests (CT)
 BUILD_CT_KHR=yes
 BUILD_CT_TIOVX=yes
+BUILD_CT_TIOVX_INTERNAL=yes
 BUILD_CT_TIOVX_TEST_KERNELS=yes
 BUILD_CT_TIOVX_IVISION=yes
 

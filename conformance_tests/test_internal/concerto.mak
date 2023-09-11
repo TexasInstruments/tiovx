@@ -19,16 +19,15 @@ ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 A53 R5F))
 ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 
 include $(PRELUDE)
-TARGET      := vx_tiovx_tests
+TARGET      := vx_tiovx_internal_tests
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/conformance_tests
+IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include
 IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/test_kernels/include
 IDIRS       += $(HOST_ROOT)/conformance_tests/test_tiovx/utils
-IDIRS       += $(HOST_ROOT)/utils/include
-
-CSOURCES    += utils/test_utils_file_bmp_rd_wr.c
+IDIRS       += $(HOST_ROOT)/conformance_tests/test_tiovx
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number

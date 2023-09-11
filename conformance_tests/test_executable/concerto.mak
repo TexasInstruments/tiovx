@@ -32,7 +32,7 @@ IDIRS       += $(VISION_APPS_PATH)
 
 STATIC_LIBS := vx_conformance_tests
 
-STATIC_LIBS += vx_tiovx_tests
+STATIC_LIBS += vx_tiovx_tests vx_tiovx_internal_tests
 
 STATIC_LIBS += vx_kernels_openvx_ext_tests
 

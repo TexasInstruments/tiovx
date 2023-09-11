@@ -57,6 +57,10 @@ ifeq ($(BUILD_CT_TIOVX),yes)
 CFLAGS      += -DBUILD_CT_TIOVX
 endif
 
+ifeq ($(BUILD_CT_TIOVX_INTERNAL),yes)
+CFLAGS      += -DBUILD_CT_TIOVX_INTERNAL
+endif
+
 ifeq ($(BUILD_CT_TIOVX_TEST_KERNELS),yes)
 CFLAGS      += -DBUILD_CT_TIOVX_TEST_KERNELS
 endif
