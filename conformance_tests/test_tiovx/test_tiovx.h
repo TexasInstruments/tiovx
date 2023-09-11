@@ -18,22 +18,6 @@
 #include "test_engine/test.h"
 #include <TI/tivx.h>
 
-/* TIOVX Test Policy
- *
- * The TIOVX test framework extensions (tiovx/conformance_tests/test_tiovx) should
- * only use the public API of TIOVX (tiovx/include) within the tests.  The rationale
- * for this is that this is the API which a TIOVX application would be utilizing.
- * Therefore, any private API from the framework should *not* be used within the
- * test cases (tiovx/source/include).
- *
- * However, in certain situations, the complexity of the code in which to test is
- * such that it warrants a waiver of this policy.  For these deviations, please use
- * the deviation identifier prefix below along with a justification of this waiver.
- *
- * Waiver Identifier: TIVX_TEST_WAIVER_COMPLEXITY_AND_MAINTENANCE_COST_XXX
- *
- */
-
 #define ADD_SIZE_18x18(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/sz=18x18", __VA_ARGS__, 18, 18))
 
