@@ -229,7 +229,8 @@ typedef struct _tivx_mem_stats_t {
 } tivx_mem_stats;
 
 /*!
- * \brief Alloc buffer from shared memory
+ * \brief Allocates memory of given size in the shared memory carveout region
+ *        used by OpenVX data buffers
  *
  * \param [out] mem_ptr Allocated memory pointer
  * \param [in] size Size of memory to allocate in bytes
@@ -320,7 +321,8 @@ void* tivxMemShared2TargetPtr(const tivx_shared_mem_ptr_t *shared_ptr);
 uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region);
 
 /*!
- * \brief Allocates memory of given size
+ * \brief Allocates memory of given size in the shared memory carveout region
+ *        used by OpenVX data buffers
  *
  * \param [in] size             size of the memory to be allocated
  * \param [in] mem_heap_region  memory heap region

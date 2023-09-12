@@ -900,6 +900,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  *
  * The following conditions regarding 'addr' must be TRUE:
  * - allocated using appMemAlloc or \ref tivxMemAlloc on ARM using the APP_MEM_HEAP_DDR or \ref TIVX_MEM_EXTERNAL memory region respectively
+ *   - This API ensures that the memory is allocated in the necessary shared memory region which can be used by OpenVX
  * - freed using appMemFree or \ref tivxMemFree on ARM
  * - memory block is contiguous
  *
@@ -917,17 +918,44 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  * The memory being imported to an OpenVX reference must adhere to the semantics of how the framework
  * allocates memory.  This is of particular note for a few OpenVX objects listed below.
  * 
- * For \ref VX_TYPE_IMAGE references, multi-plane images shall be imported as a single entry.  The reason for
- * this is that the framework allocates multi-plane images as a single contiguous memory buffer.  Therefore,
- * if this is exported, it can also be freed as a single contiguous memory buffer rather than as separate
- * buffers.
- * 
- * For \ref VX_TYPE_PYRAMID objects, each pyramid level is allocated as a separate buffer and thus must be
- * imported as a single entry per level.  Additionally, in the case that the pyramid levels are multi-plane
- * images, these entries must be allocated as a single contiguous buffer with a size of all planes of the image.
- * 
- * For \ref TIVX_TYPE_RAW_IMAGE objects with multiple exposures, these are allocated by the framework as separate
- * buffers and thus must be imported as separate entries.
+ * - For \ref VX_TYPE_IMAGE references, multi-plane images shall be imported as a single entry.  The reason for
+ *   this is that the framework allocates multi-plane images as a single contiguous memory buffer.  Therefore,
+ *   if this is exported, it can also be freed as a single contiguous memory buffer rather than as separate
+ *   buffers.
+ * - For \ref VX_TYPE_PYRAMID objects, each pyramid level is allocated as a separate buffer and thus must be
+ *   imported as a single entry per level.  Additionally, in the case that the pyramid levels are multi-plane
+ *   images, these entries must be allocated as a single contiguous buffer with a size of all planes of the image.
+ * - For \ref TIVX_TYPE_RAW_IMAGE objects with multiple exposures, these are allocated by the framework as separate
+ *   buffers and thus must be imported as separate entries.
+ *
+ * Please note the important details below on semantics about the usage of the reference import and export.  Errors
+ * will occur if the below requirements are not adhered to.
+ *
+ * - When calling the \ref tivxReferenceExportHandle API on a \ref vx_reference to obtain a handle and subsequently
+ *   calling the \ref tivxReferenceImportHandle API to import the handle to a separate \ref vx_reference, the two
+ *   references must be of the same type and have the same meta information.  This can be confirmed by using the
+ *   \ref tivxIsReferenceMetaFormatEqual API.
+ * - The handle exported by the \ref tivxReferenceExportHandle API will only be valid while the originally allocated
+ *   handle is valid. For example, if a handle is exported from ref1 and imported into ref2, and then ref1 is released
+ *   access to ref2 will result in attempting to access memory which has already been freed. It is therefore the
+ *   responsibility of the application to ensure that the original memory allocation lifetime exceeds the lifetime of
+ *   exported handle.
+ * - In the example in the bullet above, in the case that ref1 must be released prior to ref2, the suggested approach
+ *   is to import a NULL pointer to ref1, followed by a release of the reference.  At this point, ref2 has sole
+ *   possession of the buffer while ref1 has no buffer dedicated to that reference.  An implementation of this approach
+ *   can be found in the associated test cases located at tiovx/conformance_tests/test_tiovx/test_tivxMem.c.
+ * - If memory has already been allocated to a \ref vx_reference and the \ref tivxReferenceImportHandle API is called
+ *   on the \ref vx_reference, the previous buffer will be discarded and the \ref vx_reference will now use the
+ *   imported buffer.  A log in the \ref VX_ZONE_INFO log level will be thrown on the console in this scenario to note
+ *   that a buffer is being overridden.  Because this can be a dangerous situation, the \ref tivxReferenceExportHandle
+ *   API shall be called on the \ref vx_reference in question.  The previous buffer can be used as required in the
+ *   application before ultimately being freed by way of the \ref tivxMemFree API.
+ * - The \ref tivxReferenceExportHandle API and \ref tivxReferenceImportHandle API must not be called if the reference
+ *   has been enqueued to a \ref vx_graph.  This can cause a scenario where the graph overwrites the buffer contents
+ *   and is thus is not in a state where it can be read by the application.
+ *
+ * Finally, please refer to the usage section of the TIOVX documentation for further information and diagrams showcasing
+ * the proper usage of these API's.
  *
  * \param [in,out] ref The reference object to be updated.
  * \param [in] addr An array of pointers for holding the handles. The entries can be NULL.
@@ -938,9 +966,9 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  *                         (ex:- for an image object with multiple planes, num_extries > 1).
  * \ingroup group_tivx_ext_host
  * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS, if the import operation is successful. The 'ref' object will have the
+ * \retval VX_SUCCESS if the import operation is successful. The 'ref' object will have the
  * internal handles updated.
- * VX_FAILURE, if the operation is unsuccessful. The state of the reference object is not changed.
+ * \retval VX_FAILURE if the operation is unsuccessful. The state of the reference object is not changed.
  * A failure can occur for the following reasons:
  * - Unsupported reference object type
  * - The argument check fails
@@ -968,17 +996,44 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReferenceImportHandle(vx_reference ref, c
  * The memory exported from an OpenVX reference adheres to the semantics of how the framework
  * allocates memory.  This is of particular note for a few OpenVX objects listed below.
  * 
- * For \ref VX_TYPE_IMAGE references, multi-plane images are exported as a single entry.  The reason for
- * this is that the framework allocates multi-plane images as a single contiguous memory buffer.  Therefore,
- * once this is exported, it can also be freed as a single contiguous memory buffer rather than as separate
- * buffers.
- * 
- * For \ref VX_TYPE_PYRAMID objects, each pyramid level is allocated as a separate buffer and will be
- * exported as a single entry per level.  Additionally, in the case that the pyramid levels are multi-plane
- * images, these entries are provided as a single contiguous buffer with a size of all planes of the image.
- * 
- * For \ref TIVX_TYPE_RAW_IMAGE objects with multiple exposures, these are allocated by the framework as separate
- * buffers and thus are exported as separate entries.
+ * - For \ref VX_TYPE_IMAGE references, multi-plane images are exported as a single entry.  The reason for
+ *   this is that the framework allocates multi-plane images as a single contiguous memory buffer.  Therefore,
+ *   once this is exported, it can also be freed as a single contiguous memory buffer rather than as separate
+ *   buffers.
+ * - For \ref VX_TYPE_PYRAMID objects, each pyramid level is allocated as a separate buffer and will be
+ *   exported as a single entry per level.  Additionally, in the case that the pyramid levels are multi-plane
+ *   images, these entries are provided as a single contiguous buffer with a size of all planes of the image.
+ * - For \ref TIVX_TYPE_RAW_IMAGE objects with multiple exposures, these are allocated by the framework as separate
+ *   buffers and thus are exported as separate entries.
+ *
+ * Please note the important details below on semantics about the usage of the reference import and export.  Errors
+ * will occur if the below requirements are not adhered to.
+ *
+ * - When calling the \ref tivxReferenceExportHandle API on a \ref vx_reference to obtain a handle and subsequently
+ *   calling the \ref tivxReferenceImportHandle API to import the handle to a separate \ref vx_reference, the two
+ *   references must be of the same type and have the same meta information.  This can be confirmed by using the
+ *   \ref tivxIsReferenceMetaFormatEqual API.
+ * - The handle exported by the \ref tivxReferenceExportHandle API will only be valid while the originally allocated
+ *   handle is valid. For example, if a handle is exported from ref1 and imported into ref2, and then ref1 is released
+ *   access to ref2 will result in attempting to access memory which has already been freed. It is therefore the
+ *   responsibility of the application to ensure that the original memory allocation lifetime exceeds the lifetime of
+ *   exported handle.
+ * - In the example in the bullet above, in the case that ref1 must be released prior to ref2, the suggested approach
+ *   is to import a NULL pointer to ref1, followed by a release of the reference.  At this point, ref2 has sole
+ *   possession of the buffer while ref1 has no buffer dedicated to that reference.  An implementation of this approach
+ *   can be found in the associated test cases located at tiovx/conformance_tests/test_tiovx/test_tivxMem.c.
+ * - If memory has already been allocated to a \ref vx_reference and the \ref tivxReferenceImportHandle API is called
+ *   on the \ref vx_reference, the previous buffer will be discarded and the \ref vx_reference will now use the
+ *   imported buffer.  A log in the \ref VX_ZONE_INFO log level will be thrown on the console in this scenario to note
+ *   that a buffer is being overridden.  Because this can be a dangerous situation, the \ref tivxReferenceExportHandle
+ *   API shall be called on the \ref vx_reference in question.  The previous buffer can be used as required in the
+ *   application before ultimately being freed by way of the \ref tivxMemFree API.
+ * - The \ref tivxReferenceExportHandle API and \ref tivxReferenceImportHandle API must not be called if the reference
+ *   has been enqueued to a \ref vx_graph.  This can cause a scenario where the graph overwrites the buffer contents
+ *   and is thus is not in a state where it can be read by the application.
+ *
+ * Finally, please refer to the usage section of the TIOVX documentation for further information and diagrams showcasing
+ * the proper usage of these API's.
  *
  * \param [in]  ref The reference object to export the handles from.
  * \param [out] addr An array of pointers for holding the handles.
@@ -989,9 +1044,9 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReferenceImportHandle(vx_reference ref, c
  *                         (ex:- for an image object with multiple planes, num_extries > 1).
  * \ingroup group_tivx_ext_host
  * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS, if the export operation is successful. The 'addr' object will be populated
+ * \retval VX_SUCCESS if the export operation is successful. The 'addr' object will be populated
  *  with 'num_entries' handles. size[i] will correspond to the handle addr[i].
- * VX_FAILURE, if the operation is unsuccessful. The state of the reference object is not changed.
+ * \retval VX_FAILURE if the operation is unsuccessful. The state of the reference object is not changed.
  * A failure can occur for the following reasons:
  * - Unsupported reference object type
  * - The argument check fails
