@@ -40,7 +40,11 @@
 #define TIVX_TEST_MATRIX_SIZE                       (8)
 
 extern uint32_t appMemGetNumAllocs();
-
+/* Note: since these are specific to QNX, only defining them for QNX */
+#if defined (QNX)
+extern uint32_t appMemGetNumMaps();
+extern uint32_t appMemGetNumBufElements();
+#endif
 typedef struct
 {
     const char *name;
@@ -498,8 +502,16 @@ TEST(tivxMem, testTranslateAddrMemAlloc)
     vx_enum     region;
     int32_t     status;
     uint32_t    numAllocInitial, numAllocFinal;
+#if defined(QNX)
+    uint32_t    numMapsInitial, numMapsFinal;
+    uint32_t    numBufsInitial, numBufsFinal;
+#endif
 
     numAllocInitial = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsInitial  = appMemGetNumMaps();
+    numBufsInitial  = appMemGetNumBufElements();
+#endif
 
     size   = 1024;
     region = TIVX_MEM_EXTERNAL;
@@ -526,12 +538,30 @@ cleanup:
         tivxMemFree(ptr, size, region);
     }
     numAllocFinal = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsFinal  = appMemGetNumMaps();
+    numBufsFinal  = appMemGetNumBufElements();
+#endif
 
     if (numAllocInitial != numAllocFinal)
     {
         VX_PRINT(VX_ZONE_ERROR, "numAllocInitial [%d] does not equal numAllocFinal [%d]\n", numAllocInitial, numAllocFinal);
         testFail = 1;
     }
+
+#if defined(QNX)
+    if (numMapsInitial != numMapsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numMapsInitial [%d] does not equal numMapsFinal [%d]\n", numMapsInitial, numMapsFinal);
+        testFail = 1;
+    }
+
+    if (numBufsInitial != numBufsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numBufsInitial [%d] does not equal numBufsFinal [%d]\n", numBufsInitial, numBufsFinal);
+        testFail = 1;
+    }
+#endif
 
     TIVX_TEST_UPDATE_STATUS(testFail);
 }
@@ -545,9 +575,17 @@ TEST(tivxMem, testTranslateAddrMalloc)
     uint32_t    size;
     uint32_t    testFail = 0;
     int32_t     status;
-    uint32_t        numAllocInitial, numAllocFinal;
+    uint32_t    numAllocInitial, numAllocFinal;
+#if defined(QNX)
+    uint32_t    numMapsInitial, numMapsFinal;
+    uint32_t    numBufsInitial, numBufsFinal;
+#endif
 
     numAllocInitial = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsInitial  = appMemGetNumMaps();
+    numBufsInitial  = appMemGetNumBufElements();
+#endif
 
     /* ALlocate a memory block using malloc(). */
     size   = 1024;
@@ -577,12 +615,30 @@ cleanup:
     }
 
     numAllocFinal = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsFinal  = appMemGetNumMaps();
+    numBufsFinal  = appMemGetNumBufElements();
+#endif
 
     if (numAllocInitial != numAllocFinal)
     {
         VX_PRINT(VX_ZONE_ERROR, "numAllocInitial [%d] does not equal numAllocFinal [%d]\n", numAllocInitial, numAllocFinal);
         testFail = 1;
     }
+
+#if defined(QNX)
+    if (numMapsInitial != numMapsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numMapsInitial [%d] does not equal numMapsFinal [%d]\n", numMapsInitial, numMapsFinal);
+        testFail = 1;
+    }
+
+    if (numBufsInitial != numBufsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numBufsInitial [%d] does not equal numBufsFinal [%d]\n", numBufsInitial, numBufsFinal);
+        testFail = 1;
+    }
+#endif
 
     TIVX_TEST_UPDATE_STATUS(testFail);
 }
@@ -606,8 +662,16 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
     vx_enum         region;
     uint32_t        release_memory = 0;
     uint32_t        numAllocInitial, numAllocFinal;
+#if defined(QNX)
+    uint32_t    numMapsInitial, numMapsFinal;
+    uint32_t    numBufsInitial, numBufsFinal;
+#endif
 
     numAllocInitial = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsInitial  = appMemGetNumMaps();
+    numBufsInitial  = appMemGetNumBufElements();
+#endif
 
     /* Allocate objects. Both these objects should have
      * internal memory allocated after the respective data object
@@ -786,12 +850,30 @@ cleanup:
     }
 
     numAllocFinal = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsFinal  = appMemGetNumMaps();
+    numBufsFinal  = appMemGetNumBufElements();
+#endif
 
     if (numAllocInitial != numAllocFinal)
     {
         VX_PRINT(VX_ZONE_ERROR, "numAllocInitial [%d] does not equal numAllocFinal [%d]\n", numAllocInitial, numAllocFinal);
         testFail = 1;
     }
+
+#if defined(QNX)
+    if (numMapsInitial != numMapsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numMapsInitial [%d] does not equal numMapsFinal [%d]\n", numMapsInitial, numMapsFinal);
+        testFail = 1;
+    }
+
+    if (numBufsInitial != numBufsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numBufsInitial [%d] does not equal numBufsFinal [%d]\n", numBufsInitial, numBufsFinal);
+        testFail = 1;
+    }
+#endif
 
     TIVX_TEST_UPDATE_STATUS(testFail);
 }
@@ -816,8 +898,16 @@ TEST_WITH_ARG(tivxMem, testReferenceExportMultipleImport, TestArg, TEST_PARAMS)
     vx_enum         region;
     uint32_t        release_memory = 0;
     uint32_t        numAllocInitial, numAllocFinal;
+#if defined(QNX)
+    uint32_t    numMapsInitial, numMapsFinal;
+    uint32_t    numBufsInitial, numBufsFinal;
+#endif
 
     numAllocInitial = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsInitial  = appMemGetNumMaps();
+    numBufsInitial  = appMemGetNumBufElements();
+#endif
 
     /* Allocate original object. This objects should have
      * internal memory allocated after the respective data object
@@ -979,6 +1069,10 @@ cleanup:
     }
 
     numAllocFinal = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsFinal  = appMemGetNumMaps();
+    numBufsFinal  = appMemGetNumBufElements();
+#endif
 
     if (numAllocInitial != numAllocFinal)
     {
@@ -986,13 +1080,19 @@ cleanup:
         testFail = 1;
     }
 
-    numAllocFinal = appMemGetNumAllocs();
-
-    if (numAllocInitial != numAllocFinal)
+#if defined(QNX)
+    if (numMapsInitial != numMapsFinal)
     {
-        VX_PRINT(VX_ZONE_ERROR, "numAllocInitial [%d] does not equal numAllocFinal [%d]\n", numAllocInitial, numAllocFinal);
+        VX_PRINT(VX_ZONE_ERROR, "numMapsInitial [%d] does not equal numMapsFinal [%d]\n", numMapsInitial, numMapsFinal);
         testFail = 1;
     }
+
+    if (numBufsInitial != numBufsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numBufsInitial [%d] does not equal numBufsFinal [%d]\n", numBufsInitial, numBufsFinal);
+        testFail = 1;
+    }
+#endif
 
     TIVX_TEST_UPDATE_STATUS(testFail);
 }
@@ -1016,8 +1116,16 @@ TEST_WITH_ARG(tivxMem, testReferenceExportMultipleAddrSameRef, TestArg, TEST_PAR
     vx_enum         region;
     uint32_t        release_memory = 0;
     uint32_t        numAllocInitial, numAllocFinal;
+#if defined(QNX)
+    uint32_t    numMapsInitial, numMapsFinal;
+    uint32_t    numBufsInitial, numBufsFinal;
+#endif
 
     numAllocInitial = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsInitial  = appMemGetNumMaps();
+    numBufsInitial  = appMemGetNumBufElements();
+#endif
 
     /* Allocate original objects. This objects should have
      * internal memory allocated after the respective data object
@@ -1185,12 +1293,30 @@ cleanup:
     }
 
     numAllocFinal = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsFinal  = appMemGetNumMaps();
+    numBufsFinal  = appMemGetNumBufElements();
+#endif
 
     if (numAllocInitial != numAllocFinal)
     {
         VX_PRINT(VX_ZONE_ERROR, "numAllocInitial [%d] does not equal numAllocFinal [%d]\n", numAllocInitial, numAllocFinal);
         testFail = 1;
     }
+
+#if defined(QNX)
+    if (numMapsInitial != numMapsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numMapsInitial [%d] does not equal numMapsFinal [%d]\n", numMapsInitial, numMapsFinal);
+        testFail = 1;
+    }
+
+    if (numBufsInitial != numBufsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numBufsInitial [%d] does not equal numBufsFinal [%d]\n", numBufsInitial, numBufsFinal);
+        testFail = 1;
+    }
+#endif
 
     TIVX_TEST_UPDATE_STATUS(testFail);
 }
@@ -1210,10 +1336,18 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcNullObj, TestArg, TEST_PARAMS
     uint32_t        numEntries2;
     uint32_t        i;
     vx_status       vxStatus;
-    uint32_t release_memory = 0;
+    uint32_t        release_memory = 0;
     uint32_t        numAllocInitial, numAllocFinal;
+#if defined(QNX)
+    uint32_t    numMapsInitial, numMapsFinal;
+    uint32_t    numBufsInitial, numBufsFinal;
+#endif
 
     numAllocInitial = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsInitial  = appMemGetNumMaps();
+    numBufsInitial  = appMemGetNumBufElements();
+#endif
 
     /* Allocate object. */
     ref[0] = testTivxMemAllocObject(context, type, arg_->aux, 1);
@@ -1311,12 +1445,30 @@ cleanup:
     }
 
     numAllocFinal = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsFinal  = appMemGetNumMaps();
+    numBufsFinal  = appMemGetNumBufElements();
+#endif
 
     if (numAllocInitial != numAllocFinal)
     {
         VX_PRINT(VX_ZONE_ERROR, "numAllocInitial [%d] does not equal numAllocFinal [%d]\n", numAllocInitial, numAllocFinal);
         testFail = 1;
     }
+
+#if defined(QNX)
+    if (numMapsInitial != numMapsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numMapsInitial [%d] does not equal numMapsFinal [%d]\n", numMapsInitial, numMapsFinal);
+        testFail = 1;
+    }
+
+    if (numBufsInitial != numBufsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numBufsInitial [%d] does not equal numBufsFinal [%d]\n", numBufsInitial, numBufsFinal);
+        testFail = 1;
+    }
+#endif
 
     TIVX_TEST_UPDATE_STATUS(testFail);
 }
@@ -1339,8 +1491,16 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcValidObj, TestArg, TEST_PARAM
     vx_enum         region;
     uint32_t        release_memory = 0;
     uint32_t        numAllocInitial, numAllocFinal;
+#if defined(QNX)
+    uint32_t    numMapsInitial, numMapsFinal;
+    uint32_t    numBufsInitial, numBufsFinal;
+#endif
 
     numAllocInitial = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsInitial  = appMemGetNumMaps();
+    numBufsInitial  = appMemGetNumBufElements();
+#endif
 
     /* Allocate objects. Both these objects should have
      * internal memory allocated after the respective data object
@@ -1476,12 +1636,30 @@ cleanup:
     }
 
     numAllocFinal = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsFinal  = appMemGetNumMaps();
+    numBufsFinal  = appMemGetNumBufElements();
+#endif
 
     if (numAllocInitial != numAllocFinal)
     {
         VX_PRINT(VX_ZONE_ERROR, "numAllocInitial [%d] does not equal numAllocFinal [%d]\n", numAllocInitial, numAllocFinal);
         testFail = 1;
     }
+
+#if defined(QNX)
+    if (numMapsInitial != numMapsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numMapsInitial [%d] does not equal numMapsFinal [%d]\n", numMapsInitial, numMapsFinal);
+        testFail = 1;
+    }
+
+    if (numBufsInitial != numBufsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numBufsInitial [%d] does not equal numBufsFinal [%d]\n", numBufsInitial, numBufsFinal);
+        testFail = 1;
+    }
+#endif
 
     TIVX_TEST_UPDATE_STATUS(testFail);
 }
