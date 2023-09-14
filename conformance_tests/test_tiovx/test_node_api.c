@@ -22,8 +22,12 @@
 #include <VX/vxu.h>
 #include <TI/tivx_config.h>
 #include <TI/tivx.h>
+#include <TI/tivx_test_kernels.h>
+#include <TI/tivx_capture.h>
 
 #include "test_engine/test.h"
+
+#define VX_KERNEL_CONFORMANCE_TEST_USER_SOURCE1_NAME1 "org.khronos.openvx.test.user_source_1"
 
 TESTCASE(tivxNodeApi, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -66,10 +70,51 @@ TEST(tivxNodeApi, negativeTestRemapNode)
     ASSERT(NULL == vxRemapNode(graph, input, table, policy, output));
 }
 
+/* tivxCreateNodeByKernelName , if(kernel!=NULL)*/
+TEST(tivxNodeApi, negativeTesttivxCreateNodeByKernelName)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_remap table = NULL;
+    vx_reference prms[]= {NULL};
+    ASSERT(NULL == tivxCreateNodeByKernelName(graph, NULL, prms,dimof(prms)));
+}
+
+/* vxCreateNodeByStructure , #line 71*/
+TEST(tivxNodeApi, negativeTesttivxCreateNodeByStructure)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_remap table = NULL;
+    vx_reference prms[]= {NULL};
+
+    ASSERT(NULL == tivxCreateNodeByKernelRef(graph, TIVX_KERNEL_SCALAR_SOURCE_NAME, prms,dimof(prms)));
+}
+
+TEST(tivxNodeApi, negativeTesttivxCreateNodeByStructure1)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_image image;
+
+    ASSERT_VX_OBJECT(image   = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    vx_reference params[2] =
+    {
+        (vx_reference)image
+    };
+    ASSERT(NULL == tivxCreateNodeByKernelEnum(graph, VX_KERNEL_ABSDIFF, params, 2));
+    VX_CALL(vxReleaseImage(&image));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(
     tivxNodeApi,
     negativeTestWarpAffineNode,
     negativeTestWarpPerspectiveNode,
-    negativeTestRemapNode
+    negativeTestRemapNode,
+    negativeTesttivxCreateNodeByKernelName,
+    negativeTesttivxCreateNodeByStructure,
+    negativeTesttivxCreateNodeByStructure1
 )
 

@@ -22,6 +22,8 @@
 #include "shared_functions.h"
 #include <TI/tivx_config.h>
 
+#define TIVX_REFERENCE_NOT_PRESENT 0
+
 TESTCASE(tivxReference, CT_VXContext, ct_setup_vx_context, 0)
 
 
@@ -212,7 +214,6 @@ TEST(tivxReference, negativeTestRetainReference)
 TEST(tivxReference, negativeTestHint)
 {
     vx_context context = context_->vx_context_;
-
     vx_reference ref = NULL;
     vx_enum hint = 0;
     vx_uint32 udata = 0;
@@ -228,8 +229,18 @@ TEST(tivxReference, negativeTestGetReferenceParent)
     vx_reference ret;
     
     ret = tivxGetReferenceParent(ref);
-   
     ASSERT(ret == NULL);
+}
+
+TEST(tivxReference, negativeTestGetReferenceParent1)
+{
+    vx_context context = context_->vx_context_;
+    vx_uint64 is_invalid, set_is_valid = 10;
+
+    vx_image image;
+    vx_reference out_objarr;
+    out_objarr = (vx_reference)tivxGetReferenceParent((vx_reference)context);
+    ASSERT(out_objarr == NULL);
 }
 
 TEST(tivxReference, negativeTestSetRefCount)
@@ -244,13 +255,23 @@ TEST(tivxReference, negativeTestSetRefCount)
 
 TEST(tivxReference, negativeTestSetTimestamp)
 {
+    vx_reference ref = NULL;
+    vx_enum attribute = VX_REFERENCE_DEFAULT;
+    vx_uint32 udata = 0;
+    vx_size size = 0;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, tivxSetReferenceAttribute(ref, VX_REFERENCE_COUNT, &udata, size));
+}
+
+TEST(tivxReference, negativetestSetTimestamp1)
+{
     vx_context context = context_->vx_context_;
     vx_image image;
     vx_uint32 udata = 0;
-
+    vx_uint64 udata1 = 0;
     ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxSetReferenceAttribute((vx_reference)image, TIVX_REFERENCE_TIMESTAMP, &udata, sizeof(udata)));
-
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, tivxSetReferenceAttribute((vx_reference)image, TIVX_REFERENCE_NOT_PRESENT, &udata, sizeof(udata)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxSetReferenceAttribute((vx_reference)image, TIVX_REFERENCE_INVALID, &udata1, sizeof(udata1)));
     VX_CALL(vxReleaseImage(&image));
 }
 
@@ -261,13 +282,9 @@ TEST(tivxReference, negativeTestGetStatus1)
     vx_image   src_image;
 
 	ASSERT_VX_OBJECT(src_image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-
     VX_CALL(vxReleaseContext(&context));
-
     status = vxGetStatus((vx_reference)src_image);
-
     ASSERT(status==VX_FAILURE);
-
     context = vxCreateContext();
 }
 
@@ -277,7 +294,6 @@ TEST(tivxReference, negativeTestGetStatus2)
     vx_status status;
  
     status = vxGetStatus((vx_reference)context);
-
     ASSERT(status==VX_SUCCESS);
 }
 
@@ -288,6 +304,133 @@ TEST(tivxReference, testGetContext)
 
     ASSERT_VX_OBJECT(new_context = vxGetContext((vx_reference)context), VX_TYPE_CONTEXT);
 }
+
+TEST(tivxReference, negativeTestvxReferenceExportHandle)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image;
+    vx_uint64 is_invalid, set_is_valid = 10;
+    vx_reference ref;
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    VX_CALL(tivxSetReferenceAttribute((vx_reference)image, TIVX_REFERENCE_TIMESTAMP, &set_is_valid, sizeof(set_is_valid)));
+    ref = (vx_reference)image;
+ 
+    void *addr[64]; 
+    void *nonNullValue = (void *)0x12345678;
+    for (int i = 0; i < 64; i++) 
+    { addr[i] = nonNullValue; }
+    uint32_t size[64] = { 10 }; 
+    uint32_t max_entries = 64; 
+    uint32_t num_entries = NULL;
+   
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceExportHandle((vx_reference)context, addr, size, max_entries, &num_entries)));
+    VX_CALL(vxReleaseImage(&image));
+}
+
+TEST(tivxReference, negativeTestvxIsReferenceMetaFormatEqual1)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image1 = NULL;
+    vx_image image2;
+    vx_bool is_equal;
+
+    ASSERT_VX_OBJECT(image2 = vxCreateImage(context, 128, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)image1, (vx_reference)image2);
+    ASSERT(is_equal==vx_false_e);
+    VX_CALL(vxReleaseImage(&image2));
+}
+
+TEST(tivxReference, negativeTestvxIsReferenceMetaFormatEqual2)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image1;
+    vx_image image2 = NULL;
+    vx_bool is_equal;
+
+    ASSERT_VX_OBJECT(image1 = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)image1, (vx_reference)image2);
+    ASSERT(is_equal==vx_false_e);
+    VX_CALL(vxReleaseImage(&image1));
+}
+
+TEST(tivxReference, negativeTestvxIsReferenceMetaFormatEqual3)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image;
+    vx_bool is_equal;
+    vx_uint64 is_invalid, set_is_valid = 10;
+    vx_context context1, context2;
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    context2 = (vxGetContext((vx_reference)image));
+    is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)context, (vx_reference)context2);
+    ASSERT(is_equal==vx_false_e);
+    VX_CALL(vxReleaseImage(&image));
+}
+
+TEST(tivxReference, negativeTesttivxReferenceImportHandle)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph   graph;
+    vx_node node = 0;
+    vx_kernel kernel = 0;
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    vx_context context1 = vxGetContext((vx_reference)graph);
+    vx_enum take10_enumId = 0u;
+    void *addr[64]; 
+    void *nonNullValue = (void *)0x12345678;
+    for (int i = 0; i < 64; i++) 
+    { addr[i] = nonNullValue; }
+    uint32_t size[64] = { 10 }; 
+    uint32_t max_entries = 64; 
+    uint32_t num_entries = 10;
+    vx_enum kernel_id = VX_KERNEL_SOBEL_3x3;
+
+    ASSERT_VX_OBJECT(context1, VX_TYPE_CONTEXT);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context1, kernel_id), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)node, addr, size, &num_entries)));    
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseKernel(&kernel));
+    VX_CALL(vxReleaseGraph(&graph));    
+}
+
+TEST(tivxReference, negativeTesttivxReferenceImportHandle1)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image;
+    vx_pyramid pyr_in;
+    vx_uint64 is_invalid, set_is_valid = 10;
+    void *addr[64]; 
+    void *nonNullValue = (void *)0x1234567890AB;
+    for (int i = 0; i < 64; i++) 
+    { addr[i] = nonNullValue; }
+    uint32_t size[64] = { 10 }; 
+    uint32_t max_entries = 64; 
+    uint32_t num_entries = 10;
+
+    ASSERT_VX_OBJECT(pyr_in = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)pyr_in, addr, size, &num_entries)));    
+    VX_CALL(vxReleasePyramid(&pyr_in));    
+} 
+
+TEST(tivxReference, negativeTesttivxReferenceImportHandle2)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image;
+    vx_uint64 is_invalid, set_is_valid = 10;
+    void *addr[64]; 
+    void *nonNullValue = (void *)0x1234567890AB;
+    for (int i = 0; i < 64; i++) 
+    { addr[i] = nonNullValue; }
+    uint32_t size[64] = { 10 }; 
+    uint32_t max_entries = 64; 
+    uint32_t num_entries = 10;
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)image, addr, size, &num_entries)));    
+    VX_CALL(vxReleaseImage(&image));    
+} 
 
 TESTCASE_TESTS(
     tivxReference,
@@ -305,10 +448,19 @@ TESTCASE_TESTS(
     negativeTestRetainReference,
     negativeTestHint,
     negativeTestGetReferenceParent,
-    negativeTestSetRefCount,
+    negativeTestGetReferenceParent1,
+	negativeTestSetRefCount,
     negativeTestSetTimestamp,
+    negativetestSetTimestamp1,
     negativeTestGetStatus1,
-    negativeTestGetStatus2,
-    testGetContext
+    negativeTestGetStatus2,    
+    negativeTestvxReferenceExportHandle,
+    testGetContext,
+    negativeTestvxIsReferenceMetaFormatEqual1,
+    negativeTestvxIsReferenceMetaFormatEqual2,
+    negativeTestvxIsReferenceMetaFormatEqual3,    
+    negativeTesttivxReferenceImportHandle,
+    negativeTesttivxReferenceImportHandle1,
+    negativeTesttivxReferenceImportHandle2
 )
 

@@ -97,4 +97,3 @@ TESTCASE_TESTS(
     negativeTestGetObjectArrayItem,
     negativeTestQueryObjectArray
 )
-
