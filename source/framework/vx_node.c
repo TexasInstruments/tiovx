@@ -294,6 +294,18 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
                     if (ownIsValidReference(ref[cnt]) == (vx_bool)vx_true_e)
                     {
                         obj_desc_id[cnt] = ref[cnt]->obj_desc->obj_desc_id;
+
+                        /* Since it is possible that the reference sent across this API
+                         * to the node via a control command is not connected to a graph
+                         * and thus may not be allocated already, explicitly calling the
+                         * reference allocation API. */
+                        status = ownReferenceAllocMem(ref[cnt]);
+
+                        if((vx_status)VX_SUCCESS != status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "Allocating reference %d failed\n", cnt);
+                            break;
+                        }
                     }
                     else
                     {
@@ -303,11 +315,14 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
                     }
                 }
 
-                status = ownContextSendControlCmd(node->base.context,
-                    node->obj_desc[0]->base.obj_desc_id,
-                    node->obj_desc[0]->target_id,
-                    replicated_node_idx, node_cmd_id,
-                    obj_desc_id, num_refs, timeout);
+                if((vx_status)VX_SUCCESS == status)
+                {
+                    status = ownContextSendControlCmd(node->base.context,
+                        node->obj_desc[0]->base.obj_desc_id,
+                        node->obj_desc[0]->target_id,
+                        replicated_node_idx, node_cmd_id,
+                        obj_desc_id, num_refs, timeout);
+                }
             }
         }
     }
