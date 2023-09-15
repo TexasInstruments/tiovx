@@ -181,19 +181,6 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
         }
     }
 
-
-    /* CUSTOM PARAMETER CHECKING */
-
-    if ((vx_status)VX_SUCCESS == status)
-    {
-        if ((VX_SCALE_PYRAMID_HALF != gaussian_scale) &&
-            (VX_SCALE_PYRAMID_ORB != gaussian_scale))
-        {
-            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'gaussian' should be a pyramid of scale:\n VX_SCALE_PYRAMID_HALF or VX_SCALE_PYRAMID_ORB \n");
-        }
-    }
-
     if ((vx_status)VX_SUCCESS == status)
     {
         if ((vx_enum)VX_BORDER_UNDEFINED != border.mode)
