@@ -1127,14 +1127,14 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                     img_ref      = (vx_reference)pyramid->img[i];
                     img_obj_desc = (tivx_obj_desc_image_t *)img_ref->obj_desc;
 
-                    numPlanes = img_obj_desc->planes;
-
                     if (img_obj_desc == NULL)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "'img_obj_desc' is NULL.\n");
                         status = (vx_status)VX_FAILURE;
                         break;
                     }
+
+                    numPlanes = img_obj_desc->planes;
 
                     numMemElem++;
                     mem_ptr_arr[i]   = img_obj_desc->mem_ptr;

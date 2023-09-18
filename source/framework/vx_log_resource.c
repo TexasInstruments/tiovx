@@ -842,7 +842,7 @@ static char * applyMemoryUnit(double * size_bytes, char * unit)
 
 static void printOutput (FILE *ofp, const char* format, ...)
 {
-    va_list argptr;
+    va_list argptr = {0};
     va_start(argptr, format);
     if (ofp == NULL)
     {
@@ -1488,7 +1488,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
             #pragma GCC diagnostic ignored "-Wformat-truncation"
             snprintf(buffer, TIVX_CONFIG_PATH_LENGTH, "chmod +x %s", outputFileName);
             #pragma GCC diagnostic pop
-            system(buffer);
+            status = system(buffer);
         }
         fclose(ofp);
     }
