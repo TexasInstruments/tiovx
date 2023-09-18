@@ -21,8 +21,10 @@
 #include <math.h>
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <VX/vx_types.h>
 #include <TI/tivx_config.h>
-
+#include <TI/tivx_debug.h>
+#include <TI/tivx_ext_raw_image.h>
 #include "test_engine/test.h"
 
 TESTCASE(tivxDelay, CT_VXContext, ct_setup_vx_context, 0)
@@ -42,6 +44,67 @@ TEST(tivxDelay, negativeTestCreateDelay)
     count = TIVX_DELAY_MAX_OBJECT + 1;
     EXPECT_VX_ERROR(delay = vxCreateDelay(context, (vx_reference)(scalar), count), VX_ERROR_NO_RESOURCES);
     VX_CALL(vxReleaseScalar(&scalar));
+}
+
+TEST(tivxDelay, negativeTestCreateDelayTypeImage)
+{
+    vx_context context = context_->vx_context_;
+    vx_delay src_delay;
+    vx_image src_image[TIVX_IMAGE_MAX_OBJECTS];
+    int i;
+
+    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 8, 8, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+
+    EXPECT_VX_ERROR(src_delay = vxCreateDelay(context, (vx_reference)src_image[7], TIVX_DELAY_MAX_OBJECT), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseImage(&src_image[i]));
+    }
+}
+
+TEST(tivxDelay, testCreateDelayTypeConvolution)
+{
+    vx_context context = context_->vx_context_;
+    vx_delay src_delay;
+    vx_convolution src_conv;
+
+    ASSERT_VX_OBJECT(src_conv = vxCreateConvolution(context, 3, 3), VX_TYPE_CONVOLUTION);
+
+    ASSERT_VX_OBJECT(src_delay = vxCreateDelay(context, (vx_reference)src_conv, TIVX_DELAY_MAX_OBJECT), VX_TYPE_DELAY);
+
+    VX_CALL(vxReleaseConvolution(&src_conv));
+    VX_CALL(vxReleaseDelay(&src_delay));
+}
+
+TEST(tivxDelay, testCreateDelayTypeRawImage)
+{
+    vx_context context = context_->vx_context_;
+    vx_delay src_delay;
+    tivx_raw_image src_raw;
+    tivx_raw_image_create_params_t params;
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_true_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height_before = 5;
+    params.meta_height_after = 0;
+
+    ASSERT_VX_OBJECT(src_raw = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+
+    ASSERT_VX_OBJECT(src_delay = vxCreateDelay(context, (vx_reference)src_raw, TIVX_DELAY_MAX_OBJECT), VX_TYPE_DELAY);
+
+    VX_CALL(tivxReleaseRawImage(&src_raw));
+    VX_CALL(vxReleaseDelay(&src_delay));
 }
 
 TEST(tivxDelay, negativeTestGetReferenceFromDelay)
@@ -65,7 +128,7 @@ TEST(tivxDelay, negativeTestGetReferenceFromDelay)
 
 TEST(tivxDelay, negativeTestQueryDelay)
 {
-    #define VX_DELAY_DEFAULT 0
+#define VX_DELAY_DEFAULT 0
 
     vx_context context = context_->vx_context_;
 
@@ -110,6 +173,9 @@ TESTCASE_TESTS(
     negativeTestCreateDelay,
     negativeTestGetReferenceFromDelay,
     negativeTestQueryDelay,
-    negativeTestAgeDelay
-)
+    negativeTestAgeDelay,
+    negativeTestCreateDelayTypeImage,
+    testCreateDelayTypeRawImage,
+    testCreateDelayTypeConvolution
 
+)
