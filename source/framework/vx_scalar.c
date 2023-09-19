@@ -19,29 +19,8 @@
 
 #include <vx_internal.h>
 
-static vx_status ownDestructScalar(vx_reference ref);
 static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr);
 static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr);
-
-static vx_status ownDestructScalar(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    vx_scalar scalar = (vx_scalar)ref;
-
-    if(scalar->base.type == (vx_enum)VX_TYPE_SCALAR)
-    {
-        if(scalar->base.obj_desc!=NULL)
-        {
-            status = ownObjDescFree((tivx_obj_desc_t**)&scalar->base.obj_desc);
-
-            if ((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Scalar object descriptor free failed!\n");
-            }
-        }
-    }
-    return status;
-}
 
 static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
 {
@@ -221,7 +200,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
             if ((vxGetStatus((vx_reference)scalar) == (vx_status)VX_SUCCESS) && (scalar->base.type == (vx_enum)VX_TYPE_SCALAR))
             {
                 /* assign refernce type specific callback's */
-                scalar->base.destructor_callback = &ownDestructScalar;
+                scalar->base.destructor_callback = &ownDestructReferenceGeneric;
                 scalar->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseScalar;
 
                 obj_desc = (tivx_obj_desc_scalar_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SCALAR, (vx_reference)scalar);

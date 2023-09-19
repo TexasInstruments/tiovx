@@ -18,9 +18,6 @@
 
 #include <vx_internal.h>
 
-static vx_status ownDestructMatrix(vx_reference ref);
-static vx_status ownAllocMatrixBuffer(vx_reference ref);
-
 vx_matrix VX_API_CALL vxCreateMatrix(
     vx_context context, vx_enum data_type, vx_size columns, vx_size rows)
 {
@@ -65,8 +62,8 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                 (matrix->base.type == (vx_enum)VX_TYPE_MATRIX))
             {
                 /* assign refernce type specific callback's */
-                matrix->base.destructor_callback = &ownDestructMatrix;
-                matrix->base.mem_alloc_callback = &ownAllocMatrixBuffer;
+                matrix->base.destructor_callback = &ownDestructReferenceGeneric;
+                matrix->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 matrix->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseMatrix;
 
@@ -165,8 +162,8 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             (matrix->base.type == (vx_enum)VX_TYPE_MATRIX))
         {
             /* assign refernce type specific callback's */
-            matrix->base.destructor_callback = &ownDestructMatrix;
-            matrix->base.mem_alloc_callback = &ownAllocMatrixBuffer;
+            matrix->base.destructor_callback = &ownDestructReferenceGeneric;
+            matrix->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
             matrix->base.release_callback =
                 (tivx_reference_release_callback_f)&vxReleaseMatrix;
 
@@ -203,12 +200,12 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
 
                 /* Allocate memory for matrix since matrix need to be
                    filled up with a pattern  */
-                status = ownAllocMatrixBuffer(&matrix->base);
+                status = ownAllocReferenceBufferGeneric(&matrix->base);
 
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     /* Free up memory allocated for matrix */
-                    ownDestructMatrix(&matrix->base);
+                    ownDestructReferenceGeneric(&matrix->base);
 
                     /* Release matrix */
                     vxReleaseMatrix(&matrix);
@@ -477,7 +474,7 @@ vx_status VX_API_CALL vxCopyMatrix(
         }
         else /* Copy from user memory to matrix object */
         {
-            status = ownAllocMatrixBuffer(&matrix->base);
+            status = ownAllocReferenceBufferGeneric(&matrix->base);
 
             if ((vx_status)VX_SUCCESS == status)
             {
@@ -493,78 +490,4 @@ vx_status VX_API_CALL vxCopyMatrix(
     }
 
     return (status);
-}
-
-static vx_status ownAllocMatrixBuffer(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_matrix_t *obj_desc = NULL;
-
-    if(ref->type == (vx_enum)VX_TYPE_MATRIX)
-    {
-        obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
-        if(obj_desc != NULL)
-        {
-            /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL)
-            {
-                status = tivxMemBufferAlloc(
-                    &obj_desc->mem_ptr, obj_desc->mem_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
-
-                if (((vx_status)VX_SUCCESS != status) ||
-                    (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL))
-                {
-                    /* could not allocate memory */
-                    VX_PRINT(VX_ZONE_ERROR, "Memory could not be allocated\n");
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL\n");
-            status = (vx_status)VX_ERROR_INVALID_VALUE;
-        }
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Invalid matrix reference\n");
-        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    }
-
-    return status;
-}
-
-static vx_status ownDestructMatrix(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_matrix_t *obj_desc = NULL;
-
-    if(ref->type == (vx_enum)VX_TYPE_MATRIX)
-    {
-        obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
-        if(obj_desc!=NULL)
-        {
-            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
-            {
-                status = tivxMemBufferFree(
-                    &obj_desc->mem_ptr, obj_desc->mem_size);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Matrix buffer free failed!\n");
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Matrix object descriptor free failed!\n");
-                }
-            }
-        }
-    }
-    return status;
 }

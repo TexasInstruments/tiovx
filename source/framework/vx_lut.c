@@ -18,10 +18,6 @@
 
 #include <vx_internal.h>
 
-static vx_status ownDestructLut(vx_reference ref);
-static vx_status ownAllocLutBuffer(vx_reference ref);
-
-
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseLUT(vx_lut *lut)
 {
     return (ownReleaseReferenceInt(
@@ -73,8 +69,8 @@ vx_lut VX_API_CALL vxCreateLUT(
                 (lut->base.type == (vx_enum)VX_TYPE_LUT))
             {
                 /* assign refernce type specific callback's */
-                lut->base.destructor_callback = &ownDestructLut;
-                lut->base.mem_alloc_callback = &ownAllocLutBuffer;
+                lut->base.destructor_callback = &ownDestructReferenceGeneric;
+                lut->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 lut->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseLUT;
 
@@ -260,7 +256,7 @@ vx_status VX_API_CALL vxCopyLUT(
         }
         else /* Copy from user memory to lut object */
         {
-            status = ownAllocLutBuffer(&lut->base);
+            status = ownAllocReferenceBufferGeneric(&lut->base);
 
             if ((vx_status)VX_SUCCESS == status)
             {
@@ -295,7 +291,7 @@ vx_status VX_API_CALL vxMapLUT(
     }
     else
     {
-        status = ownAllocLutBuffer(&lut->base);
+        status = ownAllocReferenceBufferGeneric(&lut->base);
         if ((NULL != ptr) && ((vx_status)VX_SUCCESS == status))
         {
             obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
@@ -333,84 +329,3 @@ vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
 
     return (status);
 }
-
-static vx_status ownAllocLutBuffer(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_lut_t *obj_desc = NULL;
-
-    if(ref->type == (vx_enum)VX_TYPE_LUT)
-    {
-        obj_desc = (tivx_obj_desc_lut_t *)ref->obj_desc;
-        if(obj_desc != NULL)
-        {
-            /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL)
-            {
-                tivxMemBufferAlloc(
-                    &obj_desc->mem_ptr, obj_desc->mem_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
-
-                if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
-                {
-                    /* could not allocate memory */
-                    VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
-                    status = (vx_status)VX_ERROR_NO_MEMORY ;
-                }
-                else
-                {
-                    obj_desc->mem_ptr.shared_ptr =
-                        tivxMemHost2SharedPtr(
-                            obj_desc->mem_ptr.host_ptr,
-                            (vx_enum)TIVX_MEM_EXTERNAL);
-                }
-            }
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "object descriptor is NULL\n");
-            status = (vx_status)VX_ERROR_INVALID_VALUE;
-        }
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Invalid LUT reference\n");
-        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    }
-
-    return status;
-}
-
-static vx_status ownDestructLut(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_lut_t *obj_desc = NULL;
-
-    if(ref->type == (vx_enum)VX_TYPE_LUT)
-    {
-        obj_desc = (tivx_obj_desc_lut_t *)ref->obj_desc;
-        if(obj_desc!=NULL)
-        {
-            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
-            {
-                status = tivxMemBufferFree(
-                    &obj_desc->mem_ptr, obj_desc->mem_size);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "LUT buffer free failed!\n");
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "LUT object descriptor free failed!\n");
-                }
-            }
-        }
-    }
-    return status;
-}
-

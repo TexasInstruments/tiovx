@@ -18,8 +18,6 @@
 
 #include <vx_internal.h>
 
-static vx_status ownDestructArray(vx_reference ref);
-static vx_status ownAllocArrayBuffer(vx_reference ref);
 static void ownInitArrayObject(
     vx_array arr, vx_enum item_type, vx_size capacity, vx_bool is_virtual);
 static vx_size ownGetArrayItemSize(vx_context context, vx_enum item_type);
@@ -136,8 +134,8 @@ vx_array VX_API_CALL vxCreateArray(
                 (arr->base.type == (vx_enum)VX_TYPE_ARRAY))
             {
                 /* assign refernce type specific callback's */
-                arr->base.destructor_callback = &ownDestructArray;
-                arr->base.mem_alloc_callback = &ownAllocArrayBuffer;
+                arr->base.destructor_callback = &ownDestructReferenceGeneric;
+                arr->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 arr->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseArray;
 
@@ -183,8 +181,8 @@ vx_array VX_API_CALL vxCreateVirtualArray(
             (arr->base.type == (vx_enum)VX_TYPE_ARRAY))
         {
             /* assign refernce type specific callback's */
-            arr->base.destructor_callback = &ownDestructArray;
-            arr->base.mem_alloc_callback = &ownAllocArrayBuffer;
+            arr->base.destructor_callback = &ownDestructReferenceGeneric;
+            arr->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
             arr->base.release_callback =
                 (tivx_reference_release_callback_f)&vxReleaseArray;
 
@@ -304,7 +302,7 @@ vx_status VX_API_CALL vxAddArrayItems(
     }
     else
     {
-        status = ownAllocArrayBuffer((vx_reference)arr);
+        status = ownAllocReferenceBufferGeneric((vx_reference)arr);
 
         if (obj_desc->capacity == 0U)
         {
@@ -671,92 +669,6 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
 
     return (status);
 }
-
-static vx_status ownAllocArrayBuffer(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_array_t *obj_desc = NULL;
-
-    if(ref->type == (vx_enum)VX_TYPE_ARRAY)
-    {
-        obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
-
-        if(obj_desc != NULL)
-        {
-            /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL)
-            {
-                tivxMemBufferAlloc(
-                    &obj_desc->mem_ptr, obj_desc->mem_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
-
-                if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
-                {
-                    /* could not allocate memory */
-                    VX_PRINT(VX_ZONE_ERROR,"Could not allocate array memory\n");
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-                else
-                {
-                    obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(
-                        obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
-                }
-            }
-        }
-#ifdef LDRA_UNTESTABLE_CODE
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Array object descriptor is NULL\n");
-            status = (vx_status)VX_ERROR_INVALID_VALUE;
-        }
-#endif
-    }
-#ifdef LDRA_UNTESTABLE_CODE
-    else
-    {
-
-        VX_PRINT(VX_ZONE_ERROR,"Reference is not an array type\n");
-        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    }
-#endif
-
-    return status;
-}
-
-static vx_status ownDestructArray(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_array_t *obj_desc = NULL;
-
-    if(ref->type == (vx_enum)VX_TYPE_ARRAY)
-    {
-        obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
-        if(obj_desc != NULL)
-        {
-            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
-            {
-                status = tivxMemBufferFree(
-                    &obj_desc->mem_ptr, obj_desc->mem_size);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Array buffer free failed!\n");
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Array object descriptor free failed!\n");
-                }
-
-            }
-        }
-    }
-    return status;
-}
-
 
 static void ownInitArrayObject(
     vx_array arr, vx_enum item_type, vx_size capacity, vx_bool is_virtual)

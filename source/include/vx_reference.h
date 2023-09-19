@@ -255,6 +255,23 @@ void ownReferenceSetScope(vx_reference ref, vx_reference scope);
  */
 vx_reference ownReferenceGetHandleFromObjDescId(uint16_t obj_desc_id);
 
+/*! \brief There are several reference types that are allocated in the same way
+ *         This API generalizes this in order to enhance code reuse
+ *         The API will allocate the data buffer memory associated with the data object
+ *         and release the associated object descriptor
+ *         This API must only be called on the host
+ * \ingroup group_vx_reference
+ */
+vx_status ownAllocReferenceBufferGeneric(vx_reference ref);
+
+/*! \brief There are several reference types that are destructed in the same way
+ *         This API generalizes this in order to enhance code reuse
+ *         The API will free the data buffer memory associated with the data object
+ *         and release the associated object descriptor
+ *         This API must only be called on the host
+ * \ingroup group_vx_reference
+ */
+vx_status ownDestructReferenceGeneric(vx_reference ref);
 
 #ifdef __cplusplus
 }

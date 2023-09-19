@@ -18,9 +18,6 @@
 
 #include <vx_internal.h>
 
-static vx_status ownDestructDistribution(vx_reference ref);
-static vx_status ownAllocDistributionBuffer(vx_reference ref);
-
 vx_distribution VX_API_CALL vxCreateDistribution(
     vx_context context, vx_size num_bins, vx_int32 offset, vx_uint32 range)
 {
@@ -38,8 +35,8 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                 (dist->base.type == (vx_enum)VX_TYPE_DISTRIBUTION))
             {
                 /* assign refernce type specific callback's */
-                dist->base.destructor_callback = &ownDestructDistribution;
-                dist->base.mem_alloc_callback = &ownAllocDistributionBuffer;
+                dist->base.destructor_callback = &ownDestructReferenceGeneric;
+                dist->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 dist->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseDistribution;
 
@@ -236,7 +233,7 @@ vx_status VX_API_CALL vxCopyDistribution(
         }
         else /* Copy from user memory to dist object */
         {
-            status = ownAllocDistributionBuffer(&dist->base);
+            status = ownAllocReferenceBufferGeneric(&dist->base);
 
             if ((vx_status)VX_SUCCESS == status)
             {
@@ -271,7 +268,7 @@ vx_status VX_API_CALL vxMapDistribution(
     }
     else
     {
-        status = ownAllocDistributionBuffer(&dist->base);
+        status = ownAllocReferenceBufferGeneric(&dist->base);
         if ((NULL != ptr) && ((vx_status)VX_SUCCESS == status))
         {
             obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
@@ -310,97 +307,3 @@ vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id
 
     return (status);
 }
-
-static vx_status ownAllocDistributionBuffer(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_distribution_t *obj_desc = NULL;
-
-#ifdef LDRA_UNTESTABLE_CODE
-    if(ref->type == (vx_enum)VX_TYPE_DISTRIBUTION)
-#endif
-    {
-        obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
-#ifdef LDRA_UNTESTABLE_CODE
-        if(obj_desc != NULL)
-#endif
-        {
-            /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL)
-            {
-                tivxMemBufferAlloc(
-                    &obj_desc->mem_ptr, obj_desc->mem_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
-
-                if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
-                {
-                    /* could not allocate memory */
-                    VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-                else
-                {
-                    obj_desc->mem_ptr.shared_ptr =
-                        tivxMemHost2SharedPtr(
-                            obj_desc->mem_ptr.host_ptr,
-                            (vx_enum)TIVX_MEM_EXTERNAL);
-                }
-            }
-        }
-#ifdef LDRA_UNTESTABLE_CODE
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "object descriptor is NULL\n");
-            status = (vx_status)VX_ERROR_INVALID_VALUE;
-        }
-#endif
-    }
-#ifdef LDRA_UNTESTABLE_CODE
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "reference type is not distribution\n");
-        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    }
-#endif
-
-    return status;
-}
-
-static vx_status ownDestructDistribution(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_distribution_t *obj_desc = NULL;
-
-#ifdef LDRA_UNTESTABLE_CODE
-    if(ref->type == (vx_enum)VX_TYPE_DISTRIBUTION)
-#endif
-    {
-        obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
-#ifdef LDRA_UNTESTABLE_CODE
-        if(obj_desc!=NULL)
-#endif
-        {
-            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
-            {
-                status = tivxMemBufferFree(
-                    &obj_desc->mem_ptr, obj_desc->mem_size);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Distribution buffer free failed!\n");
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Distribution object descriptor free failed!\n");
-                }
-            }
-        }
-    }
-    return status;
-}
-
-

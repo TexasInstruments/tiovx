@@ -93,6 +93,10 @@ static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
     {(vx_enum)TIVX_TYPE_DELAY_DATA_REF_QUEUE_LIST,  sizeof(tivx_delay_data_ref_q_list_t)}
 };
 
+static vx_bool ownIsGenericAllocReferenceType(vx_enum ref_type);
+static vx_bool ownIsGenericReferenceType(vx_enum ref_type);
+static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_shared_mem_ptr_t **mem_ptr, volatile uint32_t *mem_size);
+
 vx_size ownSizeOfEnumType(vx_enum item_type)
 {
     vx_uint32 i = 0;
@@ -138,6 +142,256 @@ vx_bool ownIsValidReference(vx_reference ref)
         VX_PRINT(VX_ZONE_INFO, "Reference was NULL\n");
     }
     return ret;
+}
+
+/* Generic allocated references here are categorized as references
+ * which are a simple allocation of a given size
+ */
+static vx_bool ownIsGenericAllocReferenceType(vx_enum ref_type)
+{
+    vx_bool ret = (vx_bool)vx_false_e;
+
+    if ( (ref_type == (vx_enum)VX_TYPE_ARRAY) ||
+         (ref_type == (vx_enum)VX_TYPE_CONVOLUTION) ||
+         (ref_type == (vx_enum)VX_TYPE_DISTRIBUTION) ||
+         (ref_type == (vx_enum)VX_TYPE_LUT) ||
+         (ref_type == (vx_enum)VX_TYPE_MATRIX) ||
+         (ref_type == (vx_enum)VX_TYPE_REMAP) ||
+         (ref_type == (vx_enum)VX_TYPE_TENSOR) ||
+         (ref_type == (vx_enum)VX_TYPE_USER_DATA_OBJECT)
+       )
+    {
+        ret = (vx_bool)vx_true_e;
+    }
+
+    return ret;
+}
+
+/* Generic references here are categorized as references which
+ * utilize a common alloc/destruct logic, i.e., they do not
+ * require a unique allocation of memory data buffers
+ */
+static vx_bool ownIsGenericReferenceType(vx_enum ref_type)
+{
+    vx_bool ret = (vx_bool)vx_false_e;
+
+    if ( (ownIsGenericAllocReferenceType(ref_type)) ||
+         (ref_type == (vx_enum)VX_TYPE_SCALAR) ||
+         (ref_type == (vx_enum)VX_TYPE_THRESHOLD)
+       )
+    {
+        ret = (vx_bool)vx_true_e;
+    }
+
+    return ret;
+}
+
+static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_shared_mem_ptr_t **mem_ptr, volatile uint32_t *mem_size)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    /* Note: the obj_desc is not checked for NULL here because
+     * it is checked in the previous logic */
+    switch (ref->type)
+    {
+        case (vx_enum)VX_TYPE_ARRAY:
+        {
+            tivx_obj_desc_array_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
+
+            *mem_ptr    = &obj_desc->mem_ptr;
+            *mem_size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_CONVOLUTION:
+        {
+            tivx_obj_desc_convolution_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_convolution_t *)ref->obj_desc;
+
+            *mem_ptr    = &obj_desc->mem_ptr;
+            *mem_size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_DISTRIBUTION:
+        {
+            tivx_obj_desc_distribution_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
+
+            *mem_ptr    = &obj_desc->mem_ptr;
+            *mem_size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_LUT:
+        {
+            tivx_obj_desc_lut_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_lut_t *)ref->obj_desc;
+
+            *mem_ptr    = &obj_desc->mem_ptr;
+            *mem_size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_MATRIX:
+        {
+            tivx_obj_desc_matrix_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
+
+            *mem_ptr    = &obj_desc->mem_ptr;
+            *mem_size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_REMAP:
+        {
+            tivx_obj_desc_remap_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_remap_t *)ref->obj_desc;
+
+            *mem_ptr    = &obj_desc->mem_ptr;
+            *mem_size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_TENSOR:
+        {
+            tivx_obj_desc_tensor_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
+
+            *mem_ptr    = &obj_desc->mem_ptr;
+            *mem_size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_USER_DATA_OBJECT:
+        {
+            tivx_obj_desc_user_data_object_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_user_data_object_t *)ref->obj_desc;
+
+            *mem_ptr    = &obj_desc->mem_ptr;
+            *mem_size   = obj_desc->mem_size;
+            break;
+        }
+        default:
+        {
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    return status;
+}
+
+vx_status ownAllocReferenceBufferGeneric(vx_reference ref)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *base_obj_desc = NULL;
+
+    if((vx_bool)vx_true_e == ownIsGenericReferenceType(ref->type))
+    {
+        base_obj_desc = (tivx_obj_desc_t *)ref->obj_desc;
+
+        if(base_obj_desc == NULL)
+        {
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+            VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
+        }
+    }
+    else
+    {
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference provided to destructor!\n");
+    }
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        if((vx_bool)vx_true_e == ownIsGenericAllocReferenceType(ref->type))
+        {
+            tivx_shared_mem_ptr_t  *mem_ptr = NULL;
+            volatile uint32_t       mem_size = 0;
+
+            status = ownReferenceGetMemAttrsFromObjDesc(ref, &mem_ptr, &mem_size);
+
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                /* memory is not allocated, so allocate it */
+                if(mem_ptr->host_ptr == (uint64_t)(uintptr_t)NULL)
+                {
+                    status = tivxMemBufferAlloc(
+                        mem_ptr, mem_size,
+                        (vx_enum)TIVX_MEM_EXTERNAL);
+                }
+
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    if(mem_ptr->host_ptr==(uint64_t)(uintptr_t)NULL)
+                    {
+                        /* could not allocate memory */
+                        VX_PRINT(VX_ZONE_ERROR,"Could not allocate array memory\n");
+                        status = (vx_status)VX_ERROR_NO_MEMORY;
+                    }
+                    else
+                    {
+                        mem_ptr->shared_ptr = tivxMemHost2SharedPtr(
+                            mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                    }
+                }
+            }
+        }
+    }
+
+    return status;
+}
+
+vx_status ownDestructReferenceGeneric(vx_reference ref)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *base_obj_desc = NULL;
+
+    if((vx_bool)vx_true_e == ownIsGenericReferenceType(ref->type))
+    {
+        base_obj_desc = (tivx_obj_desc_t *)ref->obj_desc;
+
+        if(base_obj_desc == NULL)
+        {
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+            VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
+        }
+    }
+    else
+    {
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference provided to destructor!\n");
+    }
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        if((vx_bool)vx_true_e == ownIsGenericAllocReferenceType(ref->type))
+        {
+            tivx_shared_mem_ptr_t  *mem_ptr = NULL;
+            volatile uint32_t       mem_size = 0;
+
+            status = ownReferenceGetMemAttrsFromObjDesc(ref, &mem_ptr, &mem_size);
+
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
+                {
+                    status = tivxMemBufferFree(
+                        mem_ptr, mem_size);
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Buffer free failed!\n");
+                    }
+                }
+            }
+        }
+    }
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        status = ownObjDescFree((tivx_obj_desc_t**)&base_obj_desc);
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Object descriptor free failed!\n");
+        }
+
+    }
+
+    return status;
 }
 
 vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, vx_reference scope)

@@ -18,42 +18,7 @@
 
 #include <vx_internal.h>
 
-static vx_status ownDestructRemap(vx_reference ref);
 static tivx_remap_point_t *ownGetRemapPoint(const tivx_obj_desc_remap_t *obj_desc, vx_uint32 dst_x, vx_uint32 dst_y);
-static vx_status ownAllocRemapBuffer(vx_reference ref);
-
-static vx_status ownDestructRemap(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_remap_t *obj_desc = NULL;
-
-    if(ref->type == (vx_enum)VX_TYPE_REMAP)
-    {
-        obj_desc = (tivx_obj_desc_remap_t *)ref->obj_desc;
-
-        if(obj_desc!=NULL)
-        {
-            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
-            {
-                status = tivxMemBufferFree(&obj_desc->mem_ptr, obj_desc->mem_size);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Remap memory buffer free failed!\n");
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Remap object descriptor free failed!\n");
-                }
-            }
-        }
-    }
-    return status;
-}
 
 static tivx_remap_point_t *ownGetRemapPoint(const tivx_obj_desc_remap_t *obj_desc, vx_uint32 dst_x, vx_uint32 dst_y)
 {
@@ -61,53 +26,6 @@ static tivx_remap_point_t *ownGetRemapPoint(const tivx_obj_desc_remap_t *obj_des
                  + (dst_y*obj_desc->dst_width)
                  + dst_x
            ;
-}
-
-static vx_status ownAllocRemapBuffer(vx_reference ref)
-{
-    tivx_obj_desc_remap_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
-
-    if(ref->type == (vx_enum)VX_TYPE_REMAP)
-    {
-        obj_desc = (tivx_obj_desc_remap_t *)ref->obj_desc;
-
-        if(obj_desc!=NULL)
-        {
-            /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
-            {
-                tivxMemBufferAlloc(&obj_desc->mem_ptr, obj_desc->mem_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
-
-                if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
-                {
-                    /* could not allocate memory */
-                    VX_PRINT(VX_ZONE_ERROR, "Could not allocate memory\n");
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-                else
-                {
-                    obj_desc->mem_ptr.shared_ptr =
-                        tivxMemHost2SharedPtr(
-                            obj_desc->mem_ptr.host_ptr,
-                            (vx_enum)TIVX_MEM_EXTERNAL);
-                }
-            }
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Reference object descriptor is NULL\n");
-            status = (vx_status)VX_ERROR_INVALID_VALUE;
-        }
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Reference type is not remap\n");
-        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    }
-
-    return status;
 }
 
 VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
@@ -127,8 +45,8 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
             if ((vxGetStatus((vx_reference)remap) == (vx_status)VX_SUCCESS) && (remap->base.type == (vx_enum)VX_TYPE_REMAP))
             {
                 /* assign refernce type specific callback's */
-                remap->base.destructor_callback = &ownDestructRemap;
-                remap->base.mem_alloc_callback = &ownAllocRemapBuffer;
+                remap->base.destructor_callback = &ownDestructReferenceGeneric;
+                remap->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 remap->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseRemap;
 
                 obj_desc = (tivx_obj_desc_remap_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_REMAP, (vx_reference)remap);
@@ -253,47 +171,50 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
         (remap->base.obj_desc != NULL)
          )
     {
-        ownAllocRemapBuffer(&remap->base);
+        status = ownAllocReferenceBufferGeneric(&remap->base);
 
-        obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;
-
-        if(obj_desc->mem_ptr.host_ptr != (uint64_t)(uintptr_t)NULL)
+        if ((vx_status)VX_SUCCESS == status)
         {
-            if ((dst_x < obj_desc->dst_width) &&
-                (dst_y < obj_desc->dst_height))
+            obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;
+
+            if(obj_desc->mem_ptr.host_ptr != (uint64_t)(uintptr_t)NULL)
             {
-                tivx_remap_point_t *remap_point;
-
-                remap_point = ownGetRemapPoint(obj_desc, dst_x, dst_y);
-
-                if ( (dst_x==0U) && (dst_y==0U))
+                if ((dst_x < obj_desc->dst_width) &&
+                    (dst_y < obj_desc->dst_height))
                 {
-                    tivxCheckStatus(&status, tivxMemBufferMap(remap_point, (uint32_t)sizeof(tivx_remap_point_t),
-                        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+                    tivx_remap_point_t *remap_point;
+
+                    remap_point = ownGetRemapPoint(obj_desc, dst_x, dst_y);
+
+                    if ( (dst_x==0U) && (dst_y==0U))
+                    {
+                        tivxCheckStatus(&status, tivxMemBufferMap(remap_point, (uint32_t)sizeof(tivx_remap_point_t),
+                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+                    }
+
+                    remap_point->src_x = src_x;
+                    remap_point->src_y = src_y;
+
+                    if ( (dst_x == (obj_desc->dst_width-1U)) &&
+                         (dst_y == (obj_desc->dst_height-1U)))
+                    {
+                        tivxCheckStatus(&status, tivxMemBufferUnmap(remap_point, (uint32_t)sizeof(tivx_remap_point_t),
+                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+                    }
+
+                    status = (vx_status)VX_SUCCESS;
                 }
-
-                remap_point->src_x = src_x;
-                remap_point->src_y = src_y;
-
-                if ( (dst_x == (obj_desc->dst_width-1U)) &&
-                     (dst_y == (obj_desc->dst_height-1U)))
+                else
                 {
-                    tivxCheckStatus(&status, tivxMemBufferUnmap(remap_point, (uint32_t)sizeof(tivx_remap_point_t),
-                        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
-                }
-
-                status = (vx_status)VX_SUCCESS;
-            }
-            else
-            {
-                status = (vx_status)VX_ERROR_INVALID_VALUE;
-                if (!(dst_x < obj_desc->dst_width))
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "dst_x is greater than object descriptor destination width\n");
-                }
-                if (!(dst_y < obj_desc->dst_height))
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "dst_x is greater than object descriptor destination width\n");
+                    status = (vx_status)VX_ERROR_INVALID_VALUE;
+                    if (!(dst_x < obj_desc->dst_width))
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "dst_x is greater than object descriptor destination width\n");
+                    }
+                    if (!(dst_y < obj_desc->dst_height))
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "dst_x is greater than object descriptor destination width\n");
+                    }
                 }
             }
         }

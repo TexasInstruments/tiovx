@@ -18,9 +18,7 @@
 
 #include <vx_internal.h>
 
-static vx_status ownDestructThreshold(vx_reference ref);
 static vx_status ownAllocThresholdBuffer(vx_reference ref);
-
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseThreshold(vx_threshold *thresh)
 {
@@ -48,7 +46,7 @@ vx_threshold VX_API_CALL vxCreateThreshold(
                 (thresh->base.type == (vx_enum)VX_TYPE_THRESHOLD))
             {
                 /* assign refernce type specific callback's */
-                thresh->base.destructor_callback = &ownDestructThreshold;
+                thresh->base.destructor_callback = &ownDestructReferenceGeneric;
                 thresh->base.mem_alloc_callback = &ownAllocThresholdBuffer;
                 thresh->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseThreshold;
@@ -300,24 +298,3 @@ static vx_status ownAllocThresholdBuffer(vx_reference ref)
 {
     return ((vx_status)VX_SUCCESS);
 }
-
-static vx_status ownDestructThreshold(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-
-    if(ref->type == (vx_enum)VX_TYPE_THRESHOLD)
-    {
-        if(ref->obj_desc!=NULL)
-        {
-            status = ownObjDescFree((tivx_obj_desc_t**)&ref->obj_desc);
-            if ((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Threshold object descriptor free failed!\n");
-            }
-        }
-    }
-    return status;
-}
-
-
-

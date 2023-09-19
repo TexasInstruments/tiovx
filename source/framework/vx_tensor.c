@@ -28,8 +28,6 @@
 Tensor HELPER FUNCTIONS
 =============================================================================*/
 
-static vx_status ownDestructTensor(vx_reference ref);
-static vx_status ownAllocTensorBuffer(vx_reference ref);
 static void ownInitTensorObject(
     vx_tensor tensor, const vx_size* dimensions, vx_size number_of_dimensions, vx_enum data_type, vx_int8 fixed_point_position);
 static vx_bool ownIsValidTensorFormat(vx_enum data_type, vx_uint8 fixed_point_pos);
@@ -60,90 +58,6 @@ static vx_bool ownIsValidTensorFormat(vx_enum data_type, vx_uint8 fixed_point_po
 
     return res;
 }
-
-static vx_status ownAllocTensorBuffer(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_tensor_t *obj_desc = NULL;
-
-    if(ref->type == (vx_enum)VX_TYPE_TENSOR)
-    {
-        obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
-
-        if(obj_desc != NULL)
-        {
-            /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL)
-            {
-                tivxMemBufferAlloc(
-                    &obj_desc->mem_ptr, obj_desc->mem_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
-
-                if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
-                {
-                    /* could not allocate memory */
-                    VX_PRINT(VX_ZONE_ERROR,"Could not allocate tensor memory\n");
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-                else
-                {
-                    obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(
-                        obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
-                }
-            }
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Tensor object descriptor is NULL\n");
-            status = (vx_status)VX_ERROR_INVALID_VALUE;
-        }
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Reference is not an tensor type\n");
-        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    }
-
-    return status;
-}
-
-static vx_status ownDestructTensor(vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_tensor_t *obj_desc = NULL;
-
-    if(ref->type == (vx_enum)VX_TYPE_TENSOR)
-    {
-        obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
-        if(obj_desc != NULL)
-        {
-            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
-            {
-                status = tivxMemBufferFree(
-                    &obj_desc->mem_ptr, obj_desc->mem_size);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Tensor memory buffer free failed!\n");
-                }
-                else
-                {
-                    status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
-                    if ((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "Tensor object descriptor free failed!\n");
-                    }
-                }
-            }
-        }
-        else
-        {
-            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-            VX_PRINT(VX_ZONE_ERROR, "Tensor object descriptor is NULL!\n");
-        }
-    }
-    return status;
-}
-
 
 static void ownInitTensorObject(
     vx_tensor tensor, const vx_size* dimensions, vx_size number_of_dimensions, vx_enum data_type, vx_int8 fixed_point_position)
@@ -289,8 +203,8 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
                 (tensor->base.type == (vx_enum)VX_TYPE_TENSOR))
             {
                 /* assign reference type specific callback's */
-                tensor->base.destructor_callback = &ownDestructTensor;
-                tensor->base.mem_alloc_callback = &ownAllocTensorBuffer;
+                tensor->base.destructor_callback = &ownDestructReferenceGeneric;
+                tensor->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 tensor->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseTensor;
 
@@ -586,7 +500,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = ownAllocTensorBuffer(&tensor->base);
+        status = ownAllocReferenceBufferGeneric(&tensor->base);
     }
 
     /* Maps and copies one line at at time */
@@ -710,7 +624,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = ownAllocTensorBuffer(&tensor->base);
+        status = ownAllocReferenceBufferGeneric(&tensor->base);
     }
 
     if(status == (vx_status)VX_SUCCESS)
