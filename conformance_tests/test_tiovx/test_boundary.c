@@ -26,6 +26,7 @@
 #include <math.h>
 #include <TI/tivx_mutex.h>
 #include <TI/tivx_queue.h>
+#include <TI/tivx_task.h>
 
 #include "shared_functions.h"
 
@@ -2068,6 +2069,8 @@ TEST(tivxBoundary, testImageBoundary)
         ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT(vx_false_e == tivxIsReferenceVirtual((vx_reference)src_image[i]) );
     }
+
+    tivxTaskWaitMsecs(10000);
 
     for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
     {
