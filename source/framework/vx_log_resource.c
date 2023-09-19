@@ -74,7 +74,6 @@ static char * applyMemoryUnit(double * size_bytes, char * unit);
 static void printOutput (FILE *ofp, const char* format, ...);
 
 static tivx_mutex g_tivx_log_resource_lock;
-static tivx_mutex g_tivx_obj_desc_shm_lock;
 
 static tivx_shm_obj_count_t g_tivx_obj_desc_shm_table[] = {
     {
@@ -583,7 +582,7 @@ void ownTableIncrementValue(vx_enum resource_name)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     uint32_t i;
-    tivxMutexLock(g_tivx_obj_desc_shm_lock);
+    tivxMutexLock(g_tivx_log_resource_lock);
     for (i = 0; i < TIVX_OBJ_DESC_SHM_TABLE_SIZE; i++)
     {
         if (g_tivx_obj_desc_shm_table[i].object_type == resource_name)
@@ -596,7 +595,7 @@ void ownTableIncrementValue(vx_enum resource_name)
             break;
         }
     }
-    tivxMutexUnlock(g_tivx_obj_desc_shm_lock);
+    tivxMutexUnlock(g_tivx_log_resource_lock);
 #endif
 }
 
@@ -604,7 +603,7 @@ void ownTableDecrementValue(vx_enum resource_name)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     uint32_t i;
-    tivxMutexLock(g_tivx_obj_desc_shm_lock);
+    tivxMutexLock(g_tivx_log_resource_lock);
     for (i = 0; i < TIVX_OBJ_DESC_SHM_TABLE_SIZE; i++)
     {
         if (g_tivx_obj_desc_shm_table[i].object_type == resource_name)
@@ -613,7 +612,7 @@ void ownTableDecrementValue(vx_enum resource_name)
             break;
         }
     }
-    tivxMutexUnlock(g_tivx_obj_desc_shm_lock);
+    tivxMutexUnlock(g_tivx_log_resource_lock);
 #endif
 }
 
