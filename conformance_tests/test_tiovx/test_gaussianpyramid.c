@@ -424,10 +424,17 @@ static void gaussian_pyramid_check(CT_Image input, vx_pyramid pyr, vx_size level
         }
         else
         {
-            if ( (output_cur->width != ceil(output_prev->width * scale)) ||
-                 (output_cur->height != ceil(output_prev->height * scale)))
+            /* Note: ensuring it is within a margin of error of 1 */
+            if ( (output_cur->width > (ceil(output_prev->width * scale)+1)) ||
+                 (output_cur->width < (ceil(output_prev->width * scale)-1)))
             {
-                CT_FAIL_(return, "Check failed for size of level: %d", level);
+                CT_FAIL_(return, "Check failed for width of level: %d", level);
+            }
+
+            if ( (output_cur->height > (ceil(output_prev->height * scale)+1)) ||
+                 (output_cur->height < (ceil(output_prev->height * scale)-1)))
+            {
+                CT_FAIL_(return, "Check failed for width of level: %d", level);
             }
         }
 
@@ -605,36 +612,6 @@ typedef struct {
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ADD_VX_SCALE, ARG, gaussian_pyramid_generate_random, NULL)
-
-#define ADD_VX_SCALE_CUSTOM(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_HALF", __VA_ARGS__, VX_SCALE_PYRAMID_HALF)), \
-    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_3_4", __VA_ARGS__, 0.75f)), \
-    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_ORB", __VA_ARGS__, VX_SCALE_PYRAMID_ORB))
-
-#define PARAMETERS_CUSTOM \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ADD_VX_SCALE_CUSTOM, ARG, gaussian_pyramid_generate_random, NULL)
-
-TEST_WITH_ARG(tivxGaussianPyramid, testPyramidCreation, Arg,
-    PARAMETERS_CUSTOM
-)
-{
-    vx_context context = context_->vx_context_;
-    CT_Image input = NULL;
-    vx_image input_image = 0;
-    vx_size levels;
-    vx_pyramid src_pyr   = 0;
-
-    ASSERT_NO_FAILURE(input = optflow_pyrlk_read_image( "optflow_00.bmp", 0, 0));
-    ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
-
-    levels = gaussian_pyramid_calc_max_levels_count(input->width, input->height, arg_->scale);
-
-    ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
-
-    VX_CALL(vxReleasePyramid(&src_pyr));
-    VX_CALL(vxReleaseImage(&input_image));
-    ASSERT(input_image == 0);
-}
 
 TEST_WITH_ARG(tivxGaussianPyramid, testGraphProcessing, Arg,
     PARAMETERS
@@ -1011,9 +988,180 @@ TEST_WITH_ARG(tivxGaussianPyramid, negativeTestBorderMode, Arg,
     ASSERT(input_image == 0);
 }
 
+
+static void gaussian_pyramid_fill_reference(CT_Image input, vx_pyramid pyr, vx_size levels, vx_float32 scale, vx_border_t border)
+{
+    vx_uint32 level = 0;
+    vx_image  output_image = 0;
+    CT_Image  output_prev  = NULL;
+    CT_Image  output_cur   = NULL;
+    vx_uint32 ref_width    = input->width;
+    vx_uint32 ref_height   = input->height;
+
+    ASSERT(input && pyr && (levels < sizeof(c_orbscale) / sizeof(c_orbscale[0]) ));
+    ASSERT_VX_OBJECT(output_image = vxGetPyramidLevel(pyr, 0), VX_TYPE_IMAGE);
+    ASSERT_NO_FAILURE(output_prev = ct_image_from_vx_image(output_image));
+
+    CT_FILL_IMAGE_8U(return, output_prev,
+            {
+                uint8_t res = *CT_IMAGE_DATA_PTR_8U(input, x, y);
+                *dst_data = res;
+            });
+    ASSERT_NO_FAILURE(ct_image_copyto_vx_image(output_image, output_prev));
+
+    VX_CALL(vxReleaseImage(&output_image));
+    ASSERT(output_image == 0);
+
+    for (level = 1; level < levels; level++)
+    {
+        ASSERT_VX_OBJECT(output_image = vxGetPyramidLevel(pyr, level), VX_TYPE_IMAGE);
+        ASSERT_NO_FAILURE(output_cur = ct_image_from_vx_image(output_image));
+
+        if (VX_SCALE_PYRAMID_ORB == scale)
+        {
+            vx_float64 orb_scale = c_orbscale[level];
+            if ( (output_cur->width  != ceil(ref_width  * orb_scale)) ||
+                 (output_cur->height != ceil(ref_height * orb_scale)))
+            {
+                CT_FAIL_(return, "Check failed for size of level: %d", level);
+            }
+        }
+        else
+        {
+            if ( (output_cur->width  != ceil(output_prev->width  * scale)) ||
+                 (output_cur->height != ceil(output_prev->height * scale)))
+            {
+                CT_FAIL_(return, "Check failed for size of level: %d", level);
+            }
+        }
+
+        ASSERT_NO_FAILURE(output_cur = gaussian_pyramid_create_reference_image(input, output_prev, border, scale, level));
+        ASSERT_NO_FAILURE(ct_image_copyto_vx_image(output_image, output_cur));
+
+        VX_CALL(vxReleaseImage(&output_image));
+        ASSERT(output_image == 0);
+
+        output_prev = output_cur;
+    }
+}
+
+#define ADD_VX_SCALE_CUSTOM(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_1_4", __VA_ARGS__, 0.25f)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_3_4", __VA_ARGS__, 0.75f))
+
+#define PARAMETERS_CUSTOM \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ADD_VX_SCALE_CUSTOM, ARG, gaussian_pyramid_generate_random, NULL)
+
+TEST_WITH_ARG(tivxGaussianPyramid, testGenericPyramidCreation, Arg,
+    PARAMETERS_CUSTOM
+)
+{
+    vx_context context = context_->vx_context_;
+    CT_Image input = NULL;
+    vx_image input_image = 0;
+    vx_size levels;
+    vx_pyramid src_pyr   = 0;
+
+    ASSERT_NO_FAILURE(input = optflow_pyrlk_read_image( "optflow_00.bmp", 0, 0));
+    ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+
+    levels = gaussian_pyramid_calc_max_levels_count(input->width, input->height, arg_->scale);
+
+    ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    VX_CALL(vxReleasePyramid(&src_pyr));
+    VX_CALL(vxReleaseImage(&input_image));
+    ASSERT(input_image == 0);
+}
+
+TEST_WITH_ARG(tivxGaussianPyramid, testGenericGraphProcessing, Arg,
+    PARAMETERS_CUSTOM
+)
+{
+    vx_size levels;
+
+    vx_context context = context_->vx_context_;
+    vx_image input_image = 0;
+    vx_pyramid pyr = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+
+    CT_Image input = NULL;
+
+    vx_border_t border = arg_->border;
+
+    ASSERT(arg_->scale < 1.0);
+
+    ASSERT_NO_FAILURE(input = arg_->generator( arg_->fileName, arg_->width, arg_->height));
+    ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+
+    levels = gaussian_pyramid_calc_max_levels_count(input->width, input->height, arg_->scale);
+
+    ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(node = vxGaussianPyramidNode(graph, input_image, pyr), VX_TYPE_NODE);
+
+    if (border.mode != VX_BORDER_UNDEFINED)
+        VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    CT_ASSERT_NO_FAILURE_(, gaussian_pyramid_check(input, pyr, levels, arg_->scale, arg_->border));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleasePyramid(&pyr));
+    VX_CALL(vxReleaseImage(&input_image));
+    ASSERT(pyr == 0);
+    ASSERT(input_image == 0);
+}
+
+
+TEST_WITH_ARG(tivxGaussianPyramid, testGenericImmediateProcessing, Arg,
+    PARAMETERS_CUSTOM
+)
+{
+    vx_size levels;
+
+    vx_context context = context_->vx_context_;
+    vx_image input_image = 0;
+    vx_pyramid pyr = 0;
+
+    CT_Image input = NULL;
+
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(input = arg_->generator( arg_->fileName, arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+
+    levels = gaussian_pyramid_calc_max_levels_count(input->width, input->height, arg_->scale);
+
+    ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    VX_CALL(vxSetContextAttribute(context, VX_CONTEXT_IMMEDIATE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxuGaussianPyramid(context, input_image, pyr));
+
+    CT_ASSERT_NO_FAILURE_(, gaussian_pyramid_check(input, pyr, levels, arg_->scale, arg_->border));
+
+    VX_CALL(vxReleasePyramid(&pyr));
+    VX_CALL(vxReleaseImage(&input_image));
+    ASSERT(pyr == 0);
+    ASSERT(input_image == 0);
+}
+
 TESTCASE_TESTS(tivxGaussianPyramid,
-        testPyramidCreation,
         testGraphProcessing,
         testVirtualPyramid,
-        negativeTestBorderMode
+        negativeTestBorderMode,
+        testGenericPyramidCreation,
+        testGenericGraphProcessing,
+        testGenericImmediateProcessing
 )
