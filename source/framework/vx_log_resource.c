@@ -880,7 +880,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
             if (ofp == NULL)
             {
                 tivxMutexUnlock(g_tivx_log_resource_lock);
-                return VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
@@ -888,167 +888,376 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
             VX_PRINT(VX_ZONE_ERROR, "\nVX_TEST_DATA_PATH has not been set! Displaying to console instead.\n");
         }
     }
-    if (displayMode == TIVX_MEM_LOG_GLOBAL)
+    if ((vx_status)VX_SUCCESS==status)
     {
-        char_width = TIVX_MEM_CHAR_WIDTH_GLOBAL;
-    }
-    else if (displayMode == TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
-    {
-        char_width = TIVX_MEM_CHAR_WIDTH_OBJECT_DESCRIPTOR;
-    }
-    else if (displayMode == TIVX_MEM_LOG_ALL)
-    {
-        char_width = TIVX_MEM_CHAR_WIDTH_ALL;
-    }
-    else
-    {
-        char_width = TIVX_MEM_CHAR_WIDTH_DEFAULT;
-        displayMode = TIVX_MEM_LOG_DEFAULT;
-        printOutput(ofp, "\n\n");
-    }
-    if (displayMode != TIVX_MEM_LOG_DEFAULT)
-    {
-        printOutput(ofp, "\n\n|");
-        for (k = 0; k < char_width*2+23; k++)
-        {
-            printOutput(ofp, "-");
-        }
-        printOutput(ofp, "|\n|");
-        for (k = 0; k < char_width; k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "CONFIGURATION PARAMETER");
-        for (k = 0; k < char_width; k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "|\n|");
-        for (k = 0; k < char_width+4; k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "MEMORY CARVEOUT");
-        for (k = 0; k < char_width+4; k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "|\n|");
-        for (k = 0; k < char_width*2+23; k++)
-        {
-            printOutput(ofp, "-");
-        }
-        printOutput(ofp, "|\n|");
-        for (k = 0; k < char_width*2+23; k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "|\n|");
-        for (k = 0; k < char_width*2+23; k++)
-        {
-            printOutput(ofp, "-");
-        }
-        printOutput(ofp, "|\n");
-        printOutput(ofp, "|             PARAMETER              |    UNITS USED FROM     |");
-        if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
-        {
-            printOutput(ofp, " PARAMETER MEMORY| PARAMETER MEMORY|");
-        }
-        if (displayMode != TIVX_MEM_LOG_GLOBAL)
-        {
-            printOutput(ofp, " OBJECT DESCRIPTOR |");
-        }
-        printOutput(ofp, "\n");
-        printOutput(ofp, "|               NAME                 |FRAMEWORK OR APPLICATION|");
-        if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
-        {
-            printOutput(ofp, "     CONSUMED    |    REMAINING    |");
-        }
-        if (displayMode != TIVX_MEM_LOG_GLOBAL)
-        {
-            printOutput(ofp, "  MEMORY AT CALL   |");
-        }
-        printOutput(ofp, "\n|------------------------------------|------------------------|");
         if (displayMode == TIVX_MEM_LOG_GLOBAL)
         {
-            char_width = TIVX_MEM_CHAR_WIDTH_GLOBAL-2;
+            char_width = TIVX_MEM_CHAR_WIDTH_GLOBAL;
         }
         else if (displayMode == TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
         {
-            char_width = TIVX_MEM_CHAR_WIDTH_OBJECT_DESCRIPTOR-10;
+            char_width = TIVX_MEM_CHAR_WIDTH_OBJECT_DESCRIPTOR;
         }
         else if (displayMode == TIVX_MEM_LOG_ALL)
         {
-            char_width = TIVX_MEM_CHAR_WIDTH_ALL+8;
+            char_width = TIVX_MEM_CHAR_WIDTH_ALL;
         }
-        for (k = 0; k < char_width; k++)
+        else
         {
-            printOutput(ofp, "-");
+            char_width = TIVX_MEM_CHAR_WIDTH_DEFAULT;
+            displayMode = TIVX_MEM_LOG_DEFAULT;
+            printOutput(ofp, "\n\n");
         }
-        printOutput(ofp, "|\n");
-    }
-    for (i = 0; i < TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
-    {
-        size = 0;
-        rem_size = 0;
-        row = g_tivx_resource_stats_table[i];
-        useCount = row.max_used_value;
-        for (j = 0; j < TIVX_MAX_CONFIG_PARAM_OBJECTS; j++)
+        if (displayMode != TIVX_MEM_LOG_DEFAULT)
         {
-            if (row.object_types[0][j] > 0)
+            printOutput(ofp, "\n\n|");
+            for (k = 0; k < char_width*2+23; k++)
             {
-                size += useCount * (double)ownSizeOfEnumType((vx_enum)row.object_types[0][j]) * row.object_types[1][j];
-                rem_size += (row.max_value - useCount) * (double)ownSizeOfEnumType((vx_enum)row.object_types[0][j]) * row.object_types[1][j];
+                printOutput(ofp, "-");
             }
-            else break;
-        }
-        if (row.is_size_cumulative == vx_true_e)
-        {
-            total_size += size;
-            total_rem += rem_size;
-        }
-        if (strncmp(row.name, "TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", TIVX_RESOURCE_NAME_MAX) == 0)
-        {
-            total_obj_size = row.max_used_value * sizeof(tivx_obj_desc_shm_entry_t);
-        }
-        if (displayMode == TIVX_MEM_LOG_DEFAULT)
-        {
-            continue;
-        }
-        if (strncmp(row.name, "TIVX_CONTEXT_MAX_KERNELS", TIVX_RESOURCE_NAME_MAX) == 0)
-        {
-            printOutput(ofp, "|                                    | APPLICATION REQUESTED  |");
+            printOutput(ofp, "|\n|");
             for (k = 0; k < char_width; k++)
             {
                 printOutput(ofp, " ");
             }
-            printOutput(ofp, "|\n");
-            printOutput(ofp, "|          CORE APPLICATION          |------------------------|");
+            printOutput(ofp, "CONFIGURATION PARAMETER");
             for (k = 0; k < char_width; k++)
             {
                 printOutput(ofp, " ");
             }
-            printOutput(ofp, "|\n");
-            printOutput(ofp, "|              OBJECTS               | UNITS |  MAX  |   %%    |");
-            for (k = 0; k < char_width; k++)
+            printOutput(ofp, "|\n|");
+            for (k = 0; k < char_width+4; k++)
             {
                 printOutput(ofp, " ");
             }
-            printOutput(ofp, "|\n");
-            printOutput(ofp, "|                                    |  USED | UNITS |  USED  |");
-            for (k = 0; k < char_width; k++)
+            printOutput(ofp, "MEMORY CARVEOUT");
+            for (k = 0; k < char_width+4; k++)
             {
                 printOutput(ofp, " ");
             }
+            printOutput(ofp, "|\n|");
+            for (k = 0; k < char_width*2+23; k++)
+            {
+                printOutput(ofp, "-");
+            }
+            printOutput(ofp, "|\n|");
+            for (k = 0; k < char_width*2+23; k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "|\n|");
+            for (k = 0; k < char_width*2+23; k++)
+            {
+                printOutput(ofp, "-");
+            }
             printOutput(ofp, "|\n");
-            printOutput(ofp, "|------------------------------------|-------|-------|--------|");
+            printOutput(ofp, "|             PARAMETER              |    UNITS USED FROM     |");
+            if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
+            {
+                printOutput(ofp, " PARAMETER MEMORY| PARAMETER MEMORY|");
+            }
+            if (displayMode != TIVX_MEM_LOG_GLOBAL)
+            {
+                printOutput(ofp, " OBJECT DESCRIPTOR |");
+            }
+            printOutput(ofp, "\n");
+            printOutput(ofp, "|               NAME                 |FRAMEWORK OR APPLICATION|");
+            if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
+            {
+                printOutput(ofp, "     CONSUMED    |    REMAINING    |");
+            }
+            if (displayMode != TIVX_MEM_LOG_GLOBAL)
+            {
+                printOutput(ofp, "  MEMORY AT CALL   |");
+            }
+            printOutput(ofp, "\n|------------------------------------|------------------------|");
+            if (displayMode == TIVX_MEM_LOG_GLOBAL)
+            {
+                char_width = TIVX_MEM_CHAR_WIDTH_GLOBAL-2;
+            }
+            else if (displayMode == TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
+            {
+                char_width = TIVX_MEM_CHAR_WIDTH_OBJECT_DESCRIPTOR-10;
+            }
+            else if (displayMode == TIVX_MEM_LOG_ALL)
+            {
+                char_width = TIVX_MEM_CHAR_WIDTH_ALL+8;
+            }
             for (k = 0; k < char_width; k++)
             {
                 printOutput(ofp, "-");
             }
             printOutput(ofp, "|\n");
         }
-        else if (strncmp(row.name, "TIVX_ARRAY_MAX_MAPS", TIVX_RESOURCE_NAME_MAX) == 0)
+        for (i = 0; i < TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
+        {
+            size = 0;
+            rem_size = 0;
+            row = g_tivx_resource_stats_table[i];
+            useCount = row.max_used_value;
+            for (j = 0; j < TIVX_MAX_CONFIG_PARAM_OBJECTS; j++)
+            {
+                if (row.object_types[0][j] > 0)
+                {
+                    size += useCount * (double)ownSizeOfEnumType((vx_enum)row.object_types[0][j]) * row.object_types[1][j];
+                    rem_size += (row.max_value - useCount) * (double)ownSizeOfEnumType((vx_enum)row.object_types[0][j]) * row.object_types[1][j];
+                }
+                else break;
+            }
+            if (row.is_size_cumulative == vx_true_e)
+            {
+                total_size += size;
+                total_rem += rem_size;
+            }
+            if (strncmp(row.name, "TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", TIVX_RESOURCE_NAME_MAX) == 0)
+            {
+                total_obj_size = row.max_used_value * sizeof(tivx_obj_desc_shm_entry_t);
+            }
+            if (displayMode == TIVX_MEM_LOG_DEFAULT)
+            {
+                continue;
+            }
+            if (strncmp(row.name, "TIVX_CONTEXT_MAX_KERNELS", TIVX_RESOURCE_NAME_MAX) == 0)
+            {
+                printOutput(ofp, "|                                    | APPLICATION REQUESTED  |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|          CORE APPLICATION          |------------------------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|              OBJECTS               | UNITS |  MAX  |   %%    |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|                                    |  USED | UNITS |  USED  |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|------------------------------------|-------|-------|--------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, "-");
+                }
+                printOutput(ofp, "|\n");
+            }
+            else if (strncmp(row.name, "TIVX_ARRAY_MAX_MAPS", TIVX_RESOURCE_NAME_MAX) == 0)
+            {
+                printOutput(ofp, "|------------------------------------|------------------------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, "-");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|                                    | APPLICATION REQUESTED  |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|          APPLICATION DATA          |------------------------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|              OBJECTS               | UNITS |  MAX  |   %%    |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|                                    |  USED | UNITS |  USED  |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|------------------------------------|-------|-------|--------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, "-");
+                }
+                printOutput(ofp, "|\n");
+            }
+            else if (strncmp(row.name, "TIVX_ERROR_MAX_OBJECTS", TIVX_RESOURCE_NAME_MAX) == 0)
+            {
+                printOutput(ofp, "|------------------------------------|------------------------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, "-");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|                                    |   FRAMEWORK REQUIRED   |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|            MISCELLANEOUS           |------------------------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|               OBJECTS              | UNITS |  MAX  |   %%    |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|                                    |  USED | UNITS |  USED  |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|------------------------------------|-------|-------|--------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, "-");
+                }
+                printOutput(ofp, "|\n");
+            }
+            else if (strncmp(row.name, "TIVX_PARAMETER_MAX_OBJECTS", TIVX_RESOURCE_NAME_MAX) == 0)
+            {
+                printOutput(ofp, "|------------------------------------|------------------------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, "-");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|                                    |   FRAMEWORK REQUIRED   |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|                  TI                |------------------------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|              EXTENSIONS            | UNITS |  MAX  |   %%    |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|                                    |  USED | UNITS |  USED  |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|------------------------------------|-------|-------|--------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, "-");
+                }
+                printOutput(ofp, "|\n");
+            }
+            if (displayMode == TIVX_MEM_LOG_OBJECT_DESCRIPTOR && row.is_obj_desc == vx_false_e)
+            {
+                continue;
+            }
+            if (strncmp(row.name, prefix, 8) != 0)
+            {
+                printOutput(ofp, "|                                    |       |       |        |");
+                if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
+                {
+                    printOutput(ofp, "                 |                 |");
+                }
+                if (displayMode != TIVX_MEM_LOG_GLOBAL)
+                {
+                    printOutput(ofp, "                   |");
+                }
+                printOutput(ofp, "\n");
+            }
+            if (row.is_size_cumulative == vx_false_e)
+            {
+                printOutput(ofp, "| %s *", row.name);
+            }
+            else
+            {
+                printOutput(ofp, "| %s  ", row.name);
+            }
+            strncpy(prefix, row.name, TIVX_RESOURCE_NAME_MAX);
+            name_length = findMacroSize(row.name);
+            for (k = 0; k < ((int32_t)TIVX_RESOURCE_NAME_MAX - name_length - 6); k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "|");
+            numDigits = getNumDigits((int32_t)useCount);
+            for (k = 0; k < (5 - numDigits); k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "%u  |", useCount);
+            numDigits = getNumDigits((int32_t)(row.max_value));
+            for (k = 0; k < (5 - numDigits); k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "%u  |", (row.max_value));
+            percent_used = 100 * (useCount / (double)row.max_value);
+            numDigits = getNumDigits((int32_t)percent_used);
+            for (k = 0; k < (3 - numDigits); k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "%.2f%% |", percent_used);
+
+            if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
+            {
+                size_units = applyMemoryUnit(&size, unit);
+                numDigits = getNumDigits((int32_t)size);
+                for (k = 0; k < (7 - numDigits); k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "%.2f %s    |", size, size_units);
+                rem_units = applyMemoryUnit(&rem_size, unit);
+                numDigits = getNumDigits((int32_t)rem_size);
+                for (k = 0; k < (7 - numDigits); k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "%.2f %s    |", rem_size, rem_units);
+            }
+            if (displayMode != TIVX_MEM_LOG_GLOBAL)
+            {
+                if (row.is_obj_desc == vx_true_e && strncmp(row.name, "TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", TIVX_RESOURCE_NAME_MAX)!=0)
+                {
+                    obj_size = sizeof(tivx_obj_desc_shm_entry_t) * g_tivx_obj_desc_shm_table[obj_count].value;
+                    obj_units = applyMemoryUnit(&obj_size, unit);
+                    numDigits = getNumDigits((int32_t)obj_size);
+                    for (k = 0; k < (7 - numDigits); k++)
+                    {
+                        printOutput(ofp, " ");
+                    }
+                    printOutput(ofp, "%.2f %s      |", obj_size, obj_units);
+                    obj_count++;
+                }
+                else
+                {
+                    printOutput(ofp, "       -----       |");
+                }
+            }
+            printOutput(ofp, "\n");
+        }
+        if (displayMode != TIVX_MEM_LOG_GLOBAL && displayMode != TIVX_MEM_LOG_DEFAULT)
         {
             printOutput(ofp, "|------------------------------------|------------------------|");
             for (k = 0; k < char_width; k++)
@@ -1056,122 +1265,37 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
                 printOutput(ofp, "-");
             }
             printOutput(ofp, "|\n");
-            printOutput(ofp, "|                                    | APPLICATION REQUESTED  |");
+            printOutput(ofp, "|                                    |                        |");
             for (k = 0; k < char_width; k++)
             {
                 printOutput(ofp, " ");
             }
             printOutput(ofp, "|\n");
-            printOutput(ofp, "|          APPLICATION DATA          |------------------------|");
+            printOutput(ofp, "|           MISCELLANEOUS            |          UNITS         |");
             for (k = 0; k < char_width; k++)
             {
                 printOutput(ofp, " ");
             }
             printOutput(ofp, "|\n");
-            printOutput(ofp, "|              OBJECTS               | UNITS |  MAX  |   %%    |");
+            printOutput(ofp, "|         OBJECT DESCRIPTORS         |        ALLOCATED       |");
             for (k = 0; k < char_width; k++)
             {
                 printOutput(ofp, " ");
             }
             printOutput(ofp, "|\n");
-            printOutput(ofp, "|                                    |  USED | UNITS |  USED  |");
+            printOutput(ofp, "|         (NOT CONFIGURABLE)         |                        |");
             for (k = 0; k < char_width; k++)
             {
                 printOutput(ofp, " ");
             }
             printOutput(ofp, "|\n");
-            printOutput(ofp, "|------------------------------------|-------|-------|--------|");
-            for (k = 0; k < char_width; k++)
-            {
-                printOutput(ofp, "-");
-            }
-            printOutput(ofp, "|\n");
-        }
-        else if (strncmp(row.name, "TIVX_ERROR_MAX_OBJECTS", TIVX_RESOURCE_NAME_MAX) == 0)
-        {
             printOutput(ofp, "|------------------------------------|------------------------|");
             for (k = 0; k < char_width; k++)
             {
                 printOutput(ofp, "-");
             }
             printOutput(ofp, "|\n");
-            printOutput(ofp, "|                                    |   FRAMEWORK REQUIRED   |");
-            for (k = 0; k < char_width; k++)
-            {
-                printOutput(ofp, " ");
-            }
-            printOutput(ofp, "|\n");
-            printOutput(ofp, "|            MISCELLANEOUS           |------------------------|");
-            for (k = 0; k < char_width; k++)
-            {
-                printOutput(ofp, " ");
-            }
-            printOutput(ofp, "|\n");
-            printOutput(ofp, "|               OBJECTS              | UNITS |  MAX  |   %%    |");
-            for (k = 0; k < char_width; k++)
-            {
-                printOutput(ofp, " ");
-            }
-            printOutput(ofp, "|\n");
-            printOutput(ofp, "|                                    |  USED | UNITS |  USED  |");
-            for (k = 0; k < char_width; k++)
-            {
-                printOutput(ofp, " ");
-            }
-            printOutput(ofp, "|\n");
-            printOutput(ofp, "|------------------------------------|-------|-------|--------|");
-            for (k = 0; k < char_width; k++)
-            {
-                printOutput(ofp, "-");
-            }
-            printOutput(ofp, "|\n");
-        }
-        else if (strncmp(row.name, "TIVX_PARAMETER_MAX_OBJECTS", TIVX_RESOURCE_NAME_MAX) == 0)
-        {
-            printOutput(ofp, "|------------------------------------|------------------------|");
-            for (k = 0; k < char_width; k++)
-            {
-                printOutput(ofp, "-");
-            }
-            printOutput(ofp, "|\n");
-            printOutput(ofp, "|                                    |   FRAMEWORK REQUIRED   |");
-            for (k = 0; k < char_width; k++)
-            {
-                printOutput(ofp, " ");
-            }
-            printOutput(ofp, "|\n");
-            printOutput(ofp, "|                  TI                |------------------------|");
-            for (k = 0; k < char_width; k++)
-            {
-                printOutput(ofp, " ");
-            }
-            printOutput(ofp, "|\n");
-            printOutput(ofp, "|              EXTENSIONS            | UNITS |  MAX  |   %%    |");
-            for (k = 0; k < char_width; k++)
-            {
-                printOutput(ofp, " ");
-            }
-            printOutput(ofp, "|\n");
-            printOutput(ofp, "|                                    |  USED | UNITS |  USED  |");
-            for (k = 0; k < char_width; k++)
-            {
-                printOutput(ofp, " ");
-            }
-            printOutput(ofp, "|\n");
-            printOutput(ofp, "|------------------------------------|-------|-------|--------|");
-            for (k = 0; k < char_width; k++)
-            {
-                printOutput(ofp, "-");
-            }
-            printOutput(ofp, "|\n");
-        }
-        if (displayMode == TIVX_MEM_LOG_OBJECT_DESCRIPTOR && row.is_obj_desc == vx_false_e)
-        {
-            continue;
-        }
-        if (strncmp(row.name, prefix, 8) != 0)
-        {
-            printOutput(ofp, "|                                    |       |       |        |");
+            printOutput(ofp, "|                                    |                        |");
             if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
             {
                 printOutput(ofp, "                 |                 |");
@@ -1181,321 +1305,200 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
                 printOutput(ofp, "                   |");
             }
             printOutput(ofp, "\n");
-        }
-        if (row.is_size_cumulative == vx_false_e)
-        {
-            printOutput(ofp, "| %s *", row.name);
-        }
-        else
-        {
-            printOutput(ofp, "| %s  ", row.name);
-        }
-        strncpy(prefix, row.name, TIVX_RESOURCE_NAME_MAX);
-        name_length = findMacroSize(row.name);
-        for (k = 0; k < ((int32_t)TIVX_RESOURCE_NAME_MAX - name_length - 6); k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "|");
-        numDigits = getNumDigits((int32_t)useCount);
-        for (k = 0; k < (5 - numDigits); k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "%u  |", useCount);
-        numDigits = getNumDigits((int32_t)(row.max_value));
-        for (k = 0; k < (5 - numDigits); k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "%u  |", (row.max_value));
-        percent_used = 100 * (useCount / (double)row.max_value);
-        numDigits = getNumDigits((int32_t)percent_used);
-        for (k = 0; k < (3 - numDigits); k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "%.2f%% |", percent_used);
 
-        if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
-        {
-            size_units = applyMemoryUnit(&size, unit);
-            numDigits = getNumDigits((int32_t)size);
-            for (k = 0; k < (7 - numDigits); k++)
+            while (obj_count < TIVX_OBJ_DESC_SHM_TABLE_SIZE)
             {
-                printOutput(ofp, " ");
-            }
-            printOutput(ofp, "%.2f %s    |", size, size_units);
-            rem_units = applyMemoryUnit(&rem_size, unit);
-            numDigits = getNumDigits((int32_t)rem_size);
-            for (k = 0; k < (7 - numDigits); k++)
-            {
-                printOutput(ofp, " ");
-            }
-            printOutput(ofp, "%.2f %s    |", rem_size, rem_units);
-        }
-        if (displayMode != TIVX_MEM_LOG_GLOBAL)
-        {
-            if (row.is_obj_desc == vx_true_e && strncmp(row.name, "TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", TIVX_RESOURCE_NAME_MAX)!=0)
-            {
-                obj_size = sizeof(tivx_obj_desc_shm_entry_t) * g_tivx_obj_desc_shm_table[obj_count].value;
-                obj_units = applyMemoryUnit(&obj_size, unit);
-                numDigits = getNumDigits((int32_t)obj_size);
-                for (k = 0; k < (7 - numDigits); k++)
+                obj_row = g_tivx_obj_desc_shm_table[obj_count];
+                if (obj_row.is_configured == vx_false_e)
                 {
-                    printOutput(ofp, " ");
+                    obj_size = obj_row.value * sizeof(tivx_obj_desc_shm_entry_t);
+                    obj_units = applyMemoryUnit(&obj_size, unit);
+                    printOutput(ofp, "| %s", obj_row.name);
+                    name_length = findMacroSize(obj_row.name);
+                    for (k = 0; k < ((int32_t)TIVX_RESOURCE_NAME_MAX - name_length - 4); k++)
+                    {
+                        printOutput(ofp, " ");
+                    }
+                    printOutput(ofp, "|");
+                    numDigits = getNumDigits((int32_t)obj_row.value);
+                    for (k = 0; k < (13 - numDigits); k++)
+                    {
+                        printOutput(ofp, " ");
+                    }
+                    printOutput(ofp, "%u           |", obj_row.value);
+                    if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
+                    {
+                        printOutput(ofp, "      -----      |      -----      |");
+                    }
+                    numDigits = getNumDigits((int32_t)obj_size);
+                    for (k = 0; k < (7 - numDigits); k++)
+                    {
+                        printOutput(ofp, " ");
+                    }
+                    printOutput(ofp, "%.2f %s", obj_size, obj_units);
+                    printOutput(ofp, "      |\n");
+                    printOutput(ofp, "|                                    |                        |");
+                    if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
+                    {
+                        printOutput(ofp, "                 |                 |");
+                    }
+                    printOutput(ofp, "                   |\n");
                 }
-                printOutput(ofp, "%.2f %s      |", obj_size, obj_units);
                 obj_count++;
             }
-            else
-            {
-                printOutput(ofp, "       -----       |");
-            }
         }
-        printOutput(ofp, "\n");
-    }
-    if (displayMode != TIVX_MEM_LOG_GLOBAL && displayMode != TIVX_MEM_LOG_DEFAULT)
-    {
-        printOutput(ofp, "|------------------------------------|------------------------|");
-        for (k = 0; k < char_width; k++)
+        if (displayMode == TIVX_MEM_LOG_GLOBAL)
         {
-            printOutput(ofp, "-");
+            char_width = TIVX_MEM_CHAR_WIDTH_GLOBAL-4;
         }
-        printOutput(ofp, "|\n");
-        printOutput(ofp, "|                                    |                        |");
-        for (k = 0; k < char_width; k++)
+        else if (displayMode == TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
         {
-            printOutput(ofp, " ");
+            char_width = TIVX_MEM_CHAR_WIDTH_OBJECT_DESCRIPTOR-4;
         }
-        printOutput(ofp, "|\n");
-        printOutput(ofp, "|           MISCELLANEOUS            |          UNITS         |");
-        for (k = 0; k < char_width; k++)
+        else if (displayMode == TIVX_MEM_LOG_ALL)
         {
-            printOutput(ofp, " ");
+            char_width = TIVX_MEM_CHAR_WIDTH_ALL-4;
         }
-        printOutput(ofp, "|\n");
-        printOutput(ofp, "|         OBJECT DESCRIPTORS         |        ALLOCATED       |");
-        for (k = 0; k < char_width; k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "|\n");
-        printOutput(ofp, "|         (NOT CONFIGURABLE)         |                        |");
-        for (k = 0; k < char_width; k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "|\n");
-        printOutput(ofp, "|------------------------------------|------------------------|");
-        for (k = 0; k < char_width; k++)
-        {
-            printOutput(ofp, "-");
-        }
-        printOutput(ofp, "|\n");
-        printOutput(ofp, "|                                    |                        |");
-        if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
-        {
-            printOutput(ofp, "                 |                 |");
-        }
-        if (displayMode != TIVX_MEM_LOG_GLOBAL)
-        {
-            printOutput(ofp, "                   |");
-        }
-        printOutput(ofp, "\n");
-
-        while (obj_count < TIVX_OBJ_DESC_SHM_TABLE_SIZE)
-        {
-            obj_row = g_tivx_obj_desc_shm_table[obj_count];
-            if (obj_row.is_configured == vx_false_e)
-            {
-                obj_size = obj_row.value * sizeof(tivx_obj_desc_shm_entry_t);
-                obj_units = applyMemoryUnit(&obj_size, unit);
-                printOutput(ofp, "| %s", obj_row.name);
-                name_length = findMacroSize(obj_row.name);
-                for (k = 0; k < ((int32_t)TIVX_RESOURCE_NAME_MAX - name_length - 4); k++)
-                {
-                    printOutput(ofp, " ");
-                }
-                printOutput(ofp, "|");
-                numDigits = getNumDigits((int32_t)obj_row.value);
-                for (k = 0; k < (13 - numDigits); k++)
-                {
-                    printOutput(ofp, " ");
-                }
-                printOutput(ofp, "%u           |", obj_row.value);
-                if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
-                {
-                    printOutput(ofp, "      -----      |      -----      |");
-                }
-                numDigits = getNumDigits((int32_t)obj_size);
-                for (k = 0; k < (7 - numDigits); k++)
-                {
-                    printOutput(ofp, " ");
-                }
-                printOutput(ofp, "%.2f %s", obj_size, obj_units);
-                printOutput(ofp, "      |\n");
-                printOutput(ofp, "|                                    |                        |");
-                if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
-                {
-                    printOutput(ofp, "                 |                 |");
-                }
-                printOutput(ofp, "                   |\n");
-            }
-            obj_count++;
-        }
-    }
-    if (displayMode == TIVX_MEM_LOG_GLOBAL)
-    {
-        char_width = TIVX_MEM_CHAR_WIDTH_GLOBAL-4;
-    }
-    else if (displayMode == TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
-    {
-        char_width = TIVX_MEM_CHAR_WIDTH_OBJECT_DESCRIPTOR-4;
-    }
-    else if (displayMode == TIVX_MEM_LOG_ALL)
-    {
-        char_width = TIVX_MEM_CHAR_WIDTH_ALL-4;
-    }
-    printOutput(ofp, "|");
-    for (k = 0; k < char_width*2+31; k++)
-    {
-        printOutput(ofp, "-");
-    }
-    printOutput(ofp, "|\n");
-    if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
-    {
-        size_units = applyMemoryUnit(&total_size, unit);
-        rem_units = applyMemoryUnit(&total_rem, unit);
-        numDigits = getNumDigits((int32_t)total_size);
-        printOutput(ofp, "|");
-        for (k = 0; k < char_width-1; k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "TIOVX GLOBAL MEMORY USED: %.2f %s", total_size, size_units);
-        for (k = 0; k < (char_width - numDigits); k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "|\n|");
-        numDigits = getNumDigits((int32_t)total_rem);
-        for (k = 0; k < char_width-4; k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "TIOVX GLOBAL MEMORY REMAINING: %.2f %s", total_rem, rem_units);
-        for (k = 0; k < (char_width-2 - numDigits); k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "|\n");
-    }
-    if (displayMode != TIVX_MEM_LOG_GLOBAL)
-    {
-        tivxPlatformGetShmSize(&shm_size);
-        rem_obj_size = (double)shm_size - total_obj_size;
-        rem_obj_units = applyMemoryUnit(&rem_obj_size, unit);
-        obj_units = applyMemoryUnit(&total_obj_size, unit);
         printOutput(ofp, "|");
         for (k = 0; k < char_width*2+31; k++)
         {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "|\n|");
-        numDigits = getNumDigits((int32_t)total_obj_size);
-        for (k = 0; k < char_width-3; k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "OBJECT DESCRIPTOR MEMORY USED: %.2f %s", total_obj_size, obj_units);
-        for (k = 0; k < (char_width-3 - numDigits); k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "|\n|");
-        numDigits = getNumDigits((int32_t)rem_obj_size);
-        for (k = 0; k < char_width-6; k++)
-        {
-            printOutput(ofp, " ");
-        }
-        printOutput(ofp, "OBJECT DESCRIPTOR MEMORY REMAINING: %.2f %s", rem_obj_size, rem_obj_units);
-        for (k = 0; k < (char_width-5 - numDigits); k++)
-        {
-            printOutput(ofp, " ");
+            printOutput(ofp, "-");
         }
         printOutput(ofp, "|\n");
-    }
-    printOutput(ofp, "|");
-    for (k = 0; k < char_width*2+31; k++)
-    {
-        printOutput(ofp, "-");
-    }
-    printOutput(ofp, "|\n\n");
-    if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR && displayMode != TIVX_MEM_LOG_DEFAULT)
-    {
-        printOutput(ofp, "* The global memory consumed by these parameters is counted in other resources. They aren't included\n");
-        printOutput(ofp, "  in the total memory used to avoid multiple counts.\n\n");
-    }
-    printOutput(ofp, "Memory Management Documentation:\n");
-    printOutput(ofp, "https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/tiovx/docs/user_guide/TIOVX_MEMORY_MANAGEMENT.html\n\n");
-    printOutput(ofp, "Memory Map Documentation:\n");
-    printOutput(ofp, "https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/psdk_rtos/docs/user_guide/developer_notes_memory_map.html\n\n");
-
-    if (ofp != NULL)
-    {
-        fclose(ofp);
-    }
-
-    tivxMutexUnlock(g_tivx_log_resource_lock);
-
-/* Note: this requires access to the filesystem in order to generate this, and thus excluding from RTOS builds */
-#if defined(LINUX) || defined(QNX)
-    if (NULL != test_file_path())
-    {
-        char outputFileName[TIVX_CONFIG_PATH_LENGTH];
-        uint32_t new_size;
-        snprintf(outputFileName, TIVX_CONFIG_PATH_LENGTH, "%s/output/%s", test_file_path(), "gen_new_mem_map.sh");
-        new_size = ((uint32_t)total_obj_size + (16777216 - (uint32_t)total_obj_size))/(1024*1024);
-        ofp = fopen(outputFileName, "w");
-        if (ofp == NULL)
+        if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR)
         {
-            return VX_FAILURE;
+            size_units = applyMemoryUnit(&total_size, unit);
+            rem_units = applyMemoryUnit(&total_rem, unit);
+            numDigits = getNumDigits((int32_t)total_size);
+            printOutput(ofp, "|");
+            for (k = 0; k < char_width-1; k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "TIOVX GLOBAL MEMORY USED: %.2f %s", total_size, size_units);
+            for (k = 0; k < (char_width - numDigits); k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "|\n|");
+            numDigits = getNumDigits((int32_t)total_rem);
+            for (k = 0; k < char_width-4; k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "TIOVX GLOBAL MEMORY REMAINING: %.2f %s", total_rem, rem_units);
+            for (k = 0; k < (char_width-2 - numDigits); k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "|\n");
+        }
+        if (displayMode != TIVX_MEM_LOG_GLOBAL)
+        {
+            tivxPlatformGetShmSize(&shm_size);
+            rem_obj_size = (double)shm_size - total_obj_size;
+            rem_obj_units = applyMemoryUnit(&rem_obj_size, unit);
+            obj_units = applyMemoryUnit(&total_obj_size, unit);
+            printOutput(ofp, "|");
+            for (k = 0; k < char_width*2+31; k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "|\n|");
+            numDigits = getNumDigits((int32_t)total_obj_size);
+            for (k = 0; k < char_width-3; k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "OBJECT DESCRIPTOR MEMORY USED: %.2f %s", total_obj_size, obj_units);
+            for (k = 0; k < (char_width-3 - numDigits); k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "|\n|");
+            numDigits = getNumDigits((int32_t)rem_obj_size);
+            for (k = 0; k < char_width-6; k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "OBJECT DESCRIPTOR MEMORY REMAINING: %.2f %s", rem_obj_size, rem_obj_units);
+            for (k = 0; k < (char_width-5 - numDigits); k++)
+            {
+                printOutput(ofp, " ");
+            }
+            printOutput(ofp, "|\n");
+        }
+        printOutput(ofp, "|");
+        for (k = 0; k < char_width*2+31; k++)
+        {
+            printOutput(ofp, "-");
+        }
+        printOutput(ofp, "|\n\n");
+        if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR && displayMode != TIVX_MEM_LOG_DEFAULT)
+        {
+            printOutput(ofp, "* The global memory consumed by these parameters is counted in other resources. They aren't included\n");
+            printOutput(ofp, "  in the total memory used to avoid multiple counts.\n\n");
+        }
+        printOutput(ofp, "Memory Management Documentation:\n");
+        printOutput(ofp, "https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/tiovx/docs/user_guide/TIOVX_MEMORY_MANAGEMENT.html\n\n");
+        printOutput(ofp, "Memory Map Documentation:\n");
+        printOutput(ofp, "https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/psdk_rtos/docs/user_guide/developer_notes_memory_map.html\n\n");
+
+        if (ofp != NULL)
+        {
+            fclose(ofp);
+        }
+
+        tivxMutexUnlock(g_tivx_log_resource_lock);
+
+    /* Note: this requires access to the filesystem in order to generate this, and thus excluding from RTOS builds */
+    #if defined(LINUX) || defined(QNX)
+        if (NULL != test_file_path())
+        {
+            char outputFileName[TIVX_CONFIG_PATH_LENGTH];
+            uint32_t new_size;
+            snprintf(outputFileName, TIVX_CONFIG_PATH_LENGTH, "%s/output/%s", test_file_path(), "gen_new_mem_map.sh");
+            new_size = ((uint32_t)total_obj_size + (16777216 - (uint32_t)total_obj_size))/(1024*1024);
+            ofp = fopen(outputFileName, "w");
+            if (ofp == NULL)
+            {
+                return VX_FAILURE;
+            }
+            else
+            {
+                printOutput(ofp, "if [[ -z \"${VX_TEST_DATA_PATH}\" ]]; then\n");
+                printOutput(ofp, "    echo \"ERROR: VX_TEST_DATA_PATH has not been defined.\"\n");
+                printOutput(ofp, "    exit 1\n");
+                printOutput(ofp, "fi\n");
+                printOutput(ofp, "if [[ -z \"${PATH_VISION_APPS}\" ]]; then\n");
+                printOutput(ofp, "    echo \"ERROR: PATH_VISION_APPS has not been defined.\"\n");
+                printOutput(ofp, "    exit 1\n");
+                printOutput(ofp, "fi\n");
+                printOutput(ofp, "if [[ -z \"${SOC}\" ]]; then\n");
+                printOutput(ofp, "    echo \"ERROR: SOC has not been defined.\"\n");
+                printOutput(ofp, "    exit 1\n");
+                printOutput(ofp, "fi\n\n");
+                printOutput(ofp, "cd ${PATH_VISION_APPS}/platform/${SOC}/rtos\n\n");
+                printOutput(ofp, "yes | cp gen_linker_mem_map.py ${VX_TEST_DATA_PATH}/output/gen_new_linker_mem_map.py\n\n");
+                printOutput(ofp, "cd ${VX_TEST_DATA_PATH}/output\n\n");
+                printOutput(ofp, "sed -i \"s/tiovx_obj_desc_mem_size\\ =\\ ..\\*MB/tiovx_obj_desc_mem_size\\ =\\ %d\\*MB/\" gen_new_linker_mem_map.py\n\n", new_size);
+                printOutput(ofp, "python gen_new_linker_mem_map.py\n");
+
+                char buffer[TIVX_CONFIG_PATH_LENGTH];
+                #pragma GCC diagnostic push
+                #pragma GCC diagnostic ignored "-Wformat-truncation"
+                snprintf(buffer, TIVX_CONFIG_PATH_LENGTH, "chmod +x %s", outputFileName);
+                #pragma GCC diagnostic pop
+                status = system(buffer);
+            }
+            fclose(ofp);
         }
         else
         {
-            printOutput(ofp, "if [[ -z \"${VX_TEST_DATA_PATH}\" ]]; then\n");
-            printOutput(ofp, "    echo \"ERROR: VX_TEST_DATA_PATH has not been defined.\"\n");
-            printOutput(ofp, "    exit 1\n");
-            printOutput(ofp, "fi\n");
-            printOutput(ofp, "if [[ -z \"${PATH_VISION_APPS}\" ]]; then\n");
-            printOutput(ofp, "    echo \"ERROR: PATH_VISION_APPS has not been defined.\"\n");
-            printOutput(ofp, "    exit 1\n");
-            printOutput(ofp, "fi\n");
-            printOutput(ofp, "if [[ -z \"${SOC}\" ]]; then\n");
-            printOutput(ofp, "    echo \"ERROR: SOC has not been defined.\"\n");
-            printOutput(ofp, "    exit 1\n");
-            printOutput(ofp, "fi\n\n");
-            printOutput(ofp, "cd ${PATH_VISION_APPS}/platform/${SOC}/rtos\n\n");
-            printOutput(ofp, "yes | cp gen_linker_mem_map.py ${VX_TEST_DATA_PATH}/output/gen_new_linker_mem_map.py\n\n");
-            printOutput(ofp, "cd ${VX_TEST_DATA_PATH}/output\n\n");
-            printOutput(ofp, "sed -i \"s/tiovx_obj_desc_mem_size\\ =\\ ..\\*MB/tiovx_obj_desc_mem_size\\ =\\ %d\\*MB/\" gen_new_linker_mem_map.py\n\n", new_size);
-            printOutput(ofp, "python gen_new_linker_mem_map.py\n");
-
-            char buffer[TIVX_CONFIG_PATH_LENGTH];
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wformat-truncation"
-            snprintf(buffer, TIVX_CONFIG_PATH_LENGTH, "chmod +x %s", outputFileName);
-            #pragma GCC diagnostic pop
-            status = system(buffer);
+            VX_PRINT(VX_ZONE_ERROR, "VX_TEST_DATA_PATH has not been set!\n");
         }
-        fclose(ofp);
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "VX_TEST_DATA_PATH has not been set!\n");
-    }
 #endif
+    } /* if ((vx_status)VX_SUCCESS==status) */
 
 #endif
 
