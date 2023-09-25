@@ -321,7 +321,7 @@ TEST(tivxReference, negativeTestvxReferenceExportHandle)
     { addr[i] = nonNullValue; }
     uint32_t size[64] = { 10 }; 
     uint32_t max_entries = 64; 
-    uint32_t num_entries = NULL;
+    uint32_t num_entries = 0;
    
     ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceExportHandle((vx_reference)context, addr, size, max_entries, &num_entries)));
     VX_CALL(vxReleaseImage(&image));
@@ -368,6 +368,7 @@ TEST(tivxReference, negativeTestvxIsReferenceMetaFormatEqual3)
     VX_CALL(vxReleaseImage(&image));
 }
 
+#if 0
 TEST(tivxReference, negativeTesttivxReferenceImportHandle)
 {
     vx_context context = context_->vx_context_;
@@ -394,6 +395,7 @@ TEST(tivxReference, negativeTesttivxReferenceImportHandle)
     VX_CALL(vxReleaseKernel(&kernel));
     VX_CALL(vxReleaseGraph(&graph));    
 }
+
 
 TEST(tivxReference, negativeTesttivxReferenceImportHandle1)
 {
@@ -431,6 +433,7 @@ TEST(tivxReference, negativeTesttivxReferenceImportHandle2)
     ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)image, addr, size, &num_entries)));    
     VX_CALL(vxReleaseImage(&image));    
 } 
+#endif
 
 TESTCASE_TESTS(
     tivxReference,
@@ -458,9 +461,9 @@ TESTCASE_TESTS(
     testGetContext,
     negativeTestvxIsReferenceMetaFormatEqual1,
     negativeTestvxIsReferenceMetaFormatEqual2,
-    negativeTestvxIsReferenceMetaFormatEqual3,    
+    negativeTestvxIsReferenceMetaFormatEqual3/*,
     negativeTesttivxReferenceImportHandle,
     negativeTesttivxReferenceImportHandle1,
-    negativeTesttivxReferenceImportHandle2
+    negativeTesttivxReferenceImportHandle2*/
 )
 

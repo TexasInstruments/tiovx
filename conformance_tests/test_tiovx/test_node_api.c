@@ -88,7 +88,7 @@ TEST(tivxNodeApi, negativeTesttivxCreateNodeByStructure)
     vx_remap table = NULL;
     vx_reference prms[]= {NULL};
 
-    ASSERT(NULL == tivxCreateNodeByKernelRef(graph, TIVX_KERNEL_SCALAR_SOURCE_NAME, prms,dimof(prms)));
+    ASSERT(NULL == tivxCreateNodeByKernelName(graph, TIVX_KERNEL_SCALAR_SOURCE_NAME, prms,dimof(prms)));
 }
 
 TEST(tivxNodeApi, negativeTesttivxCreateNodeByStructure1)

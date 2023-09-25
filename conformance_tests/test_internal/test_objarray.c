@@ -50,7 +50,7 @@ TEST(tivxInternalObjArray, negativeTestGetObjectArrayItem1)
     vx_uint32 index = 0;
     vx_image image;
     image = (vx_image)ownCreateReference(context, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, &context->base);
-    EXPECT_VX_ERROR(vxoa = vxCreateObjectArray(context, image, 2),VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(vxoa = vxCreateObjectArray(context, (vx_reference)image, 2),VX_ERROR_NO_RESOURCES);
     VX_CALL(ownReleaseReferenceInt((vx_reference*)&image, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL));
 }
 

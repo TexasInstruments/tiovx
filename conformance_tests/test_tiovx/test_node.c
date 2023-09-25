@@ -202,15 +202,15 @@ TEST(tivxNode, negativeTestSetNodeTarget)
 
 TEST(tivxNode, negativeTestGetNodeParameterNumBufByIndex)
 {
-    uint32_t get_num_buf;
+    uint32_t get_num_buf = 1;
 
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,(tivxSetNodeParameterNumBufByIndex(NULL, 1, &get_num_buf)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,(tivxSetNodeParameterNumBufByIndex(NULL, 1, get_num_buf)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,(tivxGetNodeParameterNumBufByIndex(NULL, 1, &get_num_buf)));
 }
 
 TEST(tivxNode, negativeTestGetNodeParameterNumBufByIndex1)
 {
-    uint32_t get_num_buf;
+    uint32_t get_num_buf = 1;
     vx_context context = context_->vx_context_;
     vx_graph graph;
     vx_image d1, d2;
@@ -223,7 +223,7 @@ TEST(tivxNode, negativeTestGetNodeParameterNumBufByIndex1)
     ASSERT_VX_OBJECT(d2    = vxCreateVirtualImage(graph, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1, d2), VX_TYPE_NODE);
 
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,(tivxSetNodeParameterNumBufByIndex(n1, 100, &get_num_buf)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,(tivxSetNodeParameterNumBufByIndex(n1, 100, get_num_buf)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,(tivxGetNodeParameterNumBufByIndex(n1, 100, &get_num_buf)));
     VX_CALL(vxReleaseNode(&n1));
     VX_CALL(vxReleaseImage(&d1));
@@ -235,12 +235,12 @@ TEST(tivxNode, negativeTestGetNodeParameterNumBufByIndex2)
 {
     vx_context context = context_->vx_context_;
     vx_image input, output;
-    vx_enum target = NULL;
+    vx_enum target = 0;
     vx_enum interp = VX_INTERPOLATION_NEAREST_NEIGHBOR;
     vx_remap map;
     vx_graph graph;
     vx_node node;
-    uint32_t get_num_buf;
+    uint32_t get_num_buf = 1;
     
     ASSERT_VX_OBJECT(input = vxCreateImage(context, 16, 32, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(output = vxCreateImage(context, 128, 64, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);   
@@ -251,7 +251,7 @@ TEST(tivxNode, negativeTestGetNodeParameterNumBufByIndex2)
     vxVerifyGraph(graph);
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetNodeTarget((node), target, "ABC"));   
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED,(tivxSetNodeParameterNumBufByIndex(node, 100, &get_num_buf)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED,(tivxSetNodeParameterNumBufByIndex(node, 100, get_num_buf)));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
