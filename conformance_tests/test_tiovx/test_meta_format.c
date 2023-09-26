@@ -678,14 +678,12 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatAttributeType, type_arg, USERKERN
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    // is_initialize_called = vx_false_e;
     is_deinitialize_called = vx_false_e;
     is_validator_called = vx_false_e;
     is_kernel_called = vx_false_e;
 
     VX_CALL(vxProcessGraph(graph));
 
-    // ASSERT(is_initialize_called == vx_false_e);
     ASSERT(is_deinitialize_called == vx_false_e);
     ASSERT(is_validator_called == vx_false_e);
     ASSERT(is_kernel_called == vx_true_e);
@@ -850,6 +848,7 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
         ASSERT_VX_OBJECT(src = (vx_reference)vxCreateThreshold(context, thresh_type, item_type), type);
         ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateThreshold(context, thresh_type, item_type), type);
     }
+    break;
     case VX_TYPE_USER_DATA_OBJECT:
     {
         vx_uint32 udata = 0;
