@@ -26,13 +26,13 @@ extern "C" {
 
 /*!
  * \file
- * \brief Implementation of Lut object
+ * \brief Implementation of Distribution object
  */
 
 
 
 /*!
- * \brief Convolution object internal state
+ * \brief Distribution object internal state
  *
  * \ingroup group_vx_distribution
  */

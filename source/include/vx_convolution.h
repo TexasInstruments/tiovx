@@ -26,7 +26,7 @@ extern "C" {
 
 /*!
  * \file
- * \brief Implementation of Lut object
+ * \brief Implementation of Convolution object
  */
 
 

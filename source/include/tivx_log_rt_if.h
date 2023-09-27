@@ -90,7 +90,7 @@
 /** \brief EVent Type: End */
 #define TIVX_LOG_RT_EVENT_TYPE_END          (1u)
 
-/** \brief Event indetifier to event name index */
+/** \brief Event identifier to event name index */
 typedef struct {
 
     uint64_t event_id;    /**< event identifier */

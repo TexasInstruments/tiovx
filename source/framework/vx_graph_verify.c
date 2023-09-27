@@ -104,7 +104,7 @@ static vx_status ownGraphUpdateImageRefAfterKernetInit(vx_graph graph, vx_image 
 static vx_status ownGraphUpdateObjArrRefAfterKernetInit(vx_graph graph, vx_object_array exemplar, vx_object_array ref);
 static vx_status ownGraphUpdatePyramidRefAfterKernetInit(vx_graph graph, vx_pyramid exemplar, vx_pyramid ref);
 
-/* Add's data reference to a list, increments number of times it is refered as input node */
+/* Add's data reference to a list, increments number of times it is referred as input node */
 static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check)
 {
     uint32_t i;
@@ -2044,7 +2044,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
             if(status == (vx_status)VX_SUCCESS)
             {
                 /* Call target kernel init for each node
-                 * This results in message coomunication with target kernels
+                 * This results in message communication with target kernels
                  * Memory gets allocated which MUST be free'ed via target kernel
                  * deinit.
                  * kernel deinit called during node release

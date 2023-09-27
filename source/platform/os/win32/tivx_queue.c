@@ -92,7 +92,7 @@ vx_status tivxQueueCreate(
         if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
         {
             /*
-             * user requested block on que get
+             * user requested block on queue get
              */
 
             /*
@@ -104,7 +104,7 @@ vx_status tivxQueueCreate(
         if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT)
         {
             /*
-             * user requested block on que put
+             * user requested block on queue put
              */
 
             /*
@@ -177,7 +177,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
             /* increment put pointer */
             queue->cur_wr = (queue->cur_wr + 1) % queue->max_ele;
 
-            /* increment count of number element in que */
+            /* increment count of number element in queue */
             queue->count++;
 
             /* restore interrupts */
@@ -188,7 +188,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 
             if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
             {
-                /* blocking on que get enabled */
+                /* blocking on queue get enabled */
 
                 /* post semaphore to unblock, blocked tasks */
                 tivxEventPost(queue->block_rd);
@@ -200,7 +200,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
         }
         else
         {
-            /* que is full */
+            /* queue is full */
 
             /* restore interrupts */
             tivxMutexUnlock(queue->lock);
@@ -213,7 +213,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
             {
                 vx_status wait_status;
 
-                /* blocking on que put enabled */
+                /* blocking on queue put enabled */
 
                 /* take semaphore and block until timeout occurs or
                  * semaphore is posted */
@@ -229,11 +229,11 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                 {
                     do_break = (vx_bool)vx_false_e;
                 }
-                /* received semaphore, recheck for available space in the que */
+                /* received semaphore, recheck for available space in the queue */
             }
             else
             {
-                /* blocking on que put disabled */
+                /* blocking on queue put disabled */
 
                 /* exit with error */
                 do_break = (vx_bool)vx_true_e;
@@ -268,7 +268,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
             /* increment get pointer */
             queue->cur_rd = (queue->cur_rd + 1) % queue->max_ele;
 
-            /* decrmeent number of elements in que */
+            /* decrement number of elements in queue */
             queue->count--;
 
             /* restore interrupts */
@@ -279,7 +279,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
 
             if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT)
             {
-                /* blocking on que put enabled,
+                /* blocking on queue put enabled,
                  * post semaphore to unblock, blocked tasks
                  */
                 tivxEventPost(queue->block_wr);
@@ -290,7 +290,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
         }
         else
         {
-            /* no elements or not enough element in que to extract */
+            /* no elements or not enough element in queue to extract */
 
             /* restore interrupts */
             tivxMutexUnlock(queue->lock);
@@ -304,7 +304,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
             {
                 vx_status wait_status;
 
-                /* blocking on que get enabled */
+                /* blocking on queue get enabled */
 
                 /* take semaphore and block until timeout occurs or
                  * semaphore is posted
@@ -321,11 +321,11 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                 {
                     do_break = (vx_bool)vx_false_e;
                 }
-                /* received semaphore, check que again */
+                /* received semaphore, check queue again */
             }
             else
             {
-                /* blocking on que get disabled */
+                /* blocking on queue get disabled */
 
                 /* exit with error */
                 do_break = (vx_bool)vx_true_e;

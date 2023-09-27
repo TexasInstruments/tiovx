@@ -330,7 +330,7 @@ extern "C" {
 #endif
 
 
-/*! \brief Function to trick target kernels into beliving they are running
+/*! \brief Function to trick target kernels into believing they are running
  *   on a DSP or EVE or such core in PC emulation mode
  *
  * \ingroup group_tivx_platform

@@ -906,7 +906,7 @@ static vx_status ownExportGraphFirstPipelineToDot(vx_graph graph, const char *ou
         TIVX_EXPORT_WRITELN(fp, "");
 
         /* link the node descriptors within a pipeline to each other based on graph structure */
-        TIVX_EXPORT_WRITELN(fp, "/* Dependancy of nodes within pipeline (Pipeline = %d) */",
+        TIVX_EXPORT_WRITELN(fp, "/* Dependency of nodes within pipeline (Pipeline = %d) */",
             pipe_id);
         for(node_id=0; node_id<graph->num_nodes; node_id++)
         {
@@ -966,7 +966,7 @@ static vx_status ownExportGraphFirstPipelineToDot(vx_graph graph, const char *ou
         #endif
         #if 1
         /* link data descriptor to node descriptors depending on the graph structure */
-        TIVX_EXPORT_WRITELN(fp, "/* Dependancy of nodes within pipeline (Pipeline = %d) */",
+        TIVX_EXPORT_WRITELN(fp, "/* Dependency of nodes within pipeline (Pipeline = %d) */",
             pipe_id);
         for(node_id=0; node_id<graph->num_nodes; node_id++)
         {
@@ -1085,7 +1085,7 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
         /* link the node descriptors within a pipeline to each other based on graph structure */
         for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
         {
-            TIVX_EXPORT_WRITELN(fp, "/* Dependancy of nodes within pipeline (Pipeline = %d) */",
+            TIVX_EXPORT_WRITELN(fp, "/* Dependency of nodes within pipeline (Pipeline = %d) */",
                 pipe_id);
             for(node_id=0; node_id<graph->num_nodes; node_id++)
             {
@@ -1127,10 +1127,10 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
             TIVX_EXPORT_WRITELN(fp, "");
         }
 
-        /* link the node descriptors across pipelines to each other based on dependancy across pipelines */
+        /* link the node descriptors across pipelines to each other based on Dependency across pipelines */
         for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
         {
-            TIVX_EXPORT_WRITELN(fp, "/* Dependancy of nodes across pipeline ( Pipeline = %d ) */",
+            TIVX_EXPORT_WRITELN(fp, "/* Dependency of nodes across pipeline ( Pipeline = %d ) */",
                 pipe_id);
             for(node_id=0; node_id<graph->num_nodes; node_id++)
             {
@@ -1317,7 +1317,7 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
         /* link data descriptor to node descriptors depending on the graph structure */
         for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
         {
-            TIVX_EXPORT_WRITELN(fp, "/* Dependancy of nodes within pipeline (Pipeline = %d) */",
+            TIVX_EXPORT_WRITELN(fp, "/* Dependency of nodes within pipeline (Pipeline = %d) */",
                 pipe_id);
             for(node_id=0; node_id<graph->num_nodes; node_id++)
             {

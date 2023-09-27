@@ -59,7 +59,7 @@ typedef struct _vx_image
     tivx_reference_t base;
     /*! \brief A pointer to a parent image object. */
     vx_image       parent;
-    /*! \brief The array of images derived form this image */
+    /*! \brief The array of images derived from this image */
     vx_image       subimages[TIVX_IMAGE_MAX_SUBIMAGES];
     /*! \brief Mapping done via vxMapImagePatch() */
     tivx_image_map_info_t maps[TIVX_IMAGE_MAX_MAPS];
