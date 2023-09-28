@@ -344,7 +344,7 @@ vx_status VX_API_CALL vxAddArrayItems(
 
         for (i = 0; i < count; i ++)
         {
-            memcpy(temp_ptr, user_ptr, obj_desc->item_size);
+            (void)memcpy(temp_ptr, user_ptr, obj_desc->item_size);
 
             temp_ptr += obj_desc->item_size;
             user_ptr += stride;
@@ -492,7 +492,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
             temp_ptr = start_offset;
             for (i = 0; i < inst; i ++)
             {
-                memcpy(user_ptr, temp_ptr, obj_desc->item_size);
+                (void)memcpy(user_ptr, temp_ptr, obj_desc->item_size);
 
                 temp_ptr += obj_desc->item_size;
                 user_ptr += stride;
@@ -509,7 +509,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
             temp_ptr = start_offset;
             for (i = 0; i < inst; i ++)
             {
-                memcpy(temp_ptr, user_ptr, obj_desc->item_size);
+                (void)memcpy(temp_ptr, user_ptr, obj_desc->item_size);
 
                 temp_ptr += obj_desc->item_size;
                 user_ptr += stride;

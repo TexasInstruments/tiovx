@@ -78,7 +78,7 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
             if(ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
             {
                 kernel_info[num_kernel_info].enumeration = kernel->enumeration;
-                strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME-1U);
+                (void)strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME-1U);
                 kernel_info[num_kernel_info].name[VX_MAX_KERNEL_NAME-1U] = '\0';
                 num_kernel_info++;
             }
@@ -370,64 +370,64 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
                 switch(ref->type)
                 {
                     case (vx_enum)VX_TYPE_DELAY:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "delay_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "delay_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_LUT:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "lut_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "lut_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_DISTRIBUTION:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "distribution_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "distribution_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_PYRAMID:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "pyramid_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "pyramid_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_THRESHOLD:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "threshold_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "threshold_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_MATRIX:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "matrix_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "matrix_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_CONVOLUTION:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "convolution_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "convolution_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_SCALAR:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "scalar_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "scalar_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_ARRAY:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "array_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "array_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_IMAGE:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "image_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "image_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_REMAP:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "remap_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "remap_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_OBJECT_ARRAY:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "object_array_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "object_array_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_NODE:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "node_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "node_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_GRAPH:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "graph_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "graph_%d", ref_idx);
                         break;
                     case (vx_enum)TIVX_TYPE_DATA_REF_Q:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "data_ref_q_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "data_ref_q_%d", ref_idx);
                         break;
                     case (vx_enum)VX_TYPE_TENSOR:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "tensor_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "tensor_%d", ref_idx);
                         break;
                     case VX_TYPE_USER_DATA_OBJECT:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "user_data_object_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "user_data_object_%d", ref_idx);
                         break;
                     case TIVX_TYPE_RAW_IMAGE:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "raw_image_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "raw_image_%d", ref_idx);
                         break;
                     case TIVX_TYPE_SUPER_NODE:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "super_node_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "super_node_%d", ref_idx);
                         break;
                     default:
-                        snprintf(name, VX_MAX_REFERENCE_NAME, "ref_%d", ref_idx);
+                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "ref_%d", ref_idx);
                         break;
                 }
                 vxSetReferenceName(ref, name);
@@ -897,13 +897,13 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
         {
             context = &g_context_obj;
 
-            memset(context, 0, sizeof(tivx_context_t));
+            (void)memset(context, 0, sizeof(tivx_context_t));
 
             context->imm_border.mode = (vx_enum)VX_BORDER_UNDEFINED;
             context->imm_border_policy = (vx_enum)VX_BORDER_POLICY_DEFAULT_TO_UNDEFINED;
             context->perf_enabled = (vx_bool)vx_false_e;
             context->imm_target_enum = (vx_enum)VX_TARGET_ANY;
-            memset(context->imm_target_string, 0, sizeof(context->imm_target_string));
+            (void)memset(context->imm_target_string, 0, sizeof(context->imm_target_string));
             context->num_references = 0;
             for(idx=0; idx<dimof(context->reftable); idx++)
             {
@@ -1134,7 +1134,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             tivxMutexDelete(&context->log_lock);
             tivxMutexDelete(&context->lock);
 
-            memset(context, 0, sizeof(tivx_context_t));
+            (void)memset(context, 0, sizeof(tivx_context_t));
 
             g_context_handle = NULL;
         }
@@ -1208,7 +1208,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
             case (vx_enum)VX_CONTEXT_IMPLEMENTATION:
                 if (((int32_t)size <= VX_MAX_IMPLEMENTATION_NAME) && (NULL != ptr))
                 {
-                    strncpy(ptr, g_context_implmentation_name, VX_MAX_IMPLEMENTATION_NAME);
+                    (void)strncpy(ptr, g_context_implmentation_name, VX_MAX_IMPLEMENTATION_NAME);
                 }
                 else
                 {
@@ -1231,7 +1231,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 if ( (size <= sizeof(g_context_extensions) ) && ptr)
                 {
                     uint32_t str_size = sizeof(g_context_extensions);
-                    strncpy(ptr, g_context_extensions, str_size);
+                    (void)strncpy(ptr, g_context_extensions, str_size);
                 }
                 else
                 {
@@ -1561,7 +1561,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
         {
             case (vx_enum)VX_TARGET_ANY:
                 context->imm_target_enum = (vx_enum)VX_TARGET_ANY;
-                memset(context->imm_target_string, 0, sizeof(context->imm_target_string));
+                (void)memset(context->imm_target_string, 0, sizeof(context->imm_target_string));
                 status = (vx_status)VX_SUCCESS;
                 break;
 
@@ -1569,7 +1569,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
                 if (target_string != NULL)
                 {
                     context->imm_target_enum = (vx_enum)VX_TARGET_STRING;
-                    strncpy(context->imm_target_string, target_string, sizeof(context->imm_target_string)-1U);
+                    (void)strncpy(context->imm_target_string, target_string, sizeof(context->imm_target_string)-1U);
                     context->imm_target_string[sizeof(context->imm_target_string) - 1U] = '\0';
                     status = (vx_status)VX_SUCCESS;
                 }

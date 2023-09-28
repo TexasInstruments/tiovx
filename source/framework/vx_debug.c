@@ -111,11 +111,11 @@ void tivx_print(vx_enum zone, const char *format, ...)
         char string[1024];
         va_list ap = {0};
 
-        va_start(ap, format);
+        (void)va_start(ap, format);
 
-        snprintf(string, sizeof(string), " %s:", find_zone_name(zone));
+        (void)snprintf(string, sizeof(string), " %s:", find_zone_name(zone));
         size = (uint32_t)strlen(string);
-        vsnprintf(&string[size], sizeof(string)-size, format, ap);
+        (void)vsnprintf(&string[size], sizeof(string)-size, format, ap);
         ownPlatformPrintf(string);
         va_end(ap);
     }
