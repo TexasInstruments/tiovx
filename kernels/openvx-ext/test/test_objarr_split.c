@@ -107,6 +107,8 @@ TEST(tivxObjArraySplit, testGraph)
 
     vx_perf_t perf_node, perf_graph;
 
+    tivxExtLoadKernels(context);
+
     ASSERT_VX_OBJECT(input_exemplar   = vxCreateImage(context, TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(output0_exemplar = vxCreateImage(context, TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(output1_exemplar = vxCreateImage(context, TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -389,6 +391,7 @@ TEST(tivxObjArraySplit, testGraph)
     VX_CALL(vxReleaseObjectArray(&out3));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
+    tivxExtUnLoadKernels(context);
 }
 
 TEST(tivxObjArraySplit, negativeTestGraph)
@@ -403,6 +406,8 @@ TEST(tivxObjArraySplit, negativeTestGraph)
     vx_size output1_num_items = OUTPUT1_NUM_ITEMS;
     vx_size output2_num_items = OUTPUT2_NUM_ITEMS;
     vx_size output3_num_items = 2;
+
+    tivxExtLoadKernels(context);
 
     ASSERT_VX_OBJECT(exemplar = vxCreateImage(context, TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
@@ -425,6 +430,7 @@ TEST(tivxObjArraySplit, negativeTestGraph)
     VX_CALL(vxReleaseObjectArray(&out3));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
+    tivxExtUnLoadKernels(context);
 }
 
 TESTCASE_TESTS(

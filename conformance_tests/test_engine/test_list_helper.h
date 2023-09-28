@@ -23,6 +23,7 @@
 #include "test_main.h"
 #include "test_tiovx/test_main.h"
 #include "test_internal/test_main.h"
+#include "kernels/openvx-ext/test/test_main.h"
 
 #undef CT_TESTCASE
 #define CT_TESTCASE(testcase) testcase##_register,
@@ -31,6 +32,7 @@ CT_RegisterTestCaseFN g_testcase_register_fns[] = {
     #include "test_main.h"
     #include "test_tiovx/test_main.h"
     #include "test_internal/test_main.h"
+    #include "kernels/openvx-ext/test/test_main.h"
     NULL
 };
 
