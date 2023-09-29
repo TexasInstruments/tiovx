@@ -1081,26 +1081,30 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
     if (status == (vx_status)VX_SUCCESS)
     {
         status = vxSetMetaFormatFromReference(mf1, ref1);
-
+#ifdef LDRA_UNTESTABLE_CODE 
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_INVALID_META_UM001 */
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,
                      "vxSetMetaFormatFromReference(ref1) failed.\n");
             status = (vx_status)VX_FAILURE;
         }
+#endif
     }
 
     /* Set the ref2 in mf2. */
     if (status == (vx_status)VX_SUCCESS)
     {
         status = vxSetMetaFormatFromReference(mf2, ref2);
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_INVALID_META_UM002 */
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,
                      "vxSetMetaFormatFromReference(ref2) failed.\n");
             status = (vx_status)VX_FAILURE;
         }
+#endif
     }
 
     if (status == (vx_status)VX_SUCCESS)
@@ -1215,13 +1219,15 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             tivx_obj_desc_image_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM001 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 numPlanes = obj_desc->planes;
                 for (i = 0; i < numPlanes; i++)
@@ -1237,13 +1243,15 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             tivx_obj_desc_tensor_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM002 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 mem_ptr  = &obj_desc->mem_ptr;
                 mem_size = &obj_desc->mem_size;
@@ -1254,13 +1262,15 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             tivx_obj_desc_user_data_object_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_user_data_object_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM003 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 mem_ptr  = &obj_desc->mem_ptr;
                 mem_size = &obj_desc->mem_size;
@@ -1271,13 +1281,15 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             tivx_obj_desc_array_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM004 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 mem_ptr  = &obj_desc->mem_ptr;
                 mem_size = &obj_desc->mem_size;
@@ -1288,13 +1300,15 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             tivx_obj_desc_convolution_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_convolution_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM005 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 mem_ptr  = &obj_desc->mem_ptr;
                 mem_size = &obj_desc->mem_size;
@@ -1305,13 +1319,15 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             tivx_obj_desc_matrix_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM006 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 mem_ptr  = &obj_desc->mem_ptr;
                 mem_size = &obj_desc->mem_size;
@@ -1322,13 +1338,15 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             tivx_obj_desc_distribution_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM007 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 mem_ptr  = &obj_desc->mem_ptr;
                 mem_size = &obj_desc->mem_size;
@@ -1339,13 +1357,15 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             tivx_obj_desc_raw_image_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM008 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 numMemElem = obj_desc->params.num_exposures;
                 mem_ptr    = obj_desc->mem_ptr;
@@ -1360,13 +1380,15 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             vx_reference                img_ref;
 
             obj_desc = (tivx_obj_desc_pyramid_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM009 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 num_levels = obj_desc->num_levels;
                 pyramid    = (vx_pyramid)ref;
@@ -1377,13 +1399,15 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                     img_ref      = (vx_reference)pyramid->img[i];
                     img_obj_desc = (tivx_obj_desc_image_t *)img_ref->obj_desc;
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_IMG_OBJ_DESC_UM001 */
                     if (img_obj_desc == NULL)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "'img_obj_desc' is NULL.\n");
                         status = (vx_status)VX_FAILURE;
                         break;
                     }
-
+#endif
                     numPlanes = img_obj_desc->planes;
 
                     numMemElem++;
@@ -1651,13 +1675,15 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             tivx_obj_desc_image_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM010 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 for (i = 0; i < obj_desc->planes; i++)
                 {
@@ -1672,13 +1698,15 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             tivx_obj_desc_tensor_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM011 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 mem_ptr  = &obj_desc->mem_ptr;
                 mem_size = &obj_desc->mem_size;
@@ -1689,13 +1717,15 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             tivx_obj_desc_user_data_object_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_user_data_object_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM012 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 mem_ptr  = &obj_desc->mem_ptr;
                 mem_size = &obj_desc->mem_size;
@@ -1706,13 +1736,15 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             tivx_obj_desc_array_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM013 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 mem_ptr  = &obj_desc->mem_ptr;
                 mem_size = &obj_desc->mem_size;
@@ -1723,13 +1755,15 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             tivx_obj_desc_convolution_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_convolution_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM014 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 mem_ptr  = &obj_desc->mem_ptr;
                 mem_size = &obj_desc->mem_size;
@@ -1740,13 +1774,15 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             tivx_obj_desc_matrix_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM015 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 mem_ptr  = &obj_desc->mem_ptr;
                 mem_size = &obj_desc->mem_size;
@@ -1758,12 +1794,15 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
 
             obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM016 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 mem_ptr  = &obj_desc->mem_ptr;
                 mem_size = &obj_desc->mem_size;
@@ -1774,13 +1813,15 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             tivx_obj_desc_raw_image_t *obj_desc;
 
             obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM017 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 numMemElem = obj_desc->params.num_exposures;
                 mem_ptr    = obj_desc->mem_ptr;
@@ -1796,13 +1837,15 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             vx_reference                img_ref;
 
             obj_desc = (tivx_obj_desc_pyramid_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM018 */
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
+#endif
             {
                 num_levels = obj_desc->num_levels;
                 pyramid    = (vx_pyramid)ref;
@@ -1825,14 +1868,15 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
                         img_ref      = (vx_reference)pyramid->img[i];
                         img_obj_desc = (tivx_obj_desc_image_t *)img_ref->obj_desc;
                         total_size   = 0;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_IMG_OBJ_DESC_UM002 */
                         if (img_obj_desc == NULL)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "'img_obj_desc' is NULL.\n");
                             status = (vx_status)VX_FAILURE;
                             break;
                         }
-
+#endif
                         for (j = 0; j < img_obj_desc->planes; j++)
                         {
                             total_size += img_obj_desc->mem_size[j];
@@ -1873,4 +1917,3 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
 
     return status;
 }
-
