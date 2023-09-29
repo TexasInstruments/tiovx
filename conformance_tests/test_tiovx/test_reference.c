@@ -368,7 +368,6 @@ TEST(tivxReference, negativeTestvxIsReferenceMetaFormatEqual3)
     VX_CALL(vxReleaseImage(&image));
 }
 
-#if 0
 TEST(tivxReference, negativeTesttivxReferenceImportHandle)
 {
     vx_context context = context_->vx_context_;
@@ -408,7 +407,7 @@ TEST(tivxReference, negativeTesttivxReferenceImportHandle1)
     uint32_t num_entries = 10;
 
     ASSERT_VX_OBJECT(pyr_in = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
-    ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)pyr_in, addr, size, &num_entries)));    
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)pyr_in, (const void **)addr, (const uint32_t *)size, num_entries)));    
     VX_CALL(vxReleasePyramid(&pyr_in));    
 } 
 
@@ -428,7 +427,7 @@ TEST(tivxReference, negativeTesttivxReferenceImportHandle2)
     ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)image, (const void **)addr, (const uint32_t *)size, num_entries)));    
     VX_CALL(vxReleaseImage(&image));    
 } 
-#endif
+
 
 TESTCASE_TESTS(
     tivxReference,
