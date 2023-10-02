@@ -239,7 +239,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph graph,
+vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
                 vx_uint32 graph_parameter_index,
                 vx_reference *refs,
                 vx_uint32 num_refs,

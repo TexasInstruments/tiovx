@@ -304,7 +304,7 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
     return status;
 }
 
-vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void *parameter)
+vx_status tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void *parameter)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -319,7 +319,7 @@ vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value
     return status;
 }
 
-vx_status VX_API_CALL tivxWaitGraphEvent(
+vx_status tivxWaitGraphEvent(
                     vx_graph graph, vx_event_t *event,
                     vx_bool do_not_block)
 {

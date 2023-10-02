@@ -546,13 +546,13 @@ void ownGraphDetectAndSetNumBuf(vx_graph graph);
  *
  * \ingroup group_vx_graph
  */
-vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void *parameter);
+vx_status tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void *parameter);
 
 /*! \brief Waits for user event from graph event queue
  *
  * \ingroup group_vx_graph
  */
-vx_status VX_API_CALL tivxWaitGraphEvent(
+vx_status tivxWaitGraphEvent(
                     vx_graph graph, vx_event_t *event,
                     vx_bool do_not_block);
 
@@ -589,7 +589,7 @@ vx_status VX_API_CALL tivxWaitGraphEvent(
  *
  * \ingroup group_vx_graph_cfg
  */
-vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph graph,
+vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
                 vx_uint32 graph_parameter_index,
                 vx_reference *refs,
                 vx_uint32 num_refs,

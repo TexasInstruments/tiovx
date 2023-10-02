@@ -193,7 +193,7 @@ vx_status vxWaitEventQueue(
  *
  * \ingroup group_tivx_event_queue
  */
-VX_API_ENTRY vx_status VX_API_CALL ownRegisterEvent(vx_reference ref,
+vx_status ownRegisterEvent(vx_reference ref,
                 enum tivx_queue_type_e queue_type, enum vx_event_type_e type,
                 vx_uint32 param, vx_uint32 app_value);
 
