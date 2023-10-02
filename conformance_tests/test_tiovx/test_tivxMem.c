@@ -1768,7 +1768,7 @@ TEST(tivxMem, testReferenceImportNeg)
     {
         vx_status expected;
 
-        if (i >= numEntries)
+        if (i == numEntries)
         {
             expected = (vx_status)VX_SUCCESS;
         }

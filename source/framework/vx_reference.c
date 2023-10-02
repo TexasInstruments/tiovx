@@ -1509,16 +1509,21 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
 
         if (status == (vx_status)VX_SUCCESS)
         {
-            /* Issue a warning if the number of handles passed is more than
+            /* Issue an error if the number of handles passed is more than
              * what is needed.
              */
             if (numMemElem < num_entries)
             {
-                VX_PRINT(VX_ZONE_WARNING,
+                VX_PRINT(VX_ZONE_ERROR,
                          "The value 'num_entries' exceeds the number of "
                          "handles needed.\n");
+                status = (vx_status)VX_FAILURE;
             }
 
+        }
+
+        if (status == (vx_status)VX_SUCCESS)
+        {
             /* Update the object. */
             if (ref->type == (vx_enum)VX_TYPE_PYRAMID)
             {
