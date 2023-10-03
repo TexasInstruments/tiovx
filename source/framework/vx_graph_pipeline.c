@@ -724,6 +724,10 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
             }
         }
     }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Graph object descriptor is NULL\n");
+    }
 
     ownReferenceUnlock(&graph->base);
 
