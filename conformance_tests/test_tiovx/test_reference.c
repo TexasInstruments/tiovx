@@ -417,8 +417,7 @@ TEST(tivxReference, negativeTesttivxReferenceImportHandle2)
     vx_image image;
     vx_uint64 is_invalid, set_is_valid = 10;
     void *nonNullValue = (void *)0x1234567890AB;
-    void *addr[64] = {nonNullValue}; 
-    
+    void *addr[64] = {nonNullValue};
     uint32_t size[64] = { 10 }; 
     uint32_t max_entries = 64; 
     uint32_t num_entries = 10;
