@@ -30,7 +30,6 @@ TESTCASE(tivxNode, CT_VXContext, ct_setup_vx_context, 0)
 TEST(tivxNode, negativeTestCreateGenericNode)
 {
     vx_context context = context_->vx_context_;
-
     vx_node node = NULL;
     vx_graph graph = NULL;
     vx_kernel kernel = NULL;
@@ -46,7 +45,6 @@ TEST(tivxNode, negativeTestQueryNode)
     #define VX_NODE_DEFAULT 0
 
     vx_context context = context_->vx_context_;
-
     vx_node node = NULL;
     vx_graph graph = NULL;
     vx_kernel kernel = NULL;
@@ -77,6 +75,7 @@ TEST(tivxNode, negativeTestQueryNode)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryNode(node, VX_NODE_STATE, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryNode(node, TIVX_NODE_TIMEOUT, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryNode(node, attribute, &udata, size));
+
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseKernel(&kernel));
     VX_CALL(vxReleaseGraph(&graph));
@@ -173,6 +172,8 @@ TEST(tivxNode, negativeTestReplicateNode)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxReplicateNode(graph1, node, replicate, nop));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryNode(node, VX_NODE_PARAMETERS, &nop, sizeof(vx_uint32)));
     ASSERT_EQ_VX_STATUS(VX_FAILURE, vxReplicateNode(graph1, node, replicate, nop));
+    vx_bool replicate2[2] = {vx_true_e, vx_true_e};
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxReplicateNode(graph1, node, replicate2, nop));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseKernel(&kernel));
@@ -241,7 +242,7 @@ TEST(tivxNode, negativeTestGetNodeParameterNumBufByIndex2)
     vx_graph graph;
     vx_node node;
     uint32_t get_num_buf = 1;
-    
+
     ASSERT_VX_OBJECT(input = vxCreateImage(context, 16, 32, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(output = vxCreateImage(context, 128, 64, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);   
     ASSERT_VX_OBJECT(map = vxCreateRemap(context, 16, 32, 128, 64), VX_TYPE_REMAP);    
@@ -260,7 +261,6 @@ TEST(tivxNode, negativeTestGetNodeParameterNumBufByIndex2)
     VX_CALL(vxReleaseImage(&input));
 } 
 
-
 TESTCASE_TESTS(
     tivxNode,
     negativeTestCreateGenericNode,
@@ -275,4 +275,3 @@ TESTCASE_TESTS(
     negativeTestGetNodeParameterNumBufByIndex1,
     negativeTestGetNodeParameterNumBufByIndex2
 )
-
