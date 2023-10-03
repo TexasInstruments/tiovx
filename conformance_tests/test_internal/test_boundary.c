@@ -33,6 +33,8 @@
 #include <tivx_obj_desc_priv.h>
 #include <vx_reference.h>
 #include <vx_context.h>
+#include <tivx_data_ref_queue.h>
+#include <vx_node.h>
 
 #include "shared_functions.h"
 
@@ -61,8 +63,52 @@ TEST(tivxObjDescBoundary, negativeTestObjDescBoundary)
         }
     }
 
-    for (j = 0; j < i; j++)
+     for (j = 0; j < i; j++)
     {
+        if (NULL == obj_desc[j])
+        {
+            break;
+        }
+        VX_CALL(ownObjDescFree((tivx_obj_desc_t**)&obj_desc[j]));
+    }
+
+    VX_CALL(ownReleaseReferenceInt((vx_reference*)&img, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL));
+}
+
+TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
+{
+    extern tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref);
+    extern vx_status ownObjDescFree(tivx_obj_desc_t **obj_desc);
+
+    vx_context context = context_->vx_context_;
+    int i, j;
+    tivx_obj_desc_t *obj_desc[TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST] = {NULL};
+    vx_image img;
+    vx_threshold vxt=NULL;
+    vx_object_array vxoa = NULL;
+    vx_node node = NULL;
+
+    img = (vx_image)ownCreateReference(context, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, &context->base);
+
+    for (i = 0; i < TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST-1; i++)
+    {
+        obj_desc[i] = (tivx_obj_desc_t *)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_IMAGE, (vx_reference)img);
+        if (NULL == obj_desc[i])
+        {
+            break;
+        }
+    }
+
+    EXPECT_VX_ERROR(vxt = vxCreateThreshold(context, VX_THRESHOLD_TYPE_RANGE, VX_TYPE_UINT8), VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(vxoa = vxCreateObjectArray(context, (vx_reference)img, 2),VX_ERROR_NO_RESOURCES);
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownNodeKernelInitKernelName(node));
+
+    for (j = 0; j < i-1; j++)
+    {
+        if (NULL == obj_desc[j])
+        {
+            break;
+        }
         VX_CALL(ownObjDescFree((tivx_obj_desc_t**)&obj_desc[j]));
     }
 
@@ -70,5 +116,6 @@ TEST(tivxObjDescBoundary, negativeTestObjDescBoundary)
 }
 
 TESTCASE_TESTS(tivxObjDescBoundary,
-        negativeTestObjDescBoundary
+        negativeTestObjDescBoundary,
+        negativeBoundaryThreshold
         )
