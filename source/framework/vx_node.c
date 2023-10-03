@@ -2128,30 +2128,6 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
     return status;
 }
 
-vx_bool ownCheckNodeCompleted(vx_node node, uint32_t pipeline_id)
-{
-    vx_bool is_completed = (vx_bool)vx_false_e;
-
-    if ((NULL != node) && (pipeline_id<TIVX_GRAPH_MAX_PIPELINE_DEPTH) )
-    {
-        tivx_obj_desc_node_t *obj_desc = node->obj_desc[pipeline_id];
-
-        if (NULL != obj_desc)
-        {
-            is_completed = tivxFlagIsBitSet(obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Invalid node obj desc\n");
-        }
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Invalid node or pipeline_id\n");
-    }
-    return is_completed;
-}
-
 void ownNodeLinkObjDescForPipeline(vx_node node)
 {
     uint32_t pipe_id;

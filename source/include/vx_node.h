@@ -286,15 +286,6 @@ vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index);
  */
 vx_node ownNodeGetNextInNode(vx_node node, vx_uint32 index);
 
-/*! \brief Check if node is completed
- *
- *         Does not block for node completion.
- *
- * \ingroup group_vx_node
- */
-vx_bool ownCheckNodeCompleted(vx_node node, uint32_t pipeline_id);
-
-
 /*! \brief Register node completion event
  *
  * \ingroup group_vx_node
