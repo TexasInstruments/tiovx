@@ -74,8 +74,8 @@
 #define TIVX_EXPORT_MAX_NODE_COLOR_NAME (64u)
 
 #define TIVX_EXPORT_WRITELN(fp, message, ...) do { \
-    snprintf(line, TIVX_EXPORT_MAX_FILENAME, message"\n", ##__VA_ARGS__); \
-    fwrite(line, 1, strlen(line), fp); \
+    (void)snprintf(line, TIVX_EXPORT_MAX_FILENAME, message"\n", ##__VA_ARGS__); \
+    (void)fwrite(line, 1, strlen(line), fp); \
     } while (1 == 0)
 
 /* ========================================================================== */
@@ -103,7 +103,7 @@ static void getNodeColor(vx_node node, char *node_color_name)
 {
     char target_name[TIVX_TARGET_MAX_NAME] = {0};
 
-    snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "white");
+    (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "white");
 
     if(node->obj_desc[0] != NULL)
     {
@@ -118,122 +118,122 @@ static void getNodeColor(vx_node node, char *node_color_name)
     {
         if(strncmp(target_name, "DSP-1", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "palegreen");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "palegreen");
         }
         else
         if(strncmp(target_name, "DSP-2", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "darkturquoise");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "darkturquoise");
         }
         else
         if(strncmp(target_name, "EVE-1", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "yellow");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "yellow");
         }
         else
         if(strncmp(target_name, "EVE-2", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "gold");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "gold");
         }
         else
         if(strncmp(target_name, "EVE-3", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "orange");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "orange");
         }
         else
         if(strncmp(target_name, "EVE-4", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "goldenrod4");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "goldenrod4");
         }
         else
         if(strncmp(target_name, "A15-0", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
         }
         else
         if(strncmp(target_name, "MCU2-0", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "grey");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "grey");
         }
         else
         if(strncmp(target_name, "MCU2-1", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "LightSalmon");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "LightSalmon");
         }
         else
         if(strncmp(target_name, "IPU2", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
         }
         else
         if(strncmp(target_name, "IPU2", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
         }
         else
         if(strncmp(target_name, "MPU-0", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
         }
         else
         if(strncmp(target_name, "DSP_C7-1", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "yellow");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "yellow");
         }
         else
         if(strncmp(target_name, "VPAC_NF", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "chocolate");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "chocolate");
         }
         else
         if(strncmp(target_name, "VPAC_LDC1", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "aquamarine");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "aquamarine");
         }
         else
         if(strncmp(target_name, "VPAC_MSC1", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "antiquewhite");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "antiquewhite");
         }
         else
         if(strncmp(target_name, "VPAC_MSC2", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "azure");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "azure");
         }
         else
         if(strncmp(target_name, "DMPAC_SDE", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "beige");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "beige");
         }
         else
         if(strncmp(target_name, "DMPAC_DOF", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "bisque");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "bisque");
         }
         else
         if(strncmp(target_name, "VPAC_VISS1", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blanchedalmond");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blanchedalmond");
         }
         else
         if(strncmp(target_name, "CAPTURE1", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blue");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blue");
         }
         else
         if(strncmp(target_name, "CAPTURE2", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "brown");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "brown");
         }
         else
         if(strncmp(target_name, "DISPLAY1", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "burlywood");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "burlywood");
         }
         else
         if(strncmp(target_name, "DISPLAY2", TIVX_TARGET_MAX_NAME) == 0)
         {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "cadetblue");
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "cadetblue");
         }
         else
         {
@@ -248,7 +248,7 @@ static int32_t exportAsJpg(const char *output_file_path, const char *output_file
     #if TIVX_EXPORT_GRAPH_AS_JPG
     char command[4096];
 
-    snprintf(command, 4096, "dot -Tjpg -o%s/%s%s_img.jpg %s",
+    (void)snprintf(command, 4096, "dot -Tjpg -o%s/%s%s_img.jpg %s",
         output_file_path, output_file_prefix, out_file_id_str,
         in_filename);
     status = system(command);
@@ -290,7 +290,7 @@ static void exportTargetLegend(FILE *fp, vx_graph graph)
             {
                 num_targets++;
                 getNodeColor(graph->nodes[node_id], node_color_name_list[target_id]);
-                snprintf(target_name_list[target_id], TIVX_EXPORT_MAX_NODE_COLOR_NAME, "%s", target_name);
+                (void)snprintf(target_name_list[target_id], TIVX_EXPORT_MAX_NODE_COLOR_NAME, "%s", target_name);
             }
         }
     }
@@ -324,8 +324,8 @@ static void exportDataRef(FILE *fp, vx_reference ref)
 
         if(ref->is_virtual != 0)
         {
-            snprintf(is_virtual, 64, ", style=filled, fillcolor=lightgrey");
-            snprintf(is_virtual_label, 64, "| virtual");
+            (void)snprintf(is_virtual, 64, ", style=filled, fillcolor=lightgrey");
+            (void)snprintf(is_virtual_label, 64, "| virtual");
         }
 
         {
@@ -338,7 +338,7 @@ static void exportDataRef(FILE *fp, vx_reference ref)
                 #pragma GCC diagnostic push
                 #pragma GCC diagnostic ignored "-Wformat-truncation"
                 #endif
-                snprintf(is_replicated_label, 64, "| [in] %s", ref->scope->name);
+                (void)snprintf(is_replicated_label, 64, "| [in] %s", ref->scope->name);
                 #if defined(LINUX) || defined(QNX)
                 #pragma GCC diagnostic pop
                 #endif
@@ -402,15 +402,15 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
 
         if(ref->is_virtual != 0)
         {
-            snprintf(is_virtual, 64, ", style=filled, fillcolor=lightgrey");
-            snprintf(is_virtual_label, 64, "| virtual");
+            (void)snprintf(is_virtual, 64, ", style=filled, fillcolor=lightgrey");
+            (void)snprintf(is_virtual_label, 64, "| virtual");
         }
         if ((ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
             ||
             (ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
         )
         {
-            snprintf(is_replicated_label, 80, "| [in] %s", ref->scope->name);
+            (void)snprintf(is_replicated_label, 80, "| [in] %s", ref->scope->name);
         }
         if(ref->obj_desc != NULL)
         {
@@ -451,11 +451,11 @@ static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
 
         if(is_graph_parameter != 0)
         {
-            snprintf(graph_parameter_label, 64, ", fillcolor=yellow");
+            (void)snprintf(graph_parameter_label, 64, ", fillcolor=yellow");
         }
         else
         {
-            snprintf(graph_parameter_label, 64, ", fillcolor=lightgrey");
+            (void)snprintf(graph_parameter_label, 64, ", fillcolor=lightgrey");
         }
 
         for(pipe_id=0; pipe_id<pipeline_depth; pipe_id++)
@@ -475,7 +475,7 @@ static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
                 {
                     if(tivxFlagIsBitSet(flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE) != 0)
                     {
-                        snprintf(auto_age_delay_string, 64, "|delay_slot_auto_age");
+                        (void)snprintf(auto_age_delay_string, 64, "|delay_slot_auto_age");
                     }
                 }
                 TIVX_EXPORT_WRITELN(fp, "d_%d [shape=record, style=filled %s, label=\"{%s|bufs %d|pipe %d|in_nodes %d|desc %d %s}\"]",
@@ -524,11 +524,11 @@ static void exportDataRefQueue(FILE *fp, tivx_data_ref_queue ref, uint32_t num_b
 
         if(is_graph_parameter != 0)
         {
-            snprintf(graph_parameter_label, 64, ", fillcolor=yellow");
+            (void)snprintf(graph_parameter_label, 64, ", fillcolor=yellow");
         }
         else
         {
-            snprintf(graph_parameter_label, 64, ", fillcolor=lightgrey");
+            (void)snprintf(graph_parameter_label, 64, ", fillcolor=lightgrey");
         }
 
         TIVX_EXPORT_WRITELN(fp, "d_%s [shape=record, style=filled %s, label=\"{%s|bufs %d}\"]",
@@ -546,7 +546,7 @@ static vx_status ownExportGraphTopLevelToDot(vx_graph graph, const char *output_
 
     char filename[TIVX_EXPORT_MAX_FILENAME];
 
-    snprintf(filename, TIVX_EXPORT_MAX_FILENAME,
+    (void)snprintf(filename, TIVX_EXPORT_MAX_FILENAME,
         "%s/%s_1_img.txt",
         output_file_path,
         output_file_prefix);
@@ -639,7 +639,7 @@ static vx_status ownExportGraphTopLevelToDot(vx_graph graph, const char *output_
                     is_replicated = ownNodeIsPrmReplicated(node, data_id);
                     if(is_replicated != 0)
                     {
-                        snprintf(replicated_label, 32, "[label=\" replicated\"]");
+                        (void)snprintf(replicated_label, 32, "[label=\" replicated\"]");
                     }
 
                     ref = ownNodeGetParameterRef(node, data_id);
@@ -696,7 +696,7 @@ static vx_status ownExportGraphTopLevelToDot(vx_graph graph, const char *output_
         TIVX_EXPORT_WRITELN(fp, "");
         TIVX_EXPORT_WRITELN(fp, "}");
 
-        fclose(fp);
+        (void)fclose(fp);
 
         exportAsJpg(output_file_path, output_file_prefix, "_1", filename);
     }
@@ -809,7 +809,7 @@ static vx_status ownExportGraphDataRefQueuesToDot(vx_graph graph, const char *ou
     vx_status status = (vx_status)VX_SUCCESS;
     char filename[TIVX_EXPORT_MAX_FILENAME];
 
-    snprintf(filename, TIVX_EXPORT_MAX_FILENAME, "%s/%s_3_data_ref_q_img.txt", output_file_path, output_file_prefix);
+    (void)snprintf(filename, TIVX_EXPORT_MAX_FILENAME, "%s/%s_3_data_ref_q_img.txt", output_file_path, output_file_prefix);
 
     FILE *fp = fopen(filename, "wb");
 
@@ -857,7 +857,7 @@ static vx_status ownExportGraphDataRefQueuesToDot(vx_graph graph, const char *ou
         TIVX_EXPORT_WRITELN(fp, "");
         TIVX_EXPORT_WRITELN(fp, "}");
 
-        fclose(fp);
+        (void)fclose(fp);
 
         exportAsJpg(output_file_path, output_file_prefix, "_3_data_ref_q", filename);
     }
@@ -874,7 +874,7 @@ static vx_status ownExportGraphFirstPipelineToDot(vx_graph graph, const char *ou
     vx_status status = (vx_status)VX_SUCCESS;
     char filename[TIVX_EXPORT_MAX_FILENAME];
 
-    snprintf(filename, TIVX_EXPORT_MAX_FILENAME,
+    (void)snprintf(filename, TIVX_EXPORT_MAX_FILENAME,
                 "%s/%s_4_pipe0_img.txt",
                 output_file_path,
                 output_file_prefix);
@@ -984,7 +984,7 @@ static vx_status ownExportGraphFirstPipelineToDot(vx_graph graph, const char *ou
                         is_replicated = tivxFlagIsBitSet(node_desc->is_prm_replicated, ((uint32_t)1<<(uint32_t)data_id));
                         if(is_replicated != 0)
                         {
-                            snprintf(replicated_label, 32, "[label=\" replicated\"]");
+                            (void)snprintf(replicated_label, 32, "[label=\" replicated\"]");
                         }
 
                         if(tivxFlagIsBitSet(node_desc->is_prm_input, ((uint32_t)1<<(uint32_t)data_id)) != 0)
@@ -1031,7 +1031,7 @@ static vx_status ownExportGraphFirstPipelineToDot(vx_graph graph, const char *ou
         TIVX_EXPORT_WRITELN(fp, "");
         TIVX_EXPORT_WRITELN(fp, "}");
 
-        fclose(fp);
+        (void)fclose(fp);
 
         exportAsJpg(output_file_path, output_file_prefix, "_4_pipe0", filename);
     }
@@ -1048,7 +1048,7 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
     vx_status status = (vx_status)VX_SUCCESS;
     char filename[TIVX_EXPORT_MAX_FILENAME];
 
-    snprintf(filename, TIVX_EXPORT_MAX_FILENAME,
+    (void)snprintf(filename, TIVX_EXPORT_MAX_FILENAME,
                 "%s/%s_2_pipe_img.txt",
                 output_file_path,
                 output_file_prefix);
@@ -1335,7 +1335,7 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
                             is_replicated = tivxFlagIsBitSet(node_desc->is_prm_replicated, ((uint32_t)1<<(uint32_t)data_id));
                             if(is_replicated != 0)
                             {
-                                snprintf(replicated_label, 32, "[label=\" replicated\"]");
+                                (void)snprintf(replicated_label, 32, "[label=\" replicated\"]");
                             }
 
                             if(tivxFlagIsBitSet(node_desc->is_prm_input, ((uint32_t)1<<(uint32_t)data_id)) != 0)
@@ -1383,7 +1383,7 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
         TIVX_EXPORT_WRITELN(fp, "");
         TIVX_EXPORT_WRITELN(fp, "}");
 
-        fclose(fp);
+        (void)fclose(fp);
 
         exportAsJpg(output_file_path, output_file_prefix, "_2_pipe", filename);
     }
