@@ -881,7 +881,7 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
 
         ASSERT_VX_OBJECT(src = (vx_reference)vxCreateObjectArray(context, (vx_reference)image1, 2), VX_TYPE_OBJECT_ARRAY);
         ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateObjectArray(context, (vx_reference)image2, 3), VX_TYPE_OBJECT_ARRAY);
-        // (void)vxSetMetaFormatAttribute(dst, VX_LUT_COUNT, &num_items, sizeofErr);
+        
 
         VX_CALL(vxReleaseImage(&image1));
         VX_CALL(vxReleaseImage(&image2));
