@@ -43,7 +43,7 @@ TEST(tivxTgKnl, negativeTestAddTargetKernelInternal)
 {
     vx_context context = context_->vx_context_;
 
-    tivx_target_kernel ttk = NULL;
+    tivx_target_kernel ttk[TIVX_TARGET_KERNEL_MAX+1] = {NULL};
     tivx_target_kernel_instance tki = NULL;
     vx_enum kernel_id = 0;
     char tname[] = {'t', 'i', 'o', 'v', 'x'};
@@ -53,20 +53,24 @@ TEST(tivxTgKnl, negativeTestAddTargetKernelInternal)
     int32_t i = 0;
     vx_uint32 num_target_kernels;
 
-    ASSERT(NULL == (ttk = tivxAddTargetKernel(kernel_id, NULL, NULL, NULL, NULL, NULL, (void *)(&priv_arg))));
-    ASSERT(NULL == (ttk = tivxAddTargetKernel(kernel_id, tname, NULL, c_function, NULL, NULL, (void *)(&priv_arg))));
+    ASSERT(NULL == (ttk[0] = tivxAddTargetKernel(kernel_id, NULL, NULL, NULL, NULL, NULL, (void *)(&priv_arg))));
+    ASSERT(NULL == (ttk[0] = tivxAddTargetKernel(kernel_id, tname, NULL, c_function, NULL, NULL, (void *)(&priv_arg))));
 
     VX_CALL(tivxQueryNumTargetKernel(&num_target_kernels));
 
     for (i=num_target_kernels; i<TIVX_TARGET_KERNEL_MAX; i++) {
         kernel_id = (vx_enum)(i);
-        ASSERT(NULL != (ttk = tivxAddTargetKernel(kernel_id, tname, p_function, c_function, NULL, NULL, (void *)(&priv_arg))));
+        ASSERT(NULL != (ttk[i] = tivxAddTargetKernel(kernel_id, tname, p_function, c_function, NULL, NULL, (void *)(&priv_arg))));
     }
 
     kernel_id = TIVX_TARGET_KERNEL_MAX;
 
     /* Trying to allocate TIVX_TARGET_KERNEL_MAX+1 */
-    ASSERT(NULL == (ttk = tivxAddTargetKernel(kernel_id, tname, p_function, c_function, NULL, NULL, (void *)(&priv_arg))));
+    ASSERT(NULL == (ttk[i] = tivxAddTargetKernel(kernel_id, tname, p_function, c_function, NULL, NULL, (void *)(&priv_arg))));
+
+    for (i=num_target_kernels; i<TIVX_TARGET_KERNEL_MAX; i++) {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxRemoveTargetKernel(ttk[i]));
+    }
 }
 
 TEST(tivxTgKnl, negativeTestRemoveTargetKernel)
