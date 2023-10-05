@@ -684,7 +684,7 @@ void tivxPrintAllResourceStats(void)
         (void)printf("%s ", stat.name);
         for (j = 0; j < ((int32_t)TIVX_RESOURCE_NAME_MAX - name_length); j++)
         {
-            printf(" ");
+            (void)printf(" ");
         }
         (void)printf("|");
         numDigits = getNumDigits((int32_t)stat.max_value);
@@ -1457,7 +1457,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
         {
             char outputFileName[TIVX_CONFIG_PATH_LENGTH];
             uint32_t new_size;
-            snprintf(outputFileName, TIVX_CONFIG_PATH_LENGTH, "%s/output/%s", test_file_path(), "gen_new_mem_map.sh");
+            (void)snprintf(outputFileName, TIVX_CONFIG_PATH_LENGTH, "%s/output/%s", test_file_path(), "gen_new_mem_map.sh");
             new_size = ((uint32_t)total_obj_size + (16777216 - (uint32_t)total_obj_size))/(1024*1024);
             ofp = fopen(outputFileName, "w");
             if (ofp == NULL)
@@ -1487,11 +1487,11 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
                 char buffer[TIVX_CONFIG_PATH_LENGTH];
                 #pragma GCC diagnostic push
                 #pragma GCC diagnostic ignored "-Wformat-truncation"
-                snprintf(buffer, TIVX_CONFIG_PATH_LENGTH, "chmod +x %s", outputFileName);
+                (void)snprintf(buffer, TIVX_CONFIG_PATH_LENGTH, "chmod +x %s", outputFileName);
                 #pragma GCC diagnostic pop
                 status = system(buffer);
             }
-            fclose(ofp);
+            (void)fclose(ofp);
         }
         else
         {
