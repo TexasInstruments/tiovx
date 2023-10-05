@@ -19,4 +19,5 @@
 #if defined(BUILD_CT_TIOVX_INTERNAL)
 TESTCASE(tivxObjDescBoundary)
 TESTCASE(tivxInternalObjArray)
+TESTCASE(tivxInternalApis)
 #endif
