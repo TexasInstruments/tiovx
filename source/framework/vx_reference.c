@@ -313,20 +313,28 @@ vx_status ownAllocReferenceBufferGeneric(vx_reference ref)
                     status = tivxMemBufferAlloc(
                         mem_ptr, mem_size,
                         (vx_enum)TIVX_MEM_EXTERNAL);
-                }
 
-                if ((vx_status)VX_SUCCESS == status)
-                {
-                    if(mem_ptr->host_ptr==(uint64_t)(uintptr_t)NULL)
+                    if ((vx_status)VX_SUCCESS == status)
                     {
-                        /* could not allocate memory */
-                        VX_PRINT(VX_ZONE_ERROR,"Could not allocate array memory\n");
-                        status = (vx_status)VX_ERROR_NO_MEMORY;
+                        if(mem_ptr->host_ptr==(uint64_t)(uintptr_t)NULL)
+                        {
+                            /* could not allocate memory */
+                            VX_PRINT(VX_ZONE_ERROR,"Could not allocate array memory\n");
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
+                        }
+                        else
+                        {
+                            mem_ptr->shared_ptr = tivxMemHost2SharedPtr(
+                                mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                            if(ref->type == VX_TYPE_USER_DATA_OBJECT)
+                            {
+                                memset((vx_uint8 *)(uintptr_t)mem_ptr->host_ptr, 0, mem_size);
+                            }
+                        }
                     }
                     else
                     {
-                        mem_ptr->shared_ptr = tivxMemHost2SharedPtr(
-                            mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                        VX_PRINT(VX_ZONE_ERROR,"Memory allocation failed\n");
                     }
                 }
             }
