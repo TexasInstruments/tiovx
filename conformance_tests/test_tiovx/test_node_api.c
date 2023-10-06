@@ -87,8 +87,21 @@ TEST(tivxNodeApi, negativeTesttivxCreateNodeByStructure)
     vx_graph graph = NULL;
     vx_remap table = NULL;
     vx_reference prms[]= {NULL};
+    vx_enum kernel_id = 10;
 
-    ASSERT(NULL == tivxCreateNodeByKernelName(graph, TIVX_KERNEL_SCALAR_SOURCE_NAME, prms,dimof(prms)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxAllocateUserKernelId(context, &kernel_id));
+    vx_kernel kernel = vxAddUserKernel(
+                    context,
+                    "com.ti.test_kernels.cmd_timeout_test",
+                    kernel_id,
+                    NULL,
+                    3,
+                    NULL,
+                    NULL,
+                    NULL);
+
+    ASSERT(NULL == tivxCreateNodeByKernelRef(graph, kernel, prms,3));
+    VX_CALL(vxReleaseKernel(&kernel));
 }
 
 TEST(tivxNodeApi, negativeTesttivxCreateNodeByStructure1)
@@ -99,6 +112,7 @@ TEST(tivxNodeApi, negativeTesttivxCreateNodeByStructure1)
 
     ASSERT_VX_OBJECT(image   = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
     vx_reference params[2] =
     {
         (vx_reference)image
@@ -117,4 +131,3 @@ TESTCASE_TESTS(
     negativeTesttivxCreateNodeByStructure,
     negativeTesttivxCreateNodeByStructure1
 )
-
