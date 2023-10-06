@@ -108,7 +108,21 @@ TEST(tivxInternalApis, negativeTestInternalReference)
     ownReferenceSetScope(ref,&context->base);
 }
 
+TEST(tivxInternalApis, negativeTestInternalValidReference)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image;
+    vx_reference ref;
+    image = (vx_image)ownCreateReference(context, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, &context->base);
+    ref = (vx_reference)image;
+    ref->context = NULL;
+    ASSERT(vx_false_e==ownIsValidReference((vx_reference)image));
+    ref->context = context;
+    VX_CALL(vxReleaseImage(&image));
+}
+
 TESTCASE_TESTS(tivxInternalApis,
         negativeTestInternalNode,
-        negativeTestInternalReference
+        negativeTestInternalReference,
+        negativeTestInternalValidReference
         )
