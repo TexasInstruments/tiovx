@@ -43,16 +43,6 @@ typedef struct _vx_scalar
 
 } tivx_scalar_t;
 
-
-/*!
- * \brief Print scalar info
- *
- * \param scalar [in] scalar
- *
- * \ingroup group_vx_scalar
- */
-void ownPrintScalar(vx_scalar scalar);
-
 #ifdef __cplusplus
 }
 #endif

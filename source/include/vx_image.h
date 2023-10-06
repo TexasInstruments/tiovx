@@ -69,26 +69,6 @@ typedef struct _vx_image
     uint32_t channel_plane;
 } tivx_image_t;
 
-
-
-/*!
- * \brief Print image patch addressing info
- *
- * \param addr [in] Image patch addressing info
- *
- * \ingroup group_vx_image
- */
-void ownPrintImageAddressing(const vx_imagepatch_addressing_t *addr);
-
-/*!
- * \brief Print image info
- *
- * \param image [in] Image
- *
- * \ingroup group_vx_image
- */
-void ownPrintImage(vx_image image);
-
 /*!
  * \brief function to initialize virtual image's parameters
  *

@@ -189,12 +189,6 @@ vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype);
  */
 vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype);
 
-/*! \brief Print reference information
- * \param [in] ref The reference.
- * \ingroup group_vx_reference
- */
-void ownPrintReference(vx_reference ref);
-
 /*! \brief This returns true if the type is within the definition of types in OpenVX.
  * \note VX_TYPE_INVALID is not valid for determining a type.
  * \param [in] type The \ref vx_type_e value.

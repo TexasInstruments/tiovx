@@ -606,18 +606,6 @@ vx_bool ownIsValidSpecificReference(vx_reference ref, vx_enum type)
     return ret;
 }
 
-
-void ownPrintReference(vx_reference ref)
-{
-    if (ref != NULL)
-    {
-        VX_PRINT(VX_ZONE_REFERENCE, "vx_reference: magic:%08x type:%08x count:[%u,%u]\n", ref, ref->magic, ref->type, ref->external_count, ref->internal_count);
-    }
-}
-
-
-
-
 vx_bool ownIsValidType(vx_enum type)
 {
     vx_bool ret = (vx_bool)vx_false_e;

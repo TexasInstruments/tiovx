@@ -705,51 +705,6 @@ static vx_status ownCopyAndMapCheckParams(
     return status;
 }
 
-void ownPrintImageAddressing(const vx_imagepatch_addressing_t *addr)
-{
-    if (addr != NULL)
-    {
-        VX_PRINT(VX_ZONE_IMAGE, "dim={%u,%u} stride={%d,%d} scale={%u,%u} step={%u,%u}\n",
-                addr->dim_x, addr->dim_y,
-                addr->stride_x, addr->stride_y,
-                addr->scale_x, addr->scale_y,
-                addr->step_x, addr->step_y);
-    }
-}
-
-void ownPrintImage(vx_image image)
-{
-    vx_uint32 p = 0;
-    volatile vx_char df_image[5];
-    tivx_obj_desc_image_t *obj_desc = NULL;
-
-    obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
-
-    tivx_obj_desc_strncpy(df_image, (volatile char *)&obj_desc->format, 4);
-    df_image[4] = '\0';
-    ownPrintReference(&image->base);
-    VX_PRINT(VX_ZONE_IMAGE,
-            "vx_image:%s %ux%u (%s), planes:%d\n",
-            df_image,
-            obj_desc->width,
-            obj_desc->height,
-            ((vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_UNIFORM)?"CONSTANT":"MUTABLE",
-            obj_desc->planes
-        );
-    VX_PRINT(VX_ZONE_IMAGE,"\n");
-    for (p = 0; p < obj_desc->planes; p++)
-    {
-        VX_PRINT(VX_ZONE_IMAGE,"Plane %d: host_ptr:%p, shared_ptr:%p, mem_size:%d B\n",
-            p,
-            (void*)(uintptr_t)obj_desc->mem_ptr[p].host_ptr,
-            (void*)(uintptr_t)obj_desc->mem_ptr[p].shared_ptr,
-            obj_desc->mem_size[p]);
-        ownPrintImageAddressing(&obj_desc->imagepatch_addr[p]);
-        VX_PRINT(VX_ZONE_IMAGE,"\n");
-    }
-}
-
-
 VX_API_ENTRY vx_image VX_API_CALL vxCreateImage(vx_context context, vx_uint32 width, vx_uint32 height, vx_df_image format)
 {
     vx_image image;
