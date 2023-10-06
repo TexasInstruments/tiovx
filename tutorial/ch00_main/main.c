@@ -64,6 +64,10 @@
 #include <TI/tivx.h>
 #include <vx_tutorial.h>
 
+#ifndef DISABLE_APP_UTILS_DEP
+#include <utils/app_init/include/app_init.h>
+#endif
+
 static void show_usage(int argc, char* argv[])
 {
     printf(" \n");
@@ -81,7 +85,11 @@ static void show_usage(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+#ifndef DISABLE_APP_UTILS_DEP
+    appInit();
+#else
     tivxInit();
+#endif
 
     if(argc <= 1)
     {
@@ -117,5 +125,9 @@ int main(int argc, char* argv[])
             }
         }
     }
+#ifndef DISABLE_APP_UTILS_DEP
+    appDeInit();
+#else
     tivxDeInit();
+#endif
 }
