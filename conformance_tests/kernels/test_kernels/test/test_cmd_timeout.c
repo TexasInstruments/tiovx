@@ -571,7 +571,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testValidTimeoutSet, TestArg, TEST_PARAMS)
     /* Set the graph and node timeout values to be 10 milli-seconds. */
     vxSetTimeoutVal = 10;
 
-    /* Initialize the timeout to a valid timeout value less tha vxSetTimeoutVal. */
+    /* Initialize the timeout to a valid timeout value less than vxSetTimeoutVal. */
     cfgParams                    = &objCntxt.cfgParams;
     objCntxt.vxContext           = context_->vx_context_;
     cfgParams->createCmdTimeout  = 2;
@@ -684,7 +684,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCreateFail, TestArg, TEST_PARAMS)
     vx_status                   vxStatus;
     int32_t                     status;
 
-    /* Initialize the timeout to a valid timeout value less tha vxSetTimeoutVal. */
+    /* Initialize the timeout to a valid timeout value less than vxSetTimeoutVal. */
     cfgParams                    = &objCntxt.cfgParams;
     objCntxt.vxContext           = context_->vx_context_;
     cfgParams->createCmdTimeout  = 2;
@@ -743,6 +743,22 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCreateFail, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
+    /* Update the node timeout value to something that will now pass. */
+    vxSetTimeoutVal = 5;
+
+    /* Set a valid timeout attribute.  */
+    vxStatus = vxSetNodeAttribute(objCntxt.vxCmdTestNode, TIVX_NODE_TIMEOUT,
+                                   &vxSetTimeoutVal, sizeof(vx_uint32));
+
+    /* Verify the graph after timeout update. */
+    vxStatus = vxVerifyGraph(objCntxt.vxGraph);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxVerifyGraph() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
     /* Delay the exit. */
     TIVX_TEST_WAIT_BEFORE_EXIT();
 
@@ -777,7 +793,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutDeleteFail, TestArg, TEST_PARAMS)
     vx_status                   vxStatus;
     int32_t                     status;
 
-    /* Initialize the timeout to a valid timeout value less tha vxSetTimeoutVal. */
+    /* Initialize the timeout to a valid timeout value less than vxSetTimeoutVal. */
     cfgParams                    = &objCntxt.cfgParams;
     objCntxt.vxContext           = context_->vx_context_;
     cfgParams->createCmdTimeout  = 0;
