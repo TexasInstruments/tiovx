@@ -348,6 +348,7 @@ TEST_WITH_ARG(tivxMultiply, testFuzzy, fuzzy_arg, MUL_FUZZY_ARGS(SATURATE), MUL_
 
 TEST_WITH_ARG(tivxMultiply, testMultiplySupernode, fuzzy_arg, SUPERNODE_ARGS(SATURATE), SUPERNODE_ARGS(WRAP))
 {
+    #ifdef BUILD_BAM
     vx_image src1, src2, src3, src4, dst, virt1, virt2;
     vx_image dst_graph2, virt1_graph2, virt2_graph2;
     vx_graph graph1, graph2;
@@ -506,6 +507,7 @@ TEST_WITH_ARG(tivxMultiply, testMultiplySupernode, fuzzy_arg, SUPERNODE_ARGS(SAT
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

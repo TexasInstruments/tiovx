@@ -104,8 +104,10 @@ vx_status ownObjectInit(void)
             TIVX_USER_DATA_OBJECT_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isRawImageUse,
             TIVX_RAW_IMAGE_MAX_OBJECTS);
+        #if defined(BUILD_BAM)
         ownInitUseFlag(g_tivx_objects.isSuperNodeUse,
             TIVX_SUPER_NODE_MAX_OBJECTS);
+        #endif
         ownInitUseFlag(g_tivx_objects.isConvolutionUse,
             TIVX_CONVOLUTION_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isDelayUse,
@@ -199,12 +201,14 @@ vx_status ownObjectDeInit(void)
         {
             VX_PRINT(VX_ZONE_ERROR, "Is raw image use failed, index: %d\n", error_index);
         }
+        #if defined(BUILD_BAM)
         status = ownCheckUseFlag(g_tivx_objects.isSuperNodeUse,
             TIVX_SUPER_NODE_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Is super node use failed, index: %d\n", error_index);
         }
+        #endif
         status = ownCheckUseFlag(g_tivx_objects.isConvolutionUse,
             TIVX_CONVOLUTION_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
@@ -349,12 +353,14 @@ vx_reference ownObjectAlloc(vx_enum type)
                     TIVX_RAW_IMAGE_MAX_OBJECTS, (uint32_t)sizeof(tivx_raw_image_t),
                     "TIVX_RAW_IMAGE_MAX_OBJECTS");
                 break;
+            #if defined(BUILD_BAM)
             case TIVX_TYPE_SUPER_NODE:
                 ref = (vx_reference)ownAllocObject(
                     (uint8_t *)g_tivx_objects.super_node, g_tivx_objects.isSuperNodeUse,
                     TIVX_SUPER_NODE_MAX_OBJECTS, (uint32_t)sizeof(tivx_super_node_t),
                     "TIVX_SUPER_NODE_MAX_OBJECTS");
                 break;
+            #endif    
             case (vx_enum)VX_TYPE_CONVOLUTION:
                 ref = (vx_reference)ownAllocObject(
                     (uint8_t *)g_tivx_objects.convolution,
@@ -590,6 +596,7 @@ vx_status ownObjectFree(vx_reference ref)
                         VX_PRINT(VX_ZONE_ERROR, "Free raw image failed\n");
                     }
                     break;
+                #if defined(BUILD_BAM)
                 case TIVX_TYPE_SUPER_NODE:
                     status = ownFreeObject((uint8_t *)ref,
                         (uint8_t *)g_tivx_objects.super_node, g_tivx_objects.isSuperNodeUse,
@@ -600,6 +607,7 @@ vx_status ownObjectFree(vx_reference ref)
                         VX_PRINT(VX_ZONE_ERROR, "Free super node failed\n");
                     }
                     break;
+                #endif
                 case (vx_enum)VX_TYPE_CONVOLUTION:
                     status = ownFreeObject((uint8_t *)ref,
                         (uint8_t *)g_tivx_objects.convolution,

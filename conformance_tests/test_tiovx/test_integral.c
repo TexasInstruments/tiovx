@@ -168,6 +168,7 @@ TEST_WITH_ARG(tivxIntegral, testIntegralImageSupernode, Arg,
     SUPERNODE_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 2;
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst_image = 0, virt_image = 0;
@@ -229,6 +230,7 @@ TEST_WITH_ARG(tivxIntegral, testIntegralImageSupernode, Arg,
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

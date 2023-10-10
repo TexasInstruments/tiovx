@@ -256,6 +256,7 @@ TEST_WITH_ARG(tivxChannelCombine, testChannelCombineSingleSupernode, Arg,
     ChannelCombineSupernode_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 1;
     vx_context context = context_->vx_context_;
     vx_image src_image[4] = {0, 0, 0, 0};
@@ -323,6 +324,7 @@ TEST_WITH_ARG(tivxChannelCombine, testChannelCombineSingleSupernode, Arg,
 
     printPerformance(perf_super_node, arg_->width*arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 TEST_WITH_ARG(tivxChannelCombine, testBasicTest, Arg,

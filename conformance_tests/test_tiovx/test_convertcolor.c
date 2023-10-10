@@ -605,6 +605,7 @@ TEST_WITH_ARG(tivxColorConvert, testColConvertSupernode, format_arg,
               CVT_CASE(IYUV, NV12, 0, 0),
               )
 {
+    #ifdef BUILD_BAM
     int node_count = 2;
     int srcformat = arg_->srcformat;
     int dstformat = arg_->dstformat;
@@ -711,6 +712,7 @@ TEST_WITH_ARG(tivxColorConvert, testColConvertSupernode, format_arg,
 
     printPerformance(perf_super_node, width * height, "SN");
     printPerformance(perf_graph, width*height, "G");
+    #endif
 }
 
 TEST_WITH_ARG(tivxColorConvert, testColConvertSupernodeSingleNode, format_arg,
@@ -750,6 +752,7 @@ TEST_WITH_ARG(tivxColorConvert, testColConvertSupernodeSingleNode, format_arg,
               CVT_CASE(YUYV, IYUV, 0, 0),
               )
 {
+    #ifdef BUILD_BAM
     int node_count = 1;
     int srcformat = arg_->srcformat;
     int dstformat = arg_->dstformat;
@@ -849,6 +852,7 @@ TEST_WITH_ARG(tivxColorConvert, testColConvertSupernodeSingleNode, format_arg,
 
     printPerformance(perf_super_node, width * height, "SN");
     printPerformance(perf_graph, width*height, "G");
+    #endif
 }
 
 TEST_WITH_ARG(tivxColorConvert, testColConvertChannelExtractSupernode, new_format_arg,
@@ -892,6 +896,7 @@ TEST_WITH_ARG(tivxColorConvert, testColConvertChannelExtractSupernode, new_forma
               CVTT_CASE(IYUV, YUV4, VX_CHANNEL_V),
               )
 {
+    #ifdef BUILD_BAM
     int node_count = 2;
     int srcformat = arg_->srcformat;
     int virtformat = arg_->dstformat;
@@ -1006,6 +1011,7 @@ TEST_WITH_ARG(tivxColorConvert, testColConvertChannelExtractSupernode, new_forma
 
     printPerformance(perf_super_node, width * height, "SN");
     printPerformance(perf_graph, width*height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

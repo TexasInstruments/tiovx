@@ -155,6 +155,7 @@ TEST_WITH_ARG(tivxNot, testSizes, size_arg, NOT_SIZE_ARGS)
 
 TEST_WITH_ARG(tivxNot, testNotSupernode, size_arg, SUPERNODE_NOT_SIZE_ARGS)
 {
+    #ifdef BUILD_BAM
     int node_count = 2;
     vx_image src, dst, virt;
     CT_Image ref_src, refdst, vxdst, virt_ctimage;
@@ -232,6 +233,7 @@ TEST_WITH_ARG(tivxNot, testNotSupernode, size_arg, SUPERNODE_NOT_SIZE_ARGS)
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

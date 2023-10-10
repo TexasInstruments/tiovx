@@ -340,6 +340,7 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testExtractCombineSupernode, Arg,
     ChannelExtractCombineSupernode_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 4;
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst_image = 0, virt1 = 0, virt2 = 0, virt3 = 0;
@@ -453,12 +454,14 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testExtractCombineSupernode, Arg,
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 TEST_WITH_ARG(tivxChannelExtractCombine, testCombineExtractSupernode, Arg,
     ChannelExtractCombineSupernode_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 4;
     vx_context context = context_->vx_context_;
     vx_image src_image[3] = {0, 0, 0};
@@ -551,6 +554,7 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testCombineExtractSupernode, Arg,
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 
@@ -558,6 +562,7 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testChannelExtractSupernode, Arg,
     ChannelExtractSupernode_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 1;
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst_image = 0;
@@ -638,6 +643,7 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testChannelExtractSupernode, Arg,
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

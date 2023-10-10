@@ -221,6 +221,7 @@ TEST_WITH_ARG(tivxMagnitude, testMagnitudeSupernode, format_arg,
               MAG_TEST_CASE(Graph, Random, S16),
               )
 {
+    #ifdef BUILD_BAM
     int node_count = 3;
     int dxformat = arg_->format;
     int mode = arg_->mode;
@@ -351,6 +352,7 @@ TEST_WITH_ARG(tivxMagnitude, testMagnitudeSupernode, format_arg,
 
     printPerformance(perf_super_node, width * height, "SN");
     printPerformance(perf_graph, width * height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

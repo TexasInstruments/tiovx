@@ -355,6 +355,7 @@ TEST_WITH_ARG(tivxLUT, testLutSupernode, Arg,
     SUPERNODE_LUT_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 2;
     vx_enum data_type = arg_->data_type;
     vx_context context = context_->vx_context_;
@@ -464,6 +465,7 @@ TEST_WITH_ARG(tivxLUT, testLutSupernode, Arg,
 
     ct_free_mem(lut2_data);
     ct_free_mem(lut1_data);
+    #endif
 }
 
 TEST(tivxLUT, testCopyLUT)

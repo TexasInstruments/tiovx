@@ -264,6 +264,7 @@ TEST_WITH_ARG(tivxThreshold, testThresholdSupernode, format_arg,
               THRESHOLD_CASE(Graph, RANGE),
               )
 {
+    #ifdef BUILD_BAM
     int node_count = 2;
     int format = VX_DF_IMAGE_U8;
     int ttype = arg_->ttype;
@@ -388,6 +389,7 @@ TEST_WITH_ARG(tivxThreshold, testThresholdSupernode, format_arg,
         printPerformance(perf_super_node, width * height, "SN");
         printPerformance(perf_graph, width * height, "G");
     }
+    #endif
 }
 
 #ifdef BUILD_BAM

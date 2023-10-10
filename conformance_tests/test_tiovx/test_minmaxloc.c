@@ -604,6 +604,7 @@ TEST_WITH_ARG(tivxMinMaxLoc, testMinMaxLocSupernode, format_arg,
               MINMAXLOC_TEST_CASE(Graph, S16),
               )
 {
+    #ifdef BUILD_BAM
     int node_count = 3;
     const int MAX_CAP = 300;
     int format = arg_->format;
@@ -826,6 +827,8 @@ TEST_WITH_ARG(tivxMinMaxLoc, testMinMaxLocSupernode, format_arg,
 
     if(ptbuf)
         ct_free_mem(ptbuf);
+
+    #endif
 }
 
 #ifdef BUILD_BAM

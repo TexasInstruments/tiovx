@@ -1952,12 +1952,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 }
             }
 
+            #if defined(BUILD_BAM)
+
             if(status == (vx_status)VX_SUCCESS)
             {
                 /* Configure graph processing to account for any super nodes
                  */
                 status = ownGraphSuperNodeConfigure(graph);
             }
+
+            #endif
 
             if(status == (vx_status)VX_SUCCESS)
             {

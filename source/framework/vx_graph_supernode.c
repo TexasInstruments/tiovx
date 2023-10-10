@@ -60,6 +60,8 @@
 *
 */
 
+#if defined(BUILD_BAM)
+
 #include <vx_internal.h>
 
 static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node);
@@ -534,3 +536,5 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
 
     return status;
 }
+
+#endif

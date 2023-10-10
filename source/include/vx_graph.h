@@ -285,6 +285,8 @@ int32_t ownGraphGetFreeNodeIndex(vx_graph graph);
  */
 vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index);
 
+#if defined(BUILD_BAM)
+
 /*! \brief Add's a super node to a graph
  *
  * \param graph [in] graph object
@@ -295,6 +297,8 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index);
  * \ingroup group_vx_graph
  */
 vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node);
+
+#endif
 
 /*! \brief Remove a node from a graph
  *
@@ -343,6 +347,8 @@ vx_uint32 ownGraphGetPipeDepth(vx_graph graph);
  */
 vx_bool ownGraphCheckIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference ref2);
 
+#if defined(BUILD_BAM)
+
 /*! \brief Perform topological sort of graph nodes
  *
  * \param context    [in] context to use while searching
@@ -376,6 +382,8 @@ void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context, const vx_nod
  * \ingroup group_vx_graph
  */
 vx_status ownGraphSuperNodeConfigure(vx_graph graph);
+
+#endif
 
 /*! \brief Mark graph to be reverified
  * \ingroup group_vx_graph

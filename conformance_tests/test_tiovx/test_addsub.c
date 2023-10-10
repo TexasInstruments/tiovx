@@ -280,6 +280,7 @@ TEST_WITH_ARG(tivxAddSub, testFuzzy, fuzzy_arg, ARITHM_FUZZY_ARGS(Add), ARITHM_F
 
 TEST_WITH_ARG(tivxAddSub, testAddSubSupernode, fuzzy_arg, SUPERNODE_PARAMETERS(Add), SUPERNODE_PARAMETERS(Subtract))
 {
+#ifdef BUILD_BAM
     int node_count = 3;
     vx_image src1, src2, src3, src4, dst, virt1, virt2;
     vx_graph graph;
@@ -359,6 +360,7 @@ TEST_WITH_ARG(tivxAddSub, testAddSubSupernode, fuzzy_arg, SUPERNODE_PARAMETERS(A
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+#endif
 }
 
 #ifdef BUILD_BAM

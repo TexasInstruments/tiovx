@@ -234,6 +234,7 @@ TEST_WITH_ARG(tivxConvertDepth, BitExact, cvt_depth_arg, CVT_ARGS)
 
 TEST_WITH_ARG(tivxConvertDepth, testConvertDepthSupernode, cvt_depth_arg, SUPERNODE_CVT_ARGS)
 {
+    #ifdef BUILD_BAM
     int node_count = 2;
     vx_image src, dst, virt;
     CT_Image ref_src, refdst, vxdst, virt_ctimage;
@@ -312,6 +313,7 @@ TEST_WITH_ARG(tivxConvertDepth, testConvertDepthSupernode, cvt_depth_arg, SUPERN
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

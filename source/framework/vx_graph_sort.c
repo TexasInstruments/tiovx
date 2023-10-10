@@ -188,6 +188,8 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
     }
 }
 
+#if defined(BUILD_BAM)
+
 void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context,
     tivx_super_node super_node, uint32_t num_nodes, vx_bool *is_continuous)
 {
@@ -313,3 +315,5 @@ void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context,
         }
     }
 }
+
+#endif

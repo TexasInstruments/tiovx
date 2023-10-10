@@ -1343,12 +1343,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
         switch (attribute)
         {
             case (vx_enum)VX_NODE_PERFORMANCE:
+                #if defined(BUILD_BAM)
                 if(node->super_node != NULL)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"'node' is part of super node so VX_NODE_PERFORMANCE query is not available. Try to query the supernode instead.\n");
                     status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     break;
                 }
+                #endif
                 if (VX_CHECK_PARAM(ptr, size, vx_perf_t, 0x3U))
                 {
                     memcpy(ptr, &node->perf, size);
@@ -1360,12 +1362,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 break;
             case (vx_enum)VX_NODE_STATUS:
+                #if defined(BUILD_BAM)
                 if(node->super_node != NULL)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"'node' is part of super node so VX_NODE_STATUS query is not available. Try to query the supernode instead.\n");
                     status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     break;
                 }
+                #endif
                 if (VX_CHECK_PARAM(ptr, size, vx_status, 0x3U))
                 {
                     /* returns  status for pipeline index 0,

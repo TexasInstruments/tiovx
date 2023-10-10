@@ -877,6 +877,7 @@ TEST_WITH_ARG(tivxSobel3x3, testSobel3x3Supernode, Filter_Arg,
     SUPERNODE_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 1;
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst_x_image = 0, dst_y_image = 0;
@@ -939,12 +940,14 @@ TEST_WITH_ARG(tivxSobel3x3, testSobel3x3Supernode, Filter_Arg,
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeMultiNode, Filter_Arg,
     SUPERNODE_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 5;
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst1_x_image = 0, dst1_y_image = 0;
@@ -1139,12 +1142,14 @@ TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeMultiNode, Filter_Arg,
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeMultiNode2, Filter_Arg,
     SUPERNODE_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 5;
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst1_x_image = 0, dst1_y_image = 0;
@@ -1286,12 +1291,14 @@ TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeMultiNode2, Filter_Arg,
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeMultiNode3, Filter_Arg,
     SUPERNODE_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 3;
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst1 = 0, dst2 = 0;
@@ -1397,12 +1404,14 @@ TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeMultiNode3, Filter_Arg,
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeOptionalParametersX, Filter_Arg,
     SUPERNODE_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 1;
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst_x_image = 0;
@@ -1460,12 +1469,14 @@ TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeOptionalParametersX, Filter_Arg
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeOptionalParametersY, Filter_Arg,
     SUPERNODE_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 1;
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst_y_image = 0;
@@ -1523,12 +1534,14 @@ TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeOptionalParametersY, Filter_Arg
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeBranches, Filter_Arg,
     SUPERNODE_PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     /*this test case is to test the variying block width, heights in different branches of the graph*/
     int node_count = 7;
     vx_context context = context_->vx_context_;
@@ -1709,6 +1722,7 @@ TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeBranches, Filter_Arg,
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

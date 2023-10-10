@@ -60,6 +60,8 @@
 *
 */
 
+#if defined(BUILD_BAM)
+
 #include <vx_internal.h>
 
 static vx_bool ownIsValidCreateParams(vx_graph graph, vx_node nodes[], uint32_t num_nodes);
@@ -412,3 +414,5 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTileSize(tivx_super_node supe
     }
     return status;
 }
+
+#endif

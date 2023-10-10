@@ -322,6 +322,7 @@ TEST_WITH_ARG(tivxPhase, testPhaseSupernode, format_arg,
               PHASE_TEST_CASE(Graph, Random, S16),
               )
 {
+    #ifdef BUILD_BAM
     int node_count = 5;
     int dxformat = arg_->format;
     int mode = arg_->mode;
@@ -543,12 +544,14 @@ TEST_WITH_ARG(tivxPhase, testPhaseSupernode, format_arg,
     printPerformance(perf_super_node_1, width * height, "SN1");
     printPerformance(perf_super_node_2, width * height, "SN2");
     printPerformance(perf_graph, width * height, "G");
+    #endif
 }
 
 TEST_WITH_ARG(tivxPhase, testPhaseSupernode2, format_arg,
               PHASE_TEST_CASE(Graph, Random, S16),
               )
 {
+    #ifdef BUILD_BAM
     int node_count = 5;
     int dxformat = VX_DF_IMAGE_U8;
     int mode = arg_->mode;
@@ -694,6 +697,7 @@ TEST_WITH_ARG(tivxPhase, testPhaseSupernode2, format_arg,
 
     printPerformance(perf_super_node_1, width * height, "SN1");
     printPerformance(perf_graph, width * height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

@@ -472,6 +472,7 @@ static void ownTargetNodeDescNodeExecuteTargetKernel(
         }
 
         {
+            #if defined(BUILD_BAM)
             if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_SUPERNODE) ==
                 (vx_bool)vx_true_e)
             {
@@ -481,6 +482,7 @@ static void ownTargetNodeDescNodeExecuteTargetKernel(
                     1);
             }
             else
+            #endif
             {
                 ownTargetSetTimestamp(node_obj_desc, params);
                 node_obj_desc->exe_status |= (uint32_t)ownTargetKernelExecute(target_kernel_instance, params,
@@ -834,6 +836,7 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
             /* copy border mode also in the target_kernel_instance */
             tivx_obj_desc_memcpy(&target_kernel_instance->border_mode, &node_obj_desc->border_mode, (uint32_t)sizeof(vx_border_t));
 
+            #if defined(BUILD_BAM)
             if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_SUPERNODE) ==
                 (vx_bool)vx_true_e)
             {
@@ -843,6 +846,7 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
                     params, 1);
             }
             else
+            #endif
             {
                 status = ownTargetKernelCreate(target_kernel_instance,
                     params, (uint16_t)node_obj_desc->num_params);
@@ -905,6 +909,7 @@ static vx_status ownTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_ob
                     params[i] = ownObjDescGet(node_obj_desc->data_id[i]);
                 }
 
+                #if defined(BUILD_BAM)
                 if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_SUPERNODE) ==
                     (vx_bool)vx_true_e)
                 {
@@ -913,6 +918,7 @@ static vx_status ownTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_ob
                     tivxCheckStatus(&status, ownTargetKernelDelete(target_kernel_instance, params, 1));
                 }
                 else
+                #endif
                 {
                     tivxCheckStatus(&status, ownTargetKernelDelete(target_kernel_instance,
                         params, (uint16_t)node_obj_desc->num_params));

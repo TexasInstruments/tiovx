@@ -251,6 +251,7 @@ TEST_WITH_ARG(tivxEqualizeHistogram, testEqualizeHistogramSupernode, format_arg,
               EQHIST_TEST_CASE(Graph, U8),
               )
 {
+    #ifdef BUILD_BAM
     int node_count = 2;
     int format = arg_->format;
     int mode = arg_->mode;
@@ -332,6 +333,7 @@ TEST_WITH_ARG(tivxEqualizeHistogram, testEqualizeHistogramSupernode, format_arg,
 
     printPerformance(perf_super_node, width * height, "SN");
     printPerformance(perf_graph, width * height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

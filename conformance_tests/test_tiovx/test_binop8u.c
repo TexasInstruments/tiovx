@@ -234,6 +234,7 @@ TEST_WITH_ARG(tivxBinOp8u, testFuzzy, fuzzy_arg, BINOP_SIZE_ARGS(AbsDiff), BINOP
 
 TEST_WITH_ARG(tivxBinOp8u, testBinOp8uSupernode, fuzzy_arg, SUPERNODE_PARAMETERS(AbsDiff), SUPERNODE_PARAMETERS(And), SUPERNODE_PARAMETERS(Or), SUPERNODE_PARAMETERS(Xor))
 {
+    #ifdef BUILD_BAM
     int node_count = 3;
     vx_image src1, src2, src3, src4, dst, virt1, virt2;
     vx_graph graph;
@@ -313,6 +314,7 @@ TEST_WITH_ARG(tivxBinOp8u, testBinOp8uSupernode, fuzzy_arg, SUPERNODE_PARAMETERS
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

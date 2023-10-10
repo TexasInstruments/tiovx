@@ -235,6 +235,7 @@ TEST_WITH_ARG(tivxMeanStdDev, testMeanStdDevSupernode, format_arg,
               MEANSTDDEV_TEST_CASE(Graph, U8),
               )
 {
+    #ifdef BUILD_BAM
     int node_count = 2;
     double mean_tolerance = 1e-4;
     double stddev_tolerance = 1e-4;
@@ -342,6 +343,7 @@ TEST_WITH_ARG(tivxMeanStdDev, testMeanStdDevSupernode, format_arg,
 
     printPerformance(perf_super_node, width * height, "SN");
     printPerformance(perf_graph, width * height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

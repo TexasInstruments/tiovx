@@ -585,6 +585,7 @@ TEST_WITH_ARG(tivxNonLinearFilter, testNonLinearFilterSupernode, Filter_Arg,
     FILTER_PARAMETERS
     )
 {
+    #ifdef BUILD_BAM
     int node_count = 2;
     vx_context context = context_->vx_context_;
     vx_image src0_image = 0, dst0_image = 0, virt_image = 0;
@@ -675,12 +676,14 @@ TEST_WITH_ARG(tivxNonLinearFilter, testNonLinearFilterSupernode, Filter_Arg,
 
     printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 TEST_WITH_ARG(tivxNonLinearFilter, testNonLinearFilterSupernodeThreadTest, Filter_Arg,
     FILTER_PARAMETERS
     )
 {
+    #ifdef BUILD_BAM
     int node_count = 2;
     vx_context context = context_->vx_context_;
     vx_image src0_image1 = 0, src0_image2 = 0, dst0_image = 0;
@@ -768,6 +771,7 @@ TEST_WITH_ARG(tivxNonLinearFilter, testNonLinearFilterSupernodeThreadTest, Filte
     printPerformance(perf_super_node1, arg_->width * arg_->height, "SN");
     printPerformance(perf_super_node2, arg_->width * arg_->height, "SN");
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM

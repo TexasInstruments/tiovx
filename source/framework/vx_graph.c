@@ -78,6 +78,7 @@ static vx_status ownDestructGraph(vx_reference ref)
             }
         }
 
+        #if defined(BUILD_BAM)
         for(i=0; i<graph->num_supernodes; i++)
         {
             status1 = ownReleaseReferenceInt((vx_reference *)&graph->supernodes[i], TIVX_TYPE_SUPER_NODE, (vx_enum)VX_INTERNAL, NULL);
@@ -91,6 +92,7 @@ static vx_status ownDestructGraph(vx_reference ref)
             graph->supernodes[i] = NULL;
         }
         graph->num_supernodes = 0;
+        #endif
     }
 
     while (graph->num_nodes != 0U)
@@ -226,6 +228,7 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
     return status;
 }
 
+#if defined(BUILD_BAM)
 vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -254,6 +257,7 @@ vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node)
 
     return status;
 }
+#endif
 
 vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
 {

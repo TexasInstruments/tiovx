@@ -740,6 +740,7 @@ TEST_WITH_ARG(tivxCanny, testCannySupernode, canny_arg,
     CANNY_ARG(7, L2, 100, 120, lena_gray)
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 3;
     uint32_t total, count;
     vx_image src, dst, virt1, virt2;
@@ -845,6 +846,7 @@ TEST_WITH_ARG(tivxCanny, testCannySupernode, canny_arg,
 
     printPerformance(perf_super_node, lena->width * lena->height, "SN");
     printPerformance(perf_graph, lena->width*lena->height, "G");
+    #endif
 }
 
 TEST(tivxCanny, testRobustness)

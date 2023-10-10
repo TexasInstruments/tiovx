@@ -442,6 +442,7 @@ TEST_WITH_ARG(tivxHistogram, testHistogramSupernode, format_arg,
               HIST_TEST_CASE(Graph, U8),
               )
 {
+    #ifdef BUILD_BAM
     int node_count = 2;
     int format = arg_->format;
     int mode = arg_->mode;
@@ -519,7 +520,7 @@ TEST_WITH_ARG(tivxHistogram, testHistogramSupernode, format_arg,
 
     printPerformance(perf_super_node, width_src * height_src, "SN");
     printPerformance(perf_graph, width_src * height_src, "G");
-
+    #endif
 }
 
 #ifdef BUILD_BAM

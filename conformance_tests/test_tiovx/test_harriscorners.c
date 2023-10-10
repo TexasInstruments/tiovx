@@ -783,6 +783,7 @@ TEST_WITH_ARG(tivxHarrisCorners, testHarrisCornersSupernode, Arg,
     PARAMETERS
 )
 {
+    #ifdef BUILD_BAM
     int node_count = 3;
     vx_context context = context_->vx_context_;
     vx_image input_image0 = 0, input_image1 = 0, input_virt1 = 0, input_virt2 = 0, input_virt3 = 0, input_virt4 = 0;
@@ -943,6 +944,7 @@ TEST_WITH_ARG(tivxHarrisCorners, testHarrisCornersSupernode, Arg,
     printPerformance(perf_super_node_1, input0->width * input0->height, "SN1");
     printPerformance(perf_super_node_2, input1->width * input1->height, "SN2");
     printPerformance(perf_graph, input0->width * input0->height, "G");
+    #endif
 }
 
 #ifdef BUILD_BAM
