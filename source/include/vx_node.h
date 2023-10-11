@@ -95,6 +95,12 @@ typedef struct _vx_node {
     /*! \brief flag to indicate whether event is using context event queue */
     vx_bool is_context_event;
 
+    /*! \brief flag to indicate whether node has timed out */
+    vx_bool is_timed_out;
+
+    /*! \brief flag to indicate if node has been initialized */
+    vx_bool is_initialized;
+
     /*! \brief number of buffer to allocate at a node parameter
      *    Valid only for output parameters and when graph containing the
      *    node is pipelined.

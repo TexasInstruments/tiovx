@@ -353,6 +353,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testDefaultTimeout, TestArg, TEST_PARAMS)
     TestObjContext              objCntxt;
     tivx_cmd_timeout_params_t  *cfgParams;
     vx_uint32                   vxTimeoutVal;
+    vx_bool                     vxIsTimedOut;
     uint32_t                    testFail = 0;
     vx_status                   vxStatus;
     int32_t                     status;
@@ -410,12 +411,48 @@ TEST_WITH_ARG(tivxCmdTimeout, testDefaultTimeout, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
+    /* Query the node timeout and validate. */
+    vxStatus = vxQueryNode(objCntxt.vxCmdTestNode, TIVX_NODE_IS_TIMED_OUT,
+                           &vxIsTimedOut, sizeof(vx_bool));
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryNode() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* The node should not have timed out. */
+    if (vxIsTimedOut != (vx_bool)vx_false_e)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+                 "Node query for timeout should not indicate that node has timed out.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
     /* Verify the graph. */
     vxStatus = vxVerifyGraph(objCntxt.vxGraph);
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxVerifyGraph() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Query the node timeout and validate. */
+    vxStatus = vxQueryNode(objCntxt.vxCmdTestNode, TIVX_NODE_IS_TIMED_OUT,
+                           &vxIsTimedOut, sizeof(vx_bool));
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryNode() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* The node should not have timed out. */
+    if (vxIsTimedOut != (vx_bool)vx_false_e)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+                 "Node query for timeout should not indicate that node has timed out.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -683,6 +720,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCreateFail, TestArg, TEST_PARAMS)
     uint32_t                    testFail = 0;
     vx_status                   vxStatus;
     int32_t                     status;
+    vx_bool                     vxIsTimedOut;
 
     /* Initialize the timeout to a valid timeout value less than vxSetTimeoutVal. */
     cfgParams                    = &objCntxt.cfgParams;
@@ -743,6 +781,24 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCreateFail, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
+    /* Query the node timeout and validate. */
+    vxStatus = vxQueryNode(objCntxt.vxCmdTestNode, TIVX_NODE_IS_TIMED_OUT,
+                           &vxIsTimedOut, sizeof(vx_bool));
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryNode() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* The node should have timed out. */
+    if (vxIsTimedOut != (vx_bool)vx_true_e)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+                 "Node query for timeout should indicate that node has timed out.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
     /* Update the node timeout value to something that will now pass. */
     vxSetTimeoutVal = 5;
 
@@ -756,6 +812,23 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCreateFail, TestArg, TEST_PARAMS)
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxVerifyGraph() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+    /* Query the node timeout and validate. */
+    vxStatus = vxQueryNode(objCntxt.vxCmdTestNode, TIVX_NODE_IS_TIMED_OUT,
+                           &vxIsTimedOut, sizeof(vx_bool));
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryNode() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* The node should not have timed out. */
+    if (vxIsTimedOut != (vx_bool)vx_false_e)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+                 "Node query for timeout should not indicate that node has timed out.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -880,6 +953,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCtrlCmdFail, TestArg, TEST_PARAMS)
     uint32_t                    testFail = 0;
     vx_status                   vxStatus;
     int32_t                     status;
+    vx_bool                     vxIsTimedOut;
 
     /* Initialize the timeout to a valid timeout set. */
     cfgParams                    = &objCntxt.cfgParams;
@@ -927,6 +1001,24 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCtrlCmdFail, TestArg, TEST_PARAMS)
         VX_PRINT(VX_ZONE_ERROR,
                  "tivxNodeSendCommandTimed() failed. Expected an error code [%d] but "
                  "received [%d]\n", TIVX_ERROR_EVENT_TIMEOUT, vxStatus);
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Query the node timeout and validate. */
+    vxStatus = vxQueryNode(objCntxt.vxCmdTestNode, TIVX_NODE_IS_TIMED_OUT,
+                           &vxIsTimedOut, sizeof(vx_bool));
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryNode() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* The node should have timed out. */
+    if (vxIsTimedOut != (vx_bool)vx_true_e)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+                 "Node query for timeout should indicate that node has timed out.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 

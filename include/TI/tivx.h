@@ -300,7 +300,15 @@ typedef enum _tivx_attribute_extensions_e {
      * Use a <tt>\ref vx_uint32</tt> parameter.
      * By default, this value is set to 0.
      */
-    TIVX_CONTEXT_NUM_USER_LIBRARY_ID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xc
+    TIVX_CONTEXT_NUM_USER_LIBRARY_ID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xc,
+
+    /*! \brief Query the node to see if it has timed out.
+     * Read-Only. Can be read at initialization as well as at runtime.
+     * Use a <tt>\ref vx_bool</tt> parameter.
+     * Refer to \ref TIVX_DEFAULT_KERNEL_TIMEOUT for more details about node
+     * timeouts
+     */
+    TIVX_NODE_IS_TIMED_OUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xd
 
 } tivx_attribute_extensions_e;
 

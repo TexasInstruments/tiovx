@@ -322,6 +322,15 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
                         node->obj_desc[0]->target_id,
                         replicated_node_idx, node_cmd_id,
                         obj_desc_id, num_refs, timeout);
+
+                    if ((vx_status)TIVX_ERROR_EVENT_TIMEOUT==status)
+                    {
+                        node->is_timed_out = (vx_bool)vx_true_e;
+                    }
+                    else if ((vx_status)VX_SUCCESS==status)
+                    {
+                        node->is_timed_out = (vx_bool)vx_false_e;
+                    }
                 }
             }
         }
@@ -392,32 +401,32 @@ vx_status ownNodeKernelInit(vx_node node)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if(node->is_kernel_created == (vx_bool)vx_false_e)
+    if ((vx_bool)vx_false_e == node->kernel->is_target_kernel)
     {
-        if ((vx_bool)vx_false_e == node->kernel->is_target_kernel)
+        if(node->kernel->local_data_size != 0U)
         {
-            if(node->kernel->local_data_size != 0U)
+            /* allocate memory for user kernel */
+            node->local_data_size = node->kernel->local_data_size;
+            node->local_data_ptr = tivxMemAlloc((uint32_t)node->local_data_size,
+                (vx_enum)TIVX_MEM_EXTERNAL);
+            if(node->local_data_ptr==NULL)
             {
-                /* allocate memory for user kernel */
-                node->local_data_size = node->kernel->local_data_size;
-                node->local_data_ptr = tivxMemAlloc((uint32_t)node->local_data_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
-                if(node->local_data_ptr==NULL)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"User kernel, local data memory alloc failed\n");
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-                else
-                {
-                    node->local_data_ptr_is_alloc = (vx_bool)vx_true_e;
-                }
+                VX_PRINT(VX_ZONE_ERROR,"User kernel, local data memory alloc failed\n");
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
             else
             {
-                node->local_data_size = 0;
-                node->local_data_ptr = NULL;
+                node->local_data_ptr_is_alloc = (vx_bool)vx_true_e;
             }
+        }
+        else
+        {
+            node->local_data_size = 0;
+            node->local_data_ptr = NULL;
+        }
 
+        if ((vx_bool)vx_false_e==node->is_initialized)
+        {
             if((NULL != node->kernel->initialize) &&
                 (status == (vx_status)VX_SUCCESS))
             {
@@ -431,33 +440,20 @@ vx_status ownNodeKernelInit(vx_node node)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"User kernel, kernel init callback failed\n");
                 }
-                node->local_data_set_allow = (vx_bool)vx_false_e;
-
-                if((node->kernel->local_data_size==0U)
-                    &&
-                    (node->local_data_size != 0U)
-                    &&
-                    (node->local_data_ptr == NULL)
-                    )
+                else
                 {
-                    node->local_data_ptr = tivxMemAlloc(
-                        (uint32_t)node->local_data_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                    if(node->local_data_ptr==NULL)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"User kernel, local data memory alloc failed\n");
-                        status = (vx_status)VX_ERROR_NO_MEMORY;
-                    }
-                    else
-                    {
-                        node->local_data_ptr_is_alloc = (vx_bool)vx_true_e;
-                    }
+                    node->local_data_set_allow = (vx_bool)vx_false_e;
+                    node->is_initialized = (vx_bool)vx_true_e;
                 }
             }
         }
-        else
-        {
-            uint16_t obj_desc_id[1];
+    }
+    else
+    {
+        uint16_t obj_desc_id[1];
 
+        if ((vx_bool)vx_false_e==node->is_initialized)
+        {
             if(NULL != node->kernel->initialize)
             {
                 node->local_data_set_allow = (vx_bool)vx_true_e;
@@ -524,9 +520,16 @@ vx_status ownNodeKernelInit(vx_node node)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Target kernel, kernel init callback failed\n");
                 }
+                else
+                {
+                    node->is_initialized = (vx_bool)vx_true_e;
+                }
             }
+        }
 
-            if (status == (vx_status)VX_SUCCESS)
+        if ((vx_bool)vx_false_e==node->is_kernel_created)
+        {
+            if((vx_status)VX_SUCCESS==status)
             {
                 obj_desc_id[0] = node->obj_desc[0]->base.obj_desc_id;
 
@@ -543,6 +546,15 @@ vx_status ownNodeKernelInit(vx_node node)
                         node->obj_desc[0]->target_id, (vx_enum)TIVX_CMD_NODE_CREATE,
                         1, obj_desc_id, node->timeout_val);
 
+                    if ((vx_status)TIVX_ERROR_EVENT_TIMEOUT==status)
+                    {
+                        node->is_timed_out = (vx_bool)vx_true_e;
+                    }
+                    else if ((vx_status)VX_SUCCESS==status)
+                    {
+                        node->is_timed_out = (vx_bool)vx_false_e;
+                    }
+
                     VX_PRINT(VX_ZONE_INFO,"Create callback for node %s completed\n", ref->name);
                 }
 
@@ -556,8 +568,7 @@ vx_status ownNodeKernelInit(vx_node node)
                     VX_PRINT(VX_ZONE_ERROR,"Please be sure the target callbacks have been registered for this core\n");
                     VX_PRINT(VX_ZONE_ERROR,"If the target callbacks have been registered, please ensure no errors are occurring within the create callback of this kernel\n");
                 }
-
-                /* copy the target_kernel_index[] from 0th object descriptor to other object descriptors */
+                else /* copy the target_kernel_index[] from 0th object descriptor to other object descriptors */
                 {
                     uint32_t i;
 
@@ -571,12 +582,13 @@ vx_status ownNodeKernelInit(vx_node node)
                 }
             }
         }
-
-        if(status==(vx_status)VX_SUCCESS)
-        {
-            node->is_kernel_created = (vx_bool)vx_true_e;
-        }
     }
+
+    if((vx_status)VX_SUCCESS==status)
+    {
+        node->is_kernel_created = (vx_bool)vx_true_e;
+    }
+
     return status;
 }
 
@@ -584,9 +596,9 @@ vx_status ownNodeKernelDeinit(vx_node node)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if(node->is_kernel_created == (vx_bool)vx_true_e)
+    if((vx_bool)vx_false_e == node->kernel->is_target_kernel)
     {
-        if((vx_bool)vx_false_e == node->kernel->is_target_kernel)
+        if ((vx_bool)vx_true_e == node->is_initialized)
         {
             if(node->kernel->deinitialize != NULL)
             {
@@ -595,52 +607,144 @@ vx_status ownNodeKernelDeinit(vx_node node)
                 /* user has given deinitialize function so call it */
                 status = node->kernel->deinitialize(node, node->parameters, node->kernel->signature.num_parameters);
 
-                node->local_data_set_allow = (vx_bool)vx_false_e;
-            }
-            if(status==(vx_status)VX_SUCCESS)
-            {
-                if(((vx_bool)vx_true_e == node->local_data_ptr_is_alloc)
-                    &&
-                    (NULL != node->local_data_ptr)
-                    &&
-                    (0U != node->local_data_size)
-                    )
+                if ((vx_status)VX_SUCCESS==status)
                 {
-                    status = tivxMemFree(node->local_data_ptr, (uint32_t)node->local_data_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
-                    node->local_data_ptr = NULL;
-                    node->local_data_size = 0;
-                    node->local_data_ptr_is_alloc = (vx_bool)vx_false_e;
+                    node->is_initialized = (vx_bool)vx_false_e;
+                }
+
+                node->local_data_set_allow = (vx_bool)vx_false_e;
+
+                if((vx_status)VX_SUCCESS!=status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Target kernel, deinitialize callback failed\n");
                 }
             }
-            else
+        }
+        if(((vx_bool)vx_true_e == node->local_data_ptr_is_alloc)
+            &&
+            (NULL != node->local_data_ptr)
+            &&
+            (0U != node->local_data_size)
+            )
+        {
+            status = tivxMemFree(node->local_data_ptr, (uint32_t)node->local_data_size,
+                (vx_enum)TIVX_MEM_EXTERNAL);
+            node->local_data_ptr = NULL;
+            node->local_data_size = 0;
+            node->local_data_ptr_is_alloc = (vx_bool)vx_false_e;
+        }
+    }
+    else /* Target kernel condition */
+    {
+        uint16_t obj_desc_id[1];
+
+        obj_desc_id[0] = node->obj_desc[0]->base.obj_desc_id;
+
+        if ((vx_bool)vx_true_e == node->is_initialized)
+        {
+            if(node->kernel->deinitialize != NULL)
             {
-                VX_PRINT(VX_ZONE_ERROR,"Target kernel, deinitialize callback failed\n");
+                node->local_data_set_allow = (vx_bool)vx_true_e;
+                tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc[0];
+                uint32_t num_params = node->kernel->signature.num_parameters;
+
+                if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == (vx_bool)vx_true_e )
+                {
+                    vx_reference params[TIVX_KERNEL_MAX_PARAMS];
+                    vx_reference parent_ref[TIVX_KERNEL_MAX_PARAMS];
+                    uint32_t i, n;
+
+                    for(i=0; i<num_params ; i++)
+                    {
+                        parent_ref[i] = NULL;
+
+                        if((0 != node->replicated_flags[i]) &&
+                           (NULL != node->parameters[i]))
+                        {
+                            parent_ref[i] = node->parameters[i]->scope;
+                        }
+                    }
+
+                    for(n=0; n<node_obj_desc->num_of_replicas; n++)
+                    {
+                        for(i=0; i<num_params ; i++)
+                        {
+                            params[i] = NULL;
+                            if(node->replicated_flags[i] != 0)
+                            {
+                                if(parent_ref[i] != NULL)
+                                {
+                                    if(parent_ref[i]->type==(vx_enum)VX_TYPE_OBJECT_ARRAY)
+                                    {
+                                        params[i] = ((vx_object_array)parent_ref[i])->ref[n];
+                                    }
+                                    else if(parent_ref[i]->type==(vx_enum)VX_TYPE_PYRAMID)
+                                    {
+                                        params[i] = (vx_reference)((vx_pyramid)parent_ref[i])->img[n];
+                                    }
+                                    else
+                                    {
+                                        params[i] = NULL;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                params[i] = node->parameters[i];
+                            }
+                        }
+
+                        tivxCheckStatus(&status, node->kernel->deinitialize(node, params, num_params));
+                    }
+                }
+                else
+                {
+                    /* user has given deinitialize function so call it */
+                    status = node->kernel->deinitialize(node, node->parameters,
+                        node->kernel->signature.num_parameters);
+                    if(status!=(vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"deinitialize callback failed\n");
+                    }
+                    else
+                    {
+                        node->is_initialized = (vx_bool)vx_false_e;
+                    }
+                }
             }
         }
-        else
+        if( ((vx_bool)vx_true_e==node->is_kernel_created) ||
+            ((vx_bool)vx_true_e==node->is_timed_out) )
         {
-            uint16_t obj_desc_id[1];
-
-            obj_desc_id[0] = node->obj_desc[0]->base.obj_desc_id;
-
             if(((vx_bool)vx_true_e == node->is_super_node) ||
                (NULL == node->super_node))
             {
-                status = ownContextSendCmd(node->base.context,
+                status |= ownContextSendCmd(node->base.context,
                         node->obj_desc[0]->target_id, (vx_enum)TIVX_CMD_NODE_DELETE,
                         1, obj_desc_id, node->timeout_val);
+
+                /* Note: not providing an option to reset "is_timed_out"
+                 * here given that if the create timeout failed, then this
+                 * would override that status, even if it was only successful
+                 * in the deletion of the node */
+                if ((vx_status)TIVX_ERROR_EVENT_TIMEOUT==status)
+                {
+                    node->is_timed_out = (vx_bool)vx_true_e;
+                }
             }
         }
-        if(status==(vx_status)VX_SUCCESS)
-        {
-            node->is_kernel_created = (vx_bool)vx_false_e;
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_DELETE failed\n");
-        }
     }
+
+    if( ((vx_status)VX_SUCCESS==status) ||
+        ((vx_bool)vx_true_e==node->is_timed_out) )
+    {
+        node->is_kernel_created = (vx_bool)vx_false_e;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_DELETE failed\n");
+    }
+
     return status;
 }
 
@@ -1269,6 +1373,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     node->super_node = NULL;
                     node->timeout_val = kernel->timeout_val;
                     node->node_depth = 1;
+                    node->is_timed_out = (vx_bool)vx_false_e;
+                    node->is_initialized = (vx_bool)vx_false_e;
 
                     /* assign refernce type specific callback's */
                     node->base.destructor_callback = &ownDestructNode;
@@ -1511,6 +1617,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = node->timeout_val;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Query TIVX_NODE_TIMEOUT failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case (vx_enum)TIVX_NODE_IS_TIMED_OUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
+                {
+                    *(vx_bool *)ptr = node->is_timed_out;
                 }
                 else
                 {
