@@ -198,11 +198,20 @@ static vx_status ownRemoveNodeInt(const vx_node *n)
     {
         if (node->graph != NULL)
         {
-            ownReferenceLock(&node->graph->base);
+            status = ownReferenceLock(&node->graph->base);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to lock the reference\n");
+            }
+            else
+            {
+                status = ownGraphRemoveNode(node->graph, node);
 
-            status = ownGraphRemoveNode(node->graph, node);
-
-            ownReferenceUnlock(&node->graph->base);
+                if((vx_status)VX_SUCCESS != ownReferenceUnlock(&node->graph->base))
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to unlock reference\n");
+                }
+            }
         }
     }
     return status;
@@ -330,6 +339,10 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
                     else if ((vx_status)VX_SUCCESS==status)
                     {
                         node->is_timed_out = (vx_bool)vx_false_e;
+                    }
+                    else
+                    {
+                        /* do nothing */
                     }
                 }
             }
@@ -553,6 +566,10 @@ vx_status ownNodeKernelInit(vx_node node)
                     else if ((vx_status)VX_SUCCESS==status)
                     {
                         node->is_timed_out = (vx_bool)vx_false_e;
+                    }
+                    else
+                    {
+                        /* do nothing */
                     }
 
                     VX_PRINT(VX_ZONE_INFO,"Create callback for node %s completed\n", ref->name);
@@ -1271,23 +1288,28 @@ void ownNodeSetObjDescParamDirection(vx_node node)
 void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
 {
     vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
-
     if((node!=NULL) && (node->base.context!=NULL))
     {
         if(node->is_enable_send_complete_event != (vx_bool)vx_false_e)
         {
             if ((vx_bool)vx_true_e == node->is_context_event)
             {
-                ownEventQueueAddEvent(&node->base.context->event_queue,
+                if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->base.context->event_queue,
                             (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_app_value,
-                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0);
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0))
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
+                }
             }
 
             if ((vx_bool)vx_true_e == node->is_graph_event)
             {
-                ownEventQueueAddEvent(&node->graph->event_queue,
+                if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
                             (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_app_value,
-                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0);
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0))
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
+                }
             }
         }
     }
@@ -1303,16 +1325,18 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
         {
             if ((vx_bool)vx_true_e == node->is_context_event)
             {
-                ownEventQueueAddEvent(&node->base.context->event_queue,
+                if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->base.context->event_queue,
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
-                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status);
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
             }
 
             if ((vx_bool)vx_true_e == node->is_graph_event)
             {
-                ownEventQueueAddEvent(&node->graph->event_queue,
+                if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
-                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status);
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
             }
         }
     }
@@ -1330,8 +1354,11 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
             uint32_t idx;
             vx_status status;
 
-            ownReferenceLock(&graph->base);
-
+            status = ownReferenceLock(&graph->base);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to lock reference\n");
+            }
             n = ownGraphGetFreeNodeIndex(graph);
             if(n>=0)
             {
@@ -1343,8 +1370,11 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     node->graph = NULL;
                     node->is_kernel_created = (vx_bool)vx_false_e;
 
-                    ownResetNodePerf(node);
-
+                    status = ownResetNodePerf(node);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to reset node performance statistics\n");
+                    }
                     for(idx=0; idx<kernel->signature.num_parameters; idx++)
                     {
                         node->parameters[idx] = NULL;
@@ -1385,8 +1415,11 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
 
                     if(node->obj_desc[0] == NULL)
                     {
-                        vxReleaseNode(&node);
-
+                        status = vxReleaseNode(&node);
+                        if((vx_status)VX_SUCCESS != status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to node\n");
+                        }
                         vxAddLogEntry(&graph->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate node object descriptor\n");
                         node = (vx_node)ownGetErrorObject(graph->base.context, (vx_status)VX_ERROR_NO_RESOURCES);
                         VX_PRINT(VX_ZONE_ERROR, "Could not allocate node object descriptor\n");
@@ -1399,8 +1432,11 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
 
                         if(status!=(vx_status)VX_SUCCESS)
                         {
-                            vxReleaseNode(&node);
-
+                            status = vxReleaseNode(&node);
+                            if((vx_status)VX_SUCCESS != status)
+                            {
+                                VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to node\n");
+                            }
                             /* no valid target associated with this node, return error */
                             vxAddLogEntry(&graph->base, status, "No target associated with kernel\n");
                             node = (vx_node)ownGetErrorObject(graph->base.context, status);
@@ -1412,14 +1448,22 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                             node->graph = graph;
 
                             /* show that there are potentially multiple nodes using this kernel. */
-                            ownIncrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
+                            (void)ownIncrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
 
-                            ownGraphAddNode(graph, node, n);
+                            status = ownGraphAddNode(graph, node, n);
+                            if((vx_status)VX_SUCCESS != status)
+                            {
+                                VX_PRINT(VX_ZONE_ERROR,"Failed to add graph node\n");
+                            }
                         }
                     }
                 }
             }
-            ownReferenceUnlock(&graph->base);
+            status = ownReferenceUnlock(&graph->base);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock reference\n");
+            }
         }
         else
         {
@@ -1459,7 +1503,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 #endif
                 if (VX_CHECK_PARAM(ptr, size, vx_perf_t, 0x3U))
                 {
-                    memcpy(ptr, &node->perf, size);
+                    (void)memcpy(ptr, &node->perf, size);
                 }
                 else
                 {
@@ -1528,7 +1572,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 {
                     vx_uint32 numParams = node->kernel->signature.num_parameters;
 
-                    memcpy((vx_uint32*)ptr, &numParams, sizeof(numParams));
+                    (void)memcpy((vx_uint32*)ptr, &numParams, sizeof(numParams));
                 }
                 else
                 {
@@ -1924,10 +1968,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
 
             if (NULL != param)
             {
-                vxQueryParameter(param, (vx_enum)VX_PARAMETER_TYPE, &type, sizeof(vx_enum));
-                vxQueryParameter(param, (vx_enum)VX_PARAMETER_REF, &ref, sizeof(vx_reference));
-                vxQueryParameter(param, (vx_enum)VX_PARAMETER_STATE, &state, sizeof(vx_enum));
-                vxQueryParameter(param, (vx_enum)VX_PARAMETER_DIRECTION, &dir, sizeof(vx_enum));
+                /* these condition checks are done
+                 * in the rest of the code
+                 */
+                (void)vxQueryParameter(param, (vx_enum)VX_PARAMETER_TYPE, &type, sizeof(vx_enum));
+                (void)vxQueryParameter(param, (vx_enum)VX_PARAMETER_REF, &ref, sizeof(vx_reference));
+                (void)vxQueryParameter(param, (vx_enum)VX_PARAMETER_STATE, &state, sizeof(vx_enum));
+                (void)vxQueryParameter(param, (vx_enum)VX_PARAMETER_DIRECTION, &dir, sizeof(vx_enum));
 
                 if((state==(vx_enum)VX_PARAMETER_STATE_OPTIONAL) && (ownIsValidSpecificReference(ref, type) == (vx_bool)vx_false_e))
                 {
@@ -1953,12 +2000,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                                 if (ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                                 {
                                     vx_pyramid pyramid = (vx_pyramid)ref->scope;
-                                    vxQueryPyramid(pyramid, (vx_enum)VX_PYRAMID_LEVELS, &items, sizeof(vx_size));
+                                    status = vxQueryPyramid(pyramid, (vx_enum)VX_PYRAMID_LEVELS, &items, sizeof(vx_size));
+                                    if((vx_status)VX_SUCCESS != status)
+                                    {
+                                        VX_PRINT(VX_ZONE_ERROR,"Failed to query an attribute from an image pyramid\n");
+                                    }
                                 }
                                 else if (ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                                 {
                                     vx_object_array object_array = (vx_object_array)ref->scope;
-                                    vxQueryObjectArray(object_array, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &items, sizeof(vx_size));
+                                    status = vxQueryObjectArray(object_array, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &items, sizeof(vx_size));
+                                    if((vx_status)VX_SUCCESS != status)
+                                    {
+                                        VX_PRINT(VX_ZONE_ERROR,"Failed to query an atribute from the ObjectArray\n");
+                                    }
                                 }
                                 else
                                 {
@@ -1997,8 +2052,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                         }
                     }
                 }
-                vxReleaseReference(&ref);
-                vxReleaseParameter(&param);
+                if((vx_status)VX_SUCCESS != vxReleaseReference(&ref))
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference\n");
+                }
+                if((vx_status)VX_SUCCESS != vxReleaseParameter(&param))
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to parameter\n");
+                }
             }
             else
             {
@@ -2150,12 +2211,17 @@ void ownNodeClearExecuteState(vx_node node, uint32_t pipeline_id)
 
 void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     if (NULL != node->parameters[index]) {
-        ownReleaseReferenceInt(&node->parameters[index],
+        status = ownReleaseReferenceInt(&node->parameters[index],
             node->parameters[index]->type, (vx_enum)VX_INTERNAL, NULL);
+        if((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to destroy reference\n");
+        }
     }
 
-    ownIncrementReference(value, (vx_enum)VX_INTERNAL);
+    (void)ownIncrementReference(value, (vx_enum)VX_INTERNAL);
     node->parameters[index] = (vx_reference)value;
 
     /* Assign parameter descriptor id in the node */
