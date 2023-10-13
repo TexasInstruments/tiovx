@@ -319,7 +319,9 @@ static void read_in_file(tivx_log_rt_obj_t *obj)
             index = find_event_index(event->event_id, obj);
             obj->event_2_index_table[event_cnt] = index;
         
-            if(event->event_type == TIVX_LOG_RT_EVENT_TYPE_START && index < obj->num_index)  
+            if( (event->event_type == TIVX_LOG_RT_EVENT_TYPE_START) &&
+                (event->event_class != TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE) &&
+                (index < obj->num_index))
             {
                 obj->num_events[index]++;
             }
@@ -354,7 +356,7 @@ static void create_output(tivx_log_rt_obj_t *obj)
         
     const char div_tags[] = 
         "  <div id=\"%s\"></div>\n"
-        "  <p> <b>Global statistics : </b> min = %d us, max = %d us, avg = %d us, (max - min) = %d us, Nunber of frames = %d, Number of frame exceeded threshold (%d us) = %d </p> \n"
+        "  <p> <b>Global statistics : </b> min = %d us, max = %d us, avg = %d us, (max - min) = %d us, Number of frames = %d, Number of frame exceeded threshold (%d us) = %d </p> \n"
         "  <hr> \n"
         ;
         

@@ -73,21 +73,21 @@
 /** \brief Max number of event identifiers, MUST be 8 byte aligned */
 #define TIVX_LOG_RT_INDEX_MAX           (128u)
 
-/** \brief EVent Class: Node */
+/** \brief Event Class: Node */
 #define TIVX_LOG_RT_EVENT_CLASS_NODE        (0x0u)
-/** \brief EVent Class: Graph */
+/** \brief Event Class: Graph */
 #define TIVX_LOG_RT_EVENT_CLASS_GRAPH       (0x1u)
-/** \brief EVent Class: Target */
+/** \brief Event Class: Target */
 #define TIVX_LOG_RT_EVENT_CLASS_TARGET      (0x2u)
-/** \brief EVent Class: Kernel instance */
+/** \brief Event Class: Kernel instance */
 #define TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE (0x3u)
 
-/** \brief EVent Class: Invalid */
+/** \brief Event Class: Invalid */
 #define TIVX_LOG_RT_EVENT_CLASS_INVALID     (0xFFFFu)
 
-/** \brief EVent Type: Start */
+/** \brief Event Type: Start */
 #define TIVX_LOG_RT_EVENT_TYPE_START        (0u)
-/** \brief EVent Type: End */
+/** \brief Event Type: End */
 #define TIVX_LOG_RT_EVENT_TYPE_END          (1u)
 
 /** \brief Event identifier to event name index */
