@@ -49,9 +49,19 @@ TEST(tivxInternalObjArray, negativeTestGetObjectArrayItem1)
     vx_reference ref = NULL;
     vx_uint32 index = 0;
     vx_image image;
+    vx_graph graph;
+    vx_image img;
     image = (vx_image)ownCreateReference(context, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, &context->base);
     EXPECT_VX_ERROR(vxoa = vxCreateObjectArray(context, (vx_reference)image, 2),VX_ERROR_NO_RESOURCES);
     VX_CALL(ownReleaseReferenceInt((vx_reference*)&image, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(vxoa = vxCreateVirtualObjectArray(graph, (vx_reference)img, 32),VX_TYPE_OBJECT_ARRAY);
+    ASSERT(NULL == (ref = vxGetObjectArrayItem(vxoa, index)));
+    VX_CALL(vxReleaseObjectArray(&vxoa));
+    VX_CALL(vxReleaseImage(&img));
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 TESTCASE_TESTS(

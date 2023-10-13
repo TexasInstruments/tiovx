@@ -23,9 +23,9 @@
 #include <TI/tivx_config.h>
 
 #define TIVX_REFERENCE_NOT_PRESENT 0
+#define TIVX_REF_TEST_MAX_NUM_ADDR  (TIVX_PYRAMID_MAX_LEVEL_OBJECTS)
 
 TESTCASE(tivxReference, CT_VXContext, ct_setup_vx_context, 0)
-
 
 TEST(tivxReference, testQueryTimestamp)
 {
@@ -315,15 +315,16 @@ TEST(tivxReference, negativeTestvxReferenceExportHandle)
     VX_CALL(tivxSetReferenceAttribute((vx_reference)image, TIVX_REFERENCE_TIMESTAMP, &set_is_valid, sizeof(set_is_valid)));
     ref = (vx_reference)image;
  
-    void *addr[64]; 
+    void *addr[TIVX_REF_TEST_MAX_NUM_ADDR]; 
     void *nonNullValue = (void *)0x12345678;
-    for (int i = 0; i < 64; i++) 
+    for (int i = 0; i < TIVX_REF_TEST_MAX_NUM_ADDR; i++) 
     { addr[i] = nonNullValue; }
-    uint32_t size[64] = { 10 }; 
+    uint32_t size[TIVX_REF_TEST_MAX_NUM_ADDR] = { 10 }; 
     uint32_t max_entries = 64; 
     uint32_t num_entries = 0;
    
     ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceExportHandle((vx_reference)context, addr, size, max_entries, &num_entries)));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceExportHandle((vx_reference)context, addr, size, max_entries, NULL)));
     VX_CALL(vxReleaseImage(&image));
 }
 
@@ -358,10 +359,10 @@ TEST(tivxReference, negativeTestvxIsReferenceMetaFormatEqual3)
     vx_context context = context_->vx_context_;
     vx_image image;
     vx_bool is_equal;
-    vx_uint64 is_invalid, set_is_valid = 10;
-    vx_context context1, context2;
+    vx_context context2;
 
     ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
     context2 = (vxGetContext((vx_reference)image));
     is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)context, (vx_reference)context2);
     ASSERT(is_equal==vx_false_e);
@@ -378,8 +379,8 @@ TEST(tivxReference, negativeTesttivxReferenceImportHandle)
     vx_context context1 = vxGetContext((vx_reference)graph);
     vx_enum take10_enumId = 0u;
     void *nonNullValue = (void *)0x1234567890AB;
-    void *addr[64] = {nonNullValue}; 
-    uint32_t size[64] = { 10 }; 
+    void *addr[TIVX_REF_TEST_MAX_NUM_ADDR] = {nonNullValue}; 
+    uint32_t size[TIVX_REF_TEST_MAX_NUM_ADDR] = { 10 }; 
     uint32_t max_entries = 64; 
     uint32_t num_entries = 10;
     vx_enum kernel_id = VX_KERNEL_SOBEL_3x3;
@@ -390,9 +391,8 @@ TEST(tivxReference, negativeTesttivxReferenceImportHandle)
     ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)node, (const void **)addr, (const uint32_t *)size, num_entries)));    
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseKernel(&kernel));
-    VX_CALL(vxReleaseGraph(&graph));    
+    VX_CALL(vxReleaseGraph(&graph));
 }
-
 
 TEST(tivxReference, negativeTesttivxReferenceImportHandle1)
 {
@@ -401,15 +401,15 @@ TEST(tivxReference, negativeTesttivxReferenceImportHandle1)
     vx_pyramid pyr_in;
     vx_uint64 is_invalid, set_is_valid = 10;
     void *nonNullValue = (void *)0x1234567890AB;
-    void *addr[64] = {nonNullValue}; 
-    uint32_t size[64] = { 10 }; 
+    void *addr[TIVX_REF_TEST_MAX_NUM_ADDR] = {nonNullValue}; 
+    uint32_t size[TIVX_REF_TEST_MAX_NUM_ADDR] = { 10 }; 
     uint32_t max_entries = 64; 
     uint32_t num_entries = 10;
 
     ASSERT_VX_OBJECT(pyr_in = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
     ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)pyr_in, (const void **)addr, (const uint32_t *)size, num_entries)));    
-    VX_CALL(vxReleasePyramid(&pyr_in));    
-} 
+    VX_CALL(vxReleasePyramid(&pyr_in));
+}
 
 TEST(tivxReference, negativeTesttivxReferenceImportHandle2)
 {
@@ -417,16 +417,24 @@ TEST(tivxReference, negativeTesttivxReferenceImportHandle2)
     vx_image image;
     vx_uint64 is_invalid, set_is_valid = 10;
     void *nonNullValue = (void *)0x1234567890AB;
-    void *addr[64] = {nonNullValue};
-    uint32_t size[64] = { 10 }; 
+    void *addr[TIVX_REF_TEST_MAX_NUM_ADDR] = {nonNullValue};
+    void *addr1[TIVX_REF_TEST_MAX_NUM_ADDR];
+
+    for (uint32_t i = 0; i < TIVX_REF_TEST_MAX_NUM_ADDR; i++) {
+        addr1[i] = nonNullValue;
+    }
+    uint32_t size[TIVX_REF_TEST_MAX_NUM_ADDR] = { 10 }; 
     uint32_t max_entries = 64; 
     uint32_t num_entries = 10;
+    vx_pyramid pyr_in;
 
     ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)image, (const void **)addr, (const uint32_t *)size, num_entries)));    
-    VX_CALL(vxReleaseImage(&image));    
-} 
-
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)image, (const void **)addr, (const uint32_t *)size, num_entries)));
+    ASSERT_VX_OBJECT(pyr_in = vxCreatePyramid(context, 4, 0.5f, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)pyr_in, (const void **)addr1, (const uint32_t *)size, num_entries)));
+    VX_CALL(vxReleasePyramid(&pyr_in));
+    VX_CALL(vxReleaseImage(&image));
+}
 
 TESTCASE_TESTS(
     tivxReference,
@@ -445,7 +453,7 @@ TESTCASE_TESTS(
     negativeTestHint,
     negativeTestGetReferenceParent,
     negativeTestGetReferenceParent1,
-	negativeTestSetRefCount,
+    negativeTestSetRefCount,
     negativeTestSetTimestamp,
     negativetestSetTimestamp1,
     negativeTestGetStatus1,
@@ -459,4 +467,3 @@ TESTCASE_TESTS(
     negativeTesttivxReferenceImportHandle1,
     negativeTesttivxReferenceImportHandle2
 )
-

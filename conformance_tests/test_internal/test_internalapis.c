@@ -87,6 +87,8 @@ TEST(tivxInternalApis, negativeTestInternalReference)
     vx_reference ref = NULL;
     vx_bool ret = vx_false_e, ret1 = vx_false_e;
     vx_uint32 result = 0,result1 = 0, result2 = 0;
+    vx_threshold src_threshold = NULL;
+
     ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     result = ownDecrementReference((vx_reference)image,VX_EXTERNAL);
     ASSERT(result==0);
@@ -106,6 +108,10 @@ TEST(tivxInternalApis, negativeTestInternalReference)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownReferenceLock(NULL));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownReferenceUnlock(NULL));
     ownReferenceSetScope(ref,&context->base);
+
+    ASSERT_VX_OBJECT(src_threshold = vxCreateThreshold(context, VX_THRESHOLD_TYPE_RANGE, VX_TYPE_UINT8), VX_TYPE_THRESHOLD);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownAllocReferenceBufferGeneric((vx_reference)src_threshold));
+    VX_CALL(vxReleaseThreshold(&src_threshold));
 }
 
 TEST(tivxInternalApis, negativeTestInternalValidReference)
