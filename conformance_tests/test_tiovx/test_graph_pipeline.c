@@ -28,7 +28,7 @@
 TESTCASE(tivxGraphPipeline,  CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tivxGraphPipelineLdra,  CT_VXContext, ct_setup_vx_context, 0)
 
-#define LOG_RT_TRACE_ENABLE       (0u)
+#define LOG_RT_TRACE_ENABLE       (1u)
 
 #define MAX_NUM_BUF               (8u)
 #define MAX_IMAGE_PLANES          (3u)
@@ -160,7 +160,6 @@ static vx_status set_graph_pipeline_depth(vx_graph graph, vx_uint32 pipeline_dep
 static vx_status export_graph_to_file(vx_graph graph, char *filename_prefix)
 {
     size_t sz = 0;
-    void* buf = 0;
     char filepath[MAXPATHLENGTH];
 
     sz = snprintf(filepath, MAXPATHLENGTH, "%s/output", ct_get_test_file_path());
@@ -171,13 +170,32 @@ static vx_status export_graph_to_file(vx_graph graph, char *filename_prefix)
 /*
  * Utility API to log graph run-time trace
  */
-static vx_status log_graph_rt_trace(vx_graph graph)
+static vx_status log_graph_rt_trace_enable(vx_graph graph)
 {
     vx_status status = VX_SUCCESS;
 
     #if LOG_RT_TRACE_ENABLE
-    /* If run time logging is needed, update to use tivxLogRtTraceEnable,
-     * tivxLogRtTraceDisable and tivxLogRtTraceExportToFile */
+    status = tivxLogRtTraceEnable(graph);
+    #endif
+    return status;
+}
+
+/*
+ * Utility API to log graph run-time trace
+ */
+static vx_status log_graph_rt_trace_disable(vx_graph graph, char *filename)
+{
+    vx_status status = VX_SUCCESS;
+
+    #if LOG_RT_TRACE_ENABLE
+    size_t sz = 0;
+    char filepath[MAXPATHLENGTH];
+
+    sz = snprintf(filepath, MAXPATHLENGTH, "%s/output/%s.bin", ct_get_test_file_path(), filename);
+    ASSERT_(return 0, (sz < MAXPATHLENGTH));
+
+    status = tivxLogRtTraceExportToFile(filepath);
+    status |= tivxLogRtTraceDisable(graph);
     #endif
     return status;
 }
@@ -564,6 +582,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
     loop_cnt = arg_->loop_count;
     pipeline_depth = 2;
     num_buf = 2;
+    char *filename="test_graph_pipeline_one_node";
 
     ASSERT(num_buf <= MAX_NUM_BUF);
 
@@ -641,8 +660,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_one_node");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
 
     #if 1
     /* fill reference data into input data reference */
@@ -727,6 +746,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
         VX_CALL(vxReleaseImage(&d2[buf_id]));
     }
     VX_CALL(vxReleaseImage(&d1));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -759,7 +779,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
     uint32_t width, height, seq_init, pipeline_depth;
     uint32_t buf_id, loop_id, loop_cnt, num_buf;
     uint64_t exe_time;
-
+    char *filename="test_graph_pipeline_two_nodes_basic";
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
@@ -830,8 +850,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_two_nodes_basic");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
     #if 1
 
     /* fill reference data into input data reference */
@@ -918,6 +938,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
         VX_CALL(vxReleaseImage(&d2[buf_id]));
     }
     VX_CALL(vxReleaseImage(&d1));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -953,7 +974,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testInputMultipleEnqueue, Arg, PARAMETERS)
     uint32_t width, height, seq_init, pipeline_depth;
     uint32_t buf_id, loop_id, loop_cnt, num_buf;
     uint64_t exe_time;
-
+    char *filename="test_graph_pipeline_input_multiple_enqueue";
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
@@ -1038,8 +1059,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testInputMultipleEnqueue, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_input_multiple_enqueue");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
     #if 1
 
     /* fill reference data into input data reference */
@@ -1141,6 +1162,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testInputMultipleEnqueue, Arg, PARAMETERS)
     }
     VX_CALL(vxReleaseImage(&d1));
     VX_CALL(vxReleaseImage(&d3));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -1171,6 +1193,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
     uint32_t width, height, seq_init, pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
     uint64_t exe_time;
+    char *filename="test_graph_pipeline_two_nodes";
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
@@ -1246,8 +1269,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_two_nodes");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
 
     #if 1
     /* fill reference data into input data reference */
@@ -1340,6 +1363,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
         VX_CALL(vxReleaseImage(&d1[buf_id]));
         VX_CALL(vxReleaseImage(&d2[buf_id]));
     }
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -1370,6 +1394,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
     uint32_t width, height, seq_init, pipeline_depth, num_buf, tmp_num_buf, get_num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
     uint64_t exe_time;
+    char *filename="test_graph_pipeline_four_nodes";
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
@@ -1485,8 +1510,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_four_nodes");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
     #if 1
     /* fill reference data into input data reference */
     for(buf_id=0; buf_id<num_buf; buf_id++)
@@ -1584,6 +1609,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
     VX_CALL(vxReleaseImage(&d1));
     VX_CALL(vxReleaseImage(&d2));
     VX_CALL(vxReleaseImage(&d3));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -1618,6 +1644,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testMaxDataRef, Arg, PARAMETERS)
     uint32_t width, height, seq_init, pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt, i;
     uint64_t exe_time;
+    char *filename="test_graph_pipeline_four_nodes";
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
@@ -1692,8 +1719,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testMaxDataRef, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_four_nodes");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
     #if 1
     /* fill reference data into input data reference */
     for(buf_id=0; buf_id<num_buf; buf_id++)
@@ -1759,6 +1786,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testMaxDataRef, Arg, PARAMETERS)
     {
         VX_CALL(vxReleaseImage(&d_virt[i]));
     }
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -2015,6 +2043,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testUniformImage, Arg, PARAMETERS)
     uint32_t buf_id, loop_id, loop_cnt;
     uint64_t exe_time;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    char *filename="test_graph_pipeline_uniform_img";
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
@@ -2092,8 +2121,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testUniformImage, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_uniform_img");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
     #if 1
     /* fill reference data into input data reference */
     for(buf_id=0; buf_id<num_buf; buf_id++)
@@ -2179,6 +2208,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testUniformImage, Arg, PARAMETERS)
         VX_CALL(vxReleaseImage(&d2[buf_id]));
     }
     VX_CALL(vxReleaseImage(&d1));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -2250,6 +2280,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
     uint32_t buf_id, loop_id, loop_cnt;
     uint32_t idx, objarr_idx, objarr_elements;
     uint64_t exe_time;
+    char *filename="test_graph_pipeline_replicate_node";
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
@@ -2342,8 +2373,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_replicate_node");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
     #if 1
     /* fill reference data into input data reference */
     for(buf_id=0; buf_id<num_buf; buf_id++)
@@ -2474,6 +2505,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
     }
     VX_CALL(vxReleaseImage(&img1));
     VX_CALL(vxReleaseObjectArray(&d1));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -2506,6 +2538,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDontReplicateImage, Arg, PARAMETERS)
     uint32_t buf_id, loop_id, loop_cnt;
     uint32_t idx, objarr_idx, objarr_elements;
     uint64_t exe_time;
+    char *filename="test_graph_pipeline_dont_replicate_node";
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
@@ -2605,8 +2638,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testDontReplicateImage, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_dont_replicate_node");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
     #if 1
     /* fill reference data into input data reference */
     for(buf_id=0; buf_id<num_buf; buf_id++)
@@ -2742,6 +2775,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDontReplicateImage, Arg, PARAMETERS)
     VX_CALL(vxReleaseImage(&img1));
     VX_CALL(vxReleaseImage(&img1_1));
     VX_CALL(vxReleaseObjectArray(&d1));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -2926,6 +2960,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
     vx_image input2_0[MAX_NUM_BUF] = {NULL};
     vx_pixel_value_t value1, value2;
     vx_border_t border;
+    char *filename="test_graph_pipeline_replicate_node2";
 
     CT_Image ref_src[MAX_NUM_PYR_ELEMENTS], vxdst[MAX_NUM_PYR_ELEMENTS];
     vx_graph graph = 0;
@@ -3038,8 +3073,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
 
         VX_CALL(vxVerifyGraph(graph));
 
-        export_graph_to_file(graph, "test_graph_pipeline_replicate_node2");
-        log_graph_rt_trace(graph);
+        VX_CALL(export_graph_to_file(graph, filename));
+        VX_CALL(log_graph_rt_trace_enable(graph));
 
         #if 1
 
@@ -3138,6 +3173,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
         VX_CALL(vxReleaseNode(&node1));
         VX_CALL(vxReleaseNode(&node2));
         VX_CALL(vxReleaseNode(&node3));
+        VX_CALL(log_graph_rt_trace_disable(graph, filename));
         VX_CALL(vxReleaseGraph(&graph));
 
         for(buf_id=0; buf_id<num_buf; buf_id++)
@@ -3187,6 +3223,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testScalarOutput, Arg, PARAMETERS)
     uint64_t exe_time;
     int a = 0, b = 256;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
+    char *filename="test_graph_pipeline_scalar_output";
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
@@ -3255,8 +3292,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testScalarOutput, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_scalar_output");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
     #if 1
     /* fill reference data into input data reference */
     for(buf_id=0; buf_id<num_buf; buf_id++)
@@ -3361,6 +3398,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testScalarOutput, Arg, PARAMETERS)
         VX_CALL(vxReleaseScalar(&mean_s[buf_id]));
         VX_CALL(vxReleaseScalar(&stddev_s[buf_id]));
     }
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -3388,6 +3426,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
     uint32_t width, height, seq_init, pipeline_depth, num_buf, loop_cnt;
     uint32_t buf_id, loop_id, in_q_cnt;
     uint64_t exe_time;
+    char *filename="test_graph_pipeline_event_handling";
 
     vx_bool done;
     vx_event_t event;
@@ -3468,8 +3507,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_event_handling");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
     #if 1
     /* clear pending events */
     while( vxWaitEvent(context, &event, vx_true_e) == VX_SUCCESS);
@@ -3626,6 +3665,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
         VX_CALL(vxReleaseImage(&d2[buf_id]));
     }
     VX_CALL(vxReleaseImage(&d1));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -3805,6 +3845,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testUserKernel, Arg, PARAMETERS)
     uint32_t pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
     uint64_t exe_time;
+    char *filename="test_graph_pipeline_user_kernel";
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
@@ -3866,8 +3907,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testUserKernel, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_user_kernel");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
 
     #if 1
     /* fill reference data into input data reference */
@@ -3959,6 +4000,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testUserKernel, Arg, PARAMETERS)
         VX_CALL(vxReleaseScalar(&d2[buf_id]));
     }
     VX_CALL(vxReleaseScalar(&d1));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     test_user_kernel_unregister(context);
@@ -3982,6 +4024,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testManualSchedule, Arg, PARAMETERS)
     vx_image d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
     vx_node n0, n1;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
+    char *filename="test_graph_pipeline_manual_schedule_mode";
 
     CT_Image ref_src[MAX_NUM_BUF], vxdst;
     uint32_t width, height, seq_init, pipeline_depth, num_buf;
@@ -4056,8 +4099,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testManualSchedule, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_manual_schedule_mode");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
 
     #if 1
     /* fill reference data into input data reference */
@@ -4140,6 +4183,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testManualSchedule, Arg, PARAMETERS)
         VX_CALL(vxReleaseImage(&d2[buf_id]));
     }
     VX_CALL(vxReleaseImage(&d1));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -4167,6 +4211,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay1, Arg, PARAMETERS)
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
     vx_uint32 in_value[MAX_NUM_BUF], ref_out_value[MAX_NUM_BUF];
     vx_uint32 tmp_value = 0;
+    char *filename="test_graph_pipeline_delay1";
 
     uint32_t pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
@@ -4253,8 +4298,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay1, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_delay1");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
 
     #if 1
     /* fill reference data into input data reference */
@@ -4353,6 +4398,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay1, Arg, PARAMETERS)
         VX_CALL(vxReleaseScalar(&d2[buf_id]));
     }
     VX_CALL(vxReleaseDelay(&delay));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     test_user_kernel_unregister(context);
@@ -4385,6 +4431,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
     vx_uint32 in_value[MAX_NUM_BUF], ref_out_value[MAX_NUM_BUF];
     vx_uint32 tmp_value = 0;
+    char *filename="test_graph_pipeline_delay2";
 
     uint32_t pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt, k;
@@ -4475,8 +4522,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_delay2");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
 
     #if 1
     /* fill reference data into input data reference */
@@ -4576,6 +4623,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
         VX_CALL(vxReleaseScalar(&d2[buf_id]));
     }
     VX_CALL(vxReleaseDelay(&delay));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     test_user_kernel_unregister(context);
@@ -4611,6 +4659,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
     vx_uint32 in_value[MAX_NUM_BUF], ref_out_value[MAX_NUM_BUF];
     vx_uint32 tmp_value = 0;
+    char *filename="test_graph_pipeline_delay3";
 
     uint32_t pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
@@ -4720,8 +4769,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_delay3");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
 
     #if 1
     /* fill reference data into input data reference */
@@ -4835,6 +4884,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
         VX_CALL(vxReleaseScalar(&d2[buf_id]));
     }
     VX_CALL(vxReleaseDelay(&delay));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     test_user_kernel_unregister(context);
@@ -4870,6 +4920,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
     vx_uint32 in_value[MAX_NUM_BUF], ref_out_value;
     vx_uint32 ref_delay_value[MAX_NUM_BUF];
     vx_uint32 tmp_value = 0;
+    char *filename="test_graph_pipeline_delay4";
 
     uint32_t pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
@@ -4959,8 +5010,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_delay4");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
 
     #if 1
     /* fill reference data into input data reference */
@@ -5087,6 +5138,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
         VX_CALL(vxReleaseScalar(&d2[buf_id]));
     }
     VX_CALL(vxReleaseDelay(&delay));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 
     test_user_kernel_unregister(context);
@@ -5126,6 +5178,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
     vx_image d0[MAX_NUM_BUF] = {NULL}, d2[MAX_NUM_BUF] = {NULL}, d4[MAX_NUM_BUF] = {NULL};
     vx_node n0, n1, n2;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
+    char *filename="test_graph_pipeline_loop_carried_dependency";
 
     int i;
     vx_graph graph_1 = 0;
@@ -5305,8 +5358,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_two_nodes");
-    log_graph_rt_trace(graph);
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
 
     #if 1
     /* fill reference data into input data reference */
