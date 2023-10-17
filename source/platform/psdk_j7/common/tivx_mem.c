@@ -469,6 +469,7 @@ vx_status tivxMemResetScratchHeap(vx_enum mem_heap_region)
 {
     vx_status status = (vx_status)VX_FAILURE;
 
+    // TODO: Change this to a case statement as well
     if ((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region)
     {
         status = appMemResetScratchHeap(APP_MEM_HEAP_DDR_SCRATCH);
@@ -477,9 +478,13 @@ vx_status tivxMemResetScratchHeap(vx_enum mem_heap_region)
     {
         status = appMemResetScratchHeap(APP_MEM_HEAP_DDR_NON_CACHE_SCRATCH);
     }
+    else if ((vx_enum)TIVX_MEM_INTERNAL_L2 == mem_heap_region)
+    {
+        status = appMemResetScratchHeap(APP_MEM_HEAP_L2);
+    }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "TIVX_MEM_EXTERNAL_SCRATCH and TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE are the only memory regions supported\n");
+        VX_PRINT(VX_ZONE_ERROR, "Memory region is not supported\n");
     }
 
     return status;

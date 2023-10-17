@@ -207,7 +207,7 @@ static vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec
             {
                 if (((vx_enum)heap_id== (vx_enum)TIVX_MEM_INTERNAL_L2) && (memRec[memRecId].attrs== IALG_SCRATCH))
                 {
-                    tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, (vx_int32)heap_id);
+                    tivxMemResetScratchHeap((vx_enum)TIVX_MEM_INTERNAL_L2);
                 }
             }
         }
