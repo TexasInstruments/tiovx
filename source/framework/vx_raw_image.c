@@ -333,7 +333,12 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                         ((obj_desc->params.line_interleaved == (vx_bool)vx_false_e) || (exp_idx == 0U))
                       )
                     {
-                        tivxMemBufferAlloc(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx], (vx_enum)TIVX_MEM_EXTERNAL);
+                        /* The error status check is not done for tivxMemBufferAlloc
+                         * as after the call there is already a check done if
+                         * obj_desc->mem_ptr[exp_idx].host_ptr is NULL or not
+                         * and status is set according to that.
+                         */
+                        (void)tivxMemBufferAlloc(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx], (vx_enum)TIVX_MEM_EXTERNAL);
 
                         if(obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)(uintptr_t)NULL)
                         {
@@ -472,6 +477,7 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
 {
     tivx_raw_image raw_image = NULL;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -490,7 +496,11 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
 
                 if(obj_desc == NULL)
                 {
-                    tivxReleaseRawImage(&raw_image);
+                    status = tivxReleaseRawImage(&raw_image);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Releases reference to raw image\n");
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate raw image object descriptor\n");
                     raw_image = (tivx_raw_image)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
@@ -1010,7 +1020,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                         /* Both have compact lines */
                         for (y = start_y; y < end_y; y += image_addr->step_y)
                         {
-                            memcpy(pUserLine, pImageLine, len);
+                            (void)memcpy(pUserLine, pImageLine, len);
                             pImageLine += image_addr->stride_y;
                             pUserLine += user_addr->stride_y;
                         }
@@ -1020,7 +1030,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                         /* Both have compact lines */
                         for (y = start_y; y < end_y; y += image_addr->step_y)
                         {
-                            memcpy(pImageLine, pUserLine, len);
+                            (void)memcpy(pImageLine, pUserLine, len);
                             pImageLine += image_addr->stride_y;
                             pUserLine += user_addr->stride_y;
                         }
@@ -1074,7 +1084,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                                 for (x = start_x; x < end_x; x += image_addr->step_x)
                                 {
                                     /* One element */
-                                    memcpy(pUserElem, pImageElem, len);
+                                    (void)memcpy(pUserElem, pImageElem, len);
 
                                     pImageElem += len;
                                     pUserElem += user_addr->stride_x;
@@ -1130,7 +1140,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                                 for (x = start_x; x < end_x; x += image_addr->step_x)
                                 {
                                     /* One element */
-                                    memcpy(pImageElem, pUserElem, len);
+                                    (void)memcpy(pImageElem, pUserElem, len);
 
                                     pImageElem += len;
                                     pUserElem += user_addr->stride_x;
@@ -1146,11 +1156,11 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
             {
                 if(usage == (vx_enum)VX_READ_ONLY)
                 {
-                    memcpy(pUserLine, pImageLine, user_addr->dim_x);
+                    (void)memcpy(pUserLine, pImageLine, user_addr->dim_x);
                 }
                 else
                 {
-                    memcpy(pImageLine, pUserLine, user_addr->dim_x);
+                    (void)memcpy(pImageLine, pUserLine, user_addr->dim_x);
                 }
             }
 
