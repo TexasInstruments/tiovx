@@ -24,6 +24,7 @@ vx_matrix VX_API_CALL vxCreateMatrix(
     vx_matrix matrix = NULL;
     vx_size dim = 0U;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -71,7 +72,11 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                     (vx_enum)TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
                 if(obj_desc==NULL)
                 {
-                    vxReleaseMatrix(&matrix);
+                    status = vxReleaseMatrix(&matrix);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to matrix object\n");
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate matrix object descriptor\n");
@@ -171,7 +176,11 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 (vx_enum)TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
             if(obj_desc==NULL)
             {
-                vxReleaseMatrix(&matrix);
+                status = vxReleaseMatrix(&matrix);
+                if((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to matrix object\n");
+                }
 
                 vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                     "Could not allocate matrix object descriptor\n");
@@ -205,11 +214,18 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     /* Free up memory allocated for matrix */
-                    ownDestructReferenceGeneric(&matrix->base);
+                    /* Error status check is not done as it
+                     * is already done in the previous status
+                     * check of ownAllocReferenceBufferGeneric
+                     */
+                    (void)ownDestructReferenceGeneric(&matrix->base);
 
                     /* Release matrix */
-                    vxReleaseMatrix(&matrix);
-
+                    status = vxReleaseMatrix(&matrix);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to matrix object\n");
+                    }
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate matrix object descriptor\n");
                     matrix = (vx_matrix)ownGetErrorObject(
@@ -467,7 +483,7 @@ vx_status VX_API_CALL vxCopyMatrix(
             tivxCheckStatus(&status, tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
-            memcpy(user_ptr, (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size);
+            (void)memcpy(user_ptr, (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size);
 
             tivxCheckStatus(&status, tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
@@ -481,7 +497,7 @@ vx_status VX_API_CALL vxCopyMatrix(
                 tivxCheckStatus(&status, tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
-                memcpy((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, user_ptr, size);
+                (void)memcpy((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
                 tivxCheckStatus(&status, tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
