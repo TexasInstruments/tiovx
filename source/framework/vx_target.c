@@ -209,7 +209,11 @@ static void ownTargetNodeDescSendComplete(
                 /* users wants a notification of node complete or this is leaf node
                  * so send node complete command to host
                  */
-                ownObjDescSend( cmd_obj_desc->dst_target_id, cmd_obj_desc_id);
+                /* error status check is not required
+                 * as the return status is not used further
+                 * in ownTargetNodeDescSendComplete
+                 */
+                (void)ownObjDescSend( cmd_obj_desc->dst_target_id, cmd_obj_desc_id);
             }
         }
     }
@@ -261,7 +265,11 @@ static void ownTargetNodeDescTriggerNextNodes(
 
             if(can_execute == (vx_bool)vx_true_e)
             {
-                ownObjDescSend( next_node_obj_desc->target_id, next_node_obj_desc_id);
+                /* error status check is not done
+                 * as the return status is not used further
+                 * in ownTargetNodeDescTriggerNextNodes
+                 */
+                (void)ownObjDescSend( next_node_obj_desc->target_id, next_node_obj_desc_id);
             }
         }
     }
@@ -854,7 +862,11 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
 
             if(status!=(vx_status)VX_SUCCESS)
             {
-                ownTargetKernelInstanceFree(&target_kernel_instance);
+                /* error status check is not required
+                 * as it is already done in the previous status check
+                 * of ownTargetKernelCreate
+                 */
+                (void)ownTargetKernelInstanceFree(&target_kernel_instance);
             }
         }
     }
@@ -868,7 +880,11 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
 
             if (NULL != target_kernel_instance)
             {
-                ownTargetKernelInstanceFree(&target_kernel_instance);
+                /* status check is not required
+                 * as the NULL check of target kernel instance
+                 * is already confirmed in previous check
+                 */
+                (void)ownTargetKernelInstanceFree(&target_kernel_instance);
             }
         }
     }
@@ -924,8 +940,10 @@ static vx_status ownTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_ob
                         params, (uint16_t)node_obj_desc->num_params));
                 }
             }
-
-            ownTargetKernelInstanceFree(&target_kernel_instance);
+            /* error status check is not required here
+             * as it is checked before in tivxCheckStatus
+             */
+            (void)ownTargetKernelInstanceFree(&target_kernel_instance);
         }
     }
 
@@ -1028,7 +1046,11 @@ static void ownTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
     {
         tivxFlagBitClear( &cmd_obj_desc->flags, TIVX_CMD_FLAG_IS_ACK);
 
-        tivxEventPost((tivx_event)(uintptr_t)cmd_obj_desc->ack_event_handle);
+       /* error status check is not done
+        * as the return status value is not used
+        * ownTargetCmdDescHandleAck further
+        */
+       (void)tivxEventPost((tivx_event)(uintptr_t)cmd_obj_desc->ack_event_handle);
     }
 }
 
@@ -1040,7 +1062,11 @@ static void ownTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status
 
         cmd_obj_desc->cmd_status = (uint32_t)status;
 
-        ownObjDescSend(cmd_obj_desc->src_target_id, cmd_obj_desc->base.obj_desc_id);
+       /* error status check is not done
+        * as the returned status value is not used
+        * in ownTargetCmdDescSendAck further
+        */
+       (void)ownObjDescSend(cmd_obj_desc->src_target_id, cmd_obj_desc->base.obj_desc_id);
     }
 }
 
@@ -1206,7 +1232,7 @@ vx_status ownTargetCreate(vx_enum target_id, const tivx_target_create_params_t *
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wstringop-truncation"
         #endif
-        strncpy(target->task_params.task_name, params->task_name, TIVX_MAX_TASK_NAME);
+        (void)strncpy(target->task_params.task_name, params->task_name, TIVX_MAX_TASK_NAME);
         #if defined(LINUX)
         #pragma GCC diagnostic pop
         #endif
@@ -1227,7 +1253,11 @@ vx_status ownTargetCreate(vx_enum target_id, const tivx_target_create_params_t *
             status = tivxTaskCreate(&target->task_handle, &target->task_params);
             if(status != (vx_status)VX_SUCCESS)
             {
-                tivxQueueDelete(&target->job_queue_handle);
+                /* error status check is not done
+                 * as the status check is covered in previous check
+                 * in tivxQueueCreate
+                 */
+                (void)tivxQueueDelete(&target->job_queue_handle);   
             }
         }
 
@@ -1254,17 +1284,25 @@ vx_status ownTargetDelete(vx_enum target_id)
         target->targetExitRequest = (vx_bool)vx_true_e;
 
         /* queue a invalid object descriptor to unblock queue wait */
-        ownTargetQueueObjDesc(target_id, (vx_enum)TIVX_OBJ_DESC_INVALID);
-
-        /* wait until target exit is done */
-        while(target->targetExitDone==(vx_bool)vx_false_e)
+        status = ownTargetQueueObjDesc(target_id, (vx_enum)TIVX_OBJ_DESC_INVALID);
+        if((vx_status)VX_SUCCESS == status)
         {
-            tivxTaskWaitMsecs(1);
-        }
-        tivxTaskDelete(&target->task_handle);
+            /* wait until target exit is done */
+            while(target->targetExitDone==(vx_bool)vx_false_e)
+            {
+                    tivxTaskWaitMsecs(1);
+            }
+            /* error status is not required
+             * as it found to return always true
+             */
+            (void)tivxTaskDelete(&target->task_handle);
 
-        /* delete job queue */
-        tivxQueueDelete(&target->job_queue_handle);
+            /* delete job queue */
+            /* error check not required as it is already
+             * handled in ownTargetQueueObjDesc status check
+             */
+            (void)tivxQueueDelete(&target->job_queue_handle);
+        }
     }
 
     return status;
@@ -1278,7 +1316,10 @@ void ownTargetTriggerNode(uint16_t node_obj_desc_id)
 
     if( ownObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) != 0)
     {
-        ownObjDescSend( node_obj_desc->target_id, node_obj_desc_id);
+       /* status check is not required
+        * as the return status is not used here
+        */
+       (void)ownObjDescSend( node_obj_desc->target_id, node_obj_desc_id);
     }
 }
 
@@ -1314,7 +1355,7 @@ void ownTargetSetDefaultCreateParams(tivx_target_create_params_t *params)
     params->task_stack_size = 0;
     params->task_core_affinity = 0;
     params->task_priority = TIVX_TASK_PRI_LOWEST;
-    strncpy(params->task_name, "TIVX_TARGET", TIVX_MAX_TASK_NAME);
+    (void)strncpy(params->task_name, "TIVX_TARGET", TIVX_MAX_TASK_NAME);
     params->task_name[TIVX_MAX_TASK_NAME-1U] = '\0';
 }
 
@@ -1332,9 +1373,16 @@ void ownTargetInit(void)
     {
         g_target_table[i].target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
     }
-
-    ownTargetKernelInit();
-    ownTargetKernelInstanceInit();
+    /* error status check is not done
+     * as the returned status value is not used
+     * in ownTargetInit further
+     */
+	(void)ownTargetKernelInit();
+    /* error status check is not done
+     * as the returned status value is not used
+     * in ownTargetInit further
+     */
+    (void)ownTargetKernelInstanceInit();
 }
 
 void ownTargetDeInit(void)
