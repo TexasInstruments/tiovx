@@ -37,7 +37,7 @@
 
 // Corrupting Size of operator to validate error captured
 #define sizeofErr (sizeof(vx_uint32) + 1)
-#define errInject(x) (x = x + 1)
+#define errInject(x) (x + 1)
 
 TESTCASE(tivxMetaFormat, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -75,8 +75,8 @@ typedef struct
 static vx_status VX_CALLBACK own_set_image_valid_rect(
     vx_node node,
     vx_uint32 index,
-    const vx_rectangle_t* const input_valid[],
-    vx_rectangle_t* const output_valid[])
+    const vx_rectangle_t *const input_valid[],
+    vx_rectangle_t *const output_valid[])
 {
     return VX_SUCCESS;
 }
@@ -173,6 +173,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
         switch (type)
         {
         case VX_TYPE_IMAGE:
+        {
             VX_CALL_(return VX_FAILURE, vxQueryImage((vx_image)input, VX_IMAGE_FORMAT, &actual_format, sizeof(vx_enum)));
             VX_CALL_(return VX_FAILURE, vxQueryImage((vx_image)input, VX_IMAGE_WIDTH, &actual_src_width, sizeof(vx_uint32)));
             VX_CALL_(return VX_FAILURE, vxQueryImage((vx_image)input, VX_IMAGE_HEIGHT, &actual_src_height, sizeof(vx_uint32)));
@@ -181,13 +182,19 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
             {
                 VX_CALL_(return VX_FAILURE, vxSetMetaFormatFromReference(meta, input));
                 vx_kernel_image_valid_rectangle_f callback = &own_set_image_valid_rect;
-                (void)vxSetMetaFormatAttribute(meta, VX_VALID_RECT_CALLBACK + 1, &callback, sizeof(callback));
+                (void)vxSetMetaFormatAttribute(meta, errInject(VX_VALID_RECT_CALLBACK), &callback, sizeof(callback));
             }
             else
             {
                 return VX_ERROR_INVALID_PARAMETERS;
             }
-            break;
+        }
+        break;
+        case VX_TYPE_ARRAY:
+        {
+            vxSetMetaFormatFromReference(meta, input);
+        }
+        break;
 
         default:
             return VX_ERROR_INVALID_PARAMETERS;
@@ -234,7 +241,36 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     vx_enum actual_thresh_type = VX_TYPE_INVALID;
     vx_size actual_num_items = 0;
     vx_size actual_m = 0, actual_n = 0;
-    switch (type)
+
+    // For Tensor
+    vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS;
+    vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_enum dt = VX_TYPE_UINT8, usage = VX_READ_ONLY, user_memory_type = VX_MEMORY_TYPE_HOST;
+    vx_int8 fpp = 0;
+	
+    // For User Data Objetc
+    vx_size udata = 0;
+    vx_char test_name[] = {'t', 'e', 's', 't', 'i', 'n', 'g'};
+	
+    // For Raw image
+    tivx_raw_image_create_params_t params;
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_false_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height_before = 5;
+    params.meta_height_after = 0;
+	
+	//Dummy Data
+    uint32_t u32Dummy = 0;
+    bool bDummy = 0;
+    switch ((uint32_t)type)
     {
     case VX_TYPE_IMAGE:
         VX_CALL_(return VX_FAILURE, vxQueryImage((vx_image)input, VX_IMAGE_FORMAT, &actual_format, sizeof(vx_enum)));
@@ -389,6 +425,82 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
             return VX_ERROR_INVALID_PARAMETERS;
         }
         break;
+    case VX_TYPE_TENSOR:
+        // Postive Cases nod
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_NUMBER_OF_DIMS, &nod, sizeof(vx_size)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_DIMS, &dims, (sizeof(vx_size) * (vx_size)TIVX_CONTEXT_MAX_TENSOR_DIMS)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_FIXED_POINT_POSITION, &fpp, sizeof(vx_int8)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_DATA_TYPE, &dt, sizeof(vx_enum)));
+        // Negative Cases
+        if (vxSetMetaFormatAttribute(meta, VX_TENSOR_DIMS, &dims, sizeofErr * (sizeof(vx_size) * (vx_size)TIVX_CONTEXT_MAX_TENSOR_DIMS)) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, VX_TENSOR_NUMBER_OF_DIMS, &nod, errInject(sizeof(vx_size))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, VX_TENSOR_FIXED_POINT_POSITION, &fpp, errInject(sizeof(vx_int8))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, VX_TENSOR_DATA_TYPE, &dt, errInject(sizeof(vx_enum))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        break;
+    case VX_TYPE_USER_DATA_OBJECT:
+    {
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_USER_DATA_OBJECT_NAME, &test_name, sizeof(vx_char)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_USER_DATA_OBJECT_SIZE, &udata, sizeof(vx_size)));
+        // Negative TestCase
+        if (vxSetMetaFormatAttribute(meta, VX_USER_DATA_OBJECT_NAME, &test_name, errInject(VX_MAX_REFERENCE_NAME)) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, VX_USER_DATA_OBJECT_SIZE, &udata, errInject(sizeof(vx_uint32))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+    }
+    break;
+    case TIVX_TYPE_RAW_IMAGE:
+    {
+        // Negative TestCase
+        if (vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_WIDTH, &u32Dummy, errInject(sizeof(uint32_t))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_HEIGHT, &u32Dummy, errInject(sizeof(uint32_t))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_NUM_EXPOSURES, &u32Dummy, errInject(sizeof(uint32_t))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_LINE_INTERLEAVED, &bDummy, errInject(sizeof(uint32_t))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_FORMAT, &bDummy, errInject(sizeof(uint32_t) * sizeof(tivx_raw_image_format_t))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &bDummy, errInject(sizeof(uint32_t))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &bDummy, errInject(sizeof(uint32_t))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_IMAGEPATCH_ADDRESSING, &bDummy, errInject(sizeof(uint32_t))) != VX_ERROR_NOT_SUPPORTED)
+        {
+            return VX_FAILURE;
+        }
+    }
+    break;
     default:
         return VX_ERROR_INVALID_PARAMETERS;
         break;
@@ -482,29 +594,22 @@ static void own_register_kernel(vx_context context, vx_bool is_meta_from_ref)
     VX_CALL(vxReleaseKernel(&kernel));
 }
 
-#define ADD_TYPE(testArgName, nextmacro, ...)                                                \
-    CT_EXPAND(nextmacro(testArgName "IMAGE", __VA_ARGS__, VX_TYPE_IMAGE)),                   \
-        CT_EXPAND(nextmacro(testArgName "ARRAY", __VA_ARGS__, VX_TYPE_ARRAY)),               \
-        CT_EXPAND(nextmacro(testArgName "PYRAMID", __VA_ARGS__, VX_TYPE_PYRAMID)),           \
-        CT_EXPAND(nextmacro(testArgName "SCALAR", __VA_ARGS__, VX_TYPE_SCALAR)),             \
-        CT_EXPAND(nextmacro(testArgName "DISTRIBUTION", __VA_ARGS__, VX_TYPE_DISTRIBUTION)), \
-        CT_EXPAND(nextmacro(testArgName "MATRIX", __VA_ARGS__, VX_TYPE_MATRIX)),             \
-        CT_EXPAND(nextmacro(testArgName "THRESHOLD", __VA_ARGS__, VX_TYPE_THRESHOLD)),       \
-        CT_EXPAND(nextmacro(testArgName "LUT", __VA_ARGS__, VX_TYPE_LUT)),                   \
-        CT_EXPAND(nextmacro(testArgName "REMAP", __VA_ARGS__, VX_TYPE_REMAP))
+#define ADD_TYPE_REF(testArgName, nextmacro, ...)                          \
+    CT_EXPAND(nextmacro(testArgName "IMAGE", __VA_ARGS__, VX_TYPE_IMAGE)), \
+        CT_EXPAND(nextmacro(testArgName "ARRAY", __VA_ARGS__, VX_TYPE_ARRAY))
 
-#define ADD_FROM_FLAG(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "_FROM_ATTR", __VA_ARGS__, vx_false_e))
+#define ADD_FROM_FLAG_REF(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "_FROM_REF", __VA_ARGS__, vx_true_e))
 
-#define ADD_LOCAL_SIZE_AND_ALLOC(testArgName, nextmacro, ...)                     \
-    CT_EXPAND(nextmacro(testArgName "/LOCAL_SIZE=0", __VA_ARGS__, 0, vx_false_e)) \
-    // CT_EXPAND(nextmacro(testArgName "/LOCAL_SIZE=10/ALLOC=AUTO", __VA_ARGS__, 10, vx_false_e)),
-    // CT_EXPAND(nextmacro(testArgName "/LOCAL_SIZE=10/ALLOC=KERNEL", __VA_ARGS__, 10, vx_true_e))
+#define ADD_LOCAL_SIZE_AND_ALLOC_REF(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/LOCAL_SIZE=0", __VA_ARGS__, 0, vx_false_e))
+// CT_EXPAND(nextmacro(testArgName "/LOCAL_SIZE=10/ALLOC=AUTO", __VA_ARGS__, 10, vx_false_e)),
+// CT_EXPAND(nextmacro(testArgName "/LOCAL_SIZE=10/ALLOC=KERNEL", __VA_ARGS__, 10, vx_true_e))
 
-#define USERKERNEL_PARAMETERS \
-    CT_GENERATE_PARAMETERS("", ADD_TYPE, ADD_FROM_FLAG, ADD_LOCAL_SIZE_AND_ALLOC, ARG)
+#define USERKERNEL_PARAMETERS_REF \
+    CT_GENERATE_PARAMETERS("", ADD_TYPE_REF, ADD_FROM_FLAG_REF, ADD_LOCAL_SIZE_AND_ALLOC_REF, ARG)
 
-TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatAttributeType, type_arg, USERKERNEL_PARAMETERS)
+TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatRefrenceType, type_arg, USERKERNEL_PARAMETERS_REF)
 {
     vx_context context = context_->vx_context_;
     vx_reference src = 0, dst = 0;
@@ -554,8 +659,30 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatAttributeType, type_arg, USERKERN
     is_kernel_called = vx_false_e;
     is_initialize_called = vx_false_e;
     is_deinitialize_called = vx_false_e;
+	// For Tensor
+    vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS;
+    vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_enum dt = VX_TYPE_UINT8, usage = VX_READ_ONLY, user_memory_type = VX_MEMORY_TYPE_HOST;
+    vx_int8 fpp = 0;
+    // For User Data Objetc
+    vx_uint32 udata = 0;
+    vx_char test_name[] = {'t', 'e', 's', 't', 'i', 'n', 'g'};
+    // For Raw image
+    tivx_raw_image_create_params_t params;
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_false_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height_before = 5;
+    params.meta_height_after = 0;
 
-    switch (type)
+    switch ((uint32_t)type)
     {
     case VX_TYPE_IMAGE:
     {
@@ -662,7 +789,252 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatAttributeType, type_arg, USERKERN
         VX_CALL(vxSetThresholdAttribute((vx_threshold)src, VX_THRESHOLD_THRESHOLD_VALUE, (void *)&thresh_val, sizeof(thresh_val)));
     }
     break;
+    case VX_TYPE_TENSOR:
+    {
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+    }
+    break;
+    case VX_TYPE_USER_DATA_OBJECT:
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
+        break;
+    case TIVX_TYPE_RAW_IMAGE:
+    {
+        ASSERT_VX_OBJECT(src = (vx_reference)tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
+        ASSERT_VX_OBJECT(dst = (vx_reference)tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
+    }
+    break;
+    default:
+        break;
+    }
 
+    ASSERT_NO_FAILURE(own_register_kernel(context, is_meta_from_ref));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(user_kernel = vxGetKernelByName(context, VX_KERNEL_CONFORMANCE_TEST_OWN_USER_NAME), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, user_kernel), VX_TYPE_NODE);
+    
+	VX_CALL(vxSetParameterByIndex(node, 0, (vx_reference)src));
+    VX_CALL(vxSetParameterByIndex(node, 1, (vx_reference)dst));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+	
+    is_deinitialize_called = vx_false_e;
+    is_validator_called = vx_false_e;
+    is_kernel_called = vx_false_e;
+
+    VX_CALL(vxProcessGraph(graph));
+    ASSERT(is_deinitialize_called == vx_false_e);
+    ASSERT(is_validator_called == vx_false_e);
+    ASSERT(is_kernel_called == vx_true_e);
+    // finalization
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    /* user kernel should be removed only after all references to it released */
+    /* Note, vxRemoveKernel doesn't zeroing kernel ref */
+    VX_CALL(vxRemoveKernel(user_kernel));
+    VX_CALL(vxReleaseReference(&dst));
+    VX_CALL(vxReleaseReference(&src));
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+    ASSERT(dst == 0);
+    ASSERT(src == 0);
+}
+
+#define ADD_TYPE(testArgName, nextmacro, ...)                                                \
+    CT_EXPAND(nextmacro(testArgName "IMAGE", __VA_ARGS__, VX_TYPE_IMAGE)),                   \
+        CT_EXPAND(nextmacro(testArgName "ARRAY", __VA_ARGS__, VX_TYPE_ARRAY)),               \
+        CT_EXPAND(nextmacro(testArgName "PYRAMID", __VA_ARGS__, VX_TYPE_PYRAMID)),           \
+        CT_EXPAND(nextmacro(testArgName "SCALAR", __VA_ARGS__, VX_TYPE_SCALAR)),             \
+        CT_EXPAND(nextmacro(testArgName "DISTRIBUTION", __VA_ARGS__, VX_TYPE_DISTRIBUTION)), \
+        CT_EXPAND(nextmacro(testArgName "MATRIX", __VA_ARGS__, VX_TYPE_MATRIX)),             \
+        CT_EXPAND(nextmacro(testArgName "THRESHOLD", __VA_ARGS__, VX_TYPE_THRESHOLD)),       \
+        CT_EXPAND(nextmacro(testArgName "LUT", __VA_ARGS__, VX_TYPE_LUT)),                   \
+        CT_EXPAND(nextmacro(testArgName "RAWIMAGE", __VA_ARGS__, TIVX_TYPE_RAW_IMAGE)),      \
+        CT_EXPAND(nextmacro(testArgName "UDATA", __VA_ARGS__, VX_TYPE_USER_DATA_OBJECT)),    \
+        CT_EXPAND(nextmacro(testArgName "TENSOR", __VA_ARGS__, VX_TYPE_TENSOR)),             \
+        CT_EXPAND(nextmacro(testArgName "REMAP", __VA_ARGS__, VX_TYPE_REMAP))
+
+#define ADD_FROM_FLAG(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "_FROM_ATTR", __VA_ARGS__, vx_false_e))
+
+#define ADD_LOCAL_SIZE_AND_ALLOC(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/LOCAL_SIZE=0", __VA_ARGS__, 0, vx_false_e))
+// CT_EXPAND(nextmacro(testArgName "/LOCAL_SIZE=10/ALLOC=AUTO", __VA_ARGS__, 10, vx_false_e)),
+// CT_EXPAND(nextmacro(testArgName "/LOCAL_SIZE=10/ALLOC=KERNEL", __VA_ARGS__, 10, vx_true_e))
+
+#define USERKERNEL_PARAMETERS \
+    CT_GENERATE_PARAMETERS("", ADD_TYPE, ADD_FROM_FLAG, ADD_LOCAL_SIZE_AND_ALLOC, ARG)
+
+TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatAttributeType, type_arg, USERKERNEL_PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_reference src = 0, dst = 0;
+    vx_graph graph = 0;
+    vx_kernel user_kernel = 0;
+    vx_node node = 0;
+    vx_bool is_meta_from_ref = arg_->is_meta_from_ref;
+
+    uint64_t *seed = &CT()->seed_;
+    vx_uint8 value = 0;
+    vx_enum format = VX_DF_IMAGE_U8;
+    vx_uint32 src_width = 128, src_height = 128;
+    vx_uint32 dst_width = 256, dst_height = 256;
+    vx_enum item_type = VX_TYPE_UINT8;
+    vx_size capacity = 20;
+    vx_size levels = 8;
+    vx_float32 scale = 0.5f;
+    vx_size bins = 36;
+    vx_int32 offset = 0;
+    vx_uint32 range = 360;
+    vx_enum thresh_type = VX_THRESHOLD_TYPE_BINARY;
+    vx_int32 thresh_val = 128;
+    vx_size num_items = 100;
+    vx_size m = 5, n = 5;
+    vx_size i, j;
+
+    vx_bool expectedFailure = 0;
+    int phase = 0;
+    type = (enum vx_type_e)arg_->type;
+    local_size = arg_->local_size;
+    is_kernel_alloc = arg_->is_kernel_alloc;
+    if (is_kernel_alloc == vx_false_e)
+    {
+        local_size_auto_alloc = local_size;
+        local_size_kernel_alloc = 0;
+    }
+    else
+    {
+        local_size_auto_alloc = 0;
+        local_size_kernel_alloc = local_size;
+    }
+    is_validator_called = vx_false_e;
+    is_kernel_called = vx_false_e;
+    is_initialize_called = vx_false_e;
+    is_deinitialize_called = vx_false_e;
+    // For Tensor
+    vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS;
+    vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_enum dt = VX_TYPE_UINT8, usage = VX_READ_ONLY, user_memory_type = VX_MEMORY_TYPE_HOST;
+    vx_int8 fpp = 0;
+    // For User Data Objetc
+    vx_uint32 udata = 0;
+    vx_char test_name[] = {'t', 'e', 's', 't', 'i', 'n', 'g'};
+    // For Raw image
+    tivx_raw_image_create_params_t params;
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_false_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height_before = 5;
+    params.meta_height_after = 0;
+	
+    switch ((uint32_t)type)
+    {
+    case VX_TYPE_IMAGE:
+    {
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateImage(context, src_width, src_height, format), type);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateImage(context, src_width, src_height, format), type);
+    }
+    break;
+    case VX_TYPE_ARRAY:
+    {
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateArray(context, item_type, capacity), type);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateArray(context, item_type, capacity), type);
+    }
+    break;
+    case VX_TYPE_PYRAMID:
+    {
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreatePyramid(context, levels, scale, src_width, src_height, format), type);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreatePyramid(context, levels, scale, src_width, src_height, format), type);
+    }
+    break;
+    case VX_TYPE_SCALAR:
+    {
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateScalar(context, item_type, &value), type);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateScalar(context, item_type, &value), type);
+    }
+    break;
+    case VX_TYPE_MATRIX:
+    {
+        vx_uint8 *data = ct_alloc_mem(m * n * sizeof(vx_uint8));
+        for (i = 0; i < m * n; i++)
+        {
+            data[i] = (vx_uint8)CT_RNG_NEXT_INT(*seed, 0, 256);
+        }
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateMatrix(context, item_type, m, n), type);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateMatrix(context, item_type, m, n), type);
+        VX_CALL(vxCopyMatrix((vx_matrix)src, (void *)data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        ct_free_mem(data);
+    }
+    break;
+    case VX_TYPE_DISTRIBUTION:
+    {
+        vx_uint32 *data = ct_alloc_mem(bins * sizeof(vx_uint32));
+        for (i = 0; i < bins; i++)
+        {
+            data[i] = (vx_uint32)CT_RNG_NEXT_INT(*seed, 0, 256);
+        }
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateDistribution(context, bins, offset, range), type);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateDistribution(context, bins, offset, range), type);
+        VX_CALL(vxCopyDistribution((vx_distribution)src, (void *)data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        ct_free_mem(data);
+    }
+    break;
+    case VX_TYPE_REMAP:
+    {
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateRemap(context, src_width, src_height, dst_width, dst_height), type);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateRemap(context, src_width, src_height, dst_width, dst_height), type);
+        for (i = 0; i < dst_width; i++)
+        {
+            for (j = 0; j < dst_height; j++)
+            {
+                VX_CALL(vxSetRemapPoint((vx_remap)src, i, j, (vx_float32)((i + j) % src_width), (vx_float32)((i * j) % src_height)));
+            }
+        }
+    }
+    break;
+    case VX_TYPE_LUT:
+    {
+        vx_uint8 *data = ct_alloc_mem(num_items * sizeof(vx_uint8));
+        for (i = 0; i < num_items; i++)
+        {
+            data[i] = (vx_uint8)CT_RNG_NEXT_INT(*seed, 0, 256);
+        }
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateLUT(context, item_type, num_items), type);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateLUT(context, item_type, num_items), type);
+        VX_CALL(vxCopyLUT((vx_lut)src, (void *)data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        ct_free_mem(data);
+    }
+    break;
+    case VX_TYPE_THRESHOLD:
+    {
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateThreshold(context, thresh_type, item_type), type);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateThreshold(context, thresh_type, item_type), type);
+        VX_CALL(vxSetThresholdAttribute((vx_threshold)src, VX_THRESHOLD_THRESHOLD_VALUE, (void *)&thresh_val, sizeof(thresh_val)));
+    }
+    break;
+    case VX_TYPE_TENSOR:
+    {
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+    }
+    break;
+    case VX_TYPE_USER_DATA_OBJECT:
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
+        break;
+    case TIVX_TYPE_RAW_IMAGE:
+    {
+        ASSERT_VX_OBJECT(src = (vx_reference)tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
+        ASSERT_VX_OBJECT(dst = (vx_reference)tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
+    }
+    break;
     default:
         break;
     }
@@ -728,7 +1100,8 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
               ARG_ENUM(VX_TYPE_USER_DATA_OBJECT))
 {
     vx_context context = context_->vx_context_;
-    vx_reference src = 0, dst = 0;
+    vx_reference src = 0, dst = 0, dst1 = 0;
+    uint32_t conerCaseCnt = 0;
 
     uint64_t *seed = &CT()->seed_;
     vx_uint8 value = 0;
@@ -851,12 +1224,19 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
     {
         ASSERT_VX_OBJECT(src = (vx_reference)vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
         ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateTensor(context, nod, dims, dt, errInject(fpp)), (enum vx_type_e)(VX_TYPE_TENSOR));
+        conerCaseCnt++;
+        dims[0]=errInject(dims[0]);
+        ASSERT_VX_OBJECT(dst1 = (vx_reference)vxCreateTensor(context, nod,dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
     }
     break;
     case TIVX_TYPE_RAW_IMAGE:
     {
         ASSERT_VX_OBJECT(src = (vx_reference)tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
         // Modify height and width of dst raw image to create a negative case when src and dst are compared
+        conerCaseCnt++;
+        params.format[1].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+        params.format[1].msb = 12;
+        ASSERT_VX_OBJECT(dst1 = (vx_reference)tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
         params.width = 64;
         params.height = 64;
         ASSERT_VX_OBJECT(dst = (vx_reference)tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
@@ -881,7 +1261,7 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
 
         ASSERT_VX_OBJECT(src = (vx_reference)vxCreateObjectArray(context, (vx_reference)image1, 2), VX_TYPE_OBJECT_ARRAY);
         ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateObjectArray(context, (vx_reference)image2, 3), VX_TYPE_OBJECT_ARRAY);
-        
+
         VX_CALL(vxReleaseImage(&image1));
         VX_CALL(vxReleaseImage(&image2));
         break;
@@ -898,6 +1278,10 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
     {
         // Validates the -Ve Test Scenario
         is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)src, (vx_reference)dst);
+        if (conerCaseCnt)
+        {
+            is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)src, (vx_reference)dst1);
+        }
 
         // Validates the positive testscenario
         is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)src, (vx_reference)src);
@@ -906,14 +1290,21 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
     // finalization
 
     VX_CALL(vxReleaseReference(&dst));
+    if (conerCaseCnt)
+    {
+        VX_CALL(vxReleaseReference(&dst1));
+        ASSERT(dst1 == 0);
+    }
     VX_CALL(vxReleaseReference(&src));
 
     ASSERT(dst == 0);
     ASSERT(src == 0);
+    conerCaseCnt = 0;
 }
 TESTCASE_TESTS(
     tivxMetaFormat,
     negativeTestSetMetaFormatAttribute,
     negativeTestSetMetaFormatFromReference,
     testIsMetaFormatEqual,
-    testSetMetaFormatAttributeType)
+    testSetMetaFormatAttributeType,
+    testSetMetaFormatRefrenceType)
