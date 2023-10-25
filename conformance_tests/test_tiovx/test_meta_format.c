@@ -426,7 +426,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
         }
         break;
     case VX_TYPE_TENSOR:
-        // Postive Cases nod
+        // Positive Cases
         VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_NUMBER_OF_DIMS, &nod, sizeof(vx_size)));
         VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_DIMS, &dims, (sizeof(vx_size) * (vx_size)TIVX_CONTEXT_MAX_TENSOR_DIMS)));
         VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_FIXED_POINT_POSITION, &fpp, sizeof(vx_int8)));
@@ -664,7 +664,7 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatRefrenceType, type_arg, USERKERNE
     vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
     vx_enum dt = VX_TYPE_UINT8, usage = VX_READ_ONLY, user_memory_type = VX_MEMORY_TYPE_HOST;
     vx_int8 fpp = 0;
-    // For User Data Objetc
+    // For User Data Object
     vx_uint32 udata = 0;
     vx_char test_name[] = {'t', 'e', 's', 't', 'i', 'n', 'g'};
     // For Raw image
@@ -1101,7 +1101,7 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
 {
     vx_context context = context_->vx_context_;
     vx_reference src = 0, dst = 0, dst1 = 0;
-    uint32_t conerCaseCnt = 0;
+    uint32_t cornerCaseCnt = 0;
 
     uint64_t *seed = &CT()->seed_;
     vx_uint8 value = 0;
@@ -1224,7 +1224,7 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
     {
         ASSERT_VX_OBJECT(src = (vx_reference)vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
         ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateTensor(context, nod, dims, dt, errInject(fpp)), (enum vx_type_e)(VX_TYPE_TENSOR));
-        conerCaseCnt++;
+        cornerCaseCnt++;
         dims[0]=errInject(dims[0]);
         ASSERT_VX_OBJECT(dst1 = (vx_reference)vxCreateTensor(context, nod,dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
     }
@@ -1233,7 +1233,7 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
     {
         ASSERT_VX_OBJECT(src = (vx_reference)tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
         // Modify height and width of dst raw image to create a negative case when src and dst are compared
-        conerCaseCnt++;
+        cornerCaseCnt++;
         params.format[1].pixel_container = TIVX_RAW_IMAGE_16_BIT;
         params.format[1].msb = 12;
         ASSERT_VX_OBJECT(dst1 = (vx_reference)tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
@@ -1278,7 +1278,7 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
     {
         // Validates the -Ve Test Scenario
         is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)src, (vx_reference)dst);
-        if (conerCaseCnt)
+        if (cornerCaseCnt)
         {
             is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)src, (vx_reference)dst1);
         }
@@ -1290,7 +1290,7 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
     // finalization
 
     VX_CALL(vxReleaseReference(&dst));
-    if (conerCaseCnt)
+    if (cornerCaseCnt)
     {
         VX_CALL(vxReleaseReference(&dst1));
         ASSERT(dst1 == 0);
@@ -1299,7 +1299,7 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
 
     ASSERT(dst == 0);
     ASSERT(src == 0);
-    conerCaseCnt = 0;
+    cornerCaseCnt = 0;
 }
 TESTCASE_TESTS(
     tivxMetaFormat,
