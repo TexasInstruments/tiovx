@@ -1133,6 +1133,73 @@ TEST(tivxRawImage, testQueryRawImage)
     VX_CALL(tivxReleaseRawImage(&raw_image));
 }
 
+TEST(tivxRawImage, negativeTestCopyRawImagePatch)
+{
+    vx_context context = context_->vx_context_;
+    tivx_raw_image raw_image,raw_image1,raw_image2 = 0;
+    vx_rectangle_t rect;
+    vx_imagepatch_addressing_t addr, addrMap;
+    uint16_t *ptr = NULL;
+    vx_map_id map_id;
+
+    rect.start_x = 16;
+    rect.start_y = 19;
+    rect.end_x = 16+16+16+16;
+    rect.end_y = 19+21+21;
+
+    addr.dim_x = 16*sizeof(uint16_t);
+    addr.dim_y = sizeof(uint16_t);
+    addr.stride_x = 1;
+
+    uint16_t img[16];
+
+    tivx_raw_image_create_params_t params;
+    params.width = 64;
+    params.height = 64;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_false_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height_before = 5;
+    params.meta_height_after = 0;
+
+
+    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE,tivxCopyRawImagePatch(NULL, NULL, 0, &addr, (void *)img, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_META_BEFORE_BUFFER));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,tivxCopyRawImagePatch(raw_image, NULL, 0, &addr, NULL, 0, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_META_BEFORE_BUFFER));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,tivxCopyRawImagePatch(raw_image, &rect, 0, &addr, (void *)img, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,tivxCopyRawImagePatch(raw_image, NULL, 0, NULL, (void *)img, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+
+    addr.dim_x = 64*sizeof(uint16_t);
+    addr.dim_y = 64*sizeof(uint16_t);
+    addr.stride_x = 3;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,tivxCopyRawImagePatch(raw_image, &rect, 0, &addr, (void *)img, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+
+    rect.end_x = 19;
+    rect.end_y = 19;
+    params.width = 16;
+    params.height = 16;
+    addr.dim_x = 16*sizeof(uint16_t);
+    addr.dim_y = sizeof(uint16_t);
+
+    ASSERT_VX_OBJECT(raw_image1 = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,tivxCopyRawImagePatch(raw_image1, &rect, 0, &addr, (void *)img, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,tivxCopyRawImagePatch(raw_image1, &rect, 4, &addr, (void *)img, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_META_AFTER_BUFFER));
+
+    VX_CALL(tivxReleaseRawImage(&raw_image));
+    VX_CALL(tivxReleaseRawImage(&raw_image1));
+
+    params.width = 1u;
+    params.num_exposures = 0;
+    EXPECT_VX_ERROR(raw_image=tivxCreateRawImage(context, &params),VX_ERROR_INVALID_PARAMETERS);
+
+}
+
 TESTCASE_TESTS(tivxRawImage,
     test_tivxCreateRawImage,
     test_tivxCopyRawImageRead,
@@ -1145,6 +1212,7 @@ TESTCASE_TESTS(tivxRawImage,
     testMapRawImagePatch,
     negativeTestUnmapRawImagePatch,
     negativeTestQueryRawImage,
-    testQueryRawImage
+    testQueryRawImage,
+    negativeTestCopyRawImagePatch
     )
 
