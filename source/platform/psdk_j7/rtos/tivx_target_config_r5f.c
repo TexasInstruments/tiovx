@@ -125,7 +125,7 @@ void ownPlatformCreateTargets(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DMPAC_DOF, 2, "TIVX_DOF", 8u);
 
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU3_0, 0, "TIVX_MCU3_0", 4u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU3_1, 1, "TIVX_MCU3_1", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU3_1, 0, "TIVX_MCU3_1", 4u);
 
     #if defined(SOC_J784S4)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU4_0, 0, "TIVX_MCU4_0", 4u);
