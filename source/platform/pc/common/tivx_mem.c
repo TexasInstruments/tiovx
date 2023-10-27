@@ -115,16 +115,31 @@ vx_status tivxMemBufferAlloc(
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t alloc_size = size+HOST_EMULATION_ALLOC_PAD;
 
-    mem_ptr->mem_heap_region = mem_heap_region;
-
-    mem_ptr->host_ptr = (uint64_t)(uintptr_t)tivxMemAlloc(alloc_size, (vx_enum)TIVX_MEM_EXTERNAL);
-
-    mem_ptr->shared_ptr = mem_ptr->host_ptr;
-
-    if(mem_ptr->host_ptr==(uint64_t)(uintptr_t)NULL)
+    if ((NULL == mem_ptr) || (0U == size))
     {
-        VX_PRINT(VX_ZONE_ERROR, "Memory was not allocated\n");
-        status = (vx_status)VX_ERROR_NO_MEMORY;
+        if (NULL == mem_ptr)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Mem pointer is NULL\n");
+        }
+        if (0U == size)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "size is 0\n");
+        }
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        mem_ptr->mem_heap_region = mem_heap_region;
+
+        mem_ptr->host_ptr = (uint64_t)(uintptr_t)tivxMemAlloc(alloc_size, (vx_enum)TIVX_MEM_EXTERNAL);
+
+        mem_ptr->shared_ptr = mem_ptr->host_ptr;
+
+        if(mem_ptr->host_ptr==(uint64_t)(uintptr_t)NULL)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Memory was not allocated\n");
+            status = (vx_status)VX_ERROR_NO_MEMORY;
+        }
     }
 
     return (status);
@@ -201,9 +216,24 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t alloc_size = size+HOST_EMULATION_ALLOC_PAD;
 
-    if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
+    if ((NULL == mem_ptr) || (0U == size))
     {
-        status = tivxMemFree((void*)(uintptr_t)mem_ptr->host_ptr, alloc_size, (vx_enum)TIVX_MEM_EXTERNAL);
+        if (NULL == mem_ptr)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Mem pointer is NULL\n");
+        }
+        if (0U == size)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "size is 0\n");
+        }
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
+        {
+            status = tivxMemFree((void*)(uintptr_t)mem_ptr->host_ptr, alloc_size, (vx_enum)TIVX_MEM_EXTERNAL);
+        }
     }
 
     return (status);
