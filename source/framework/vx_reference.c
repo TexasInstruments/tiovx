@@ -302,40 +302,40 @@ vx_status ownAllocReferenceBufferGeneric(vx_reference ref)
         {
             tivx_shared_mem_ptr_t  *mem_ptr = NULL;
             volatile uint32_t       mem_size = 0;
+            /* added void here as this status check of
+             * ownReferenceGetMemAttrsFromObjDesc will always be true if
+             * the previous condition is true
+             */
+            (void)ownReferenceGetMemAttrsFromObjDesc(ref, &mem_ptr, &mem_size);
 
-            status = ownReferenceGetMemAttrsFromObjDesc(ref, &mem_ptr, &mem_size);
-
-            if ((vx_status)VX_SUCCESS == status)
+            /* memory is not allocated, so allocate it */
+            if(mem_ptr->host_ptr == (uint64_t)(uintptr_t)NULL)
             {
-                /* memory is not allocated, so allocate it */
-                if(mem_ptr->host_ptr == (uint64_t)(uintptr_t)NULL)
-                {
-                    status = tivxMemBufferAlloc(
-                        mem_ptr, mem_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
+                status = tivxMemBufferAlloc(
+                    mem_ptr, mem_size,
+                    (vx_enum)TIVX_MEM_EXTERNAL);
 
-                    if ((vx_status)VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    if(mem_ptr->host_ptr==(uint64_t)(uintptr_t)NULL)
                     {
-                        if(mem_ptr->host_ptr==(uint64_t)(uintptr_t)NULL)
-                        {
-                            /* could not allocate memory */
-                            VX_PRINT(VX_ZONE_ERROR,"Could not allocate array memory\n");
-                            status = (vx_status)VX_ERROR_NO_MEMORY;
-                        }
-                        else
-                        {
-                            mem_ptr->shared_ptr = tivxMemHost2SharedPtr(
-                                mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
-                            if(ref->type == VX_TYPE_USER_DATA_OBJECT)
-                            {
-                                memset((vx_uint8 *)(uintptr_t)mem_ptr->host_ptr, 0, mem_size);
-                            }
-                        }
+                        /* could not allocate memory */
+                        VX_PRINT(VX_ZONE_ERROR,"Could not allocate array memory\n");
+                        status = (vx_status)VX_ERROR_NO_MEMORY;
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Memory allocation failed\n");
+                        mem_ptr->shared_ptr = tivxMemHost2SharedPtr(
+                            mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                        if(ref->type == VX_TYPE_USER_DATA_OBJECT)
+                        {
+                            (void)memset((vx_uint8 *)(uintptr_t)mem_ptr->host_ptr, 0, mem_size);
+                        }
                     }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Memory allocation failed\n");
                 }
             }
         }
@@ -371,19 +371,18 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
         {
             tivx_shared_mem_ptr_t  *mem_ptr = NULL;
             volatile uint32_t       mem_size = 0;
+            /* void is added as the status check for the ownReferenceGetMemAttrsFromObjDesc
+             * will be always true as the previous condition is true
+             */
+            (void)ownReferenceGetMemAttrsFromObjDesc(ref, &mem_ptr, &mem_size);
 
-            status = ownReferenceGetMemAttrsFromObjDesc(ref, &mem_ptr, &mem_size);
-
-            if ((vx_status)VX_SUCCESS == status)
+            if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
-                if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
+                status = tivxMemBufferFree(
+                    mem_ptr, mem_size);
+                if ((vx_status)VX_SUCCESS != status)
                 {
-                    status = tivxMemBufferFree(
-                        mem_ptr, mem_size);
-                    if ((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "Buffer free failed!\n");
-                    }
+                    VX_PRINT(VX_ZONE_ERROR, "Buffer free failed!\n");
                 }
             }
         }
@@ -447,33 +446,45 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
 vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
 {
     vx_uint32 result = (uint32_t)UINT32_MAX;
+    vx_status status = (vx_status)VX_SUCCESS;
     if (ref != NULL)
     {
-        ownReferenceLock(ref);
-        if ((reftype == (vx_enum)VX_INTERNAL) || (reftype == (vx_enum)VX_BOTH))
+        status = ownReferenceLock(ref);
+        if((vx_status)VX_SUCCESS != status)
         {
-            if (ref->internal_count == 0U)
-            {
-                VX_PRINT(VX_ZONE_WARNING, "#### INTERNAL REF COUNT IS ALREADY ZERO!!! "VX_FMT_REF" type:%08x #####\n", ref, ref->type);
-            }
-            else
-            {
-                ref->internal_count--;
-            }
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock reference \n");
         }
-        if ((reftype == (vx_enum)VX_EXTERNAL) || (reftype == (vx_enum)VX_BOTH))
+        else
         {
-            if (ref->external_count == 0U)
+            if ((reftype == (vx_enum)VX_INTERNAL) || (reftype == (vx_enum)VX_BOTH))
             {
-                VX_PRINT(VX_ZONE_WARNING, "#### EXTERNAL REF COUNT IS ALREADY ZERO!!! "VX_FMT_REF" type:%08x #####\n", ref, ref->type);
+                if (ref->internal_count == 0U)
+                {
+                    VX_PRINT(VX_ZONE_WARNING, "#### INTERNAL REF COUNT IS ALREADY ZERO!!! "VX_FMT_REF" type:%08x #####\n", ref, ref->type);
+                }
+                else
+                {
+                    ref->internal_count--;
+                }
             }
-            else
+            if ((reftype == (vx_enum)VX_EXTERNAL) || (reftype == (vx_enum)VX_BOTH))
             {
-                ref->external_count--;
+                if (ref->external_count == 0U)
+                {
+                    VX_PRINT(VX_ZONE_WARNING, "#### EXTERNAL REF COUNT IS ALREADY ZERO!!! "VX_FMT_REF" type:%08x #####\n", ref, ref->type);
+                }
+                else
+                {
+                    ref->external_count--;
+                }
             }
         }
         result = ref->internal_count + ref->external_count;
-        ownReferenceUnlock(ref);
+        status = ownReferenceUnlock(ref);
+        if((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock reference \n");
+        }
     }
     return result;
 }
@@ -481,19 +492,31 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
 vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype)
 {
     vx_uint32 count = 0u;
+    vx_status status = (vx_status)VX_SUCCESS;
     if (ref != NULL)
     {
-        ownReferenceLock(ref);
-        if ((reftype == (vx_enum)VX_EXTERNAL) || (reftype == (vx_enum)VX_BOTH))
+        status = ownReferenceLock(ref);
+        if((vx_status)VX_SUCCESS != status)
         {
-            ref->external_count++;
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock reference \n");
         }
-        if ((reftype == (vx_enum)VX_INTERNAL) || (reftype == (vx_enum)VX_BOTH))
+        else
         {
-            ref->internal_count++;
+            if ((reftype == (vx_enum)VX_EXTERNAL) || (reftype == (vx_enum)VX_BOTH))
+            {
+                ref->external_count++;
+            }
+            if ((reftype == (vx_enum)VX_INTERNAL) || (reftype == (vx_enum)VX_BOTH))
+            {
+                ref->internal_count++;
+            }
         }
         count = ref->internal_count + ref->external_count;
-        ownReferenceUnlock(ref);
+        status = ownReferenceUnlock(ref);
+        if((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock reference \n");
+        }
     }
     return count;
 }
@@ -547,11 +570,15 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
 
                 if(ref->lock != NULL)
                 {
-                    tivxMutexDelete(&ref->lock);
+                    /* error check is not required
+                    * as already checking for NULL in above check
+                    */
+                    (void)tivxMutexDelete(&ref->lock);
                 }
                 ref->magic = TIVX_BAD_MAGIC; /* make sure no existing copies of refs can use ref again */
+                if((vx_status)VX_SUCCESS != ownObjectFree(ref))
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to free memory of reference \n");
 
-                ownObjectFree(ref);
             }
         }
         *pref = NULL;
@@ -572,7 +599,8 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
         status = ownInitReference(ref, context, type, scope);
         if(status==(vx_status)VX_SUCCESS)
         {
-            ownIncrementReference(ref, reftype);
+            /* Setting it as void since return value 'ref count' is not used further */
+            (void)ownIncrementReference(ref, reftype);
             if (ownAddReferenceToContext(context, ref) == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Add reference to context failed\n");
@@ -582,7 +610,8 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
 
         if(status!=(vx_status)VX_SUCCESS)
         {
-            ownObjectFree(ref);
+            if((vx_status)VX_SUCCESS != ownObjectFree(ref))
+                VX_PRINT(VX_ZONE_ERROR, "Failed to free memory of reference \n");
             vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Failed to add to resources table\n");
             VX_PRINT(VX_ZONE_ERROR, "Failed to add to resources table\n");
             ref = (vx_reference)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
@@ -900,7 +929,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetReferenceName(vx_reference ref, const vx
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if (ownIsValidReference(ref) != 0)
     {
-        snprintf(ref->name, VX_MAX_REFERENCE_NAME, "%s", name);
+        (void)snprintf(ref->name, VX_MAX_REFERENCE_NAME, "%s", name);
         status = (vx_status)VX_SUCCESS;
     }
     else
@@ -941,7 +970,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxRetainReference(vx_reference ref)
 
     if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
-        ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
+        /* Setting it as void since return value 'ref count' is not used further */
+        (void)ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
     }
     else
     {
@@ -1052,7 +1082,10 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
         VX_PRINT(VX_ZONE_ERROR, "The type of the references do not match.\n");
         status = (vx_status)VX_FAILURE;
     }
-
+    else
+    {
+        /* do nothing as references are already validated */
+    }
     /* Create a meta format object. */
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -1115,12 +1148,20 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
     /* Release the meta objects. */
     if (mf1 != NULL)
     {
-        ownReleaseMetaFormat(&mf1);
+        status = ownReleaseMetaFormat(&mf1);
+        if (status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to release a meta-format object.\n");
+        }
     }
 
     if (mf2 != NULL)
     {
-        ownReleaseMetaFormat(&mf2);
+        status =  ownReleaseMetaFormat(&mf2);
+        if (status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to release a meta-format object.\n");
+        }
     }
 
     return boolStatus;
@@ -1206,7 +1247,10 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'size' is NULL.\n");
         status = (vx_status)VX_FAILURE;
     }
-
+    else
+    {
+       /* do nothing as the arguments are already validated */;
+    }
     if (status == (vx_status)VX_SUCCESS)
     {
         numMemElem = 1;
@@ -1664,7 +1708,10 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'num_entries' is NULL.\n");
         status = (vx_status)VX_FAILURE;
     }
-
+    else
+    {
+        /* do nothing as the arguments are already validated */;
+    }
     if (status == (vx_status)VX_SUCCESS)
     {
         numMemElem = 1;
