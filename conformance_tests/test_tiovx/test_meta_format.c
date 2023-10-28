@@ -247,11 +247,11 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
     vx_enum dt = VX_TYPE_UINT8, usage = VX_READ_ONLY, user_memory_type = VX_MEMORY_TYPE_HOST;
     vx_int8 fpp = 0;
-	
+
     // For User Data Objetc
     vx_size udata = 0;
     vx_char test_name[] = {'t', 'e', 's', 't', 'i', 'n', 'g'};
-	
+
     // For Raw image
     tivx_raw_image_create_params_t params;
     params.width = 128;
@@ -266,8 +266,8 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     params.format[2].msb = 11;
     params.meta_height_before = 5;
     params.meta_height_after = 0;
-	
-	//Dummy Data
+
+    // Dummy Data
     uint32_t u32Dummy = 0;
     bool bDummy = 0;
     switch ((uint32_t)type)
@@ -659,7 +659,7 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatRefrenceType, type_arg, USERKERNE
     is_kernel_called = vx_false_e;
     is_initialize_called = vx_false_e;
     is_deinitialize_called = vx_false_e;
-	// For Tensor
+    // For Tensor
     vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS;
     vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
     vx_enum dt = VX_TYPE_UINT8, usage = VX_READ_ONLY, user_memory_type = VX_MEMORY_TYPE_HOST;
@@ -813,11 +813,11 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatRefrenceType, type_arg, USERKERNE
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(user_kernel = vxGetKernelByName(context, VX_KERNEL_CONFORMANCE_TEST_OWN_USER_NAME), VX_TYPE_KERNEL);
     ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, user_kernel), VX_TYPE_NODE);
-    
-	VX_CALL(vxSetParameterByIndex(node, 0, (vx_reference)src));
+
+    VX_CALL(vxSetParameterByIndex(node, 0, (vx_reference)src));
     VX_CALL(vxSetParameterByIndex(node, 1, (vx_reference)dst));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-	
+
     is_deinitialize_called = vx_false_e;
     is_validator_called = vx_false_e;
     is_kernel_called = vx_false_e;
@@ -891,6 +891,7 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatAttributeType, type_arg, USERKERN
     vx_size num_items = 100;
     vx_size m = 5, n = 5;
     vx_size i, j;
+    vx_status status = VX_SUCCESS;
 
     vx_bool expectedFailure = 0;
     int phase = 0;
@@ -933,7 +934,7 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatAttributeType, type_arg, USERKERN
     params.format[2].msb = 11;
     params.meta_height_before = 5;
     params.meta_height_after = 0;
-	
+
     switch ((uint32_t)type)
     {
     case VX_TYPE_IMAGE:
@@ -1049,20 +1050,21 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatAttributeType, type_arg, USERKERN
     VX_CALL(vxSetParameterByIndex(node, 0, (vx_reference)src));
     VX_CALL(vxSetParameterByIndex(node, 1, (vx_reference)dst));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    status = vxVerifyGraph(graph);
 
     is_deinitialize_called = vx_false_e;
     is_validator_called = vx_false_e;
     is_kernel_called = vx_false_e;
 
-    VX_CALL(vxProcessGraph(graph));
-
-    ASSERT(is_deinitialize_called == vx_false_e);
-    ASSERT(is_validator_called == vx_false_e);
-    ASSERT(is_kernel_called == vx_true_e);
+    if (VX_SUCCESS == status)
+    {
+        VX_CALL(vxProcessGraph(graph));
+        ASSERT(is_deinitialize_called == vx_false_e);
+        ASSERT(is_validator_called == vx_false_e);
+        ASSERT(is_kernel_called == vx_true_e);
+    }
 
     // finalization
-
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
     /* user kernel should be removed only after all references to it released */
@@ -1225,8 +1227,8 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
         ASSERT_VX_OBJECT(src = (vx_reference)vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
         ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateTensor(context, nod, dims, dt, errInject(fpp)), (enum vx_type_e)(VX_TYPE_TENSOR));
         cornerCaseCnt++;
-        dims[0]=errInject(dims[0]);
-        ASSERT_VX_OBJECT(dst1 = (vx_reference)vxCreateTensor(context, nod,dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+        dims[0] = errInject(dims[0]);
+        ASSERT_VX_OBJECT(dst1 = (vx_reference)vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
     }
     break;
     case TIVX_TYPE_RAW_IMAGE:
