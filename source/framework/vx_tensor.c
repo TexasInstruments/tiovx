@@ -212,7 +212,11 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
                     (vx_enum)TIVX_OBJ_DESC_TENSOR, (vx_reference)tensor);
                 if(tensor->base.obj_desc==NULL)
                 {
-                    vxReleaseTensor(&tensor);
+                    status = vxReleaseTensor(&tensor);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate tensor object descriptor\n");
@@ -524,7 +528,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
                 tivxCheckStatus(&status, tivxMemBufferMap(tensor_ptr + tensor_pos, (uint32_t)bytes_per_line,
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
-                memcpy (user_curr_ptr + patch_pos, tensor_ptr + tensor_pos, bytes_per_line);
+                (void)memcpy (user_curr_ptr + patch_pos, tensor_ptr + tensor_pos, bytes_per_line);
 
                 tivxCheckStatus(&status, tivxMemBufferUnmap(tensor_ptr + tensor_pos, (uint32_t)bytes_per_line,
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
@@ -534,7 +538,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
                 tivxCheckStatus(&status, tivxMemBufferMap(tensor_ptr + tensor_pos, (uint32_t)bytes_per_line,
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
-                memcpy (tensor_ptr + tensor_pos, user_curr_ptr + patch_pos, bytes_per_line);
+                (void)memcpy (tensor_ptr + tensor_pos, user_curr_ptr + patch_pos, bytes_per_line);
 
                 tivxCheckStatus(&status, tivxMemBufferUnmap(tensor_ptr + tensor_pos, (uint32_t)bytes_per_line,
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));

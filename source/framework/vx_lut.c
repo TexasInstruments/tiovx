@@ -30,6 +30,7 @@ vx_lut VX_API_CALL vxCreateLUT(
     vx_lut lut = NULL;
     vx_size dim = 0;
     tivx_obj_desc_lut_t *obj_desc = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -78,7 +79,11 @@ vx_lut VX_API_CALL vxCreateLUT(
                     (vx_enum)TIVX_OBJ_DESC_LUT, (vx_reference)lut);
                 if(obj_desc==NULL)
                 {
-                    vxReleaseLUT(&lut);
+                    status = vxReleaseLUT(&lut);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate lut object descriptor\n");
@@ -249,7 +254,7 @@ vx_status VX_API_CALL vxCopyLUT(
             tivxCheckStatus(&status, tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
-            memcpy(user_ptr, (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size);
+            (void)memcpy(user_ptr, (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size);
 
             tivxCheckStatus(&status, tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
@@ -263,7 +268,7 @@ vx_status VX_API_CALL vxCopyLUT(
                 tivxCheckStatus(&status, tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
-                memcpy((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, user_ptr, size);
+                (void)memcpy((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
                 tivxCheckStatus(&status, tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));

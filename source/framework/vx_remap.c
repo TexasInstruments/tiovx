@@ -36,6 +36,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
 {
     vx_remap remap = NULL;
     tivx_obj_desc_remap_t *obj_desc = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context)==(vx_bool)vx_true_e)
     {
@@ -52,7 +53,11 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                 obj_desc = (tivx_obj_desc_remap_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_REMAP, (vx_reference)remap);
                 if(obj_desc==NULL)
                 {
-                    vxReleaseRemap(&remap);
+                    status = vxReleaseRemap(&remap);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate remap object descriptor\n");
                     remap = (vx_remap)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);

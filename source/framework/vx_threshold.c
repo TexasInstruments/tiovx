@@ -31,6 +31,7 @@ vx_threshold VX_API_CALL vxCreateThreshold(
 {
     vx_threshold thresh = NULL;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -55,7 +56,11 @@ vx_threshold VX_API_CALL vxCreateThreshold(
                     (vx_enum)TIVX_OBJ_DESC_THRESHOLD, (vx_reference)thresh);
                 if(obj_desc==NULL)
                 {
-                    vxReleaseThreshold(&thresh);
+                    status = vxReleaseThreshold(&thresh);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate thresh object descriptor\n");

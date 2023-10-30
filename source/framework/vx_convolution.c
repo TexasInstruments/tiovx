@@ -26,6 +26,7 @@ vx_convolution VX_API_CALL vxCreateConvolution(
 {
     vx_convolution cnvl = NULL;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -50,7 +51,11 @@ vx_convolution VX_API_CALL vxCreateConvolution(
                     (vx_enum)TIVX_OBJ_DESC_CONVOLUTION, (vx_reference)cnvl);
                 if(obj_desc==NULL)
                 {
-                    vxReleaseConvolution(&cnvl);
+                    status = vxReleaseConvolution(&cnvl);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate cnvl object descriptor\n");

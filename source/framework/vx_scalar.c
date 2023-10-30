@@ -124,6 +124,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
 {
     vx_scalar scalar = NULL;
     tivx_obj_desc_scalar_t *obj_desc = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -144,7 +145,11 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
                 obj_desc = (tivx_obj_desc_scalar_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SCALAR, (vx_reference)scalar);
                 if(obj_desc==NULL)
                 {
-                    vxReleaseScalar(&scalar);
+                    status = vxReleaseScalar(&scalar);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate scalar object descriptor\n");
                     scalar = (vx_scalar)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
@@ -159,7 +164,10 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
                     /* User can pass a NULL ptr, but scalar will be initialized */
                     if (NULL != ptr)
                     {
-                        vxCopyScalar(scalar, (void*)ptr, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
+                        /* Error status check is not done due
+                         * to the previous condition checks
+                         */
+                        (void)vxCopyScalar(scalar, (void*)ptr, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
                     }
                 }
             }

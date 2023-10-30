@@ -122,7 +122,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publi
                 (g_module_table[idx].unpublish == NULL)
               )
             {
-                strncpy(g_module_table[idx].name, name, TIVX_MODULE_MAX_NAME-1U);
+                (void)strncpy(g_module_table[idx].name, name, TIVX_MODULE_MAX_NAME-1U);
                 g_module_table[idx].name[TIVX_MODULE_MAX_NAME-1U] = '\0';
                 g_module_table[idx].publish = publish;
                 g_module_table[idx].unpublish = unpublish;

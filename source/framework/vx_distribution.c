@@ -23,6 +23,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
 {
     vx_distribution dist = NULL;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -44,7 +45,11 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                     (vx_enum)TIVX_OBJ_DESC_DISTRIBUTION, (vx_reference)dist);
                 if(obj_desc==NULL)
                 {
-                    vxReleaseDistribution(&dist);
+                    status = vxReleaseDistribution(&dist);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate dist object descriptor\n");
@@ -226,7 +231,7 @@ vx_status VX_API_CALL vxCopyDistribution(
             tivxCheckStatus(&status, tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
-            memcpy(user_ptr, (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size);
+            (void)memcpy(user_ptr, (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size);
 
             tivxCheckStatus(&status, tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
@@ -240,7 +245,7 @@ vx_status VX_API_CALL vxCopyDistribution(
                 tivxCheckStatus(&status, tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
-                memcpy((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, user_ptr, size);
+                (void)memcpy((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
                 tivxCheckStatus(&status, tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
