@@ -278,7 +278,7 @@ vx_bool ownNodeIsPrmReplicated(vx_node node, uint32_t prm_idx);
  *
  * \ingroup group_vx_node
  */
-void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value);
+vx_status ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value);
 
 /*! \brief Get next node at given output index
  *

@@ -2209,9 +2209,10 @@ void ownNodeClearExecuteState(vx_node node, uint32_t pipeline_id)
     }
 }
 
-void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value)
+vx_status ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+
     if (NULL != node->parameters[index]) {
         status = ownReleaseReferenceInt(&node->parameters[index],
             node->parameters[index]->type, (vx_enum)VX_INTERNAL, NULL);
@@ -2220,13 +2221,15 @@ void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value)
             VX_PRINT(VX_ZONE_ERROR,"Failed to destroy reference\n");
         }
     }
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        (void)ownIncrementReference(value, (vx_enum)VX_INTERNAL);
+        node->parameters[index] = (vx_reference)value;
 
-    (void)ownIncrementReference(value, (vx_enum)VX_INTERNAL);
-    node->parameters[index] = (vx_reference)value;
-
-    /* Assign parameter descriptor id in the node */
-    node->obj_desc[0]->data_id[index] =
-        ownReferenceGetObjDescId(value);
+        /* Assign parameter descriptor id in the node */
+        node->obj_desc[0]->data_id[index] = ownReferenceGetObjDescId(value);
+    }
+    return status;
 }
 
 vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index)
