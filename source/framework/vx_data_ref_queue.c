@@ -98,7 +98,7 @@ vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_refe
             blocked_nodes.num_nodes = 0;
 
             /* if any node is blocked on ref enqueued to this queue, then get the list of blocked nodes */
-            ownObjDescQueueExtractBlockedNodes(queue_obj_desc_id,
+            status = ownObjDescQueueExtractBlockedNodes(queue_obj_desc_id,
                 &blocked_nodes);
         }
 
@@ -263,13 +263,20 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
     {
         if(ref->wait_done_ref_available_event != NULL)
         {
-            tivxEventPost(ref->wait_done_ref_available_event);
+            status = tivxEventPost(ref->wait_done_ref_available_event);
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to add post event\n");
+            }
         }
         if(ref->is_enable_send_ref_consumed_event != 0)
         {
-            ownEventQueueAddEvent(&ref->base.context->event_queue,
+            status = ownEventQueueAddEvent(&ref->base.context->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
                         (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
+            }
         }
     }
 #ifdef LDRA_UNTESTABLE_CODE
@@ -285,6 +292,7 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
 static vx_status ownDataRefQueueDestruct(vx_reference ref)
 {
     uint32_t i;
+    vx_status status=(vx_status)VX_SUCCESS;
 
     if(ref->type == (vx_enum)TIVX_TYPE_DATA_REF_Q)
     {
@@ -292,30 +300,48 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
 
         if(data_ref_q->wait_done_ref_available_event!=NULL)
         {
-            tivxEventDelete(&data_ref_q->wait_done_ref_available_event);
+           /* Error status check not done since
+            * there is previous NULL check
+            */
+           (void)tivxEventDelete(&data_ref_q->wait_done_ref_available_event);
         }
-
         for(i=0; i<data_ref_q->pipeline_depth; i++)
         {
             if(data_ref_q->obj_desc[i] != NULL)
             {
-                ownObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc[i]);
+                status = ownObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc[i]);
+                if((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor\n");
+                    break;
+                }
             }
             if(data_ref_q->obj_desc_cmd[i] != NULL)
             {
-                ownObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc_cmd[i]);
+                status = ownObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc_cmd[i]);
+                if((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor\n");
+                    break;
+                }
             }
         }
-        if((vx_enum)data_ref_q->acquire_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+        if(status == VX_SUCCESS)
         {
-            ownObjDescQueueRelease(&data_ref_q->acquire_q_obj_desc_id);
-        }
-        if((vx_enum)data_ref_q->release_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
-        {
-            ownObjDescQueueRelease(&data_ref_q->release_q_obj_desc_id);
+            if((vx_enum)data_ref_q->acquire_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+            {
+                status = ownObjDescQueueRelease(&data_ref_q->acquire_q_obj_desc_id);
+            }
+            if(status == VX_SUCCESS)
+            {
+                if((vx_enum)data_ref_q->release_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                {
+                    status = ownObjDescQueueRelease(&data_ref_q->release_q_obj_desc_id);
+                }
+            }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 
 tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_queue_create_params_t *prms)
