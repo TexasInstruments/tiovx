@@ -264,6 +264,7 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
         if(ref->wait_done_ref_available_event != NULL)
         {
             status = tivxEventPost(ref->wait_done_ref_available_event);
+            if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to add post event\n");
             }
