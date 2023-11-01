@@ -82,7 +82,7 @@ vx_lut VX_API_CALL vxCreateLUT(
                     status = vxReleaseLUT(&lut);
                     if((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to LUT object\n");
                     }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,

@@ -215,7 +215,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
                     status = vxReleaseTensor(&tensor);
                     if((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to tensor object\n");
                     }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,

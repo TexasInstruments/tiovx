@@ -56,7 +56,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                     status = vxReleaseRemap(&remap);
                     if((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to remap table object\n");
                     }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate remap object descriptor\n");

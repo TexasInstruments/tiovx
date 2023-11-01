@@ -148,7 +148,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
                     status = vxReleaseScalar(&scalar);
                     if((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar object\n");
                     }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate scalar object descriptor\n");
