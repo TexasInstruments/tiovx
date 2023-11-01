@@ -126,7 +126,8 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                     (vx_enum)TIVX_OBJ_DESC_PYRAMID, (vx_reference)prmd);
                 if(obj_desc==NULL)
                 {
-                    vxReleasePyramid(&prmd);
+                    if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd))
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate prmd object descriptor\n");
@@ -154,7 +155,8 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
 
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        vxReleasePyramid(&prmd);
+                        if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd))
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
                     }
                 }
             }
@@ -196,8 +198,10 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
             img = prmd->img[index];
 
             /* Should increment the reference count,
-               To release this image, app should explicitely call ReleaseImage */
-            ownIncrementReference(&img->base, (vx_enum)VX_EXTERNAL);
+             * To release this image, app should explicitely call ReleaseImage.
+             * Setting it as void since return value 'count' not used further
+             */
+            (void)ownIncrementReference(&img->base, (vx_enum)VX_EXTERNAL);
 
             /* setting is_array_element flag */
             img->base.is_array_element = (vx_bool)vx_true_e;
@@ -251,7 +255,8 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
                 (vx_enum)TIVX_OBJ_DESC_PYRAMID, (vx_reference)prmd);
             if(obj_desc==NULL)
             {
-                vxReleasePyramid(&prmd);
+                if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd))
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
 
                 vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                     "Could not allocate prmd object descriptor\n");
@@ -468,8 +473,10 @@ static vx_status ownDestructPyramid(vx_reference ref)
             (vxGetStatus((vx_reference)prmd->img[i]) == (vx_status)VX_SUCCESS))
         {
             /* decrement the internal counter on the image, not the
-               external one */
-            ownDecrementReference((vx_reference)prmd->img[i], (vx_enum)VX_INTERNAL);
+             * external one. Setting it as void since return value
+             * 'count' is not used further.
+             */
+            (void)ownDecrementReference((vx_reference)prmd->img[i], (vx_enum)VX_INTERNAL);
 
             status = ownReleaseReferenceInt((vx_reference *)&prmd->img[i],
                     (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
@@ -526,7 +533,7 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
 
             /* increment the internal counter on the image, not the
                external one */
-            ownIncrementReference((vx_reference)img, (vx_enum)VX_INTERNAL);
+            (void)ownIncrementReference((vx_reference)img, (vx_enum)VX_INTERNAL);
 
             /* remember that the scope of the image is the prmd */
             ownReferenceSetScope(&img->base, &prmd->base);
@@ -563,10 +570,12 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
             {
                 /* increment the internal counter on the image, not the
                    external one */
-                ownDecrementReference((vx_reference)prmd->img[j], (vx_enum)VX_INTERNAL);
+                (void)ownDecrementReference((vx_reference)prmd->img[j], (vx_enum)VX_INTERNAL);
 
-                ownReleaseReferenceInt((vx_reference *)&prmd->img[j],
+                status = ownReleaseReferenceInt((vx_reference *)&prmd->img[j],
                     (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
+                if((vx_status)VX_SUCCESS != status)
+                    VX_PRINT(VX_ZONE_ERROR,"Pyramid release failed\n");
             }
         }
     }
