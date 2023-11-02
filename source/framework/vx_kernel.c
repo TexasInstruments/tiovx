@@ -42,7 +42,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
     if ((NULL != kernel) &&
         (ownIsValidSpecificReference((vx_reference)(*kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) )
     {
-        ownReleaseReferenceInt((vx_reference *)kernel, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, NULL);
+        status = ownReleaseReferenceInt((vx_reference *)kernel, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, NULL);
+        if((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to destroy reference\n");
+        }
     }
     else
     {
@@ -74,7 +78,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
             case (vx_enum)VX_KERNEL_NAME:
                 if ((ptr != NULL) && ((vx_enum)size >= VX_MAX_KERNEL_NAME))
                 {
-                    strncpy(ptr, kernel->name, VX_MAX_KERNEL_NAME);
+                    (void)strncpy(ptr, kernel->name, VX_MAX_KERNEL_NAME);
                 }
                 else
                 {
@@ -239,8 +243,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
 
                 /* Decrementing internal ref count given when it was added to context.  Do this now even though
                  * kernel will be removed in destructor.  This is needed so that the destructor will properly
-                 * get called when all other references have been released */
-                ownDecrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
+                 * get called when all other references have been released.
+                 * Setting it void as return value 'count' is not used further.
+                 */
+                (void)ownDecrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
             }
 
 /* The following logic is to throw an error if :
@@ -357,6 +363,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
     vx_kernel kernel = NULL;
     vx_bool is_found;
     uint32_t idx;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context)==(vx_bool)vx_true_e)
     {
@@ -364,8 +371,8 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
         {
             is_found = (vx_bool)vx_false_e;
 
-            ownIsKernelInContext(context, enumeration, name, &is_found);
-            if((numParams <= TIVX_KERNEL_MAX_PARAMS)
+            status = ownIsKernelInContext(context, enumeration, name, &is_found);
+            if(((vx_status)VX_SUCCESS == status) && (numParams <= TIVX_KERNEL_MAX_PARAMS)
                 && (
                 (is_found == (vx_bool)vx_false_e) /* not a duplicate kernel */
                 ))
@@ -373,9 +380,10 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                 kernel = (vx_kernel)ownCreateReference(context, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, &context->base);
                 if ((vxGetStatus((vx_reference)kernel) == (vx_status)VX_SUCCESS) && (kernel->base.type == (vx_enum)VX_TYPE_KERNEL))
                 {
-                    strncpy(kernel->name, name, VX_MAX_KERNEL_NAME-1);
+                    (void)strncpy(kernel->name, name, VX_MAX_KERNEL_NAME-1);
                     kernel->name[VX_MAX_KERNEL_NAME-1]=(char)0;
-                    vxSetReferenceName((vx_reference)kernel, kernel->name);
+                    /* Error status check is not done due to the previous condition check */
+                    (void)vxSetReferenceName((vx_reference)kernel, kernel->name);
                     kernel->enumeration = enumeration;
                     kernel->function = func_ptr;
                     kernel->validate = validate;
@@ -413,7 +421,13 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                     if(kernel->is_target_kernel == (vx_bool)vx_false_e)
                     {
                         /* for user kernel, add to HOST target by default */
-                        tivxAddKernelTarget(kernel, TIVX_TARGET_HOST);
+                        status = tivxAddKernelTarget(kernel, TIVX_TARGET_HOST);
+                        if((vx_status)VX_SUCCESS != status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to add kernel to host target\n");
+                            kernel = (vx_kernel)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
+                        }
+
                     }
                 }
             }
@@ -492,7 +506,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const c
     {
         if(kernel->num_targets < TIVX_MAX_TARGETS_PER_KERNEL)
         {
-            strncpy(kernel->target_name[kernel->num_targets],
+            (void)strncpy(kernel->target_name[kernel->num_targets],
                     target_name,
                     TIVX_TARGET_MAX_NAME-1U
                 );
