@@ -21,19 +21,28 @@ VX_API_ENTRY void VX_API_CALL vxRegisterLogCallback(vx_context cntxt, vx_log_cal
 {
     if (ownIsValidContext(cntxt) == (vx_bool)vx_true_e)
     {
-        ownContextLock(cntxt);
-        if ((cntxt->log_callback == NULL) && (callback != NULL))
+        if((vx_status)VX_SUCCESS != ownContextLock(cntxt))
         {
-            cntxt->log_enabled = (vx_bool)vx_true_e;
+            VX_PRINT(VX_ZONE_ERROR, "Failed to lock context\n");
+        }
+        else
+        {
+            if ((cntxt->log_callback == NULL) && (callback != NULL))
+            {
+                cntxt->log_enabled = (vx_bool)vx_true_e;
 
-            /* reentrant is ignored, lock is always taken */
+                /* reentrant is ignored, lock is always taken */
+            }
+            if ((cntxt->log_callback != NULL) && (callback == NULL))
+            {
+                cntxt->log_enabled = (vx_bool)vx_false_e;
+            }
+            cntxt->log_callback = callback;
+            if((vx_status)VX_SUCCESS != ownContextUnlock(cntxt))
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Failed to unlock context\n");
+            }
         }
-        if ((cntxt->log_callback != NULL) && (callback == NULL))
-        {
-            cntxt->log_enabled = (vx_bool)vx_false_e;
-        }
-        cntxt->log_callback = callback;
-        ownContextUnlock(cntxt);
     }
 }
 
@@ -96,16 +105,24 @@ VX_API_ENTRY void VX_API_CALL vxAddLogEntry(vx_reference ref, vx_status status, 
         }
         else
         {
-            tivxMutexLock(context->log_lock);
+            if((vx_status)VX_SUCCESS != tivxMutexLock(context->log_lock))
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Failed to lock mutex\n");
+            }
+            else
+            {
+                (void)va_start(ap, message);
+                (void)vsnprintf(string, VX_MAX_LOG_MESSAGE_LEN, message, ap);
+                string[VX_MAX_LOG_MESSAGE_LEN-1] = '\0'; /* for MSVC which is not C99 compliant */
+                va_end(ap);
 
-            va_start(ap, message);
-            vsnprintf(string, VX_MAX_LOG_MESSAGE_LEN, message, ap);
-            string[VX_MAX_LOG_MESSAGE_LEN-1] = '\0'; /* for MSVC which is not C99 compliant */
-            va_end(ap);
+                context->log_callback(context, ref, status, string);
 
-            context->log_callback(context, ref, status, string);
-
-            tivxMutexUnlock(context->log_lock);
+                if((vx_status)VX_SUCCESS != tivxMutexUnlock(context->log_lock))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to unlock mutex\n");
+                }
+            }
         }
     }
 
