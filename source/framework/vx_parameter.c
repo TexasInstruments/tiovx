@@ -115,7 +115,8 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
                 parameter->index = index;
                 parameter->node = NULL;
                 parameter->kernel = kernel;
-                ownIncrementReference(&parameter->kernel->base, (vx_enum)VX_INTERNAL);
+                /* Setting it void since return value 'count' not used further */
+                (void)ownIncrementReference(&parameter->kernel->base, (vx_enum)VX_INTERNAL);
             }
         }
         else
@@ -151,9 +152,11 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uin
                     param->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseParameter;
                     param->index = index;
                     param->node = node;
-                    ownIncrementReference(&param->node->base, (vx_enum)VX_INTERNAL);
+                    /* Setting it void since return value 'count' not used further */
+                    (void)ownIncrementReference(&param->node->base, (vx_enum)VX_INTERNAL);
                     param->kernel = node->kernel;
-                    ownIncrementReference(&param->kernel->base, (vx_enum)VX_INTERNAL);
+                    /* Setting it void since return value 'count' not used further */
+                    (void)ownIncrementReference(&param->kernel->base, (vx_enum)VX_INTERNAL);
                 }
             }
             else
@@ -223,8 +226,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
             if(status == (vx_status)VX_SUCCESS)
             {
                 /* if it was a valid reference then get the type from it */
-                vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type));
-                VX_PRINT(VX_ZONE_PARAMETER, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
+                if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type)))
+                    VX_PRINT(VX_ZONE_PARAMETER, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
 
                 /* Check that signature type matches reference type*/
                 if (node->kernel->signature.types[index] != type)
@@ -280,7 +283,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 
             if(status == (vx_status)VX_SUCCESS)
             {
-                ownNodeSetParameter(node, index, value);
+                if((vx_status)VX_SUCCESS != ownNodeSetParameter(node, index, value))
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to set node parameter\n");
             }
 
             /* Note that we don't need to do anything special for parameters to child graphs. */
@@ -381,9 +385,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
                             /*! \internal this could potentially allow the user to break
                              * a currently chosen optimization! We need to alert the
                              * system that if a write occurs to this data, put the graph
-                             * into an unverified state.
+                             * into an unverified state. Setting it void since return value
+                             * 'count' not used further
                              */
-                            ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
+                            (void)ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
                         }
                         *(vx_reference *)ptr = (vx_reference)ref;
                     }
