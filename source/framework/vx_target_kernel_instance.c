@@ -82,13 +82,23 @@ vx_status ownTargetKernelInstanceInit(void)
     }
 
     status = tivxMutexCreate(&g_target_kernel_instance_lock);
+    if((vx_status)VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to create mutex\n");
+    }
 
     return status;
 }
 
 void ownTargetKernelInstanceDeInit(void)
 {
-    tivxMutexDelete(&g_target_kernel_instance_lock);
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    status = tivxMutexDelete(&g_target_kernel_instance_lock);
+    if((vx_status)VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
+    }
 }
 
 tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id)
@@ -158,7 +168,11 @@ tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, vola
                 VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_TARGET_KERNEL_INSTANCE_MAX in tiovx/include/TI/tivx_config.h\n");
             }
 
-            tivxMutexUnlock(g_target_kernel_instance_lock);
+            status = tivxMutexUnlock(g_target_kernel_instance_lock);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
+            }
         }
     }
 
@@ -314,7 +328,7 @@ VX_API_ENTRY void tivxGetTargetKernelInstanceBorderMode(
 {
     if ((NULL != target_kernel_instance) && (NULL != border_mode))
     {
-        memcpy(border_mode, &target_kernel_instance->border_mode,
+        (void)memcpy(border_mode, &target_kernel_instance->border_mode,
             sizeof(vx_border_t));
     }
 }
