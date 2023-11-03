@@ -160,7 +160,7 @@ vx_status ownEventQueueCreate(tivx_event_queue_t *event_q);
  *
  * \ingroup group_tivx_event_queue
  */
-void ownEventQueueDelete(tivx_event_queue_t *event_q);
+vx_status ownEventQueueDelete(tivx_event_queue_t *event_q);
 
 /*!
  * \brief Add event to event queue

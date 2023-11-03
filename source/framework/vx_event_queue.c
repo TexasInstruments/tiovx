@@ -80,7 +80,10 @@ vx_status ownEventQueueCreate(tivx_event_queue_t *event_q)
                 TIVX_QUEUE_FLAG_BLOCK_ON_GET);
         if(status!=(vx_status)VX_SUCCESS)
         {
-            tivxQueueDelete(&event_q->free_queue);
+            /* void added as the status would be success
+             * due to previous check at tixQueueCreate
+             */
+            (void)tivxQueueDelete(&event_q->free_queue);
         }
     }
     if(status!=(vx_status)VX_SUCCESS)
@@ -97,7 +100,7 @@ vx_status ownEventQueueCreate(tivx_event_queue_t *event_q)
             /* this call wont fail since number of elements being inserted are equal to
              * queue depth, hence not doing any error checks
              */
-            tivxQueuePut(&event_q->free_queue, i, TIVX_EVENT_TIMEOUT_NO_WAIT);
+            (void)tivxQueuePut(&event_q->free_queue, i, TIVX_EVENT_TIMEOUT_NO_WAIT);
         }
     }
 
@@ -105,12 +108,20 @@ vx_status ownEventQueueCreate(tivx_event_queue_t *event_q)
     return status;
 }
 
-void ownEventQueueDelete(tivx_event_queue_t *event_q)
+vx_status ownEventQueueDelete(tivx_event_queue_t *event_q)
 {
     event_q->enable = (vx_bool)vx_false_e;
+    vx_status status = VX_SUCCESS;
 
-    tivxQueueDelete(&event_q->free_queue);
-    tivxQueueDelete(&event_q->ready_queue);
+    status = tivxQueueDelete(&event_q->free_queue);
+    if(status != (vx_status)VX_SUCCESS)
+        VX_PRINT(VX_ZONE_ERROR,"Failed to delete free_queue\n");
+
+    status = tivxQueueDelete(&event_q->ready_queue);
+    if(status != (vx_status)VX_SUCCESS)
+        VX_PRINT(VX_ZONE_ERROR,"Failed to delete ready_queue\n");
+
+    return status;
 }
 
 void ownEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable)
@@ -300,7 +311,7 @@ vx_status vxWaitEventQueue(
 
         /* release index into free queue,
          * this wont fail since the index was dequeued from free queue to begin with */
-        tivxQueuePut(&event_q->free_queue, index, TIVX_EVENT_TIMEOUT_NO_WAIT);
+        (void)tivxQueuePut(&event_q->free_queue, index, TIVX_EVENT_TIMEOUT_NO_WAIT);
     }
 
     return status;
@@ -332,22 +343,16 @@ vx_status ownRegisterEvent(vx_reference ref,
             if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
             {
                 node->is_graph_event = (vx_bool)vx_true_e;
-                status = (vx_status)VX_SUCCESS;
+                status = ownNodeRegisterEvent((vx_node)ref, (vx_enum)type, app_value);
             }
             else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)
             {
                 node->is_context_event = (vx_bool)vx_true_e;
-                status = (vx_status)VX_SUCCESS;
+                status = ownNodeRegisterEvent((vx_node)ref, (vx_enum)type, app_value);
             }
             else
             {
-                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                VX_PRINT(VX_ZONE_ERROR, "Invalid queue type given\n");
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                status = ownNodeRegisterEvent((vx_node)ref, (vx_enum)type, app_value);
+                /* do nothing */
             }
         }
     }
