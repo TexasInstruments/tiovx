@@ -132,10 +132,13 @@ vx_bool ownIsValidReference(vx_reference ref)
         {
             VX_PRINT(VX_ZONE_INFO, "Not a valid reference!\n");
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM001 */
         else
         {
             /* do nothing as ret is already initialized */
         }
+#endif
     }
     else
     {
@@ -266,10 +269,13 @@ static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_share
             *mem_size   = obj_desc->mem_size;
             break;
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEF_REF_TYPE_UM001 */
         default:
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
+#endif
     }
 
     return status;
@@ -284,11 +290,14 @@ vx_status ownAllocReferenceBufferGeneric(vx_reference ref)
     {
         base_obj_desc = (tivx_obj_desc_t *)ref->obj_desc;
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM002 */
         if(base_obj_desc == NULL)
         {
             status = (vx_status)VX_ERROR_INVALID_REFERENCE;
             VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
         }
+#endif
     }
     else
     {
@@ -372,18 +381,21 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
             tivx_shared_mem_ptr_t  *mem_ptr = NULL;
             volatile uint32_t       mem_size = 0;
             /* void is added as the status check for the ownReferenceGetMemAttrsFromObjDesc
-             * will be always true as the previous condition is true
-             */
+            * will be always true as the previous condition is true
+            */
             (void)ownReferenceGetMemAttrsFromObjDesc(ref, &mem_ptr, &mem_size);
 
             if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
                 status = tivxMemBufferFree(
                     mem_ptr, mem_size);
-                if ((vx_status)VX_SUCCESS != status)
+#ifdef LDRA_UNTESTABLE_CODE 
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM003 */
+                if((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Buffer free failed!\n");
                 }
+#endif
             }
         }
     }
