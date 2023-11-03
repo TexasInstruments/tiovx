@@ -42,8 +42,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
     if ((NULL != kernel) &&
         (ownIsValidSpecificReference((vx_reference)(*kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) )
     {
-        status = ownReleaseReferenceInt((vx_reference *)kernel, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, NULL);
-        if((vx_status)VX_SUCCESS != status)
+        if((vx_status)VX_SUCCESS != ownReleaseReferenceInt((vx_reference *)kernel, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, NULL))
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to destroy reference\n");
         }
