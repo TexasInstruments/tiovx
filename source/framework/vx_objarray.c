@@ -86,7 +86,11 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
                 if(objarr->base.obj_desc==NULL)
                 {
-                    vxReleaseObjectArray(&objarr);
+                    status = vxReleaseObjectArray(&objarr);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of ObjectArray object\n");
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
@@ -110,7 +114,11 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
 
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        vxReleaseObjectArray(&objarr);
+                        status = vxReleaseObjectArray(&objarr);
+                        if((vx_status)VX_SUCCESS != status)
+                        {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of ObjectArray object\n");
+                        }
 
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                             "Could not allocate objarr object descriptor\n");
@@ -133,6 +141,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
 {
     vx_object_array objarr = NULL;
     vx_context context;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) ==
                 (vx_bool)vx_true_e) &&
@@ -159,7 +168,11 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
                 if(objarr->base.obj_desc==NULL)
                 {
-                    vxReleaseObjectArray(&objarr);
+                    status = vxReleaseObjectArray(&objarr);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of ObjectArray object\n");
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
@@ -179,10 +192,29 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
 
                     ownLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
 
-                    ownInitObjArrayFromObject(context, objarr, exemplar);
+                    status = ownInitObjArrayFromObject(context, objarr, exemplar);
 
-                    objarr->base.is_virtual = (vx_bool)vx_true_e;
-                    ownReferenceSetScope(&objarr->base, &graph->base);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        status = vxReleaseObjectArray(&objarr);
+                        if((vx_status)VX_SUCCESS != status)
+                        {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of ObjectArray object\n");
+                        }
+
+                        vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
+                            "Could not allocate objarr object descriptor\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
+                        objarr = (vx_object_array)ownGetErrorObject(
+                            context, (vx_status)VX_ERROR_NO_RESOURCES);
+                    }
+                    else
+                    {
+                        objarr->base.is_virtual = (vx_bool)vx_true_e;
+                        ownReferenceSetScope(&objarr->base, &graph->base);
+                    }
                 }
             }
         }
@@ -226,7 +258,8 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
 
             if (NULL != ref)
             {
-                ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
+                /* Setting it as void since the return value 'count' is not used further */
+                (void)ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
                 /* set is_array_element flag */
                 ref->is_array_element = (vx_bool)vx_true_e;
             }
@@ -358,8 +391,10 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
         ref->obj_desc->element_idx = i;
 
         /* increment the internal counter on the image, not the
-           external one */
-        ownIncrementReference(ref, (vx_enum)VX_INTERNAL);
+         * external one. Setting it as void since the return value
+         * 'count' is not used further.
+         */
+        (void)ownIncrementReference(ref, (vx_enum)VX_INTERNAL);
 
         ownReferenceSetScope(ref, &objarr->base);
     }
@@ -384,8 +419,10 @@ static vx_status ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t num_
         if (NULL != objarr->ref[i])
         {
             /* decrement the internal counter on the object, not the
-               external one */
-            ownDecrementReference(objarr->ref[i], (vx_enum)VX_INTERNAL);
+             * external one. Setting it as void since the return value
+             * 'count' is not used further.
+             */
+            (void)ownDecrementReference(objarr->ref[i], (vx_enum)VX_INTERNAL);
 
             status = vxReleaseReference(&objarr->ref[i]);
 
