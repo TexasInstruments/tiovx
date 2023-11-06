@@ -57,26 +57,33 @@ vx_reference ownGetErrorObject(vx_context context, vx_status status)
     tivx_error_t *error = NULL;
     vx_size i = 0U;
 
-    ownContextLock(context);
-
-    for (i = 0U; i < dimof(context->reftable); i++)
+    if((vx_status)VX_SUCCESS != ownContextLock(context))
     {
-        if (context->reftable[i] != NULL)
+        VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+    }
+    else
+    {
+        for (i = 0U; i < dimof(context->reftable); i++)
         {
-            if (context->reftable[i]->type == (vx_enum)VX_TYPE_ERROR)
+            if (context->reftable[i] != NULL)
             {
-                error = (tivx_error_t *)context->reftable[i];
-                if (error->status == status)
+                if (context->reftable[i]->type == (vx_enum)VX_TYPE_ERROR)
                 {
-                    break;
+                    error = (tivx_error_t *)context->reftable[i];
+                    if (error->status == status)
+                    {
+                        break;
+                    }
+                    error = NULL;
                 }
-                error = NULL;
             }
         }
+
+        if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+        }
     }
-
-    ownContextUnlock(context);
-
     return (vx_reference)error;
 }
 

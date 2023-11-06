@@ -67,15 +67,14 @@
 User Data Object HELPER FUNCTIONS
 =============================================================================*/
 
-static vx_status ownInitUserDataObjectObject(
+static void ownInitUserDataObjectObject(
     vx_user_data_object user_data_object, const vx_char* type_name, vx_size size);
 
-static vx_status ownInitUserDataObjectObject(
+static void ownInitUserDataObjectObject(
     vx_user_data_object user_data_object, const vx_char* type_name, vx_size size)
 {
     vx_uint32 i;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
 
     obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
 
@@ -100,7 +99,6 @@ static vx_status ownInitUserDataObjectObject(
         user_data_object->maps[i].map_size = 0;
     }
 
-    return status;
 }
 
 
@@ -115,6 +113,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
     const void *ptr)
 {
     vx_user_data_object user_data_object = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -141,7 +140,11 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                     (vx_enum)TIVX_OBJ_DESC_USER_DATA_OBJECT, (vx_reference)user_data_object);
                 if(user_data_object->base.obj_desc==NULL)
                 {
-                    vxReleaseUserDataObject(&user_data_object);
+                    status = vxReleaseUserDataObject(&user_data_object);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of user data object\n");
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate user data object descriptor\n");
@@ -153,15 +156,11 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                 }
                 else
                 {
-                    vx_status status;
-                    status = ownInitUserDataObjectObject(user_data_object, type_name, size);
+                    ownInitUserDataObjectObject(user_data_object, type_name, size);
 
-                    if(status == (vx_status)VX_SUCCESS)
+                    if (NULL != ptr)
                     {
-                        if (NULL != ptr)
-                        {
-                            status = vxCopyUserDataObject(user_data_object, 0, size, (void*)ptr, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
-                        }
+                        status = vxCopyUserDataObject(user_data_object, 0, size, (void*)ptr, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
                     }
 
                     if(status != (vx_status)VX_SUCCESS)
@@ -344,7 +343,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
             tivxCheckStatus(&status, tivxMemBufferMap(start_ptr, (uint32_t)size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
-            memcpy(user_ptr, start_ptr, size);
+            (void)memcpy(user_ptr, start_ptr, size);
 
             tivxCheckStatus(&status, tivxMemBufferUnmap(start_ptr, (uint32_t)size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
@@ -354,7 +353,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
             tivxCheckStatus(&status, tivxMemBufferMap(start_ptr, (uint32_t)size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
-            memcpy(start_ptr, user_ptr, size);
+            (void)memcpy(start_ptr, user_ptr, size);
 
             tivxCheckStatus(&status, tivxMemBufferUnmap(start_ptr, (uint32_t)size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));

@@ -78,7 +78,7 @@ void ownLogRtInit()
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
 
-    memset(obj, 0, sizeof(tivx_log_rt_obj_t));
+    (void)memset(obj, 0, sizeof(tivx_log_rt_obj_t));
 
     ownPlatformGetLogRtShmInfo(&obj->log_rt_shm_base, &obj->log_rt_shm_size);
 

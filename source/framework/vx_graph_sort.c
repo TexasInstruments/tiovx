@@ -121,7 +121,8 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
             cur_node->incounter = (uint16_t)ownNodeGetNumInNodes(cur_node);
             if((cur_node->incounter==0U) && (cur_node->is_super_node == (vx_bool)vx_false_e))
             {
-                ownGraphSortStackPush(context, cur_node);
+                if((vx_bool)vx_true_e != ownGraphSortStackPush(context, cur_node))
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to push to stack \n");
             }
         }
         cur_node_idx = 0;
@@ -153,7 +154,8 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
                     next_node->incounter--;
                     if(next_node->incounter==0U)
                     {
-                        ownGraphSortStackPush(context, next_node);
+                        if((vx_bool)vx_true_e != ownGraphSortStackPush(context, next_node))
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to push to stack\n");
                     }
                 }
             }

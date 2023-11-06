@@ -410,13 +410,17 @@ static vx_reference ownCreateObjectArrayFromExemplar(
 #ifdef LDRA_UNTESTABLE_CODE
         if(objarr_item_exemplar==NULL)
         {
-            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR,"Invalid object array reference\n");
         }
         else
 #endif
         {
             objarr = vxCreateObjectArray(context, objarr_item_exemplar, count);
-            vxReleaseReference(&objarr_item_exemplar);
+            status = vxReleaseReference(&objarr_item_exemplar);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to object item exemplar\n");
+            }    
         }
     }
 
