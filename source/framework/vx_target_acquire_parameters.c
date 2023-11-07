@@ -118,7 +118,11 @@ static void ownTargetObjDescSendRefConsumed(
                 /* users wants a notification of data reference consumed
                  * so send command to host
                  */
-                ownObjDescSend( cmd_obj_desc->dst_target_id, cmd_obj_desc_id);
+                /* error status check is not done
+                 * as the return status is not used further
+                 * in ownTargetObjDescSendRefConsumed
+                 */
+                (void)ownObjDescSend( cmd_obj_desc->dst_target_id, cmd_obj_desc_id);
             }
         }
     }
@@ -144,29 +148,31 @@ static void ownTargetNodeDescAcquireParameter(
 
         obj_desc_q_id = data_ref_q_obj_desc->acquire_q_obj_desc_id;
 
-        ownObjDescQueueDequeue(
-            obj_desc_q_id,
-            &ref_obj_desc_id
-            );
+        /* Error status check is not done since the next if
+         * statement checks if we got a valid obj desc id
+         */
+        (void)ownObjDescQueueDequeue(obj_desc_q_id,&ref_obj_desc_id);
 
         if((vx_enum)ref_obj_desc_id==(vx_enum)TIVX_OBJ_DESC_INVALID) /* did not get a ref */
         {
             /* add node to list of blocked nodes */
-            ownObjDescQueueAddBlockedNode(
+            if((vx_status)VX_SUCCESS == ownObjDescQueueAddBlockedNode(
                 obj_desc_q_id,
                 node_obj_desc->base.obj_desc_id
-                );
-            *is_node_blocked = (vx_bool)vx_true_e;
+                ))
+            {
+                *is_node_blocked = (vx_bool)vx_true_e;
 
-            /* mark current node as blocked, blocked on parameter acquire */
-            node_obj_desc->state = TIVX_NODE_OBJ_DESC_STATE_BLOCKED;
+                /* mark current node as blocked, blocked on parameter acquire */
+                node_obj_desc->state = TIVX_NODE_OBJ_DESC_STATE_BLOCKED;
 
-            VX_PRINT(VX_ZONE_INFO,"Parameter acquire failed ... BLOCKING (node=%d, pipe=%d, data_ref_q=%d, queue=%d)\n",
-                             node_obj_desc->base.obj_desc_id,
-                             node_obj_desc->pipeline_id,
-                             data_ref_q_obj_desc->base.obj_desc_id,
-                             obj_desc_q_id
-                       );
+                VX_PRINT(VX_ZONE_INFO,"Parameter acquire failed ... BLOCKING (node=%d, pipe=%d, data_ref_q=%d, queue=%d)\n",
+                                node_obj_desc->base.obj_desc_id,
+                                node_obj_desc->pipeline_id,
+                                data_ref_q_obj_desc->base.obj_desc_id,
+                                obj_desc_q_id
+                        );
+            }
         }
         else
         {
@@ -230,10 +236,10 @@ static void ownTargetNodeDescAcquireParameterForPipeup(
 
         obj_desc_q_id = data_ref_q_obj_desc->acquire_q_obj_desc_id;
 
-        ownObjDescQueueDequeue(
-            obj_desc_q_id,
-            &ref_obj_desc_id
-            );
+        /* Error status check is not done since the next if
+         * statement checks if we got a valid obj desc id
+         */
+        (void)ownObjDescQueueDequeue(obj_desc_q_id, &ref_obj_desc_id);
 
         if((vx_enum)ref_obj_desc_id==(vx_enum)TIVX_OBJ_DESC_INVALID) /* did not get a ref */
         {
@@ -304,26 +310,31 @@ static void ownTargetNodeDescReleaseParameterInDelay(
                 /* acquire a ref and release it immediately to rotate the ref at this slot */
                 obj_desc_q_id = next_data_ref_q->acquire_q_obj_desc_id;
 
-                ownObjDescQueueDequeue(
-                    obj_desc_q_id,
-                    &ref_obj_desc_id
-                    );
+                /* Error status check is not done since the next if
+                 * statement checks if we got a valid obj desc id
+                 */
+                (void)ownObjDescQueueDequeue(obj_desc_q_id, &ref_obj_desc_id);
 
                 if((vx_enum)ref_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
                     obj_desc_q_id = next_data_ref_q->release_q_obj_desc_id;
 
-                    ownObjDescQueueEnqueue(
+                    if((vx_status)VX_SUCCESS == ownObjDescQueueEnqueue(
                         obj_desc_q_id,
                         ref_obj_desc_id
-                        );
-                    /* check if anyone was blocked on this buffer being available
-                     * if yes then get the node IDs and trigger them
-                     */
-                    ownObjDescQueueExtractBlockedNodes(
-                        obj_desc_q_id,
-                        blocked_nodes
-                        );
+                        ))
+                        {
+                            /* check if anyone was blocked on this buffer being available
+                             * if yes then get the node IDs and trigger them
+                             */
+                            /* added void due to previous status check and returning success
+                             * then this will also return success
+                             */
+                            (void)ownObjDescQueueExtractBlockedNodes(
+                                obj_desc_q_id,
+                                blocked_nodes
+                                );
+                        }
                 }
             }
             cur_data_ref_q = next_data_ref_q;
@@ -429,18 +440,22 @@ static void ownTargetNodeDescReleaseParameter(
              */
             obj_desc_q_id = data_ref_q_obj_desc->release_q_obj_desc_id;
 
-            ownObjDescQueueEnqueue(
+            if((vx_status)VX_SUCCESS == ownObjDescQueueEnqueue(
                 obj_desc_q_id,
                 ref_obj_desc_id
-                );
-            /* check if anyone was blocked on this buffer being available
-             * if yes then get the node IDs and trigger them
-             */
-            ownObjDescQueueExtractBlockedNodes(
-                obj_desc_q_id,
-                &blocked_nodes
-                );
-
+                ))
+            {
+                /* check if anyone was blocked on this buffer being available
+                 * if yes then get the node IDs and trigger them
+                 */
+                /* added void due to previous status check and returning success
+                 * then this will also return success
+                 */
+                (void)ownObjDescQueueExtractBlockedNodes(
+                    obj_desc_q_id,
+                    &blocked_nodes
+                    );
+            }
             *is_prm_released = (vx_bool)vx_true_e;
 
             /* handle ref auto age for delay
