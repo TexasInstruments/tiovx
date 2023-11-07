@@ -263,9 +263,7 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
                 uint32_t bytes_to_write_1, bytes_to_write_2;
 
                 bytes_to_write_1 = 0;
-                bytes_to_write_2 = 0;
                 buf_1 = NULL;
-                buf_2 = NULL;
 
                 ownPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
 
@@ -323,7 +321,7 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
 
                         if(status == VX_SUCCESS)
                         {
-                            ownLogRtFileWrite(fd,
+                            status = ownLogRtFileWrite(fd,
                                 buf_2, bytes_to_write_2,
                                 tmp_buf, tmp_buf_size);
                         }
@@ -352,7 +350,7 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
 
             if(is_write_to_file)
             {
-                close(fd);
+                (void)close(fd);
             }
         }
     }
@@ -368,7 +366,7 @@ void tivxLogRtTraceKernelInstanceAddEvent(vx_node node, uint16_t event_index, ch
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wformat-truncation"
     #endif
-    snprintf(name, TIVX_LOG_RT_EVENT_NAME_MAX, "%s_%s", node->base.name, event_name);
+    (void)snprintf(name, TIVX_LOG_RT_EVENT_NAME_MAX, "%s_%s", node->base.name, event_name);
     #if defined(LINUX) || defined(QNX)
     #pragma GCC diagnostic pop
     #endif
