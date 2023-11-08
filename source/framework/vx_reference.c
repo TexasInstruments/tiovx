@@ -1272,26 +1272,36 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
 
         if (ref->type == (vx_enum)VX_TYPE_IMAGE)
         {
-            tivx_obj_desc_image_t *obj_desc;
+            vx_image image = (vx_image)ref;
 
-            obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
+            if (NULL == image->parent)
+            {
+                tivx_obj_desc_image_t *obj_desc;
+
+                obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
 #ifdef LDRA_UNTESTABLE_CODE
 /* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM001 */
-            if (obj_desc == NULL)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                status = (vx_status)VX_FAILURE;
+                if (obj_desc == NULL)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                    status = (vx_status)VX_FAILURE;
+                }
+                else
+#endif
+                {
+                    numPlanes = obj_desc->planes;
+                    for (i = 0; i < numPlanes; i++)
+                    {
+                        total_size += obj_desc->mem_size[i];
+                    }
+                    mem_ptr    = obj_desc->mem_ptr;
+                    mem_size   = obj_desc->mem_size;
+                }
             }
             else
-#endif
             {
-                numPlanes = obj_desc->planes;
-                for (i = 0; i < numPlanes; i++)
-                {
-                    total_size += obj_desc->mem_size[i];
-                }
-                mem_ptr    = obj_desc->mem_ptr;
-                mem_size   = obj_desc->mem_size;
+                VX_PRINT(VX_ZONE_ERROR, "Import to a subimage is not supported.\n");
+                status = (vx_status)VX_FAILURE;
             }
         }
         else if (ref->type == (vx_enum)VX_TYPE_TENSOR)
@@ -1731,25 +1741,35 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
 
         if (ref->type == (vx_enum)VX_TYPE_IMAGE)
         {
-            tivx_obj_desc_image_t *obj_desc;
+            vx_image image = (vx_image)ref;
 
-            obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
+            if (NULL == image->parent)
+            {
+                tivx_obj_desc_image_t *obj_desc;
+
+                obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
 #ifdef LDRA_UNTESTABLE_CODE
 /* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NULL_OBJ_DESC_UM010 */
-            if (obj_desc == NULL)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                status = (vx_status)VX_FAILURE;
+                if (obj_desc == NULL)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                    status = (vx_status)VX_FAILURE;
+                }
+                else
+#endif
+                {
+                    for (i = 0; i < obj_desc->planes; i++)
+                    {
+                        total_size += obj_desc->mem_size[i];
+                    }
+                    mem_ptr    = obj_desc->mem_ptr;
+                    mem_size   = &total_size;
+                }
             }
             else
-#endif
             {
-                for (i = 0; i < obj_desc->planes; i++)
-                {
-                    total_size += obj_desc->mem_size[i];
-                }
-                mem_ptr    = obj_desc->mem_ptr;
-                mem_size   = &total_size;
+                VX_PRINT(VX_ZONE_ERROR, "Export from a subimage is not supported.\n");
+                status = (vx_status)VX_FAILURE;
             }
         }
         else if (ref->type == (vx_enum)VX_TYPE_TENSOR)

@@ -1922,6 +1922,43 @@ cleanup:
     TIVX_TEST_UPDATE_STATUS(testFail);
 }
 
+TEST(tivxMem, testSubimageNeg)
+{
+    vx_context      context = context_->vx_context_;
+    void           *virtAddr[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
+    uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
+    uint32_t        maxNumAddr = 1;
+    uint32_t        numEntries;
+    uint32_t        i;
+    vx_status       vxStatus;
+
+    vx_uint32      outWidth = 640, outHeight = 480;
+    vx_image       parent_image, subimage;
+    vx_rectangle_t rect = {0, 0, outWidth, outHeight/2};
+    CT_Image       parent_src;
+
+    ASSERT_NO_FAILURE({
+        parent_src = ct_allocate_image(outWidth, outHeight, VX_DF_IMAGE_U8);
+        parent_image = ct_image_to_vx_image(parent_src, context);
+    });
+
+    ASSERT_VX_OBJECT(subimage = vxCreateImageFromROI(parent_image, &rect), VX_TYPE_IMAGE);
+
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, tivxReferenceExportHandle((vx_reference)subimage,
+                                         virtAddr,
+                                         size,
+                                         maxNumAddr,
+                                         &numEntries));
+
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, tivxReferenceImportHandle((vx_reference)subimage,
+                                             (const void **)virtAddr,
+                                             (const uint32_t *)size,
+                                             maxNumAddr));
+
+    VX_CALL(vxReleaseImage(&subimage));
+    VX_CALL(vxReleaseImage(&parent_image));
+}
+
 TESTCASE_TESTS(tivxMem,
                testTranslateAddrMemAlloc,
                testTranslateAddrMalloc,
@@ -1931,5 +1968,6 @@ TESTCASE_TESTS(tivxMem,
                testReferenceImportExportIpcNullObj,
                testReferenceImportExportIpcValidObj,
                testReferenceImportNeg,
-               testReferenceExportNeg
+               testReferenceExportNeg,
+               testSubimageNeg
 )
