@@ -2052,13 +2052,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                         }
                     }
                 }
-                if((vx_status)VX_SUCCESS != vxReleaseReference(&ref))
+                if (NULL != ref)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference\n");
+                    if((vx_status)VX_SUCCESS != vxReleaseReference(&ref))
+                    {
+                        status |= (vx_status)VX_FAILURE;
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference at index %d\n", p);
+                    }
                 }
                 if((vx_status)VX_SUCCESS != vxReleaseParameter(&param))
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to parameter\n");
+                    status |= (vx_status)VX_FAILURE;
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to parameter at index %d\n", p);
                 }
             }
             else
