@@ -500,3 +500,47 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
     return vxStatus;
 }
 
+vx_bool tivx_utils_compare_refs_from_ipc_xfer(tivx_utils_ref_ipc_msg_t *ipcMsg1,
+                                              tivx_utils_ref_ipc_msg_t *ipcMsg2)
+{
+    vx_bool   ret      = (vx_bool)vx_false_e;
+    vx_status vxStatus = (vx_status)VX_SUCCESS;
+
+    if (ipcMsg1 == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'ipcMsg1' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+
+    if (ipcMsg2 == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'ipcMsg2' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+
+    if ((vx_status)VX_SUCCESS == vxStatus)
+    {
+        if (ipcMsg1->numFd != ipcMsg2->numFd)
+        {
+            VX_PRINT(VX_ZONE_INFO, "ipcMsg1->numFd (%d) does not match ipcMsg2->numFd (%d).\n", ipcMsg1->numFd, ipcMsg2->numFd);
+            vxStatus = (vx_status)VX_FAILURE;
+        }
+    }
+
+    if ((vx_status)VX_SUCCESS == vxStatus)
+    {
+        uint32_t i;
+        tivx_utils_ref_desc_t  *refDesc1, *refDesc2;
+
+        refDesc1 = &ipcMsg1->refDesc;
+        refDesc2 = &ipcMsg2->refDesc;
+
+        for (i = 0; i < ipcMsg1->numFd; i++)
+        {
+            /* Compare FD of ipcMsg1 and ipcMsg2. */
+            ret |= tivxMemCompareFd((uint64_t)ipcMsg1->fd[i], (uint64_t)ipcMsg2->fd[i], refDesc1->handleSizes[i], refDesc2->handleSizes[i]);
+        }
+    }
+
+    return ret;
+}

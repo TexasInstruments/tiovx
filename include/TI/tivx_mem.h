@@ -386,6 +386,22 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region);
 vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **phyAddr);
 
 /**
+ * \brief Compares two given FD's and returns a boolean based on whether they
+ *        are the same or not.
+ *
+ * \param dmaBufFd1 [in] First file descriptor corresponding to compare.
+ * \param dmaBufFd2 [in] Second file descriptor corresponding to compare.
+ * \param size1     [in] Size of the first descriptor.
+ * \param size2     [in] Size of the second descriptor.
+ *
+ * \return  - vx_true_e, if dmaBufFd1 and dmaBufFd2 are the same
+ *          - vx_false_e, if dmaBufFd1 and dmaBufFd2 are the different
+ *
+ * \ingroup group_tivx_mem
+ */
+vx_bool tivxMemCompareFd(uint64_t dmaBufFd1, uint64_t dmaBufFd2, uint32_t size1, uint32_t size2);
+
+/**
  * \brief Translates a given file descriptor to a virtual and physical address.
  *        The following conditions regarding 'fd' must be TRUE:
  *        - allocated using appMemAlloc()/tivxMemAlloc()

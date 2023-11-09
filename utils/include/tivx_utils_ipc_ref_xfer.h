@@ -295,6 +295,20 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
                                               tivx_utils_ref_ipc_msg_t *ipcMsg,
                                               vx_reference              *ref);
 
+/**
+ * \brief Compare the external handle information of a valid reference with
+ *        another external handle.
+ *
+ * \param [in,out] ipcMsg1  Exported object information of the first reference
+ * \param [in,out] ipcMsg1  Exported object information of the second reference
+ *
+ * \return vx_true_e if ipcMsg1 points to the same buffer as ipcMsg2, vx_false_e
+ *         if it does not
+ *
+ */
+vx_bool tivx_utils_compare_refs_from_ipc_xfer(tivx_utils_ref_ipc_msg_t *ipcMsg1,
+                                              tivx_utils_ref_ipc_msg_t *ipcMsg2);
+
 #ifdef __cplusplus
 }
 #endif

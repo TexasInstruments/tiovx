@@ -1324,7 +1324,7 @@ cleanup:
 TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcNullObj, TestArg, TEST_PARAMS)
 {
     vx_context      context = context_->vx_context_;
-    tivx_utils_ref_ipc_msg_t   ipcMsg;
+    tivx_utils_ref_ipc_msg_t   ipcMsg1, ipcMsg2;
     void           *virtAddr1[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
     void           *virtAddr2[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
     uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
@@ -1336,6 +1336,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcNullObj, TestArg, TEST_PARAMS
     uint32_t        numEntries2;
     uint32_t        i;
     vx_status       vxStatus;
+    vx_bool         refCompare;
     uint32_t        release_memory = 0;
     uint32_t        numAllocInitial, numAllocFinal;
 #if defined(QNX)
@@ -1359,7 +1360,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcNullObj, TestArg, TEST_PARAMS
     }
 
     /* Create the IPC message with the object export. */
-    vxStatus = tivx_utils_export_ref_for_ipc_xfer(ref[0], &ipcMsg);
+    vxStatus = tivx_utils_export_ref_for_ipc_xfer(ref[0], &ipcMsg1);
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
@@ -1370,11 +1371,29 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcNullObj, TestArg, TEST_PARAMS
     /* Create a new object with the exported information. ref[1] is
      * NULL, so a new object will be created and handles will be imported.
      */
-    vxStatus = tivx_utils_import_ref_from_ipc_xfer(context, &ipcMsg, &ref[1]);
+    vxStatus = tivx_utils_import_ref_from_ipc_xfer(context, &ipcMsg1, &ref[1]);
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivx_utils_import_ref_from_ipc_xfer() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Create the IPC message with the object export. */
+    vxStatus = tivx_utils_export_ref_for_ipc_xfer(ref[1], &ipcMsg2);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivx_utils_export_ref_for_ipc_xfer() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Compare the references to a different ipcMsg transfer */
+    refCompare = tivx_utils_compare_refs_from_ipc_xfer(&ipcMsg1, &ipcMsg2);
+
+    if (refCompare != (vx_bool)vx_true_e)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivx_utils_compare_refs_from_ipc_xfer() failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -1476,7 +1495,7 @@ cleanup:
 TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcValidObj, TestArg, TEST_PARAMS)
 {
     vx_context      context = context_->vx_context_;
-    tivx_utils_ref_ipc_msg_t   ipcMsg;
+    tivx_utils_ref_ipc_msg_t   ipcMsg1, ipcMsg2;
     void           *virtAddr1[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
     void           *virtAddr2[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
     uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
@@ -1490,6 +1509,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcValidObj, TestArg, TEST_PARAM
     vx_status       vxStatus;
     vx_enum         region;
     uint32_t        release_memory = 0;
+    vx_bool         refCompare;
     uint32_t        numAllocInitial, numAllocFinal;
 #if defined(QNX)
     uint32_t    numMapsInitial, numMapsFinal;
@@ -1519,11 +1539,29 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcValidObj, TestArg, TEST_PARAM
     }
 
     /* Create the IPC message with the object export. */
-    vxStatus = tivx_utils_export_ref_for_ipc_xfer(ref[0], &ipcMsg);
+    vxStatus = tivx_utils_export_ref_for_ipc_xfer(ref[0], &ipcMsg1);
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivx_utils_export_ref_for_ipc_xfer() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Create the IPC message with the object export. */
+    vxStatus = tivx_utils_export_ref_for_ipc_xfer(ref[1], &ipcMsg2);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivx_utils_export_ref_for_ipc_xfer() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Compare the references to a different ipcMsg transfer */
+    refCompare = tivx_utils_compare_refs_from_ipc_xfer(&ipcMsg1, &ipcMsg2);
+
+    if (refCompare != (vx_bool)vx_false_e)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivx_utils_compare_refs_from_ipc_xfer() failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -1561,7 +1599,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcValidObj, TestArg, TEST_PARAM
      * a valid object so no new object will be created but only
      * the handles will be imported.
      */
-    vxStatus = tivx_utils_import_ref_from_ipc_xfer(context, &ipcMsg, &ref[1]);
+    vxStatus = tivx_utils_import_ref_from_ipc_xfer(context, &ipcMsg1, &ref[1]);
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
