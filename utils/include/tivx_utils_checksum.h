@@ -72,6 +72,10 @@
 #include <VX/vx_khr_user_data_object.h>
 #include <TI/tivx_tensor.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * \brief Returns a uint32_t of the sum of all words within a rect of an image's buffer.
  *
@@ -130,4 +134,9 @@ uint32_t tivx_utils_user_data_object_checksum(vx_user_data_object user_data_obje
  */
 uint32_t tivx_utils_tensor_checksum(vx_tensor tensor_object, vx_size number_of_dimensions, vx_size * view_start, vx_size * view_end, vx_size * user_stride);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* _TIVX_UTILS_CHECKSUM_H_ */
+

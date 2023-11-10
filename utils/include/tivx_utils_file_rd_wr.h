@@ -70,6 +70,10 @@
 #include <tivx_utils.h>
 #include <tivx_utils_bmp.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * \brief Read data from PNG file
  *
@@ -272,5 +276,9 @@ vx_status tivx_utils_save_vximage_to_bmpfile(const char *filename, vx_image imag
 vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, vx_bool convert_to_gray_scale);
 
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* _TIVX_UTILS_FILE_RD_WR_H_ */
 

@@ -71,6 +71,10 @@
 #include <VX/vx.h>
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \brief Max file name size for output */
 #define TIVX_UTILS_POINT_MAX_FILENAME     (256u)
 
@@ -116,5 +120,9 @@ vx_status tivx_utils_graph_perf_export(FILE *fp, vx_graph graph);
  */
 vx_status tivx_utils_node_perf_print(vx_node node);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* _TIVX_UTILS_GRAPH_PERF_H_ */
 
