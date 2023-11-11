@@ -94,7 +94,11 @@
 /*! \brief Psuedo L2RAM size for DSP
  * \ingroup group_tivx_mem
  */
+#if defined (SOC_J784S4)
+#define TIVX_MEM_L2RAM_SIZE (4*10*1024*1024 + 8*1024*1024) /* 4 * 10 MB for 4 cores (L2/MSMC-L1) + 8 MB for MSMC-L3 */
+#else
 #define TIVX_MEM_L2RAM_SIZE (10*1024*1024)
+#endif
 
 /*! \brief Psuedo L2RAM memory for DSP
  * \ingroup group_tivx_mem
