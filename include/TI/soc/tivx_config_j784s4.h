@@ -379,9 +379,10 @@ extern "C" {
  * Kernel configuration resources
  */
 /*! \brief Max parameters in a kernel
+ *         This is required to be <= 32 per framework requirements
  * \ingroup group_vx_misc_cfg
  */
-#define TIVX_KERNEL_MAX_PARAMS             (64u)
+#define TIVX_KERNEL_MAX_PARAMS             (32u)
 
 /*! \brief Max number kernel objects supported
  * \ingroup group_vx_misc_cfg
