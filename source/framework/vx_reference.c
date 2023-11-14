@@ -556,11 +556,14 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
         {
             tivx_reference_callback_f destructor = special_destructor;
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM004 */
             if (ownRemoveReferenceFromContext(ref->context, ref) == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Invalid reference\n");
                 status = (vx_status)VX_ERROR_INVALID_REFERENCE;
             }
+#endif
             else
             {
                 /* find the destructor method */
@@ -613,21 +616,29 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
         {
             /* Setting it as void since return value 'ref count' is not used further */
             (void)ownIncrementReference(ref, reftype);
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM005 */
             if (ownAddReferenceToContext(context, ref) == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Add reference to context failed\n");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
+#endif
         }
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM006 */
         if(status!=(vx_status)VX_SUCCESS)
         {
             if((vx_status)VX_SUCCESS != ownObjectFree(ref))
+            {
                 VX_PRINT(VX_ZONE_ERROR, "Failed to free memory of reference \n");
+            }
             vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Failed to add to resources table\n");
             VX_PRINT(VX_ZONE_ERROR, "Failed to add to resources table\n");
             ref = (vx_reference)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
         }
+#endif
     }
     else
     {
