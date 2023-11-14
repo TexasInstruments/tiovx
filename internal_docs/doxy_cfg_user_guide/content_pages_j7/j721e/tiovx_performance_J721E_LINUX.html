@@ -1,0 +1,795 @@
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>TIOVX Kernel Performance</title>
+</head>
+<body>
+  <table frame="box" rules="all" cellspacing="0" width="50%" border="1" cellpadding="3">
+    <tr bgcolor="lightgrey">
+<td width="5" align="center"><b>Index</b></td>
+<td width="25%" align="center"><b>Kernel</b></td>
+<td width="25%" align="center"><b>Variant</b></td>
+<td width="20%" align="center"><b>Frame Size (Pixels) </b></td>
+<td width="25%" align="center"><b>Graph Performance (msec) </b></td>
+<td width="25%" align="center"><b>Node Performance (msec) </b></td>
+</tr>
+ <tr align="center">
+<td>1</td>
+<td>Accumulate</td>
+<td></td>
+<td>640x480  (307200)</td>
+<td>2.642000</td>
+<td>2.561000</td>
+ </tr>
+ <tr align="center">
+<td>2</td>
+<td>AccumulateSquare</td>
+<td></td>
+<td>640x480  (307200)</td>
+<td>2.673000</td>
+<td>2.593000</td>
+ </tr>
+ <tr align="center">
+<td>3</td>
+<td>AccumulateWeighted</td>
+<td></td>
+<td>640x480  (307200)</td>
+<td>1.738000</td>
+<td>1.661000</td>
+ </tr>
+ <tr align="center">
+<td>4</td>
+<td>Addition</td>
+<td>U8+U8=U8</td>
+<td>640x480  (307200)</td>
+<td>2.075000</td>
+<td>1.997000</td>
+ </tr>
+ <tr align="center">
+<td>5</td>
+<td>Addition</td>
+<td>U8+U8=S16</td>
+<td>640x480  (307200)</td>
+<td>3.039000</td>
+<td>2.959000</td>
+ </tr>
+ <tr align="center">
+<td>6</td>
+<td>Addition</td>
+<td>U8+S16=S16</td>
+<td>640x480  (307200)</td>
+<td>4.135000</td>
+<td>4.054000</td>
+ </tr>
+ <tr align="center">
+<td>7</td>
+<td>Addition</td>
+<td>S16+S16=S16</td>
+<td>640x480  (307200)</td>
+<td>3.795000</td>
+<td>3.716000</td>
+ </tr>
+ <tr align="center">
+<td>8</td>
+<td>Subtraction</td>
+<td>U8-U8=U8</td>
+<td>640x480  (307200)</td>
+<td>2.554000</td>
+<td>2.471000</td>
+ </tr>
+ <tr align="center">
+<td>9</td>
+<td>Subtraction</td>
+<td>U8-U8=S16</td>
+<td>640x480  (307200)</td>
+<td>3.077000</td>
+<td>2.997000</td>
+ </tr>
+ <tr align="center">
+<td>10</td>
+<td>Subtraction</td>
+<td>S16-U8=S16</td>
+<td>640x480  (307200)</td>
+<td>4.017000</td>
+<td>3.934000</td>
+ </tr>
+ <tr align="center">
+<td>11</td>
+<td>Subtraction</td>
+<td>S16-S16=S16</td>
+<td>640x480  (307200)</td>
+<td>4.881000</td>
+<td>4.794000</td>
+ </tr>
+ <tr align="center">
+<td>12</td>
+<td>Not Operation</td>
+<td>U8</td>
+<td>640x480  (307200)</td>
+<td>1.553000</td>
+<td>1.471000</td>
+ </tr>
+ <tr align="center">
+<td>13</td>
+<td>And Operation</td>
+<td>U8</td>
+<td>640x480  (307200)</td>
+<td>2.032000</td>
+<td>1.955000</td>
+ </tr>
+ <tr align="center">
+<td>14</td>
+<td>OR Operation</td>
+<td>U8</td>
+<td>640x480  (307200)</td>
+<td>2.021000</td>
+<td>1.941000</td>
+ </tr>
+ <tr align="center">
+<td>15</td>
+<td>XOR Operation</td>
+<td>U8</td>
+<td>640x480  (307200)</td>
+<td>2.025000</td>
+<td>1.944000</td>
+ </tr>
+ <tr align="center">
+<td>16</td>
+<td>Abs Diff</td>
+<td>U8</td>
+<td>640x480  (307200)</td>
+<td>2.527000</td>
+<td>2.449000</td>
+ </tr>
+ <tr align="center">
+<td>17</td>
+<td>Abs Diff</td>
+<td>S16</td>
+<td>640x480  (307200)</td>
+<td>4.800000</td>
+<td>4.719000</td>
+ </tr>
+ <tr align="center">
+<td>18</td>
+<td>Box</td>
+<td>3x3</td>
+<td>640x480  (307200)</td>
+<td>1.699000</td>
+<td>1.621000</td>
+ </tr>
+ <tr align="center">
+<td>19</td>
+<td>Dilate</td>
+<td>3x3</td>
+<td>640x480  (307200)</td>
+<td>1.671000</td>
+<td>1.590000</td>
+ </tr>
+ <tr align="center">
+<td>20</td>
+<td>Erode</td>
+<td>3x3</td>
+<td>640x480  (307200)</td>
+<td>1.678000</td>
+<td>1.598000</td>
+ </tr>
+ <tr align="center">
+<td>21</td>
+<td>Fast Corners</td>
+<td>No NMS</td>
+<td>640x480  (307200)</td>
+<td>13.549000</td>
+<td>13.462000</td>
+ </tr>
+ <tr align="center">
+<td>22</td>
+<td>Canny</td>
+<td></td>
+<td>640x480  (307200)</td>
+<td>15.094000</td>
+<td>15.002000</td>
+ </tr>
+ <tr align="center">
+<td>23</td>
+<td>Channel Combine</td>
+<td>3 to 1 (RGB)</td>
+<td>640x480  (307200)</td>
+<td>4.799000</td>
+<td>4.716000</td>
+ </tr>
+ <tr align="center">
+<td>24</td>
+<td>Channel Combine</td>
+<td>4 to 1 (RGBX)</td>
+<td>640x480  (307200)</td>
+<td>6.177000</td>
+<td>6.096000</td>
+ </tr>
+ <tr align="center">
+<td>25</td>
+<td>Channel Combine</td>
+<td>YUYV</td>
+<td>640x480  (307200)</td>
+<td>3.022000</td>
+<td>2.939000</td>
+ </tr>
+ <tr align="center">
+<td>26</td>
+<td>Channel Combine</td>
+<td>2 to 1 (NV12)</td>
+<td>640x480  (307200)</td>
+<td>2.414000</td>
+<td>2.332000</td>
+ </tr>
+ <tr align="center">
+<td>27</td>
+<td>Channel Extract</td>
+<td>1 of 3 (RGB)</td>
+<td>640x480  (307200)</td>
+<td>2.694000</td>
+<td>2.613000</td>
+ </tr>
+ <tr align="center">
+<td>28</td>
+<td>Channel Extract</td>
+<td>1 of 4 (RGBX)</td>
+<td>640x480  (307200)</td>
+<td>3.926000</td>
+<td>3.843000</td>
+ </tr>
+ <tr align="center">
+<td>29</td>
+<td>Color Convert</td>
+<td>RGB=>RGBX</td>
+<td>640x480  (307200)</td>
+<td>5.291000</td>
+<td>5.212000</td>
+ </tr>
+ <tr align="center">
+<td>30</td>
+<td>Color Convert</td>
+<td>RGB=>NV12</td>
+<td>640x480  (307200)</td>
+<td>3.827000</td>
+<td>3.743000</td>
+ </tr>
+ <tr align="center">
+<td>31</td>
+<td>Color Convert</td>
+<td>RGB=>IYUV</td>
+<td>640x480  (307200)</td>
+<td>3.965000</td>
+<td>3.881000</td>
+ </tr>
+ <tr align="center">
+<td>32</td>
+<td>Color Convert</td>
+<td>RGB=>YUV4</td>
+<td>640x480  (307200)</td>
+<td>3.968000</td>
+<td>3.887000</td>
+ </tr>
+ <tr align="center">
+<td>33</td>
+<td>Color Convert</td>
+<td>RGBX=>RGB</td>
+<td>640x480  (307200)</td>
+<td>5.043000</td>
+<td>4.960000</td>
+ </tr>
+ <tr align="center">
+<td>34</td>
+<td>Color Convert</td>
+<td>RGBX=>NV12</td>
+<td>640x480  (307200)</td>
+<td>4.661000</td>
+<td>4.577000</td>
+ </tr>
+ <tr align="center">
+<td>35</td>
+<td>Color Convert</td>
+<td>RGBX=>IYUV</td>
+<td>640x480  (307200)</td>
+<td>4.694000</td>
+<td>4.611000</td>
+ </tr>
+ <tr align="center">
+<td>36</td>
+<td>Color Convert</td>
+<td>RGBX=>YUV4</td>
+<td>640x480  (307200)</td>
+<td>4.737000</td>
+<td>4.655000</td>
+ </tr>
+ <tr align="center">
+<td>37</td>
+<td>Color Convert</td>
+<td>NVXX=>RGB</td>
+<td>640x480  (307200)</td>
+<td>3.697000</td>
+<td>3.617000</td>
+ </tr>
+ <tr align="center">
+<td>38</td>
+<td>Color Convert</td>
+<td>NVXX=>RGBX</td>
+<td>640x480  (307200)</td>
+<td>4.695000</td>
+<td>4.615000</td>
+ </tr>
+ <tr align="center">
+<td>39</td>
+<td>Color Convert</td>
+<td>NVXX=>IYUV</td>
+<td>640x480  (307200)</td>
+<td>2.362000</td>
+<td>2.282000</td>
+ </tr>
+ <tr align="center">
+<td>40</td>
+<td>Color Convert</td>
+<td>NVXX=>YUV4</td>
+<td>640x480  (307200)</td>
+<td>3.039000</td>
+<td>2.958000</td>
+ </tr>
+ <tr align="center">
+<td>41</td>
+<td>Color Convert</td>
+<td>YUVX=>RGB</td>
+<td>640x480  (307200)</td>
+<td>4.456000</td>
+<td>4.375000</td>
+ </tr>
+ <tr align="center">
+<td>42</td>
+<td>Color Convert</td>
+<td>YUVX=>RGBX</td>
+<td>640x480  (307200)</td>
+<td>5.224000</td>
+<td>5.140000</td>
+ </tr>
+ <tr align="center">
+<td>43</td>
+<td>Color Convert</td>
+<td>YUVX=>NV12</td>
+<td>640x480  (307200)</td>
+<td>3.578000</td>
+<td>3.501000</td>
+ </tr>
+ <tr align="center">
+<td>44</td>
+<td>Color Convert</td>
+<td>YUVX=>IYUV</td>
+<td>640x480  (307200)</td>
+<td>3.339000</td>
+<td>3.255000</td>
+ </tr>
+ <tr align="center">
+<td>45</td>
+<td>Color Convert</td>
+<td>IYUV=>RGB</td>
+<td>640x480  (307200)</td>
+<td>3.917000</td>
+<td>3.836000</td>
+ </tr>
+ <tr align="center">
+<td>46</td>
+<td>Color Convert</td>
+<td>IYUV=>RGBX</td>
+<td>640x480  (307200)</td>
+<td>4.706000</td>
+<td>4.626000</td>
+ </tr>
+ <tr align="center">
+<td>47</td>
+<td>Color Convert</td>
+<td>IYUV=>NV12</td>
+<td>640x480  (307200)</td>
+<td>2.430000</td>
+<td>2.349000</td>
+ </tr>
+ <tr align="center">
+<td>48</td>
+<td>Color Convert</td>
+<td>IYUV=>YUV4</td>
+<td>640x480  (307200)</td>
+<td>3.300000</td>
+<td>3.219000</td>
+ </tr>
+ <tr align="center">
+<td>49</td>
+<td>Convert Depth</td>
+<td>U8 to S16</td>
+<td>640x480  (307200)</td>
+<td>2.484000</td>
+<td>2.398000</td>
+ </tr>
+ <tr align="center">
+<td>50</td>
+<td>Convert Depth</td>
+<td>S16 to U8</td>
+<td>640x480  (307200)</td>
+<td>2.549000</td>
+<td>2.463000</td>
+ </tr>
+ <tr align="center">
+<td>51</td>
+<td>Convolution</td>
+<td>3x3, O: U8</td>
+<td>640x480  (307200)</td>
+<td>1.894000</td>
+<td>1.811000</td>
+ </tr>
+ <tr align="center">
+<td>52</td>
+<td>Convolution</td>
+<td>3x3, O: S16</td>
+<td>640x480  (307200)</td>
+<td>2.605000</td>
+<td>2.524000</td>
+ </tr>
+ <tr align="center">
+<td>53</td>
+<td>Convolution</td>
+<td>9x3, O: U8</td>
+<td>640x480  (307200)</td>
+<td>18.892000</td>
+<td>18.809000</td>
+ </tr>
+ <tr align="center">
+<td>54</td>
+<td>Convolution</td>
+<td>9x3, O: S16</td>
+<td>640x480  (307200)</td>
+<td>18.389000</td>
+<td>18.305000</td>
+ </tr>
+ <tr align="center">
+<td>55</td>
+<td>Convolution</td>
+<td>3x9, O: U8</td>
+<td>640x480  (307200)</td>
+<td>24.493000</td>
+<td>24.406000</td>
+ </tr>
+ <tr align="center">
+<td>56</td>
+<td>Convolution</td>
+<td>3x9, O: S16</td>
+<td>640x480  (307200)</td>
+<td>23.327000</td>
+<td>23.235000</td>
+ </tr>
+ <tr align="center">
+<td>57</td>
+<td>Convolution</td>
+<td>5x5, O: U8</td>
+<td>640x480  (307200)</td>
+<td>2.240000</td>
+<td>2.160000</td>
+ </tr>
+ <tr align="center">
+<td>58</td>
+<td>Convolution</td>
+<td>5x5, O: S16</td>
+<td>640x480  (307200)</td>
+<td>2.719000</td>
+<td>2.641000</td>
+ </tr>
+ <tr align="center">
+<td>59</td>
+<td>Convolution</td>
+<td>7x7, O: U8</td>
+<td>640x480  (307200)</td>
+<td>3.101000</td>
+<td>3.020000</td>
+ </tr>
+ <tr align="center">
+<td>60</td>
+<td>Convolution</td>
+<td>7x7, O: S16</td>
+<td>640x480  (307200)</td>
+<td>3.301000</td>
+<td>3.222000</td>
+ </tr>
+ <tr align="center">
+<td>61</td>
+<td>Convolution</td>
+<td>9x9, O: U8</td>
+<td>640x480  (307200)</td>
+<td>37.585000</td>
+<td>37.502000</td>
+ </tr>
+ <tr align="center">
+<td>62</td>
+<td>Convolution</td>
+<td>9x9, O: S16</td>
+<td>640x480  (307200)</td>
+<td>36.403000</td>
+<td>36.312000</td>
+ </tr>
+ <tr align="center">
+<td>63</td>
+<td>Equalize Histogram</td>
+<td></td>
+<td>640x480  (307200)</td>
+<td>2.636000</td>
+<td>2.554000</td>
+ </tr>
+ <tr align="center">
+<td>64</td>
+<td>Gaussian</td>
+<td>3x3</td>
+<td>640x480  (307200)</td>
+<td>1.747000</td>
+<td>1.664000</td>
+ </tr>
+ <tr align="center">
+<td>65</td>
+<td>Gaussian Pyramid</td>
+<td></td>
+<td>640x480  (307200)</td>
+<td>10.300000</td>
+<td>10.196000</td>
+ </tr>
+ <tr align="center">
+<td>66</td>
+<td>Half Scale Gaussian Pyramid</td>
+<td></td>
+<td>640x480  (307200)</td>
+<td>1.129000</td>
+<td>1.028000</td>
+ </tr>
+ <tr align="center">
+<td>67</td>
+<td>Harris Corners</td>
+<td></td>
+<td>640x480  (307200)</td>
+<td>29.583000</td>
+<td>29.487000</td>
+ </tr>
+ <tr align="center">
+<td>68</td>
+<td>Histogram</td>
+<td>U8</td>
+<td>640x480  (307200)</td>
+<td>1.081000</td>
+<td>0.997000</td>
+ </tr>
+ <tr align="center">
+<td>69</td>
+<td>Integral Image</td>
+<td></td>
+<td>640x480  (307200)</td>
+<td>4.495000</td>
+<td>4.409000</td>
+ </tr>
+ <tr align="center">
+<td>70</td>
+<td>Laplacian Pyramid</td>
+<td>U8; Levels = 6</td>
+<td>640x480  (307200)</td>
+<td>7.540000</td>
+<td>7.429000</td>
+ </tr>
+ <tr align="center">
+<td>71</td>
+<td>Laplacian Reconstruct</td>
+<td>U8</td>
+<td>640x480  (307200)</td>
+<td>10.440000</td>
+<td>10.344000</td>
+ </tr>
+ <tr align="center">
+<td>72</td>
+<td>LookUpTable</td>
+<td>U8</td>
+<td>640x480  (307200)</td>
+<td>3.273000</td>
+<td>3.190000</td>
+ </tr>
+ <tr align="center">
+<td>73</td>
+<td>LookUpTable</td>
+<td>U8</td>
+<td>640x480  (307200)</td>
+<td>1.744000</td>
+<td>1.663000</td>
+ </tr>
+ <tr align="center">
+<td>74</td>
+<td>Magnitude</td>
+<td>S16</td>
+<td>640x480  (307200)</td>
+<td>5.737000</td>
+<td>5.655000</td>
+ </tr>
+ <tr align="center">
+<td>75</td>
+<td>Mean/Standard Deviation</td>
+<td>U8</td>
+<td>640x480  (307200)</td>
+<td>0.906000</td>
+<td>0.817000</td>
+ </tr>
+ <tr align="center">
+<td>76</td>
+<td>Median</td>
+<td>3x3</td>
+<td>640x480  (307200)</td>
+<td>1.820000</td>
+<td>1.733000</td>
+ </tr>
+ <tr align="center">
+<td>77</td>
+<td>Min Max Loc</td>
+<td>U8</td>
+<td>640x480  (307200)</td>
+<td>1.609000</td>
+<td>1.526000</td>
+ </tr>
+ <tr align="center">
+<td>78</td>
+<td>Min Max Loc</td>
+<td>S16</td>
+<td>640x480  (307200)</td>
+<td>3.015000</td>
+<td>2.929000</td>
+ </tr>
+ <tr align="center">
+<td>79</td>
+<td>Multiply</td>
+<td>U8 x U8 = U8</td>
+<td>640x480  (307200)</td>
+<td>2.094000</td>
+<td>2.008000</td>
+ </tr>
+ <tr align="center">
+<td>80</td>
+<td>Multiply</td>
+<td>U8 x U8 = S16</td>
+<td>640x480  (307200)</td>
+<td>2.049000</td>
+<td>1.962000</td>
+ </tr>
+ <tr align="center">
+<td>81</td>
+<td>Multiply</td>
+<td>U8 x S16 = S16</td>
+<td>640x480  (307200)</td>
+<td>4.394000</td>
+<td>4.309000</td>
+ </tr>
+ <tr align="center">
+<td>82</td>
+<td>Multiply</td>
+<td>S16 x S16 = S16</td>
+<td>640x480  (307200)</td>
+<td>3.858000</td>
+<td>3.774000</td>
+ </tr>
+ <tr align="center">
+<td>83</td>
+<td>NonLinear Filter</td>
+<td>mask=5x5; Erosion</td>
+<td>640x480  (307200)</td>
+<td>2.564000</td>
+<td>2.480000</td>
+ </tr>
+ <tr align="center">
+<td>84</td>
+<td>NonLinear Filter</td>
+<td>mask=5x5; Dilation</td>
+<td>640x480  (307200)</td>
+<td>2.546000</td>
+<td>2.464000</td>
+ </tr>
+ <tr align="center">
+<td>85</td>
+<td>NonLinear Filter</td>
+<td>mask=5x5; Median</td>
+<td>640x480  (307200)</td>
+<td>22.586000</td>
+<td>22.496000</td>
+ </tr>
+ <tr align="center">
+<td>86</td>
+<td>Optical Flow</td>
+<td>5x5</td>
+<td>640x480  (307200)</td>
+<td>5.341000</td>
+<td>5.249000</td>
+ </tr>
+ <tr align="center">
+<td>87</td>
+<td>Phase</td>
+<td></td>
+<td>640x480  (307200)</td>
+<td>5.032000</td>
+<td>4.949000</td>
+ </tr>
+ <tr align="center">
+<td>88</td>
+<td>Remap</td>
+<td>Bilinear Interpolation</td>
+<td>*640x480  (307200)</td>
+<td>8.950000</td>
+<td>8.864000</td>
+ </tr>
+ <tr align="center">
+<td>89</td>
+<td>Remap</td>
+<td>Nearest Neighbor</td>
+<td>*640x480  (307200)</td>
+<td>7.739000</td>
+<td>7.649000</td>
+ </tr>
+ <tr align="center">
+<td>90</td>
+<td>Scale Image</td>
+<td>1 to 2; Nearest Neighbor</td>
+<td>*640x480  (307200)</td>
+<td>1.160000</td>
+<td>1.080000</td>
+ </tr>
+ <tr align="center">
+<td>91</td>
+<td>Scale Image</td>
+<td>1 to 2; Bilinear Interpolation</td>
+<td>*640x480  (307200)</td>
+<td>2.512000</td>
+<td>2.432000</td>
+ </tr>
+ <tr align="center">
+<td>92</td>
+<td>Sobel</td>
+<td>3x3</td>
+<td>640x480  (307200)</td>
+<td>4.836000</td>
+<td>4.754000</td>
+ </tr>
+ <tr align="center">
+<td>93</td>
+<td>Threshold</td>
+<td>Binary</td>
+<td>640x480  (307200)</td>
+<td>1.666000</td>
+<td>1.582000</td>
+ </tr>
+ <tr align="center">
+<td>94</td>
+<td>Warp Affine</td>
+<td>Nearest Neighbor</td>
+<td>*640x480  (307200)</td>
+<td>0.471000</td>
+<td>0.389000</td>
+ </tr>
+ <tr align="center">
+<td>95</td>
+<td>Warp Affine</td>
+<td>Bilinear Interpolation</td>
+<td>*640x480  (307200)</td>
+<td>0.802000</td>
+<td>0.720000</td>
+ </tr>
+ <tr align="center">
+<td>96</td>
+<td>Warp Pespective</td>
+<td>Nearest Neighbor</td>
+<td>*640x480  (307200)</td>
+<td>0.665000</td>
+<td>0.584000</td>
+ </tr>
+ <tr align="center">
+<td>97</td>
+<td>Warp Pespective</td>
+<td>Bilinear Interpolation</td>
+<td>*640x480  (307200)</td>
+<td>1.131000</td>
+<td>1.048000</td>
+ </tr>
+</table>
+</body>
+</html>
+<p>Footnote 1: All optional parameters for relevant kernels are used<p><p>Footnote 2: All image sizes are for input parameters unless noted with an asterisk (*) in which case these are the output parameter sizes<p>

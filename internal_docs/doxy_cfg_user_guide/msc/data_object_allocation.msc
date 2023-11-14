@@ -1,0 +1,33 @@
+msc {
+    hscale = "2.0", wordwraparcs = "true";
+
+    APP [label="", textcolor="#80141f", linecolor="#80141f", arclinecolor="#80141f", arctextcolor="#80141f"],
+    OBJ [label="vx_[data object].c", textcolor="#191e82", linecolor="#191e82", arclinecolor="#191e82", arctextcolor="#191e82"],
+    REF [label="vx_reference.c", textcolor="#191e82", linecolor="#191e82", arclinecolor="#191e82", arctextcolor="#191e82"],
+    OBJS [label="vx_objects.c", textcolor="#191e82", linecolor="#191e82", arclinecolor="#191e82", arctextcolor="#191e82"];
+
+    APP box APP [label="Application"],
+    OBJ box OBJS [label="Framework"];
+    ||| ;
+    ||| ;
+    APP box APP [label="vx_[data object]"];
+    APP => OBJ [label="vxCreate[data object](vx_[data object])"];
+    OBJ box OBJ [label="vx_[data object]"];
+    ... ;
+    OBJ => REF [label="ownCreateReference(vx_[data object])"];
+    REF box REF [label="vx_reference"];
+    REF => OBJS [label="ownObjectAlloc(vx_reference)"];
+    OBJS box OBJS [label="vx_reference"];
+    ... ;
+    OBJS box OBJS [label="tivx_[data object]_t [MAX_[data object]_OBJECTS]\nnew vx_[data object] added, index incremented"];
+    ... ;
+    OBJS >> REF [label="ownObjectAlloc(returns vx_reference)"];
+    REF box REF [label="vx_reference"];
+    ... ;
+    REF box REF [label="referenceTable [MAX_CONTEXT_REFERENCES]\nobject reference added, index incremented"];
+    REF >> OBJ [label="ownCreateReference(returns vx_reference)"];
+    OBJ box OBJ [label="vx_reference"];
+    ... ;
+    OBJ >> APP [label="vxCreate[data object](returns vx_[data object])"];
+    APP box APP [label="vx_[data object]"];
+}

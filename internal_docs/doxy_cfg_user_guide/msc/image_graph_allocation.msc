@@ -1,0 +1,58 @@
+msc {
+    hscale = "2.0", wordwraparcs = "true";
+
+    APP [label="", textcolor="#80141f", linecolor="#80141f", arclinecolor="#80141f", arctextcolor="#80141f"],
+    OBJ [label="vx_[data object].c", textcolor="#191e82", linecolor="#191e82", arclinecolor="#191e82", arctextcolor="#191e82"],
+    REF [label="vx_reference.c", textcolor="#191e82", linecolor="#191e82", arclinecolor="#191e82", arctextcolor="#191e82"],
+    OBJS [label="vx_objects.c", textcolor="#191e82", linecolor="#191e82", arclinecolor="#191e82", arctextcolor="#191e82"];
+
+    APP box APP [label="Application"],
+    OBJ box OBJS [label="Framework"];
+    ||| ;
+    ||| ;
+
+    APP box APP [label="vx_image"];
+    APP => OBJ [label="vxCreateImage(vx_image)"];
+    OBJ box OBJ [label="vx_image"];
+    ... ;
+    OBJ => REF [label="ownCreateReference(vx_image)"];
+    REF box REF [label="vx_reference"];
+    REF => OBJS [label="ownObjectAlloc(vx_reference)"];
+    OBJS box OBJS [label="vx_reference"];
+    ... ;
+    OBJS box OBJS [label="tivx_image_t [TIVX_IMAGE_MAX_OBJECTS]\nnew vx_image added, index incremented"];
+    ... ;
+    OBJS >> REF [label="ownObjectAlloc(return vx_reference)"];
+    REF box REF [label="vx_reference"];
+    ... ;
+    REF box REF [label="referenceTable [TIVX_CONTEXT_MAX_REFERENCES]\nimage vx_reference added, index incremented"];
+    REF >> OBJ [label="ownCreateReference(returns vx_reference)"];
+    OBJ box OBJ [label="vx_reference"];
+    ... ;
+    OBJ >> APP [label="vxCreateImage(returns vx_image)"];
+    APP box APP [label="vx_image"];
+
+    ||| ;
+    ||| ;
+    
+    APP box APP [label="vx_graph"];
+    APP => OBJ [label="vxCreateGraph(vx_graph)"];
+    OBJ box OBJ [label="vx_graph"];
+    ... ;
+    OBJ => REF [label="ownCreateReference(vx_graph)"];
+    REF box REF [label="vx_reference"];
+    REF => OBJS [label="ownObjectAlloc(vx_reference)"];
+    OBJS box OBJS [label="vx_reference"];
+    ... ;
+    OBJS box OBJS [label="tivx_graph_t [TIVX_GRAPH_MAX_OBJECTS]\nnew vx_graph added, index incremented"];
+    ... ;
+    OBJS >> REF [label="ownObjectAlloc(return vx_reference)"];
+    REF box REF [label="vx_reference"];
+    ... ;
+    REF box REF [label="referenceTable [TIVX_CONTEXT_MAX_REFERENCES]\ngraph vx_reference added, index incremented"];
+    REF >> OBJ [label="ownCreateReference(returns vx_reference)"];
+    OBJ box OBJ [label="vx_reference"];
+    ... ;
+    OBJ >> APP [label="vxCreateGraph(returns vx_graph)"];
+    APP box APP [label="vx_graph"];
+}

@@ -105,7 +105,7 @@ vision_apps_utils:
 endif
 
 doxy_docs:
-	cat tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_$(SOC)_linux.cfg > /tmp/user_guide_$(SOC)_linux.cfg
+	cat internal_docs/doxy_cfg_user_guide/user_guide_$(SOC)_linux.cfg > /tmp/user_guide_$(SOC)_linux.cfg
 	$(PRINT) EXCLUDE = \\ >> /tmp/user_guide_$(SOC)_linux.cfg
 ifeq ($(SOC),j721e)
 	$(PRINT)           include/TI/soc/tivx_soc_j721s2.h \\ >> /tmp/user_guide_j721e_linux.cfg
@@ -120,7 +120,7 @@ ifeq ($(SOC),j784s4)
 	$(PRINT)           include/TI/soc/tivx_soc_j721s2.h \\ >> /tmp/user_guide_j784s4_linux.cfg
 endif
 	$(PRINT)           include/TI/tivx_soc_j6.h >> /tmp/user_guide_$(SOC)_linux.cfg
-	$(DOXYGEN) /tmp/user_guide_$(SOC)_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
+	$(DOXYGEN) /tmp/user_guide_$(SOC)_linux.cfg 2> internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
 	$(CLEAN) /tmp/user_guide_$(SOC)_linux.cfg
 	$(COPY) tiovx_dev/internal_docs/tiovx_release_notes_psdkra_$(SOC).html $(TIOVX_PATH)/tiovx_release_notes.html
 	-rm $(TIOVX_PATH)/docs/test_reports/* -f
@@ -130,7 +130,7 @@ endif
 	$(MKDIR) $(TIOVX_PATH)/docs/manifest/
 	$(MKDIR) $(TIOVX_PATH)/docs/user_guide/
 	$(COPY) tiovx_dev/internal_docs/test_reports/$(SOC)/* $(TIOVX_PATH)/docs/test_reports/.
-	$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide/images/*.pdf $(TIOVX_PATH)/docs/user_guide/.
+	$(COPY) internal_docs/doxy_cfg_user_guide/images/*.pdf $(TIOVX_PATH)/docs/user_guide/.
 	$(COPY) tiovx_dev/internal_docs/static_analysis_tiovx.xlsx $(TIOVX_PATH)/docs/static_analysis/.
 	$(COPY) tiovx_dev/internal_docs/bidi_report_tiovx.xlsx $(TIOVX_PATH)/docs/bidi/.
 	$(COPY) tiovx_dev/internal_docs/manifest/TIOVX_manifest.html $(TIOVX_PATH)/docs/manifest/.
