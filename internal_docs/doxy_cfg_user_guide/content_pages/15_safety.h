@@ -86,6 +86,7 @@
        allocation will automatically align the memory to the required alignment
      - There is an error thrown if the corresponding number of entries doesn't match a set of number of valid addresses.  If the total number of memory pointers
        are not equal to the number of poitners required for the reference, then an error will be thrown.
+     - Subimages of a given image object will not be imported to the subsequent imported image object.
 
      For more information about how to use this API, please refer to the Producer/Consumer application within vision_apps as well as the test cases
      found at tiovx/conformance_tests/test_tiovx/test_tivxMem.c

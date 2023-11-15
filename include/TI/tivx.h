@@ -913,7 +913,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  * - memory block is contiguous
  *
  * Only the following reference object types are supported:
- * - \ref VX_TYPE_IMAGE (note: subimages of images are not supported)
+ * - \ref VX_TYPE_IMAGE (note: subimages of images are not supported; also, subimages of an image will not be retained across export/import)
  * - \ref VX_TYPE_TENSOR
  * - \ref VX_TYPE_USER_DATA_OBJECT
  * - \ref VX_TYPE_ARRAY
@@ -991,7 +991,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReferenceImportHandle(vx_reference ref, c
  * hold all the handles expected from the reference object.
  *
  * Only the following reference object types are supported:
- * - \ref VX_TYPE_IMAGE (note: subimages of images are not supported)
+ * - \ref VX_TYPE_IMAGE (note: subimages of images are not supported; also, subimages of an image will not be retained across export/import)
  * - \ref VX_TYPE_TENSOR
  * - \ref VX_TYPE_USER_DATA_OBJECT
  * - \ref VX_TYPE_ARRAY
