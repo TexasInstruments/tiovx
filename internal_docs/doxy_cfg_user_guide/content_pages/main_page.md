@@ -70,8 +70,8 @@ lib                 | Pre-built dependency libraries (PC) and tiovx libraries co
 Note: since the 8.6 release the below folders have been moved to the following locations:
 
 
-8.6 Location | 9.0 Location
--------------|-------------
+8.6 Location          | 9.0 (and beyond) Location
+----------------------|--------------------------
 tiovx/concerto        | sdk_builder/concerto
 tiovx/kernels_j7/hwa  | imaging/kernels/hwa
 tiovx/kernels_j7/tidl | c7x-mma-tidl/arm-tidl/tiovx_kernels/tidl
