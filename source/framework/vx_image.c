@@ -242,7 +242,7 @@ static vx_status ownDestructImage(vx_reference ref)
             {
                 if(obj_desc->mem_ptr[0].host_ptr!=(uint64_t)(uintptr_t) NULL)
                 {
-                    for(plane_idx=0; plane_idx<obj_desc->planes-1; plane_idx++)
+                    for(plane_idx=0; plane_idx<(obj_desc->planes-1); plane_idx++)
                     {
                         size += TIVX_IMG_ALIGN(obj_desc->mem_size[plane_idx]);
                     }
@@ -299,7 +299,7 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                 /* We will allocate all planes in a single buffer and multiple plane pointers,
                  * with appropriate alignment between them to account for HWA requirements.
                  * This is required for Video Codec in PSDK 7.3 to have NV12 buffers be contiguous. */
-                for(plane_idx=0; plane_idx<obj_desc->planes-1; plane_idx++)
+                for(plane_idx=0; plane_idx<(obj_desc->planes-1); plane_idx++)
                 {
                     size += TIVX_IMG_ALIGN(obj_desc->mem_size[plane_idx]);
                 }

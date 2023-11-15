@@ -82,7 +82,7 @@ void ownLogRtInit()
 
     ownPlatformGetLogRtShmInfo(&obj->log_rt_shm_base, &obj->log_rt_shm_size);
 
-    if(obj->log_rt_shm_base != NULL && obj->log_rt_shm_size > sizeof(tivx_log_rt_shm_header_t))
+    if((obj->log_rt_shm_base != NULL) && (obj->log_rt_shm_size > sizeof(tivx_log_rt_shm_header_t)))
     {
         obj->is_valid = vx_true_e;
     }

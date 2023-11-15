@@ -710,7 +710,7 @@ void tivxPrintAllResourceStats(void)
         }
         (void)printf("|");
         numDigits = getNumDigits((int32_t)stat.min_required_value);
-        for (j = 0; j < 7 - numDigits; j++)
+        for (j = 0; j < (7 - numDigits); j++)
         {
             (void)printf(" ");
         }
@@ -825,12 +825,12 @@ static char * applyMemoryUnit(double * size_bytes, char * unit)
         {
             output = "B ";
         }
-        else if (*size_bytes < 1024*1024)
+        else if (*size_bytes < (1024*1024))
         {
             *size_bytes /= 1024;
             output = "KB";
         }
-        else if (*size_bytes < 1024*1024*1024)
+        else if (*size_bytes < (1024*1024*1024))
         {
             *size_bytes /= (1024*1024);
             output = "MB";
@@ -911,7 +911,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
         if (displayMode != TIVX_MEM_LOG_DEFAULT)
         {
             printOutput(ofp, "\n\n|");
-            for (k = 0; k < char_width*2+23; k++)
+            for (k = 0; k < ((char_width*2)+23); k++)
             {
                 printOutput(ofp, "-");
             }
@@ -926,27 +926,27 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
                 printOutput(ofp, " ");
             }
             printOutput(ofp, "|\n|");
-            for (k = 0; k < char_width+4; k++)
+            for (k = 0; k < (char_width+4); k++)
             {
                 printOutput(ofp, " ");
             }
             printOutput(ofp, "MEMORY CARVEOUT");
-            for (k = 0; k < char_width+4; k++)
+            for (k = 0; k < (char_width+4); k++)
             {
                 printOutput(ofp, " ");
             }
             printOutput(ofp, "|\n|");
-            for (k = 0; k < char_width*2+23; k++)
+            for (k = 0; k < ((char_width*2)+23); k++)
             {
                 printOutput(ofp, "-");
             }
             printOutput(ofp, "|\n|");
-            for (k = 0; k < char_width*2+23; k++)
+            for (k = 0; k < ((char_width*2)+23); k++)
             {
                 printOutput(ofp, " ");
             }
             printOutput(ofp, "|\n|");
-            for (k = 0; k < char_width*2+23; k++)
+            for (k = 0; k < ((char_width*2)+23); k++)
             {
                 printOutput(ofp, "-");
             }
@@ -1167,7 +1167,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
                 }
                 printOutput(ofp, "|\n");
             }
-            if (displayMode == TIVX_MEM_LOG_OBJECT_DESCRIPTOR && row.is_obj_desc == vx_false_e)
+            if ((displayMode == TIVX_MEM_LOG_OBJECT_DESCRIPTOR) && (row.is_obj_desc == vx_false_e))
             {
                 continue;
             }
@@ -1238,7 +1238,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
             }
             if (displayMode != TIVX_MEM_LOG_GLOBAL)
             {
-                if (row.is_obj_desc == vx_true_e && strncmp(row.name, "TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", TIVX_RESOURCE_NAME_MAX)!=0)
+                if ((row.is_obj_desc == vx_true_e) && (strncmp(row.name, "TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", TIVX_RESOURCE_NAME_MAX) != 0))
                 {
                     obj_size = sizeof(tivx_obj_desc_shm_entry_t) * g_tivx_obj_desc_shm_table[obj_count].value;
                     obj_units = applyMemoryUnit(&obj_size, unit);
@@ -1257,7 +1257,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
             }
             printOutput(ofp, "\n");
         }
-        if (displayMode != TIVX_MEM_LOG_GLOBAL && displayMode != TIVX_MEM_LOG_DEFAULT)
+        if ((displayMode != TIVX_MEM_LOG_GLOBAL) && (displayMode != TIVX_MEM_LOG_DEFAULT))
         {
             printOutput(ofp, "|------------------------------------|------------------------|");
             for (k = 0; k < char_width; k++)
@@ -1360,7 +1360,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
             char_width = TIVX_MEM_CHAR_WIDTH_ALL-4;
         }
         printOutput(ofp, "|");
-        for (k = 0; k < char_width*2+31; k++)
+        for (k = 0; k < ((char_width*2)+31); k++)
         {
             printOutput(ofp, "-");
         }
@@ -1371,7 +1371,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
             rem_units = applyMemoryUnit(&total_rem, unit);
             numDigits = getNumDigits((int32_t)total_size);
             printOutput(ofp, "|");
-            for (k = 0; k < char_width-1; k++)
+            for (k = 0; k < (char_width-1); k++)
             {
                 printOutput(ofp, " ");
             }
@@ -1382,7 +1382,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
             }
             printOutput(ofp, "|\n|");
             numDigits = getNumDigits((int32_t)total_rem);
-            for (k = 0; k < char_width-4; k++)
+            for (k = 0; k < (char_width-4); k++)
             {
                 printOutput(ofp, " ");
             }
@@ -1400,13 +1400,13 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
             rem_obj_units = applyMemoryUnit(&rem_obj_size, unit);
             obj_units = applyMemoryUnit(&total_obj_size, unit);
             printOutput(ofp, "|");
-            for (k = 0; k < char_width*2+31; k++)
+            for (k = 0; k < ((char_width*2)+31); k++)
             {
                 printOutput(ofp, " ");
             }
             printOutput(ofp, "|\n|");
             numDigits = getNumDigits((int32_t)total_obj_size);
-            for (k = 0; k < char_width-3; k++)
+            for (k = 0; k < (char_width-3); k++)
             {
                 printOutput(ofp, " ");
             }
@@ -1417,7 +1417,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
             }
             printOutput(ofp, "|\n|");
             numDigits = getNumDigits((int32_t)rem_obj_size);
-            for (k = 0; k < char_width-6; k++)
+            for (k = 0; k < (char_width-6); k++)
             {
                 printOutput(ofp, " ");
             }
@@ -1429,12 +1429,12 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
             printOutput(ofp, "|\n");
         }
         printOutput(ofp, "|");
-        for (k = 0; k < char_width*2+31; k++)
+        for (k = 0; k < ((char_width*2)+31); k++)
         {
             printOutput(ofp, "-");
         }
         printOutput(ofp, "|\n\n");
-        if (displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR && displayMode != TIVX_MEM_LOG_DEFAULT)
+        if ((displayMode != TIVX_MEM_LOG_OBJECT_DESCRIPTOR) && (displayMode != TIVX_MEM_LOG_DEFAULT))
         {
             printOutput(ofp, "* The global memory consumed by these parameters is counted in other resources. They aren't included\n");
             printOutput(ofp, "  in the total memory used to avoid multiple counts.\n\n");

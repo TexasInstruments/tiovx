@@ -91,8 +91,8 @@ static vx_bool ownLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class)
 
         for(i=0; i<TIVX_LOG_RT_INDEX_MAX; i++)
         {
-            if(    obj->index[i].event_class == event_class
-                && obj->index[i].event_id == event_id
+            if(    (obj->index[i].event_class == event_class)
+                && (obj->index[i].event_id == event_id)
                 )
             {
                 is_found = vx_true_e;
@@ -177,8 +177,8 @@ static void tivxLogRtTraceRemoveEventClass(uint64_t event_id, uint16_t event_cla
 
         for(i=0; i<TIVX_LOG_RT_INDEX_MAX; i++)
         {
-            if(    obj->index[i].event_class == event_class
-                && obj->index[i].event_id == event_id)
+            if(    (obj->index[i].event_class == event_class)
+                && (obj->index[i].event_id == event_id))
             {
                 /* index entry found, mark it as empty */
                 obj->index[i].event_id = 0u;
@@ -198,7 +198,7 @@ static vx_status ownLogRtFileWrite(int fd, uint8_t *buf, uint32_t bytes_to_write
     ssize_t ret_size;
     vx_status status = VX_SUCCESS;
 
-    while(buf != NULL && bytes_to_write != 0)
+    while((buf != NULL) && (bytes_to_write != 0))
     {
         if(bytes_to_write < tmp_buf_size)
             write_size = bytes_to_write;
