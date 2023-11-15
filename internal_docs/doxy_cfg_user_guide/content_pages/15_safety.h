@@ -90,6 +90,13 @@
      For more information about how to use this API, please refer to the Producer/Consumer application within vision_apps as well as the test cases
      found at tiovx/conformance_tests/test_tiovx/test_tivxMem.c
 
+     \section TIOVX_SAFETY_OS_SUPPORT TIOVX OS Support
+
+     The aspects of TIOVX which are considered under the safety qualification effort are the framework, platform layer and associated utils layers.  For the
+     remote cores supported via TIOVX safety, the safety OS which is supported is SafeRTOS.  For the host side components, given that the Linux and QNX OS
+     layers do not support safety, a safety OS would need to be used in place of Linux and QNX.  Please note though that the generic POSIX platform layer will
+     have safety qualification collateral (e.g., MISRA-C, Code Coverage, Requirement documentation, etc).
+
  */
 
 /*!
