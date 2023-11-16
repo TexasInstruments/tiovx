@@ -111,7 +111,6 @@ void ownLogRtResetShm(void *shm_base, uint32_t shm_size)
 
     for(i=0; i<TIVX_LOG_RT_INDEX_MAX; i++)
     {
-        index[i].event_class = TIVX_LOG_RT_EVENT_CLASS_INVALID;
         index[i].event_id = 0u;
         index[i].event_class = TIVX_LOG_RT_EVENT_CLASS_INVALID;
         tivx_obj_desc_strncpy(index[i].event_name, "INVALID", TIVX_LOG_RT_EVENT_NAME_MAX);
@@ -147,6 +146,26 @@ static void ownLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_
         }
 
         ownPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT);
+    }
+}
+
+void tivxLogRtTraceKernelInstanceExeStartTimestamp(tivx_target_kernel_instance kernel, uint16_t event_index, uint64_t timestamp)
+{
+    if(tivxFlagIsBitSet(kernel->node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
+    {
+        ownLogRtTraceLogEvent(timestamp,
+            kernel->node_obj_desc->base.host_ref+event_index, 0,
+            TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, TIVX_LOG_RT_EVENT_TYPE_START);
+    }
+}
+
+void tivxLogRtTraceKernelInstanceExeEndTimestamp(tivx_target_kernel_instance kernel, uint16_t event_index, uint64_t timestamp)
+{
+    if(tivxFlagIsBitSet(kernel->node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
+    {
+        ownLogRtTraceLogEvent(timestamp,
+            kernel->node_obj_desc->base.host_ref+event_index, 0,
+            TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, TIVX_LOG_RT_EVENT_TYPE_END);
     }
 }
 

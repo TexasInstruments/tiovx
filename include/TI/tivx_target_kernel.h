@@ -352,6 +352,40 @@ void tivxLogRtTraceKernelInstanceExeStart(tivx_target_kernel_instance kernel, ui
 void tivxLogRtTraceKernelInstanceExeEnd(tivx_target_kernel_instance kernel, uint16_t event_index);
 
 /*!
+ * \brief Log trace on target kernel instance execute start with timestamp given externally
+ *
+ * - This API is intended to be called from within a target-side callback
+ *   of a user kernel (process callback, for example).
+ * - This was added to accommodate timestamps obtained from within an interrupt context.  The trace API can not
+ *   be called from within an interrupt context due to locks, so instead, a timestamp can be obtained from within
+ *   the interrupt ISR, and later assigned to the logger via this API.
+ *
+ * \param [in] kernel       The target kernel instance object from the argument list of the target side callback
+ * \param [in] event_index  Event index to trigger the end trace for
+ * \param [in] timestamp    Timestamp to assign to the event
+ *
+ * \ingroup group_tivx_log_rt_trace_target
+ */
+void tivxLogRtTraceKernelInstanceExeStartTimestamp(tivx_target_kernel_instance kernel, uint16_t event_index, uint64_t timestamp);
+
+/*!
+ * \brief Log trace on target kernel instance execute end with timestamp given externally
+ *
+ * - This API is intended to be called from within a target-side callback
+ *   of a user kernel (process callback, for example).
+ * - This was added to accommodate timestamps obtained from within an interrupt context.  The trace API can not
+ *   be called from within an interrupt context due to locks, so instead, a timestamp can be obtained from within
+ *   the interrupt ISR, and later assigned to the logger via this API.
+ *
+ * \param [in] kernel       The target kernel instance object from the argument list of the target side callback
+ * \param [in] event_index  Event index to trigger the end trace for
+ * \param [in] timestamp    Timestamp to assign to the event
+ *
+ * \ingroup group_tivx_log_rt_trace_target
+ */
+void tivxLogRtTraceKernelInstanceExeEndTimestamp(tivx_target_kernel_instance kernel, uint16_t event_index, uint64_t timestamp);
+
+/*!
  * \brief Utility function to obtain DMA handle
  *
  * \ingroup group_tivx_target_kernel
