@@ -47,7 +47,7 @@ typedef struct
     tivx_log_rt_index_t index[TIVX_LOG_RT_INDEX_MAX]; /* event index's which map event ID to event name */
     uint32_t num_events[TIVX_LOG_RT_INDEX_MAX]; /* number of events for each event index */
     tivx_log_rt_entry_t *events; /* list of events */
-    uint32_t *event_2_index_table; /* table mappging each event in 'events' to event index within 'index' */
+    uint32_t *event_2_index_table; /* table mapping each event in 'events' to event index within 'index' */
     uint32_t total_events; /* total number of events, i.e number of entries in 'events', 'event_2_index_table' */
     uint32_t num_index; /* total number of event index's, i.e number of valid entries in 'index', 'num_events' */
     
@@ -115,13 +115,14 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
 static struct argp argp = { options, parse_opt, args_doc, cmd_doc, 0, 0, 0 };
 
-static uint32_t find_event_index(uint64_t event_id, tivx_log_rt_obj_t *obj)
+static uint32_t find_event_index(tivx_log_rt_entry_t *event, tivx_log_rt_obj_t *obj)
 {
     uint32_t i;
     
     for(i=0; i<obj->num_index; i++)
     {
-        if(event_id == obj->index[i].event_id)
+        if((event->event_id == obj->index[i].event_id) &&
+           (event->event_class == obj->index[i].event_class))
         {
             return i;
         }
@@ -290,6 +291,7 @@ static void read_in_file(tivx_log_rt_obj_t *obj)
             /* we dont handle GRAPH class for now */
             case TIVX_LOG_RT_EVENT_CLASS_TARGET:
             case TIVX_LOG_RT_EVENT_CLASS_NODE:
+            case TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE:
                 obj->index[cur_index] = index[i];
                 cur_index++;
                 break;
@@ -316,11 +318,10 @@ static void read_in_file(tivx_log_rt_obj_t *obj)
             && event->timestamp <= (obj->start_time  + (uint64_t)(obj->arguments.start_offset+obj->arguments.duration)*1000)
           )
         {
-            index = find_event_index(event->event_id, obj);
+            index = find_event_index(event, obj);
             obj->event_2_index_table[event_cnt] = index;
         
             if( (event->event_type == TIVX_LOG_RT_EVENT_TYPE_START) &&
-                (event->event_class != TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE) &&
                 (index < obj->num_index))
             {
                 obj->num_events[index]++;
@@ -399,7 +400,9 @@ static void create_output(tivx_log_rt_obj_t *obj)
     fprintf(out_fp, header);
     for(event_index=0; event_index<obj->num_index; event_index++)
     {
-        if(obj->index[event_index].event_class == TIVX_LOG_RT_EVENT_CLASS_NODE)
+        if((obj->index[event_index].event_class == TIVX_LOG_RT_EVENT_CLASS_NODE) ||
+           (obj->index[event_index].event_class == TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE) ||
+           (obj->index[event_index].event_class == TIVX_LOG_RT_EVENT_CLASS_TARGET) )
         {
             fprintf(out_fp, div_tags, 
                     obj->index[event_index].event_name,
@@ -416,7 +419,9 @@ static void create_output(tivx_log_rt_obj_t *obj)
     fprintf(out_fp, script_header);
     for(event_index=0; event_index<obj->num_index; event_index++)
     {   
-        if(obj->index[event_index].event_class == TIVX_LOG_RT_EVENT_CLASS_NODE)
+        if((obj->index[event_index].event_class == TIVX_LOG_RT_EVENT_CLASS_NODE) ||
+           (obj->index[event_index].event_class == TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE)||
+           (obj->index[event_index].event_class == TIVX_LOG_RT_EVENT_CLASS_TARGET) )
         { 
             fprintf(out_fp, graph_header, event_index, obj->index[event_index].event_name);
                 
