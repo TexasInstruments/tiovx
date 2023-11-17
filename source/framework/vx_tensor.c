@@ -30,7 +30,7 @@ Tensor HELPER FUNCTIONS
 
 static void ownInitTensorObject(
     vx_tensor tensor, const vx_size* dimensions, vx_size number_of_dimensions, vx_enum data_type, vx_int8 fixed_point_position);
-static vx_bool ownIsValidTensorFormat(vx_enum data_type, vx_uint8 fixed_point_pos);
+static vx_bool ownIsValidTensorFormat(vx_enum data_type);
 static vx_status ownTensorCheckSizes(const volatile uint32_t *dimensions, const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions);
 static vx_size ownComputePatchSize (const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions);
 static void ownComputePositionsFromIndex(vx_size index, const vx_size * start, const vx_size * end,
@@ -38,7 +38,7 @@ static void ownComputePositionsFromIndex(vx_size index, const vx_size * start, c
         vx_size * tensor_pos, vx_size * patch_pos);
 static vx_uint32 ownComputePatchOffset(vx_size num_dims, const vx_size *dim_coordinate, const volatile uint32_t *strides);
 
-static vx_bool ownIsValidTensorFormat(vx_enum data_type, vx_uint8 fixed_point_pos)
+static vx_bool ownIsValidTensorFormat(vx_enum data_type)
 {
     vx_bool res = (vx_bool)vx_false_e;
 
@@ -189,7 +189,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
             status = (vx_status)VX_ERROR_INVALID_DIMENSION;
         }
 
-        if ((vx_bool)vx_false_e == ownIsValidTensorFormat(data_type, (vx_uint8)fixed_point_position))
+        if ((vx_bool)vx_false_e == ownIsValidTensorFormat(data_type))
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid data_type for the tensor.\n");
             status = (vx_status)VX_ERROR_INVALID_TYPE;
