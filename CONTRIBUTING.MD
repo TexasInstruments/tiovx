@@ -18,6 +18,7 @@
 
 - [Git COMMIT Messages](#git-commit-messages)
 - [Pull Requests](#pull-requests)
+- [Standard Review Process](#standard-review-process)
 - [Coding Guidelines](#coding-guidelines)
 - [Documentation Style Guide](#documentation-style-guide)
 - [Testing](#testing)
@@ -146,6 +147,21 @@ When creating a pull request, please adhere to following guidelines:
 - Submit to merge to the appropriate branch (main is default)
 - If you want to share the PR in draft state, then you can use the [Draft Pull Request](https://github.blog/2019-02-14-introducing-draft-pull-requests/) feature to indicate that it is not ready to merge yet, but want to start the conversation.
 - During review, it is okay to keep adding several commits in the PR, but each of them should be buildable and tests should pass.  After finalizing the patch prior to merging, the submitter is requested to rebase and squash several commits into a minimal logical subset (removing intermediate modifications based on review comments).
+- Attach document with list of requirements (for official Khronos extensions, the extension document may be sufficient if requirements are identified)
+- Include requirement labels in the test case. All requirements should have test case coverage.
+
+## Standard Review Process
+
+The below points outline the standard review process and guidelines for making a contribution:
+
+- After creating a Pull Request, TI will do first pass review and offer feedback based on visual review only.
+- Once feedback has been fixed by the Pull Request submitter, the Pull Request submitter shall respond back to each of TI's comments with an acknowledgement that the change has been made or further clarification/justification of TI's comments have been requested.
+- Please note that Github feedback comments default to a "Pending" state until they are explicitly posted when closing out a review.
+- For feedback that is not inline and thus not able to be commented upon, the Pull Request submitter shall respond with a "Thumbs Up" emoji to denote agreement or a "Thumbs Down" emoji and a comment on the pull request if in disagreement.
+- TI shall mark each set of conversations as "Resolved" once it has deemed it resolved.
+- After fixes to visual reviews, TI will run through static analysis checker and give feedback report.
+- After fixes to static analysis checker and assuming that all conformance tests are still passing, TI will run through a validation cycle.
+- Based on when all issues are closed, TI aims to merge after the next release so that external features are in place for sufficient testing throughout the inter-release period.
 
 ## Coding Guidelines
 
