@@ -429,7 +429,7 @@ void ownGraphFreeObjDesc(vx_graph graph);
  *
  * \ingroup group_vx_graph
  */
-void ownGraphFreeStreaming(vx_graph graph);
+vx_status ownGraphFreeStreaming(vx_graph graph);
 
 /*! \brief Create queues to maintain submitted graph desc and free graph desc
  *

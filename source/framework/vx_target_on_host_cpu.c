@@ -67,7 +67,7 @@ extern own_target_cmd_desc_handler_f  g_target_cmd_desc_handler_for_host_f;
 
 /* These two are assigned to the function pointers above */
 static void ownTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
-static void ownTargetCmdDescHandlerHost(tivx_obj_desc_cmd_t *cmd_obj_desc);
+static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc);
 
 /* These two are called by \ref ownTargetCmdDescHandlerHost */
 static vx_action ownTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
@@ -86,7 +86,7 @@ static void ownTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_ob
     node_obj_desc->exe_status = (uint32_t)ownNodeUserKernelExecute((vx_node)(uintptr_t)node_obj_desc->base.host_ref, prm_ref);
 }
 
-static void ownTargetCmdDescHandlerHost(tivx_obj_desc_cmd_t *cmd_obj_desc)
+static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
 {
     uint16_t node_obj_desc_id;
     tivx_obj_desc_node_t *node_obj_desc;

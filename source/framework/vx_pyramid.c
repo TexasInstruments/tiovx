@@ -127,8 +127,9 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                 if(obj_desc==NULL)
                 {
                     if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd))
+                    {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
-
+                    }
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate prmd object descriptor\n");
                     prmd = (vx_pyramid)ownGetErrorObject(
@@ -156,7 +157,9 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                     if ((vx_status)VX_SUCCESS != status)
                     {
                         if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd))
+                        {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
+                        }
                     }
                 }
             }
@@ -256,7 +259,9 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
             if(obj_desc==NULL)
             {
                 if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd))
+                {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
+                }
 
                 vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                     "Could not allocate prmd object descriptor\n");
@@ -575,7 +580,9 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
                 status = ownReleaseReferenceInt((vx_reference *)&prmd->img[j],
                     (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
                 if((vx_status)VX_SUCCESS != status)
+                {
                     VX_PRINT(VX_ZONE_ERROR,"Pyramid release failed\n");
+                }
             }
         }
     }

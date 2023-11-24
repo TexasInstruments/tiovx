@@ -46,91 +46,116 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 
     while((vx_bool)vx_false_e == done)
     {
-        tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e);
-
-        switch (state)
+        if((vx_status)VX_SUCCESS == tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e))
         {
-            case IDLE:
-                if(START == event.app_value)
-                {
-                    VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
-                    state = RUNNING;
-                    tivxSendUserGraphEvent(graph, RUN, NULL);
-                }
-
-                if(STOP == event.app_value)
-                {
-                    VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
-                    tivxEventPost(graph->stop_done);
-                }
-
-                if(DELETE == event.app_value)
-                {
-                    /* Break from loop and exit task */
-                    VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: DELETE\n");
-                    done = (vx_bool)vx_true_e;
-                }
-
-                if(RUN == event.app_value)
-                {
-                    /* Do nothing, graph is stopped */
-                    VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: RUN\n");
-                }
-
-                break;
-            case RUNNING:
-                if(START == event.app_value)
-                {
-                    /* Already running, ignore */
-                    VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: START\n");
-                }
-
-                if(STOP == event.app_value)
-                {
-                    /* Change state to IDLE; if any pending RUN events then they get ignored in IDLE state */
-                    VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: STOP\n");
-                    state = IDLE;
-                    tivxEventPost(graph->stop_done);
-                }
-
-                if(DELETE == event.app_value)
-                {
-                    VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
-
-                    status = vxWaitGraph(graph);
-
-                    if (status != (vx_status)VX_SUCCESS)
+            switch (state)
+            {
+                case IDLE:
+                    if(START == event.app_value)
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
+                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
+                        state = RUNNING;
+                        status = tivxSendUserGraphEvent(graph, RUN, NULL);
+                        if (status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+                        }
                     }
 
-                    state = IDLE;
-                    done = (vx_bool)vx_true_e;
-                }
-
-                if(RUN == event.app_value)
-                {
-                    /* Execute graph then trigger another graph execution */
-                    VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: RUN\n");
-                    ownGraphScheduleGraph(graph, 1);
-
-                    status = vxWaitGraph(graph);
-
-                    if (status != (vx_status)VX_SUCCESS)
+                    if(STOP == event.app_value)
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
+                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
+                        status = tivxEventPost(graph->stop_done);
+                        if (status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
+                        }
                     }
 
-                    graph->streaming_executions++;
-                    tivxSendUserGraphEvent(graph, RUN, NULL);
-                }
+                    if(DELETE == event.app_value)
+                    {
+                        /* Break from loop and exit task */
+                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: DELETE\n");
+                        done = (vx_bool)vx_true_e;
+                    }
 
-                break;
-            default :
-                break;
+                    if(RUN == event.app_value)
+                    {
+                        /* Do nothing, graph is stopped */
+                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: RUN\n");
+                    }
+
+                    break;
+                case RUNNING:
+                    if(START == event.app_value)
+                    {
+                        /* Already running, ignore */
+                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: START\n");
+                    }
+
+                    if(STOP == event.app_value)
+                    {
+                        /* Change state to IDLE; if any pending RUN events then they get ignored in IDLE state */
+                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: STOP\n");
+                        state = IDLE;
+                        status = tivxEventPost(graph->stop_done);
+                        if (status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
+                        }
+                    }
+
+                    if(DELETE == event.app_value)
+                    {
+                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
+
+                        status = vxWaitGraph(graph);
+
+                        if (status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
+                        }
+
+                        state = IDLE;
+                        done = (vx_bool)vx_true_e;
+                    }
+
+                    if(RUN == event.app_value)
+                    {
+                        /* Execute graph then trigger another graph execution */
+                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: RUN\n");
+                        status = ownGraphScheduleGraph(graph, 1);
+                        if (status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraph() failed.\n");
+                        }
+
+                        status = vxWaitGraph(graph);
+
+                        if (status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
+                        }
+
+                        graph->streaming_executions++;
+                        status = tivxSendUserGraphEvent(graph, RUN, NULL);
+                        if (status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+                        }
+                    }
+
+                    break;
+                default :
+                    break;
+            }
         }
     }
-    tivxEventPost(graph->delete_done);
+    status = tivxEventPost(graph->delete_done);
+    if (status != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
+    }
 }
 
 static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
@@ -143,91 +168,112 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 
     while((vx_bool)vx_false_e == done)
     {
-        tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e);
-
-        switch (state)
+        if((vx_status)VX_SUCCESS == tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e))
         {
-            case IDLE:
-                if(START == event.app_value)
-                {
-                    VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
-                    state = RUNNING;
-                    /* Execute graph then trigger another graph execution */
-                    if ((vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode)
+            switch (state)
+            {
+                case IDLE:
+                    if(START == event.app_value)
                     {
+                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
+                        state = RUNNING;
+                        /* Execute graph then trigger another graph execution */
+                        if ((vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode)
+                        {
+                            graph->streaming_executions++;
+                            status = ownGraphScheduleGraphWrapper(graph);
+                            if (status != (vx_status)VX_SUCCESS)
+                            {
+                                VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraphWrapper() failed.\n");
+                            }
+                        }
+                    }
+
+                    if(STOP == event.app_value)
+                    {
+                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
+                        status = tivxEventPost(graph->stop_done);
+                        if (status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
+                        }
+                    }
+
+                    if(DELETE == event.app_value)
+                    {
+                        /* Break from loop and exit task */
+                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: DELETE\n");
+                        done = (vx_bool)vx_true_e;
+                    }
+
+                    if(RUN == event.app_value)
+                    {
+                        /* Do nothing, graph is stopped */
+                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: RUN\n");
+                    }
+
+                    break;
+                case RUNNING:
+                    if(START == event.app_value)
+                    {
+                        /* Already running, ignore */
+                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: START\n");
+                    }
+
+                    if(STOP == event.app_value)
+                    {
+                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: STOP\n");
+                        /* Change state to IDLE; if any pending RUN events then they get ignored in IDLE state */
+                        state = IDLE;
+
+                        status = vxWaitGraph(graph);
+
+                        if (status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
+                        }
+
+                        status = tivxEventPost(graph->stop_done);
+                        if (status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
+                        }
+                    }
+
+                    if(DELETE == event.app_value)
+                    {
+                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
+                        state = IDLE;
+                        done = (vx_bool)vx_true_e;
+                    }
+
+                    if(RUN == event.app_value)
+                    {
+                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: RUN\n");
+                    }
+
+                    if(STREAMING_EVENT==event.app_value)
+                    {
+                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: NODE COMPLETE\n");
                         graph->streaming_executions++;
-                        ownGraphScheduleGraphWrapper(graph);
-                    }
-                }
-
-                if(STOP == event.app_value)
-                {
-                    VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
-                    tivxEventPost(graph->stop_done);
-                }
-
-                if(DELETE == event.app_value)
-                {
-                    /* Break from loop and exit task */
-                    VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: DELETE\n");
-                    done = (vx_bool)vx_true_e;
-                }
-
-                if(RUN == event.app_value)
-                {
-                    /* Do nothing, graph is stopped */
-                    VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: RUN\n");
-                }
-
-                break;
-            case RUNNING:
-                if(START == event.app_value)
-                {
-                    /* Already running, ignore */
-                    VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: START\n");
-                }
-
-                if(STOP == event.app_value)
-                {
-                    VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: STOP\n");
-                    /* Change state to IDLE; if any pending RUN events then they get ignored in IDLE state */
-                    state = IDLE;
-
-                    status = vxWaitGraph(graph);
-
-                    if (status != (vx_status)VX_SUCCESS)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
+                        status = ownGraphScheduleGraph(graph, 1);
+                        if (status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraph() failed.\n");
+                        }
                     }
 
-                    tivxEventPost(graph->stop_done);
-                }
-
-                if(DELETE == event.app_value)
-                {
-                    VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
-                    state = IDLE;
-                    done = (vx_bool)vx_true_e;
-                }
-
-                if(RUN == event.app_value)
-                {
-                    VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: RUN\n");
-                }
-
-                if(STREAMING_EVENT==event.app_value)
-                {
-                    VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: NODE COMPLETE\n");
-                    graph->streaming_executions++;
-                    ownGraphScheduleGraph(graph, 1);
-                }
-
-                break;
-            default :
-                break;
+                    break;
+                default :
+                    break;
+            }
         }
     }
-    tivxEventPost(graph->delete_done);
+    status = tivxEventPost(graph->delete_done);
+    if (status != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
+    }   
 }
 
 VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph)
@@ -278,8 +324,17 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
     {
         if ((vx_bool)vx_true_e == graph->is_streaming)
         {
-            tivxEventClear(graph->stop_done);
-            tivxSendUserGraphEvent(graph, STOP, NULL);
+            status = tivxEventClear(graph->stop_done);
+            if (status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxEventClear() failed.\n");
+            }
+
+            status = tivxSendUserGraphEvent(graph, STOP, NULL);
+            if (status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+            }
             status = tivxEventWait(graph->stop_done, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
             if (status != (vx_status)VX_SUCCESS)
@@ -396,7 +451,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
             streamingTaskParams.stack_size = TIVX_STREAMING_STACK_SIZE;
             streamingTaskParams.core_affinity = TIVX_TASK_AFFINITY_ANY;
             streamingTaskParams.priority = TIVX_STREAMING_TASK_PRIORITY;
-            strncpy(streamingTaskParams.task_name, "TIVX_STRM", TIVX_MAX_TASK_NAME);
+            (void)strncpy(streamingTaskParams.task_name, "TIVX_STRM", TIVX_MAX_TASK_NAME);
             streamingTaskParams.task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
 
             status = ownEventQueueCreate(&graph->event_queue);
@@ -500,22 +555,52 @@ vx_status ownGraphVerifyStreamingMode(vx_graph graph)
     return status;
 }
 
-void ownGraphFreeStreaming(vx_graph graph)
+vx_status ownGraphFreeStreaming(vx_graph graph)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     if (graph->is_streaming_enabled != 0)
     {
         /* Clear event and send user event */
-        tivxEventClear(graph->delete_done);
-        tivxSendUserGraphEvent(graph, DELETE, NULL);
-        tivxEventWait(graph->delete_done, graph->timeout_val);
+        status = tivxEventClear(graph->delete_done);
+        if (status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxEventClear() failed.\n");
+        }
 
-        tivxTaskDelete(&graph->streaming_task_handle);
+        status = tivxSendUserGraphEvent(graph, DELETE, NULL);
+        if (status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+        }
 
-        ownEventQueueDelete(&graph->event_queue);
+        status = tivxEventWait(graph->delete_done, graph->timeout_val);
+        if (status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
+        }
 
-        tivxEventDelete(&graph->stop_done);
+        (void)tivxTaskDelete(&graph->streaming_task_handle);
 
-        tivxEventDelete(&graph->delete_done);
+        status = ownEventQueueDelete(&graph->event_queue);
+        if (status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to delete event queue.\n");
+        }
+
+        status = tivxEventDelete(&graph->stop_done);
+        if (status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
+        }
+
+
+        status = tivxEventDelete(&graph->delete_done);
+        if (status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
+        }
+
     }
+    return status;
 }
 

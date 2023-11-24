@@ -197,7 +197,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
                     vx_uint32   timeout_val = *(vx_uint32*)ptr;
 
                     /* Validate the timeout. It cannot be zero. */
-                    if (timeout_val == 0)
+                    if (timeout_val == 0U)
                     {
                         VX_PRINT(VX_ZONE_ERROR,
                                  "Invalid timeout value specified: %d\n",

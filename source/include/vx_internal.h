@@ -138,22 +138,22 @@ extern "C" {
  */
 enum tivx_type_e {
     TIVX_TYPE_DATA_REF_Q = VX_TYPE_VENDOR_OBJECT_START, /*! \brief Data reference queue type */
-    TIVX_TYPE_ARRAY_MAP_INFO = VX_TYPE_VENDOR_STRUCT_START+1, /*! \brief A <tt>\ref tivx_array_map_info</tt>. */
-    TIVX_TYPE_IMAGE_MAP_INFO = VX_TYPE_VENDOR_STRUCT_START+2, /*! \brief A <tt>\ref tivx_image_map_info</tt>. */
-    TIVX_TYPE_RAW_IMAGE_MAP_INFO = VX_TYPE_VENDOR_STRUCT_START+3, /*! \brief A <tt>\ref tivx_raw_image_map_info</tt>. */
-    TIVX_TYPE_TENSOR_MAP_INFO = VX_TYPE_VENDOR_STRUCT_START+4, /*! \brief A <tt>\ref tivx_tensor_map_info</tt>. */
-    TIVX_TYPE_USER_DATA_OBJECT_MAP_INFO = VX_TYPE_VENDOR_STRUCT_START+5, /*! \brief A <tt>\ref tivx_user_data_object_map_info</tt>. */
-    TIVX_TYPE_EVENT_QUEUE_ELEMENT = VX_TYPE_VENDOR_STRUCT_START+6, /*! \brief A <tt>\ref tivx_event_queue_elem</tt>. */
-    TIVX_TYPE_TARGET = VX_TYPE_VENDOR_STRUCT_START+7,  /*! \brief A <tt>\ref tivx_target</tt>. */
-    TIVX_TYPE_TARGET_KERNEL_INSTANCE = VX_TYPE_VENDOR_STRUCT_START+8,  /*! \brief A <tt>\ref tivx_target_kernel_instance</tt>. */
-    TIVX_TYPE_TARGET_KERNEL = VX_TYPE_VENDOR_STRUCT_START+9,  /*! \brief A <tt>\ref tivx_target_kernel</tt>. */
-    TIVX_TYPE_DELAY_PARAM = VX_TYPE_VENDOR_STRUCT_START+10,  /*! \brief A <tt>\ref tivx_delay_param</tt>. */
-    TIVX_TYPE_EVENT = VX_TYPE_VENDOR_STRUCT_START+11, /*! \brief A <tt>\ref tivx_event</tt>. */
-    TIVX_TYPE_UINTPTR = VX_TYPE_VENDOR_STRUCT_START+12, /*! \brief A <tt>\ref uintptr</tt>. */
-    TIVX_TYPE_CONTEXT_USER_STRUCTS = VX_TYPE_VENDOR_STRUCT_START+13, /*! \brief A <tt>\ref context->user_structs</tt>. */
-    TIVX_TYPE_GRAPH_PARAMETERS = VX_TYPE_VENDOR_STRUCT_START+14, /*! \brief A <tt>\ref graph->parameters</tt>. */
-    TIVX_TYPE_DATA_REF_QUEUE_LIST = VX_TYPE_VENDOR_STRUCT_START+15, /*! \brief A <tt>\ref graph->data_ref_q_list</tt>. */
-    TIVX_TYPE_DELAY_DATA_REF_QUEUE_LIST = VX_TYPE_VENDOR_STRUCT_START+16 /*! \brief A <tt>\ref graph->delay_data_ref_q_list</tt>. */
+    TIVX_TYPE_ARRAY_MAP_INFO = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 1, /*! \brief A <tt>\ref tivx_array_map_info</tt>. */
+    TIVX_TYPE_IMAGE_MAP_INFO = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 2, /*! \brief A <tt>\ref tivx_image_map_info</tt>. */
+    TIVX_TYPE_RAW_IMAGE_MAP_INFO = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 3, /*! \brief A <tt>\ref tivx_raw_image_map_info</tt>. */
+    TIVX_TYPE_TENSOR_MAP_INFO = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 4, /*! \brief A <tt>\ref tivx_tensor_map_info</tt>. */
+    TIVX_TYPE_USER_DATA_OBJECT_MAP_INFO = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 5, /*! \brief A <tt>\ref tivx_user_data_object_map_info</tt>. */
+    TIVX_TYPE_EVENT_QUEUE_ELEMENT = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 6, /*! \brief A <tt>\ref tivx_event_queue_elem</tt>. */
+    TIVX_TYPE_TARGET = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 7,  /*! \brief A <tt>\ref tivx_target</tt>. */
+    TIVX_TYPE_TARGET_KERNEL_INSTANCE = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 8,  /*! \brief A <tt>\ref tivx_target_kernel_instance</tt>. */
+    TIVX_TYPE_TARGET_KERNEL = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 9,  /*! \brief A <tt>\ref tivx_target_kernel</tt>. */
+    TIVX_TYPE_DELAY_PARAM = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 10,  /*! \brief A <tt>\ref tivx_delay_param</tt>. */
+    TIVX_TYPE_EVENT = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 11, /*! \brief A <tt>\ref tivx_event</tt>. */
+    TIVX_TYPE_UINTPTR = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 12, /*! \brief A <tt>\ref uintptr</tt>. */
+    TIVX_TYPE_CONTEXT_USER_STRUCTS = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 13, /*! \brief A <tt>\ref context->user_structs</tt>. */
+    TIVX_TYPE_GRAPH_PARAMETERS = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 14, /*! \brief A <tt>\ref graph->parameters</tt>. */
+    TIVX_TYPE_DATA_REF_QUEUE_LIST = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 15, /*! \brief A <tt>\ref graph->data_ref_q_list</tt>. */
+    TIVX_TYPE_DELAY_DATA_REF_QUEUE_LIST = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 16 /*! \brief A <tt>\ref graph->delay_data_ref_q_list</tt>. */
 };
 
 /*! \brief A parameter checker for size and alignment.

@@ -787,7 +787,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                         num_dims = (vx_size)TIVX_RAW_IMAGE_MAX_EXPOSURES;
                     }
 
-                    tivx_obj_desc_memcpy(ptr, &obj_desc->imagepatch_addr[0], (uint32_t)sizeof(vx_imagepatch_addressing_t)*num_dims);
+                    tivx_obj_desc_memcpy(ptr, &obj_desc->imagepatch_addr[0], (uint32_t)(sizeof(vx_imagepatch_addressing_t)*num_dims));
                 }
                 else
                 {

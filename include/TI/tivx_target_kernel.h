@@ -268,7 +268,7 @@ static inline void tivxFlagBitClear(volatile uint32_t *flag_var, uint32_t flag_v
  */
 static inline vx_bool tivxFlagIsBitSet(uint32_t flag_var, uint32_t flag_val)
 {
-    vx_bool result = ((flag_var & flag_val) == flag_val);
+    vx_bool result = (((flag_var & flag_val) == flag_val)? 1 : 0);
     return result;
 }
 

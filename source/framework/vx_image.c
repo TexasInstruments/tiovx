@@ -19,7 +19,7 @@
 #include <vx_internal.h>
 
 #define TIVX_IMG_ALIGN_BYTES    (64U)
-#define TIVX_IMG_ALIGN(size)    (((size + (TIVX_IMG_ALIGN_BYTES-1)) / TIVX_IMG_ALIGN_BYTES) * TIVX_IMG_ALIGN_BYTES)
+#define TIVX_IMG_ALIGN(size)    (((size + (TIVX_IMG_ALIGN_BYTES-1U)) / TIVX_IMG_ALIGN_BYTES) * TIVX_IMG_ALIGN_BYTES)
 
 static vx_bool ownIsSupportedFourcc(vx_df_image code);
 static vx_bool ownIsValidImage(vx_image image);
@@ -219,7 +219,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
         VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_IMAGE_MAX_SUBIMAGES in tiovx/include/TI/tivx_config.h\n");
     }
 
-    ownIncrementReference(&parent->base, (vx_enum)VX_INTERNAL);
+    (void)ownIncrementReference(&parent->base, (vx_enum)VX_INTERNAL);
 }
 
 static vx_status ownDestructImage(vx_reference ref)
@@ -242,7 +242,7 @@ static vx_status ownDestructImage(vx_reference ref)
             {
                 if(obj_desc->mem_ptr[0].host_ptr!=(uint64_t)(uintptr_t) NULL)
                 {
-                    for(plane_idx=0; plane_idx<(obj_desc->planes-1); plane_idx++)
+                    for(plane_idx=0; plane_idx<(obj_desc->planes-1U); plane_idx++)
                     {
                         size += TIVX_IMG_ALIGN(obj_desc->mem_size[plane_idx]);
                     }
@@ -299,7 +299,7 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                 /* We will allocate all planes in a single buffer and multiple plane pointers,
                  * with appropriate alignment between them to account for HWA requirements.
                  * This is required for Video Codec in PSDK 7.3 to have NV12 buffers be contiguous. */
-                for(plane_idx=0; plane_idx<(obj_desc->planes-1); plane_idx++)
+                for(plane_idx=0; plane_idx<(obj_desc->planes-1U); plane_idx++)
                 {
                     size += TIVX_IMG_ALIGN(obj_desc->mem_size[plane_idx]);
                 }
@@ -308,36 +308,41 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                 /* memory is not allocated, so allocate it */
                 if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
-                    tivxMemBufferAlloc(&obj_desc->mem_ptr[0], size, (vx_enum)TIVX_MEM_EXTERNAL);
+                    /* Two conditions may fail inside function mem pointer null and size zero
+                     * to handle that put a status check here
+                     */
+                    if((vx_status)VX_SUCCESS == tivxMemBufferAlloc(&obj_desc->mem_ptr[0], size, (vx_enum)TIVX_MEM_EXTERNAL))
+                    {
 
-                    if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)(uintptr_t)NULL)
-                    {
-                        /* could not allocate memory */
-                        VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
-                        status = (vx_status)VX_ERROR_NO_MEMORY;
-                    }
-                    else
-                    {
-                        obj_desc->mem_ptr[plane_idx].shared_ptr =
-                            tivxMemHost2SharedPtr(
-                                obj_desc->mem_ptr[0].host_ptr,
-                                (vx_enum)TIVX_MEM_EXTERNAL);
-                        for(plane_idx=1; plane_idx<obj_desc->planes; plane_idx++)
+                        if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)(uintptr_t)NULL)
                         {
-                            obj_desc->mem_ptr[plane_idx].mem_heap_region =
-                                obj_desc->mem_ptr[plane_idx-1].mem_heap_region;
-                            obj_desc->mem_ptr[plane_idx].host_ptr =
-                                obj_desc->mem_ptr[plane_idx-1].host_ptr +
-                                obj_desc->mem_size[plane_idx-1];
+                            /* could not allocate memory */
+                            VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
+                        }
+                        else
+                        {
                             obj_desc->mem_ptr[plane_idx].shared_ptr =
                                 tivxMemHost2SharedPtr(
-                                    obj_desc->mem_ptr[plane_idx].host_ptr,
+                                    obj_desc->mem_ptr[0].host_ptr,
                                     (vx_enum)TIVX_MEM_EXTERNAL);
-                            obj_desc->mem_ptr[plane_idx].dma_buf_fd =
-                                obj_desc->mem_ptr[plane_idx-1].dma_buf_fd;
-                            obj_desc->mem_ptr[plane_idx].dma_buf_fd_offset =
-                                obj_desc->mem_ptr[plane_idx-1].dma_buf_fd_offset +
-                                TIVX_IMG_ALIGN(obj_desc->mem_size[plane_idx-1]);
+                            for(plane_idx=1; plane_idx<obj_desc->planes; plane_idx++)
+                            {
+                                obj_desc->mem_ptr[plane_idx].mem_heap_region =
+                                    obj_desc->mem_ptr[plane_idx-(uint16_t)1].mem_heap_region;
+                                obj_desc->mem_ptr[plane_idx].host_ptr =
+                                    obj_desc->mem_ptr[plane_idx-(uint16_t)1].host_ptr +
+                                    obj_desc->mem_size[plane_idx-(uint16_t)1];
+                                obj_desc->mem_ptr[plane_idx].shared_ptr =
+                                    tivxMemHost2SharedPtr(
+                                        obj_desc->mem_ptr[plane_idx].host_ptr,
+                                        (vx_enum)TIVX_MEM_EXTERNAL);
+                                obj_desc->mem_ptr[plane_idx].dma_buf_fd =
+                                    obj_desc->mem_ptr[plane_idx-(uint16_t)1].dma_buf_fd;
+                                obj_desc->mem_ptr[plane_idx].dma_buf_fd_offset =
+                                    obj_desc->mem_ptr[plane_idx-(uint16_t)1].dma_buf_fd_offset +
+                                    TIVX_IMG_ALIGN(obj_desc->mem_size[plane_idx-(uint16_t)1]);
+                            }
                         }
                     }
                 }
@@ -580,8 +585,10 @@ static vx_image ownCreateImageInt(vx_context context,
 
                     if(obj_desc == NULL)
                     {
-                        vxReleaseImage(&image);
-
+                        if((vx_status)VX_SUCCESS != vxReleaseImage(&image))
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to image object\n");
+                        }
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate image object descriptor\n");
                         image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
                         VX_PRINT(VX_ZONE_ERROR, "Could not allocate image object descriptor\n");
@@ -753,7 +760,10 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                 {
                     if((addrs[plane_idx].stride_x != 0) || (addrs[plane_idx].stride_y < ((((vx_int32)addrs[plane_idx].dim_x * 12)+7)/8)) )
                     {
-                        vxReleaseImage(&image);
+                        if((vx_status)VX_SUCCESS != vxReleaseImage(&image))
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to image object\n");
+                        }
                         image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
                         status = (vx_status)VX_FAILURE;
                     }
@@ -763,7 +773,10 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                 {
                     if((addrs[plane_idx].stride_x <= 0) || (addrs[plane_idx].stride_y < (addrs[plane_idx].stride_x * (vx_int32)addrs[plane_idx].dim_x) ) )
                     {
-                        vxReleaseImage(&image);
+                        if((vx_status)VX_SUCCESS != vxReleaseImage(&image))
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to image object\n");
+                        }
                         image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
                         status = (vx_status)VX_FAILURE;
                     }
@@ -1088,7 +1101,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
             vx_imagepatch_addressing_t addr;
             void *base;
 
-            vxQueryImage(image, (vx_enum)VX_IMAGE_PLANES, &planes, sizeof(planes));
+            (void)vxQueryImage(image, (vx_enum)VX_IMAGE_PLANES, &planes, sizeof(planes));
 
             for (p = 0; p < planes; p++)
             {
@@ -1257,12 +1270,15 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                             }
                         }
                     }
-                    vxUnmapImagePatch(image, map_id);
+                    (void)vxUnmapImagePatch(image, map_id);
                 }
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch failed\n");
-                    vxReleaseImage(&image);
+                    if((vx_status)VX_SUCCESS != vxReleaseImage(&image))
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to image object\n");
+                    }
                     image = (vx_image)ownGetErrorObject(context, (vx_status)VX_FAILURE);
                     break;
                 }
@@ -1388,52 +1404,49 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageValidRectangle(vx_image image, cons
     if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
-
-        if (NULL != obj_desc)
+        /* removed the null check of obj_desc due to previous check in ownIsValidImage */
+        if (NULL != rect)
         {
-            if (NULL != rect)
+            if ((rect->start_x <= rect->end_x) &&
+                (rect->start_y <= rect->end_y) &&
+                (rect->end_x <= obj_desc->width) &&
+                (rect->end_y <= obj_desc->height))
             {
-                if ((rect->start_x <= rect->end_x) &&
-                    (rect->start_y <= rect->end_y) &&
-                    (rect->end_x <= obj_desc->width) &&
-                    (rect->end_y <= obj_desc->height))
-                {
-                    obj_desc->valid_roi.start_x = rect->start_x;
-                    obj_desc->valid_roi.start_y = rect->start_y;
-                    obj_desc->valid_roi.end_x   = rect->end_x;
-                    obj_desc->valid_roi.end_y   = rect->end_y;
-                    status = (vx_status)VX_SUCCESS;
-                }
-                else
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "invalid rectangle dimensions\n");
-                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                    if (!(rect->start_x <= rect->end_x))
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "rectangle start x is greater than end x\n");
-                    }
-                    if (!(rect->start_y <= rect->end_y))
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "rectangle start y is greater than end y\n");
-                    }
-                    if (!(rect->end_x <= obj_desc->width))
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "rectangle end x is greater than image width\n");
-                    }
-                    if (!(rect->end_y <= obj_desc->height))
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "rectangle end y is greater than image height\n");
-                    }
-                }
+                obj_desc->valid_roi.start_x = rect->start_x;
+                obj_desc->valid_roi.start_y = rect->start_y;
+                obj_desc->valid_roi.end_x   = rect->end_x;
+                obj_desc->valid_roi.end_y   = rect->end_y;
+                status = (vx_status)VX_SUCCESS;
             }
             else
             {
-                obj_desc->valid_roi.start_x = 0;
-                obj_desc->valid_roi.start_y = 0;
-                obj_desc->valid_roi.end_x   = obj_desc->width;
-                obj_desc->valid_roi.end_y   = obj_desc->height;
-                status = (vx_status)VX_SUCCESS;
+                VX_PRINT(VX_ZONE_ERROR, "invalid rectangle dimensions\n");
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                if (!(rect->start_x <= rect->end_x))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "rectangle start x is greater than end x\n");
+                }
+                if (!(rect->start_y <= rect->end_y))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "rectangle start y is greater than end y\n");
+                }
+                if (!(rect->end_x <= obj_desc->width))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "rectangle end x is greater than image width\n");
+                }
+                if (!(rect->end_y <= obj_desc->height))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "rectangle end y is greater than image height\n");
+                }
             }
+        }
+        else
+        {
+            obj_desc->valid_roi.start_x = 0;
+            obj_desc->valid_roi.start_y = 0;
+            obj_desc->valid_roi.end_x   = obj_desc->width;
+            obj_desc->valid_roi.end_y   = obj_desc->height;
+            status = (vx_status)VX_SUCCESS;
         }
     }
 
@@ -1610,7 +1623,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                         num_dims = (vx_size)TIVX_IMAGE_MAX_PLANES;
                     }
 
-                    tivx_obj_desc_memcpy(ptr, &obj_desc->imagepatch_addr[0], (uint32_t)sizeof(vx_imagepatch_addressing_t)*num_dims);
+                    tivx_obj_desc_memcpy(ptr, &obj_desc->imagepatch_addr[0], (uint32_t)(sizeof(vx_imagepatch_addressing_t)*num_dims));
                 }
                 else
                 {
@@ -1772,7 +1785,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                     /* Both have compact lines */
                     for (y = start_y; y < end_y; y += image_addr->step_y)
                     {
-                        memcpy(pUserLine, pImageLine, len);
+                        (void)memcpy(pUserLine, pImageLine, len);
                         pImageLine = &(pImageLine[image_addr->stride_y]);
                         pUserLine = &(pUserLine[user_addr->stride_y]);
                     }
@@ -1782,7 +1795,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                     /* Both have compact lines */
                     for (y = start_y; y < end_y; y += image_addr->step_y)
                     {
-                        memcpy(pImageLine, pUserLine, len);
+                        (void)memcpy(pImageLine, pUserLine, len);
                         pImageLine = &(pImageLine[image_addr->stride_y]);
                         pUserLine = &(pUserLine[user_addr->stride_y]);
                     }
@@ -1836,7 +1849,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                             for (x = start_x; x < end_x; x += image_addr->step_x)
                             {
                                 /* One element */
-                                memcpy(pUserElem, pImageElem, len);
+                                (void)memcpy(pUserElem, pImageElem, len);
 
                                 pImageElem = &(pImageElem[len]);
                                 pUserElem = &(pUserElem[user_addr->stride_x]);
@@ -1892,7 +1905,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                             for (x = start_x; x < end_x; x += image_addr->step_x)
                             {
                                 /* One element */
-                                memcpy(pImageElem, pUserElem, len);
+                                (void)memcpy(pImageElem, pUserElem, len);
 
                                 pImageElem = &(pImageElem[len]);
                                 pUserElem = &(pUserElem[user_addr->stride_x]);

@@ -84,15 +84,15 @@ void ownLogRtInit(void)
 
     if((obj->log_rt_shm_base != NULL) && (obj->log_rt_shm_size > sizeof(tivx_log_rt_shm_header_t)))
     {
-        obj->is_valid = vx_true_e;
+        obj->is_valid = (vx_bool)vx_true_e;
     }
 
-    if(obj->is_valid)
+    if(obj->is_valid == (vx_bool)vx_true_e)
     {
         obj->queue          = (tivx_log_rt_queue_t*)( (uintptr_t)obj->log_rt_shm_base );
         obj->index          = (tivx_log_rt_index_t*)( (uintptr_t)obj->log_rt_shm_base + sizeof(tivx_log_rt_queue_t)      );
         obj->event_log_base = (tivx_log_rt_entry_t*)( (uintptr_t)obj->log_rt_shm_base + sizeof(tivx_log_rt_shm_header_t) );
-        obj->event_log_max_entries = (obj->log_rt_shm_size - sizeof(tivx_log_rt_shm_header_t) ) / ( sizeof(tivx_log_rt_entry_t) );
+        obj->event_log_max_entries = (obj->log_rt_shm_size - (uint32_t)sizeof(tivx_log_rt_shm_header_t) ) / ( (uint32_t)sizeof(tivx_log_rt_entry_t) );
     }
 }
 
@@ -124,9 +124,9 @@ static void ownLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_
     tivx_log_rt_queue_t *queue = obj->queue;
     volatile uint32_t tmp;
 
-    if(obj->is_valid)
+    if(obj->is_valid == (vx_bool)vx_true_e)
     {
-        ownPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT);
+        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT);
 
         if( queue->count < obj->event_log_max_entries )
         {
@@ -138,14 +138,14 @@ static void ownLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_
             entry->event_class = event_class;
             entry->event_type  = event_type;
 
-            queue->wr_index = (queue->wr_index+1) % obj->event_log_max_entries;
+            queue->wr_index = (queue->wr_index+1U) % obj->event_log_max_entries;
             queue->count++;
 
             tmp = queue->count; /* readback to make sure update has reached the memory */
             tmp;
         }
 
-        ownPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT);
+        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT);
     }
 }
 
@@ -189,7 +189,7 @@ void tivxLogRtTraceKernelInstanceExeEnd(tivx_target_kernel_instance kernel, uint
     }
 }
 
-void ownLogRtTraceNodeExeStart(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc)
+void ownLogRtTraceNodeExeStart(uint64_t timestamp, const tivx_obj_desc_node_t *node_obj_desc)
 {
     if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
@@ -199,7 +199,7 @@ void ownLogRtTraceNodeExeStart(uint64_t timestamp, tivx_obj_desc_node_t *node_ob
     }
 }
 
-void ownLogRtTraceNodeExeEnd(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc)
+void ownLogRtTraceNodeExeEnd(uint64_t timestamp, const tivx_obj_desc_node_t *node_obj_desc)
 {
     if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
@@ -209,7 +209,7 @@ void ownLogRtTraceNodeExeEnd(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_
     }
 }
 
-void ownLogRtTraceGraphExeStart(uint64_t timestamp, tivx_obj_desc_graph_t *graph_obj_desc)
+void ownLogRtTraceGraphExeStart(uint64_t timestamp, const tivx_obj_desc_graph_t *graph_obj_desc)
 {
     if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
@@ -219,7 +219,7 @@ void ownLogRtTraceGraphExeStart(uint64_t timestamp, tivx_obj_desc_graph_t *graph
     }
 }
 
-void ownLogRtTraceGraphExeEnd(uint64_t timestamp, tivx_obj_desc_graph_t *graph_obj_desc)
+void ownLogRtTraceGraphExeEnd(uint64_t timestamp, const tivx_obj_desc_graph_t *graph_obj_desc)
 {
     if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
@@ -235,7 +235,7 @@ void ownLogRtTraceTargetExeStart(tivx_target target, const tivx_obj_desc_t *obj_
     if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         ownLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
-            target->target_id, 0,
+            (uint64_t)target->target_id, 0,
             TIVX_LOG_RT_EVENT_CLASS_TARGET, TIVX_LOG_RT_EVENT_TYPE_START);
     }
 }
@@ -245,7 +245,7 @@ void ownLogRtTraceTargetExeEnd(tivx_target target, const tivx_obj_desc_t *obj_de
     if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         ownLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
-            target->target_id, 0,
+            (uint64_t)target->target_id, 0,
             TIVX_LOG_RT_EVENT_CLASS_TARGET, TIVX_LOG_RT_EVENT_TYPE_END);
     }
 }

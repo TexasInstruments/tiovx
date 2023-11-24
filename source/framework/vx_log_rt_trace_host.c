@@ -68,7 +68,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-static vx_status ownLogRtFileWrite(int fd, uint8_t *buf, uint32_t bytes_to_write, uint8_t *tmp_buf, uint32_t tmp_buf_size);
+static vx_status ownLogRtFileWrite(int32_t fd, uint8_t *buf, uint32_t bytes_to_write, uint8_t *tmp_buf, uint32_t tmp_buf_size);
 #endif
 
 static vx_bool ownLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class);
@@ -83,9 +83,9 @@ extern tivx_log_rt_obj_t g_tivx_log_rt_obj;
 static vx_bool ownLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class)
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
-    vx_bool is_found = vx_false_e;
+    vx_bool is_found = (vx_bool)vx_false_e;
 
-    if(obj->is_valid)
+    if(obj->is_valid == (vx_bool)vx_true_e)
     {
         uint32_t i;
 
@@ -95,7 +95,7 @@ static vx_bool ownLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class)
                 && (obj->index[i].event_id == event_id)
                 )
             {
-                is_found = vx_true_e;
+                is_found = (vx_bool)vx_true_e;
                 break;
             }
         }
@@ -106,9 +106,9 @@ static vx_bool ownLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class)
 static vx_bool ownLogRtTraceFindEventName(char *event_name)
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
-    vx_bool is_found = vx_false_e;
+    vx_bool is_found = (vx_bool)vx_false_e;
 
-    if(obj->is_valid)
+    if(obj->is_valid == (vx_bool)vx_true_e)
     {
         uint32_t i;
 
@@ -118,7 +118,7 @@ static vx_bool ownLogRtTraceFindEventName(char *event_name)
                 == 0
                 )
             {
-                is_found = vx_true_e;
+                is_found = (vx_bool)vx_true_e;
                 break;
             }
         }
@@ -130,27 +130,27 @@ static void ownLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class, 
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
 
-    if(obj->is_valid)
+    if(obj->is_valid == (vx_bool)vx_true_e)
     {
         uint32_t i;
-        vx_bool do_add_event = vx_true_e;
+        vx_bool do_add_event = (vx_bool)vx_true_e;
 
-        if(ownLogRtTraceFindEventId(event_id, event_class)==vx_true_e)
+        if(ownLogRtTraceFindEventId(event_id, event_class)== (vx_bool)vx_true_e)
         {
             VX_PRINT(VX_ZONE_WARNING,"Log RT event %ld of event class %d already exists, not adding again\n", event_id, (uint32_t)event_class);
-            do_add_event = vx_false_e;
+            do_add_event = (vx_bool)vx_false_e;
         }
-        if(do_add_event)
+        if(do_add_event == (vx_bool)vx_true_e)
         {
-            if(ownLogRtTraceFindEventName(event_name)==vx_true_e)
+            if(ownLogRtTraceFindEventName(event_name)==(vx_bool)vx_true_e)
             {
                 VX_PRINT(VX_ZONE_WARNING,"Log RT event name %s of event %ld of event class %d already exists, not adding again."
                     "Recommend to use a unique event name.\n",
                     event_name, event_id, (uint32_t)event_class);
-                do_add_event = vx_false_e;
+                do_add_event = (vx_bool)vx_false_e;
             }
         }
-        if(do_add_event)
+        if(do_add_event == (vx_bool)vx_true_e)
         {
             for(i=0; i<TIVX_LOG_RT_INDEX_MAX; i++)
             {
@@ -171,7 +171,7 @@ static void tivxLogRtTraceRemoveEventClass(uint64_t event_id, uint16_t event_cla
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
 
-    if(obj->is_valid)
+    if(obj->is_valid == (vx_bool)vx_true_e)
     {
         uint32_t i;
 
@@ -192,19 +192,22 @@ static void tivxLogRtTraceRemoveEventClass(uint64_t event_id, uint16_t event_cla
 
 #if defined(LINUX) || defined(QNX)
 
-static vx_status ownLogRtFileWrite(int fd, uint8_t *buf, uint32_t bytes_to_write, uint8_t *tmp_buf, uint32_t tmp_buf_size)
+static vx_status ownLogRtFileWrite(int32_t fd, uint8_t *buf, uint32_t bytes_to_write, uint8_t *tmp_buf, uint32_t tmp_buf_size)
 {
     uint32_t write_size;
     ssize_t ret_size;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
-    while((buf != NULL) && (bytes_to_write != 0))
+    while((buf != NULL) && ((int32_t)bytes_to_write != 0))
     {
         if(bytes_to_write < tmp_buf_size)
+        {
             write_size = bytes_to_write;
+        }
         else
+        {
             write_size = tmp_buf_size;
-
+        }
 
 
         tivx_obj_desc_memcpy(tmp_buf, buf, write_size);
@@ -212,9 +215,9 @@ static vx_status ownLogRtFileWrite(int fd, uint8_t *buf, uint32_t bytes_to_write
         buf = &(buf[write_size]);
         bytes_to_write -= write_size;
 
-        if(ret_size < write_size)
+        if(ret_size < (ssize_t)write_size)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
         }
     }
@@ -223,30 +226,30 @@ static vx_status ownLogRtFileWrite(int fd, uint8_t *buf, uint32_t bytes_to_write
 
 vx_status tivxLogRtTraceExportToFile(char *filename)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
     tivx_log_rt_queue_t *queue = obj->queue;
 
-    int fd = -1;
-    vx_bool is_write_to_file = vx_false_e;
+    int32_t fd = -1;
+    vx_bool is_write_to_file = (vx_bool)vx_false_e;
 
-    if(obj->is_valid)
+    if(obj->is_valid == (vx_bool)vx_true_e)
     {
         if(filename!=NULL)
         {
             fd = open(filename, O_CREAT | O_WRONLY, S_IRWXU | S_IRWXG | S_IRWXO );
             if(fd < 0)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "[%s] file could not be opened for writing run-time log\n", filename);
             }
             else
             {
-                is_write_to_file = vx_true_e;
+                is_write_to_file = (vx_bool)vx_true_e;
             }
         }
 
-        if( status==VX_SUCCESS )
+        if( status==(vx_status)VX_SUCCESS )
         {
             uint32_t tmp_buf_size = 128*1024;
             void *tmp_buf = malloc(tmp_buf_size);
@@ -254,7 +257,7 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
 
             if(tmp_buf == NULL)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "Unable to allocate tmp buffer for writing run-time log\n");
             }
             else
@@ -265,9 +268,9 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
                 bytes_to_write_1 = 0;
                 buf_1 = NULL;
 
-                ownPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
+                ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
 
-                if(is_write_to_file)
+                if(is_write_to_file == (vx_bool)vx_true_e)
                 {
                     buf_1 = (uint8_t*)obj->index;
                     bytes_to_write_1 = TIVX_LOG_RT_INDEX_MAX*sizeof(tivx_log_rt_index_t);
@@ -276,79 +279,79 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
                         buf_1, bytes_to_write_1,
                         tmp_buf, tmp_buf_size);
 
-                    if(status != VX_SUCCESS)
+                    if(status != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Unable to write run-time log index\n");
                     }
                 }
 
-                ownPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
+                ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
 
                 bytes_to_write_1 = 0;
                 bytes_to_write_2 = 0;
                 buf_1 = NULL;
                 buf_2 = NULL;
 
-                ownPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT);
+                ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT);
 
                 num_log_entries = queue->count;
-                if(num_log_entries > 0)
+                if((int32_t)num_log_entries > 0)
                 {
                     if(queue->rd_index < queue->wr_index)
                     {
-                        bytes_to_write_1 = (queue->wr_index - queue->rd_index)*sizeof(tivx_log_rt_entry_t);
+                        bytes_to_write_1 = (uint32_t)((queue->wr_index - queue->rd_index)*(uint32_t)sizeof(tivx_log_rt_entry_t));
                         buf_1 = (uint8_t*)&obj->event_log_base[queue->rd_index];
                     }
                     else
                     {
-                        bytes_to_write_1 = (obj->event_log_max_entries - queue->rd_index)*sizeof(tivx_log_rt_entry_t);
+                        bytes_to_write_1 = (uint32_t)((obj->event_log_max_entries - queue->rd_index)*(uint32_t)sizeof(tivx_log_rt_entry_t));
                         buf_1 = (uint8_t*)&obj->event_log_base[queue->rd_index];
 
-                        bytes_to_write_2 = queue->wr_index*sizeof(tivx_log_rt_entry_t);
+                        bytes_to_write_2 = (uint32_t)(queue->wr_index*sizeof(tivx_log_rt_entry_t));
                         buf_2 = (uint8_t*)&obj->event_log_base[0];
                     }
                 }
 
-                ownPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT);
+                ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT);
 
-                if(is_write_to_file)
+                if(is_write_to_file == (vx_bool)vx_true_e)
                 {
-                    if(status == VX_SUCCESS)
+                    if(status == (vx_status)VX_SUCCESS)
                     {
                         status = ownLogRtFileWrite(fd,
                             buf_1, bytes_to_write_1,
                             tmp_buf, tmp_buf_size);
 
-                        if(status == VX_SUCCESS)
+                        if(status == (vx_status)VX_SUCCESS)
                         {
                             status = ownLogRtFileWrite(fd,
                                 buf_2, bytes_to_write_2,
                                 tmp_buf, tmp_buf_size);
                         }
 
-                        if(status != VX_SUCCESS)
+                        if(status != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "Unable to write run-time log\n");
                         }
                     }
                 }
 
-                if(num_log_entries > 0)
+                if(num_log_entries > 0U)
                 {
                     volatile uint32_t tmp;
 
-                    ownPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT);
+                    ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT);
                     queue->count -= num_log_entries;
                     queue->rd_index = (queue->rd_index + num_log_entries) % obj->event_log_max_entries;
                     tmp = queue->count;
                     tmp; /* readback to make sure update has reached the memory */
-                    ownPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT);
+                    ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT);
                 }
 
                 free(tmp_buf);
             }
 
-            if(is_write_to_file)
+            if(is_write_to_file == (vx_bool)vx_true_e)
             {
                 (void)close(fd);
             }
@@ -371,15 +374,15 @@ void tivxLogRtTraceKernelInstanceAddEvent(vx_node node, uint16_t event_index, ch
     #pragma GCC diagnostic pop
     #endif
 
-    if(vx_false_e == ownLogRtTraceFindEventName(name))
+    if((vx_bool)vx_false_e == ownLogRtTraceFindEventName(name))
     {
-        ownLogRtTraceAddEventClass((uintptr_t)node+event_index, TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, name);
+        ownLogRtTraceAddEventClass((uint64_t)(uintptr_t)node+event_index, (uint16_t)TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, name);
     }
 }
 
 void tivxLogRtTraceKernelInstanceRemoveEvent(vx_node node, uint16_t event_index)
 {
-    tivxLogRtTraceRemoveEventClass((uintptr_t)node+event_index, TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE);
+    tivxLogRtTraceRemoveEventClass((uint64_t)node+event_index, (uint16_t)TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE);
 }
 
 static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
@@ -393,7 +396,7 @@ static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
     if (   (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
         && (graph->verified == (vx_bool)vx_true_e))
     {
-        ownPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
+        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
 
         for(target_id=0; target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH; target_id++)
         {
@@ -405,7 +408,7 @@ static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
 
             if(node != NULL)
             {
-                if(is_enable)
+                if(is_enable == (vx_bool)vx_true_e)
                 {
                     ownLogRtTraceAddEventClass((uintptr_t)node, TIVX_LOG_RT_EVENT_CLASS_NODE, node->base.name);
                 }
@@ -418,7 +421,7 @@ static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
                 {
                     if(node->obj_desc[pipe_id] != NULL)
                     {
-                        if(is_enable)
+                        if(is_enable == (vx_bool)vx_true_e)
                         {
                             tivxFlagBitSet(
                                 &node->obj_desc[pipe_id]->base.flags,
@@ -456,7 +459,7 @@ static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
             }
         }
 
-        if(is_enable)
+        if(is_enable == (vx_bool)vx_true_e)
         {
             ownLogRtTraceAddEventClass(graph->obj_desc[0]->base.obj_desc_id, TIVX_LOG_RT_EVENT_CLASS_GRAPH, graph->base.name);
         }
@@ -469,7 +472,7 @@ static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
         {
             if(graph->obj_desc[pipe_id] != NULL)
             {
-                if(is_enable)
+                if(is_enable == (vx_bool)vx_true_e)
                 {
                     tivxFlagBitSet(
                         &graph->obj_desc[pipe_id]->base.flags,
@@ -492,16 +495,16 @@ static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
 
             ownPlatformGetTargetName(targets[target_id], target_name);
 
-            if(is_enable)
+            if(is_enable == (vx_bool)vx_true_e)
             {
-                ownLogRtTraceAddEventClass(targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET, target_name);
+                ownLogRtTraceAddEventClass((uint64_t)targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET, target_name);
             }
             else
             {
-                tivxLogRtTraceRemoveEventClass(targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET);
+                tivxLogRtTraceRemoveEventClass((uint64_t)targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET);
             }
         }
-        ownPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
+        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
     }
     else
     {
@@ -513,10 +516,10 @@ static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
 
 vx_status tivxLogRtTraceEnable(vx_graph graph)
 {
-    return ownLogRtTraceSetup(graph, vx_true_e);
+    return ownLogRtTraceSetup(graph, (vx_bool)vx_true_e);
 }
 
 vx_status tivxLogRtTraceDisable(vx_graph graph)
 {
-    return ownLogRtTraceSetup(graph, vx_false_e);
+    return ownLogRtTraceSetup(graph, (vx_bool)vx_false_e);
 }

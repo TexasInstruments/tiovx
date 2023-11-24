@@ -155,7 +155,7 @@ tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref)
             tmp_obj_desc->host_ref = (uint64_t)(uintptr_t)ref;
             for(cpu_id = 0; cpu_id<TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU; cpu_id++)
             {
-                tmp_obj_desc->host_port_id[cpu_id] = ownIpcGetHostPortId(cpu_id);
+                tmp_obj_desc->host_port_id[cpu_id] = ownIpcGetHostPortId((uint16_t)cpu_id);
             }
             tmp_obj_desc->host_cpu_id  = (uint32_t)tivxGetSelfCpuId();
             tmp_obj_desc->timestamp = 0;
@@ -186,7 +186,7 @@ vx_status ownObjDescFree(tivx_obj_desc_t **obj_desc)
         if((*obj_desc)->obj_desc_id < g_obj_desc_table.num_entries)
         {
             ownLogResourceFree("TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", 1);
-            ownTableDecrementValue((*obj_desc)->type);
+            ownTableDecrementValue((vx_enum)(*obj_desc)->type);
             /* valid object descriptor, free it */
             (*obj_desc)->type = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
@@ -260,14 +260,14 @@ vx_status ownObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
 
         if (NULL != obj_desc)
         {
-            if(self_cpu_id < TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU)
+            if(self_cpu_id < (vx_enum)TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU)
             {
                 /* target is on remote CPU, send using IPC */
                 status = ownIpcSendMsg(cpu_id, ipc_payload, obj_desc->host_cpu_id, obj_desc->host_port_id[self_cpu_id]);
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
 
             if(status != (vx_status)VX_SUCCESS)
@@ -333,7 +333,7 @@ tivx_obj_desc_t *tivxGetObjDescElement(tivx_obj_desc_t *obj_desc, uint16_t elem_
         {
             VX_PRINT(VX_ZONE_ERROR,
                      "Requested element index [%d] out of range [0-%d]\n",
-                     elem_idx, obj_desc_obj_array->num_items-1);
+                     elem_idx, obj_desc_obj_array->num_items-1U);
         }
     }
     else
@@ -430,9 +430,9 @@ int32_t tivx_obj_desc_strncmp_delim(volatile void *dst, volatile void *src, uint
 
     for(i=0; i<size; i++)
     {
-        if((d[i] != s[i]) || (d[i] == 0U) || (s[i] == 0U) || (d[i] == delim) || (s[i] == delim))
+        if((d[i] != s[i]) || (d[i] == 0U) || (s[i] == 0U) || (d[i] == (uint8_t)delim) || (s[i] == (uint8_t)delim))
         {
-            if((d[i] != delim) && (s[i] != delim))
+            if((d[i] != (uint8_t)delim) && (s[i] != (uint8_t)delim))
             {
                 ret = ((int32_t)d[i] - (int32_t)s[i]);
             }

@@ -127,28 +127,28 @@ void ownLogRtResetShm(void *shm_base);
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void ownLogRtTraceNodeExeStart(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc);
+void ownLogRtTraceNodeExeStart(uint64_t timestamp, const tivx_obj_desc_node_t *node_obj_desc);
 
 /*!
  * \brief Log trace on node execute end
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void ownLogRtTraceNodeExeEnd(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc);
+void ownLogRtTraceNodeExeEnd(uint64_t timestamp, const tivx_obj_desc_node_t *node_obj_desc);
 
 /*!
  * \brief Log trace on graph execute start
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void ownLogRtTraceGraphExeStart(uint64_t timestamp, tivx_obj_desc_graph_t *graph_obj_desc);
+void ownLogRtTraceGraphExeStart(uint64_t timestamp, const tivx_obj_desc_graph_t *graph_obj_desc);
 
 /*!
  * \brief Log trace on graph execute end
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void ownLogRtTraceGraphExeEnd(uint64_t timestamp, tivx_obj_desc_graph_t *graph_obj_desc);
+void ownLogRtTraceGraphExeEnd(uint64_t timestamp, const tivx_obj_desc_graph_t *graph_obj_desc);
 
 /*!
  * \brief Log trace on target execute start

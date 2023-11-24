@@ -111,15 +111,19 @@ vx_status ownEventQueueCreate(tivx_event_queue_t *event_q)
 vx_status ownEventQueueDelete(tivx_event_queue_t *event_q)
 {
     event_q->enable = (vx_bool)vx_false_e;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxQueueDelete(&event_q->free_queue);
     if(status != (vx_status)VX_SUCCESS)
+    {
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete free_queue\n");
+    }
 
     status = tivxQueueDelete(&event_q->ready_queue);
     if(status != (vx_status)VX_SUCCESS)
+    {
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete ready_queue\n");
+    }
 
     return status;
 }

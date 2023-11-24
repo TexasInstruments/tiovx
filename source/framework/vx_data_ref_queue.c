@@ -335,13 +335,13 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
                 break;
             }
         }
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             if((vx_enum)data_ref_q->acquire_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
             {
                 status = ownObjDescQueueRelease(&data_ref_q->acquire_q_obj_desc_id);
             }
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 if((vx_enum)data_ref_q->release_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {

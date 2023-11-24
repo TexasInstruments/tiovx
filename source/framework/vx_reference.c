@@ -178,7 +178,7 @@ static vx_bool ownIsGenericReferenceType(vx_enum ref_type)
 {
     vx_bool ret = (vx_bool)vx_false_e;
 
-    if ( (ownIsGenericAllocReferenceType(ref_type)) ||
+    if ( (ownIsGenericAllocReferenceType(ref_type) == (vx_bool)vx_true_e) ||
          (ref_type == (vx_enum)VX_TYPE_SCALAR) ||
          (ref_type == (vx_enum)VX_TYPE_THRESHOLD)
        )
@@ -593,7 +593,9 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
                 }
                 ref->magic = TIVX_BAD_MAGIC; /* make sure no existing copies of refs can use ref again */
                 if((vx_status)VX_SUCCESS != ownObjectFree(ref))
+                {
                     VX_PRINT(VX_ZONE_ERROR, "Failed to free memory of reference \n");
+                }
 
             }
         }
@@ -923,7 +925,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 {
                     vx_bool is_ref_invalid;
 
-                    if (tivxFlagIsBitSet(ref->obj_desc->flags, TIVX_REF_FLAG_IS_INVALID) != 0U)
+                    if (tivxFlagIsBitSet(ref->obj_desc->flags, TIVX_REF_FLAG_IS_INVALID) != (vx_bool)0U)
                     {
                         is_ref_invalid = (vx_bool)vx_true_e;
                     }
@@ -1255,7 +1257,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
         VX_PRINT(VX_ZONE_ERROR, "Reference is Invalid.\n");
         status = (vx_status)VX_FAILURE;
     }
-    else if (num_entries == 0)
+    else if (num_entries == 0U)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "The parameter 'num_entries' must be non-zero.\n");
@@ -1525,7 +1527,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                         tivxMemHost2SharedPtr((uint64_t)(uintptr_t)addr[i],
                                               (vx_enum)TIVX_MEM_EXTERNAL);
 
-                    if (shared_ptr[i] == 0)
+                    if (shared_ptr[i] == 0U)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "addr[%d] is INVALID.\n", i);
                         status = (vx_status)VX_FAILURE;
@@ -1539,7 +1541,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
 
             if ((status == (vx_status)VX_SUCCESS) &&
-                (numNulls != 0) &&
+                (numNulls != 0U) &&
                 (numNulls != numMemElem))
             {
                 VX_PRINT(VX_ZONE_ERROR,
@@ -1551,7 +1553,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
         /* Validate the sizes of the handles. Do this only if we are not
          * importing NULLs.
          */
-        if ((status == (vx_status)VX_SUCCESS) && (numNulls == 0))
+        if ((status == (vx_status)VX_SUCCESS) && (numNulls == 0U))
         {
             if (ref->type == (vx_enum)VX_TYPE_PYRAMID)
             {
@@ -1644,7 +1646,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                     {
                         if (mem_ptr[0].host_ptr != (uint64_t)(uintptr_t)NULL)
                         {
-                            mem_ptr[j].host_ptr        = mem_ptr[j-1].host_ptr + mem_size[j-1];
+                            mem_ptr[j].host_ptr        = mem_ptr[(int32_t)j-1].host_ptr + mem_size[(int32_t)j-1];
                             mem_ptr[j].shared_ptr      = tivxMemHost2SharedPtr(
                                     mem_ptr[j].host_ptr,
                                     (vx_enum)TIVX_MEM_EXTERNAL);
@@ -1680,7 +1682,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                         {
                             if (mem_ptr[0].host_ptr != (uint64_t)(uintptr_t)NULL)
                             {
-                                mem_ptr[j].host_ptr        = mem_ptr[j-1].host_ptr + mem_size[j-1];
+                                mem_ptr[j].host_ptr        = mem_ptr[(int32_t)j-1].host_ptr + mem_size[(int32_t)j-1];
                                 mem_ptr[j].shared_ptr      = tivxMemHost2SharedPtr(
                                         mem_ptr[j].host_ptr,
                                         (vx_enum)TIVX_MEM_EXTERNAL);
@@ -1732,7 +1734,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'size' is NULL.\n");
         status = (vx_status)VX_FAILURE;
     }
-    else if (max_entries == 0)
+    else if (max_entries == 0U)
     {
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'max_entries' is 0.\n");
         status = (vx_status)VX_FAILURE;

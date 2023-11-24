@@ -227,8 +227,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
             {
                 /* if it was a valid reference then get the type from it */
                 if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type)))
+                {
                     VX_PRINT(VX_ZONE_PARAMETER, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
-
+                }
                 /* Check that signature type matches reference type*/
                 if (node->kernel->signature.types[index] != type)
                 {
@@ -284,7 +285,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
             if(status == (vx_status)VX_SUCCESS)
             {
                 if((vx_status)VX_SUCCESS != ownNodeSetParameter(node, index, value))
+                {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to set node parameter\n");
+                }
             }
 
             /* Note that we don't need to do anything special for parameters to child graphs. */

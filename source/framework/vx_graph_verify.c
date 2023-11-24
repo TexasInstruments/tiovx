@@ -363,7 +363,10 @@ static vx_status ownGraphValidRectCallback(
 
                                 tivxCheckStatus(&status, vxSetImageValidRectangle(img, &graph->out_valid_rect[k]));
 
-                                vxReleaseImage(&img);
+                                if((vx_status)VX_SUCCESS != vxReleaseImage(&img))
+                                {
+                                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to an image object\n");
+                                }
                             }
                         }
                     }
@@ -1269,7 +1272,8 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
             }
             if(status==(vx_status)VX_SUCCESS)
             {
-                ownDataRefQueueLinkDelayDataRefQueues(delay_data_ref_q_list, auto_age_delay_slot, delay->count);
+                /* always returning success */
+                (void)ownDataRefQueueLinkDelayDataRefQueues(delay_data_ref_q_list, auto_age_delay_slot, delay->count);
             }
         }
     }
@@ -1874,246 +1878,262 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
         }
     }
 
-    if((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)) &&
+    if((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
         ((vx_status)VX_SUCCESS == status))
     {
-        ownReferenceLock(&graph->base);
-
-        graph->verified = (vx_bool)vx_false_e;
-
-        if(first_time_verify == (vx_bool)vx_false_e)
+        if((vx_status)VX_SUCCESS == ownReferenceLock(&graph->base))
         {
-            ownGraphNodeKernelDeinit(graph);
-        }
-        {
-            /* Find out nodes and in nodes for each node in the graph
-             * No resources are allocated in this step
-             */
-            status = ownGraphCalcInAndOutNodes(graph);
-            if(status != (vx_status)VX_SUCCESS)
+            graph->verified = (vx_bool)vx_false_e;
+
+            if(first_time_verify == (vx_bool)vx_false_e)
             {
-                VX_PRINT(VX_ZONE_ERROR,"Unable to calculate out nodes and in nodes for each node\n");
+                if((vx_status)VX_SUCCESS != ownGraphNodeKernelDeinit(graph))
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Graph Node kernel de-init failed\n");
+                }
             }
+            {
+                /* Find out nodes and in nodes for each node in the graph
+                * No resources are allocated in this step
+                */
+                status = ownGraphCalcInAndOutNodes(graph);
+                if(status != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Unable to calculate out nodes and in nodes for each node\n");
+                }
 
             if(status == (vx_status)VX_SUCCESS)
             {
                 vx_bool has_cycle = (vx_bool)vx_false_e;
 
-                ownContextLock(graph->base.context);
+                    if((vx_status)VX_SUCCESS == ownContextLock(graph->base.context))
+                    {
 
-                /* Topological sort graph to find cycles
-                 */
-                ownGraphTopologicalSort(
-                            &graph->base.context->graph_sort_context,
-                            graph->nodes,
-                            graph->num_nodes,
-                            &has_cycle);
+                        /* Topological sort graph to find cycles
+                        */
+                        ownGraphTopologicalSort(
+                                    &graph->base.context->graph_sort_context,
+                                    graph->nodes,
+                                    graph->num_nodes,
+                                    &has_cycle);
 
-                ownContextUnlock(graph->base.context);
+                        if((vx_status)VX_SUCCESS != ownContextUnlock(graph->base.context))
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+                        }
+                    }
 
-                if(has_cycle != 0)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Topological sort failed, due to cycles in graph\n");
-                    status = (vx_status)VX_FAILURE;
+                    if(has_cycle != 0)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Topological sort failed, due to cycles in graph\n");
+                        status = (vx_status)VX_FAILURE;
+                    }
                 }
-            }
 
-            /* Detects connection between source and sink nodes */
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                ownGraphDetectSourceSink(graph);
-            }
+                /* Detects connection between source and sink nodes */
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* always returning success */
+                    (void)ownGraphDetectSourceSink(graph);
+                }
 
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* Call validate function for each node
-                 * If validation fails then return with error
-                 * No resources are allocated in this step
-                 */
-                status = ownGraphNodeKernelValidate(graph, meta);
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* Call validate function for each node
+                    * If validation fails then return with error
+                    * No resources are allocated in this step
+                    */
+                    status = ownGraphNodeKernelValidate(graph, meta);
+
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Node kernel Validate failed\n");
+                    }
+                }
+
+                /* Detects errors in pipelining parameters being set as graph parameter and multiple buffers at node */
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    status = ownGraphValidatePipelineParameters(graph);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Error in pipelining parameters\n");
+                    }
+                }
+
+                #if defined(BUILD_BAM)
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* Configure graph processing to account for any super nodes
+                    */
+                    status = ownGraphSuperNodeConfigure(graph);
+                }
+
+                #endif
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* Find head nodes and leaf nodes
+                    * in graph
+                    * No resources are allocated in this step
+                    */
+                    status = ownGraphCalcHeadAndLeafNodes(graph);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Find head nodes and leaf nodes failed\n");
+                    }
+                }
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    status = ownGraphFindAndAddDataReferences(graph);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Find and add data references failed\n");
+                    }
+                }
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* detect num bufs */
+                    ownGraphDetectAndSetNumBuf(graph);
+                }
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* Allocate memory associated with data objects of this graph
+                    * Memory resources are allocated in this step
+                    * No need to free them in case of error, since they get free'ed during
+                    * data object release
+                    */
+                    status = ownGraphAllocateDataObjects(graph);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Memory alloc for data objects failed\n");
+                    }
+                }
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* Pipeline node objects */
+                    status = ownGraphNodePipeline(graph);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Node pipelining failed\n");
+                    }
+                }
+
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* Set node callback commands
+                    * If case of any error these command are free'ed during
+                    * graph release
+                    */
+                    status = ownGraphCreateNodeCallbackCommands(graph);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Create node callback commands failed\n");
+                    }
+                }
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* link array elements to node parameters */
+                    ownGraphLinkArrayElements(graph);
+                }
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* create and link data references queues to node parameters */
+                    status = ownGraphCreateAndLinkDataReferenceQueues(graph);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Create data ref queues failed\n");
+                    }
+                }
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* Call target kernel init for each node
+                    * This results in message communication with target kernels
+                    * Memory gets allocated which MUST be free'ed via target kernel
+                    * deinit.
+                    * kernel deinit called during node release
+                    */
+                    status = ownGraphNodeKernelInit(graph);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Node kernel init failed\n");
+                    }
+                }
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* update data refs within data ref queues for meta data updated during kernel init */
+                    status = ownGraphUpdateDataReferenceQueueRefsAfterKernelInit(graph);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Unable to update data ref queue refs for graph\n");
+                    }
+                }
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* alloc object descriptor for graph and enqueue them */
+                    status = ownGraphAllocAndEnqueueObjDescForPipeline(graph);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj desc for graph\n");
+                    }
+                }
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* alloc everything for streaming */
+                    status = ownGraphAllocForStreaming(graph);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Unable to alloc streaming objects for graph\n");
+                    }
+                }
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* verify graph schedule mode with streaming */
+                    status = ownGraphVerifyStreamingMode(graph);
+                    if(status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"If streaming is enabled, schedule mode must be normal\n");
+                    }
+                }
+
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    /* everything passed, now graph is verified */
+                    graph->verified = (vx_bool)vx_true_e;
+                    graph->reverify = (vx_bool)vx_false_e;
+                    graph->state = (vx_enum)VX_GRAPH_STATE_VERIFIED;
+                }
 
                 if(status != (vx_status)VX_SUCCESS)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Node kernel Validate failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Graph verify failed\n");
+                    /* deinit kernel to recover resources */
+                    if((vx_status)VX_SUCCESS != ownGraphNodeKernelDeinit(graph))
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Grade node kernel de-init failed\n");
+                    }
                 }
+
             }
 
-            /* Detects errors in pipelining parameters being set as graph parameter and multiple buffers at node */
-            if(status == (vx_status)VX_SUCCESS)
+            if((vx_status)VX_SUCCESS != ownReferenceUnlock(&graph->base))
             {
-                status = ownGraphValidatePipelineParameters(graph);
-                if(status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Error in pipelining parameters\n");
-                }
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock reference\n");
             }
-
-            #if defined(BUILD_BAM)
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* Configure graph processing to account for any super nodes
-                 */
-                status = ownGraphSuperNodeConfigure(graph);
-            }
-
-            #endif
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* Find head nodes and leaf nodes
-                 * in graph
-                 * No resources are allocated in this step
-                 */
-                status = ownGraphCalcHeadAndLeafNodes(graph);
-                if(status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Find head nodes and leaf nodes failed\n");
-                }
-            }
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                status = ownGraphFindAndAddDataReferences(graph);
-                if(status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Find and add data references failed\n");
-                }
-            }
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* detect num bufs */
-                ownGraphDetectAndSetNumBuf(graph);
-            }
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* Allocate memory associated with data objects of this graph
-                 * Memory resources are allocated in this step
-                 * No need to free them in case of error, since they get free'ed during
-                 * data object release
-                 */
-                status = ownGraphAllocateDataObjects(graph);
-                if(status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Memory alloc for data objects failed\n");
-                }
-            }
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* Pipeline node objects */
-                status = ownGraphNodePipeline(graph);
-                if(status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Node pipelining failed\n");
-                }
-            }
-
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* Set node callback commands
-                 * If case of any error these command are free'ed during
-                 * graph release
-                 */
-                status = ownGraphCreateNodeCallbackCommands(graph);
-                if(status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Create node callback commands failed\n");
-                }
-            }
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* link array elements to node parameters */
-                ownGraphLinkArrayElements(graph);
-            }
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* create and link data references queues to node parameters */
-                status = ownGraphCreateAndLinkDataReferenceQueues(graph);
-                if(status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Create data ref queues failed\n");
-                }
-            }
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* Call target kernel init for each node
-                 * This results in message communication with target kernels
-                 * Memory gets allocated which MUST be free'ed via target kernel
-                 * deinit.
-                 * kernel deinit called during node release
-                 */
-                status = ownGraphNodeKernelInit(graph);
-                if(status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Node kernel init failed\n");
-                }
-            }
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* update data refs within data ref queues for meta data updated during kernel init */
-                status = ownGraphUpdateDataReferenceQueueRefsAfterKernelInit(graph);
-                if(status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Unable to update data ref queue refs for graph\n");
-                }
-            }
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* alloc object descriptor for graph and enqueue them */
-                status = ownGraphAllocAndEnqueueObjDescForPipeline(graph);
-                if(status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj desc for graph\n");
-                }
-            }
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* alloc everything for streaming */
-                status = ownGraphAllocForStreaming(graph);
-                if(status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Unable to alloc streaming objects for graph\n");
-                }
-            }
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* verify graph schedule mode with streaming */
-                status = ownGraphVerifyStreamingMode(graph);
-                if(status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"If streaming is enabled, schedule mode must be normal\n");
-                }
-            }
-
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                /* everything passed, now graph is verified */
-                graph->verified = (vx_bool)vx_true_e;
-                graph->reverify = (vx_bool)vx_false_e;
-                graph->state = (vx_enum)VX_GRAPH_STATE_VERIFIED;
-            }
-
-            if(status != (vx_status)VX_SUCCESS)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Graph verify failed\n");
-                /* deinit kernel to recover resources */
-                ownGraphNodeKernelDeinit(graph);
-            }
-
         }
-
-        ownReferenceUnlock(&graph->base);
     }
     else
     {
@@ -2125,7 +2145,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     {
         if (NULL != meta[i])
         {
-            ownReleaseMetaFormat(&meta[i]);
+            if((vx_status)VX_SUCCESS != ownReleaseMetaFormat(&meta[i]))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to release met-format object\n");
+            }
         }
     }
 

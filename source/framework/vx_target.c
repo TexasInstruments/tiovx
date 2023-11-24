@@ -1407,7 +1407,7 @@ void ownTargetSetTimestamp(
     {
         if (NULL != obj_desc[prm_id])
         {
-            if (tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)))
+            if (tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id))==(vx_bool)vx_true_e)
             {
                 obj_timestamp = obj_desc[prm_id]->timestamp;
 
@@ -1424,7 +1424,7 @@ void ownTargetSetTimestamp(
     {
         if (NULL != obj_desc[prm_id])
         {
-            if (!tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)))
+            if (tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)) == (vx_bool)vx_false_e)
             {
                 obj_desc[prm_id]->timestamp = timestamp;
 

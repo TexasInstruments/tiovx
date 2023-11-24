@@ -142,8 +142,8 @@ static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
                     g_target_kernel_table[i].kernel_name[0] = '\0';
                     if(kernel_name!=NULL)
                     {
-                        (void)strncpy(g_target_kernel_table[i].kernel_name, kernel_name, VX_MAX_KERNEL_NAME-1U);
-                        g_target_kernel_table[i].kernel_name[VX_MAX_KERNEL_NAME-1U] = '\0';
+                        (void)strncpy(g_target_kernel_table[i].kernel_name, kernel_name, VX_MAX_KERNEL_NAME-1);
+                        g_target_kernel_table[i].kernel_name[VX_MAX_KERNEL_NAME-1] = '\0';
                         VX_PRINT(VX_ZONE_INFO, "registered kernel %s on target %s\n", kernel_name, target_name);
                     }
                     g_target_kernel_table[i].target_id =

@@ -354,7 +354,7 @@ typedef enum _tivx_status_e {
     /*!< \brief Indicates that the wait operation on an event
      * timed-out
      */
-    TIVX_ERROR_EVENT_TIMEOUT = (vx_int32)(TIVX_STATUS_BASE + 1),
+    TIVX_ERROR_EVENT_TIMEOUT = (vx_int32)(TIVX_STATUS_BASE) + 1,
 
 } tivx_status_e;
 
@@ -547,7 +547,7 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void);
  *
  * \ingroup group_tivx_ext_host
  */
-vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum displayMode);
+vx_status tivxExportMemoryConsumption(char * outputFile, const char * unit, vx_enum displayMode);
 
 /*! \brief Enumerations of memory consumption tool's display modes
  *
