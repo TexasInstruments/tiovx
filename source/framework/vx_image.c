@@ -1734,7 +1734,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
 
         if (image_addr->stride_x == 0)
         {
-            pImageLine = pImagePtr + ((start_y*(vx_uint32)image_addr->stride_y)/image_addr->step_y) + (((start_x*12UL)/8UL)/image_addr->step_x);
+            pImageLine = &(pImagePtr[((start_y*(vx_uint32)image_addr->stride_y)/image_addr->step_y) + (((start_x*12UL)/8UL)/image_addr->step_x)]);
 
             if (user_addr->stride_x == 1)
             {
@@ -1744,7 +1744,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
         }
         else
         {
-            pImageLine = pImagePtr + ((start_y*(vx_uint32)image_addr->stride_y)/image_addr->step_y) + ((start_x*(vx_uint32)image_addr->stride_x)/image_addr->step_x);
+            pImageLine = &(pImagePtr[((start_y*(vx_uint32)image_addr->stride_y)/image_addr->step_y) + ((start_x*(vx_uint32)image_addr->stride_x)/image_addr->step_x)]);
         }
         pUserLine = pUserPtr;
 
@@ -1773,8 +1773,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                     for (y = start_y; y < end_y; y += image_addr->step_y)
                     {
                         memcpy(pUserLine, pImageLine, len);
-                        pImageLine += image_addr->stride_y;
-                        pUserLine += user_addr->stride_y;
+                        pImageLine = &(pImageLine[image_addr->stride_y]);
+                        pUserLine = &(pUserLine[user_addr->stride_y]);
                     }
                 }
                 else
@@ -1783,8 +1783,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                     for (y = start_y; y < end_y; y += image_addr->step_y)
                     {
                         memcpy(pImageLine, pUserLine, len);
-                        pImageLine += image_addr->stride_y;
-                        pUserLine += user_addr->stride_y;
+                        pImageLine = &(pImageLine[image_addr->stride_y]);
+                        pUserLine = &(pUserLine[user_addr->stride_y]);
                     }
                 }
             }
@@ -1813,16 +1813,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
 
                                 *pUserElem16 = (vx_uint16)(value & 0xFFFU);
 
-                                pUserElem += user_addr->stride_x;
+                                pUserElem = &(pUserElem[user_addr->stride_x]);
                                 pUserElem16 = (vx_uint16*)pUserElem;
 
                                 *pUserElem16 = (vx_uint16)((value >> 12) & 0xFFFU);
 
-                                pUserElem += user_addr->stride_x;
-                                pImageElem += 3;
+                                pUserElem = &(pUserElem[user_addr->stride_x]);
+                                pImageElem =&(pImageElem[3]);
                             }
-                            pImageLine += image_addr->stride_y;
-                            pUserLine += user_addr->stride_y;
+                            pImageLine = &(pImageLine[image_addr->stride_y]);
+                            pUserLine  = &(pUserLine[user_addr->stride_y]);
                         }
                     }
                     else
@@ -1838,11 +1838,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                                 /* One element */
                                 memcpy(pUserElem, pImageElem, len);
 
-                                pImageElem += len;
-                                pUserElem += user_addr->stride_x;
+                                pImageElem = &(pImageElem[len]);
+                                pUserElem = &(pUserElem[user_addr->stride_x]);
                             }
-                            pImageLine += image_addr->stride_y;
-                            pUserLine += user_addr->stride_y;
+                            pImageLine = &(pImageLine[image_addr->stride_y]);
+                            pUserLine = &(pUserLine[user_addr->stride_y]);
                         }
                     }
                 }
@@ -1863,12 +1863,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
 
                                 value = (vx_uint32)*pUserElem16 & 0xFFFU;
 
-                                pUserElem += user_addr->stride_x;
+                                pUserElem = &(pUserElem[user_addr->stride_x]);
                                 pUserElem16 = (vx_uint16*)pUserElem;
 
                                 value |= ((vx_uint32)*pUserElem16 & 0xFFFU)<<12;
 
-                                pUserElem += user_addr->stride_x;
+                                pUserElem = &(pUserElem[user_addr->stride_x]);
 
                                 *pImageElem = (vx_uint8)(value & 0xFFU);
                                 pImageElem++;
@@ -1877,8 +1877,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                                 *pImageElem = (vx_uint8)(value>>4u);
                                 pImageElem++;
                             }
-                            pImageLine += image_addr->stride_y;
-                            pUserLine += user_addr->stride_y;
+                            pImageLine = &(pImageLine[image_addr->stride_y]);
+                            pUserLine = &(pUserLine[user_addr->stride_y]);
                         }
                     }
                     else
@@ -1894,11 +1894,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                                 /* One element */
                                 memcpy(pImageElem, pUserElem, len);
 
-                                pImageElem += len;
-                                pUserElem += user_addr->stride_x;
+                                pImageElem = &(pImageElem[len]);
+                                pUserElem = &(pUserElem[user_addr->stride_x]);
                             }
-                            pImageLine += image_addr->stride_y;
-                            pUserLine += user_addr->stride_y;
+                            pImageLine = &(pImageLine[image_addr->stride_y]);
+                            pUserLine = &(pUserLine[user_addr->stride_y]);
                         }
                     }
                 }
@@ -1987,7 +1987,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
                 user_addr->dim_x = rect->end_x - rect->start_x;
                 user_addr->dim_y = rect->end_y - rect->start_y;
 
-                end_addr = host_addr + map_size;
+                end_addr = &(host_addr[map_size]);
                 map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)host_addr, 128U);
                 end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
                 uintptr_t temp_map_size = (uintptr_t)end_addr - (uintptr_t)host_addr;
@@ -2059,7 +2059,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
             map_addr = image->maps[map_id].map_addr;
             map_size = (uint32_t)image->maps[map_id].map_size;
 
-            end_addr = map_addr + map_size;
+            end_addr = &(map_addr[map_size]);
             map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128U);
             end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
             uintptr_t temp_size = (uintptr_t)end_addr - (uintptr_t)map_addr;
@@ -2175,7 +2175,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                         {
                             for (p = 0; p < si_obj_desc->planes; p++)
                             {
-                                ptrs[p] = (vx_uint8*)new_ptrs[p] + subimage->mem_offset[p];
+                                ptrs[p] = &(((vx_uint8*)new_ptrs[p])[subimage->mem_offset[p]]);
                             }
 
                             status = vxSwapImageHandle(subimage, (void**)ptrs, (void**)NULL, si_obj_desc->planes);

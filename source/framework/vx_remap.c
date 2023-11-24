@@ -22,10 +22,7 @@ static tivx_remap_point_t *ownGetRemapPoint(const tivx_obj_desc_remap_t *obj_des
 
 static tivx_remap_point_t *ownGetRemapPoint(const tivx_obj_desc_remap_t *obj_desc, vx_uint32 dst_x, vx_uint32 dst_y)
 {
-    return (tivx_remap_point_t*)(uintptr_t)obj_desc->mem_ptr.host_ptr
-                 + (dst_y*obj_desc->dst_width)
-                 + dst_x
-           ;
+    return &(((tivx_remap_point_t*)(uintptr_t)obj_desc->mem_ptr.host_ptr)[(dst_y*obj_desc->dst_width)+ dst_x]);
 }
 
 VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,

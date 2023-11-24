@@ -945,7 +945,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
 
             if (image_addr->stride_x == 0)
             {
-                pImageLine = pImagePtr + ((start_y*(vx_uint32)image_addr->stride_y)/image_addr->step_y) + (((start_x*12UL)/8UL)/image_addr->step_x);
+                pImageLine = &(pImagePtr[((start_y*(vx_uint32)image_addr->stride_y)/image_addr->step_y) + (((start_x*12UL)/8UL)/image_addr->step_x)]);
 
                 if (user_addr->stride_x == 1)
                 {
@@ -955,7 +955,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
             }
             else
             {
-                pImageLine = pImagePtr + ((start_y*(vx_uint32)image_addr->stride_y)/image_addr->step_y) + ((start_x*(vx_uint32)image_addr->stride_x)/image_addr->step_x);
+                pImageLine = &(pImagePtr[((start_y*(vx_uint32)image_addr->stride_y)/image_addr->step_y) + ((start_x*(vx_uint32)image_addr->stride_x)/image_addr->step_x)]);
             }
             pUserLine = pUserPtr;
 
@@ -1021,8 +1021,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                         for (y = start_y; y < end_y; y += image_addr->step_y)
                         {
                             (void)memcpy(pUserLine, pImageLine, len);
-                            pImageLine += image_addr->stride_y;
-                            pUserLine += user_addr->stride_y;
+                            pImageLine = &(pImageLine[image_addr->stride_y]);
+                            pUserLine = &(pUserLine[user_addr->stride_y]);
                         }
                     }
                     else
@@ -1031,8 +1031,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                         for (y = start_y; y < end_y; y += image_addr->step_y)
                         {
                             (void)memcpy(pImageLine, pUserLine, len);
-                            pImageLine += image_addr->stride_y;
-                            pUserLine += user_addr->stride_y;
+                            pImageLine = &(pImageLine[image_addr->stride_y]);
+                            pUserLine = &(pUserLine[user_addr->stride_y]);
                         }
                     }
                 }
@@ -1061,16 +1061,16 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
 
                                     *pUserElem16 = (uint16_t)value & (uint16_t)0xFFFU;
 
-                                    pUserElem += user_addr->stride_x;
+                                    pUserElem = &(pUserElem[user_addr->stride_x]);
                                     pUserElem16 = (vx_uint16*)pUserElem;
 
                                     *pUserElem16 = (uint16_t)(value >> 12U) & (uint16_t)0xFFFU;
 
-                                    pUserElem += user_addr->stride_x;
-                                    pImageElem += 3;
+                                    pUserElem = &(pUserElem[user_addr->stride_x]);
+                                    pImageElem = &(pImageElem[3]);
                                 }
-                                pImageLine += image_addr->stride_y;
-                                pUserLine += user_addr->stride_y;
+                                pImageLine = &(pImageLine[image_addr->stride_y]);
+                                pUserLine = &(pUserLine[user_addr->stride_y]);
                             }
                         }
                         else
@@ -1086,11 +1086,11 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                                     /* One element */
                                     (void)memcpy(pUserElem, pImageElem, len);
 
-                                    pImageElem += len;
-                                    pUserElem += user_addr->stride_x;
+                                    pImageElem = &(pImageElem[len]);
+                                    pUserElem = &(pUserElem[user_addr->stride_x]);
                                 }
-                                pImageLine += image_addr->stride_y;
-                                pUserLine += user_addr->stride_y;
+                                pImageLine = &(pImageLine[image_addr->stride_y]);
+                                pUserLine = &(pUserLine[user_addr->stride_y]);
                             }
                         }
                     }
@@ -1111,12 +1111,12 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
 
                                     value = (uint32_t)*pUserElem16 & 0xFFFU;
 
-                                    pUserElem += user_addr->stride_x;
+                                    pUserElem = &(pUserElem[user_addr->stride_x]);
                                     pUserElem16 = (vx_uint16*)pUserElem;
 
                                     value |= ((uint32_t)*pUserElem16 & 0xFFFU)<<12;
 
-                                    pUserElem += user_addr->stride_x;
+                                    pUserElem = &(pUserElem[user_addr->stride_x]);
 
                                     *pImageElem = (vx_uint8)(value & 0xFFU);
                                     pImageElem++;
@@ -1125,8 +1125,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                                     *pImageElem = (vx_uint8)(value>>4u);
                                     pImageElem++;
                                 }
-                                pImageLine += image_addr->stride_y;
-                                pUserLine += user_addr->stride_y;
+                                pImageLine = &(pImageLine[image_addr->stride_y]);
+                                pUserLine = &(pUserLine[user_addr->stride_y]);
                             }
                         }
                         else
@@ -1142,11 +1142,11 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                                     /* One element */
                                     (void)memcpy(pImageElem, pUserElem, len);
 
-                                    pImageElem += len;
-                                    pUserElem += user_addr->stride_x;
+                                    pImageElem = &(pImageElem[len]);
+                                    pUserElem = &(pUserElem[user_addr->stride_x]);
                                 }
-                                pImageLine += image_addr->stride_y;
-                                pUserLine += user_addr->stride_y;
+                                pImageLine = &(pImageLine[image_addr->stride_y]);
+                                pUserLine = &(pUserLine[user_addr->stride_y]);
                             }
                         }
                     }
@@ -1285,7 +1285,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
                     user_addr->dim_x = map_size;
                 }
 
-                end_addr = host_addr + map_size;
+                end_addr = &(host_addr[map_size]);
                 map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)host_addr, 128U);
                 end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
                 uintptr_t temp_map_size0 = ((uintptr_t)end_addr - (uintptr_t)host_addr);
@@ -1357,7 +1357,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapRawImagePatch(tivx_raw_image raw_ima
             map_addr = raw_image->maps[map_id].map_addr;
             map_size = (uint32_t)raw_image->maps[map_id].map_size;
 
-            end_addr = map_addr + map_size;
+            end_addr = &(map_addr[map_size]);
             map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128U);
             end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
             uintptr_t temp_map_size1 = ((uintptr_t)end_addr - (uintptr_t)map_addr);

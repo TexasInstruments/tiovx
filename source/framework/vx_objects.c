@@ -771,7 +771,7 @@ static uint8_t *ownAllocObject(
             ownLogResourceAlloc(resource_name, 1);
             break;
         }
-        obj_start_ptr += size;
+        obj_start_ptr = &(obj_start_ptr[size]);
     }
 
     if (obj_ptr == NULL)
@@ -798,7 +798,7 @@ static vx_status ownFreeObject(
             ownLogResourceFree(resource_name, 1);
             break;
         }
-        obj_start_ptr += size;
+        obj_start_ptr = &(obj_start_ptr[size]);
     }
 
     return (status);

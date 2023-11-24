@@ -335,7 +335,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
     if (status == (vx_status)VX_SUCCESS)
     {
         /* Get the offset to the free memory */
-        start_ptr = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr + offset;
+        start_ptr = &(((vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr)[offset]);
 
         /* Copy from internal object to user memory */
         if ((vx_enum)VX_READ_ONLY == usage)
@@ -492,7 +492,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapUserDataObject(vx_user_data_object use
             map_addr = user_data_object->maps[map_id].map_addr;
             map_size = (uint32_t)user_data_object->maps[map_id].map_size;
 
-            end_addr = map_addr + map_size;
+            end_addr = &(map_addr[map_size]);
             map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128U);
             end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
             uintptr_t temp_map_size = (uintptr_t)end_addr - (uintptr_t)map_addr;

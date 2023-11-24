@@ -278,18 +278,18 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             }
             /* Set data values in the centre row and column to 255  */
             pTempDataPtr = (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
-            pTempDataPtr = pTempDataPtr + (((rows/2U))*columns);
+            pTempDataPtr = &(pTempDataPtr[((rows/2U))*columns]);
             for (i = 0U; i < columns; i ++)
             {
                 *pTempDataPtr = 255;
                 pTempDataPtr ++;
             }
             pTempDataPtr = (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
-            pTempDataPtr = pTempDataPtr + ((columns/2U));
+            pTempDataPtr = &(pTempDataPtr[(columns/2U)]);
             for (i = 0U; i < rows; i ++)
             {
                 *pTempDataPtr = 255;
-                pTempDataPtr += columns;
+                pTempDataPtr = &(pTempDataPtr[columns]);
             }
         }
         else if ((vx_enum)VX_PATTERN_DISK == pattern)

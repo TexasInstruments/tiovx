@@ -346,7 +346,7 @@ vx_status VX_API_CALL vxAddArrayItems(
     {
         /* Get the offset to the free memory */
         offset = (vx_size)obj_desc->num_items * (vx_size)obj_desc->item_size;
-        temp_ptr = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr + offset;
+        temp_ptr = &(((vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr)[offset]);
 
         tivxCheckStatus(&status, tivxMemBufferMap(
             (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, obj_desc->mem_size,
@@ -356,8 +356,8 @@ vx_status VX_API_CALL vxAddArrayItems(
         {
             (void)memcpy(temp_ptr, user_ptr, obj_desc->item_size);
 
-            temp_ptr += obj_desc->item_size;
-            user_ptr += stride;
+            temp_ptr = &(temp_ptr[obj_desc->item_size]);
+            user_ptr = &(user_ptr[stride]);
         }
 
         tivxCheckStatus(&status, tivxMemBufferUnmap(
@@ -489,8 +489,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
     if ((vx_status)VX_SUCCESS == status)
     {
         /* Get the offset to the free memory */
-        start_offset = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr +
-            (range_start * obj_desc->item_size);
+        start_offset = &(((vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr)[range_start * obj_desc->item_size]);
         inst = range_end - range_start;
 
         /* Copy from arr object to user memory */
@@ -504,8 +503,8 @@ vx_status VX_API_CALL vxCopyArrayRange(
             {
                 (void)memcpy(user_ptr, temp_ptr, obj_desc->item_size);
 
-                temp_ptr += obj_desc->item_size;
-                user_ptr += stride;
+                temp_ptr = &(temp_ptr[obj_desc->item_size]);
+                user_ptr = &(user_ptr[stride]);
             }
 
             tivxCheckStatus(&status, tivxMemBufferUnmap(start_offset, (uint32_t)inst*obj_desc->item_size,
@@ -521,8 +520,8 @@ vx_status VX_API_CALL vxCopyArrayRange(
             {
                 (void)memcpy(temp_ptr, user_ptr, obj_desc->item_size);
 
-                temp_ptr += obj_desc->item_size;
-                user_ptr += stride;
+                temp_ptr = &(temp_ptr[obj_desc->item_size]);
+                user_ptr = &(user_ptr[stride]);
             }
 
             tivxCheckStatus(&status, tivxMemBufferUnmap(start_offset, (uint32_t)inst*obj_desc->item_size,
@@ -597,8 +596,7 @@ vx_status VX_API_CALL vxMapArrayRange(
         if (i < TIVX_ARRAY_MAX_MAPS)
         {
             /* Get the offset to the free memory */
-            start_offset = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr +
-                (range_start * obj_desc->item_size);
+            start_offset = &(((vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr)[range_start * obj_desc->item_size]);
             inst = (uint32_t)range_end - (uint32_t)range_start;
 
             if ((NULL != ptr) && (NULL != map_id))

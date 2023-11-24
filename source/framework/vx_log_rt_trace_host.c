@@ -209,7 +209,7 @@ static vx_status ownLogRtFileWrite(int fd, uint8_t *buf, uint32_t bytes_to_write
 
         tivx_obj_desc_memcpy(tmp_buf, buf, write_size);
         ret_size = write(fd, tmp_buf, write_size);
-        buf += write_size;
+        buf = &(buf[write_size]);
         bytes_to_write -= write_size;
 
         if(ret_size < write_size)
