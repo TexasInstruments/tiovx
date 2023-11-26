@@ -897,35 +897,47 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
         {
             case (vx_enum)TIVX_RAW_IMAGE_ALLOC_BUFFER:
                 pImagePtr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr[exposure_index].host_ptr;
+                #ifdef LDRA_UNTESTABLE_CODE
+                /* LDRA Uncovered Id: TIOVX_RAW_IMAGE_UM001*/
                 if (pImagePtr == NULL)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "User mem_ptr is null at exposure_index = %d\n", exposure_index);
                     status = (vx_status)VX_FAILURE;
                 }
+                #endif
                 break;
             case (vx_enum)TIVX_RAW_IMAGE_PIXEL_BUFFER:
                 pImagePtr = (vx_uint8*)(uintptr_t)obj_desc->img_ptr[exposure_index].host_ptr;
+                #ifdef LDRA_UNTESTABLE_CODE
+                /* LDRA Uncovered Id: TIOVX_RAW_IMAGE_UM002*/
                 if (pImagePtr == NULL)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "User img_ptr is null at exposure_index = %d\n", exposure_index);
                     status = (vx_status)VX_FAILURE;
                 }
+                #endif
                 break;
             case (vx_enum)TIVX_RAW_IMAGE_META_BEFORE_BUFFER:
                 pImagePtr = (vx_uint8*)(uintptr_t)obj_desc->meta_before_ptr[exposure_index].host_ptr;
+                #ifdef LDRA_UNTESTABLE_CODE
+                /* LDRA Uncovered Id: TIOVX_RAW_IMAGE_UM003*/
                 if (pImagePtr == NULL)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "User meta_before_ptr is null at exposure_index = %d\n", exposure_index);
                     status = (vx_status)VX_FAILURE;
                 }
+                #endif
                 break;
             case (vx_enum)TIVX_RAW_IMAGE_META_AFTER_BUFFER:
                 pImagePtr = (vx_uint8*)(uintptr_t)obj_desc->meta_after_ptr[exposure_index].host_ptr;
+                #ifdef LDRA_UNTESTABLE_CODE
+                /* LDRA Uncovered Id: TIOVX_RAW_IMAGE_UM004*/
                 if (pImagePtr == NULL)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "User meta_after_ptr is null at exposure_index = %d\n", exposure_index);
                     status = (vx_status)VX_FAILURE;
                 }
+                #endif
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "invalid buffer_select\n");
