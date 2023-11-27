@@ -175,7 +175,7 @@ static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uin
 
         for (i = 0; i < aux; i++)
         {
-            dims[i] = 100;
+            dims[i] = 50;
         }
 
         tensor = vxCreateTensor(context, aux, dims, VX_TYPE_UINT8, 0);
@@ -187,7 +187,7 @@ static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uin
         else if (alloc_handle == 1)
         {
             vx_size start_map0[TIVX_CONTEXT_MAX_TENSOR_DIMS]= { 0 };
-            vx_size end_map0[TIVX_CONTEXT_MAX_TENSOR_DIMS]= { 100, 100, 100, 100 };
+            vx_size end_map0[TIVX_CONTEXT_MAX_TENSOR_DIMS]= { 50, 50, 50, 50 };
             vx_size strides_map8[TIVX_CONTEXT_MAX_TENSOR_DIMS]= { 0 };
             vx_map_id id8;
             vx_uint8 *ptr8 = NULL;
