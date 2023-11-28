@@ -163,7 +163,7 @@ extern "C" {
 /*! \brief Max number node objects supported
  * \ingroup group_vx_node_cfg
  */
-#define TIVX_NODE_MAX_OBJECTS              (64u)
+#define TIVX_NODE_MAX_OBJECTS              (72u)
 
 
 /*
@@ -432,7 +432,7 @@ extern "C" {
 /*! \brief Max number data reference queue objects supported
  * \ingroup group_vx_misc_cfg
  */
-#define TIVX_DATA_REF_Q_MAX_OBJECTS        (128u)
+#define TIVX_DATA_REF_Q_MAX_OBJECTS        (256u)
 
 
 /*
