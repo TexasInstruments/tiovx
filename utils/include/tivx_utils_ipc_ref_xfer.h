@@ -263,6 +263,7 @@ typedef struct
  *
  * \return VX_SUCCESS on success, else failure
  *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
                                              tivx_utils_ref_ipc_msg_t  *ipcMsg);
@@ -290,6 +291,7 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
  *
  * \return VX_SUCCESS on success, else failure
  *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
                                               tivx_utils_ref_ipc_msg_t *ipcMsg,
@@ -305,6 +307,7 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
  * \return vx_true_e if ipcMsg1 points to the same buffer as ipcMsg2, vx_false_e
  *         if it does not
  *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_bool tivx_utils_compare_refs_from_ipc_xfer(tivx_utils_ref_ipc_msg_t *ipcMsg1,
                                               tivx_utils_ref_ipc_msg_t *ipcMsg2);

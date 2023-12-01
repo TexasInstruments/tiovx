@@ -112,6 +112,8 @@ const char *tivx_utils_get_test_file_dir();
  *
  * \return  - VX_SUCCESS and the content of 'outFilePath' will be valid
  *          - VX_FAILURE and the content of 'outFilePath' will be undefined
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_expand_file_path(const char *inFilePath, char *outFilePath);
 
