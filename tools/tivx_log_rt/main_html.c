@@ -209,7 +209,7 @@ static void create_time_series(tivx_log_rt_obj_t *obj)
         }
         obj->global_stats[i].min = min;
         obj->global_stats[i].max = max;
-        obj->global_stats[i].avg = sum/obj->num_events[i];
+        obj->global_stats[i].avg = (obj->num_events[i]) ? sum/obj->num_events[i] : 0;
         obj->global_stats[i].threshold_cnt = threshold_cnt;
         obj->global_stats[i].std_dev = 0;
         for(k=0; k<obj->num_events[i]; k++)
@@ -219,7 +219,7 @@ static void create_time_series(tivx_log_rt_obj_t *obj)
             diff = (int32_t)frame_period[k].frame_period - (int32_t)obj->global_stats[i].avg;
             sum  += diff*diff;
         }
-        sum = sum/obj->num_events[i];
+        sum = (obj->num_events[i]) ? sum/obj->num_events[i] : 0;
         obj->global_stats[i].std_dev = sqrt(sum);        
     }
 }
