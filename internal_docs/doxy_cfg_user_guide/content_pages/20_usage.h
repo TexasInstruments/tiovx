@@ -468,7 +468,7 @@
 
     The TIOVX framework contains informative debug logging that can be enabled and disabled.  The logging print statements are enabled
     based on which level of logging that has been set.  The logging levels can be found as a part of the enum \ref tivx_debug_zone_e.
-    By default, the VX_ZONE_WARNING and VX_ZONE_ERROR logging are enabled on each core.  Logging levels can be enabled and disabled
+    By default, the VX_ZONE_INFO, VX_ZONE_WARNING, and VX_ZONE_ERROR logging are enabled on each core.  Logging levels can be enabled and disabled
     for each core by calling the \ref tivx_set_debug_zone and \ref tivx_clr_debug_zone respectively.  Note, these have to be called
     for the individual cores, not system-wide.
 
