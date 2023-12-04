@@ -98,13 +98,22 @@ static vx_status ownDestructGraph(vx_reference ref)
     while (graph->num_nodes != 0U)
     {
         vx_node node = graph->nodes[0];
+        vx_reference ref;
+
+        ref = (vx_reference)node;
+
+        VX_PRINT(VX_ZONE_INFO,"Removing node %s\n", ref->name);
 
         status1 = vxRemoveNode(&node);
 
         if (status1 != (vx_status)VX_SUCCESS)
         {
-            VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
+            VX_PRINT(VX_ZONE_ERROR, "removing node %s failed.\n", ref->name);
             status = status1;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO,"Done removing node %s\n", ref->name);
         }
     }
 

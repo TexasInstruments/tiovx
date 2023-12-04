@@ -736,9 +736,17 @@ vx_status ownNodeKernelDeinit(vx_node node)
             if(((vx_bool)vx_true_e == node->is_super_node) ||
                (NULL == node->super_node))
             {
+                vx_reference ref;
+
+                ref = (vx_reference)node;
+
+                VX_PRINT(VX_ZONE_INFO,"Calling delete callback for node %s\n", ref->name);
+
                 status |= ownContextSendCmd(node->base.context,
                         node->obj_desc[0]->target_id, (vx_enum)TIVX_CMD_NODE_DELETE,
                         1, obj_desc_id, node->timeout_val);
+
+                VX_PRINT(VX_ZONE_INFO,"Delete callback for node %s completed\n", ref->name);
 
                 /* Note: not providing an option to reset "is_timed_out"
                  * here given that if the create timeout failed, then this
