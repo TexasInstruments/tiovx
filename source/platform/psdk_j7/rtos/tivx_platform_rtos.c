@@ -297,7 +297,7 @@ void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
     {
         appIpcGetTiovxLogRtSharedMemInfo(shm_base, shm_size);
         /* Needs to be called once by someone, size RTOS boots first, we call it in RTOS side */
-        ownLogRtResetShm(*shm_base, *shm_size);
+        ownLogRtResetShm(*shm_base);
     }
 }
 

@@ -24,8 +24,8 @@
 static vx_bool ownIsValidObject(vx_enum type);
 static void ownResetDelayPrmPool(vx_delay delay);
 static tivx_delay_param_t *ownAllocDelayPrm(vx_delay delay);
-static void ownFreeDelayPrm(vx_delay delay, tivx_delay_param_t *prm);
-static vx_status ownAddRefToDelay(vx_context context, vx_delay delay, vx_reference ref, uint32_t i);
+static void ownFreeDelayPrm(tivx_delay_param_t *prm);
+static vx_status ownAddRefToDelay(vx_delay delay, vx_reference ref, uint32_t i);
 static void ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items);
 static vx_status ownDestructDelay(vx_reference ref);
 static vx_status ownAllocDelayBuffer(vx_reference delay_ref);
@@ -93,7 +93,7 @@ static tivx_delay_param_t *ownAllocDelayPrm(vx_delay delay)
     return prm;
 }
 
-static void ownFreeDelayPrm(vx_delay delay, tivx_delay_param_t *prm)
+static void ownFreeDelayPrm(tivx_delay_param_t *prm)
 {
     prm->node = NULL;
     prm->next = NULL;
@@ -179,7 +179,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
                 if ( ((*ptr)->node == n) && ((*ptr)->index == i) )
                 {
                     next = (*ptr)->next;
-                    ownFreeDelayPrm(delay, *ptr);
+                    ownFreeDelayPrm(*ptr);
                     *ptr = next;
                     do_break = (vx_bool)vx_true_e;
                 }
@@ -212,7 +212,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
     return status;
 }
 
-static vx_status ownAddRefToDelay(vx_context context, vx_delay delay, vx_reference ref, uint32_t i)
+static vx_status ownAddRefToDelay(vx_delay delay, vx_reference ref, uint32_t i)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -381,7 +381,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
 
                         if(status == (vx_status)VX_SUCCESS)
                         {
-                            status = ownAddRefToDelay(context, delay, ref, i);
+                            status = ownAddRefToDelay(delay, ref, i);
                         }
                         else
                         {
@@ -419,7 +419,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
 
                                             if (NULL != ref)
                                             {
-                                                status = ownAddRefToDelay(context, objarrdelay, ref, i);
+                                                status = ownAddRefToDelay(objarrdelay, ref, i);
                                             }
 
                                             if( (NULL == ref) || (status!=(vx_status)VX_SUCCESS))
@@ -454,7 +454,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                     {
                                         ref = (vx_reference)vxGetPyramidLevel((vx_pyramid)delay->refs[i], (vx_uint32)level_idx);
 
-                                        status = ownAddRefToDelay(context, pyrdelay, ref, i);
+                                        status = ownAddRefToDelay(pyrdelay, ref, i);
                                         if(status!=(vx_status)VX_SUCCESS)
                                         {
                                             VX_PRINT(VX_ZONE_ERROR, "reference was not added to delay\n");

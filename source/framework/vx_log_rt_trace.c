@@ -74,7 +74,7 @@ tivx_log_rt_obj_t g_tivx_log_rt_obj;
 
 static void ownLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_t event_value, uint16_t event_class, uint16_t event_type);
 
-void ownLogRtInit()
+void ownLogRtInit(void)
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
 
@@ -96,7 +96,7 @@ void ownLogRtInit()
     }
 }
 
-void ownLogRtResetShm(void *shm_base, uint32_t shm_size)
+void ownLogRtResetShm(void *shm_base)
 {
     tivx_log_rt_queue_t *queue;
     tivx_log_rt_index_t *index;

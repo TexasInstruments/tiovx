@@ -74,7 +74,7 @@ static vx_status ownLogRtFileWrite(int fd, uint8_t *buf, uint32_t bytes_to_write
 static vx_bool ownLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class);
 static vx_bool ownLogRtTraceFindEventName(char *event_name);
 static void ownLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class, char *event_name);
-static void tivxLogRtTraceRemoveEventClass(uint64_t event_id, uint16_t event_class, char *event_name);
+static void tivxLogRtTraceRemoveEventClass(uint64_t event_id, uint16_t event_class);
 static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable);
 
 /* Already defined in vx_log_rt_trace.c */
@@ -167,7 +167,7 @@ static void ownLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class, 
     }
 }
 
-static void tivxLogRtTraceRemoveEventClass(uint64_t event_id, uint16_t event_class, char *event_name)
+static void tivxLogRtTraceRemoveEventClass(uint64_t event_id, uint16_t event_class)
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
 
@@ -379,7 +379,7 @@ void tivxLogRtTraceKernelInstanceAddEvent(vx_node node, uint16_t event_index, ch
 
 void tivxLogRtTraceKernelInstanceRemoveEvent(vx_node node, uint16_t event_index)
 {
-    tivxLogRtTraceRemoveEventClass((uintptr_t)node+event_index, TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, NULL);
+    tivxLogRtTraceRemoveEventClass((uintptr_t)node+event_index, TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE);
 }
 
 static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
@@ -411,7 +411,7 @@ static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
                 }
                 else
                 {
-                    tivxLogRtTraceRemoveEventClass((uintptr_t)node, TIVX_LOG_RT_EVENT_CLASS_NODE, node->base.name);
+                    tivxLogRtTraceRemoveEventClass((uintptr_t)node, TIVX_LOG_RT_EVENT_CLASS_NODE);
                 }
 
                 for(pipe_id=0; pipe_id<node->pipeline_depth; pipe_id++)
@@ -462,7 +462,7 @@ static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
         }
         else
         {
-            tivxLogRtTraceRemoveEventClass(graph->obj_desc[0]->base.obj_desc_id, TIVX_LOG_RT_EVENT_CLASS_GRAPH, graph->base.name);
+            tivxLogRtTraceRemoveEventClass(graph->obj_desc[0]->base.obj_desc_id, TIVX_LOG_RT_EVENT_CLASS_GRAPH);
         }
 
         for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
@@ -498,7 +498,7 @@ static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
             }
             else
             {
-                tivxLogRtTraceRemoveEventClass(targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET, target_name);
+                tivxLogRtTraceRemoveEventClass(targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET);
             }
         }
         ownPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT_INDEX);

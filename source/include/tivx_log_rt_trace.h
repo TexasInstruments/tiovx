@@ -111,7 +111,7 @@ typedef struct {
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void ownLogRtInit();
+void ownLogRtInit(void);
 
 /*!
  * \brief Reset shared memory used for logging
@@ -120,7 +120,7 @@ void ownLogRtInit();
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void ownLogRtResetShm(void *shm_base, uint32_t shm_size);
+void ownLogRtResetShm(void *shm_base);
 
 /*!
  * \brief Log trace on node execute start
