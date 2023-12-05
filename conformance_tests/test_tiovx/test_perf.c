@@ -4224,9 +4224,9 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfWarpAffine, WarpAffine_Arg,
     ASSERT(input_image == 0);
 
     if (arg_->interp_type == VX_INTERPOLATION_NEAREST_NEIGHBOR)
-        PrintPerf(perf_graph, perf_node, input->width, input->height, "Warp Affine", "Nearest Neighbor", 1);
+        PrintPerf(perf_graph, perf_node, output->width, output->height, "Warp Affine", "Nearest Neighbor", 1);
     else if (arg_->interp_type == VX_INTERPOLATION_BILINEAR)
-        PrintPerf(perf_graph, perf_node, input->width, input->height, "Warp Affine", "Bilinear Interpolation", 1);
+        PrintPerf(perf_graph, perf_node, output->width, output->height, "Warp Affine", "Bilinear Interpolation", 1);
 }
 
 typedef struct {
