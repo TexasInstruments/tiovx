@@ -70,27 +70,35 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
     else
 #endif
     {
-        ownContextLock(context);
-
-        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
-            kernel = context->kerneltable[idx];
-            if(ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+        }
+        else
+        {
+            for(idx=0; idx<dimof(context->kerneltable); idx++)
             {
-                kernel_info[num_kernel_info].enumeration = kernel->enumeration;
-                (void)strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME-1U);
-                kernel_info[num_kernel_info].name[VX_MAX_KERNEL_NAME-1U] = '\0';
-                num_kernel_info++;
-            }
-            if(num_kernel_info > max_kernels)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"num kernel info is greater than max kernels\n");
-                status = (vx_status)VX_ERROR_NO_RESOURCES;
-                break;
+                kernel = context->kerneltable[idx];
+                if(ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
+                {
+                    kernel_info[num_kernel_info].enumeration = kernel->enumeration;
+                    (void)strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME-1U);
+                    kernel_info[num_kernel_info].name[VX_MAX_KERNEL_NAME-1U] = '\0';
+                    num_kernel_info++;
+                }
+                if(num_kernel_info > max_kernels)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"num kernel info is greater than max kernels\n");
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
+                    break;
+                }
             }
         }
 
-        ownContextUnlock(context);
+        if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+        }
     }
 
     return status;
@@ -116,7 +124,10 @@ static vx_status ownContextCreateCmdObj(vx_context context)
 
         if (status!=(vx_status)VX_SUCCESS)
         {
-            tivxQueueDelete(&context->free_queue);
+            /* error status check is not done due to the
+             * previous status check for tivxQueueCreate
+             */
+            (void)tivxQueueDelete(&context->free_queue);
         }
     }
 
@@ -165,20 +176,25 @@ static vx_status ownContextCreateCmdObj(vx_context context)
             {
                 if (context->obj_desc_cmd[i] != NULL)
                 {
-                    ownObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
+                    status = ownObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to free object descriptor\n");
+                    }
                 }
 
                 if (context->cmd_ack_event[i] != NULL)
                 {
-                    tivxEventDelete(&context->cmd_ack_event[i]);
+                    /* Error status check is not done due to the previous check */
+                    (void)tivxEventDelete(&context->cmd_ack_event[i]);
                 }
             }
 
             /* Delete the queues. No error checks are being made since we know
              * that the queues have been created successfully above.
              */
-            tivxQueueDelete(&context->free_queue);
-            tivxQueueDelete(&context->pend_queue);
+            (void)tivxQueueDelete(&context->free_queue);
+            (void)tivxQueueDelete(&context->pend_queue);
         }
     }
 
@@ -190,7 +206,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
             /* This call wont fail since number of elements being inserted are equal to
              * queue depth, hence not doing any error checks
              */
-            tivxQueuePut(&context->free_queue,
+            (void)tivxQueuePut(&context->free_queue,
                          i,
                          TIVX_EVENT_TIMEOUT_NO_WAIT);
         }
@@ -353,96 +369,107 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
 
     if (ownIsValidContext(context)==(vx_bool)vx_true_e)
     {
-        ownContextLock(context);
-
-        for(ref_idx=0; ref_idx < dimof(context->reftable); ref_idx++)
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
-            if(context->reftable[ref_idx]==NULL)
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+        }
+        else
+        {
+            for(ref_idx=0; ref_idx < dimof(context->reftable); ref_idx++)
             {
-                char name[VX_MAX_REFERENCE_NAME];
-
-                context->reftable[ref_idx] = ref;
-                context->num_references++;
-                is_success = (vx_bool)vx_true_e;
-
-                ownLogResourceAlloc("TIVX_CONTEXT_MAX_REFERENCES", 1);
-
-                switch(ref->type)
+                if(context->reftable[ref_idx]==NULL)
                 {
-                    case (vx_enum)VX_TYPE_DELAY:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "delay_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_LUT:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "lut_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_DISTRIBUTION:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "distribution_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_PYRAMID:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "pyramid_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_THRESHOLD:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "threshold_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_MATRIX:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "matrix_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_CONVOLUTION:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "convolution_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_SCALAR:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "scalar_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_ARRAY:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "array_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_IMAGE:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "image_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_REMAP:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "remap_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_OBJECT_ARRAY:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "object_array_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_NODE:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "node_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_GRAPH:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "graph_%d", ref_idx);
-                        break;
-                    case (vx_enum)TIVX_TYPE_DATA_REF_Q:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "data_ref_q_%d", ref_idx);
-                        break;
-                    case (vx_enum)VX_TYPE_TENSOR:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "tensor_%d", ref_idx);
-                        break;
-                    case VX_TYPE_USER_DATA_OBJECT:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "user_data_object_%d", ref_idx);
-                        break;
-                    case TIVX_TYPE_RAW_IMAGE:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "raw_image_%d", ref_idx);
-                        break;
-                    case TIVX_TYPE_SUPER_NODE:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "super_node_%d", ref_idx);
-                        break;
-                    default:
-                        (void)snprintf(name, VX_MAX_REFERENCE_NAME, "ref_%d", ref_idx);
-                        break;
-                }
-                vxSetReferenceName(ref, name);
+                    char name[VX_MAX_REFERENCE_NAME];
 
-                break;
+                    context->reftable[ref_idx] = ref;
+                    context->num_references++;
+                    is_success = (vx_bool)vx_true_e;
+
+                    ownLogResourceAlloc("TIVX_CONTEXT_MAX_REFERENCES", 1);
+
+                    switch(ref->type)
+                    {
+                        case (vx_enum)VX_TYPE_DELAY:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "delay_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_LUT:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "lut_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_DISTRIBUTION:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "distribution_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_PYRAMID:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "pyramid_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_THRESHOLD:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "threshold_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_MATRIX:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "matrix_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_CONVOLUTION:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "convolution_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_SCALAR:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "scalar_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_ARRAY:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "array_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_IMAGE:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "image_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_REMAP:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "remap_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_OBJECT_ARRAY:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "object_array_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_NODE:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "node_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_GRAPH:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "graph_%d", ref_idx);
+                            break;
+                        case (vx_enum)TIVX_TYPE_DATA_REF_Q:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "data_ref_q_%d", ref_idx);
+                            break;
+                        case (vx_enum)VX_TYPE_TENSOR:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "tensor_%d", ref_idx);
+                            break;
+                        case VX_TYPE_USER_DATA_OBJECT:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "user_data_object_%d", ref_idx);
+                            break;
+                        case TIVX_TYPE_RAW_IMAGE:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "raw_image_%d", ref_idx);
+                            break;
+                        case TIVX_TYPE_SUPER_NODE:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "super_node_%d", ref_idx);
+                            break;
+                        default:
+                            (void)snprintf(name, VX_MAX_REFERENCE_NAME, "ref_%d", ref_idx);
+                            break;
+                    }
+                    if((vx_status)VX_SUCCESS != vxSetReferenceName(ref, name))
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to name reference\n");
+                    }
+
+                    break;
+                }
+            }
+
+            if ((vx_bool)vx_false_e == is_success)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Max context references exceeded\n");
+                VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_CONTEXT_MAX_REFERENCES in tiovx/include/TI/tivx_config.h\n");
+            }
+
+            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
             }
         }
-
-        if ((vx_bool)vx_false_e == is_success)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Max context references exceeded\n");
-            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_CONTEXT_MAX_REFERENCES in tiovx/include/TI/tivx_config.h\n");
-        }
-
-        ownContextUnlock(context);
     }
     return is_success;
 }
@@ -454,21 +481,30 @@ vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref)
 
     if (ownIsValidContext(context)==(vx_bool)vx_true_e)
     {
-        ownContextLock(context);
-
-        for(ref_idx=0; ref_idx < dimof(context->reftable); ref_idx++)
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
-            if(context->reftable[ref_idx]==ref)
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+        }
+        else
+        {
+
+            for(ref_idx=0; ref_idx < dimof(context->reftable); ref_idx++)
             {
-                context->reftable[ref_idx] = NULL;
-                context->num_references--;
-                is_success = (vx_bool)vx_true_e;
-                ownLogResourceFree("TIVX_CONTEXT_MAX_REFERENCES", 1);
-                break;
+                if(context->reftable[ref_idx]==ref)
+                {
+                    context->reftable[ref_idx] = NULL;
+                    context->num_references--;
+                    is_success = (vx_bool)vx_true_e;
+                    ownLogResourceFree("TIVX_CONTEXT_MAX_REFERENCES", 1);
+                    break;
+                }
+            }
+
+            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
             }
         }
-
-        ownContextUnlock(context);
     }
     return is_success;
 }
@@ -505,29 +541,39 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
     else
 #endif
     {
-        ownContextLock(context);
-
-        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
-            if ((NULL == context->kerneltable[idx]) && (context->num_unique_kernels < dimof(context->kerneltable)))
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+        }
+        else
+        {
+
+            for(idx=0; idx<dimof(context->kerneltable); idx++)
             {
-                /* found free entry */
-                context->kerneltable[idx] = kernel;
-                context->num_unique_kernels++;
-                ownIncrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
-                ownLogResourceAlloc("TIVX_CONTEXT_MAX_KERNELS", 1);
-                break;
+                if ((NULL == context->kerneltable[idx]) && (context->num_unique_kernels < dimof(context->kerneltable)))
+                {
+                    /* found free entry */
+                    context->kerneltable[idx] = kernel;
+                    context->num_unique_kernels++;
+                    /* Setting it as void since return value 'count' is not used further */
+                    (void)ownIncrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
+                    ownLogResourceAlloc("TIVX_CONTEXT_MAX_KERNELS", 1);
+                    break;
+                }
+            }
+            if(idx>=dimof(context->kerneltable))
+            {
+                /* free entry not found */
+                VX_PRINT(VX_ZONE_ERROR,"free entry not found\n");
+                VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_CONTEXT_MAX_KERNELS in tiovx/include/TI/tivx_config.h\n");
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
+            }
+
+            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
             }
         }
-        if(idx>=dimof(context->kerneltable))
-        {
-            /* free entry not found */
-            VX_PRINT(VX_ZONE_ERROR,"free entry not found\n");
-            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_CONTEXT_MAX_KERNELS in tiovx/include/TI/tivx_config.h\n");
-            status = (vx_status)VX_ERROR_NO_RESOURCES;
-        }
-
-        ownContextUnlock(context);
     }
 
     return status;
@@ -734,7 +780,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 #endif
                 }
 
-                if (status != (vx_status)VX_SUCCESS)
+                else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
                 }
@@ -857,7 +903,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 #endif
                 }
 
-                if (status != (vx_status)VX_SUCCESS)
+                else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
                 }
@@ -950,7 +996,8 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                     if(status == (vx_status)VX_SUCCESS)
                     {
                         vx_bool ret;
-                        ownIncrementReference(&context->base, (vx_enum)VX_EXTERNAL);
+                        /* Setting it as void since return value 'count' is not used further */
+                        (void)ownIncrementReference(&context->base, (vx_enum)VX_EXTERNAL);
                         ret = ownCreateConstErrors(context);
 #ifdef LDRA_UNTESTABLE_CODE
                         if ((vx_bool)vx_false_e==ret)
@@ -996,7 +1043,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                      * Error's are not checked here,
                      * User can check kernels that are added using vxQueryContext()
                      */
-                    vxLoadKernels(context, g_context_default_load_module[idx]);
+                    (void)vxLoadKernels(context, g_context_default_load_module[idx]);
                 }
 
                 /* set flag to allow removal additional kernels
@@ -1008,7 +1055,8 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
         else
         {
             context = g_context_handle;
-            ownIncrementReference(&context->base, (vx_enum)VX_EXTERNAL);
+            /* Setting it as void since return value 'count' is not used further */
+            (void)ownIncrementReference(&context->base, (vx_enum)VX_EXTERNAL);
         }
     }
     ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
@@ -1032,6 +1080,7 @@ vx_context ownGetContext(void)
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status1 = (vx_status)VX_SUCCESS;
     vx_context context;
     vx_uint32 r;
     uint32_t idx;
@@ -1060,83 +1109,131 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                  idx < (sizeof(g_context_default_load_module)/sizeof(g_context_default_load_module[0]));
                  idx ++)
             {
-            /* Unload kernels */
-            vxUnloadKernels(context, g_context_default_load_module[idx]);
-            }
-
-            ownContextSetKernelRemoveLock(context, (vx_bool)vx_false_e);
-
-            /* Deregister any log callbacks if there is any registered */
-            vxRegisterLogCallback(context, NULL, (vx_bool)vx_false_e);
-
-            /*! \internal Garbage Collect All References */
-            /* Details:
-             *   1. This loop will warn of references which have not been released by the user.
-             *   2. It will close all internally opened error references.
-             *   3. It will close the external references, which in turn will internally
-             *      close any internally dependent references that they reference, assuming the
-             *      reference counting has been done properly in the framework.
-             *   4. This garbage collection must be done before the targets are released since some of
-             *      these external references may have internal references to target kernels.
-             */
-            for (r = 0; r < dimof(context->reftable); r++)
-            {
-                vx_reference ref = context->reftable[r];
-
-                /* Warnings should only come when users have not released all external references */
-                if ((NULL != ref) && (ref->external_count > 0U) ) {
-                    VX_PRINT(VX_ZONE_WARNING,"Found a reference "VX_FMT_REF" of type %08x at external count %u, internal count %u, releasing it\n",
-                             ref, ref->type, ref->external_count, ref->internal_count);
-                    VX_PRINT(VX_ZONE_WARNING,"Releasing reference (name=%s) now as a part of garbage collection\n", ref->name);
-                }
-
-                /* These were internally opened during creation, so should internally close ERRORs */
-                if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_ERROR) ) {
-                    ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_INTERNAL, NULL);
-                }
-
-                if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_KERNEL) ) {
-                    VX_PRINT(VX_ZONE_WARNING,"A kernel with name %s has not been removed, possibly due to a kernel module not being unloaded.\n", ref->name);
-                    VX_PRINT(VX_ZONE_WARNING,"Removing as a part of garbage collection\n");
-                    status = vxRemoveKernel((vx_kernel)ref);
-                }
-
-                /* Warning above so user can fix release external objects, but close here anyway */
-                while ((NULL != ref)&& (ref->external_count > 1U) ) {
-                    ownDecrementReference(ref, (vx_enum)VX_EXTERNAL);
-                }
-                if ((NULL != ref) && (ref->external_count > 0U) ) {
-                    ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_EXTERNAL, NULL);
-                }
-            }
-
-            /* By now, all external and internal references should be removed */
-#ifdef LDRA_UNTESTABLE_CODE
-            for (r = 0; r < dimof(context->reftable); r++)
-            {
-                if(context->reftable[r] != NULL)
+                /* Unload kernels */
+                status = vxUnloadKernels(context, g_context_default_load_module[idx]);   
+                if((vx_status)VX_SUCCESS != status) 
                 {
-                        VX_PRINT(VX_ZONE_ERROR,"Reference %d not removed\n", r);
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to unload kernel\n");
+                    break;
                 }
             }
-#endif
+            if((vx_status)VX_SUCCESS == status)
+            {
+              
+                ownContextSetKernelRemoveLock(context, (vx_bool)vx_false_e);
 
-            ownContextDeleteCmdObj(context);
+                /* Deregister any log callbacks if there is any registered */
+                vxRegisterLogCallback(context, NULL, (vx_bool)vx_false_e);
 
-            ownEventQueueDelete(&context->event_queue);
+                /*! \internal Garbage Collect All References */
+                /* Details:
+                *   1. This loop will warn of references which have not been released by the user.
+                *   2. It will close all internally opened error references.
+                *   3. It will close the external references, which in turn will internally
+                *      close any internally dependent references that they reference, assuming the
+                *      reference counting has been done properly in the framework.
+                *   4. This garbage collection must be done before the targets are released since some of
+                *      these external references may have internal references to target kernels.
+                */
+                for (r = 0; r < dimof(context->reftable); r++)
+                {
+                    vx_reference ref = context->reftable[r];
 
-            ownLogResourceFree("TIVX_CONTEXT_MAX_OBJECTS", 1);
+                    /* Warnings should only come when users have not released all external references */
+                    if ((NULL != ref) && (ref->external_count > 0U) ) {
+                        VX_PRINT(VX_ZONE_WARNING,"Found a reference "VX_FMT_REF" of type %08x at external count %u, internal count %u, releasing it\n",
+                                ref, ref->type, ref->external_count, ref->internal_count);
+                        VX_PRINT(VX_ZONE_WARNING,"Releasing reference (name=%s) now as a part of garbage collection\n", ref->name);
+                    }
 
-            /*! \internal wipe away the context memory first */
-            /* Normally destroy sem is part of release reference, but can't for context */
-            tivxMutexDelete(&context->base.lock);
+                    /* These were internally opened during creation, so should internally close ERRORs */
+                    if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_ERROR) ) 
+                    {
+                        status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_INTERNAL, NULL);
+                        if((vx_status)VX_SUCCESS != status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to destroy internel reference objects\n");
+                            status = status1;
+                            break;
+                        }
+                    }
 
-            tivxMutexDelete(&context->log_lock);
-            tivxMutexDelete(&context->lock);
+                    if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_KERNEL) ) {
+                        VX_PRINT(VX_ZONE_WARNING,"A kernel with name %s has not been removed, possibly due to a kernel module not being unloaded.\n", ref->name);
+                        VX_PRINT(VX_ZONE_WARNING,"Removing as a part of garbage collection\n");
+                        status = vxRemoveKernel((vx_kernel)ref);
+                    }
 
-            (void)memset(context, 0, sizeof(tivx_context_t));
+                    /* Warning above so user can fix release external objects, but close here anyway */
+                    while ((NULL != ref)&& (ref->external_count > 1U) ) {
+                        /* Setting it as void since return value 'count' is not used further */
+                        (void)ownDecrementReference(ref, (vx_enum)VX_EXTERNAL);
+                    }
+                    if ((NULL != ref) && (ref->external_count > 0U) ) 
+                    {
+                        status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_EXTERNAL, NULL);
+                        if((vx_status)VX_SUCCESS != status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to destroy external reference objects\n");
+                            status = status1;
+                            break;
+                        }
+                    }
+                }
 
-            g_context_handle = NULL;
+                /* By now, all external and internal references should be removed */
+    #ifdef LDRA_UNTESTABLE_CODE
+                for (r = 0; r < dimof(context->reftable); r++)
+                {
+                    if(context->reftable[r] != NULL)
+                    {
+                            VX_PRINT(VX_ZONE_ERROR,"Reference %d not removed\n", r);
+                    }
+                }
+    #endif
+
+                status1 = ownContextDeleteCmdObj(context);
+                if((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"ownContextDeleteCmdObj() failed\n");
+                    status = status1;
+                }
+
+                status1 = ownEventQueueDelete(&context->event_queue);
+                if((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to delete even queue\n");
+                    status = status1;
+                }
+
+                ownLogResourceFree("TIVX_CONTEXT_MAX_OBJECTS", 1);
+
+                /*! \internal wipe away the context memory first */
+                /* Normally destroy sem is part of release reference, but can't for context */
+                status1 = tivxMutexDelete(&context->base.lock);
+                if((vx_status)VX_SUCCESS != status1)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
+                    status = status1;
+                }
+
+                status1 = tivxMutexDelete(&context->log_lock);
+                if((vx_status)VX_SUCCESS != status1)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
+                    status = status1;
+                }
+                status1 = tivxMutexDelete(&context->lock);
+                if((vx_status)VX_SUCCESS != status1)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
+                    status = status1;
+                }
+
+                (void)memset(context, 0, sizeof(tivx_context_t));
+
+                g_context_handle = NULL;
+            }
         }
     }
     else
@@ -1472,26 +1569,35 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) &&
         (size != 0U))
     {
-        (void)ownContextLock(context);
-
-        for (i = 0; i < TIVX_CONTEXT_MAX_USER_STRUCTS; ++i)
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
-            if (context->user_structs[i].type == (vx_enum)VX_TYPE_INVALID)
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+        }
+        else
+        {
+
+            for (i = 0; i < TIVX_CONTEXT_MAX_USER_STRUCTS; ++i)
             {
-                context->user_structs[i].type = (vx_enum)VX_TYPE_USER_STRUCT_START + (int32_t)i;
-                context->user_structs[i].size = size;
-                type = context->user_structs[i].type;
-                ownLogSetResourceUsedValue("TIVX_CONTEXT_MAX_USER_STRUCTS", (uint16_t)i+1U);
-                break;
+                if (context->user_structs[i].type == (vx_enum)VX_TYPE_INVALID)
+                {
+                    context->user_structs[i].type = (vx_enum)VX_TYPE_USER_STRUCT_START + (int32_t)i;
+                    context->user_structs[i].size = size;
+                    type = context->user_structs[i].type;
+                    ownLogSetResourceUsedValue("TIVX_CONTEXT_MAX_USER_STRUCTS", (uint16_t)i+1U);
+                    break;
+                }
+            }
+
+            if (type == (vx_enum)VX_TYPE_INVALID)
+            {
+                VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_CONTEXT_MAX_USER_STRUCTS in tiovx/include/TI/tivx_config.h\n");
+            }
+
+            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
             }
         }
-
-        if (type == (vx_enum)VX_TYPE_INVALID)
-        {
-            VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_CONTEXT_MAX_USER_STRUCTS in tiovx/include/TI/tivx_config.h\n");
-        }
-
-        (void)ownContextUnlock(context);
     }
     return type;
 }
@@ -1602,28 +1708,37 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const v
     }
     else
     {
-        ownContextLock(context);
-
-        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
-            kernel = context->kerneltable[idx];
-            if((ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) != (vx_bool)vx_false_e)
-                &&
-                ( strncmp(kernel->name, name, VX_MAX_KERNEL_NAME) == 0 )
-                )
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+        }
+        else
+        {
+
+            for(idx=0; idx<dimof(context->kerneltable); idx++)
             {
-                /* found match */
-                ownIncrementReference(&kernel->base, (vx_enum)VX_EXTERNAL);
-                break;
+                kernel = context->kerneltable[idx];
+                if((ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) != (vx_bool)vx_false_e)
+                    &&
+                    ( strncmp(kernel->name, name, VX_MAX_KERNEL_NAME) == 0 )
+                    )
+                {
+                    /* found match and setting it as void since return value 'count' is not used further */
+                    (void)ownIncrementReference(&kernel->base, (vx_enum)VX_EXTERNAL);
+                    break;
+                }
+            }
+            if(idx>=dimof(context->kerneltable))
+            {
+                /* not found */
+                kernel = NULL;
+            }
+
+            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
             }
         }
-        if(idx>=dimof(context->kerneltable))
-        {
-            /* not found */
-            kernel = NULL;
-        }
-
-        ownContextUnlock(context);
     }
 
     return kernel;
@@ -1640,28 +1755,36 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByEnum(vx_context context, vx_enum
     }
     else
     {
-        ownContextLock(context);
-
-        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
-            kernel = context->kerneltable[idx];
-            if((ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) != (vx_bool)vx_false_e)
-                &&
-                ( kernel->enumeration == kernelenum )
-                )
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+        }
+        else
+        {
+            for(idx=0; idx<dimof(context->kerneltable); idx++)
             {
-                /* found match */
-                ownIncrementReference(&kernel->base, (vx_enum)VX_EXTERNAL);
-                break;
+                kernel = context->kerneltable[idx];
+                if((ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) != (vx_bool)vx_false_e)
+                    &&
+                    ( kernel->enumeration == kernelenum )
+                    )
+                {
+                    /* found match and setting it as void since return value 'count' is not used further */
+                    (void)ownIncrementReference(&kernel->base, (vx_enum)VX_EXTERNAL);
+                    break;
+                }
+            }
+            if(idx>=dimof(context->kerneltable))
+            {
+                /* not found */
+                kernel = NULL;
+            }
+
+            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
             }
         }
-        if(idx>=dimof(context->kerneltable))
-        {
-            /* not found */
-            kernel = NULL;
-        }
-
-        ownContextUnlock(context);
     }
 
     return kernel;
