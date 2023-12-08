@@ -1,7 +1,7 @@
 /*!
     \page TIOVX_SAFETY TIOVX Safety Manual
 
-    This section of the user guide describes relevant safety considerations required for the ASIL-B certification
+    This section of the user guide describes relevant safety recommendations required for the ASIL-B certification
     of the TI OpenVX framework.  This activity is planned to be finalized in July 2024.
 
     In scope for this safety project is TI's implementation of the OpenVX framework (source/framework), the OS platform
@@ -10,13 +10,13 @@
     Please reference the TI software safety qualification approach for more information about what all collateral
     shall be provided for final certification of the SW module.
 
-    - \subpage TIOVX_SAFETY_CONSIDERATIONS - Various TIOVX safety considerations when designing a SW system.
+    - \subpage TIOVX_SAFETY_RECOMMENDATIONS - Various TIOVX safety recommendations when designing a SW system.
     - \subpage TIOVX_SAFETY_FEATURES - Description of features within TIOVX which can be useful when designing a SW system.
     - \subpage TIOVX_SAFETY_TOOLING - Description of provided tooling for helping enable a safety application using TIOVX.
  */
 
 /*!
-    \page TIOVX_SAFETY_CONSIDERATIONS TIOVX Safety Considerations
+    \page TIOVX_SAFETY_RECOMMENDATIONS TIOVX Safety Recommendations
 
     \tableofcontents
 
@@ -51,8 +51,38 @@
 
      \section TIOVX_SAFETY_MEMORY_MANAGEMENT TIOVX Memory Management for Safety
 
-     A critical component of safety SW systems is the memory management scheme.  Please reference the section \ref TIOVX_MEMORY_MANAGEMENT_OPTIMIZATIONS
+     A critical component of safety SW systems is the memory management scheme.  Please reference the section \ref TIOVX_MEMORY_MANAGEMENT
      for details on how memory management is handled in TIOVX and how it facilitates safety.
+
+     OpenVX has a clear “initialization” phase, “run-time” phase, and “deinit” phase for each graph.  The initialization phase for a graph
+     ends when the call to \ref vxVerifyGraph returns.  With one specific case exception listed below, all of the resources are initialized, and
+     at no point in the run-time phase the framework or kernels allocate memory. (Note that it is possible that the application itself may still
+     allocate memory as in the case of the control callback objects discussed below.)
+
+     The exception to this case is if the application wants to call control commands which require it to create additional OpenVX references which are
+     not already node parameters and thus allocated as a part of the verify graph call.  Due to this fact, an application should ideally create, map and
+     unmap these data references prior to the call to \ref vxVerifyGraph.  This allows the data references to be allocated and thus the full system memory
+     will be considered when returning a status from the graph verification.
+
+     If an application initializes all of the graphs it expects to run prior to running, it is guaranteed that it has all the
+     memory resources reserved and will not run into an out of memory condition or memory fragmentation, which is the primary rationale for this rule.
+     In the case of having multiple graphs spanning multiple threads or processes, the create and verification of all graphs in a system shall be called
+     prior to the process phase of any graph in the system.  This is the recommended approach when using OpenVX.
+
+     In TIOVX, all framework and data objects “created” in the init phase reserve statically allocated slots in a specific global memory array of objects,
+     and max values that define the length of this array are defined statically at build time using the respective SoC tivx_config.h.  During development,
+     if a use case exceeds the max allocation from these lists, then a run-time terminal error print which says which value to increase in this file, and
+     the user can rebuild and run again.  In order to ensure no memory is wasted, we have a feature where the user can initialize their application to be
+     used in production and run a function which creates an updated version of this file which sets all the max values to the peak usage at the time that
+     the function was called.  This way the user can recompile the framework using this new header file and only allocate the memory required for this application
+     use case.
+
+     For data buffers, there is a specific contiguous shared memory carveout that data buffers get allocated out of during the \ref vxVerifyGraph function call.
+     Since these are all done during initialization time, then once the vxVerifyGraph function returns, that graph will never experience an out of memory or memory
+     fragmentation issue.
+
+     When designing applications, the application shall not selectively delete graphs or memory associated with OpenVX objects.  Rather, it should persist throughout
+     the duration of the application.  The reason for this is that selective deletion and re-creation of various OpenVX objects can lead to memory fragmentation.
 
      \section TIOVX_SAFETY_RESOURCE_TEARDOWN TIOVX Resource Teardown
 
