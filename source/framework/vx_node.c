@@ -1511,7 +1511,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 #endif
                 if (VX_CHECK_PARAM(ptr, size, vx_perf_t, 0x3U))
                 {
-                    (void)memcpy(ptr, &node->perf, size);
+                    (void)memcpy(ptr, (void *)&node->perf, size);
                 }
                 else
                 {

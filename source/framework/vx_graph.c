@@ -477,7 +477,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
             case (vx_enum)VX_GRAPH_PERFORMANCE:
                 if (VX_CHECK_PARAM(ptr, size, vx_perf_t, 0x3U))
                 {
-                    memcpy(ptr, &graph->perf, size);
+                    memcpy(ptr,(void *)&graph->perf, size);
                 }
                 else
                 {

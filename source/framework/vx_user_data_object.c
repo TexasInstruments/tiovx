@@ -343,7 +343,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
             tivxCheckStatus(&status, tivxMemBufferMap(start_ptr, (uint32_t)size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
-            (void)memcpy(user_ptr, start_ptr, size);
+            (void)memcpy(user_ptr, (void *)start_ptr, size);
 
             tivxCheckStatus(&status, tivxMemBufferUnmap(start_ptr, (uint32_t)size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
@@ -353,7 +353,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
             tivxCheckStatus(&status, tivxMemBufferMap(start_ptr, (uint32_t)size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
-            (void)memcpy(start_ptr, user_ptr, size);
+            (void)memcpy((void *)start_ptr, user_ptr, size);
 
             tivxCheckStatus(&status, tivxMemBufferUnmap(start_ptr, (uint32_t)size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));

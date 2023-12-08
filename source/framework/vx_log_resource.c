@@ -748,10 +748,12 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void)
     status = (vx_status)VX_SUCCESS;
 
     char outputFilename[TIVX_CONFIG_PATH_LENGTH];
+    const char *env;
+    env = test_file_path();
 
-    if (NULL != test_file_path())
+    if (NULL != env)
     {
-        (void)snprintf(outputFilename, TIVX_CONFIG_PATH_LENGTH, "%s/%s", test_file_path(), "output/tivx_config_generated.h");
+        (void)snprintf(outputFilename, TIVX_CONFIG_PATH_LENGTH, "%s/%s", env, "output/tivx_config_generated.h");
 
         ofp = fopen(outputFilename, "w");
 
@@ -870,12 +872,15 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
     tivx_shm_obj_count_t obj_row;
     status = (vx_status)VX_SUCCESS;
     FILE * ofp = NULL;
+    const char *env;
+    env = test_file_path();
+
     if (outputFile != NULL)
     {
-        if (NULL != test_file_path())
+        if (NULL != env)
         {
             char outputFileName[TIVX_CONFIG_PATH_LENGTH];
-            (void)snprintf(outputFileName, TIVX_CONFIG_PATH_LENGTH, "%s/output/%s", test_file_path(), outputFile);
+            (void)snprintf(outputFileName, TIVX_CONFIG_PATH_LENGTH, "%s/output/%s", env, outputFile);
             ofp = fopen(outputFileName, "w");
             if (ofp == NULL)
             {
@@ -1453,11 +1458,13 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
 
     /* Note: this requires access to the filesystem in order to generate this, and thus excluding from RTOS builds */
     #if defined(LINUX) || defined(QNX)
-        if (NULL != test_file_path())
+        const char *env;
+        env = test_file_path();
+        if (NULL != env)
         {
             char outputFileName[TIVX_CONFIG_PATH_LENGTH];
             uint32_t new_size;
-            (void)snprintf(outputFileName, TIVX_CONFIG_PATH_LENGTH, "%s/output/%s", test_file_path(), "gen_new_mem_map.sh");
+            (void)snprintf(outputFileName, TIVX_CONFIG_PATH_LENGTH, "%s/output/%s", env, "gen_new_mem_map.sh");
             new_size = ((uint32_t)total_obj_size + (16777216 - (uint32_t)total_obj_size))/(1024*1024);
             ofp = fopen(outputFileName, "w");
             if (ofp == NULL)
@@ -1490,8 +1497,8 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
                 (void)snprintf(buffer, TIVX_CONFIG_PATH_LENGTH, "chmod +x %s", outputFileName);
                 #pragma GCC diagnostic pop
                 status = system(buffer);
+                (void)fclose(ofp);
             }
-            (void)fclose(ofp);
         }
         else
         {

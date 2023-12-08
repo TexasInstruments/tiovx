@@ -607,7 +607,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 {
                     vx_size num_dims = size / sizeof(tivx_raw_image_format_t);
 
-                    (void)memcpy(&meta->raw_image.format, ptr, sizeof(tivx_raw_image_format_t)*num_dims);
+                    (void)memcpy((void *)&meta->raw_image.format, ptr, sizeof(tivx_raw_image_format_t)*num_dims);
                 }
                 else
                 {
