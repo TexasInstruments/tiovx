@@ -1150,9 +1150,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                     if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_ERROR) ) 
                     {
                         status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_INTERNAL, NULL);
-                        if((vx_status)VX_SUCCESS != status)
+                        if((vx_status)VX_SUCCESS != status1)
                         {
-                            VX_PRINT(VX_ZONE_ERROR,"Failed to destroy internel reference objects\n");
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to destroy internal reference objects\n");
                             status = status1;
                             break;
                         }
@@ -1172,7 +1172,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                     if ((NULL != ref) && (ref->external_count > 0U) ) 
                     {
                         status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_EXTERNAL, NULL);
-                        if((vx_status)VX_SUCCESS != status)
+                        if((vx_status)VX_SUCCESS != status1)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to destroy external reference objects\n");
                             status = status1;
@@ -1193,14 +1193,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     #endif
 
                 status1 = ownContextDeleteCmdObj(context);
-                if((vx_status)VX_SUCCESS != status)
+                if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"ownContextDeleteCmdObj() failed\n");
                     status = status1;
                 }
 
                 status1 = ownEventQueueDelete(&context->event_queue);
-                if((vx_status)VX_SUCCESS != status)
+                if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to delete even queue\n");
                     status = status1;
