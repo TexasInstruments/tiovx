@@ -29,8 +29,20 @@ static vx_status ownDestructKernel(vx_reference ref)
 
     if(kernel != NULL)
     {
-        VX_PRINT(VX_ZONE_INFO, "Kernel %s destructor called (removed from context)\n", kernel->name);
-        status = ownRemoveKernelFromContext(kernel->base.context, kernel);
+        vx_bool is_found;
+
+        /* It is possible that the kernel has been created, but not added to the context table.  The case
+         * where this is possible is if the vxAddUserKernel API has been called on the kernel, but the
+         * vxFinalizeKernel API has not been called on the kernel.  If the vxFinalizeKernel has been called,
+         * then it will need to be removed.  If not, then this should be skipped to avoid a misleading status
+         * return. */
+        status = ownIsKernelInContext(kernel->base.context, kernel->enumeration, kernel->name, &is_found);
+
+        if ( ((vx_status)VX_SUCCESS == status) && (is_found == (vx_bool)vx_true_e) )
+        {
+            VX_PRINT(VX_ZONE_INFO, "Kernel %s destructor called (removed from context)\n", kernel->name);
+            status = ownRemoveKernelFromContext(kernel->base.context, kernel);
+        }
     }
     return status;
 }
@@ -42,7 +54,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
     if ((NULL != kernel) &&
         (ownIsValidSpecificReference((vx_reference)(*kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) )
     {
-        if((vx_status)VX_SUCCESS != ownReleaseReferenceInt((vx_reference *)kernel, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, NULL))
+        status = ownReleaseReferenceInt((vx_reference *)kernel,
+                (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, NULL);
+        if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to destroy reference\n");
         }
