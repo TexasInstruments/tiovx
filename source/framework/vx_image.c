@@ -643,9 +643,9 @@ static vx_status ownCopyAndMapCheckParams(
         }
     }
 
-    obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
     if(status == (vx_status)VX_SUCCESS)
     {
+        obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
         if((vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_VIRTUAL)
         {
             VX_PRINT(VX_ZONE_ERROR, "image is virtual\n");
