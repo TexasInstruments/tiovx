@@ -84,6 +84,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     int i, j;
     tivx_obj_desc_t *obj_desc[TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST] = {NULL};
     vx_image img;
+    vx_image img1;
     vx_threshold vxt=NULL;
     vx_object_array vxoa = NULL;
     vx_node node = NULL;
@@ -113,8 +114,10 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     }
 
     EXPECT_VX_ERROR(vxt = vxCreateThreshold(context, VX_THRESHOLD_TYPE_RANGE, VX_TYPE_UINT8), VX_ERROR_NO_RESOURCES);
-    EXPECT_VX_ERROR(vxoa = vxCreateObjectArray(context, (vx_reference)img, 2),VX_ERROR_NO_RESOURCES);
-    EXPECT_VX_ERROR(src_object_array = vxCreateVirtualObjectArray(graph, (vx_reference)img, 32),VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(vxoa = vxCreateObjectArray(context, (vx_reference)img, 2), VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(src_object_array = vxCreateVirtualObjectArray(graph, (vx_reference)img, 32), VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(img1 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_ERROR_NO_RESOURCES);
+
     ASSERT_EQ_VX_STATUS(VX_FAILURE, ownNodeKernelInitKernelName(node));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric((vx_reference)img));
     for (j = 0; j < i-1; j++)
@@ -125,8 +128,10 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
         }
         VX_CALL(ownObjDescFree((tivx_obj_desc_t**)&obj_desc[j]));
     }
-
-    VX_CALL(ownReleaseReferenceInt((vx_reference*)&img, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL));
+    if(NULL!=img)
+    {
+        VX_CALL(ownReleaseReferenceInt((vx_reference*)&img, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL));
+    }
     VX_CALL(vxReleaseGraph(&graph));
 }
 

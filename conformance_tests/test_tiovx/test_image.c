@@ -309,8 +309,24 @@ TEST(tivxImage, negativeTestMapImagePatch)
     vx_uint8 user_ptr[256];
     vx_enum usage = VX_READ_ONLY, mem_type = VX_MEMORY_TYPE_HOST;
     vx_uint32 flags = 0;
-
+    void *base;
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxMapImagePatch(img, &rect, plane_index, NULL, NULL, NULL, usage, mem_type, flags));
+    //-ve Testcase for rect == NULL
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxMapImagePatch(img, NULL, plane_index, &map_id, &user_addr, &base, usage, mem_type, flags));
+    VX_CALL(vxReleaseImage(&img));
+    //-ve Testcase for wrong image type
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxMapImagePatch(NULL, &rect, plane_index, &map_id, &user_addr, &base, usage, mem_type, flags));
+    plane_index = 2; // Create a -ve condition for plane index being > than No.of Img planes
+    //-ve case to check condition start_y>end_y
+    rect.start_y = 1;
+    rect.end_y = 0;
+    //-ve case to check condition start_x>end_x
+    rect.start_x = 1;
+    rect.end_x = 0;
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxMapImagePatch(img, &rect, plane_index, &map_id, &user_addr, &base, usage, mem_type, flags));
+    VX_CALL(vxReleaseImage(&img));
 }
 
 TEST(tivxImage, negativeTestUnmapImagePatch)
@@ -373,7 +389,47 @@ TEST(tivxImage, testQueryImage)
 
     VX_CALL(vxReleaseImage(&image));
 }
+TEST(tivxImage, negativeTestSubmage)
+{
+    vx_context context = context_->vx_context_;
 
+    vx_image image = NULL;
+    vx_image img1=NULL;
+    vx_image img[TIVX_IMAGE_MAX_SUBIMAGES+1]; // Added  an extra subimage to create overflow condition
+    int i;
+    
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 640, 480, VX_DF_IMAGE_YUV4), VX_TYPE_IMAGE);
+
+    for (i= 0; i <=TIVX_IMAGE_MAX_SUBIMAGES; i++)
+    { // Max out the SubImage allocation space
+        if(i<TIVX_IMAGE_MAX_SUBIMAGES)
+        {
+            //MaxOut the buffer 
+            ASSERT_VX_OBJECT(img[i]=vxCreateImageFromChannel(image, VX_CHANNEL_V),VX_TYPE_IMAGE);
+        }
+        else //Create the error condition
+        {
+            EXPECT_VX_ERROR(img[i] = vxCreateImageFromChannel(image, VX_CHANNEL_V), VX_ERROR_NO_RESOURCES);
+        }
+        
+    }
+
+    for (int j = 0; j < i; j++)
+    { // Max out the SubImage allocation space
+        if(NULL!=img[j])
+        {
+            vxReleaseImage(&img[j]);
+        }
+    }
+    VX_CALL(vxReleaseImage(&image));
+}
+TEST(tivxImage, negativeTestIsValidDimension)
+{
+    vx_context context = context_->vx_context_;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_DIMENSION, vxGetStatus((vx_reference)vxCreateImage(context, 641, 480, VX_DF_IMAGE_IYUV)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGetStatus((vx_reference)vxCreateImage(context, 641, 480, VX_REFERENCE_TYPE)));
+}
 
 TESTCASE_TESTS(
     tivxImage,
@@ -395,6 +451,6 @@ TESTCASE_TESTS(
     negativeTestMapImagePatch,
     negativeTestUnmapImagePatch,
     negativeTestSwapImageHandle,
-    testQueryImage
-)
-
+    negativeTestIsValidDimension,
+    negativeTestSubmage,
+    testQueryImage)
