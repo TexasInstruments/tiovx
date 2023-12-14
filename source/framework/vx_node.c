@@ -30,6 +30,7 @@ static vx_status ownDestructNode(vx_reference ref)
     vx_status status1 = (vx_status)VX_SUCCESS;
     vx_node node = (vx_node)ref;
     uint32_t p, pipe_id;
+    vx_bool put_break = (vx_bool)vx_false_e;
 
     if(node->base.type == (vx_enum)VX_TYPE_NODE)
     {
@@ -94,7 +95,7 @@ static vx_status ownDestructNode(vx_reference ref)
                     if ((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Node object descriptor free failed!\n");
-                        break;
+                        put_break = (vx_bool)vx_true_e;
                     }
                 }
                 if(node->obj_desc_cmd[pipe_id]!=NULL)
@@ -103,8 +104,12 @@ static vx_status ownDestructNode(vx_reference ref)
                     if ((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Node command object descriptor free failed!\n");
-                        break;
+                        put_break = (vx_bool)vx_true_e;
                     }
+                }
+                if ((vx_bool)vx_true_e == put_break)
+                {
+                    break;
                 }
             }
         }
@@ -742,12 +747,22 @@ vx_status ownNodeKernelDeinit(vx_node node)
 
                 VX_PRINT(VX_ZONE_INFO,"Calling delete callback for node %s\n", ref->name);
 
-                status |= ownContextSendCmd(node->base.context,
+                vx_status tmp_status = ownContextSendCmd(node->base.context,
                         node->obj_desc[0]->target_id, (vx_enum)TIVX_CMD_NODE_DELETE,
                         1, obj_desc_id, node->timeout_val);
 
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    if(tmp_status == (vx_status)VX_SUCCESS)
+                    {
+                        status = (vx_status)VX_SUCCESS;
+                    }
+                    else
+                    {
+                        status = tmp_status;
+                    }
+                }
                 VX_PRINT(VX_ZONE_INFO,"Delete callback for node %s completed\n", ref->name);
-
                 /* Note: not providing an option to reset "is_timed_out"
                  * here given that if the create timeout failed, then this
                  * would override that status, even if it was only successful
@@ -1336,7 +1351,9 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->base.context->event_queue,
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
+                {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
+                }
             }
 
             if ((vx_bool)vx_true_e == node->is_graph_event)
@@ -1344,7 +1361,9 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
+                {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
+                }
             }
         }
     }
@@ -1783,7 +1802,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                         vx_uint32   timeout_val = *(vx_uint32*)ptr;
 
                         /* Validate the timeout. It cannot be zero. */
-                        if (timeout_val == 0)
+                        if (timeout_val == 0U)
                         {
                             VX_PRINT(VX_ZONE_ERROR,
                                      "Invalid timeout value specified: %d\n",
@@ -2064,13 +2083,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                 {
                     if((vx_status)VX_SUCCESS != vxReleaseReference(&ref))
                     {
-                        status |= (vx_status)VX_FAILURE;
+                        status = (vx_status)VX_FAILURE;
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release reference at index %d\n", p);
                     }
                 }
                 if((vx_status)VX_SUCCESS != vxReleaseParameter(&param))
                 {
-                    status |= (vx_status)VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to parameter at index %d\n", p);
                 }
             }
