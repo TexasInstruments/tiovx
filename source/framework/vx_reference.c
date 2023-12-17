@@ -274,6 +274,7 @@ static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_share
         default:
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            break;
         }
 #endif
     }

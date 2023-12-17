@@ -1966,8 +1966,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
     {
         for (p = 0; p < number_of_parameters; p++)
         {
-            vx_parameter param = 0;
-            vx_reference ref = 0;
+            vx_parameter param = NULL;
+            vx_reference ref = NULL;
             vx_enum type = 0;
             vx_enum state = 0;
             vx_enum dir = 0;

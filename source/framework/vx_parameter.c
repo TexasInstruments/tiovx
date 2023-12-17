@@ -210,7 +210,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
     if(status == (vx_status)VX_SUCCESS)
     {
         /* if it's an optional parameter, it's ok to be NULL */
-        if ((value == 0) && (node->kernel->signature.states[index] == (vx_enum)VX_PARAMETER_STATE_OPTIONAL))
+        if ((value == NULL) && (node->kernel->signature.states[index] == (vx_enum)VX_PARAMETER_STATE_OPTIONAL))
         {
             status = (vx_status)VX_SUCCESS;
         }

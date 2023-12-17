@@ -1091,12 +1091,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     }
     else
     {
-        context = 0;
+        context = NULL;
     }
 
     if (c != NULL)
     {
-        *c = 0;
+        *c = NULL;
     }
     ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)

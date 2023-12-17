@@ -592,7 +592,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
             param = &delay->set[i];
             do
             {
-                if (param->node != 0)
+                if (param->node != NULL)
                 {
                     ownNodeSetParameter(param->node,
                                        param->index,

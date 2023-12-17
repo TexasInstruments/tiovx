@@ -724,7 +724,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImage(vx_context context, vx_uint32 wi
 
 VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx_df_image color, const vx_imagepatch_addressing_t addrs[], void *const ptrs[], vx_enum memory_type)
 {
-    vx_image image = 0;
+    vx_image image = NULL;
     vx_imagepatch_addressing_t *imagepatch_addr;
     tivx_shared_mem_ptr_t *mem_ptr;
     tivx_obj_desc_image_t *obj_desc = NULL;
@@ -1069,7 +1069,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateVirtualImage(vx_graph graph, vx_uint32
 
 VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_uint32 width, vx_uint32 height, vx_df_image format, const vx_pixel_value_t *value)
 {
-    vx_image image = 0;
+    vx_image image = NULL;
     vx_status status;
 
     if (value == NULL)

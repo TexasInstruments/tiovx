@@ -40,7 +40,7 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
                                 vx_uint32 num)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_node node = 0;
+    vx_node node = NULL;
     vx_uint32 release_kernel = 0;
     vx_context context = vxGetContext((vx_reference)graph);
 
@@ -66,7 +66,7 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to node, node might not be a vx_node\n");
                     }
-                    node = 0;
+                    node = NULL;
                     break;
                 }
             }
