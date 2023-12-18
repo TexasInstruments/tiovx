@@ -82,8 +82,8 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
                 if(ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
                 {
                     kernel_info[num_kernel_info].enumeration = kernel->enumeration;
-                    (void)strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME-1U);
-                    kernel_info[num_kernel_info].name[VX_MAX_KERNEL_NAME-1U] = '\0';
+                    (void)strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME-1);
+                    kernel_info[num_kernel_info].name[VX_MAX_KERNEL_NAME-1] = '\0';
                     num_kernel_info++;
                 }
                 if(num_kernel_info > max_kernels)
@@ -108,6 +108,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t    i;
+    vx_bool do_break = (vx_bool)vx_false_e;
 
     /* Create the free and pend queues. */
     status = tivxQueueCreate(&context->free_queue,
@@ -154,7 +155,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
                     VX_PRINT(VX_ZONE_ERROR,
                              "context object event [%d] allocation failed\n", i);
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
-                    break;
+                    do_break = (vx_bool)vx_true_e;
                 }
             }
             else
@@ -165,6 +166,10 @@ static vx_status ownContextCreateCmdObj(vx_context context)
                 VX_PRINT(VX_ZONE_ERROR, "context object descriptor [%d] allocation failed\n", i);
                 VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
                 VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
+                do_break = (vx_bool)vx_true_e;
+            }
+            if((vx_bool)vx_true_e == do_break)
+            {
                 break;
             }
         }
@@ -598,40 +603,49 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
     else
 #endif
     {
-        ownContextLock(context);
-
-        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
-            if( (context->kerneltable[idx]==kernel) && (context->num_unique_kernels>0U) )
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+        }
+        else
+        {
+
+            for(idx=0; idx<dimof(context->kerneltable); idx++)
             {
-                /* found kernel entry */
-
-                status = ownDeallocateUserKernelId(context, kernel);
-
-                if ((vx_status)VX_SUCCESS == status)
+                if( (context->kerneltable[idx]==kernel) && (context->num_unique_kernels>0U) )
                 {
-                    context->kerneltable[idx] = NULL;
-                    context->num_unique_kernels--;
-                    ownLogResourceFree("TIVX_CONTEXT_MAX_KERNELS", 1);
-                }
+                    /* found kernel entry */
+
+                    status = ownDeallocateUserKernelId(context, kernel);
+
+                    if ((vx_status)VX_SUCCESS == status)
+                    {
+                        context->kerneltable[idx] = NULL;
+                        context->num_unique_kernels--;
+                        ownLogResourceFree("TIVX_CONTEXT_MAX_KERNELS", 1);
+                    }
 #ifdef LDRA_UNTESTABLE_CODE
-                else
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"deallocate user kernel id failed\n");
-                }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"deallocate user kernel id failed\n");
+                    }
 #endif
+                    break;
+                }
+            }
 
-                break;
+            if(idx>=dimof(context->kerneltable))
+            {
+                /* kernel not found */
+                VX_PRINT(VX_ZONE_ERROR,"kernel not found\n");
+                status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+            }
+
+            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
             }
         }
-        if(idx>=dimof(context->kerneltable))
-        {
-            /* kernel not found */
-            VX_PRINT(VX_ZONE_ERROR,"kernel not found\n");
-            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-        }
-
-        ownContextUnlock(context);
     }
 
     return status;
@@ -655,30 +669,39 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
     }
     else
     {
-        ownContextLock(context);
-
-        *is_found = (vx_bool)vx_false_e;
-
-        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
-            kernel = context->kerneltable[idx];
-            if((ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) ==
-                    (vx_bool)vx_true_e)
-                &&
-                ( (strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0)
-                    ||
-                    (kernel->enumeration == enumeration)
-                )
-                )
-            {
-                /* found match */
-                *is_found = (vx_bool)vx_true_e;
-                break;
-            }
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+        }
+        else
+        {
 
+            *is_found = (vx_bool)vx_false_e;
+
+            for(idx=0; idx<dimof(context->kerneltable); idx++)
+            {
+                kernel = context->kerneltable[idx];
+                if((ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) ==
+                        (vx_bool)vx_true_e)
+                    &&
+                    ( (strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0)
+                        ||
+                        (kernel->enumeration == enumeration)
+                    )
+                    )
+                {
+                    /* found match */
+                    *is_found = (vx_bool)vx_true_e;
+                    break;
+                }
+
+            }
         }
 
-        ownContextUnlock(context);
+        if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+        }
     }
 
     return status;
@@ -795,7 +818,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                 }
             }
         }
-        ownLogSetResourceUsedValue("TIVX_MAX_CTRL_CMD_OBJECTS", obj_id);
+        ownLogSetResourceUsedValue("TIVX_MAX_CTRL_CMD_OBJECTS", (uint16_t)obj_id);
     }
 #ifdef LDRA_UNTESTABLE_CODE
     else
@@ -1015,8 +1038,19 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"context objection creation failed\n");
-                    tivxMutexDelete(&context->lock);
-                    tivxMutexDelete(&context->log_lock);
+                    status = tivxMutexDelete(&context->lock);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
+                    }
+                    else
+                    {
+                        status = tivxMutexDelete(&context->log_lock);
+                        if((vx_status)VX_SUCCESS != status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
+                        }
+                    }
                 }
             }
             if(status!=(vx_status)VX_SUCCESS)
@@ -1081,6 +1115,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_status status1 = (vx_status)VX_SUCCESS;
+    vx_bool do_break = (vx_bool)vx_false_e;
     vx_context context;
     vx_uint32 r;
     uint32_t idx;
@@ -1154,30 +1189,36 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to destroy internal reference objects\n");
                             status = status1;
-                            break;
+                            do_break = (vx_bool)vx_true_e;
                         }
                     }
-
-                    if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_KERNEL) ) {
-                        VX_PRINT(VX_ZONE_WARNING,"A kernel with name %s has not been removed, possibly due to a kernel module not being unloaded.\n", ref->name);
-                        VX_PRINT(VX_ZONE_WARNING,"Removing as a part of garbage collection\n");
-                        status = vxRemoveKernel((vx_kernel)ref);
-                    }
-
-                    /* Warning above so user can fix release external objects, but close here anyway */
-                    while ((NULL != ref)&& (ref->external_count > 1U) ) {
-                        /* Setting it as void since return value 'count' is not used further */
-                        (void)ownDecrementReference(ref, (vx_enum)VX_EXTERNAL);
-                    }
-                    if ((NULL != ref) && (ref->external_count > 0U) ) 
+                    if((vx_status)VX_SUCCESS == status1)
                     {
-                        status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_EXTERNAL, NULL);
-                        if((vx_status)VX_SUCCESS != status1)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,"Failed to destroy external reference objects\n");
-                            status = status1;
-                            break;
+                        if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_KERNEL) ) {
+                            VX_PRINT(VX_ZONE_WARNING,"A kernel with name %s has not been removed, possibly due to a kernel module not being unloaded.\n", ref->name);
+                            VX_PRINT(VX_ZONE_WARNING,"Removing as a part of garbage collection\n");
+                            status = vxRemoveKernel((vx_kernel)ref);
                         }
+
+                        /* Warning above so user can fix release external objects, but close here anyway */
+                        while ((NULL != ref)&& (ref->external_count > 1U) ) {
+                            /* Setting it as void since return value 'count' is not used further */
+                            (void)ownDecrementReference(ref, (vx_enum)VX_EXTERNAL);
+                        }
+                        if ((NULL != ref) && (ref->external_count > 0U) ) 
+                        {
+                            status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_EXTERNAL, NULL);
+                            if((vx_status)VX_SUCCESS != status1)
+                            {
+                                VX_PRINT(VX_ZONE_ERROR,"Failed to destroy external reference objects\n");
+                                status = status1;
+                                do_break = (vx_bool)vx_true_e;
+                            }
+                        }
+                    }
+                    if((vx_bool)vx_true_e == do_break)
+                    {
+                        break;
                     }
                 }
 
@@ -1202,7 +1243,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 status1 = ownEventQueueDelete(&context->event_queue);
                 if((vx_status)VX_SUCCESS != status1)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to delete even queue\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to delete event queue\n");
                     status = status1;
                 }
 
@@ -1327,7 +1368,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
             case (vx_enum)VX_CONTEXT_EXTENSIONS:
                 if ( (size <= sizeof(g_context_extensions) ) && ptr)
                 {
-                    uint32_t str_size = sizeof(g_context_extensions);
+                    uint32_t str_size = (uint32_t)sizeof(g_context_extensions);
                     (void)strncpy(ptr, g_context_extensions, str_size);
                 }
                 else
@@ -1609,22 +1650,31 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
     {
         uint32_t idx;
 
-        (void)ownContextLock(context);
-
-        status = (vx_status)VX_ERROR_NO_RESOURCES;
-        for(idx=0; idx<TIVX_MAX_KERNEL_ID; idx++)
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
-            if (context->is_dynamic_user_kernel_id_used[idx] == (vx_bool)vx_false_e)
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+        }
+        else
+        {
+
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
+            for(idx=0; idx<TIVX_MAX_KERNEL_ID; idx++)
             {
-                *pKernelEnumId = VX_KERNEL_BASE(VX_ID_USER, 0U) + (vx_enum)(idx);
-                status = (vx_status)VX_SUCCESS;
-                context->is_dynamic_user_kernel_id_used[idx] = (vx_bool)vx_true_e;
-                context->num_dynamic_user_kernel_id++;
-                break;
+                if (context->is_dynamic_user_kernel_id_used[idx] == (vx_bool)vx_false_e)
+                {
+                    *pKernelEnumId = VX_KERNEL_BASE(VX_ID_USER, 0U) + (vx_enum)(idx);
+                    status = (vx_status)VX_SUCCESS;
+                    context->is_dynamic_user_kernel_id_used[idx] = (vx_bool)vx_true_e;
+                    context->num_dynamic_user_kernel_id++;
+                    break;
+                }
             }
         }
 
-        (void)ownContextUnlock(context);
+        if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+        }
     }
     return status;
 }
@@ -1636,22 +1686,31 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
     {
         uint32_t idx;
 
-        ownContextLock(context);
-
-        status = (vx_status)VX_ERROR_NO_RESOURCES;
-        for(idx=1; idx<(TIVX_MAX_LIBRARY_ID); idx++)
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
-            if (context->is_dynamic_user_library_id_used[idx] == (vx_bool)vx_false_e)
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+        }
+        else
+        {
+
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
+            for(idx=1; idx<(TIVX_MAX_LIBRARY_ID); idx++)
             {
-                *pLibraryId = (int32_t)(idx);
-                status = (vx_status)VX_SUCCESS;
-                context->is_dynamic_user_library_id_used[idx] = (vx_bool)vx_true_e;
-                context->num_dynamic_user_library_id++;
-                break;
+                if (context->is_dynamic_user_library_id_used[idx] == (vx_bool)vx_false_e)
+                {
+                    *pLibraryId = (int32_t)(idx);
+                    status = (vx_status)VX_SUCCESS;
+                    context->is_dynamic_user_library_id_used[idx] = (vx_bool)vx_true_e;
+                    context->num_dynamic_user_library_id++;
+                    break;
+                }
             }
         }
 
-        ownContextUnlock(context);
+        if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+        }
     }
     return status;
 }
@@ -1661,38 +1720,47 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        ownContextLock(context);
-
-        switch (target_enum)
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
-            case (vx_enum)VX_TARGET_ANY:
-                context->imm_target_enum = (vx_enum)VX_TARGET_ANY;
-                (void)memset(context->imm_target_string, 0, sizeof(context->imm_target_string));
-                status = (vx_status)VX_SUCCESS;
-                break;
+            VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
+        }
+        else
+        {
 
-            case (vx_enum)VX_TARGET_STRING:
-                if (target_string != NULL)
-                {
-                    context->imm_target_enum = (vx_enum)VX_TARGET_STRING;
-                    (void)strncpy(context->imm_target_string, target_string, sizeof(context->imm_target_string)-1U);
-                    context->imm_target_string[sizeof(context->imm_target_string) - 1U] = '\0';
+            switch (target_enum)
+            {
+                case (vx_enum)VX_TARGET_ANY:
+                    context->imm_target_enum = (vx_enum)VX_TARGET_ANY;
+                    (void)memset(context->imm_target_string, 0, sizeof(context->imm_target_string));
                     status = (vx_status)VX_SUCCESS;
-                }
-                else /* target was not found */
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"target was not found\n");
-                    status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                }
-                break;
+                    break;
 
-            default:
-                VX_PRINT(VX_ZONE_ERROR,"unsupported target_enum\n");
-                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                break;
+                case (vx_enum)VX_TARGET_STRING:
+                    if (target_string != NULL)
+                    {
+                        context->imm_target_enum = (vx_enum)VX_TARGET_STRING;
+                        (void)strncpy(context->imm_target_string, target_string, sizeof(context->imm_target_string)-1U);
+                        context->imm_target_string[sizeof(context->imm_target_string) - 1U] = '\0';
+                        status = (vx_status)VX_SUCCESS;
+                    }
+                    else /* target was not found */
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"target was not found\n");
+                        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                    }
+                    break;
+
+                default:
+                    VX_PRINT(VX_ZONE_ERROR,"unsupported target_enum\n");
+                    status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                    break;
+            }
         }
 
-        ownContextUnlock(context);
+        if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+        }
     }
     return status;
 }
