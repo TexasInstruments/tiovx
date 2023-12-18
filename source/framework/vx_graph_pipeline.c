@@ -602,7 +602,7 @@ vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
                 graph->obj_desc[i]->exe_time_end_h = 0;
                 graph->obj_desc[i]->exe_time_end_l = 0;
 
-                if((vx_status)VX_SUCCESS == ownGraphEnqueueFreeObjDesc(graph, graph->obj_desc[i]))
+                if((vx_status)VX_SUCCESS != ownGraphEnqueueFreeObjDesc(graph, graph->obj_desc[i]))
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Failed to add element to graph free queue \n");
                 }
@@ -725,7 +725,7 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
                     graph->state = (int32_t)graph_obj_desc->state;
                 }
 
-                if((vx_status)VX_SUCCESS == ownGraphEnqueueFreeObjDesc(graph, graph_obj_desc))
+                if((vx_status)VX_SUCCESS != ownGraphEnqueueFreeObjDesc(graph, graph_obj_desc))
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Failed to add element to graph free queue \n");
                 }
