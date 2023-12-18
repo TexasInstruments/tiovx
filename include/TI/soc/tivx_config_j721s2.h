@@ -351,7 +351,7 @@ extern "C" {
 /*! \brief Max number user data objects supported
  * \ingroup group_vx_user_data_cfg
  */
-#define TIVX_USER_DATA_OBJECT_MAX_OBJECTS  (96u)
+#define TIVX_USER_DATA_OBJECT_MAX_OBJECTS  (176u)
 
 
 /*
