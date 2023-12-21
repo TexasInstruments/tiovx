@@ -268,7 +268,8 @@ static inline void tivxFlagBitClear(volatile uint32_t *flag_var, uint32_t flag_v
  */
 static inline vx_bool tivxFlagIsBitSet(uint32_t flag_var, uint32_t flag_val)
 {
-    return (vx_bool)((flag_var & flag_val) == flag_val);
+    vx_bool result = ((flag_var & flag_val) == flag_val);
+    return result;
 }
 
 /*! \brief Macro to set flag value, flag MUST be of bit type

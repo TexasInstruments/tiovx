@@ -294,6 +294,7 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
 {
     uint32_t i;
     vx_status status=(vx_status)VX_SUCCESS;
+    vx_bool do_break = (vx_bool)vx_false_e;
 
     if(ref->type == (vx_enum)TIVX_TYPE_DATA_REF_Q)
     {
@@ -314,17 +315,24 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
                 if((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor\n");
-                    break;
+                    do_break = (vx_bool)vx_true_e;
                 }
             }
-            if(data_ref_q->obj_desc_cmd[i] != NULL)
+            if((vx_status)VX_SUCCESS == status)
             {
-                status = ownObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc_cmd[i]);
-                if((vx_status)VX_SUCCESS != status)
+                if(data_ref_q->obj_desc_cmd[i] != NULL)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor\n");
-                    break;
+                    status = ownObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc_cmd[i]);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor\n");
+                        do_break = (vx_bool)vx_true_e;
+                    }
                 }
+            }
+            if((vx_bool)vx_true_e == do_break)
+            {
+                break;
             }
         }
         if(status == VX_SUCCESS)

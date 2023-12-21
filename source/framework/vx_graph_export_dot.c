@@ -418,13 +418,15 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
             #pragma GCC diagnostic push
             #pragma GCC diagnostic ignored "-Wformat-truncation"
             #endif
+            uint16_t obj_id;
+            obj_id = ref->obj_desc->obj_desc_id;
             TIVX_EXPORT_WRITELN(fp, "d_%d [shape=record %s, label=\"{%s %s %s | desc %d}\"]",
-                ref->obj_desc->obj_desc_id,
+                obj_id,
                 is_virtual,
                 ref->name,
                 is_virtual_label,
                 is_replicated_label,
-                ref->obj_desc->obj_desc_id
+                obj_id
                 );
             #if defined(LINUX) || defined(QNX)
             #pragma GCC diagnostic pop
