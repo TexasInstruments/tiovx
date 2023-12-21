@@ -541,6 +541,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_reference ref;
+    vx_bool is_removed = (vx_bool)vx_true_e;
 
     if (pref != NULL)
     {
@@ -557,16 +558,17 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
         {
             tivx_reference_callback_f destructor = special_destructor;
 
+            is_removed = ownRemoveReferenceFromContext(ref->context, ref);
 #ifdef LDRA_UNTESTABLE_CODE
 /* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM004 */
-            if (ownRemoveReferenceFromContext(ref->context, ref) == (vx_bool)vx_false_e)
+            if (is_removed  == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Invalid reference\n");
                 status = (vx_status)VX_ERROR_INVALID_REFERENCE;
             }
-#endif
             else
             {
+#endif
                 /* find the destructor method */
                 if (destructor==NULL)
                 {
@@ -596,8 +598,10 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Failed to free memory of reference \n");
                 }
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM004 */
             }
+#endif
         }
         *pref = NULL;
     } else {
@@ -611,6 +615,7 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
 {
     vx_reference ref = (vx_reference)ownObjectAlloc(type);
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_bool is_add = (vx_bool)vx_true_e;
 
     if (ref != NULL)
     {
@@ -619,9 +624,10 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
         {
             /* Setting it as void since return value 'ref count' is not used further */
             (void)ownIncrementReference(ref, reftype);
+            is_add = ownAddReferenceToContext(context, ref);
 #ifdef LDRA_UNTESTABLE_CODE
 /* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM005 */
-            if (ownAddReferenceToContext(context, ref) == (vx_bool)vx_false_e)
+            if(is_add == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Add reference to context failed\n");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
