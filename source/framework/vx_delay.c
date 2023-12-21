@@ -117,7 +117,7 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
     else
     {
         tivx_delay_param_t **ptr = &delay->set[index].next;
-        do
+        for(;;)
         {
             if (*ptr == NULL)
             {
@@ -139,13 +139,13 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
                 ptr = &((*ptr)->next);
             }
 #endif
-        } while (1 == 1);
+        } 
     }
 
     if(status == (vx_bool)vx_true_e)
     {
         /* Increment a reference to the delay */
-        ownIncrementReference((vx_reference)delay, (vx_enum)VX_INTERNAL);
+        (void)ownIncrementReference((vx_reference)delay, (vx_enum)VX_INTERNAL);
     }
 
     return status;
@@ -172,7 +172,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
         tivx_delay_param_t **ptr = &delay->set[index].next;
         tivx_delay_param_t *next = NULL;
         do_break = (vx_bool)vx_false_e;
-        do
+        for(;;)
         {
             if (*ptr != NULL)
             {
@@ -200,14 +200,18 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
             {
                 break;
             }
-        } while (1 == 1);
+        } 
     }
 
 
     if (status == (vx_bool)vx_true_e) /* Release the delay */
     {
         vx_reference ref=(vx_reference)delay;
-        ownReleaseReferenceInt(&ref, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
+        status = ownReleaseReferenceInt(&ref, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
+        if((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to destroy delay reference\n");
+        }
     }
     return status;
 }
@@ -223,7 +227,7 @@ static vx_status ownAddRefToDelay(vx_delay delay, vx_reference ref, uint32_t i)
 
     /* increment the internal counter on the image, not the
        external one */
-    ownIncrementReference(ref, (vx_enum)VX_INTERNAL);
+    (void)ownIncrementReference(ref, (vx_enum)VX_INTERNAL);
 
     return status;
 }
@@ -231,13 +235,17 @@ static vx_status ownAddRefToDelay(vx_delay delay, vx_reference ref, uint32_t i)
 static void ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
 {
     uint32_t i;
-
+    vx_status status;
     if (tivxIsValidDelay(delay) && (delay->type == (vx_enum)VX_TYPE_PYRAMID) && (delay->pyr_num_levels > 0U) )
     {
         /* release pyramid delays */
         for (i = 0; i < delay->pyr_num_levels; i++)
         {
-            ownReleaseReferenceInt((vx_reference *)&(delay->pyr_delay[i]), (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
+            status = ownReleaseReferenceInt((vx_reference *)&(delay->pyr_delay[i]), (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to destroy pyramid delay reference\n");
+            }  
         }
         delay->pyr_num_levels = 0;
     }
@@ -247,7 +255,11 @@ static void ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
         /* release object array delays */
         for (i = 0; i < delay->obj_arr_num_items; i++)
         {
-            ownReleaseReferenceInt((vx_reference *)&(delay->obj_arr_delay[i]), (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
+            status = ownReleaseReferenceInt((vx_reference *)&(delay->obj_arr_delay[i]), (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to destroy object array reference\n");
+            } 
         }
         delay->obj_arr_num_items = 0;
     }
@@ -258,9 +270,13 @@ static void ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
         {
             /* decrement the internal counter on the image, not the
                external one */
-            ownDecrementReference(delay->refs[i], (vx_enum)VX_INTERNAL);
+            (void)ownDecrementReference(delay->refs[i], (vx_enum)VX_INTERNAL);
 
-            vxReleaseReference(&delay->refs[i]);
+            status =  vxReleaseReference(&delay->refs[i]);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to release delay reference \n");
+            }
         }
     }
 }
@@ -421,8 +437,10 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                             {
                                                 status = ownAddRefToDelay(objarrdelay, ref, i);
                                             }
-
-                                            if( (NULL == ref) || (status!=(vx_status)VX_SUCCESS))
+                                            /* removed the status check as the status would be 
+                                             * always success from the above conditions 
+                                             */
+                                            else 
                                             {
                                                 VX_PRINT(VX_ZONE_ERROR, "reference was not added to delay\n");
                                                 break;
@@ -453,13 +471,8 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                     for (i = 0; i < count; i++)
                                     {
                                         ref = (vx_reference)vxGetPyramidLevel((vx_pyramid)delay->refs[i], (vx_uint32)level_idx);
-
-                                        status = ownAddRefToDelay(pyrdelay, ref, i);
-                                        if(status!=(vx_status)VX_SUCCESS)
-                                        {
-                                            VX_PRINT(VX_ZONE_ERROR, "reference was not added to delay\n");
-                                            break;
-                                        }
+                                        /* removed status always returning success */
+                                        (void)ownAddRefToDelay(pyrdelay, ref, i);
                                     }
                                     delay->pyr_num_levels++;
                                 }
@@ -469,7 +482,11 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                     if(status!=(vx_status)VX_SUCCESS)
                     {
                         ownReleaseRefFromDelay(delay, i);
-                        vxReleaseDelay(&delay);
+                        status = vxReleaseDelay(&delay);
+                        if((vx_status)VX_SUCCESS != status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to release a reference to delay object\n");
+                        }
 
                         VX_PRINT(VX_ZONE_ERROR, "Could not allocate delay object descriptor\n");
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
@@ -505,7 +522,7 @@ VX_API_ENTRY vx_reference VX_API_CALL vxGetReferenceFromDelay(
     vx_delay delay, vx_int32 index)
 {
     vx_reference ref = NULL;
-    if ((vx_bool)tivxIsValidDelay(delay) == (vx_bool)vx_true_e)
+    if (tivxIsValidDelay(delay))
     {
         if ((vx_uint32)abs(index) < delay->count)
         {
@@ -526,7 +543,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay,
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((vx_bool)tivxIsValidDelay(delay) == (vx_bool)vx_true_e)
+    if (tivxIsValidDelay(delay))
     {
         switch (attribute)
         {
@@ -576,7 +593,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((vx_bool)tivxIsValidDelay(delay) == (vx_bool)vx_true_e)
+    if (tivxIsValidDelay(delay))
     {
         vx_int32 i,j;
 
@@ -594,9 +611,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
             {
                 if (param->node != NULL)
                 {
-                    ownNodeSetParameter(param->node,
-                                       param->index,
-                                       delay->refs[j]);
+                    status = ownNodeSetParameter(param->node,param->index,delay->refs[j]);
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Failed to set parameter at node \n");
+                    }
 
                     ownInitReferenceForDelay(delay->refs[j], delay, i);
                 }
