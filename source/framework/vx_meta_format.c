@@ -1303,14 +1303,14 @@ static vx_bool ownIsMetaFormatRawImageEqual(
 }
 
 vx_bool ownIsMetaFormatEqual(
-    vx_meta_format meta1, vx_meta_format meta2, vx_enum type)
+    vx_meta_format meta1, vx_meta_format meta2, vx_enum ref_type)
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
     if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
          (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
-        switch (type)
+        switch (ref_type)
         {
             case (vx_enum)VX_TYPE_IMAGE:
                 is_equal = ownIsMetaFormatImageEqual(meta1, meta2);

@@ -81,12 +81,12 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph);
 static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph);
 static vx_status ownGraphAllocateDataObjects(vx_graph graph);
 static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph);
-static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t index);
+static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx);
 static vx_status ownGraphDetectSourceSink(vx_graph graph);
 static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check);
 static vx_status ownGraphAllocateDataObject(vx_node node_cur, uint32_t prm_cur_idx, vx_reference ref);
 static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph, vx_node node,
-                                                                uint32_t index, tivx_data_ref_queue data_ref_q);
+                                                                uint32_t idx, tivx_data_ref_queue data_ref_q);
 static vx_status ownGraphCreateAndLinkDataReferenceQueues(vx_graph graph);
 static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph);
 static vx_status ownGraphCreateIntermediateDataReferenceQueues(vx_graph graph);
@@ -95,7 +95,7 @@ static uint32_t ownGraphGetNumInNodes(vx_graph graph, vx_node node, uint32_t nod
 static void ownGraphLinkArrayElements(vx_graph graph);
 static void ownGraphLinkDataReferenceQueues(vx_graph graph);
 static void ownGraphLinkDataReferenceQueuesToNodeIndex(vx_graph graph, tivx_data_ref_queue data_ref_q,
-                                                       vx_node node, uint32_t index);
+                                                       vx_node node, uint32_t idx);
 static vx_status ownGraphNodePipeline(vx_graph graph);
 static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph);
 static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_reference exemplar, vx_reference ref);
@@ -1076,12 +1076,12 @@ static void ownGraphLinkArrayElements(vx_graph graph)
 
 static void ownGraphLinkDataReferenceQueuesToNodeIndex(vx_graph graph,
                     tivx_data_ref_queue data_ref_q,
-                    vx_node node, uint32_t index)
+                    vx_node node, uint32_t idx)
 {
     uint32_t node_id, prm_id;
     vx_reference node_prm_ref;
 
-    node_prm_ref = ownNodeGetParameterRef(node, index);
+    node_prm_ref = ownNodeGetParameterRef(node, idx);
 
     /* find the (nodes,index) in the graph where node_prm_ref is used as input/output
      * and insert data ref q handle at those (nodes,index)
@@ -1240,13 +1240,13 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
 
 static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
             vx_node node,
-            uint32_t index,
+            uint32_t idx,
             tivx_data_ref_queue data_ref_q)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_reference ref = ownNodeGetParameterRef(
                             node,
-                            index);
+                            idx);
 
     if (ref != NULL)
     {
@@ -1264,7 +1264,7 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
                     node)
                     &&
                    ( delay->set[delay_slot_index].index ==
-                    index))
+                    idx))
                 {
                     delay_data_ref_q_list[delay_slot_index] = data_ref_q;
                 }
@@ -1336,7 +1336,7 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
         vx_reference node_ref;
         node_ref = (vx_reference)node;
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-        VX_PRINT(VX_ZONE_ERROR,"Graph parameter of node %s at index %d is NULL \n", node_ref->name, index);
+        VX_PRINT(VX_ZONE_ERROR,"Graph parameter of node %s at index %d is NULL \n", node_ref->name, idx);
     }
 
     return status;
@@ -1681,26 +1681,26 @@ static vx_status ownGraphCreateAndLinkDataReferenceQueues(vx_graph graph)
  * this function is called for non-graph parameters that are intermediate data objects
  * within a graph
  */
-static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t index)
+static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
 {
     vx_bool skip_add_data_ref_q = (vx_bool)vx_false_e;
     vx_status status = (vx_status)VX_SUCCESS;
     vx_reference param_ref;
 
-    param_ref = ownNodeGetParameterRef(node, index);
+    param_ref = ownNodeGetParameterRef(node, idx);
 
     /* Dont make a data ref queue if below is true
      * - if node parameter is input
      * - or if this is a leaf node
      *   - Note: exception here is if it is a delay b/c the delay slot in question
      *           may not be connected to another node
-     * - or no node reference specified at the node,index
+     * - or no node reference specified at the node,idx
      * Here no data ref queue is required since if user really wanted to access
-     * the data ref, user would have a graph parameter out of this node, index
+     * the data ref, user would have a graph parameter out of this node, idx
      */
-    if((ownNodeGetParameterDir(node, index) == (vx_enum)VX_INPUT) /* input parameter */
+    if((ownNodeGetParameterDir(node, idx) == (vx_enum)VX_INPUT) /* input parameter */
         || (param_ref == NULL) /* no reference specified at node,index */
-        || (   (ownGraphGetNumInNodes(graph, node, index) == 0U)
+        || (   (ownGraphGetNumInNodes(graph, node, idx) == 0U)
             && !((param_ref->delay != NULL) /* leaf parameter and not a delay */
             && (ownIsValidSpecificReference((vx_reference)param_ref->delay, (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e))
            )
@@ -1733,20 +1733,20 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
             vx_reference exemplar;
 
             graph->data_ref_q_list[graph->num_data_ref_q].node = node;
-            graph->data_ref_q_list[graph->num_data_ref_q].index = index;
+            graph->data_ref_q_list[graph->num_data_ref_q].index = idx;
             graph->data_ref_q_list[graph->num_data_ref_q].num_buf = 1;
             graph->data_ref_q_list[graph->num_data_ref_q].data_ref_queue = NULL;
-            graph->data_ref_q_list[graph->num_data_ref_q].refs_list[0] = ownNodeGetParameterRef(node, index);
+            graph->data_ref_q_list[graph->num_data_ref_q].refs_list[0] = ownNodeGetParameterRef(node, idx);
 
             /* if user has requested more than 1 buf at this node, then allocate the additional references */
-            num_buf = ownNodeGetParameterNumBuf(node, index);
+            num_buf = ownNodeGetParameterNumBuf(node, idx);
 
             if(num_buf>0U)
             {
                 uint32_t buf_id;
                 vx_bool is_replicated;
 
-                is_replicated = ownNodeIsPrmReplicated(node, index);
+                is_replicated = ownNodeIsPrmReplicated(node, idx);
 
                 exemplar = graph->data_ref_q_list[graph->num_data_ref_q].refs_list[0];
                 if(is_replicated != 0)

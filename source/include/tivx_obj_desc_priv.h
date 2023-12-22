@@ -457,7 +457,7 @@ typedef struct {
 /*!
  * \brief Allocate a Object descriptor
  *
- * \param type [in] Type of object descriptor to allocate, see \ref tivx_obj_desc_type_e
+ * \param ref_type [in] Type of object descriptor to allocate, see \ref tivx_obj_desc_type_e
  * \param ref [in] vx_reference that is associated with this object descriptor.
  *                  If not applicable set to NULL
  *
@@ -466,7 +466,7 @@ typedef struct {
  *
  * \ingroup group_tivx_obj_desc_priv
  */
-tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref);
+tivx_obj_desc_t *ownObjDescAlloc(vx_enum ref_type, vx_reference ref);
 
 /*!
  * \brief Free a previously allocated object descriptor
@@ -509,7 +509,7 @@ tivx_obj_desc_t *ownObjDescGet(uint16_t obj_desc_id);
  *
  * \ingroup group_tivx_obj_desc_priv
  */
-vx_bool ownObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e type);
+vx_bool ownObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e obj_type);
 
 /*!
  * \brief Init object descriptor module

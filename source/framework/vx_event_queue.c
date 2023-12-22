@@ -140,14 +140,14 @@ vx_status ownEventQueueAddEvent(tivx_event_queue_t *event_q,
 
     if((event_q != NULL) && (event_q->enable == (vx_bool)vx_true_e))
     {
-        uintptr_t index;
+        uintptr_t idx;
 
-        status = tivxQueueGet(&event_q->free_queue, &index, TIVX_EVENT_TIMEOUT_NO_WAIT);
-        if((status == (vx_status)VX_SUCCESS) && (index < TIVX_EVENT_QUEUE_MAX_SIZE))
+        status = tivxQueueGet(&event_q->free_queue, &idx, TIVX_EVENT_TIMEOUT_NO_WAIT);
+        if((status == (vx_status)VX_SUCCESS) && (idx < TIVX_EVENT_QUEUE_MAX_SIZE))
         {
             tivx_event_queue_elem_t *elem;
 
-            elem = &event_q->event_list[index];
+            elem = &event_q->event_list[idx];
 
             elem->event_id = event_id;
             elem->timestamp = timestamp;
@@ -156,11 +156,11 @@ vx_status ownEventQueueAddEvent(tivx_event_queue_t *event_q,
             elem->param2 = param2;
             elem->param3 = param3;
 
-            status = tivxQueuePut(&event_q->ready_queue, index, TIVX_EVENT_TIMEOUT_NO_WAIT);
+            status = tivxQueuePut(&event_q->ready_queue, idx, TIVX_EVENT_TIMEOUT_NO_WAIT);
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                ownLogSetResourceUsedValue("TIVX_EVENT_QUEUE_MAX_SIZE", (vx_uint16)index+1U);
+                ownLogSetResourceUsedValue("TIVX_EVENT_QUEUE_MAX_SIZE", (vx_uint16)idx+1U);
             }
         }
         if(status != (vx_status)VX_SUCCESS)
@@ -252,7 +252,7 @@ vx_status vxWaitEventQueue(
                     vx_bool do_not_block)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    uintptr_t index;
+    uintptr_t idx;
     uint32_t timeout;
 
     if((vx_bool)vx_true_e == do_not_block)
@@ -264,12 +264,12 @@ vx_status vxWaitEventQueue(
         timeout = TIVX_EVENT_TIMEOUT_WAIT_FOREVER;
     }
 
-    status = tivxQueueGet(&event_q->ready_queue, &index, timeout);
+    status = tivxQueueGet(&event_q->ready_queue, &idx, timeout);
 
-    if((status == (vx_status)VX_SUCCESS) && (index < TIVX_EVENT_QUEUE_MAX_SIZE))
+    if((status == (vx_status)VX_SUCCESS) && (idx < TIVX_EVENT_QUEUE_MAX_SIZE))
     {
         tivx_event_queue_elem_t *elem;
-        elem = &event_q->event_list[index];
+        elem = &event_q->event_list[idx];
 
         /* copy internal event info to user event structure */
         if(event!=NULL)
@@ -315,7 +315,7 @@ vx_status vxWaitEventQueue(
 
         /* release index into free queue,
          * this wont fail since the index was dequeued from free queue to begin with */
-        (void)tivxQueuePut(&event_q->free_queue, index, TIVX_EVENT_TIMEOUT_NO_WAIT);
+        (void)tivxQueuePut(&event_q->free_queue, idx, TIVX_EVENT_TIMEOUT_NO_WAIT);
     }
 
     return status;
@@ -332,27 +332,27 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref,
 }
 
 vx_status ownRegisterEvent(vx_reference ref,
-                enum tivx_queue_type_e queue_type, enum vx_event_type_e type,
+                enum tivx_queue_type_e queue_type, enum vx_event_type_e event_type,
                 vx_uint32 param, vx_uint32 app_value)
 {
     vx_status status = (vx_status)VX_ERROR_NOT_SUPPORTED;
 
     if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
-        if( ((vx_enum)type==(vx_enum)VX_EVENT_NODE_COMPLETED) ||
-            ((vx_enum)type==(vx_enum)VX_EVENT_NODE_ERROR) )
+        if( ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_COMPLETED) ||
+            ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_ERROR) )
         {
             vx_node node = (vx_node)ref;
 
             if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
             {
                 node->is_graph_event = (vx_bool)vx_true_e;
-                status = ownNodeRegisterEvent((vx_node)ref, (vx_enum)type, app_value);
+                status = ownNodeRegisterEvent((vx_node)ref, (vx_enum)event_type, app_value);
             }
             else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)
             {
                 node->is_context_event = (vx_bool)vx_true_e;
-                status = ownNodeRegisterEvent((vx_node)ref, (vx_enum)type, app_value);
+                status = ownNodeRegisterEvent((vx_node)ref, (vx_enum)event_type, app_value);
             }
             else
             {
@@ -363,12 +363,12 @@ vx_status ownRegisterEvent(vx_reference ref,
     else
     if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
-        if((vx_enum)type==(vx_enum)VX_EVENT_GRAPH_COMPLETED)
+        if((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_COMPLETED)
         {
             status = ownGraphRegisterCompletionEvent((vx_graph)ref, app_value);
         }
         else
-        if((vx_enum)type==(vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED)
+        if((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED)
         {
             status = ownGraphRegisterParameterConsumedEvent((vx_graph)ref, param, app_value);
         }

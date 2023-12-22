@@ -647,7 +647,7 @@ void ownTableDecrementValue(vx_enum resource_name)
 #endif
 }
 
-vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_t *stat)
+vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_t *stats)
 {
     vx_status status = (vx_status)VX_FAILURE;
 #ifdef TIVX_RESOURCE_LOG_ENABLE
@@ -658,7 +658,7 @@ vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_
         {
             if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
             {
-                *stat = g_tivx_resource_stats_table[i];
+                *stats = g_tivx_resource_stats_table[i];
                 status = (vx_status)VX_SUCCESS;
                 break;
             }

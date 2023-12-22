@@ -136,32 +136,32 @@ typedef struct _vx_reference {
  * \brief Create a reference object
  *
  * \param [in] context The context to which this reference will belong
- * \param [in] type    The \ref vx_type_e type desired.
+ * \param [in] ref_type    The \ref vx_type_e type desired.
  * \param [in] reftype The \ref tivx_reftype_e reference type desired.
  * \param [in] scope   The scope to which this reference belongs.
  *
  * \ingroup group_vx_reference
  */
-vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftype, vx_reference scope);
+vx_reference ownCreateReference(vx_context context, vx_enum ref_type, vx_enum reftype, vx_reference scope);
 
 /*! \brief Used to destroy a reference.
  * \param [in] ref The reference to release.
- * \param [in] type The \ref vx_type_e to check against.
+ * \param [in] ref_type The \ref vx_type_e to check against.
  * \param [in] reftype The \ref tivx_reftype_e reference type
  * \param [in] destructor The function to call after the total count has reached zero
  * \ingroup group_vx_reference
  */
 vx_status ownReleaseReferenceInt(vx_reference *ref,
-                        vx_enum type,
+                        vx_enum ref_type,
                         vx_enum reftype,
                         tivx_reference_callback_f destructor);
 
 /*! \brief Used to validate everything but vx_context, vx_image
  * \param [in] ref The reference to validate.
- * \param [in] type The \ref vx_type_e to check for.
+ * \param [in] ref_type The \ref vx_type_e to check for.
  * \ingroup group_vx_reference
  */
-vx_bool ownIsValidSpecificReference(vx_reference ref, vx_enum type);
+vx_bool ownIsValidSpecificReference(vx_reference ref, vx_enum ref_type);
 
 /*! \brief Lock the reference
  * \param [in] ref The reference to lock
@@ -191,22 +191,22 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype);
 
 /*! \brief This returns true if the type is within the definition of types in OpenVX.
  * \note VX_TYPE_INVALID is not valid for determining a type.
- * \param [in] type The \ref vx_type_e value.
+ * \param [in] ref_type The \ref vx_type_e value.
  * \ingroup group_vx_reference
  */
-vx_bool ownIsValidType(vx_enum type);
+vx_bool ownIsValidType(vx_enum ref_type);
 
 /**
  * \brief Init a reference object
  *
  * \param [in] ref     The reference
  * \param [in] context The context to which this reference will belong
- * \param [in] type    The \ref vx_type_e type desired.
+ * \param [in] ref_type    The \ref vx_type_e type desired.
  * \param [in] scope   The scope to which this reference belongs.
  *
  * \ingroup group_vx_reference
  */
-vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, vx_reference scope);
+vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum ref_type, vx_reference scope);
 
 
 /**
@@ -221,10 +221,10 @@ vx_bool ownIsValidReference(vx_reference ref);
 /*! \brief Used to initialize any vx_reference as a delay element
  * \param [in] ref The pointer to the reference object.
  * \param [in] d The delay to which the object belongs
- * \param [in] index the index in the delay
+ * \param [in] idx the index in the delay
  * \ingroup group_vx_reference
  */
-void ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 index);
+void ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 idx);
 
 /*! \brief Alloc memory associated with this reference, typically data reference
  * \ingroup group_vx_reference

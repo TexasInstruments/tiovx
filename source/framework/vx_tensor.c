@@ -33,7 +33,7 @@ static void ownInitTensorObject(
 static vx_bool ownIsValidTensorFormat(vx_enum data_type);
 static vx_status ownTensorCheckSizes(const volatile uint32_t *dimensions, const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions);
 static vx_size ownComputePatchSize (const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions);
-static void ownComputePositionsFromIndex(vx_size index, const vx_size * start, const vx_size * end,
+static void ownComputePositionsFromIndex(vx_size idx, const vx_size * start, const vx_size * end,
         const volatile uint32_t * tensor_stride, const vx_size * patch_stride,  vx_size number_of_dimensions,
         vx_size * tensor_pos, vx_size * patch_pos);
 static vx_uint32 ownComputePatchOffset(vx_size num_dims, const vx_size *dim_coordinate, const volatile uint32_t *strides);
@@ -136,13 +136,13 @@ static vx_size ownComputePatchSize (const vx_size * view_start, const vx_size * 
 }
 
 
-static void ownComputePositionsFromIndex(vx_size index, const vx_size * start, const vx_size * end,
+static void ownComputePositionsFromIndex(vx_size idx, const vx_size * start, const vx_size * end,
         const volatile uint32_t * tensor_stride, const vx_size * patch_stride,  vx_size number_of_dimensions,
         vx_size * tensor_pos, vx_size * patch_pos)
 {
     *tensor_pos = 0;
     *patch_pos = 0;
-    vx_size index_leftover = index;
+    vx_size index_leftover = idx;
     int32_t divisor = 1;
     vx_size i;
     for (i = 0; i < number_of_dimensions; i++)

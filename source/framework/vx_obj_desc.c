@@ -128,7 +128,7 @@ void ownObjDescInit(void)
     ownIpcRegisterHandler(ownObjDescIpcHandler);
 }
 
-tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref)
+tivx_obj_desc_t *ownObjDescAlloc(vx_enum ref_type, vx_reference ref)
 {
     tivx_obj_desc_t *obj_desc = NULL, *tmp_obj_desc = NULL;
     uint32_t i, idx, cpu_id;
@@ -162,7 +162,7 @@ tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref)
              *   concerned on time for now. */
             tivx_obj_desc_memset(tmp_obj_desc, 0, (uint32_t)sizeof(tivx_obj_desc_shm_entry_t));
 
-            tmp_obj_desc->type = (uint16_t)type;
+            tmp_obj_desc->type = (uint16_t)ref_type;
 
             g_obj_desc_table.last_alloc_index
                 = (idx+1U)%g_obj_desc_table.num_entries;
@@ -176,12 +176,13 @@ tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref)
             ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
             ownLogResourceAlloc("TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", 1);
-            ownTableIncrementValue(type);
+            ownTableIncrementValue(ref_type);
             /* init entry that is found */
             tmp_obj_desc->obj_desc_id = (uint16_t)idx;
             tmp_obj_desc->scope_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
             tmp_obj_desc->in_node_done_cnt = 0;
             tmp_obj_desc->element_idx = 0;
+            tmp_obj_desc->type = (uint16_t)ref_type;
             tmp_obj_desc->host_ref = (uint64_t)(uintptr_t)ref;
             for(cpu_id = 0; cpu_id<TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU; cpu_id++)
             {
@@ -248,12 +249,12 @@ tivx_obj_desc_t *ownObjDescGet(uint16_t obj_desc_id)
     return obj_desc;
 }
 
-vx_bool ownObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e type)
+vx_bool ownObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e obj_type)
 {
     vx_bool is_valid = (vx_bool)vx_false_e;
 
     if(    (NULL != obj_desc)
-        && (obj_desc->type == (uint32_t)type)
+        && (obj_desc->type == (uint32_t)obj_type)
         && (obj_desc->obj_desc_id < g_obj_desc_table.num_entries))
     {
         is_valid = (vx_bool)vx_true_e;

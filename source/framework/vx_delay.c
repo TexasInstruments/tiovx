@@ -107,16 +107,16 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
     vx_int32 delay_index = value->delay_slot_index;
     vx_bool status = (vx_bool)vx_true_e;
 
-    vx_int32 index = ((vx_int32)delay->index + (vx_int32)abs(delay_index)) % (vx_int32)delay->count;
+    vx_int32 idx = ((vx_int32)delay->index + (vx_int32)abs(delay_index)) % (vx_int32)delay->count;
 
-    if (delay->set[index].node == NULL) /* head is empty */
+    if (delay->set[idx].node == NULL) /* head is empty */
     {
-        delay->set[index].node = n;
-        delay->set[index].index = i;
+        delay->set[idx].node = n;
+        delay->set[idx].index = i;
     }
     else
     {
-        tivx_delay_param_t **ptr = &delay->set[index].next;
+        tivx_delay_param_t **ptr = &delay->set[idx].next;
         for(;;)
         {
             if (*ptr == NULL)
@@ -159,18 +159,18 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
     vx_int32 delay_index = value->delay_slot_index;
     vx_bool do_break;
 
-    vx_int32 index = delay_index;
+    vx_int32 idx = delay_index;
     vx_bool check_status = (vx_bool)vx_true_e;
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ( (delay->set[index].node == n) && (delay->set[index].index == i) ) /* head is a match */
+    if ( (delay->set[idx].node == n) && (delay->set[idx].index == i) ) /* head is a match */
     {
-        delay->set[index].node = NULL;
-        delay->set[index].index = 0;
+        delay->set[idx].node = NULL;
+        delay->set[idx].index = 0;
     }
     else
     {
-        tivx_delay_param_t **ptr = &delay->set[index].next;
+        tivx_delay_param_t **ptr = &delay->set[idx].next;
         tivx_delay_param_t *next = NULL;
         do_break = (vx_bool)vx_false_e;
         for(;;)

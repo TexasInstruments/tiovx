@@ -46,18 +46,18 @@ static vx_status ownDestructNode(vx_reference ref)
             /* remove, don't delete, all references from the node itself */
             for (p = 0; p < node->kernel->signature.num_parameters; p++)
             {
-                vx_reference ref = node->parameters[p];
-                if (NULL != ref)
+                vx_reference node_ref = node->parameters[p];
+                if (NULL != node_ref)
                 {
                     /* Remove the potential delay association */
-                    if (ref->delay!=NULL) {
-                        vx_bool res = ownRemoveAssociationToDelay(ref, node, p);
+                    if (node_ref->delay!=NULL) {
+                        vx_bool res = ownRemoveAssociationToDelay(node_ref, node, p);
                         if (res == (vx_bool)vx_false_e)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "Internal error removing delay association\n");
                         }
                     }
-                    status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_INTERNAL, NULL);
+                    status1 = ownReleaseReferenceInt(&node_ref, node_ref->type, (vx_enum)VX_INTERNAL, NULL);
 
                     if (status1 != (vx_status)VX_SUCCESS)
                     {
@@ -2255,13 +2255,13 @@ void ownNodeClearExecuteState(vx_node node, uint32_t pipeline_id)
     }
 }
 
-vx_status ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value)
+vx_status ownNodeSetParameter(vx_node node, vx_uint32 idx, vx_reference value)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (NULL != node->parameters[index]) {
-        status = ownReleaseReferenceInt(&node->parameters[index],
-            node->parameters[index]->type, (vx_enum)VX_INTERNAL, NULL);
+    if (NULL != node->parameters[idx]) {
+        status = ownReleaseReferenceInt(&node->parameters[idx],
+            node->parameters[idx]->type, (vx_enum)VX_INTERNAL, NULL);
         if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to destroy reference\n");
@@ -2270,25 +2270,25 @@ vx_status ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value)
     if(status == (vx_status)VX_SUCCESS)
     {
         (void)ownIncrementReference(value, (vx_enum)VX_INTERNAL);
-        node->parameters[index] = (vx_reference)value;
+        node->parameters[idx] = (vx_reference)value;
 
         /* Assign parameter descriptor id in the node */
-        node->obj_desc[0]->data_id[index] = ownReferenceGetObjDescId(value);
+        node->obj_desc[0]->data_id[idx] = ownReferenceGetObjDescId(value);
     }
     return status;
 }
 
-vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index)
+vx_node ownNodeGetNextNode(vx_node node, vx_uint32 idx)
 {
     vx_node next_node = NULL;
 
-    if((node) && (node->obj_desc[0]) && (index < node->obj_desc[0]->num_out_nodes))
+    if((node) && (node->obj_desc[0]) && (idx < node->obj_desc[0]->num_out_nodes))
     {
         tivx_obj_desc_node_t *next_node_obj_desc;
 
         next_node_obj_desc =
             (tivx_obj_desc_node_t *)
-                ownObjDescGet( node->obj_desc[0]->out_node_id[index] );
+                ownObjDescGet( node->obj_desc[0]->out_node_id[idx] );
 
         if(next_node_obj_desc != NULL)
         {
@@ -2298,17 +2298,17 @@ vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index)
     return next_node;
 }
 
-vx_node ownNodeGetNextInNode(vx_node node, vx_uint32 index)
+vx_node ownNodeGetNextInNode(vx_node node, vx_uint32 idx)
 {
     vx_node next_node = NULL;
 
-    if((node) && (node->obj_desc[0]) && (index < node->obj_desc[0]->num_in_nodes))
+    if((node) && (node->obj_desc[0]) && (idx < node->obj_desc[0]->num_in_nodes))
     {
         tivx_obj_desc_node_t *next_node_obj_desc;
 
         next_node_obj_desc =
             (tivx_obj_desc_node_t *)
-                ownObjDescGet( node->obj_desc[0]->in_node_id[index] );
+                ownObjDescGet( node->obj_desc[0]->in_node_id[idx] );
 
         if(next_node_obj_desc != NULL)
         {
@@ -2519,15 +2519,15 @@ void ownNodeLinkArrayElement(vx_node node, uint32_t prm_id)
     }
 }
 
-uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 index)
+uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 idx)
 {
     vx_uint32 num_buf = 0, num_pipeup_bufs = 0, sink_bufs = 0;
 
     if((node != NULL)
-      && (index < ownNodeGetNumParameters(node))
-      && ((vx_enum)VX_INPUT != ownNodeGetParameterDir(node, index)))
+      && (idx < ownNodeGetNumParameters(node))
+      && ((vx_enum)VX_INPUT != ownNodeGetParameterDir(node, idx)))
     {
-        num_buf = node->parameter_index_num_buf[index];
+        num_buf = node->parameter_index_num_buf[idx];
 
         sink_bufs = node->kernel->connected_sink_bufs - 1U;
 
@@ -2541,7 +2541,7 @@ uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 index)
     return num_buf;
 }
 
-vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, vx_uint32 num_buf)
+vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 idx, vx_uint32 num_buf)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -2554,12 +2554,12 @@ vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
         }
         if(status==(vx_status)VX_SUCCESS)
         {
-            if( (index < ownNodeGetNumParameters(node))
+            if( (idx < ownNodeGetNumParameters(node))
                 && (num_buf < TIVX_OBJ_DESC_QUEUE_MAX_DEPTH)
-                && ((vx_enum)VX_INPUT != ownNodeGetParameterDir(node, index))
+                && ((vx_enum)VX_INPUT != ownNodeGetParameterDir(node, idx))
                 )
             {
-                node->parameter_index_num_buf[index] = num_buf;
+                node->parameter_index_num_buf[idx] = num_buf;
             }
             else
             {
@@ -2576,17 +2576,17 @@ vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
     return status;
 }
 
-vx_status VX_API_CALL tivxGetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, vx_uint32 *num_buf)
+vx_status VX_API_CALL tivxGetNodeParameterNumBufByIndex(vx_node node, vx_uint32 idx, vx_uint32 *num_buf)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
-        if( (index < ownNodeGetNumParameters(node))
-            && ((vx_enum)VX_INPUT != ownNodeGetParameterDir(node, index))
+        if( (idx < ownNodeGetNumParameters(node))
+            && (ownNodeGetParameterDir(node, idx) == (vx_enum)VX_OUTPUT)
             )
         {
-            *(vx_uint32 *)num_buf = node->parameter_index_num_buf[index];
+            *(vx_uint32 *)num_buf = node->parameter_index_num_buf[idx];
         }
         else
         {

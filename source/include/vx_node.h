@@ -278,19 +278,19 @@ vx_bool ownNodeIsPrmReplicated(vx_node node, uint32_t prm_idx);
  *
  * \ingroup group_vx_node
  */
-vx_status ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value);
+vx_status ownNodeSetParameter(vx_node node, vx_uint32 idx, vx_reference value);
 
 /*! \brief Get next node at given output index
  *
  * \ingroup group_vx_node
  */
-vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index);
+vx_node ownNodeGetNextNode(vx_node node, vx_uint32 idx);
 
 /*! \brief Get next node at given input index
  *
  * \ingroup group_vx_node
  */
-vx_node ownNodeGetNextInNode(vx_node node, vx_uint32 index);
+vx_node ownNodeGetNextInNode(vx_node node, vx_uint32 idx);
 
 /*! \brief Register node completion event
  *
@@ -351,7 +351,7 @@ void ownNodeLinkArrayElement(vx_node node, uint32_t prm_id);
  *
  * \ingroup group_vx_node
  */
-uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 index);
+uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 idx);
 
 #ifdef __cplusplus
 }

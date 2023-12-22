@@ -311,7 +311,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                 node->kernel->signature.types[index]);
         }
     }
-
     return status;
 }
 

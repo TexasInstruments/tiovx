@@ -31,7 +31,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage);
 static vx_status ownDestructImage(vx_reference ref);
 static vx_status ownAllocImageBuffer(vx_reference ref);
 static void ownInitPlane(vx_image image,
-                 vx_uint32 index,
+                 vx_uint32 idx,
                  vx_uint32 size_of_ch,
                  vx_uint32 channels,
                  vx_uint32 width,
@@ -368,7 +368,7 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
 }
 
 static void ownInitPlane(vx_image image,
-                 vx_uint32 index,
+                 vx_uint32 idx,
                  vx_uint32 size_of_ch,
                  vx_uint32 channels,
                  vx_uint32 width,
@@ -386,7 +386,7 @@ static void ownInitPlane(vx_image image,
     {
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
-        imagepatch_addr = &obj_desc->imagepatch_addr[index];
+        imagepatch_addr = &obj_desc->imagepatch_addr[idx];
 
         imagepatch_addr->dim_x = width;
         imagepatch_addr->dim_y = height;
@@ -412,13 +412,13 @@ static void ownInitPlane(vx_image image,
 
         mem_size = ((vx_uint32)imagepatch_addr->stride_y*imagepatch_addr->dim_y)/step_y;
 
-        obj_desc->mem_size[index] = mem_size;
+        obj_desc->mem_size[idx] = mem_size;
 
-        obj_desc->mem_ptr[index].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
-        obj_desc->mem_ptr[index].host_ptr = (uint64_t)(uintptr_t)NULL;
-        obj_desc->mem_ptr[index].shared_ptr = (uint64_t)(uintptr_t)NULL;
+        obj_desc->mem_ptr[idx].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+        obj_desc->mem_ptr[idx].host_ptr = (uint64_t)(uintptr_t)NULL;
+        obj_desc->mem_ptr[idx].shared_ptr = (uint64_t)(uintptr_t)NULL;
 
-        image->mem_offset[index] = 0;
+        image->mem_offset[idx] = 0;
     }
 }
 
@@ -1586,13 +1586,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
             case (vx_enum)VX_IMAGE_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    vx_size size = 0U;
+                    vx_size img_size = 0U;
                     vx_uint32 p;
                     for (p = 0; p < obj_desc->planes; p++)
                     {
-                        size += obj_desc->mem_size[p];
+                        img_size += obj_desc->mem_size[p];
                     }
-                    *(vx_size *)ptr = size;
+                    *(vx_size *)ptr = img_size;
                 }
                 else
                 {

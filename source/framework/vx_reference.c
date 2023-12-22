@@ -414,14 +414,14 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
     return status;
 }
 
-vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, vx_reference scope)
+vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum ref_type, vx_reference scope)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
 
     if (ref != NULL)
     {
         ref->magic = TIVX_MAGIC;
-        ref->type = type;
+        ref->type = ref_type;
         ref->context = context;
         ref->internal_count = 0;
         ref->external_count = 0;
@@ -535,7 +535,7 @@ vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype)
 }
 
 vx_status ownReleaseReferenceInt(vx_reference *pref,
-                        vx_enum type,
+                        vx_enum ref_type,
                         vx_enum reftype,
                         tivx_reference_callback_f special_destructor)
 {
@@ -552,7 +552,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
         ref = NULL;
     }
 
-    if (ownIsValidSpecificReference(ref, type) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(ref, ref_type) == (vx_bool)vx_true_e)
     {
         if (ownDecrementReference(ref, reftype) == 0U)
         {
@@ -606,15 +606,15 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
     return status;
 }
 
-vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftype, vx_reference scope)
+vx_reference ownCreateReference(vx_context context, vx_enum ref_type, vx_enum reftype, vx_reference scope)
 {
-    vx_reference ref = (vx_reference)ownObjectAlloc(type);
+    vx_reference ref = (vx_reference)ownObjectAlloc(ref_type);
     vx_status status = (vx_status)VX_SUCCESS;
     vx_bool is_add = (vx_bool)vx_true_e;
 
     if (ref != NULL)
     {
-        status = ownInitReference(ref, context, type, scope);
+        status = ownInitReference(ref, context, ref_type, scope);
         if(status==(vx_status)VX_SUCCESS)
         {
             /* Setting it as void since return value 'ref count' is not used further */
@@ -650,13 +650,13 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
 
 
 
-vx_bool ownIsValidSpecificReference(vx_reference ref, vx_enum type)
+vx_bool ownIsValidSpecificReference(vx_reference ref, vx_enum ref_type)
 {
     vx_bool ret = (vx_bool)vx_false_e;
     if (ref != NULL)
     {
         if ((ref->magic == TIVX_MAGIC) &&
-            (ref->type == type) &&
+            (ref->type == ref_type) &&
             (ownIsValidContext(ref->context) == (vx_bool)vx_true_e))
         {
             ret = (vx_bool)vx_true_e;
@@ -665,26 +665,26 @@ vx_bool ownIsValidSpecificReference(vx_reference ref, vx_enum type)
     return ret;
 }
 
-vx_bool ownIsValidType(vx_enum type)
+vx_bool ownIsValidType(vx_enum ref_type)
 {
     vx_bool ret = (vx_bool)vx_false_e;
-    if (type <= (vx_enum)VX_TYPE_INVALID)
+    if (ref_type <= (vx_enum)VX_TYPE_INVALID)
     {
         ret = (vx_bool)vx_false_e;
     }
-    else if (TIVX_TYPE_IS_SCALAR(type)) /* some scalar */
+    else if (TIVX_TYPE_IS_SCALAR(ref_type)) /* some scalar */
     {
         ret = (vx_bool)vx_true_e;
     }
-    else if (TIVX_TYPE_IS_STRUCT(type)) /* some struct */
+    else if (TIVX_TYPE_IS_STRUCT(ref_type)) /* some struct */
     {
         ret = (vx_bool)vx_true_e;
     }
-    else if (TIVX_TYPE_IS_OBJECT(type)) /* some object */
+    else if (TIVX_TYPE_IS_OBJECT(ref_type)) /* some object */
     {
         ret = (vx_bool)vx_true_e;
     }
-    else if (TIVX_TYPE_IS_TI_OBJECT(type)) /* some object */
+    else if (TIVX_TYPE_IS_TI_OBJECT(ref_type)) /* some object */
     {
         ret = (vx_bool)vx_true_e;
     }
@@ -739,9 +739,9 @@ vx_status ownReferenceUnlock(vx_reference ref)
     return status;
 }
 
-void ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 slot_index) {
+void ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 idx) {
     ref->delay=d;
-    ref->delay_slot_index=slot_index;
+    ref->delay_slot_index=idx;
 }
 
 vx_status ownReferenceAllocMem(vx_reference ref)
@@ -1704,7 +1704,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
     return status;
 }
 
-vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t size[], uint32_t max_entries, uint32_t *num_entries)
+vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t size[], uint32_t max_num_entries, uint32_t *num_entries)
 {
     tivx_shared_mem_ptr_t  *mem_ptr;
     volatile uint32_t      *mem_size = NULL;
@@ -1730,9 +1730,9 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'size' is NULL.\n");
         status = (vx_status)VX_FAILURE;
     }
-    else if (max_entries == 0U)
+    else if (max_num_entries == 0U)
     {
-        VX_PRINT(VX_ZONE_ERROR, "The parameter 'max_entries' is 0.\n");
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'max_num_entries' is 0.\n");
         status = (vx_status)VX_FAILURE;
     }
     else if (num_entries == NULL)
@@ -1939,15 +1939,15 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
                 num_levels = obj_desc->num_levels;
                 pyramid    = (vx_pyramid)ref;
 
-                if (num_levels > max_entries)
+                if (num_levels > max_num_entries)
                 {
                     /* Having more handles than needed is OK but not the
                      * other way.
                      */
                     VX_PRINT(VX_ZONE_ERROR,
-                             "max_entries [%d] less than num "
+                             "max_num_entries [%d] less than num "
                              "levels of pyramid [%d].\n",
-                              max_entries, num_levels);
+                              max_num_entries, num_levels);
                     status = (vx_status)VX_FAILURE;
                 }
                 else

@@ -204,7 +204,7 @@ vx_meta_format ownCreateMetaFormat(vx_context context);
  *
  * \param [in] meta1 First meta format object to be compared.
  * \param [in] meta2 Second meta format object to be compared.
- * \param [in] type  Type of both meta format objects to be compared.
+ * \param [in] ref_type  Type of both meta format objects to be compared.
  *                   Note: this must be the same for each meta object. This information
  *                   cannot be extracted from the meta object because the type gets set
  *                   at verify time and this could be called prior.
@@ -213,7 +213,7 @@ vx_meta_format ownCreateMetaFormat(vx_context context);
  *
  * \ingroup group_int_meta_format
  */
-vx_bool ownIsMetaFormatEqual(vx_meta_format meta1, vx_meta_format meta2, vx_enum type);
+vx_bool ownIsMetaFormatEqual(vx_meta_format meta1, vx_meta_format meta2, vx_enum ref_type);
 
 #ifdef __cplusplus
 }

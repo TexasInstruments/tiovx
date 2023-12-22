@@ -277,13 +277,13 @@ int32_t ownGraphGetFreeNodeIndex(vx_graph graph);
  *
  * \param graph [in] graph object
  * \param node  [in] the node to add
- * \param index [in] the index in graph at which to add the node
+ * \param idx   [in] the index in graph at which to add the node
  *
  * \return VX_SUCCESS, on success
  *
  * \ingroup group_vx_graph
  */
-vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index);
+vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t idx);
 
 #if defined(BUILD_BAM)
 

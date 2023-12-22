@@ -198,15 +198,15 @@ vx_status ownTargetKernelInstanceFree(tivx_target_kernel_instance *target_kernel
 
 uint32_t ownTargetKernelInstanceGetIndex(tivx_target_kernel_instance target_kernel_instance)
 {
-    uint32_t index = TIVX_TARGET_KERNEL_INSTANCE_MAX;
+    uint32_t idx = TIVX_TARGET_KERNEL_INSTANCE_MAX;
 
     if((NULL != target_kernel_instance) &&
        (target_kernel_instance->index < (uint32_t)TIVX_TARGET_KERNEL_INSTANCE_MAX))
     {
-        index = target_kernel_instance->index;
+        idx = target_kernel_instance->index;
     }
 
-    return index;
+    return idx;
 }
 
 tivx_target_kernel tivxTargetKernelInstanceGetKernel(tivx_target_kernel_instance target_kernel_instance)

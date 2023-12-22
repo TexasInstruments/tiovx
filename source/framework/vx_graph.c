@@ -98,22 +98,22 @@ static vx_status ownDestructGraph(vx_reference ref)
     while (graph->num_nodes != 0U)
     {
         vx_node node = graph->nodes[0];
-        vx_reference ref;
+        vx_reference node_ref;
 
-        ref = (vx_reference)node;
+        node_ref = (vx_reference)node;
 
-        VX_PRINT(VX_ZONE_INFO,"Removing node %s\n", ref->name);
+        VX_PRINT(VX_ZONE_INFO,"Removing node %s\n", node_ref->name);
 
         status1 = vxRemoveNode(&node);
 
         if (status1 != (vx_status)VX_SUCCESS)
         {
-            VX_PRINT(VX_ZONE_ERROR, "removing node %s failed.\n", ref->name);
+            VX_PRINT(VX_ZONE_ERROR, "removing node %s failed.\n", node_ref->name);
             status = status1;
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO,"Done removing node %s\n", ref->name);
+            VX_PRINT(VX_ZONE_INFO,"Done removing node %s\n", node_ref->name);
         }
     }
 
@@ -205,13 +205,13 @@ int32_t ownGraphGetFreeNodeIndex(vx_graph graph)
     return free_index;
 }
 
-vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
+vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t idx)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
-        if( (index < (int32_t)TIVX_GRAPH_MAX_NODES) && (index == (int32_t)graph->num_nodes) )
+        if( (idx < (int32_t)TIVX_GRAPH_MAX_NODES) && (idx == (int32_t)graph->num_nodes) )
         {
             /* index MUST be graph->num_nodes, since that is what is returned via
                 ownGraphGetFreeNodeIndex() */
@@ -994,7 +994,7 @@ void ownSetGraphState(vx_graph graph, uint32_t pipeline_id, vx_enum state)
     }
 }
 
-vx_node tivxGraphGetNode(vx_graph graph, uint32_t index)
+vx_node tivxGraphGetNode(vx_graph graph, uint32_t idx)
 {
     vx_node node = NULL;
 
@@ -1002,9 +1002,9 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t index)
     {
         if(vxIsGraphVerified(graph) != 0)
         {
-            if( (index < TIVX_GRAPH_MAX_NODES) && (index < graph->num_nodes) )
+            if( (idx < TIVX_GRAPH_MAX_NODES) && (idx < graph->num_nodes) )
             {
-                node = graph->nodes[index];
+                node = graph->nodes[idx];
 
                 if(ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
                 {
@@ -1013,13 +1013,13 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t index)
                 else
                 {
                     node = NULL;
-                    VX_PRINT(VX_ZONE_ERROR, "invalid node object @ index %d\n", index);
+                    VX_PRINT(VX_ZONE_ERROR, "invalid node object @ index %d\n", idx);
                 }
             }
             else
             {
                 node = NULL;
-                VX_PRINT(VX_ZONE_ERROR, "node index %d not valid\n", index);
+                VX_PRINT(VX_ZONE_ERROR, "node index %d not valid\n", idx);
             }
         }
         else

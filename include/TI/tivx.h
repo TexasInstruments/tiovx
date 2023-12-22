@@ -491,7 +491,7 @@ vx_enum tivxGetSelfCpuId(void);
  * \brief Query resource for resource stats
  *
  * \param [in] resource_name Name of the resource to query
- * \param [out] stat Pointer to resource statistic returned from the query
+ * \param [out] stats Pointer to resource statistic returned from the query
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors.
@@ -499,7 +499,7 @@ vx_enum tivxGetSelfCpuId(void);
  *
  * \ingroup group_tivx_ext_host
  */
-vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_t *stat);
+vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_t *stats);
 
 /*!
  * \brief Prints out resource stats
@@ -705,12 +705,12 @@ vx_status VX_API_CALL tivxExportGraphToDot(vx_graph graph, const char *output_fi
  * in case any of above conditions are not met.
  *
  * \param [in] node Node reference
- * \param [in] index Node parameter index
+ * \param [in] idx Node parameter index
  * \param [in] num_buf Number of buffers to allocate
  *
  * \ingroup group_tivx_ext_host
  */
-vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, vx_uint32 num_buf);
+vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 idx, vx_uint32 num_buf);
 
 /*!
  * \brief Get number of buffers to allocate at output of a node parameter
@@ -728,12 +728,12 @@ vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
  * - The node parameter specified MUST be a output parameter.
  *
  * \param [in]  node Node reference
- * \param [in]  index Node parameter index
+ * \param [in]  idx Node parameter index
  * \param [out] num_buf Number of buffers allocated at output parameter
  *
  * \ingroup group_tivx_ext_host
  */
-vx_status VX_API_CALL tivxGetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, vx_uint32 *num_buf);
+vx_status VX_API_CALL tivxGetNodeParameterNumBufByIndex(vx_node node, vx_uint32 idx, vx_uint32 *num_buf);
 
 /*! \brief Indicates to the implementation the depth of the graph pipeline
  *
@@ -838,14 +838,14 @@ vx_status VX_API_CALL tivxNodeSendCommandTimed(vx_node node,
  *        Node returned by this API is not reference counted and should not be released by the user.
  *
  * \param [in] graph graph handle
- * \param [in] index  node index, value from 0 .. value returned by vxQueryGraph(VX_GRAPH_NUMNODES) - 1
+ * \param [in] idx  node index, value from 0 .. value returned by vxQueryGraph(VX_GRAPH_NUMNODES) - 1
  *
  * \return vx_node in case of success, else NULL
  *
  * \ingroup group_tivx_ext_host
  *
  */
-vx_node tivxGraphGetNode(vx_graph graph, uint32_t index);
+vx_node tivxGraphGetNode(vx_graph graph, uint32_t idx);
 
 /*!
  * \brief Sets attributes on the user data object
@@ -1047,7 +1047,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReferenceImportHandle(vx_reference ref, c
  * \param [in]  ref The reference object to export the handles from.
  * \param [out] addr An array of pointers for holding the handles.
  * \param [out] size An array of sizes corresponding to handles. The entries will be looked
- * \param [in]  max_entries Maximum number of entries to export.
+ * \param [in]  max_num_entries Maximum number of entries to export.
  * \param [out] num_entries Number of valid entries in addr[]. This should match the
  *                         number of handles expected to be maintained internally by 'ref'
  *                         (ex:- for an image object with multiple planes, num_extries > 1).
@@ -1062,7 +1062,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReferenceImportHandle(vx_reference ref, c
  * - The max number of handles specified is less than the number expected to be exported by the
  *   reference object.
  */
-VX_API_ENTRY vx_status VX_API_CALL tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t size[], uint32_t max_entries, uint32_t *num_entries);
+VX_API_ENTRY vx_status VX_API_CALL tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t size[], uint32_t max_num_entries, uint32_t *num_entries);
 
 
 /*! \brief Create reference from a exemplar object
