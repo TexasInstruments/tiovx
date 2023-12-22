@@ -66,7 +66,7 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                 matrix->base.destructor_callback = &ownDestructReferenceGeneric;
                 matrix->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 matrix->base.release_callback =
-                    (tivx_reference_release_callback_f)&vxReleaseMatrix;
+                    &ownReleaseReferenceBufferGeneric;
 
                 obj_desc = (tivx_obj_desc_matrix_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
@@ -170,7 +170,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             matrix->base.destructor_callback = &ownDestructReferenceGeneric;
             matrix->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
             matrix->base.release_callback =
-                (tivx_reference_release_callback_f)&vxReleaseMatrix;
+                &ownReleaseReferenceBufferGeneric;
 
             obj_desc = (tivx_obj_desc_matrix_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);

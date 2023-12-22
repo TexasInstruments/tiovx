@@ -206,7 +206,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
                 tensor->base.destructor_callback = &ownDestructReferenceGeneric;
                 tensor->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 tensor->base.release_callback =
-                    (tivx_reference_release_callback_f)&vxReleaseTensor;
+                   &ownReleaseReferenceBufferGeneric;
 
                 tensor->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_TENSOR, (vx_reference)tensor);

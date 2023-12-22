@@ -354,7 +354,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
         if ( (vxGetStatus((vx_reference)graph) == (vx_status)VX_SUCCESS) && (graph->base.type == (vx_enum)VX_TYPE_GRAPH) )
         {
             graph->base.destructor_callback = &ownDestructGraph;
-            graph->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseGraph;
+            graph->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
             graph->num_nodes = 0;
             graph->num_head_nodes = 0;

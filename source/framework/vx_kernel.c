@@ -430,7 +430,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                      * at which point we set the destructor callback so that it gets removed when all references
                      * are removed */
                     kernel->base.destructor_callback = NULL;
-                    kernel->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseKernel;
+                    kernel->base.release_callback = &ownReleaseReferenceBufferGeneric;
                     if(kernel->is_target_kernel == (vx_bool)vx_false_e)
                     {
                         /* for user kernel, add to HOST target by default */

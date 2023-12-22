@@ -70,17 +70,14 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
         if (((vx_bool)vx_true_e == ownIsValidObject(exemplar->type)) &&
             (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS))
         {
-            objarr = (vx_object_array)ownCreateReference(
-                context, (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, &context->base);
-
+            objarr = (vx_object_array)ownCreateReference(context, (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, &context->base);
             if ((vxGetStatus((vx_reference)objarr) == (vx_status)VX_SUCCESS) &&
                 (objarr->base.type == (vx_enum)VX_TYPE_OBJECT_ARRAY))
             {
                 /* assign refernce type specific callback's */
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
-                objarr->base.release_callback =
-                    (tivx_reference_release_callback_f)&vxReleaseObjectArray;
+                objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
                 objarr->base.obj_desc = ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
@@ -161,8 +158,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                 /* assign refernce type specific callback's */
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
-                objarr->base.release_callback =
-                    (tivx_reference_release_callback_f)&vxReleaseObjectArray;
+                objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
                 objarr->base.obj_desc = ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);

@@ -367,7 +367,7 @@ static void ownDelayInit(vx_delay delay, vx_size count, vx_enum type)
     delay->base.destructor_callback = &ownDestructDelay;
     delay->base.mem_alloc_callback = &ownAllocDelayBuffer;
     delay->base.release_callback =
-        (tivx_reference_release_callback_f)&vxReleaseDelay;
+        &ownReleaseReferenceBufferGeneric;
 }
 
 VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,

@@ -1441,7 +1441,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     /* assign refernce type specific callback's */
                     node->base.destructor_callback = &ownDestructNode;
                     node->base.mem_alloc_callback = NULL;
-                    node->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseNode;
+                    node->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
                     node->obj_desc[0] = (tivx_obj_desc_node_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_NODE, (vx_reference)node);
 

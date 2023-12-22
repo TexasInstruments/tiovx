@@ -116,7 +116,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseArray(vx_array *arr)
     return (ownReleaseReferenceInt(
         (vx_reference*)arr, (vx_enum)VX_TYPE_ARRAY, (vx_enum)VX_EXTERNAL, NULL));
 }
-
 vx_array VX_API_CALL vxCreateArray(
     vx_context context, vx_enum item_type, vx_size capacity)
 {
@@ -138,7 +137,7 @@ vx_array VX_API_CALL vxCreateArray(
                 arr->base.destructor_callback = &ownDestructReferenceGeneric;
                 arr->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 arr->base.release_callback =
-                    (tivx_reference_release_callback_f)&vxReleaseArray;
+                    &ownReleaseReferenceBufferGeneric;
 
                 arr->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_ARRAY, (vx_reference)arr);
@@ -190,7 +189,7 @@ vx_array VX_API_CALL vxCreateVirtualArray(
             arr->base.destructor_callback = &ownDestructReferenceGeneric;
             arr->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
             arr->base.release_callback =
-                (tivx_reference_release_callback_f)&vxReleaseArray;
+                &ownReleaseReferenceBufferGeneric;
 
             arr->base.obj_desc = (tivx_obj_desc_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_ARRAY, (vx_reference)arr);

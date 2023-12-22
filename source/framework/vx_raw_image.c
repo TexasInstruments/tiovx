@@ -490,7 +490,7 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
                 /* assign refernce type specific callback's */
                 raw_image->base.destructor_callback = &ownDestructRawImage;
                 raw_image->base.mem_alloc_callback = &ownAllocRawImageBuffer;
-                raw_image->base.release_callback = (tivx_reference_release_callback_f)&tivxReleaseRawImage;
+                raw_image->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
                 obj_desc = (tivx_obj_desc_raw_image_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE, (vx_reference)raw_image);
 

@@ -936,6 +936,168 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
     return status;
 }
 
+vx_status ownReleaseReferenceBufferGeneric(vx_reference *ref)
+{
+    vx_enum value = (vx_enum)(*ref)->type;
+    vx_status status; 
+
+    switch(value)
+    {
+        case (vx_enum)VX_TYPE_ARRAY:
+        {
+            vx_array *temp_arr;
+            temp_arr = (vx_array *)ref;
+            status = vxReleaseArray(temp_arr); 
+            break;
+        }   
+        case (vx_enum)VX_TYPE_CONTEXT: 
+        {
+            vx_context *temp_context;
+            temp_context = (vx_context *)ref;
+            status = vxReleaseContext(temp_context);
+            break;
+        }   
+        case (vx_enum)VX_TYPE_CONVOLUTION:
+        {
+            vx_convolution *temp_convol;
+            temp_convol = (vx_convolution *)ref;
+            status = vxReleaseConvolution(temp_convol);
+            break;
+        }
+        case(vx_enum)VX_TYPE_DELAY :
+        {
+            vx_delay *temp_del;
+            temp_del = (vx_delay*)ref;
+            status = vxReleaseDelay(temp_del);
+            break;
+        } 
+        case (vx_enum)VX_TYPE_DISTRIBUTION:
+        {
+            vx_distribution *temp_dist;
+            temp_dist = (vx_distribution *)ref;
+            status = vxReleaseDistribution(temp_dist); 
+            break;
+        }
+        case (vx_enum)VX_TYPE_GRAPH:
+        {
+            vx_graph *temp_graph;
+            temp_graph = (vx_graph *)ref;
+            status = vxReleaseGraph(temp_graph); 
+            break;
+        }
+        case (vx_enum)VX_TYPE_IMAGE:
+        {
+            vx_image *temp_image;
+            temp_image = (vx_image *)ref;
+            status = vxReleaseImage(temp_image);
+            break;
+        }
+        case (vx_enum)VX_TYPE_KERNEL:
+        {
+            vx_kernel *temp_kernel;
+            temp_kernel = (vx_kernel *)ref;
+            status = vxReleaseKernel(temp_kernel); 
+            break;
+        }
+        case (vx_enum)VX_TYPE_LUT:
+        {
+            vx_lut *temp_lut;
+            temp_lut = (vx_lut *)ref;
+            status = vxReleaseLUT(temp_lut); 
+            break;
+        }
+        case (vx_enum)VX_TYPE_MATRIX:
+        {
+            vx_matrix *temp_matrix;
+            temp_matrix = (vx_matrix *)ref;
+            status = vxReleaseMatrix(temp_matrix); 
+            break;
+        }
+        case (vx_enum)VX_TYPE_NODE:
+        {
+            vx_node *temp_node;
+            temp_node = (vx_node *)ref;
+            status = vxReleaseNode(temp_node);
+            break;
+        }
+        case (vx_enum)VX_TYPE_OBJECT_ARRAY:
+        {
+            vx_object_array *temp_objarr;  
+            temp_objarr = (vx_object_array *)ref;
+            status = vxReleaseObjectArray(temp_objarr);
+            break;
+        }
+        case (vx_enum)VX_TYPE_PARAMETER:
+        {
+            vx_parameter *temp_par;
+            temp_par = (vx_parameter *)ref;
+            status = vxReleaseParameter(temp_par);  
+            break;
+        }
+        case (vx_enum)VX_TYPE_PYRAMID:
+        {
+            vx_pyramid *temp_pyrmd;
+            temp_pyrmd = (vx_pyramid *)ref;
+            status = vxReleasePyramid(temp_pyrmd);  
+            break;
+        }
+        case (vx_enum)VX_TYPE_REMAP:
+        {
+            vx_remap *temp_remap;
+            temp_remap = (vx_remap *)ref;
+            status = vxReleaseRemap(temp_remap); 
+            break;
+        }
+        case (vx_enum)VX_TYPE_SCALAR:
+        {
+            vx_scalar *temp_scalar;
+            temp_scalar = (vx_scalar *)ref;
+            status = vxReleaseScalar(temp_scalar);
+            break;
+        }
+        case (vx_enum)VX_TYPE_THRESHOLD:
+        {
+            vx_threshold *temp_thresh;
+            temp_thresh = (vx_threshold *)ref;
+            status = vxReleaseThreshold(temp_thresh);
+            break;
+        }
+        case (vx_enum)VX_TYPE_TENSOR:
+        {
+            vx_tensor *temp_tensor;
+            temp_tensor = (vx_tensor *)ref;
+            status = vxReleaseTensor(temp_tensor); 
+            break;
+        }
+        case (vx_enum)TIVX_TYPE_DATA_REF_Q:
+        {
+            tivx_data_ref_queue *temp_ref;
+            temp_ref = (tivx_data_ref_queue *)ref;
+            status = ownDataRefQueueRelease(temp_ref); 
+            break;
+        }
+        case (vx_enum)TIVX_TYPE_RAW_IMAGE:
+        {
+            tivx_raw_image *temp_rwimage;
+            temp_rwimage = (tivx_raw_image *)ref;
+            status = tivxReleaseRawImage(temp_rwimage);
+            break;
+        }
+        case (vx_enum)VX_TYPE_USER_DATA_OBJECT :
+        {
+            vx_user_data_object *temp_usr_ob;
+            temp_usr_ob = (vx_user_data_object *)ref;
+            status = vxReleaseUserDataObject(temp_usr_ob); 
+            break;
+        }
+        default:
+            VX_PRINT(VX_ZONE_ERROR, "Invalid data type\n");
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS; 
+            break;
+    }    
+    return status;
+}
+
 VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
 {
     vx_context context = NULL;
@@ -982,7 +1144,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
             context->num_dynamic_user_library_id = 0;
             context->log_enabled = (vx_bool)vx_false_e;
             context->base.release_callback =
-                (tivx_reference_release_callback_f)&vxReleaseContext;
+                &ownReleaseReferenceBufferGeneric;
 
             status = tivxMutexCreate(&context->lock);
             if(status==(vx_status)VX_SUCCESS)

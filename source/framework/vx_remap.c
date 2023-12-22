@@ -45,7 +45,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                 /* assign refernce type specific callback's */
                 remap->base.destructor_callback = &ownDestructReferenceGeneric;
                 remap->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
-                remap->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseRemap;
+                remap->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
                 obj_desc = (tivx_obj_desc_remap_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_REMAP, (vx_reference)remap);
                 if(obj_desc==NULL)

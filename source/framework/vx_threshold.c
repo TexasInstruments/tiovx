@@ -42,7 +42,7 @@ vx_threshold VX_API_CALL vxCreateThreshold(
         {
             thresh = (vx_threshold)ownCreateReference(context, (vx_enum)VX_TYPE_THRESHOLD,
                 (vx_enum)VX_EXTERNAL, &context->base);
-
+                
             if ((vxGetStatus((vx_reference)thresh) == (vx_status)VX_SUCCESS) &&
                 (thresh->base.type == (vx_enum)VX_TYPE_THRESHOLD))
             {
@@ -50,7 +50,7 @@ vx_threshold VX_API_CALL vxCreateThreshold(
                 thresh->base.destructor_callback = &ownDestructReferenceGeneric;
                 thresh->base.mem_alloc_callback = &ownAllocThresholdBuffer;
                 thresh->base.release_callback =
-                    (tivx_reference_release_callback_f)&vxReleaseThreshold;
+                    &ownReleaseReferenceBufferGeneric;
 
                 obj_desc = (tivx_obj_desc_threshold_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_THRESHOLD, (vx_reference)thresh);

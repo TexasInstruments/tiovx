@@ -114,7 +114,7 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
             if ((vxGetStatus((vx_reference)parameter) == (vx_status)VX_SUCCESS) && (parameter->base.type == (vx_enum)VX_TYPE_PARAMETER))
             {
                 parameter->base.destructor_callback = &ownDestructParameter;
-                parameter->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseParameter;
+                parameter->base.release_callback = &ownReleaseReferenceBufferGeneric;
                 parameter->index = index;
                 parameter->node = NULL;
                 parameter->kernel = kernel;
@@ -152,7 +152,7 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uin
                 if ((vxGetStatus((vx_reference)param) == (vx_status)VX_SUCCESS) && (param->base.type == (vx_enum)VX_TYPE_PARAMETER))
                 {
                     param->base.destructor_callback = &ownDestructParameter;
-                    param->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseParameter;
+                    param->base.release_callback = &ownReleaseReferenceBufferGeneric;
                     param->index = index;
                     param->node = node;
                     /* Setting it void since return value 'count' not used further */

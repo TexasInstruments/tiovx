@@ -354,7 +354,6 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
     {
         ref = (tivx_data_ref_queue)ownCreateReference(graph->base.context,
             (vx_enum)TIVX_TYPE_DATA_REF_Q, (vx_enum)VX_INTERNAL, &graph->base);
-
         if ((vxGetStatus((vx_reference)ref) == (vx_status)VX_SUCCESS) &&
             (ref->base.type == (vx_enum)TIVX_TYPE_DATA_REF_Q))
         {
@@ -363,7 +362,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
             ref->base.destructor_callback = &ownDataRefQueueDestruct;
             ref->base.mem_alloc_callback = NULL;
             ref->base.release_callback =
-                (tivx_reference_release_callback_f)&ownDataRefQueueRelease;
+                &ownReleaseReferenceBufferGeneric;
 
             ref->pipeline_depth = prms->pipeline_depth;
 

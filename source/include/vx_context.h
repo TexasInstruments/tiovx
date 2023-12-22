@@ -273,6 +273,13 @@ vx_bool ownContextGetKernelRemoveLock(vx_context context);
  */
 void ownContextSetKernelRemoveLock(vx_context context, vx_bool do_lock);
 
+/*! \brief Common callback function.
+ * \param [in] ref The reference to release.
+ * \return A <tt>\ref vx_status_e</tt> enumeration
+ * \ingroup group_vx_reference
+ */
+vx_status ownReleaseReferenceBufferGeneric(vx_reference *ref);
+
 /*!
  * \brief Lock context
  *

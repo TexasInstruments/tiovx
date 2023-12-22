@@ -39,7 +39,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                 dist->base.destructor_callback = &ownDestructReferenceGeneric;
                 dist->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 dist->base.release_callback =
-                    (tivx_reference_release_callback_f)&vxReleaseDistribution;
+                    &ownReleaseReferenceBufferGeneric;
 
                 obj_desc = (tivx_obj_desc_distribution_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_DISTRIBUTION, (vx_reference)dist);
