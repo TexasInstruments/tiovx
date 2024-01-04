@@ -151,9 +151,9 @@ TEST(tivxKernel, negativeTestAddKernelTarget)
     char tname[] = {'t', 'i', 'o', 'v', 'x'};
     uint8_t i = 0, num_remaining_targets;
 
-    /* Note: this kernel is registered on 2 DSP's for J721E
+    /* Note: this kernel is registered on 2 DSP's for J721E/J722S
      * All other platforms have only 1 DSP target */
-    #if defined(SOC_J721E)
+    #if defined(SOC_J721E) || defined(SOC_J722S)
     num_remaining_targets = TIVX_MAX_TARGETS_PER_KERNEL-2;
     #else
     num_remaining_targets = TIVX_MAX_TARGETS_PER_KERNEL-1;

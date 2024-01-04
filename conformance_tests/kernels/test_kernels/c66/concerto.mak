@@ -24,9 +24,11 @@ include $(FINALE)
 
 endif
 
-ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J721S2 J784S4 AM62A))
+ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J721S2 J784S4 AM62A J722S))
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71 C7120 C7504))
+ifeq ($(TARGET_FAMILY),DSP)
+
+ifneq ($(TARGET_CPU),C66)
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_dsp
@@ -43,12 +45,12 @@ ifeq ($(BUILD_BAM),yes)
 DEFS += BUILD_BAM
 endif
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71 C7100 C7120 C7504))
 DEFS += C6X_MIGRATION _TMS320C6600
-endif
 
 include $(FINALE)
 
-endif
+endif # ifneq ($(TARGET_CPU),C66)
 
-endif
+endif # ifeq ($(TARGET_FAMILY),DSP)
+
+endif # ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J721S2 J784S4 AM62A J722S))

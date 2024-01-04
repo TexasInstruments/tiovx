@@ -369,3 +369,15 @@ void tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel)
     tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
     #endif
 }
+
+void tivxKernelsHostUtilsAddKernelTargetMcu(vx_kernel kernel)
+{
+    #if defined(SOC_AM62A)
+    tivxAddKernelTarget(kernel, TIVX_TARGET_MCU1_0);
+    #else
+    tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_0);
+    #ifndef SOC_J722S
+    tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_1);
+    #endif
+    #endif
+}

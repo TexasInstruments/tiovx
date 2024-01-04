@@ -189,10 +189,30 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms);
 /*!
  * \brief Function to add platform-specific DSP kernel target
  *
+ *        Cores which are assigned per SoC are below:
+ *            J721E:  \ref TIVX_TARGET_DSP1 and \ref TIVX_TARGET_DSP2
+ *            J721S2: \ref TIVX_TARGET_DSP1
+ *            J784S4: \ref TIVX_TARGET_DSP1
+ *            J722S:  \ref TIVX_TARGET_DSP1 and \ref TIVX_TARGET_DSP2
+ *            AM62A:  \ref TIVX_TARGET_DSP1
+ *
  * \ingroup group_tivx_ext_host_kernel
  */
 void tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel);
 
+/*!
+ * \brief Function to add platform-specific R5F kernel target
+ *
+ *        Cores which are assigned per SoC are below:
+ *            J721E:  \ref TIVX_TARGET_MCU2_0 and \ref TIVX_TARGET_MCU2_1
+ *            J721S2: \ref TIVX_TARGET_MCU2_0 and \ref TIVX_TARGET_MCU2_1
+ *            J784S4: \ref TIVX_TARGET_MCU2_0 and \ref TIVX_TARGET_MCU2_1
+ *            J722S:  \ref TIVX_TARGET_MCU2_0
+ *            AM62A:  \ref TIVX_TARGET_MCU1_0
+ *
+ * \ingroup group_tivx_ext_host_kernel
+ */
+void tivxKernelsHostUtilsAddKernelTargetMcu(vx_kernel kernel);
 
 /*!
  *  STATIC INLINE FUNCTION DEFINITIONS

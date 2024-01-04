@@ -217,12 +217,7 @@ vx_status tivxAddKernelScalarIntermediate2(vx_context context)
         if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
-            #if defined(SOC_AM62A)
-            tivxAddKernelTarget(kernel, TIVX_TARGET_MCU1_0);
-            #else
-            tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_0);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_1);
-            #endif
+            tivxKernelsHostUtilsAddKernelTargetMcu(kernel);
         }
         if (status == (vx_status)VX_SUCCESS)
         {

@@ -446,3 +446,38 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
     return status;
 }
 
+vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
+
+    #if defined(SOC_AM62A)
+    if (self_cpu == TIVX_CPU_ID_MCU1_0)
+    {
+        strncpy(target_name, TIVX_TARGET_MCU1_0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #else
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0 )
+    {
+        strncpy(target_name, TIVX_TARGET_MCU2_0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #ifndef SOC_J722S
+    else
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1 )
+    {
+        strncpy(target_name, TIVX_TARGET_MCU2_1, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #endif
+    #endif
+    else
+    {
+        status = (vx_status)VX_FAILURE;
+    }
+
+    return status;
+}

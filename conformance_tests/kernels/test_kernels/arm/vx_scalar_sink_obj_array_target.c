@@ -226,40 +226,9 @@ static vx_status VX_CALLBACK tivxScalarSinkObjArrayControl(
 
 void tivxAddTargetKernelScalarSinkObjArray(void)
 {
-    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
-    vx_enum self_cpu;
 
-    self_cpu = tivxGetSelfCpuId();
-
-    #if defined(SOC_AM62A)
-    if (self_cpu == TIVX_CPU_ID_MCU1_0)
-    {
-        strncpy(target_name, TIVX_TARGET_MCU1_0, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    #else
-    if ( (self_cpu == TIVX_CPU_ID_MCU2_0) ||
-          (self_cpu == TIVX_CPU_ID_MCU2_1))
-    {
-        if (self_cpu == TIVX_CPU_ID_MCU2_0)
-        {
-            strncpy(target_name, TIVX_TARGET_MCU2_0, TIVX_TARGET_MAX_NAME);
-            status = (vx_status)VX_SUCCESS;
-        }
-        else if (self_cpu == TIVX_CPU_ID_MCU2_1)
-        {
-            strncpy(target_name, TIVX_TARGET_MCU2_1, TIVX_TARGET_MAX_NAME);
-            status = (vx_status)VX_SUCCESS;
-        }
-    }
-    #endif
-    else
-    {
-        status = (vx_status)VX_FAILURE;
-    }
-
-    if (status == (vx_status)VX_SUCCESS)
+    if( (vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name))
     {
         vx_scalar_sink_obj_array_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_NAME,

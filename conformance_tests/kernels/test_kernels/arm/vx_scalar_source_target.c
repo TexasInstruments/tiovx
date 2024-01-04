@@ -67,6 +67,7 @@
 #include "tivx_kernel_scalar_source.h"
 #include "TI/tivx_target_kernel.h"
 #include <TI/tivx_task.h>
+#include "tivx_kernels_target_utils.h"
 
 typedef struct
 {
@@ -214,68 +215,9 @@ static vx_status VX_CALLBACK tivxScalarSourceDelete(
 
 void tivxAddTargetKernelScalarSource(void)
 {
-    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
-    vx_enum self_cpu;
 
-    self_cpu = tivxGetSelfCpuId();
-
-    #if defined(SOC_AM62A)
-    if (self_cpu == TIVX_CPU_ID_MCU1_0)
-    {
-        strncpy(target_name, TIVX_TARGET_MCU1_0, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    #else
-    if ( (self_cpu == TIVX_CPU_ID_MCU2_0) ||
-          (self_cpu == TIVX_CPU_ID_MCU2_1) ||
-          (self_cpu == TIVX_CPU_ID_MCU3_0) ||
-          (self_cpu == TIVX_CPU_ID_MCU3_1))
-    {
-        if (self_cpu == TIVX_CPU_ID_MCU2_0)
-        {
-            strncpy(target_name, TIVX_TARGET_MCU2_0, TIVX_TARGET_MAX_NAME);
-            status = (vx_status)VX_SUCCESS;
-        }
-        else if (self_cpu == TIVX_CPU_ID_MCU2_1)
-        {
-            strncpy(target_name, TIVX_TARGET_MCU2_1, TIVX_TARGET_MAX_NAME);
-            status = (vx_status)VX_SUCCESS;
-        }
-        else if (self_cpu == TIVX_CPU_ID_MCU3_0)
-        {
-            strncpy(target_name, TIVX_TARGET_MCU3_0, TIVX_TARGET_MAX_NAME);
-            status = (vx_status)VX_SUCCESS;
-        }
-        else if (self_cpu == TIVX_CPU_ID_MCU3_1)
-        {
-            strncpy(target_name, TIVX_TARGET_MCU3_1, TIVX_TARGET_MAX_NAME);
-            status = (vx_status)VX_SUCCESS;
-        }
-    }
-    #if defined(SOC_J784S4)
-    else if ( (self_cpu == TIVX_CPU_ID_MCU4_0) ||
-              (self_cpu == TIVX_CPU_ID_MCU4_1) )
-    {
-        if (self_cpu == TIVX_CPU_ID_MCU4_0)
-        {
-            strncpy(target_name, TIVX_TARGET_MCU4_0, TIVX_TARGET_MAX_NAME);
-            status = (vx_status)VX_SUCCESS;
-        }
-        else if (self_cpu == TIVX_CPU_ID_MCU4_1)
-        {
-            strncpy(target_name, TIVX_TARGET_MCU4_1, TIVX_TARGET_MAX_NAME);
-            status = (vx_status)VX_SUCCESS;
-        }
-    }
-    #endif
-    #endif
-    else
-    {
-        status = (vx_status)VX_FAILURE;
-    }
-
-    if (status == (vx_status)VX_SUCCESS)
+    if( (vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name))
     {
         vx_scalar_source_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_SCALAR_SOURCE_NAME,
