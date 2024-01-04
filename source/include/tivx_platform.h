@@ -84,7 +84,8 @@ extern "C" {
  */
 typedef enum {
 
-    /*! \brief Lock the shared object descriptor table */
+    /*! \brief Lock the shared object descriptor table during
+     *         object descriptor slot alloc and dealloc */
     TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE = 0,
 
     /*! \brief Lock the context during context create and delete */
@@ -212,6 +213,10 @@ void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size);
  *
  *        This locks is taken across all targets to mutual exclusion
  *        across targets
+ *
+ *        WARNING: No OS calls shall be made after calling this function
+ *        until the \ref ownPlatformSystemUnlock has been called due to the
+ *        chance that interrupts may be disabled during this duration.
  *
  * \ingroup group_tivx_platform
  */

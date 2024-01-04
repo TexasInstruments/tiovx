@@ -133,8 +133,19 @@ tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref)
     tivx_obj_desc_t *obj_desc = NULL, *tmp_obj_desc = NULL;
     uint32_t i, idx, cpu_id;
 
+    /* Since the object descriptor table is in memory shared across
+     * processors, and any processor can allocate an object descriptor
+     * from this memory, take a interprocessor lock while searching for
+     * and acquiring an open slot using a system lock that is spinlock
+     * enabled */
     ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
+    /* g_obj_desc_table is local to this process so last_alloc_index, may
+     * be different for each process, but this does not break functionality.
+     * last_alloc_index only acts as a time saver to minimize iterations
+     * through the table to look for open slots.  The loop below wraps around
+     * until an open slot is found, or all entries in the table have been
+     * traversed. */
     idx = g_obj_desc_table.last_alloc_index;
 
     for(i=0; i<g_obj_desc_table.num_entries; i++)
@@ -143,7 +154,27 @@ tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref)
 
         if((vx_enum)tmp_obj_desc->type==(vx_enum)TIVX_OBJ_DESC_INVALID)
         {
+            /* TIOVX-1463: Explore option to move the memset to somewhere else to minimize time
+             * holding the lock.
+             * - Other option is to move to both the ownObjDescFree and tivxPlatformResetObjDescTableInfo,
+             *   however the reset function runs on all RTOS cores, and they are not syncronized yet,
+             *   so this would need to be accounted for. Since this is done at init time, not too
+             *   concerned on time for now. */
             tivx_obj_desc_memset(tmp_obj_desc, 0, (uint32_t)sizeof(tivx_obj_desc_shm_entry_t));
+
+            tmp_obj_desc->type = (uint16_t)type;
+
+            g_obj_desc_table.last_alloc_index
+                = (idx+1U)%g_obj_desc_table.num_entries;
+
+            /* Once an open slot is found (via the type parameter), acquire the slot
+             * by updating the type parameter, and then release the lock as early as possible
+             * to unblock any other processors needing it.  It is safe to initialize the rest
+             * of the slot after releasing the lock since the lock is only protecting the
+             * type parameter of all the object descriptors in the table for the purposes of
+             * allocating and deallocating object descriptor slots in this file. */
+            ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
+
             ownLogResourceAlloc("TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", 1);
             ownTableIncrementValue(type);
             /* init entry that is found */
@@ -151,7 +182,6 @@ tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref)
             tmp_obj_desc->scope_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
             tmp_obj_desc->in_node_done_cnt = 0;
             tmp_obj_desc->element_idx = 0;
-            tmp_obj_desc->type = (uint16_t)type;
             tmp_obj_desc->host_ref = (uint64_t)(uintptr_t)ref;
             for(cpu_id = 0; cpu_id<TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU; cpu_id++)
             {
@@ -160,9 +190,6 @@ tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref)
             tmp_obj_desc->host_cpu_id  = (uint32_t)tivxGetSelfCpuId();
             tmp_obj_desc->timestamp = 0;
 
-            g_obj_desc_table.last_alloc_index
-                = (idx+1U)%g_obj_desc_table.num_entries;
-
             obj_desc = tmp_obj_desc;
             break;
         }
@@ -170,7 +197,11 @@ tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref)
         idx = (idx+1U)%g_obj_desc_table.num_entries;
     }
 
-    ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
+    if(NULL == obj_desc)
+    {
+        /* Release the lock in the case where no slots are available */
+        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
+    }
 
     return obj_desc;
 }
@@ -179,7 +210,9 @@ vx_status ownObjDescFree(tivx_obj_desc_t **obj_desc)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
-    ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
+    /* No lock is needed since the act of writing INVALID to the
+     * type field is atomic and after the write is done, any
+     * new allocation can be made on this slot */
 
     if((NULL != obj_desc) && (NULL != *obj_desc))
     {
@@ -199,8 +232,6 @@ vx_status ownObjDescFree(tivx_obj_desc_t **obj_desc)
             VX_PRINT(VX_ZONE_ERROR, "object descriptor ID is greater than number of object descriptor table entries\n");
         }
     }
-
-    ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
     return status;
 }
