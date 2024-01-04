@@ -399,7 +399,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
 
     self_cpu = tivxGetSelfCpuId();
 
-    #if defined(SOC_J721E)
+    #if defined(SOC_J721E) || defined(SOC_J722S)
     if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
         if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)

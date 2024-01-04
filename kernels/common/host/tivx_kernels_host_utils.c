@@ -365,7 +365,7 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
 void tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel)
 {
     tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
-    #if defined(SOC_J721E)
+    #if defined(SOC_J721E) || defined(SOC_J722S)
     tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
     #endif
 }
