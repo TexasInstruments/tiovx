@@ -209,11 +209,7 @@ vx_status ownDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_ui
         /* get queue object descriptor */
         queue_obj_desc_id = data_ref_q->done_q_obj_desc_id;
 
-        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
-
         status = ownObjDescQueueGetCount(queue_obj_desc_id, count);
-
-        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
     }
     return status;
 }
@@ -235,11 +231,7 @@ vx_status ownDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_u
         /* get queue object descriptor */
         queue_obj_desc_id = data_ref_q->ready_q_obj_desc_id;
 
-        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
-
         status = ownObjDescQueueGetCount(queue_obj_desc_id, count);
-
-        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
     }
     return status;
 }
