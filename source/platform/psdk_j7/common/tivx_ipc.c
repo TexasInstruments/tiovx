@@ -70,6 +70,15 @@ static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
 };
 #endif
 
+#if defined (SOC_J722S)
+static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
+    APP_IPC_CPU_C7x_1,
+    APP_IPC_CPU_C7x_2,
+    APP_IPC_CPU_MCU2_0,
+    APP_IPC_CPU_MPU1_0
+};
+#endif
+
 /*! \brief Pointer to the IPC notify event handler.
  *         It can be registered using #ownIpcRegisterHandler API
  * \ingroup group_tivx_ipc

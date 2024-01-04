@@ -71,8 +71,10 @@
 #include <soc/tivx_platform_psdk_j784s4.h>
 #elif defined(SOC_AM62A)
 #include <soc/tivx_platform_psdk_am62a.h>
+#elif defined(SOC_J722S)
+#include <soc/tivx_platform_psdk_j722s.h>
 #else
-#error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A
+#error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A, SOC_J722S
 #endif
 
 #endif

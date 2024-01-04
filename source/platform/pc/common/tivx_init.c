@@ -155,10 +155,11 @@ void tivxInit(void)
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
         tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetArmKernels();
-
+        #ifndef SOC_J722S
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
         tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetArmKernels();
+        #endif
         #endif
 
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);

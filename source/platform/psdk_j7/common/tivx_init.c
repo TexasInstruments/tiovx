@@ -95,8 +95,8 @@ static void tivxInitLocal(void)
     #endif
     #endif
 
-    #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A)
-    #if defined (C71) || defined (C7120) || defined (C7504)
+    #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A) || defined (SOC_J722S)
+    #if defined (C7X_FAMILY)
         tivxRegisterOpenVXCoreTargetKernels();
         #ifdef BUILD_TUTORIAL
         tivxRegisterTutorialTargetKernels();
@@ -116,8 +116,8 @@ static void tivxInitLocal(void)
     #endif
     #endif
 
-    #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A)
-    #if defined (C71) || defined (C7120) || defined (C7504)
+    #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A) || defined (SOC_J722S)
+    #if defined (C7X_FAMILY)
         tivxRegisterTestKernelsTargetDspKernels();
     #endif
     #endif
@@ -153,8 +153,8 @@ static void tivxDeInitLocal(void)
         #endif
         #endif
 
-        #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A)
-        #if defined (C71) || defined (C7120) || defined (C7504)
+        #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A) || defined (SOC_J722S)
+        #if defined (C7X_FAMILY)
             tivxUnRegisterOpenVXCoreTargetKernels();
             #ifdef BUILD_TUTORIAL
             tivxUnRegisterTutorialTargetKernels();
@@ -174,8 +174,8 @@ static void tivxDeInitLocal(void)
         #endif
         #endif
 
-        #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A)
-        #if defined (C71) || defined (C7120) || defined (C7504)
+        #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A) || defined (SOC_J722S)
+        #if defined (C7X_FAMILY)
             tivxUnRegisterTestKernelsTargetDspKernels();
         #endif
         #endif
