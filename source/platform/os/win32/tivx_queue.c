@@ -79,7 +79,18 @@ vx_status tivxQueueCreate(
         /*
          * init queue to 0's
          */
-        memset(queue, 0, sizeof(tivx_queue));
+        queue->cur_rd = 0;
+        queue->cur_wr = 0;
+        queue->count = 0;
+        queue->max_ele = 0;
+        (void)memset(&queue->queue, 0, sizeof(queue->queue));
+        (void)memset(&queue->block_rd, 0, sizeof(queue->block_rd));
+        (void)memset(&queue->block_wr, 0, sizeof(queue->block_wr));
+        (void)memset(&queue->lock, 0, sizeof(queue->lock));
+        (void)memset(&queue->context, 0, sizeof(queue->context));
+        queue->flags = 0;
+        queue->blockedOnGet = 0;
+        queue->blockedOnPut = 0;
 
         /*
          * init queue with user parameters
