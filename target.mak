@@ -66,4 +66,17 @@ else
         SYSIDIRS += $(ARP32CGT_ROOT)/include
         SYSLDIRS += $(ARP32CGT_ROOT)/lib
     endif
+
+    ifeq ($(TARGET_OS), $(filter $(TARGET_OS), FREERTOS SAFERTOS))
+        ifeq ($(RTOS_SDK),pdk)
+            SYSIDIRS += $(PDK_PATH)/packages
+            SYSIDIRS += $(PDK_PATH)/packages/ti/osal
+            SYSIDIRS += $(PDK_PATH)/packages/ti/drv
+        else
+            SYSIDIRS += $(MCU_PLUS_SDK_PATH)/source
+            SYSIDIRS += $(MCU_PLUS_SDK_PATH)/source/drivers
+            SYSIDIRS += $(MCU_PLUS_SDK_PATH)/source/kernel/dpl
+            SYSDEFS  += MCU_PLUS_SDK
+        endif
+    endif
 endif
