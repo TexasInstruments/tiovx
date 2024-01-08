@@ -101,6 +101,8 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     vx_size num_bins = 1;
     vx_int32 offset = 1;
     vx_uint32 range = 5;
+    vx_uint8  scalar_val = 0;
+    vx_scalar scalar = NULL;
 
     vx_matrix matrix = NULL;
     vx_enum data_type = VX_TYPE_INT8;
@@ -130,6 +132,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     EXPECT_VX_ERROR(dist = vxCreateDistribution(context, num_bins, offset, range), VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(matrix = vxCreateMatrix(context, data_type, cols, rows), VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(matrix = vxCreateMatrixFromPattern(context, VX_PATTERN_OTHER, cols, rows), VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_ERROR_NO_RESOURCES);
 
     ASSERT_EQ_VX_STATUS(VX_FAILURE, ownNodeKernelInitKernelName(node));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric((vx_reference)img));
