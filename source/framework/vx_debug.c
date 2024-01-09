@@ -109,10 +109,10 @@ void tivx_print(vx_enum zone, const char *format, ...)
     {
         uint32_t size;
         char string[1024];
-        va_list ap = {0};
+        va_list ap;
 
+        (void)memset(&ap, 0, sizeof(ap));
         (void)va_start(ap, format);
-
         (void)snprintf(string, sizeof(string), " %s:", find_zone_name(zone));
         size = (uint32_t)strlen(string);
         (void)vsnprintf(&string[size], sizeof(string)-size, format, ap);
@@ -120,7 +120,4 @@ void tivx_print(vx_enum zone, const char *format, ...)
         va_end(ap);
     }
 }
-
-
-
 
