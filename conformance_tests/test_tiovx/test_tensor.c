@@ -474,6 +474,7 @@ TEST(tivxTensor, negativeTestQueryTensor)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryTensor(tensor, TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryTensor(tensor, TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION, &udata, sizeof(vx_uint8)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryTensor(tensor, attribute, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryTensor(tensor, TIVX_TENSOR_STRIDES, &udata, size));
     VX_CALL(vxReleaseTensor(&tensor));
 }
 

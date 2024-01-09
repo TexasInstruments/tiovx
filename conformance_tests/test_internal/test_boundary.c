@@ -107,12 +107,18 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     vx_matrix matrix = NULL;
     vx_enum data_type = VX_TYPE_INT8;
 
+    // For Tensor
+    vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS;
+    vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_enum dt = VX_TYPE_UINT8;
+    vx_int8 fpp = 0;
+
     ASSERT_VX_OBJECT(conv = vxCreateConvolution(context, cols, rows), VX_TYPE_CONVOLUTION);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownAllocReferenceBufferGeneric((vx_reference)conv));
     VX_CALL(vxReleaseConvolution(&conv));
 
     vx_graph graph = NULL;
-
+    vx_tensor tensor;
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     img = (vx_image)ownCreateReference(context, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, &context->base);
@@ -133,6 +139,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     EXPECT_VX_ERROR(matrix = vxCreateMatrix(context, data_type, cols, rows), VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(matrix = vxCreateMatrixFromPattern(context, VX_PATTERN_OTHER, cols, rows), VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(tensor = vxCreateTensor(context, nod, dims, dt, fpp), VX_ERROR_NO_RESOURCES);
 
     ASSERT_EQ_VX_STATUS(VX_FAILURE, ownNodeKernelInitKernelName(node));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric((vx_reference)img));
