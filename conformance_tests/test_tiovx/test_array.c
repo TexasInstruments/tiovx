@@ -406,18 +406,53 @@ TEST(tivxArray, negativeTestOwnAllocArrayBuffer)
     VX_CALL(vxReleaseArray(&array));
 }
 
+typedef struct _own_struct
+{
+    vx_uint32  var1;
+    vx_float64 var2;
+} own_struct;
+
+TEST(tivxArray, test_ownGetArrayItemSize)
+{
+    vx_context context = context_->vx_context_;
+    vx_enum item_type = VX_TYPE_INVALID;
+    vx_array array = NULL;
+    vx_size capacity = 2;
+
+    for (int i = 0; i < 2; i++)
+    {
+        item_type = vxRegisterUserStruct(context, sizeof(own_struct));
+        ASSERT(item_type != VX_TYPE_INVALID);
+    }
+
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, capacity), VX_TYPE_ARRAY);
+
+    VX_CALL(vxReleaseArray(&array));
+}
+
+TEST(tivxArray, negativeTestownIsValidArrayItemType)
+{
+    vx_context context = context_->vx_context_;
+    vx_enum item_type = VX_TYPE_INVALID;
+    vx_size capacity = 2;
+
+    ASSERT(NULL == vxCreateArray(context, item_type, capacity));
+}
+
 TESTCASE_TESTS(
     tivxArray,
     test_vxCopyArrayRangeRead,
     test_vxCopyArrayRangeWrite,
     test_vxMapArrayRangeWrite,
+    test_ownGetArrayItemSize,
     negativeTestQueryArray,
     negativeTestAddArrayItems,
     negativeTestTruncateArray,
     negativeTestCopyArrayRange,
     negativeTestMapUnmapArrayRange,
     negativeTestCreateArray,
-    negativeTestCreateVirtualArray/*,
+    negativeTestCreateVirtualArray,/*,
     negativeTestOwnAllocArrayBuffer*/
+    negativeTestownIsValidArrayItemType
 )
 
