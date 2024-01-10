@@ -87,7 +87,7 @@ extern "C" {
 #define TIVX_PLATFORM_MAX_TARGETS            (43u)
 #elif defined (SOC_AM62A)
 #define TIVX_PLATFORM_MAX_TARGETS            (24u)
-#elif defined (SOC_J72SS2)
+#elif defined (SOC_J722S)
 #define TIVX_PLATFORM_MAX_TARGETS            (44u)
 #endif
 
