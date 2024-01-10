@@ -329,6 +329,59 @@ extern "C" {
     {TIVX_TARGET_HOST, 11},                                   \
 }
 
+#elif defined (SOC_J722S)
+
+/*! \brief Mapping of Target names with Target Ids
+ *   Used to initialize internal structure
+ *
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_TARGET_INFO                                      \
+{                                                             \
+    {TIVX_TARGET_DSP1, 0},                                    \
+    {TIVX_TARGET_DSP_C7_1, 1},                                \
+    {TIVX_TARGET_DSP_C7_1_PRI_2, 2},                          \
+    {TIVX_TARGET_DSP_C7_1_PRI_3, 3},                          \
+    {TIVX_TARGET_DSP_C7_1_PRI_4, 4},                          \
+    {TIVX_TARGET_DSP_C7_1_PRI_5, 5},                          \
+    {TIVX_TARGET_DSP_C7_1_PRI_6, 6},                          \
+    {TIVX_TARGET_DSP_C7_1_PRI_7, 7},                          \
+    {TIVX_TARGET_DSP_C7_1_PRI_8, 8},                         \
+    {TIVX_TARGET_DSP2, 9},                                    \
+    {TIVX_TARGET_DSP_C7_2, 10},                               \
+    {TIVX_TARGET_DSP_C7_2_PRI_2, 11},                         \
+    {TIVX_TARGET_DSP_C7_2_PRI_3, 12},                         \
+    {TIVX_TARGET_DSP_C7_2_PRI_4, 13},                         \
+    {TIVX_TARGET_DSP_C7_2_PRI_5, 14},                         \
+    {TIVX_TARGET_DSP_C7_2_PRI_6, 15},                         \
+    {TIVX_TARGET_DSP_C7_2_PRI_7, 16},                         \
+    {TIVX_TARGET_DSP_C7_2_PRI_8, 17},                         \
+    {TIVX_TARGET_IPU1_0, 18},                                 \
+    {TIVX_TARGET_MCU2_0, 19},                                 \
+    {TIVX_TARGET_MPU_0, 20},                                  \
+    {TIVX_TARGET_MPU_1, 21},                                  \
+    {TIVX_TARGET_MPU_2, 22},                                  \
+    {TIVX_TARGET_MPU_3, 23},                                  \
+    {TIVX_TARGET_VPAC_LDC1, 24},                              \
+    {TIVX_TARGET_VPAC_MSC1, 25},                              \
+    {TIVX_TARGET_VPAC_MSC2, 26},                              \
+    {TIVX_TARGET_VPAC_VISS1, 27},                             \
+    {TIVX_TARGET_CAPTURE1, 28},                              \
+    {TIVX_TARGET_CAPTURE2, 29},                              \
+    {TIVX_TARGET_DISPLAY1, 30},                              \
+    {TIVX_TARGET_DISPLAY2, 31},                              \
+    {TIVX_TARGET_CSITX, 32},                                 \
+    {TIVX_TARGET_CSITX2, 33},                                \
+    {TIVX_TARGET_CAPTURE3, 34},                              \
+    {TIVX_TARGET_CAPTURE4, 35},                              \
+    {TIVX_TARGET_DMPAC_SDE, 36},                             \
+    {TIVX_TARGET_DMPAC_DOF, 37},                             \
+    /* TIVX_TARGET_HOST should point to the number associated with  \
+     * the host target thread in list above                         \
+     */                                                             \
+    {TIVX_TARGET_HOST, 20},                                   \
+}
+
 #endif
 
 
