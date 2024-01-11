@@ -9,7 +9,12 @@ STATIC_LIBS += vx_vxu
 
 STATIC_LIBS += vx_utils
 STATIC_LIBS += vx_target_kernels_ivision_common
+
+ifeq ($(SOC), j722s)
+STATIC_LIBS += C7524-MMA2_256-host-emulation
+else
 STATIC_LIBS += $(C7X_VERSION)-host-emulation
+endif
 
 SYS_SHARED_LIBS += rt dl png z
 
