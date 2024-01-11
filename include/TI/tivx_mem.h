@@ -160,7 +160,15 @@ typedef enum _tivx_mem_heap_region_e
      *  as well as applications.  Must be reset and allocated
      *  each time it is used.
      */
-    TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE
+    TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE,
+    /*! \brief External cacheable memory with write through policy
+     *
+     *  Typically used when only one core needs to RW the memory,
+     *  and a DMA needs to read what was written.  In this case,
+     *  time is saved by avoiding a cache write back operation before
+     *  triggering a DMA read of the memory.
+     */
+    TIVX_MEM_EXTERNAL_CACHEABLE_WT
 
 } tivx_mem_heap_region_e;
 
