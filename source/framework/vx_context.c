@@ -70,7 +70,8 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
     else
 #endif
     {
-        if((vx_status)VX_SUCCESS != ownContextLock(context))
+        status = ownContextLock(context);
+        if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
         }
@@ -93,11 +94,10 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
                     break;
                 }
             }
-        }
-
-        if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+            }
         }
     }
 
@@ -546,7 +546,8 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
     else
 #endif
     {
-        if((vx_status)VX_SUCCESS != ownContextLock(context))
+        status = ownContextLock(context);
+        if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
         }
@@ -603,7 +604,8 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
     else
 #endif
     {
-        if((vx_status)VX_SUCCESS != ownContextLock(context))
+        status = ownContextLock(context);
+        if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
         }
@@ -669,7 +671,8 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
     }
     else
     {
-        if((vx_status)VX_SUCCESS != ownContextLock(context))
+        status = ownContextLock(context);
+        if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
         }
@@ -681,8 +684,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
             for(idx=0; idx<dimof(context->kerneltable); idx++)
             {
                 kernel = context->kerneltable[idx];
-                if((ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) ==
-                        (vx_bool)vx_true_e)
+                if((ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) ==(vx_bool)vx_true_e)
                     &&
                     ( (strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0)
                         ||
@@ -696,11 +698,10 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
                 }
 
             }
-        }
-
-        if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+            }
         }
     }
 
@@ -1610,7 +1611,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) &&
         (size != 0U))
     {
-        if((vx_status)VX_SUCCESS != ownContextLock(context))
+        if((vx_status)VX_SUCCESS !=  ownContextLock(context))
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
         }
@@ -1650,7 +1651,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
     {
         uint32_t idx;
 
-        if((vx_status)VX_SUCCESS != ownContextLock(context))
+        status = ownContextLock(context);
+        if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
         }
@@ -1669,11 +1671,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
                     break;
                 }
             }
-        }
-
-        if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+            }
         }
     }
     return status;
@@ -1686,7 +1687,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
     {
         uint32_t idx;
 
-        if((vx_status)VX_SUCCESS != ownContextLock(context))
+        status = ownContextLock(context);
+        if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
         }
@@ -1705,11 +1707,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
                     break;
                 }
             }
-        }
-
-        if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+            }
         }
     }
     return status;
@@ -1720,7 +1721,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if((vx_status)VX_SUCCESS != ownContextLock(context))
+        status = ownContextLock(context);
+        if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
         }
@@ -1755,11 +1757,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
                     status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     break;
             }
-        }
-
-        if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
+            }
         }
     }
     return status;
