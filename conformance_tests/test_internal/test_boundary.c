@@ -115,6 +115,9 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
 
     vx_array array = NULL;
 
+    vx_lut lut = NULL;
+    vx_size count = 0;
+
     ASSERT_VX_OBJECT(conv = vxCreateConvolution(context, cols, rows), VX_TYPE_CONVOLUTION);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownAllocReferenceBufferGeneric((vx_reference)conv));
     VX_CALL(vxReleaseConvolution(&conv));
@@ -144,6 +147,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     EXPECT_VX_ERROR(tensor = vxCreateTensor(context, nod, dims, dt, fpp), VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(array = vxCreateArray(context, VX_TYPE_ARRAY, 1),VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(array = vxCreateVirtualArray(graph, VX_TYPE_KEYPOINT, 1),VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(lut = vxCreateLUT(context, data_type, count), VX_ERROR_NO_RESOURCES);
 
     ASSERT_EQ_VX_STATUS(VX_FAILURE, ownNodeKernelInitKernelName(node));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric((vx_reference)img));
