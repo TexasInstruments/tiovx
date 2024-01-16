@@ -22,4 +22,5 @@ TESTCASE(tivxInternalObjArray)
 TESTCASE(tivxInternalApis)
 TESTCASE(tivxInternalObjects)
 TESTCASE(tivxInternalContext)
+TESTCASE(tivxInternalUserDataObject)
 #endif
