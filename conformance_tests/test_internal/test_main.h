@@ -21,4 +21,5 @@ TESTCASE(tivxObjDescBoundary)
 TESTCASE(tivxInternalObjArray)
 TESTCASE(tivxInternalApis)
 TESTCASE(tivxInternalObjects)
+TESTCASE(tivxInternalContext)
 #endif

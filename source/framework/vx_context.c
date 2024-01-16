@@ -1611,7 +1611,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) &&
         (size != 0U))
     {
-        if((vx_status)VX_SUCCESS !=  ownContextLock(context))
+        if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to lock context\n");
         }
