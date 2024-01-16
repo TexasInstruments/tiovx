@@ -1918,7 +1918,7 @@ TEST(tivxMem, testReferenceExportNeg)
     }
 
     /* Run the loop with [0..(numEntries+1)] values. */
-    for (i = 0; i < numEntries+2; i++)
+    for (i = 0; i < maxNumAddr+2; i++)
     {
         vx_status expected;
 
@@ -1949,7 +1949,7 @@ TEST(tivxMem, testReferenceExportNeg)
 cleanup:
 
     /* Free the object. */
-    vxStatus = testTivxMemFreeObject(ref, type, 0, numEntries);
+    vxStatus = testTivxMemFreeObject(ref, type, 0, maxNumAddr);
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
