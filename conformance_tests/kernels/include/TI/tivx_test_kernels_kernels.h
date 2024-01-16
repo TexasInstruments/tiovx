@@ -140,6 +140,11 @@ extern "C" {
  */
 #define TIVX_KERNEL_SCALAR_INTERMEDIATE_2_NAME     "com.ti.test_kernels.scalar_intermediate_2"
 
+/*! \brief test_target kernel name
+ *  \see group_vision_function_tmp
+ */
+#define TIVX_KERNEL_TEST_TARGET_NAME     "com.ti.test_kernels.test_target"
+
 /*! End of group_vision_function_test_kernels */
 
 /*!

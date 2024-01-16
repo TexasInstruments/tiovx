@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2024 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,44 +60,24 @@
  *
  */
 
-#include <TI/tivx.h>
-#include <TI/tivx_target_kernel.h>
-#include "tivx_test_kernels_kernels.h"
-#include "tivx_kernels_target_utils.h"
+#ifndef _TIVX_KERNEL_TEST_TARGET_
+#define _TIVX_KERNEL_TEST_TARGET_
 
-#ifdef BUILD_BAM
-void tivxAddTargetKernelBamNotNot(void);
-void tivxAddTargetKernelTestTarget(void);
-#else
-void tivxAddTargetKernelNotNot(void);
-void tivxAddTargetKernelTestTarget(void);
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-#ifdef BUILD_BAM
-void tivxRemoveTargetKernelBamNotNot(void);
-void tivxRemoveTargetKernelTestTarget(void);
-#else
-void tivxRemoveTargetKernelNotNot(void);
-void tivxRemoveTargetKernelTestTarget(void);
-#endif
 
-static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-#ifdef BUILD_BAM
-    {&tivxAddTargetKernelBamNotNot, &tivxRemoveTargetKernelBamNotNot},
-    {&tivxAddTargetKernelTestTarget, &tivxRemoveTargetKernelTestTarget},
-#else
-    {&tivxAddTargetKernelNotNot, &tivxRemoveTargetKernelNotNot},
-    {&tivxAddTargetKernelTestTarget, &tivxRemoveTargetKernelTestTarget},
-#endif
-};
+#define TIVX_KERNEL_TEST_TARGET_INPUT_IDX (0U)
+#define TIVX_KERNEL_TEST_TARGET_OUTPUT_IDX (1U)
 
-void tivxRegisterTestKernelsTargetDspKernels(void)
-{
-    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+#define TIVX_KERNEL_TEST_TARGET_MAX_PARAMS (2U)
+
+#ifdef __cplusplus
 }
+#endif
 
-void tivxUnRegisterTestKernelsTargetDspKernels(void)
-{
-    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
-}
+
+#endif /* _TIVX_KERNEL_TEST_TARGET_ */
+
 

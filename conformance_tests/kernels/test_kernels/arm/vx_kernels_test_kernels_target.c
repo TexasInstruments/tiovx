@@ -69,9 +69,12 @@ void tivxRemoveTargetKernelBamCmdTimeoutTest(void);
 void tivxRemoveTargetKernelCmdTimeoutTest(void);
 void tivxAddTargetKernelNotNot_arm(void);
 void tivxRemoveTargetKernelNotNot_arm(void);
+void tivxAddTargetKernelTestTarget(void);
+void tivxRemoveTargetKernelTestTarget(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelCmdTimeoutTest, &tivxRemoveTargetKernelCmdTimeoutTest},
+    {&tivxAddTargetKernelTestTarget, &tivxRemoveTargetKernelTestTarget},
 #if defined(LINUX) || defined(QNX)
     {&tivxAddTargetKernelNotNot_arm, &tivxRemoveTargetKernelNotNot_arm},
 #endif

@@ -61,3 +61,4 @@
  */
 
 TESTCASE(tivxObjArraySplit)
+TESTCASE(tivxTargetFinal)

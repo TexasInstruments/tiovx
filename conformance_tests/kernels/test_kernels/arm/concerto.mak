@@ -5,8 +5,8 @@ include $(PRELUDE)
 TARGET      := vx_target_kernels_source_sink
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
-IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include
-IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/test_kernels/include
+IDIRS       += $(TIOVX_PATH)/conformance_tests/kernels/include
+IDIRS       += $(TIOVX_PATH)/conformance_tests/kernels/test_kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
 
 include $(FINALE)

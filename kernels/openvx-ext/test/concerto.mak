@@ -8,6 +8,8 @@ TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(TIOVX_PATH)/conformance_tests
 IDIRS       += $(TIOVX_PATH)/conformance_tests/test_tiovx
+IDIRS       += $(TIOVX_PATH)/conformance_tests/kernels/include
+IDIRS       += $(TIOVX_PATH)/conformance_tests/kernels/test_kernels/include
 IDIRS       += $(TIOVX_PATH)/utils/include
 IDIRS       += $(APP_UTILS_PATH)/
 
