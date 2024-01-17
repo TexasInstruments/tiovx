@@ -160,7 +160,8 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
     vx_bool do_break;
 
     vx_int32 index = delay_index;
-    vx_bool status = (vx_bool)vx_true_e;
+    vx_bool check_status = (vx_bool)vx_true_e;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ( (delay->set[index].node == n) && (delay->set[index].index == i) ) /* head is a match */
     {
@@ -192,7 +193,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
             }
             else
             {
-                status = (vx_bool)vx_false_e;
+                check_status = (vx_bool)vx_false_e;
                 do_break = (vx_bool)vx_true_e;
             }
 
@@ -204,16 +205,17 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
     }
 
 
-    if (status == (vx_bool)vx_true_e) /* Release the delay */
+    if (check_status == (vx_bool)vx_true_e) /* Release the delay */
     {
         vx_reference ref=(vx_reference)delay;
         status = ownReleaseReferenceInt(&ref, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
         if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to destroy delay reference\n");
+            check_status = (vx_bool)vx_false_e;
         }
     }
-    return status;
+    return check_status;
 }
 
 static vx_status ownAddRefToDelay(vx_delay delay, vx_reference ref, uint32_t i)
