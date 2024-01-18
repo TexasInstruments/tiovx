@@ -32,6 +32,7 @@ static uint32_t gInitCount = 0U;
 
 #if defined(LINUX) || defined(QNX)
 #include <pthread.h>
+#include <tivx_platform_posix.h>
 
 /* Mutex for controlling access to Init/De-Init. */
 static pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -75,6 +76,11 @@ static void tivxInitLocal(void)
         tivx_set_debug_zone((int32_t)VX_ZONE_ERROR);
         tivx_set_debug_zone((int32_t)VX_ZONE_WARNING);
         tivx_clr_debug_zone((int32_t)VX_ZONE_INFO);
+
+#if defined(LINUX) || defined(QNX)
+        /* Initialize the POSIX objects */
+        ownPosixObjectInit();
+#endif
 
         /* Initialize resource logging */
         ownLogResourceInit();
@@ -189,6 +195,11 @@ static void tivxDeInitLocal(void)
 
             /* DeInitialize resource logging */
             ownLogResourceDeInit();
+
+#if defined(LINUX) || defined(QNX)
+            /* DeInitialize the POSIX objects */
+            ownPosixObjectDeInit();
+#endif
 
             VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");
         }

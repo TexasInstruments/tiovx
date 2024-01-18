@@ -16,6 +16,7 @@ COMMON_FILES_BASE_PATH = $(TIOVX_PATH)/source/platform/pc/common
 CSOURCES    := \
 	$(OS_FILES_REL_PATH)/tivx_event.c \
 	$(OS_FILES_REL_PATH)/tivx_mutex.c \
+	$(OS_FILES_REL_PATH)/tivx_posix_objects.c  \
 	$(OS_FILES_REL_PATH)/tivx_task.c  \
 	$(OS_FILES_REL_PATH)/tivx_queue.c \
 	$(COMMON_FILES_REL_PATH)/tivx_mem.c \
@@ -29,6 +30,7 @@ CSOURCES    := \
 IDIRS += $(TIOVX_PATH)/source/include $(COMMON_FILES_BASE_PATH)
 IDIRS += $(APP_UTILS_PATH)
 IDIRS += $(VISION_APPS_PATH)/platform/$(SOC)/rtos
+IDIRS += $(TIOVX_PATH)/source/platform/os/posix
 
 DEFS += _DISABLE_TIDL
 IDIRS += $(CUSTOM_KERNEL_PATH)/include

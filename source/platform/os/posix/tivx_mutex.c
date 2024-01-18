@@ -60,14 +60,7 @@
 *
 */
 
-#include <vx_internal.h>
-#include <pthread.h>
-
-typedef struct _tivx_mutex_t {
-
-  pthread_mutex_t lock;
-
-} tivx_mutex_t;
+#include <tivx_platform_posix.h>
 
 vx_status tivxMutexCreate(tivx_mutex *mutex)
 {
@@ -75,7 +68,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
     pthread_mutexattr_t mutex_attr;
     tivx_mutex tmp_mutex;
 
-    tmp_mutex = (tivx_mutex)malloc(sizeof(tivx_mutex_t));
+    tmp_mutex = (tivx_mutex)ownPosixObjectAlloc(TIVX_POSIX_TYPE_MUTEX);
     if(tmp_mutex==NULL)
     {
         *mutex = NULL;
@@ -90,7 +83,11 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
         if(status!=0)
         {
             pthread_mutex_destroy(&tmp_mutex->lock);
-            free(tmp_mutex);
+            status = ownPosixObjectFree((uint8_t *)tmp_mutex, TIVX_POSIX_TYPE_MUTEX);
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Mutex free failed\n");
+            }
             *mutex = NULL;
             VX_PRINT(VX_ZONE_ERROR, "Mutex initialization failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -112,7 +109,11 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
     if(*mutex)
     {
         pthread_mutex_destroy(&(*mutex)->lock);
-        free(*mutex);
+        status = ownPosixObjectFree((uint8_t *)(*mutex), TIVX_POSIX_TYPE_MUTEX);
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Mutex free failed\n");
+        }
         *mutex = NULL;
         status = (vx_status)VX_SUCCESS;
     }

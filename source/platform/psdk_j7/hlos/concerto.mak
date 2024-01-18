@@ -12,6 +12,7 @@ COMMON_FILES_REL_PATH = ../../os/posix
 CSOURCES    := \
     $(COMMON_FILES_REL_PATH)/tivx_event.c \
     $(COMMON_FILES_REL_PATH)/tivx_mutex.c \
+    $(COMMON_FILES_REL_PATH)/tivx_posix_objects.c  \
     $(COMMON_FILES_REL_PATH)/tivx_queue.c \
     $(COMMON_FILES_REL_PATH)/tivx_task.c  \
     ../common/tivx_target_config_mpu1_0.c           \
@@ -22,8 +23,9 @@ CSOURCES    := \
     ../common/tivx_mem.c                            \
     tivx_platform_hlos.c
 
-IDIRS       += $(HOST_ROOT)/source/include
-IDIRS       += $(HOST_ROOT)/source/platform/psdk_j7/common
+IDIRS       += $(TIOVX_PATH)/source/include
+IDIRS       += $(TIOVX_PATH)/source/platform/psdk_j7/common
+IDIRS       += $(TIOVX_PATH)/source/platform/os/posix
 IDIRS       += $(APP_UTILS_PATH)
 
 DEFS += TARGET_HLOS

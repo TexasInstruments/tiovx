@@ -60,21 +60,7 @@
 *
 */
 
-
-
-#include <vx_internal.h>
-#include <pthread.h>
-
-typedef struct _tivx_queue_context *tivx_queue_context;
-
-typedef struct _tivx_queue_context {
-
-  pthread_mutex_t lock;
-  pthread_cond_t  condGet;
-  pthread_cond_t  condPut;
-
-} tivx_queue_context_t;
-
+#include <tivx_platform_posix.h>
 
 vx_status tivxQueueCreate(
     tivx_queue *queue, uint32_t max_elements, uintptr_t *queue_memory,
@@ -98,7 +84,7 @@ vx_status tivxQueueCreate(
 
         queue->queue = queue_memory;
 
-        queue->context = malloc(sizeof(tivx_queue_context_t));
+        queue->context = ownPosixObjectAlloc(TIVX_POSIX_TYPE_QUEUE);
 
         context = queue->context;
 
@@ -161,7 +147,11 @@ vx_status tivxQueueCreate(
             else
             {
                 pthread_mutex_destroy(&context->lock);
-                free(queue->context);
+                status = ownPosixObjectFree(queue->context, TIVX_POSIX_TYPE_QUEUE);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Queue free failed\n");
+                }
                 queue->context = NULL;
             }
         }
@@ -190,7 +180,11 @@ vx_status tivxQueueDelete(tivx_queue *queue)
         }
         pthread_mutex_destroy(&context->lock);
 
-        free(context);
+        status = ownPosixObjectFree((uint8_t*)context, TIVX_POSIX_TYPE_QUEUE);
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Queue free failed\n");
+        }
         queue->context = NULL;
 
         status = (vx_status)VX_SUCCESS;

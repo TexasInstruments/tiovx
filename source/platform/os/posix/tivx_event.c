@@ -60,18 +60,9 @@
 *
 */
 
-#include <vx_internal.h>
+#include <tivx_platform_posix.h>
 #include <errno.h>
 #include <sys/time.h>
-#include <pthread.h>
-
-typedef struct _tivx_event_t {
-
-    uint16_t is_set;
-    pthread_mutex_t lock;
-    pthread_cond_t  cond;
-
-} tivx_posix_event_t;
 
 vx_status tivxEventCreate(tivx_event *event)
 {
@@ -80,7 +71,7 @@ vx_status tivxEventCreate(tivx_event *event)
     tivx_event tmp_event;
     vx_status status = (vx_status)VX_SUCCESS;
 
-    tmp_event = (tivx_event)malloc(sizeof(tivx_posix_event_t));
+    tmp_event = (tivx_event)ownPosixObjectAlloc(TIVX_POSIX_TYPE_EVENT);
     if(tmp_event==NULL)
     {
         *event = NULL;
@@ -101,7 +92,12 @@ vx_status tivxEventCreate(tivx_event *event)
         {
             pthread_cond_destroy(&tmp_event->cond);
             pthread_mutex_destroy(&tmp_event->lock);
-            free(tmp_event);
+            status = ownPosixObjectFree((uint8_t *)tmp_event, TIVX_POSIX_TYPE_EVENT);
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Event free failed\n");
+            }
+
             *event = NULL;
             VX_PRINT(VX_ZONE_ERROR, "Mutex initialization failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -126,7 +122,11 @@ vx_status tivxEventDelete(tivx_event *event)
     {
         pthread_cond_destroy(&(*event)->cond);
         pthread_mutex_destroy(&(*event)->lock);
-        free(*event);
+        status = ownPosixObjectFree((uint8_t *)(*event), TIVX_POSIX_TYPE_EVENT);
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Event free failed\n");
+        }
         *event = NULL;
         status = (vx_status)VX_SUCCESS;
     }

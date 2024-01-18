@@ -69,9 +69,6 @@
 static tivx_object_t g_tivx_objects;
 static tivx_mutex g_tivx_objects_lock;
 
-
-static vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele, uint32_t *error_index);
-static void ownInitUseFlag(vx_bool inUse[], uint32_t num_ele);
 static vx_status ownFreeObject(
     const uint8_t *obj_ptr, const uint8_t *obj_start_ptr, vx_bool inUse[],
     uint32_t max_objects, uint32_t size, const char *resource_name);
@@ -804,7 +801,7 @@ static vx_status ownFreeObject(
     return (status);
 }
 
-static void ownInitUseFlag(vx_bool inUse[], uint32_t num_ele)
+void ownInitUseFlag(vx_bool inUse[], uint32_t num_ele)
 {
     uint32_t i;
 
@@ -814,7 +811,7 @@ static void ownInitUseFlag(vx_bool inUse[], uint32_t num_ele)
     }
 }
 
-static vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele, uint32_t *error_index)
+vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele, uint32_t *error_index)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;

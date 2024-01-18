@@ -61,6 +61,7 @@
 */
 
 #include <pthread.h>
+#include <tivx_platform_posix.h>
 
 #include <vx_internal.h>
 #include <tivx_platform_pc.h>
@@ -103,6 +104,9 @@ void tivxInit(void)
         tivx_set_debug_zone(VX_ZONE_INIT);
         tivx_set_debug_zone(VX_ZONE_ERROR);
         tivx_set_debug_zone(VX_ZONE_WARNING);
+
+        /* Initialize the POSIX objects */
+        ownPosixObjectInit();
 
         /* Initialize resource logging */
         ownLogResourceInit();
@@ -230,6 +234,9 @@ void tivxDeInit(void)
 
             /* DeInitialize resource logging */
             ownLogResourceDeInit();
+
+            /* DeInitialize the POSIX objects */
+            ownPosixObjectDeInit();
         }
     }
     else

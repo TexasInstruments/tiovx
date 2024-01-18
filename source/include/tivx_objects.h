@@ -223,6 +223,16 @@ vx_status ownObjectInit(void);
  */
 vx_status ownObjectDeInit(void);
 
+/*! \brief Check flag for if the element is in use
+ * \ingroup group_tivx_obj
+ */
+vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele, uint32_t *error_index);
+
+/*! \brief Initialize the array for flagging what is in use
+ * \ingroup group_tivx_obj
+ */
+void ownInitUseFlag(vx_bool inUse[], uint32_t num_ele);
+
 #ifdef __cplusplus
 }
 #endif

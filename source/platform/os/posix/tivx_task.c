@@ -60,31 +60,7 @@
 *
 */
 
-#include <vx_internal.h>
-#include <pthread.h>
-
-#if _POSIX_C_SOURCE >= 199309L
-#include <time.h>   /* for nanosleep */
-
-int nanosleep(const struct timespec *req, struct timespec *rem);
-
-#else
-#include <unistd.h> /* for usleep */
-
-extern int usleep (useconds_t __useconds);
-
-#endif
-
-#define PRI_MAX  sched_get_priority_max(SCHED_FIFO)
-#define PRI_MIN  sched_get_priority_min(SCHED_FIFO)
-
-typedef struct _tivx_task_context *tivx_task_context;
-
-typedef struct _tivx_task_context
-{
-    pthread_t hndl;
-
-} tivx_task_context_t;
+#include <tivx_platform_posix.h>
 
 void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params)
 {
@@ -119,7 +95,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
 
         task->tsk_handle = NULL;
 
-        context = malloc(sizeof(tivx_task_context_t));
+        context = (tivx_task_context)ownPosixObjectAlloc(TIVX_POSIX_TYPE_TASK);
         if(context == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "Context memory allocation failed\n");
@@ -179,7 +155,11 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
             }
             else
             {
-                free(context);
+                status = ownPosixObjectFree((uint8_t*)context, TIVX_POSIX_TYPE_TASK);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Task free failed\n");
+                }
             }
         }
     }
@@ -206,7 +186,12 @@ vx_status tivxTaskDelete(tivx_task *task)
         pthread_cancel(context->hndl);
         pthread_join(context->hndl, &ret_val);
 
-        free(context);
+        status = ownPosixObjectFree((uint8_t*)context, TIVX_POSIX_TYPE_TASK);
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Task free failed\n");
+        }
+
         task->tsk_handle = NULL;
     }
 
