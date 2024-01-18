@@ -79,10 +79,7 @@ vx_reference ownGetErrorObject(vx_context context, vx_status status)
             }
         }
 
-        if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-        }
+        (void)ownContextUnlock(context);
     }
     return (vx_reference)error;
 }

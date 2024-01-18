@@ -1917,10 +1917,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                                     graph->num_nodes,
                                     &has_cycle);
 
-                        if((vx_status)VX_SUCCESS != ownContextUnlock(graph->base.context))
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-                        }
+                        (void)ownContextUnlock(graph->base.context);
                     }
 
                     if(has_cycle != 0)

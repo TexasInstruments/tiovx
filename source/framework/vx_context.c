@@ -94,10 +94,7 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
                     break;
                 }
             }
-            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(context);
         }
     }
 
@@ -470,10 +467,7 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
                 VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_CONTEXT_MAX_REFERENCES in tiovx/include/TI/tivx_config.h\n");
             }
 
-            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(context);
         }
     }
     return is_success;
@@ -505,10 +499,7 @@ vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref)
                 }
             }
 
-            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(context);
         }
     }
     return is_success;
@@ -575,10 +566,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
 
-            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(context);
         }
     }
 
@@ -643,10 +631,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
                 status = (vx_status)VX_ERROR_INVALID_REFERENCE;
             }
 
-            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(context);
         }
     }
 
@@ -698,10 +683,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
                 }
 
             }
-            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(context);
         }
     }
 
@@ -1634,11 +1616,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
             {
                 VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_CONTEXT_MAX_USER_STRUCTS in tiovx/include/TI/tivx_config.h\n");
             }
-
-            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(context);
         }
     }
     return type;
@@ -1671,10 +1649,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
                     break;
                 }
             }
-            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(context);
         }
     }
     return status;
@@ -1707,10 +1682,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
                     break;
                 }
             }
-            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(context);
         }
     }
     return status;
@@ -1757,10 +1729,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
                     status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     break;
             }
-            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(context);
         }
     }
     return status;
@@ -1802,11 +1771,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const v
                 /* not found */
                 kernel = NULL;
             }
-
-            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(context);
         }
     }
 
@@ -1848,11 +1813,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByEnum(vx_context context, vx_enum
                 /* not found */
                 kernel = NULL;
             }
-
-            if((vx_status)VX_SUCCESS != ownContextUnlock(context))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(context);
         }
     }
 

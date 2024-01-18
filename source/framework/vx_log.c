@@ -38,10 +38,7 @@ VX_API_ENTRY void VX_API_CALL vxRegisterLogCallback(vx_context cntxt, vx_log_cal
                 cntxt->log_enabled = (vx_bool)vx_false_e;
             }
             cntxt->log_callback = callback;
-            if((vx_status)VX_SUCCESS != ownContextUnlock(cntxt))
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Failed to unlock context\n");
-            }
+            (void)ownContextUnlock(cntxt);
         }
     }
 }
