@@ -309,7 +309,13 @@ typedef enum _tivx_attribute_extensions_e {
      * Refer to \ref TIVX_DEFAULT_KERNEL_TIMEOUT for more details about node
      * timeouts
      */
-    TIVX_NODE_IS_TIMED_OUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xd
+    TIVX_NODE_IS_TIMED_OUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xd,
+
+    /*! \brief Query the reference to see if the associated buffer has been allocated.
+     * Read-Only. Can be read at initialization as well as at runtime.
+     * Use a <tt>\ref vx_bool</tt> parameter.
+     */
+    TIVX_REFERENCE_BUFFER_IS_ALLOCATED = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xe
 
 } tivx_attribute_extensions_e;
 

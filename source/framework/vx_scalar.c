@@ -238,6 +238,8 @@ static vx_scalar ownCreateScalar(vx_reference scope, vx_enum data_type, const vo
                 }
                 else
                 {
+                    vx_reference scalar_ref   = (vx_reference)scalar;
+                    scalar_ref->is_accessible = (vx_bool)vx_true_e;
                     obj_desc->data_type = (vx_uint32)data_type;
                     scalar->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                     /* User can pass a NULL ptr, but scalar will be initialized */

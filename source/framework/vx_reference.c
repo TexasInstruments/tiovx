@@ -341,6 +341,7 @@ vx_status ownAllocReferenceBufferGeneric(vx_reference ref)
                         {
                             (void)memset((vx_uint8 *)(uintptr_t)mem_ptr->host_ptr, 0, mem_size);
                         }
+                        ref->is_allocated = (vx_bool)vx_true_e;
                     }
                 }
                 else
@@ -522,6 +523,7 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum ref_typ
         ref->lock = NULL;
         ref->is_accessible = (vx_bool)vx_false_e;
         ref->is_array_element = (vx_bool)vx_false_e;
+        ref->is_allocated = (vx_bool)vx_false_e;
 
         ownReferenceSetScope(ref, scope);
 
@@ -1015,6 +1017,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Query reference invalid flag failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case (vx_enum)TIVX_REFERENCE_BUFFER_IS_ALLOCATED:
+                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
+                {
+                    *(vx_bool*)ptr = (vx_bool)ref->is_allocated;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Query reference buffer allocated failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;

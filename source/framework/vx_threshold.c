@@ -301,5 +301,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
 
 static vx_status ownAllocThresholdBuffer(vx_reference ref)
 {
+    ref->is_allocated = (vx_bool)vx_true_e;
     return ((vx_status)VX_SUCCESS);
 }

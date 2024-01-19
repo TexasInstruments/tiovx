@@ -112,6 +112,21 @@ TEST(tivxReference, testQueryInvalidFlag)
     VX_CALL(vxReleaseImage(&image));
 }
 
+TEST(tivxReference, testQueryAllocatedFlag)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image;
+    vx_bool is_allocated;
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    VX_CALL(vxQueryReference((vx_reference)image, TIVX_REFERENCE_BUFFER_IS_ALLOCATED, &is_allocated, sizeof(is_allocated)));
+
+    ASSERT(is_allocated==vx_false_e);
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
 TEST(tivxReference, testIsReferenceMetaFormatEqualPass)
 {
     vx_context context = context_->vx_context_;
@@ -186,6 +201,7 @@ TEST(tivxReference, negativeTestQueryReference)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryReference(ref, VX_REFERENCE_NAME, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryReference(ref, TIVX_REFERENCE_TIMESTAMP, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryReference(ref, TIVX_REFERENCE_INVALID, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryReference(ref, TIVX_REFERENCE_BUFFER_IS_ALLOCATED, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryReference(ref, attribute, &udata, size));
     VX_CALL(vxReleaseGraph(&graph));
 }
@@ -443,6 +459,7 @@ TESTCASE_TESTS(
     testSetInvalid,
     testSetValid,
     testQueryInvalidFlag,
+    testQueryAllocatedFlag,
     testIsReferenceMetaFormatEqualPass,
     testIsReferenceMetaFormatEqualFail1,
     testIsReferenceMetaFormatEqualFail2,

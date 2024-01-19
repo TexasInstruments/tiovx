@@ -354,6 +354,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                                     obj_desc->mem_ptr[exp_idx].
                                     host_ptr,
                                     (vx_enum)TIVX_MEM_EXTERNAL);
+                            ref->is_allocated = (vx_bool)vx_true_e;
                         }
                     }
                 }

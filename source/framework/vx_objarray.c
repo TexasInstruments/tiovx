@@ -544,6 +544,11 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                 }
             }
+
+            if ((vx_status)VX_SUCCESS==status)
+            {
+                objarr_ref->is_allocated = (vx_bool)vx_true_e;
+            }
         }
         else
         {

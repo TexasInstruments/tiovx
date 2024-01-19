@@ -350,6 +350,7 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                                     obj_desc->mem_ptr[plane_idx-(uint16_t)1].dma_buf_fd_offset +
                                     TIVX_IMG_ALIGN(obj_desc->mem_size[plane_idx-(uint16_t)1]);
                             }
+                            ref->is_allocated = (vx_bool)vx_true_e;
                         }
                     }
                 }
