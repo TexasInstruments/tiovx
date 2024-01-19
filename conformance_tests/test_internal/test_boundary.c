@@ -121,6 +121,9 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     vx_user_data_object user_data_object = 0;
     vx_uint32 usrdata = 0;
 
+    vx_remap remap = NULL;
+    vx_uint32 src_width = 1, src_height = 1, dst_width = 1, dst_height = 1;
+
     ASSERT_VX_OBJECT(conv = vxCreateConvolution(context, cols, rows), VX_TYPE_CONVOLUTION);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownAllocReferenceBufferGeneric((vx_reference)conv));
     VX_CALL(vxReleaseConvolution(&conv));
@@ -152,6 +155,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     EXPECT_VX_ERROR(array = vxCreateVirtualArray(graph, VX_TYPE_KEYPOINT, 1),VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(lut = vxCreateLUT(context, data_type, count), VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(user_data_object = vxCreateUserDataObject(context, NULL, sizeof(vx_uint32), &usrdata), VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(remap = vxCreateRemap(context, src_width, src_height, dst_width, dst_height),VX_ERROR_NO_RESOURCES);
 
     ASSERT_EQ_VX_STATUS(VX_FAILURE, ownNodeKernelInitKernelName(node));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric((vx_reference)img));
