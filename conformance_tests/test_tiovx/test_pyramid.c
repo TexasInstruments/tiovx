@@ -97,11 +97,25 @@ TEST(tivxPymd, negativeTestQueryPyramid)
     VX_CALL(vxReleasePyramid(&pymd));
 }
 
+TEST(tivxPymd, negativeTestOwnInitPyramid)
+{
+    #define VX_FORMAT_DEFAULT 0
+    vx_context context = context_->vx_context_;
+    vx_pyramid pymd=NULL;
+    vx_size levels = 3;
+    vx_float32 scale = 0.9f;
+    vx_uint32 index = 3, width = 3, height = 3;
+    vx_df_image format = VX_FORMAT_DEFAULT;
+    pymd = vxCreatePyramid(context, levels, scale, width, height, format);
+    EXPECT(pymd == NULL);
+}
+
 TESTCASE_TESTS(
     tivxPymd,
     negativeTestCreatePyramid,
     negativeTestGetPyramidLevel,
     negativeTestCreateVirtualPyramid,
-    negativeTestQueryPyramid
+    negativeTestQueryPyramid,
+    negativeTestOwnInitPyramid
 )
 
