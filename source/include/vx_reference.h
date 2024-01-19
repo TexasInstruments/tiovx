@@ -127,6 +127,13 @@ typedef struct _vx_reference {
      */
     vx_bool is_array_element;
 
+    /*! \brief Is the buffer corresponding to this reference allocated
+     *         This is only relevant to the data objects and will always
+     *         be set to vx_false_e for non-data objects such as \ref vx_graph,
+     *         \ref vx_node, \ref vx_kernel, etc
+     */
+    vx_bool is_allocated;
+
     /*! \brief object descriptor */
     tivx_obj_desc_t *obj_desc;
 

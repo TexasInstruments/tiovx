@@ -151,6 +151,8 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
                 }
                 else
                 {
+                    vx_reference scalar_ref   = (vx_reference)scalar;
+                    scalar_ref->is_accessible = (vx_bool)vx_true_e;
                     obj_desc->data_type = (vx_uint32)data_type;
                     scalar->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                     /* User can pass a NULL ptr, but scalar will be initialized */

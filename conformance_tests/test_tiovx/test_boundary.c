@@ -366,6 +366,7 @@ TEST(tivxBoundary2, testGraphMaxPipelineDepthBoundary)
     uint64_t exe_time;
     int i, j;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    vx_bool is_allocated;
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
@@ -396,6 +397,16 @@ TEST(tivxBoundary2, testGraphMaxPipelineDepthBoundary)
 
     ASSERT_VX_OBJECT(d1 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
+    /* Asserting that the buffer is not allocated after initial creation */
+    VX_CALL(vxQueryReference((vx_reference)d0[0], TIVX_REFERENCE_BUFFER_IS_ALLOCATED, &is_allocated, sizeof(is_allocated)));
+
+    ASSERT(is_allocated==vx_false_e);
+
+    /* Asserting that the buffer is not allocated after initial creation */
+    VX_CALL(vxQueryReference((vx_reference)d1, TIVX_REFERENCE_BUFFER_IS_ALLOCATED, &is_allocated, sizeof(is_allocated)));
+
+    ASSERT(is_allocated==vx_false_e);
+
     {
         vx_imagepatch_addressing_t addr;
         vx_rectangle_t rect;
@@ -412,6 +423,11 @@ TEST(tivxBoundary2, testGraphMaxPipelineDepthBoundary)
 
         VX_CALL(vxUnmapImagePatch(d1, map_id));
     }
+
+    /* Asserting that the buffer is allocated now that it has been mapped */
+    VX_CALL(vxQueryReference((vx_reference)d1, TIVX_REFERENCE_BUFFER_IS_ALLOCATED, &is_allocated, sizeof(is_allocated)));
+
+    ASSERT(is_allocated==vx_true_e);
 
     ASSERT_VX_OBJECT(n0 = vxOrNode(graph, d0[0], d1, d2[0]), VX_TYPE_NODE);
 
@@ -440,6 +456,11 @@ TEST(tivxBoundary2, testGraphMaxPipelineDepthBoundary)
     VX_CALL(tivxSetGraphPipelineDepth(graph, TIVX_GRAPH_MAX_PIPELINE_DEPTH-1));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    /* Asserting that the buffer is allocated after graph verification */
+    VX_CALL(vxQueryReference((vx_reference)d0[0], TIVX_REFERENCE_BUFFER_IS_ALLOCATED, &is_allocated, sizeof(is_allocated)));
+
+    ASSERT(is_allocated==vx_true_e);
 
     VX_CALL(vxReleaseNode(&n0));
     for(buf_id=0; buf_id<num_buf; buf_id++)
@@ -2855,6 +2876,8 @@ TEST(tivxBoundary2, testMapTensorBoundary)
     vx_size *dims = (vx_size*)ct_alloc_mem(num_dims * sizeof(vx_size));
     vx_uint32 *pdata[TIVX_TENSOR_MAX_MAPS];
     int i;
+    vx_bool is_allocated;
+
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++)
     {
         pdata[i] = 0;
@@ -2867,11 +2890,22 @@ TEST(tivxBoundary2, testMapTensorBoundary)
     }
 
     ASSERT_VX_OBJECT(src_tensor = vxCreateTensor(context, num_dims, dims, VX_TYPE_UINT8, 0), (enum vx_type_e)VX_TYPE_TENSOR);
+
+    /* Asserting that the buffer is not allocated after initial creation */
+    VX_CALL(vxQueryReference((vx_reference)src_tensor, TIVX_REFERENCE_BUFFER_IS_ALLOCATED, &is_allocated, sizeof(is_allocated)));
+
+    ASSERT(is_allocated==vx_false_e);
+
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++) 
     {
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxMapTensorPatch(src_tensor, num_dims, NULL, NULL, &mid[i], strides, (void **)&pdata[i], VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
     }
-    
+
+    /* Asserting that the buffer is allocated now that it has been mapped */
+    VX_CALL(vxQueryReference((vx_reference)src_tensor, TIVX_REFERENCE_BUFFER_IS_ALLOCATED, &is_allocated, sizeof(is_allocated)));
+
+    ASSERT(is_allocated==vx_true_e);
+
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++)
     {
         VX_CALL(tivxUnmapTensorPatch(src_tensor, mid[i]));
@@ -3036,12 +3070,20 @@ TEST(tivxBoundary2, testMapUserDataObjectBoundary)
     vx_uint32 flags = 0, udata = 0, *pdata[TIVX_USER_DATA_OBJECT_MAX_MAPS] = {0};
     vx_char test_name[] = {'t', 'e', 's', 't', 'i', 'n', 'g'};
     int i;
+    vx_bool is_allocated;
+
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i++)
     {
         pdata[i] = 0;
     }
 
     ASSERT_VX_OBJECT(src_user_data = vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
+
+    /* Asserting that the buffer is allocated given that valid data was supplied to user data object creation and thus allocated */
+    VX_CALL(vxQueryReference((vx_reference)src_user_data, TIVX_REFERENCE_BUFFER_IS_ALLOCATED, &is_allocated, sizeof(is_allocated)));
+
+    ASSERT(is_allocated==vx_true_e);
+
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i++) 
     {
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapUserDataObject(src_user_data, offset, size, &mid[i], (void *)(&pdata[i]), usage, user_mem_type, flags));
