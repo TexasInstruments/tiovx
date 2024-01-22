@@ -124,6 +124,12 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     vx_remap remap = NULL;
     vx_uint32 src_width = 1, src_height = 1, dst_width = 1, dst_height = 1;
 
+    vx_pyramid pymd = NULL, pymd1 = NULL;
+    vx_uint32 width = 3, height = 3;
+    vx_size levels = 1;
+    vx_float32 scale = 0.9f;
+    vx_df_image format = VX_DF_IMAGE_U8;
+
     ASSERT_VX_OBJECT(conv = vxCreateConvolution(context, cols, rows), VX_TYPE_CONVOLUTION);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownAllocReferenceBufferGeneric((vx_reference)conv));
     VX_CALL(vxReleaseConvolution(&conv));
@@ -158,6 +164,8 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     EXPECT_VX_ERROR(remap = vxCreateRemap(context, src_width, src_height, dst_width, dst_height),VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(conv = vxCreateConvolution(context, cols, rows), VX_ERROR_NO_RESOURCES);
 
+    EXPECT_VX_ERROR(pymd = vxCreatePyramid(context, levels, scale, width, height, format), VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(pymd1 = vxCreateVirtualPyramid(graph, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_ERROR_NO_RESOURCES);
     ASSERT_EQ_VX_STATUS(VX_FAILURE, ownNodeKernelInitKernelName(node));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric((vx_reference)img));
     for (j = 0; j < i-1; j++)
