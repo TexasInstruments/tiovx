@@ -471,28 +471,35 @@ static vx_status ownDestructPyramid(vx_reference ref)
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
     obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
-
-    for (i = 0; i < obj_desc->num_levels; i++)
+    if(obj_desc == NULL)
     {
-        if ((NULL != prmd->img[i]) &&
-            (vxGetStatus((vx_reference)prmd->img[i]) == (vx_status)VX_SUCCESS))
-        {
-            /* decrement the internal counter on the image, not the
-             * external one. Setting it as void since return value
-             * 'count' is not used further.
-             */
-            (void)ownDecrementReference((vx_reference)prmd->img[i], (vx_enum)VX_INTERNAL);
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
+    }
+    else
+    {
 
-            status = ownReleaseReferenceInt((vx_reference *)&prmd->img[i],
-                    (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
-            if ((vx_status)VX_SUCCESS != status)
+        for (i = 0; i < obj_desc->num_levels; i++)
+        {
+            if ((NULL != prmd->img[i]) &&
+                (vxGetStatus((vx_reference)prmd->img[i]) == (vx_status)VX_SUCCESS))
             {
-                VX_PRINT(VX_ZONE_ERROR, "Pyramid level %d release failed\n", i);
-                break;
+                /* decrement the internal counter on the image, not the
+                * external one. Setting it as void since return value
+                * 'count' is not used further.
+                */
+                (void)ownDecrementReference((vx_reference)prmd->img[i], (vx_enum)VX_INTERNAL);
+
+                status = ownReleaseReferenceInt((vx_reference *)&prmd->img[i],
+                        (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Pyramid level %d release failed\n", i);
+                    break;
+                }
             }
         }
     }
-
     if(prmd->base.type == (vx_enum)VX_TYPE_PYRAMID)
     {
         if(prmd->base.obj_desc!=NULL)
