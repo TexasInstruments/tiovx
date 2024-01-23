@@ -171,11 +171,7 @@ static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
                 VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_TARGET_KERNEL_MAX in tiovx/include/TI/tivx_config.h\n");
             }
 
-            status = tivxMutexUnlock(g_target_kernel_lock);
-            if((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
-            }
+            (void)tivxMutexUnlock(g_target_kernel_lock);
         }
     }
     else
@@ -249,11 +245,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
                 }
             }
 
-            mutex_status = tivxMutexUnlock(g_target_kernel_lock);
-            if((vx_status)VX_SUCCESS != mutex_status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
-            }
+            (void)tivxMutexUnlock(g_target_kernel_lock);
         }
     }
 
@@ -311,11 +303,7 @@ tivx_target_kernel ownTargetKernelGet(vx_enum kernel_id, volatile char *kernel_n
             }
         }
 
-        status = tivxMutexUnlock(g_target_kernel_lock);
-        if((vx_status)VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
-        }
+        (void)tivxMutexUnlock(g_target_kernel_lock);
     }
 
     return (knl);

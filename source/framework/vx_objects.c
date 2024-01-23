@@ -455,10 +455,7 @@ vx_reference ownObjectAlloc(vx_enum type)
                 break;
         }
 
-        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_objects_lock))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
-        }
+        (void)tivxMutexUnlock(g_tivx_objects_lock);
     }
 
     return (ref);
@@ -742,10 +739,7 @@ vx_status ownObjectFree(vx_reference ref)
                     break;
             }
 
-            if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_objects_lock))
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Mutex unlock failed \n");
-            }
+            (void)tivxMutexUnlock(g_tivx_objects_lock);
         }
     }
 

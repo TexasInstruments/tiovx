@@ -168,11 +168,7 @@ tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, vola
                 VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_TARGET_KERNEL_INSTANCE_MAX in tiovx/include/TI/tivx_config.h\n");
             }
 
-            status = tivxMutexUnlock(g_target_kernel_instance_lock);
-            if((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
-            }
+            (void)tivxMutexUnlock(g_target_kernel_instance_lock);
         }
     }
 

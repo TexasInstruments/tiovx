@@ -115,10 +115,7 @@ VX_API_ENTRY void VX_API_CALL vxAddLogEntry(vx_reference ref, vx_status status, 
 
                 context->log_callback(context, ref, status, string);
 
-                if((vx_status)VX_SUCCESS != tivxMutexUnlock(context->log_lock))
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Failed to unlock mutex\n");
-                }
+                (void)tivxMutexUnlock(context->log_lock);
             }
         }
     }
