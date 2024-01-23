@@ -559,8 +559,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
             tivx_reference_callback_f destructor = special_destructor;
 
             is_removed = ownRemoveReferenceFromContext(ref->context, ref);
-#ifdef LDRA_UNTESTABLE_CODE
-/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM004 */
+
             if (is_removed  == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Invalid reference\n");
@@ -568,7 +567,6 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
             }
             else
             {
-#endif
                 /* find the destructor method */
                 if (destructor==NULL)
                 {
@@ -598,10 +596,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Failed to free memory of reference \n");
                 }
-#ifdef LDRA_UNTESTABLE_CODE
-/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM004 */
             }
-#endif
         }
         *pref = NULL;
     } else {
@@ -624,19 +619,15 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
         {
             /* Setting it as void since return value 'ref count' is not used further */
             (void)ownIncrementReference(ref, reftype);
+
             is_add = ownAddReferenceToContext(context, ref);
-#ifdef LDRA_UNTESTABLE_CODE
-/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM005 */
             if(is_add == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Add reference to context failed\n");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
-#endif
         }
 
-#ifdef LDRA_UNTESTABLE_CODE
-/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM006 */
         if(status!=(vx_status)VX_SUCCESS)
         {
             if((vx_status)VX_SUCCESS != ownObjectFree(ref))
@@ -647,7 +638,6 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
             VX_PRINT(VX_ZONE_ERROR, "Failed to add to resources table\n");
             ref = (vx_reference)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
         }
-#endif
     }
     else
     {
