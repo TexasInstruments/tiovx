@@ -42,7 +42,7 @@ TEST(tivxInternalContext, negativeTestContextLock)
     vx_distribution dist,dist1 = NULL;
     vx_size size = 3U;
     vx_uint32 nkernels = 0;
-    tivx_mutex lock1;
+    tivx_mutex lock1,lock2;
     vx_enum enumeration = 0;
     vx_kernel_f func_ptr = NULL;
     vx_uint32 numParams = 0;
@@ -51,6 +51,7 @@ TEST(tivxInternalContext, negativeTestContextLock)
     vx_kernel_deinitialize_f deinitialize = NULL;
     
     lock1 = context->lock;
+    lock2 = context->log_lock;
     VX_CALL(vxQueryContext(context, VX_CONTEXT_UNIQUE_KERNELS, &nkernels, sizeof(nkernels)));
     vx_kernel_info_t *kernel_table = (vx_kernel_info_t *)ct_alloc_mem(nkernels*sizeof(vx_kernel_info_t));
     EXPECT_VX_OBJECT(dist = vxCreateDistribution(context, num_bins, offset, range), VX_TYPE_DISTRIBUTION);
@@ -69,6 +70,9 @@ TEST(tivxInternalContext, negativeTestContextLock)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE,vxReleaseDistribution(&dist));
     ASSERT(NULL == vxAddUserKernel(context, "org.khronos.openvx.test", enumeration, func_ptr, numParams, validate, initialize, deinitialize));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,vxFinalizeKernel(kernel));
+    vxRegisterLogCallback(context, NULL, 0);
+    context->log_lock = NULL;
+    vxAddLogEntry((vx_reference)dist1, VX_FAILURE, "hello world", 1, 2, 3);
 
     context->lock = lock1;
     dist=dist1;
