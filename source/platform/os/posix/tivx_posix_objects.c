@@ -120,10 +120,7 @@ uint8_t *ownPosixObjectAlloc(vx_enum type)
     vx_status status = VX_SUCCESS;
     uint8_t *obj = NULL;
 
-    if (NULL != g_tivx_objects_lock)
-    {
-        status = tivxMutexLock(g_tivx_objects_lock);
-    }
+    status = tivxMutexLock(g_tivx_objects_lock);
 
     if ((vx_status)VX_SUCCESS == status)
     {
@@ -154,10 +151,7 @@ uint8_t *ownPosixObjectAlloc(vx_enum type)
                 break;
         }
 
-        if (NULL != g_tivx_objects_lock)
-        {
-            tivxMutexUnlock(g_tivx_objects_lock);
-        }
+        tivxMutexUnlock(g_tivx_objects_lock);
     }
 
     return (obj);
@@ -169,10 +163,7 @@ vx_status ownPosixObjectFree(uint8_t *obj, vx_enum type)
 
     if (NULL != obj)
     {
-        if (NULL != g_tivx_objects_lock)
-        {
-            status = tivxMutexLock(g_tivx_objects_lock);
-        }
+        status = tivxMutexLock(g_tivx_objects_lock);
 
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -228,10 +219,7 @@ vx_status ownPosixObjectFree(uint8_t *obj, vx_enum type)
                     break;
             }
 
-            if (NULL != g_tivx_objects_lock)
-            {
-                tivxMutexUnlock(g_tivx_objects_lock);
-            }
+            tivxMutexUnlock(g_tivx_objects_lock);
         }
     }
 
@@ -251,7 +239,15 @@ vx_status ownPosixObjectInit(void)
     ownInitUseFlag(g_tivx_posix_objects.isTaskUse,
         TIVX_TASK_MAX_OBJECTS);
 
-    status = tivxMutexCreate(&g_tivx_objects_lock);
+    g_tivx_objects_lock = (tivx_mutex)ownAllocPosixObject(
+                    (uint8_t *)g_tivx_posix_objects.mutex, g_tivx_posix_objects.isMutexUse,
+                    TIVX_MUTEX_MAX_OBJECTS, (uint32_t)sizeof(tivx_mutex_t), "TIVX_MUTEX_MAX_OBJECTS");
+
+    if (NULL == g_tivx_objects_lock)
+    {
+        status = VX_FAILURE;
+        VX_PRINT(VX_ZONE_ERROR, "Error creating g_tivx_objects_lock\n");
+    }
 
     return status;
 }
@@ -259,10 +255,13 @@ vx_status ownPosixObjectInit(void)
 vx_status ownPosixObjectDeInit(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-
     uint32_t error_index;
 
-    status = tivxMutexDelete(&g_tivx_objects_lock);
+    status = ownFreePosixObject((uint8_t *)&g_tivx_objects_lock,
+                                (uint8_t *)g_tivx_posix_objects.mutex,
+                                g_tivx_posix_objects.isMutexUse,
+                                TIVX_MUTEX_MAX_OBJECTS,
+                                (uint32_t)sizeof(tivx_mutex_t));
 
     if ((vx_status)VX_SUCCESS == status)
     {
@@ -271,12 +270,6 @@ vx_status ownPosixObjectDeInit(void)
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting event at index: %d failed\n", error_index);
-        }
-        status = ownCheckUseFlag(g_tivx_posix_objects.isMutexUse,
-            TIVX_MUTEX_MAX_OBJECTS, &error_index);
-        if ((vx_status)VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Deiniting mutex at index: %d failed\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_posix_objects.isQueueUse,
             TIVX_QUEUE_MAX_OBJECTS, &error_index);
@@ -289,6 +282,12 @@ vx_status ownPosixObjectDeInit(void)
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting task at index: %d failed\n", error_index);
+        }
+        status = ownCheckUseFlag(g_tivx_posix_objects.isMutexUse,
+            TIVX_MUTEX_MAX_OBJECTS, &error_index);
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Deiniting mutex at index: %d failed\n", error_index);
         }
     }
 
