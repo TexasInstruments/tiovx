@@ -439,6 +439,20 @@ TEST(tivxArray, negativeTestownIsValidArrayItemType)
     ASSERT(NULL == vxCreateArray(context, item_type, capacity));
 }
 
+TEST(tivxArray, negativetestownGetArrayItemSize)
+{
+    vx_context context = context_->vx_context_;
+    vx_enum item_type = VX_TYPE_INVALID;
+    vx_array array = NULL;
+    vx_size capacity = 2;
+
+    for (int i = 0; i < TIVX_CONTEXT_MAX_USER_STRUCTS; i++)
+    {
+        ASSERT(VX_TYPE_INVALID != vxRegisterUserStruct(context, sizeof(own_struct)));
+    }
+    ASSERT(NULL == vxCreateArray(context, VX_TYPE_INVALID, capacity));
+}
+
 TESTCASE_TESTS(
     tivxArray,
     test_vxCopyArrayRangeRead,
@@ -453,6 +467,7 @@ TESTCASE_TESTS(
     negativeTestCreateArray,
     negativeTestCreateVirtualArray,/*,
     negativeTestOwnAllocArrayBuffer*/
-    negativeTestownIsValidArrayItemType
+    negativeTestownIsValidArrayItemType,
+    negativetestownGetArrayItemSize
 )
 
