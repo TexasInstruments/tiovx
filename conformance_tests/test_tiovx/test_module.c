@@ -21,8 +21,17 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <TI/tivx_config.h>
+#include <TI/tivx.h>
 
 #include "test_engine/test.h"
+
+/* Set module max to 13 instead of using TIVX_MODULE_MAX for maxing
+ * out since some modules are already created during conformance test.
+ */
+#define MODULE_MAX 13u
+
+void TestModuleRegister();
+void TestModuleUnRegister();
 
 TESTCASE(tivxModule, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -40,9 +49,36 @@ TEST(tivxModule, negativeTestUnloadKernels)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxUnloadKernels(context, "tiovx"));
 }
 
+TEST(tivxModule, negativeTestRegisterModule)
+{
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxRegisterModule("tiovx",NULL,NULL));
+}
+
+TEST(tivxModule, negativeTestUnRegisterModule)
+{
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, tivxUnRegisterModule("tiovx"));
+}
+
+TEST(tivxModule, test_boundaryRegisterModule)
+{
+    for (int i = 0;i < MODULE_MAX; i++)
+    {
+        TestModuleRegister();
+    }
+    TestModuleRegister();
+
+    for (int i = 0;i < MODULE_MAX; i++)
+    {
+        TestModuleUnRegister();
+    }
+}
+
 TESTCASE_TESTS(
     tivxModule,
     negativeTestLoadKernels,
-    negativeTestUnloadKernels
+    negativeTestUnloadKernels,
+    negativeTestRegisterModule,
+    negativeTestUnRegisterModule,
+    test_boundaryRegisterModule
 )
 
