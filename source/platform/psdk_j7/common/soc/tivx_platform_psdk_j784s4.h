@@ -48,6 +48,11 @@ extern "C" {
  */
 #define TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID    (255u)
 
+/*! \brief Max number of targets on a given R5F
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_TARGET_R5F_MAX            (26U)
+
 /*! \brief Target ID for supported targets
  * \ingroup group_tivx_platform
  */

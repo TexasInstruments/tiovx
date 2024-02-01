@@ -63,6 +63,8 @@
 #ifndef TIVX_PLATFORM_SOC_H_
 #define TIVX_PLATFORM_SOC_H_
 
+#include <vx_internal.h>
+
 #if defined(SOC_J721E)
 #include <soc/tivx_platform_psdk_j721e.h>
 #elif defined(SOC_J721S2)
@@ -76,6 +78,10 @@
 #else
 #error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A, SOC_J722S
 #endif
+
+void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name, uint32_t task_pri);
+
+void tivxPlatformDeleteTargetId(vx_enum target_id);
 
 #endif
 

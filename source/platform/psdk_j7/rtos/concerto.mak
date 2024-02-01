@@ -56,7 +56,6 @@ endif
 
 ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J721E J721S2 J784S4 AM62A J722S))
 ifeq ($(TARGET_CPU),R5F)
-CSOURCES += tivx_target_config_r5f.c
 CSOURCES += soc/tivx_target_config_r5f_${SOC}.c
 SKIPBUILD=0
 endif
