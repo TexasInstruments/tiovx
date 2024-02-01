@@ -61,11 +61,7 @@ static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
-        if ((vx_status)VX_SUCCESS != ownReferenceUnlock(&scalar->base))
-        {
-            VX_PRINT(VX_ZONE_ERROR, "reference could not be unlocked\n");
-            status = (vx_status)VX_ERROR_NO_RESOURCES;
-        }
+        (void)ownReferenceUnlock(&scalar->base);
     }
 
     return status;
@@ -110,11 +106,7 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
-        if ((vx_status)VX_SUCCESS != ownReferenceUnlock(&scalar->base))
-        {
-            VX_PRINT(VX_ZONE_ERROR, "reference could not be unlocked\n");
-            status = (vx_status)VX_ERROR_NO_RESOURCES;
-        }
+        (void)ownReferenceUnlock(&scalar->base);
     }
 
     return status;

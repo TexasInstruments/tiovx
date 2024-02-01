@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2023 Texas Instruments Incorporated
+ * Copyright (c) 2024 Texas Instruments Incorporated
  */
 #include <vx_internal.h>
 #include <tivx_objects.h>

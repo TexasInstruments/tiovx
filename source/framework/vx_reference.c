@@ -491,13 +491,10 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
                     ref->external_count--;
                 }
             }
-        }
-        result = ref->internal_count + ref->external_count;
-        status = ownReferenceUnlock(ref);
-        if((vx_status)VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock reference \n");
-        }
+        
+            result = ref->internal_count + ref->external_count;
+            (void)ownReferenceUnlock(ref);
+        }    
     }
     return result;
 }
@@ -523,12 +520,8 @@ vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype)
             {
                 ref->internal_count++;
             }
-        }
-        count = ref->internal_count + ref->external_count;
-        status = ownReferenceUnlock(ref);
-        if((vx_status)VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock reference \n");
+            count = ref->internal_count + ref->external_count;
+            (void)ownReferenceUnlock(ref);
         }
     }
     return count;

@@ -25,4 +25,5 @@ TESTCASE(tivxInternalContext)
 TESTCASE(tivxInternalUserDataObject)
 TESTCASE(tivxInternalRawImage)
 TESTCASE(tivxInternalError)
+TESTCASE(tivxReferenceLock)
 #endif

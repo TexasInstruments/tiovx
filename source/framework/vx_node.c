@@ -213,10 +213,7 @@ static vx_status ownRemoveNodeInt(const vx_node *n)
             {
                 status = ownGraphRemoveNode(node->graph, node);
 
-                if((vx_status)VX_SUCCESS != ownReferenceUnlock(&node->graph->base))
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to unlock reference\n");
-                }
+                (void)ownReferenceUnlock(&node->graph->base);
             }
         }
     }
@@ -1391,111 +1388,110 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to lock reference\n");
             }
-            n = ownGraphGetFreeNodeIndex(graph);
-            if(n>=0)
+            else
             {
-                node = (vx_node)ownCreateReference(graph->base.context, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_EXTERNAL, &graph->base);
-                if ((vxGetStatus((vx_reference)node) == (vx_status)VX_SUCCESS) && (node->base.type == (vx_enum)VX_TYPE_NODE))
+                n = ownGraphGetFreeNodeIndex(graph);
+                if(n>=0)
                 {
-                    /* set kernel, params, graph to NULL */
-                    node->kernel = NULL;
-                    node->graph = NULL;
-                    node->is_kernel_created = (vx_bool)vx_false_e;
+                    node = (vx_node)ownCreateReference(graph->base.context, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_EXTERNAL, &graph->base);
+                    if ((vxGetStatus((vx_reference)node) == (vx_status)VX_SUCCESS) && (node->base.type == (vx_enum)VX_TYPE_NODE))
+                    {
+                        /* set kernel, params, graph to NULL */
+                        node->kernel = NULL;
+                        node->graph = NULL;
+                        node->is_kernel_created = (vx_bool)vx_false_e;
 
-                    status = ownResetNodePerf(node);
-                    if((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to reset node performance statistics\n");
-                    }
-                    for(idx=0; idx<kernel->signature.num_parameters; idx++)
-                    {
-                        node->parameters[idx] = NULL;
-                        node->replicated_flags[idx] = (vx_bool)vx_false_e;
-                        node->parameter_index_num_buf[idx] = 0;
-                    }
-                    node->valid_rect_reset = (vx_bool)vx_false_e;
-                    for(idx=0; idx<TIVX_GRAPH_MAX_PIPELINE_DEPTH; idx++)
-                    {
-                        node->obj_desc_cmd[idx] = NULL;
-                        node->obj_desc[idx] = NULL;
-                    }
-                    node->user_callback = NULL;
-                    node->local_data_ptr = NULL;
-                    node->local_data_size = 0;
-                    node->local_data_ptr_is_alloc = (vx_bool)vx_false_e;
-                    node->local_data_set_allow = (vx_bool)vx_false_e;
-                    node->pipeline_depth = 1;
-                    node->is_context_event = (vx_bool)vx_false_e;
-                    node->is_graph_event = (vx_bool)vx_false_e;
-                    node->node_completed_app_value = 0;
-                    node->node_error_app_value = 0;
-                    node->is_enable_send_complete_event = (vx_bool)vx_false_e;
-                    node->is_enable_send_error_event    = (vx_bool)vx_false_e;
-                    node->is_super_node = (vx_bool)vx_false_e;
-                    node->super_node = NULL;
-                    node->timeout_val = kernel->timeout_val;
-                    node->node_depth = 1;
-                    node->is_timed_out = (vx_bool)vx_false_e;
-                    node->is_initialized = (vx_bool)vx_false_e;
+                        status = ownResetNodePerf(node);
+                        if((vx_status)VX_SUCCESS != status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to reset node performance statistics\n");
+                        }
+                        for(idx=0; idx<kernel->signature.num_parameters; idx++)
+                        {
+                            node->parameters[idx] = NULL;
+                            node->replicated_flags[idx] = (vx_bool)vx_false_e;
+                            node->parameter_index_num_buf[idx] = 0;
+                        }
+                        node->valid_rect_reset = (vx_bool)vx_false_e;
+                        for(idx=0; idx<TIVX_GRAPH_MAX_PIPELINE_DEPTH; idx++)
+                        {
+                            node->obj_desc_cmd[idx] = NULL;
+                            node->obj_desc[idx] = NULL;
+                        }
+                        node->user_callback = NULL;
+                        node->local_data_ptr = NULL;
+                        node->local_data_size = 0;
+                        node->local_data_ptr_is_alloc = (vx_bool)vx_false_e;
+                        node->local_data_set_allow = (vx_bool)vx_false_e;
+                        node->pipeline_depth = 1;
+                        node->is_context_event = (vx_bool)vx_false_e;
+                        node->is_graph_event = (vx_bool)vx_false_e;
+                        node->node_completed_app_value = 0;
+                        node->node_error_app_value = 0;
+                        node->is_enable_send_complete_event = (vx_bool)vx_false_e;
+                        node->is_enable_send_error_event    = (vx_bool)vx_false_e;
+                        node->is_super_node = (vx_bool)vx_false_e;
+                        node->super_node = NULL;
+                        node->timeout_val = kernel->timeout_val;
+                        node->node_depth = 1;
+                        node->is_timed_out = (vx_bool)vx_false_e;
+                        node->is_initialized = (vx_bool)vx_false_e;
 
                     /* assign refernce type specific callback's */
                     node->base.destructor_callback = &ownDestructNode;
                     node->base.mem_alloc_callback = NULL;
                     node->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
-                    node->obj_desc[0] = (tivx_obj_desc_node_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_NODE, (vx_reference)node);
+                        node->obj_desc[0] = (tivx_obj_desc_node_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_NODE, (vx_reference)node);
 
-                    if(node->obj_desc[0] == NULL)
-                    {
-                        status = vxReleaseNode(&node);
-                        if((vx_status)VX_SUCCESS != status)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to node\n");
-                        }
-                        vxAddLogEntry(&graph->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate node object descriptor\n");
-                        node = (vx_node)ownGetErrorObject(graph->base.context, (vx_status)VX_ERROR_NO_RESOURCES);
-                        VX_PRINT(VX_ZONE_ERROR, "Could not allocate node object descriptor\n");
-                        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                        VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
-                    }
-                    else
-                    {
-                        status = ownInitNodeObjDesc(node, kernel, 0);
-
-                        if(status!=(vx_status)VX_SUCCESS)
+                        if(node->obj_desc[0] == NULL)
                         {
                             status = vxReleaseNode(&node);
                             if((vx_status)VX_SUCCESS != status)
                             {
                                 VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to node\n");
                             }
-                            /* no valid target associated with this node, return error */
-                            vxAddLogEntry(&graph->base, status, "No target associated with kernel\n");
-                            node = (vx_node)ownGetErrorObject(graph->base.context, status);
+                            vxAddLogEntry(&graph->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate node object descriptor\n");
+                            node = (vx_node)ownGetErrorObject(graph->base.context, (vx_status)VX_ERROR_NO_RESOURCES);
+                            VX_PRINT(VX_ZONE_ERROR, "Could not allocate node object descriptor\n");
+                            VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+                            VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
                         }
                         else
                         {
-                            /* all condition successful for node creation, now set kernel, graph references */
-                            node->kernel = kernel;
-                            node->graph = graph;
+                            status = ownInitNodeObjDesc(node, kernel, 0);
 
-                            /* show that there are potentially multiple nodes using this kernel. */
-                            (void)ownIncrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
-
-                            status = ownGraphAddNode(graph, node, n);
-                            if((vx_status)VX_SUCCESS != status)
+                            if(status!=(vx_status)VX_SUCCESS)
                             {
-                                VX_PRINT(VX_ZONE_ERROR,"Failed to add graph node\n");
+                                status = vxReleaseNode(&node);
+                                if((vx_status)VX_SUCCESS != status)
+                                {
+                                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to node\n");
+                                }
+                                /* no valid target associated with this node, return error */
+                                vxAddLogEntry(&graph->base, status, "No target associated with kernel\n");
+                                node = (vx_node)ownGetErrorObject(graph->base.context, status);
+                            }
+                            else
+                            {
+                                /* all condition successful for node creation, now set kernel, graph references */
+                                node->kernel = kernel;
+                                node->graph = graph;
+
+                                /* show that there are potentially multiple nodes using this kernel. */
+                                (void)ownIncrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
+
+                                status = ownGraphAddNode(graph, node, n);
+                                if((vx_status)VX_SUCCESS != status)
+                                {
+                                    VX_PRINT(VX_ZONE_ERROR,"Failed to add graph node\n");
+                                }
                             }
                         }
                     }
                 }
-            }
-            status = ownReferenceUnlock(&graph->base);
-            if((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock reference\n");
-            }
+                (void)ownReferenceUnlock(&graph->base);
+            }    
         }
         else
         {
