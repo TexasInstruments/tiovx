@@ -386,13 +386,6 @@ void tivxLogRtTraceKernelInstanceExeStartTimestamp(tivx_target_kernel_instance k
  */
 void tivxLogRtTraceKernelInstanceExeEndTimestamp(tivx_target_kernel_instance kernel, uint16_t event_index, uint64_t timestamp);
 
-/*!
- * \brief Utility function to obtain DMA handle
- *
- * \ingroup group_tivx_target_kernel
- */
-void *tivxPlatformGetDmaObj(void);
-
 #ifdef __cplusplus
 }
 #endif

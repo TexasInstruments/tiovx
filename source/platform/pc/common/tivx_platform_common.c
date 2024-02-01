@@ -275,11 +275,6 @@ void ownPlatformDeactivate()
 {
 }
 
-void *tivxPlatformGetDmaObj()
-{
-  return NULL;
-}
-
 void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
 {
     if(shm_base)

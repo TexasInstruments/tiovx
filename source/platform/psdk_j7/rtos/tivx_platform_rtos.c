@@ -11,7 +11,6 @@
 #include <tivx_platform_psdk.h>
 #include <utils/ipc/include/app_ipc.h>
 #include <utils/misc/include/app_misc.h>
-#include <utils/udma/include/app_udma.h>
 
 void tivxPlatformResetObjDescTableInfo(void);
 
@@ -50,11 +49,6 @@ tivx_obj_desc_shm_entry_t *gTivxObjDescShmEntry = NULL;
 int32_t tivxPlatformGetShmSize(uint32_t * shm_size)
 {
     return appIpcGetTiovxObjDescSharedMemInfo((void**)&gTivxObjDescShmEntry, shm_size);
-}
-
-void *tivxPlatformGetDmaObj(void)
-{
-   return appUdmaGetObj();
 }
 
 vx_status ownPlatformInit(void)
