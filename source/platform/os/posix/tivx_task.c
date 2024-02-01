@@ -225,7 +225,7 @@ void tivxTaskWaitMsecs(uint32_t msec)
     do
     {
         ret = nanosleep(&delay_time, &remain_time);
-        if(ret < 0 && remain_time.tv_sec > 0 && remain_time.tv_nsec > 0)
+        if((ret < 0) && (remain_time.tv_sec > 0) && (remain_time.tv_nsec > 0))
         {
             /* restart for remaining time */
             delay_time = remain_time;

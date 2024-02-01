@@ -185,7 +185,7 @@ vx_status tivxQueueDelete(tivx_queue *queue)
     vx_status status = (vx_status)VX_FAILURE;
     tivx_queue_context context;
 
-    if (NULL != queue && queue->context != NULL)
+    if ((NULL != queue) && (queue->context != NULL))
     {
         context = queue->context;
 
