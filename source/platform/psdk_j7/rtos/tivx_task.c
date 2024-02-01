@@ -12,6 +12,20 @@
 #include <utils/rtos/include/app_rtos.h>
 
 static void tivxTaskDefHandle(void* arg0, void* arg1);
+void init_params(tivx_task_create_params_t ** const params);
+
+void init_params(tivx_task_create_params_t ** const params)
+{
+    (*params)->stack_ptr = NULL;
+    (*params)->stack_size = (uint32_t)0;
+    (*params)->core_affinity = (uint32_t)0;
+    (*params)->priority = (uint32_t)0;
+    (*params)->task_main = NULL;
+    (*params)->app_var = NULL;
+    (void)memset(&(*params)->task_name, 0, sizeof((*params)->task_name));
+
+    return;
+}
 
 static void tivxTaskDefHandle(void* arg0, void* arg1)
 {
@@ -29,9 +43,7 @@ void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params)
 {
     if (NULL != params)
     {
-        params->core_affinity = 0;
-	    params->priority = 0;
-        (void)memset(&params->task_name, 0, sizeof(params->task_name));
+        init_params(&params);
 
         params->core_affinity = TIVX_TASK_AFFINITY_ANY;
         params->priority = TIVX_TASK_PRI_LOWEST;

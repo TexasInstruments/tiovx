@@ -208,10 +208,13 @@ static uint32_t ownGraphGetNumInNodes(vx_graph graph, vx_node node, uint32_t nod
     {
         for(i=0; i<graph->num_data_ref; i++)
         {
-            if(ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref) != 0)
+            if (i < TIVX_GRAPH_MAX_DATA_REF)
             {
-                num_in_nodes = graph->data_ref_num_in_nodes[i];
-                break;
+                if(ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref) != 0)
+                {
+                    num_in_nodes = graph->data_ref_num_in_nodes[i];
+                    break;
+                }
             }
         }
     }

@@ -65,8 +65,25 @@
 
 #include <vx_internal.h>
 
+void init_queue(tivx_queue ** const queue);
 
+void init_queue(tivx_queue ** const queue)
+{
+    (*queue)->cur_rd = (uint32_t)0;
+    (*queue)->cur_wr = (uint32_t)0;
+    (*queue)->count = (uint32_t)0;
+    (*queue)->max_ele = (uint32_t)0;
+    (*queue)->queue = NULL;
+    (*queue)->block_rd = NULL;
+    (*queue)->block_wr = NULL;
+    (*queue)->lock = NULL;
+    (*queue)->context = NULL;
+    (*queue)->flags = (uint32_t)0;
+    (*queue)->blockedOnGet = (vx_bool)0;
+    (*queue)->blockedOnPut = (vx_bool)0;
 
+    return;
+}
 
 vx_status tivxQueueCreate(
     tivx_queue *queue, uint32_t max_elements, uintptr_t *queue_memory,
@@ -79,18 +96,7 @@ vx_status tivxQueueCreate(
         /*
          * init queue to 0's
          */
-        queue->cur_rd = 0;
-        queue->cur_wr = 0;
-        queue->count = 0;
-        queue->max_ele = 0;
-        (void)memset(&queue->queue, 0, sizeof(queue->queue));
-        (void)memset(&queue->block_rd, 0, sizeof(queue->block_rd));
-        (void)memset(&queue->block_wr, 0, sizeof(queue->block_wr));
-        (void)memset(&queue->lock, 0, sizeof(queue->lock));
-        (void)memset(&queue->context, 0, sizeof(queue->context));
-        queue->flags = 0;
-        queue->blockedOnGet = 0;
-        queue->blockedOnPut = 0;
+        init_queue(&queue);
 
         /*
          * init queue with user parameters

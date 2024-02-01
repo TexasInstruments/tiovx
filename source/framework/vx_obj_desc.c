@@ -291,7 +291,7 @@ vx_status ownObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
 
         if (NULL != obj_desc)
         {
-            if(self_cpu_id < (vx_enum)TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU)
+            if((self_cpu_id < (vx_enum)TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU) && (self_cpu_id != -1))
             {
                 /* target is on remote CPU, send using IPC */
                 status = ownIpcSendMsg(cpu_id, ipc_payload, obj_desc->host_cpu_id, obj_desc->host_port_id[self_cpu_id]);
