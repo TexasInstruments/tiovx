@@ -353,6 +353,6 @@ void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
     }
 }
 
-void ownPlatformTaskInit()
+void ownPlatformTaskInit(void)
 {
 }

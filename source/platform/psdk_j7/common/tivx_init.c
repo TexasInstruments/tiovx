@@ -19,8 +19,8 @@ void tivxRegisterCaptureTargetArmKernels(void);
 void tivxUnRegisterCaptureTargetArmKernels(void);
 void tivxRegisterTestKernelsTargetDspKernels(void);
 void tivxUnRegisterTestKernelsTargetDspKernels(void);
-void tivxRegisterTestKernelsTargetArmKernels();
-void tivxUnRegisterTestKernelsTargetArmKernels();
+void tivxRegisterTestKernelsTargetArmKernels(void);
+void tivxUnRegisterTestKernelsTargetArmKernels(void);
 
 static void tivxInitLocal(void);
 static void tivxDeInitLocal(void);
