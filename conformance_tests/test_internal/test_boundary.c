@@ -130,6 +130,21 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     vx_float32 scale = 0.9f;
     vx_df_image format = VX_DF_IMAGE_U8;
 
+    tivx_raw_image raw_image;
+    tivx_raw_image_create_params_t params;
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_true_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height_before = 5;
+    params.meta_height_after = 0;
+
     ASSERT_VX_OBJECT(conv = vxCreateConvolution(context, cols, rows), VX_TYPE_CONVOLUTION);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownAllocReferenceBufferGeneric((vx_reference)conv));
     VX_CALL(vxReleaseConvolution(&conv));
@@ -166,6 +181,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
 
     EXPECT_VX_ERROR(pymd = vxCreatePyramid(context, levels, scale, width, height, format), VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(pymd1 = vxCreateVirtualPyramid(graph, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(raw_image = tivxCreateRawImage(context, &params), VX_ERROR_NO_RESOURCES);
     ASSERT_EQ_VX_STATUS(VX_FAILURE, ownNodeKernelInitKernelName(node));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric((vx_reference)img));
     for (j = 0; j < i-1; j++)

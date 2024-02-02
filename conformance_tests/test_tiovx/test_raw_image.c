@@ -1277,6 +1277,7 @@ TEST(tivxRawImage, negativeTestCopyRawImagePatch)
     params.height = 16;
     addr.dim_x = 16 * sizeof(uint16_t);
     addr.dim_y = sizeof(uint16_t);
+    rect.start_x = 20;
 
     ASSERT_VX_OBJECT(raw_image1 = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxCopyRawImagePatch(raw_image1, &rect, 0, &addr, (void *)img, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
@@ -1287,6 +1288,10 @@ TEST(tivxRawImage, negativeTestCopyRawImagePatch)
 
     params.width = 1u;
     params.num_exposures = 0;
+    EXPECT_VX_ERROR(raw_image = tivxCreateRawImage(context, &params), VX_ERROR_INVALID_PARAMETERS);
+    params.width = 3;
+    params.height = 2;
+    params.num_exposures = 2;
     EXPECT_VX_ERROR(raw_image = tivxCreateRawImage(context, &params), VX_ERROR_INVALID_PARAMETERS);
 }
 
