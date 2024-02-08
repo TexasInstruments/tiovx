@@ -594,11 +594,13 @@ vx_bool tivxMemCompareFd(uint64_t dmaBufFd1, uint64_t dmaBufFd2, uint32_t size1,
     if (size1 == size2)
     {
         vx_status status;
+        uint32_t temp_status;
         void  *phyAddr1,  *phyAddr2;
         void  *virtAddr1, *virtAddr2;
 
         status  = tivxMemTranslateFd(dmaBufFd1, size1, &virtAddr1, &phyAddr1);
-        status |= tivxMemTranslateFd(dmaBufFd2, size2, &virtAddr2, &phyAddr2);
+        temp_status = (uint32_t)status | (uint32_t)tivxMemTranslateFd(dmaBufFd2, size2, &virtAddr2, &phyAddr2);
+        status = (vx_status)temp_status;
 
         if ((vx_status)VX_SUCCESS == status)
         {
