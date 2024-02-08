@@ -118,7 +118,7 @@ vx_status tivxEventDelete(tivx_event *event)
 {
     vx_status status = (vx_status)VX_FAILURE;
 
-    if(*event)
+    if(*event != NULL)
     {
         pthread_cond_destroy(&(*event)->cond);
         pthread_mutex_destroy(&(*event)->lock);
@@ -138,7 +138,7 @@ vx_status tivxEventPost(tivx_event event)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
-    if(event)
+    if(event != NULL)
     {
         status = pthread_mutex_lock(&event->lock);
         if(status == 0)
@@ -164,7 +164,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
     int32_t   status1;
     int32_t   retVal;
 
-    if(event)
+    if(event != NULL)
     {
         status = pthread_mutex_lock(&event->lock);
         if(status == 0)
@@ -225,7 +225,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                             status = (vx_status)TIVX_ERROR_EVENT_TIMEOUT;
                             done = (vx_bool)vx_true_e;
                         }
-                        else if (retVal)
+                        else if ((int32_t)0 != retVal)
                         {
                             /* Error other than ETIMEDOUT. */
                             VX_PRINT(VX_ZONE_ERROR, "Event wait failed.\n");
@@ -246,7 +246,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                     /* timeout == TIVX_EVENT_TIMEOUT_WAIT_FOREVER */
                     retVal = pthread_cond_wait(&event->cond, &event->lock);
 
-                    if (retVal)
+                    if ((int32_t)0 != retVal)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Event wait failed.\n");
                         status = (vx_status)VX_FAILURE;
@@ -272,7 +272,7 @@ vx_status tivxEventClear(tivx_event event)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
-    if(event)
+    if(event != NULL)
     {
         status = pthread_mutex_lock(&event->lock);
         if(status == 0)

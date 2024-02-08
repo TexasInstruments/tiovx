@@ -234,7 +234,7 @@ void tivxTaskWaitMsecs(uint32_t msec)
         {
             break;
         }
-    } while(1);
+    } while(true);
 #else
     usleep(msec * 1000);
 #endif

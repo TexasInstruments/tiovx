@@ -126,7 +126,7 @@ vx_status tivxQueueCreate(
 
             if(status==0)
             {
-                if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
+                if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != (uint32_t)0)
                 {
                     pthread_condattr_t cond_attr;
 
@@ -142,7 +142,7 @@ vx_status tivxQueueCreate(
 
                     pthread_condattr_destroy(&cond_attr);
                 }
-                if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT)
+                if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != (uint32_t)0)
                 {
                     pthread_condattr_t cond_attr;
 
@@ -190,11 +190,11 @@ vx_status tivxQueueDelete(tivx_queue *queue)
         context = queue->context;
 
         VX_PRINT(VX_ZONE_INFO, "if this hangs, please ensure all application threads have been destroyed\n");
-        if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET))
+        if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != (uint32_t)0)
         {
             pthread_cond_destroy(&(context)->condGet);
         }
-        if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT))
+        if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != (uint32_t)0)
         {
             pthread_cond_destroy(&(context)->condPut);
         }
@@ -242,7 +242,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                     /* mark status as success */
                     status = (vx_status)VX_SUCCESS;
 
-                    if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
+                    if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != (uint32_t)0)
                     {
                         /* blocking on queue get enabled */
 
@@ -262,7 +262,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                         status = (vx_status)VX_FAILURE;
                         do_break = (vx_bool)vx_true_e; /* non-blocking, so exit with error */
                     }
-                    else if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT)
+                    else if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != (uint32_t)0)
                     {
                         /* blocking on queue put enabled */
                         queue->blockedOnPut = (vx_bool)vx_true_e;
@@ -285,7 +285,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                     break;
                 }
             }
-            while (1);
+            while (true);
 
             status |= pthread_mutex_unlock(&context->lock);
         }
@@ -323,7 +323,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                     /* set status as success */
                     status = (vx_status)VX_SUCCESS;
 
-                    if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT)
+                    if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != (uint32_t)0)
                     {
                         /* post cond to unblock, blocked tasks */
                         pthread_cond_signal(&context->condPut);
@@ -342,7 +342,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                         do_break = (vx_bool)vx_true_e; /* non-blocking, exit with error */
                     }
                     else
-                    if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
+                    if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != (uint32_t)0)
                     {
                         /* blocking on queue get enabled */
 
@@ -367,7 +367,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                     break;
                 }
             }
-            while (1);
+            while (true);
             status |= pthread_mutex_unlock(&context->lock);
         }
     }

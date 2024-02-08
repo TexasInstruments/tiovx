@@ -339,11 +339,11 @@ void ownPlatformGetTargetName(vx_enum target_id, char *target_name)
 
 void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
 {
-    if(shm_base)
+    if(shm_base != NULL)
     {
         *shm_base = NULL;
     }
-    if(shm_size)
+    if(shm_size != NULL)
     {
         *shm_size = 0;
     }

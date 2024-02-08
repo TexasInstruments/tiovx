@@ -106,7 +106,7 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
 {
     vx_status status = (vx_status)VX_FAILURE;
 
-    if(*mutex)
+    if(*mutex != NULL)
     {
         pthread_mutex_destroy(&(*mutex)->lock);
         status = ownPosixObjectFree((uint8_t *)(*mutex), TIVX_POSIX_TYPE_MUTEX);
@@ -125,7 +125,7 @@ vx_status tivxMutexLock(tivx_mutex mutex)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
-    if(mutex)
+    if(mutex != NULL)
     {
         status = pthread_mutex_lock(&mutex->lock);
         if(status != 0)
@@ -142,7 +142,7 @@ vx_status tivxMutexUnlock(tivx_mutex mutex)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
-    if(mutex)
+    if(mutex != NULL)
     {
         status = pthread_mutex_unlock(&mutex->lock);
         if(status != 0)
