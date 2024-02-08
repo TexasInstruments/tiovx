@@ -65,6 +65,7 @@
 vx_status tivxMutexCreate(tivx_mutex *mutex)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t temp_status;
     pthread_mutexattr_t mutex_attr;
     tivx_mutex tmp_mutex;
 
@@ -77,8 +78,11 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
     }
     else
     {
-        status |= pthread_mutexattr_init(&mutex_attr);
-        status |= pthread_mutex_init(&tmp_mutex->lock, &mutex_attr);
+        temp_status = (uint32_t)status | (uint32_t)pthread_mutexattr_init(&mutex_attr);
+        status = (vx_status)temp_status;
+        temp_status = (uint32_t)status | (uint32_t)pthread_mutex_init(&tmp_mutex->lock, &mutex_attr);
+        status = (vx_status)temp_status;
+       
 
         if(status!=0)
         {

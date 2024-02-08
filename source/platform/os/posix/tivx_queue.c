@@ -87,6 +87,7 @@ vx_status tivxQueueCreate(
     uint32_t flags)
 {
     vx_status status = (vx_status)VX_FAILURE;
+    uint32_t temp_status;
     tivx_queue_context context = NULL;
 
     if ((NULL != queue) && (NULL != queue_memory) && (0U != max_elements))
@@ -119,8 +120,10 @@ vx_status tivxQueueCreate(
 
             status = (vx_status)VX_SUCCESS;
 
-            status |= pthread_mutexattr_init(&mutex_attr);
-            status |= pthread_mutex_init(&context->lock, &mutex_attr);
+            temp_status = (uint32_t)status | (uint32_t)pthread_mutexattr_init(&mutex_attr);
+            status = (vx_status)temp_status;
+            temp_status = (uint32_t)status | (uint32_t)pthread_mutex_init(&context->lock, &mutex_attr);
+            status = (vx_status)temp_status;
 
             (void)pthread_mutexattr_destroy(&mutex_attr);
 
@@ -137,8 +140,10 @@ vx_status tivxQueueCreate(
                     /*
                      * create cond for it
                      */
-                    status |= pthread_condattr_init(&cond_attr);
-                    status |= pthread_cond_init(&context->condGet, &cond_attr);
+                    temp_status = (uint32_t)status | (uint32_t)pthread_condattr_init(&cond_attr);
+                    status = (vx_status)temp_status;
+                    temp_status = (uint32_t)status | (uint32_t)pthread_cond_init(&context->condGet, &cond_attr);
+                    status = (vx_status)temp_status;
 
                     (void)pthread_condattr_destroy(&cond_attr);
                 }
@@ -153,8 +158,10 @@ vx_status tivxQueueCreate(
                     /*
                      * create cond for it
                      */
-                    status |= pthread_condattr_init(&cond_attr);
-                    status |= pthread_cond_init(&context->condPut, &cond_attr);
+                    temp_status = (uint32_t)status | (uint32_t)pthread_condattr_init(&cond_attr);
+                    status = (vx_status)temp_status;
+                    temp_status = (uint32_t)status | (uint32_t)pthread_cond_init(&context->condPut, &cond_attr);
+                    status = (vx_status)temp_status;
 
                     (void)pthread_condattr_destroy(&cond_attr);
                 }
@@ -216,6 +223,7 @@ vx_status tivxQueueDelete(tivx_queue *queue)
 vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 {
     vx_status status = (vx_status)VX_FAILURE;
+    uint32_t temp_status;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
     tivx_queue_context context = NULL;
 
@@ -287,7 +295,8 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
             }
             while (true);
 
-            status |= pthread_mutex_unlock(&context->lock);
+            temp_status = (uint32_t)status | (uint32_t)pthread_mutex_unlock(&context->lock);
+            status = (vx_status)temp_status;
         }
     }
 
@@ -297,6 +306,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
 {
     vx_status status = (vx_status)VX_FAILURE;/* init status to error */
+    uint32_t temp_status;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
     tivx_queue_context context = NULL;
 
@@ -368,7 +378,9 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                 }
             }
             while (true);
-            status |= pthread_mutex_unlock(&context->lock);
+          
+            temp_status = (uint32_t)status | (uint32_t)pthread_mutex_unlock(&context->lock);
+            status = (vx_status)temp_status;
         }
     }
     return (status);

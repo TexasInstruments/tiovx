@@ -70,6 +70,7 @@ vx_status tivxEventCreate(tivx_event *event)
     pthread_condattr_t cond_attr;
     tivx_event tmp_event;
     vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t temp_status;
 
     tmp_event = (tivx_event)ownPosixObjectAlloc((vx_enum)TIVX_POSIX_TYPE_EVENT);
     if(tmp_event==NULL)
@@ -80,11 +81,17 @@ vx_status tivxEventCreate(tivx_event *event)
     }
     else
     {
-        status |= pthread_mutexattr_init(&mutex_attr);
-        status |= pthread_condattr_init(&cond_attr);
+       
+        temp_status = (uint32_t)status | (uint32_t)pthread_mutexattr_init(&mutex_attr);
+        status = (vx_status)temp_status;
+        temp_status = (uint32_t)status | (uint32_t)pthread_condattr_init(&cond_attr);
+        status = (vx_status)temp_status;
+        
 
-        status |= pthread_mutex_init(&tmp_event->lock, &mutex_attr);
-        status |= pthread_cond_init(&tmp_event->cond, &cond_attr);
+        temp_status = (uint32_t)status | (uint32_t)pthread_mutex_init(&tmp_event->lock, &mutex_attr);
+        status = (vx_status)temp_status;
+        temp_status = (uint32_t)status | (uint32_t)pthread_cond_init(&tmp_event->cond, &cond_attr);
+        status = (vx_status)temp_status;
 
         tmp_event->is_set = (uint16_t)0;
 
@@ -137,6 +144,7 @@ vx_status tivxEventDelete(tivx_event *event)
 vx_status tivxEventPost(tivx_event event)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+    uint32_t temp_status;
 
     if(event != NULL)
     {
@@ -145,8 +153,11 @@ vx_status tivxEventPost(tivx_event event)
         {
             event->is_set = 1;
 
-            status |= pthread_cond_signal(&event->cond);
-            status |= pthread_mutex_unlock(&event->lock);
+            temp_status = (uint32_t)status | (uint32_t)pthread_cond_signal(&event->cond);
+            status = (vx_status)temp_status;
+            temp_status = (uint32_t)status | (uint32_t)pthread_mutex_unlock(&event->lock);
+            status = (vx_status)temp_status;
+           
         }
         if(status != 0)
         {
