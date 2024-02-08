@@ -125,6 +125,11 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
             VX_PRINT(VX_ZONE_ERROR, "Semaphore wait returned an error\n");
             status = (vx_status)VX_FAILURE;
         }
+        else
+        {
+            /*Do Nothing*/
+        }
+
     }
     else
     {

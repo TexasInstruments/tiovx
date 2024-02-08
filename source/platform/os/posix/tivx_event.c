@@ -232,6 +232,10 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                             status = (vx_status)VX_FAILURE;
                             done = (vx_bool)vx_true_e;
                         }
+                        else
+                        {
+                            /*Do Nothing*/
+                        }
                     }
                     else
                     {
