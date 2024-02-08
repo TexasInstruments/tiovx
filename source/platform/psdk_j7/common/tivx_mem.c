@@ -519,7 +519,7 @@ vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **ph
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'fd' is NULL.\n");
         vxStatus = (vx_status)VX_FAILURE;
     }
-    else if (phyAddr == NULL)
+    if (phyAddr == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'phyAddr' is NULL.\n");
         vxStatus = (vx_status)VX_FAILURE;
@@ -551,7 +551,7 @@ vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, 
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'virtAddr' is NULL.\n");
         vxStatus = (vx_status)VX_FAILURE;
     }
-    else if (phyAddr == NULL)
+    if (phyAddr == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'phyAddr' is NULL.\n");
         vxStatus = (vx_status)VX_FAILURE;
