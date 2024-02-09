@@ -71,7 +71,7 @@ vx_status tivxEventCreate(tivx_event *event)
     tivx_event tmp_event;
     vx_status status = (vx_status)VX_SUCCESS;
 
-    tmp_event = (tivx_event)ownPosixObjectAlloc(TIVX_POSIX_TYPE_EVENT);
+    tmp_event = (tivx_event)ownPosixObjectAlloc((vx_enum)TIVX_POSIX_TYPE_EVENT);
     if(tmp_event==NULL)
     {
         *event = NULL;
@@ -86,13 +86,13 @@ vx_status tivxEventCreate(tivx_event *event)
         status |= pthread_mutex_init(&tmp_event->lock, &mutex_attr);
         status |= pthread_cond_init(&tmp_event->cond, &cond_attr);
 
-        tmp_event->is_set = 0;
+        tmp_event->is_set = (uint16_t)0;
 
         if(status!=0)
         {
             (void)pthread_cond_destroy(&tmp_event->cond);
             (void)pthread_mutex_destroy(&tmp_event->lock);
-            status = ownPosixObjectFree((uint8_t *)tmp_event, TIVX_POSIX_TYPE_EVENT);
+            status = ownPosixObjectFree((uint8_t *)tmp_event, (vx_enum)TIVX_POSIX_TYPE_EVENT);
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Event free failed\n");
@@ -122,7 +122,7 @@ vx_status tivxEventDelete(tivx_event *event)
     {
         (void)pthread_cond_destroy(&(*event)->cond);
         (void)pthread_mutex_destroy(&(*event)->lock);
-        status = ownPosixObjectFree((uint8_t *)(*event), TIVX_POSIX_TYPE_EVENT);
+        status = ownPosixObjectFree((uint8_t *)(*event), (vx_enum)TIVX_POSIX_TYPE_EVENT);
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Event free failed\n");
@@ -203,17 +203,17 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                         unsigned long   micro;
 
                         /* timeout is expected to be in milli-sec. */
-                        micro = tv.tv_usec + (timeout * 1000);
-                        sec   = tv.tv_sec;
+                        micro = tv.tv_usec + ((uint64_t)timeout * 1000);
+                        sec   = (uint32_t)tv.tv_sec;
 
                         if (micro >= 1000000LLU)
                         {
-                            sec   += micro/1000000LLU;
-                            micro %= 1000000LLU;
+                            sec   += (uint32_t)micro/(uint32_t)1000000LLU;
+                            micro %= (uint32_t)1000000LLU;
                         }
 
-                        ts.tv_nsec = micro * 1000;
-                        ts.tv_sec  = sec;
+                        ts.tv_nsec = (int64_t)micro * 1000;
+                        ts.tv_sec  = (int64_t)sec;
 
                         retVal = pthread_cond_timedwait(&event->cond,
                                                         &event->lock,

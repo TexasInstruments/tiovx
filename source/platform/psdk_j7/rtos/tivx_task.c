@@ -73,7 +73,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
 
         rtos_task_prms.stacksize = params->stack_size;
         rtos_task_prms.stack     = params->stack_ptr;
-        rtos_task_prms.priority  = (int8_t)params->priority;
+        rtos_task_prms.priority  = (uint8_t)params->priority;
         rtos_task_prms.arg0      = (void*)(task);
         rtos_task_prms.arg1      = (void*)(task);
         rtos_task_prms.name      = (const char*)&task->task_name[0];

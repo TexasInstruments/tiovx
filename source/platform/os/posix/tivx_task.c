@@ -110,7 +110,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
 
         task->tsk_handle = NULL;
 
-        context = (tivx_task_context)ownPosixObjectAlloc(TIVX_POSIX_TYPE_TASK);
+        context = (tivx_task_context)ownPosixObjectAlloc((vx_enum)TIVX_POSIX_TYPE_TASK);
         if(context == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "Context memory allocation failed\n");
@@ -170,7 +170,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
             }
             else
             {
-                status = ownPosixObjectFree((uint8_t*)context, TIVX_POSIX_TYPE_TASK);
+                status = ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_TASK);
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Task free failed\n");
@@ -201,7 +201,7 @@ vx_status tivxTaskDelete(tivx_task *task)
         (void)pthread_cancel(context->hndl);
         (void)pthread_join(context->hndl, &ret_val);
 
-        status = ownPosixObjectFree((uint8_t*)context, TIVX_POSIX_TYPE_TASK);
+        status = ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_TASK);
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Task free failed\n");
@@ -219,8 +219,8 @@ void tivxTaskWaitMsecs(uint32_t msec)
     struct timespec delay_time = {0}, remain_time = {0};
     int ret;
 
-    delay_time.tv_sec  = msec/1000U;
-    delay_time.tv_nsec = (msec%1000U)*1000000U;
+    delay_time.tv_sec  = (int64_t)msec/1000;
+    delay_time.tv_nsec = ((int64_t)msec%1000)*1000000;
 
     do
     {

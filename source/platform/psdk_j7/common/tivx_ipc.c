@@ -181,7 +181,7 @@ uint16_t ownIpcGetHostPortId(uint16_t cpu_id)
 
         if(vsdk_cpu_id != APP_IPC_CPU_INVALID )
         {
-            host_port_id = appIpcGetHostPortId(vsdk_cpu_id);
+            host_port_id = appIpcGetHostPortId((uint16_t)vsdk_cpu_id);
         }
     }
 

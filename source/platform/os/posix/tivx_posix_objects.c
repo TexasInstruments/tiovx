@@ -117,7 +117,7 @@ static vx_status ownFreePosixObject(
 
 uint8_t *ownPosixObjectAlloc(vx_enum type)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint8_t *obj = NULL;
 
     status = tivxMutexLock(g_tivx_objects_lock);
@@ -245,7 +245,7 @@ vx_status ownPosixObjectInit(void)
 
     if (NULL == g_tivx_objects_lock)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
         VX_PRINT(VX_ZONE_ERROR, "Error creating g_tivx_objects_lock\n");
     }
 

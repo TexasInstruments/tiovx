@@ -531,7 +531,7 @@ vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **ph
 
         *fd = appMemGetDmaBufFd((void*)virtAddr, &dmaBufFdOffset);
         *phyAddr = (void *)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)virtAddr,
-                                                            TIVX_MEM_EXTERNAL);
+                                                            (vx_enum)TIVX_MEM_EXTERNAL);
 
         if ((*fd == (uint32_t)-1) || (*phyAddr == 0))
         {
@@ -560,11 +560,17 @@ vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, 
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         int32_t status;
-
-        status = appMemTranslateDmaBufFd(dmaBufFd,
+        #if defined(X86_64) || defined(QNX)
+        status = (int32_t)appMemTranslateDmaBufFd(dmaBufFd,
                                          size,
                                          (uint64_t*)virtAddr,
                                          (uint64_t*)phyAddr);
+        #else
+        status = (int32_t)appMemTranslateDmaBufFd((uint32_t)dmaBufFd,
+                                         size,
+                                         (uint64_t*)virtAddr,
+                                         (uint64_t*)phyAddr);
+        #endif
 
         if (status < 0)
         {

@@ -104,7 +104,7 @@ vx_status tivxQueueCreate(
 
         queue->queue = queue_memory;
 
-        queue->context = ownPosixObjectAlloc(TIVX_POSIX_TYPE_QUEUE);
+        queue->context = ownPosixObjectAlloc((vx_enum)TIVX_POSIX_TYPE_QUEUE);
 
         context = queue->context;
 
@@ -167,7 +167,7 @@ vx_status tivxQueueCreate(
             else
             {
                 (void)pthread_mutex_destroy(&context->lock);
-                status = ownPosixObjectFree(queue->context, TIVX_POSIX_TYPE_QUEUE);
+                status = ownPosixObjectFree(queue->context, (vx_enum)TIVX_POSIX_TYPE_QUEUE);
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Queue free failed\n");
@@ -200,7 +200,7 @@ vx_status tivxQueueDelete(tivx_queue *queue)
         }
         (void)pthread_mutex_destroy(&context->lock);
 
-        status = ownPosixObjectFree((uint8_t*)context, TIVX_POSIX_TYPE_QUEUE);
+        status = ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_QUEUE);
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Queue free failed\n");
