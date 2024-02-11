@@ -1159,7 +1159,7 @@ TEST(tivxRawImage, testQueryRawImage)
 TEST(tivxRawImage, negativeTestCopyRawImagePatch1)
 {
     vx_context context = context_->vx_context_;
-    tivx_raw_image raw_image;
+    tivx_raw_image raw_image,raw_image1;
     int i, j;
     vx_rectangle_t rect;
     vx_imagepatch_addressing_t addr, addr1;
@@ -1221,8 +1221,16 @@ TEST(tivxRawImage, negativeTestCopyRawImagePatch1)
                                                           VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxCopyRawImagePatch(raw_image, NULL, 0, &addr, (void *)img,
                                                           VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_META_BEFORE_BUFFER));
-
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxCopyRawImagePatch(raw_image, NULL, 0, &addr, (void *)img,
+                                                          VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_ALLOC_BUFFER));
+    params.meta_height_after = 2;
+    ASSERT_VX_OBJECT(raw_image1 = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxCopyRawImagePatch(raw_image1, &rect, 0, &addr, (void *)img,
+                                                          VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_META_AFTER_BUFFER));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxCopyRawImagePatch(raw_image1, &rect, 0, &addr, (void *)img,
+                                                          VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
     VX_CALL(tivxReleaseRawImage(&raw_image));
+    VX_CALL(tivxReleaseRawImage(&raw_image1));
     ASSERT(raw_image == 0);
 }
 
