@@ -23,4 +23,5 @@ TESTCASE(tivxInternalApis)
 TESTCASE(tivxInternalObjects)
 TESTCASE(tivxInternalContext)
 TESTCASE(tivxInternalUserDataObject)
+TESTCASE(tivxInternalRawImage)
 #endif
