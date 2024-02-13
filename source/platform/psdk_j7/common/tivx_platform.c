@@ -46,7 +46,7 @@ char *tivxPlatformGetEnv(const char *env_var)
 #if defined(A72) || defined(A53)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (128U*1024U)
 #elif defined(R5F)
-#define TIVX_TARGET_DEFAULT_STACK_SIZE  (16U*1024U)
+#define TIVX_TARGET_DEFAULT_STACK_SIZE  (8U*1024U)
 #elif defined(C7X_FAMILY) || defined(C66)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (64U*1024U)
 #endif
