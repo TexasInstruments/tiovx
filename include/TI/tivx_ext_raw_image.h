@@ -59,8 +59,8 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 */
-#ifndef _TIVX_EXT_RAW_IMAGE_H_
-#define _TIVX_EXT_RAW_IMAGE_H_
+#ifndef TIVX_EXT_RAW_IMAGE_H_
+#define TIVX_EXT_RAW_IMAGE_H_
 
 /*!
  * \file

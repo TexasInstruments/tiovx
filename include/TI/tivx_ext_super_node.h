@@ -60,8 +60,8 @@
 *
 */
 
-#ifndef _TIVX_EXT_SUPER_NODE_H_
-#define _TIVX_EXT_SUPER_NODE_H_
+#ifndef TIVX_EXT_SUPER_NODE_H_
+#define TIVX_EXT_SUPER_NODE_H_
 
 /*!
  * \file

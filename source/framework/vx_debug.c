@@ -27,7 +27,7 @@ static vx_uint32 g_debug_zonemask = 0;
 
 #define ZONE_BIT(zone)  ((vx_uint32)1U << (zone))
 
-#define _STR2(x) {#x, (vx_enum)x}
+#define STR2(x) {#x, (vx_enum)x}
 
 struct vx_string_and_enum_e {
     vx_char name[20];
@@ -35,25 +35,25 @@ struct vx_string_and_enum_e {
 };
 
 static struct vx_string_and_enum_e g_debug_enumnames[] = {
-    _STR2(VX_ZONE_ERROR),
-    _STR2(VX_ZONE_WARNING),
-    _STR2(VX_ZONE_API),
-    _STR2(VX_ZONE_INFO),
-    _STR2(VX_ZONE_PERF),
-    _STR2(VX_ZONE_CONTEXT),
-    _STR2(VX_ZONE_OSAL),
-    _STR2(VX_ZONE_REFERENCE),
-    _STR2(VX_ZONE_ARRAY),
-    _STR2(VX_ZONE_IMAGE),
-    _STR2(VX_ZONE_SCALAR),
-    _STR2(VX_ZONE_KERNEL),
-    _STR2(VX_ZONE_GRAPH),
-    _STR2(VX_ZONE_NODE),
-    _STR2(VX_ZONE_PARAMETER),
-    _STR2(VX_ZONE_DELAY),
-    _STR2(VX_ZONE_TARGET),
-    _STR2(VX_ZONE_LOG),
-    _STR2(VX_ZONE_INIT),
+    STR2(VX_ZONE_ERROR),
+    STR2(VX_ZONE_WARNING),
+    STR2(VX_ZONE_API),
+    STR2(VX_ZONE_INFO),
+    STR2(VX_ZONE_PERF),
+    STR2(VX_ZONE_CONTEXT),
+    STR2(VX_ZONE_OSAL),
+    STR2(VX_ZONE_REFERENCE),
+    STR2(VX_ZONE_ARRAY),
+    STR2(VX_ZONE_IMAGE),
+    STR2(VX_ZONE_SCALAR),
+    STR2(VX_ZONE_KERNEL),
+    STR2(VX_ZONE_GRAPH),
+    STR2(VX_ZONE_NODE),
+    STR2(VX_ZONE_PARAMETER),
+    STR2(VX_ZONE_DELAY),
+    STR2(VX_ZONE_TARGET),
+    STR2(VX_ZONE_LOG),
+    STR2(VX_ZONE_INIT),
     {"UNKNOWN", -1} /* if the zone is not found, this will be returned. */
 };
 
