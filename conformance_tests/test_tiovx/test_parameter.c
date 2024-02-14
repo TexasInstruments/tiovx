@@ -131,12 +131,29 @@ TEST(tivxParameter, negativeTestQueryParameter)
     VX_CALL(vxReleaseKernel(&kern));
 }
 
+TEST(tivxParameter, negativeTestValidDirection)
+{
+    vx_context context = context_->vx_context_;
+    #define VX_KERNEL_TYPE_INVALID 3
+    #define VX_TYPE_INVALID_TYPE 0
+    vx_parameter param = NULL;
+    vx_kernel kern = NULL;
+    vx_reference value = NULL;
+    vx_uint32 index = 1;
+
+    ASSERT_VX_OBJECT(kern = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxAddParameterToKernel(kern, 1, VX_KERNEL_TYPE_INVALID, VX_TYPE_SCALAR, VX_PARAMETER_STATE_OPTIONAL));
+    VX_CALL(vxReleaseKernel(&kern));
+}
+
+
 TESTCASE_TESTS(
     tivxParameter,
     negativeTestGetKernelParameterByIndex,
     negativeTestGetParameterByIndex,
     negativeTestSetParameterByIndex,
     negativeTestSetParameterByReference,
-    negativeTestQueryParameter
+    negativeTestQueryParameter,
+    negativeTestValidDirection
 )
 

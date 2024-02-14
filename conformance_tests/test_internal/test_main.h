@@ -27,4 +27,5 @@ TESTCASE(tivxInternalRawImage)
 TESTCASE(tivxInternalError)
 TESTCASE(tivxReferenceLock)
 TESTCASE(tivxInternalPyramid)
+TESTCASE(tivxInternalParameter)
 #endif
