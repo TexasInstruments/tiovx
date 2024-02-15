@@ -54,6 +54,8 @@ typedef struct
 #define SET_NODE_TARGET_PARAMETERS \
     CT_GENERATE_PARAMETERS("target", ADD_SET_TARGET_PARAMETERS, ARG, NULL)
 
+#define NODE_ERROR_EVENT     (1u)
+
 TEST_WITH_ARG(tivxTargetFinal, testTargetScalar, SetTarget_Arg, SET_NODE_TARGET_PARAMETERS)
 {
     vx_graph graph;
@@ -61,8 +63,11 @@ TEST_WITH_ARG(tivxTargetFinal, testTargetScalar, SetTarget_Arg, SET_NODE_TARGET_
     vx_uint8  scalar_val = 0;
     vx_scalar scalar_in, scalar_out;
     vx_node n0;
+    vx_event_t event;
 
     tivxTestKernelsLoadKernels(context);
+
+    VX_CALL(vxEnableEvents(context));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -73,10 +78,17 @@ TEST_WITH_ARG(tivxTargetFinal, testTargetScalar, SetTarget_Arg, SET_NODE_TARGET_
 
     vxSetReferenceName((vx_reference)n0, "test_target_node");
 
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n0, VX_EVENT_NODE_ERROR, 0, NODE_ERROR_EVENT));
+
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, arg_->target_string));
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
+
+    tivxTaskWaitMsecs(10);
+
+    /* Asserting that no errors were produced when running the application */
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitEvent(context, &event, vx_true_e));
 
     VX_CALL(vxReleaseNode(&n0));
     VX_CALL(vxReleaseScalar(&scalar_in));

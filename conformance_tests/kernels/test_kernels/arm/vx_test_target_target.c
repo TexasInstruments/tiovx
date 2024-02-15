@@ -67,6 +67,7 @@
 #include "tivx_kernel_test_target.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include <TI/tivx_task.h>
 
 static tivx_target_kernel vx_test_target_target_kernel = NULL;
 
@@ -86,6 +87,73 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
        tivx_target_kernel_instance kernel,
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
+
+#define TARGET_TEST_TASK_STACK_SIZE      1024U
+
+/* Note: there is probably a cleaner way of obtaining this value
+ * with ifdefs, etc.
+ * However, it should be greater than the below task values:
+ *  - TIVX_TASK_MAX_OBJECTS for A72/A53
+ *  - OSAL_FREERTOS_CONFIGNUM_TASK for PDK FreeRTOS
+ *  - OSAL_SAFERTOS_CONFIGNUM_TASK for PDK SafeRTOS
+ *  - APP_RTOS_MAX_TASK_COUNT for MCU+ */
+#define TARGET_TEST_MAX_TASKS            1024U
+
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+
+#define TARGET_TEST_TASK_STACK_ALIGNMENT 1024U
+
+static uint8_t tivxTestTargetTaskStack
+__attribute__ ((section(".bss:taskStackSection")))
+__attribute__ ((aligned(TARGET_TEST_TASK_STACK_ALIGNMENT)))
+    ;
+
+#endif
+
+static void VX_CALLBACK tivxTestTask(void *app_var)
+{
+}
+
+static vx_status tivxTestTargetTaskBoundary(void)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_task taskHandle[TARGET_TEST_MAX_TASKS];
+    tivx_task_create_params_t taskParams;
+    uint32_t i, j;
+
+    tivxTaskSetDefaultCreateParams(&taskParams);
+    taskParams.task_main = &tivxTestTask;
+    taskParams.app_var = NULL;
+    #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+    taskParams.stack_ptr = &tivxTestTargetTaskStack;
+    #else
+    taskParams.stack_ptr = NULL;
+    #endif
+    taskParams.stack_size = TARGET_TEST_TASK_STACK_SIZE;
+    taskParams.core_affinity = TIVX_TASK_AFFINITY_ANY;
+    taskParams.priority = 8;
+
+    /* There isn't a clean way to query the total number of
+     * tasks, so exiting once we hit the max */
+    for (i = 0; i < TARGET_TEST_MAX_TASKS; i++)
+    {
+        status = tivxTaskCreate(&taskHandle[i], &taskParams);
+
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            break;
+        }
+    }
+
+    j = i;
+
+    for (i = 0; i < j; i++)
+    {
+        status = tivxTaskDelete(&taskHandle[i]);
+    }
+
+    return status;
+}
 
 static vx_status VX_CALLBACK tivxTestTargetProcess(
        tivx_target_kernel_instance kernel,
@@ -118,6 +186,11 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
 
         out_desc->data.u08 = in_value;
 
+    }
+
+    if((vx_status)VX_SUCCESS == status)
+    {
+        status = tivxTestTargetTaskBoundary();
     }
 
     return status;
