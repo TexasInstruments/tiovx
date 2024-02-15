@@ -22,7 +22,7 @@ All of the below kernels default to running on the C66x DSP 1.  If a different t
 is needed, it can be selected from the available targets indicated below by using the vxSetNodeTarget() API.
 
 Kernel | C66x 1 | C66x 2 | HWA | PC Emulation Support |
--------|------|------|-----|-----|
+-------|--------|--------|-----|----------------------|
 [Absolute Difference](https://www.khronos.org/registry/OpenVX/specs/1.1/html/dc/ddf/group__group__vision__function__absdiff.html)              | Cache | Cache | | Yes |
 [Accumulate](https://www.khronos.org/registry/OpenVX/specs/1.1/html/d0/d77/group__group__vision__function__accumulate.html)                    | Cache | Cache | | Yes |
 [Accumulate Squared](https://www.khronos.org/registry/OpenVX/specs/1.1/html/d0/d2c/group__group__vision__function__accumulate__square.html)    | Cache | Cache | | Yes |

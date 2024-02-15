@@ -27,7 +27,7 @@ be recompiled from C66x to C7x, these kernels in VXLIB and associated kernel wra
 for information on how to recompile these kernels.
 
 Kernel | C7X | HWA | PC Emulation Support |
--------|------|-----|-----|
+-------|-----|-----|----------------------|
 [Absolute Difference](https://www.khronos.org/registry/OpenVX/specs/1.1/html/dc/ddf/group__group__vision__function__absdiff.html)              | Cache | | Yes |
 [Accumulate](https://www.khronos.org/registry/OpenVX/specs/1.1/html/d0/d77/group__group__vision__function__accumulate.html)                    | Cache | | Yes |
 [Accumulate Squared](https://www.khronos.org/registry/OpenVX/specs/1.1/html/d0/d2c/group__group__vision__function__accumulate__square.html)    | Cache | | Yes |
