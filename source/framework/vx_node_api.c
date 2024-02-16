@@ -502,9 +502,15 @@ VX_API_ENTRY vx_node VX_API_CALL vxAccumulateWeightedImageNode(vx_graph graph, v
 
 VX_API_ENTRY vx_node VX_API_CALL vxAccumulateWeightedImageNodeX(vx_graph graph, vx_image input, vx_float32 alpha, vx_image accum)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar salpha = vxCreateScalar(vxGetContext((vx_reference)graph), (vx_enum)VX_TYPE_FLOAT32, &alpha);
     vx_node node = vxAccumulateWeightedImageNode(graph, input, salpha, accum);
-    vxReleaseScalar(&salpha);
+
+    status = vxReleaseScalar(&salpha);
+    if((vx_status)VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar object");
+    }
     return node;
 }
 
@@ -523,9 +529,15 @@ VX_API_ENTRY vx_node VX_API_CALL vxAccumulateSquareImageNode(vx_graph graph, vx_
 
 VX_API_ENTRY vx_node VX_API_CALL vxAccumulateSquareImageNodeX(vx_graph graph, vx_image input, vx_uint32 shift, vx_image accum)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar scalar = vxCreateScalar(vxGetContext((vx_reference)graph), (vx_enum)VX_TYPE_UINT32, &shift);
     vx_node node = vxAccumulateSquareImageNode(graph, input, scalar, accum);
-    vxReleaseScalar(&scalar);
+
+    status = vxReleaseScalar(&scalar);
+    if((vx_status)VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar object");
+    }
     return node;
 }
 
