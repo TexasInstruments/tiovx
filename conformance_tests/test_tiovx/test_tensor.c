@@ -587,6 +587,21 @@ TEST(tivxTensor, negativeTestUnmapTensorPatch)
     VX_CALL(vxReleaseTensor(&tensor));
 }
 
+TEST(tivxTensor, negativeTestQueryTensorNegativeCases)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_tensor tensor = NULL;
+    vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS, dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0}, size = 0;
+    vx_enum dt = VX_TYPE_UINT8;
+    vx_int8 fpp = 0;
+
+    ASSERT_VX_OBJECT(tensor = vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryTensor(tensor, VX_TENSOR_DIMS, NULL, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryTensor(tensor, TIVX_TENSOR_STRIDES, NULL, size));
+    VX_CALL(vxReleaseTensor(&tensor));
+}
+
 TESTCASE_TESTS(
     tivxTensor,
     testCreateTensor,
@@ -598,6 +613,7 @@ TESTCASE_TESTS(
     negativeTestSetTensorAttribute,
     negativeTestCopyTensor,
     negativeTestMapTensorPatch,
-    negativeTestUnmapTensorPatch
+    negativeTestUnmapTensorPatch,
+    negativeTestQueryTensorNegativeCases
 )
 
