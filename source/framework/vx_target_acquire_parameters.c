@@ -627,8 +627,9 @@ void ownTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc, 
 
             if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
-                is_prm_input =    tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id))
-                               || tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)TIVX_OBJ_DESC_BIDIR_FLAG<<prm_id));
+                bool temp;
+                temp = (bool)tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)) || (bool)tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)TIVX_OBJ_DESC_BIDIR_FLAG<<prm_id));
+                is_prm_input = (vx_bool)temp;
                 is_prm_released = (vx_bool)vx_false_e;
 
 
