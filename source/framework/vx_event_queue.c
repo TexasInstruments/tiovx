@@ -356,7 +356,7 @@ vx_status ownRegisterEvent(vx_reference ref,
             }
             else
             {
-                /* do nothing */
+                VX_PRINT(VX_ZONE_ERROR, "Invalid queue type given\n");
             }
         }
     }
