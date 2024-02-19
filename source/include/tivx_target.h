@@ -271,7 +271,7 @@ typedef void(*own_execute_user_kernel_f)(tivx_obj_desc_node_t *node_obj_desc, ui
 * \param [in] cmd_obj_desc The command object descriptor to handle.
 * \ingroup group_tivx_target
 */
-typedef void(*own_target_cmd_desc_handler_f)(tivx_obj_desc_cmd_t *cmd_obj_desc);
+typedef void(*own_target_cmd_desc_handler_f)(const tivx_obj_desc_cmd_t *cmd_obj_desc);
 
 /*!
  * \brief Register Various functions within target files to be linked for host usage
