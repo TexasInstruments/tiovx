@@ -30,6 +30,7 @@ static void ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items);
 static vx_status ownDestructDelay(vx_reference ref);
 static vx_status ownAllocDelayBuffer(vx_reference delay_ref);
 static void ownDelayInit(vx_delay delay, vx_size count, vx_enum type);
+static vx_status ownAgeDelay(vx_delay delay);
 
 
 static vx_bool ownIsValidObject(vx_enum type)
@@ -597,6 +598,57 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
 
     if (tivxIsValidDelay(delay))
     {
+        vx_int32 i;
+
+        status = ownAgeDelay(delay);
+
+        switch (delay->type)
+        {
+            case (vx_enum)VX_TYPE_PYRAMID:
+                if (delay->pyr_num_levels > 0U)
+                {
+                    /* age pyramid levels */
+                    vx_int32 numLevels = (vx_int32)delay->pyr_num_levels;
+                    for (i = 0; i < numLevels; ++i)
+                    {
+                        status = ownAgeDelay(delay->pyr_delay[i]);
+                    }
+                }
+                break;
+
+            case (vx_enum)VX_TYPE_OBJECT_ARRAY:
+                if (delay->obj_arr_num_items > 0U)
+                {
+                     /* age object array levels */
+                    vx_int32 numLevels = (vx_int32)delay->obj_arr_num_items;
+                    for (i = 0; i < numLevels; ++i)
+                    {
+                        /* Note: Given that object arrays cannot have object array
+                         * exemplars, this aging process is valid */
+                        status = ownAgeDelay(delay->obj_arr_delay[i]);
+                    }
+                }
+                break;
+
+            default:
+                break;
+
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "invalid delay\n");
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    }
+    return status;
+}
+
+static vx_status ownAgeDelay(vx_delay delay)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if (tivxIsValidDelay(delay))
+    {
         vx_int32 i,j;
 
         /* increment the index */
@@ -623,25 +675,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
                 }
                 param = param->next;
             } while (param != NULL);
-        }
-
-        if ( (delay->type == (vx_enum)VX_TYPE_PYRAMID) && (delay->pyr_num_levels > 0U) )
-        {
-            /* age pyramid levels */
-            vx_int32 numLevels = (vx_int32)delay->pyr_num_levels;
-            for (i = 0; i < numLevels; ++i)
-            {
-                vxAgeDelay(delay->pyr_delay[i]);
-            }
-        }
-        if ( (delay->type == (vx_enum)VX_TYPE_OBJECT_ARRAY) && (delay->obj_arr_num_items > 0U) )
-        {
-            /* age object array levels */
-            vx_int32 numLevels = (vx_int32)delay->obj_arr_num_items;
-            for (i = 0; i < numLevels; ++i)
-            {
-                vxAgeDelay(delay->obj_arr_delay[i]);
-            }
         }
     }
     else

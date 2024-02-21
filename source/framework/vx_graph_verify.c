@@ -102,6 +102,7 @@ static vx_status ownGraphUpdateDataReferenceQueueRefsAfterKernelInit(vx_graph gr
 static vx_status ownGraphUpdateImageRefAfterKernetInit(vx_image exemplar, vx_image ref);
 static vx_status ownGraphUpdateObjArrRefAfterKernetInit(vx_object_array exemplar, vx_object_array ref);
 static vx_status ownGraphUpdatePyramidRefAfterKernetInit(vx_pyramid exemplar, vx_pyramid ref);
+static vx_status ownGraphAddSingleDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check);
 
 /* Validate graph parameters; two parameters should not point to the same node & index, and two parameters should not have the same initial reference set. */
 static vx_status ownGraphValidateParameters(vx_graph graph)
@@ -167,6 +168,29 @@ static vx_status ownGraphLinkParameters(vx_graph graph)
 /* Add's data reference to a list, increments number of times it is referred as input node */
 static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check)
 {
+    vx_status status = (vx_status)VX_FAILURE;
+
+    status = ownGraphAddSingleDataReference(graph, ref, prm_dir, check);
+
+    if ((vx_status)VX_SUCCESS==status)
+    {
+        if ((ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+                ||
+            (ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
+           )
+        {
+            /* Check set to 0 because a data_ref_num_in_nodes is not supposed to be set for parent object */
+            /* Note: given that object arrays/pyramid cannot be made to have parent objects themselves, this
+             * is a valid way of adding these data references, rather than needing a recursive check */
+            status = ownGraphAddSingleDataReference(graph, ref->scope, prm_dir, 0);
+        }
+    }
+
+    return status;
+}
+
+static vx_status ownGraphAddSingleDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check)
+{
     uint32_t i;
     vx_status status = (vx_status)VX_FAILURE;
 
@@ -207,16 +231,6 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
     {
         /* do nothing */
     }
-
-    if ((ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
-            ||
-        (ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
-       )
-    {
-        /* Check set to 0 because a data_ref_num_in_nodes is not supposed to be set for parent object */
-        ownGraphAddDataReference(graph, ref->scope, prm_dir, 0);
-    }
-
     return status;
 }
 
