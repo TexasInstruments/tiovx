@@ -957,7 +957,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
 
             if (image_addr->stride_x == 0)
             {
-                pImageLine = &(pImagePtr[((start_y*(vx_uint32)image_addr->stride_y)/image_addr->step_y) + (((start_x*12UL)/8UL)/image_addr->step_x)]);
+                pImageLine = &(pImagePtr[(((unsigned long)start_y*(vx_uint32)image_addr->stride_y)/image_addr->step_y) + (((start_x*12UL)/8UL)/image_addr->step_x)]);
 
                 if (user_addr->stride_x == 1)
                 {
