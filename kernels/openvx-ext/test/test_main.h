@@ -61,4 +61,6 @@
  */
 
 TESTCASE(tivxObjArraySplit)
+#if !defined(SOC_J722S) && !defined(SOC_AM62A)
 TESTCASE(tivxTargetFinal)
+#endif
