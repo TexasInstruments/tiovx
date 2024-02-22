@@ -122,7 +122,7 @@ vx_status tivxQueueCreate(
             status |= pthread_mutexattr_init(&mutex_attr);
             status |= pthread_mutex_init(&context->lock, &mutex_attr);
 
-            pthread_mutexattr_destroy(&mutex_attr);
+            (void)pthread_mutexattr_destroy(&mutex_attr);
 
             if(status==0)
             {
@@ -140,7 +140,7 @@ vx_status tivxQueueCreate(
                     status |= pthread_condattr_init(&cond_attr);
                     status |= pthread_cond_init(&context->condGet, &cond_attr);
 
-                    pthread_condattr_destroy(&cond_attr);
+                    (void)pthread_condattr_destroy(&cond_attr);
                 }
                 if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != (uint32_t)0)
                 {
@@ -156,7 +156,7 @@ vx_status tivxQueueCreate(
                     status |= pthread_condattr_init(&cond_attr);
                     status |= pthread_cond_init(&context->condPut, &cond_attr);
 
-                    pthread_condattr_destroy(&cond_attr);
+                    (void)pthread_condattr_destroy(&cond_attr);
                 }
             }
             if ((vx_status)VX_SUCCESS == status)
@@ -166,7 +166,7 @@ vx_status tivxQueueCreate(
             }
             else
             {
-                pthread_mutex_destroy(&context->lock);
+                (void)pthread_mutex_destroy(&context->lock);
                 status = ownPosixObjectFree(queue->context, TIVX_POSIX_TYPE_QUEUE);
                 if ((vx_status)VX_SUCCESS != status)
                 {
@@ -192,13 +192,13 @@ vx_status tivxQueueDelete(tivx_queue *queue)
         VX_PRINT(VX_ZONE_INFO, "if this hangs, please ensure all application threads have been destroyed\n");
         if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != (uint32_t)0)
         {
-            pthread_cond_destroy(&(context)->condGet);
+            (void)pthread_cond_destroy(&(context)->condGet);
         }
         if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != (uint32_t)0)
         {
-            pthread_cond_destroy(&(context)->condPut);
+            (void)pthread_cond_destroy(&(context)->condPut);
         }
-        pthread_mutex_destroy(&context->lock);
+        (void)pthread_mutex_destroy(&context->lock);
 
         status = ownPosixObjectFree((uint8_t*)context, TIVX_POSIX_TYPE_QUEUE);
         if ((vx_status)VX_SUCCESS != status)
@@ -247,7 +247,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                         /* blocking on queue get enabled */
 
                         /* post cond to unblock, blocked tasks */
-                        pthread_cond_signal(&context->condGet);
+                        (void)pthread_cond_signal(&context->condGet);
                     }
 
                     /* exit, with success */
@@ -266,7 +266,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                     {
                         /* blocking on queue put enabled */
                         queue->blockedOnPut = (vx_bool)vx_true_e;
-                        pthread_cond_wait(&context->condPut, &context->lock);
+                        (void)pthread_cond_wait(&context->condPut, &context->lock);
                         queue->blockedOnPut = (vx_bool)vx_false_e;
                     }
                     else
@@ -326,7 +326,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                     if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != (uint32_t)0)
                     {
                         /* post cond to unblock, blocked tasks */
-                        pthread_cond_signal(&context->condPut);
+                        (void)pthread_cond_signal(&context->condPut);
                     }
 
                     /* exit with success */
@@ -347,7 +347,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                         /* blocking on queue get enabled */
 
                         queue->blockedOnGet = (vx_bool)vx_true_e;
-                        pthread_cond_wait(&context->condGet, &context->lock);
+                        (void)pthread_cond_wait(&context->condGet, &context->lock);
                         queue->blockedOnGet = (vx_bool)vx_false_e;
                         /* received semaphore, check queue again */
                     }
@@ -396,7 +396,7 @@ vx_bool tivxQueueIsEmpty(const tivx_queue *queue)
                 is_empty = (vx_bool)vx_false_e;
             }
 
-            pthread_mutex_unlock(&context->lock);
+            (void)pthread_mutex_unlock(&context->lock);
         }
     }
     return (is_empty);

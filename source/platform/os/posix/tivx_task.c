@@ -162,7 +162,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
                 {
                     status = pthread_create(&context->hndl, &thread_attr, tivxTaskMain, task);
                 }
-                pthread_attr_destroy(&thread_attr);
+                (void)pthread_attr_destroy(&thread_attr);
             }
             if (status == 0)
             {
@@ -198,8 +198,8 @@ vx_status tivxTaskDelete(tivx_task *task)
 
         context = (tivx_task_context)task->tsk_handle;
 
-        pthread_cancel(context->hndl);
-        pthread_join(context->hndl, &ret_val);
+        (void)pthread_cancel(context->hndl);
+        (void)pthread_join(context->hndl, &ret_val);
 
         status = ownPosixObjectFree((uint8_t*)context, TIVX_POSIX_TYPE_TASK);
         if ((vx_status)VX_SUCCESS != status)

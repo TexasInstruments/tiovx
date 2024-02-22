@@ -148,9 +148,9 @@ void ownPlatformDeInit(void)
 {
     int32_t i;
 
-    sem_close(g_tivx_platform_info.semaphore);
-    sem_close(g_tivx_platform_info.semaphore_data_ref);
-    sem_close(g_tivx_platform_info.semaphore_log_mem);
+    (void)sem_close(g_tivx_platform_info.semaphore);
+    (void)sem_close(g_tivx_platform_info.semaphore_data_ref);
+    (void)sem_close(g_tivx_platform_info.semaphore_log_mem);
 
     ownIpcDeInit();
 
@@ -176,17 +176,17 @@ void ownPlatformSystemLock(vx_enum lock_id)
              * data ref queue.
              * This lock in this platform is implemented via HW spinlock
              */
-            sem_wait(g_tivx_platform_info.semaphore_data_ref);
+            (void)sem_wait(g_tivx_platform_info.semaphore_data_ref);
             appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
         {
-            sem_wait(g_tivx_platform_info.semaphore_log_mem);
+            (void)sem_wait(g_tivx_platform_info.semaphore_log_mem);
             appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
-            sem_wait(g_tivx_platform_info.semaphore);
+            (void)sem_wait(g_tivx_platform_info.semaphore);
             appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
         else
@@ -204,17 +204,17 @@ void ownPlatformSystemUnlock(vx_enum lock_id)
         {
             /* release the lock taken during ownPlatformSystemLock */
             appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
-            sem_post(g_tivx_platform_info.semaphore_data_ref);
+            (void)sem_post(g_tivx_platform_info.semaphore_data_ref);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
         {
             appIpcHwLockRelease(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID);
-            sem_post(g_tivx_platform_info.semaphore_log_mem);
+            (void)sem_post(g_tivx_platform_info.semaphore_log_mem);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
             appIpcHwLockRelease(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID);
-            sem_post(g_tivx_platform_info.semaphore);
+            (void)sem_post(g_tivx_platform_info.semaphore);
         }
         else
         {
@@ -322,7 +322,7 @@ void ownPlatformGetTargetName(vx_enum target_id, char *target_name)
 {
     uint32_t i;
 
-    snprintf(target_name, TIVX_TARGET_MAX_NAME, "UNKNOWN");
+    (void)snprintf(target_name, TIVX_TARGET_MAX_NAME, "UNKNOWN");
 
     if(target_id!=(vx_enum)TIVX_TARGET_ID_INVALID)
     {
@@ -330,7 +330,7 @@ void ownPlatformGetTargetName(vx_enum target_id, char *target_name)
         {
             if (target_id == g_tivx_platform_info.target_info[i].target_id)
             {
-                snprintf(target_name, TIVX_TARGET_MAX_NAME, "%s", g_tivx_platform_info.target_info[i].target_name);
+                (void)snprintf(target_name, TIVX_TARGET_MAX_NAME, "%s", g_tivx_platform_info.target_info[i].target_name);
                 break;
             }
         }

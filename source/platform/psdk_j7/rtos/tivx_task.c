@@ -47,7 +47,7 @@ void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params)
 
         params->core_affinity = TIVX_TASK_AFFINITY_ANY;
         params->priority = TIVX_TASK_PRI_LOWEST;
-        strncpy(params->task_name, "TIVX", TIVX_MAX_TASK_NAME);
+        (void)strncpy(params->task_name, "TIVX", TIVX_MAX_TASK_NAME);
         params->task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
     }
 }
@@ -80,7 +80,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
         rtos_task_prms.taskfxn   = &tivxTaskDefHandle;
 
 
-        strncpy(task->task_name, params->task_name, TIVX_MAX_TASK_NAME);
+        (void)strncpy(task->task_name, params->task_name, TIVX_MAX_TASK_NAME);
         task->task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
 
         tskHndl = (void*)appRtosTaskCreate(&rtos_task_prms);
