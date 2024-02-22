@@ -180,7 +180,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
         status = pthread_mutex_lock(&event->lock);
         if(status == 0)
         {
-            vx_bool done = (vx_bool)vx_false_e;
+            bool done = (bool)vx_false_e;
 
             while(!done)
             {
@@ -189,7 +189,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                     /* clear event */
                     event->is_set = 0;
                     status = (vx_status)VX_SUCCESS;
-                    done = (vx_bool)vx_true_e;
+                    done = (bool)vx_true_e;
                 }
                 else
                 if(timeout==TIVX_EVENT_TIMEOUT_NO_WAIT)
@@ -197,7 +197,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                     VX_PRINT(VX_ZONE_ERROR,
                              "Timeout set to TIVX_EVENT_TIMEOUT_NO_WAIT\n");
                     status = (vx_status)VX_FAILURE;
-                    done = (vx_bool)vx_true_e;
+                    done = (bool)vx_true_e;
                 }
                 else
                 if(timeout!=TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
@@ -234,14 +234,14 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "Event timed-out.\n");
                             status = (vx_status)TIVX_ERROR_EVENT_TIMEOUT;
-                            done = (vx_bool)vx_true_e;
+                            done = (bool)vx_true_e;
                         }
                         else if ((int32_t)0 != retVal)
                         {
                             /* Error other than ETIMEDOUT. */
                             VX_PRINT(VX_ZONE_ERROR, "Event wait failed.\n");
                             status = (vx_status)VX_FAILURE;
-                            done = (vx_bool)vx_true_e;
+                            done = (bool)vx_true_e;
                         }
                         else
                         {
@@ -253,7 +253,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                         /* gettimeofday() failed. */
                         VX_PRINT(VX_ZONE_ERROR, "gettimeofday() failed.\n");
                         status = (vx_status)VX_FAILURE;
-                        done = (vx_bool)vx_true_e;
+                        done = (bool)vx_true_e;
                     }
                 }
                 else
@@ -265,7 +265,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Event wait failed.\n");
                         status = (vx_status)VX_FAILURE;
-                        done = (vx_bool)vx_true_e;
+                        done = (bool)vx_true_e;
                     }
                 }
             }

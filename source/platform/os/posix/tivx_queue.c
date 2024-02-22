@@ -423,20 +423,18 @@ vx_status tivxQueuePeek(const tivx_queue *queue, uintptr_t *data)
     {
         context = queue->context;
 
-        status = pthread_mutex_lock(&context->lock);
-        if(status==0)
+        (void)pthread_mutex_lock(&context->lock);
+        
+        if (queue->count > 0U)
         {
-            if (queue->count > 0U)
-            {
-                /* 'peek' the element but dont extract it */
-                *data = queue->queue[queue->cur_rd];
-
-                /* set status as success */
-                status = (vx_status)VX_SUCCESS;
-            }
-
-            status = pthread_mutex_unlock(&context->lock);
+            /* 'peek' the element but dont extract it */
+            *data = queue->queue[queue->cur_rd];
+            /*Set status as success*/
+            status = (vx_status)VX_SUCCESS;
         }
+
+        (void)pthread_mutex_unlock(&context->lock);
+        
     }
     return (status);
 }

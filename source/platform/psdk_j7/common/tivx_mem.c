@@ -533,7 +533,7 @@ vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **ph
         *phyAddr = (void *)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)virtAddr,
                                                             (vx_enum)TIVX_MEM_EXTERNAL);
 
-        if ((*fd == (uint32_t)-1) || (*phyAddr == 0))
+        if ((*fd == (uint32_t)-1) || (*phyAddr == (void*)0))
         {
             vxStatus = (vx_status)VX_FAILURE;
         }
