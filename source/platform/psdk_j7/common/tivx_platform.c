@@ -104,7 +104,7 @@ void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name,
         target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
         target_create_prms.task_core_affinity = TIVX_TASK_AFFINITY_ANY;
         target_create_prms.task_priority = task_pri;
-        strncpy(target_create_prms.task_name, name,TIVX_TARGET_MAX_TASK_NAME);
+        (void)strncpy(target_create_prms.task_name, name,TIVX_TARGET_MAX_TASK_NAME);
         target_create_prms.task_name[TIVX_TARGET_MAX_TASK_NAME-1U] = (char)0;
 
         status = ownTargetCreate(target_id, &target_create_prms);

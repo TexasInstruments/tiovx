@@ -82,7 +82,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 
         if(status!=0)
         {
-            pthread_mutex_destroy(&tmp_mutex->lock);
+            (void)pthread_mutex_destroy(&tmp_mutex->lock);
             status = ownPosixObjectFree((uint8_t *)tmp_mutex, TIVX_POSIX_TYPE_MUTEX);
             if ((vx_status)VX_SUCCESS != status)
             {
@@ -96,7 +96,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
         {
             *mutex = tmp_mutex;
         }
-        pthread_mutexattr_destroy(&mutex_attr);
+        (void)pthread_mutexattr_destroy(&mutex_attr);
     }
 
     return (status);
@@ -108,7 +108,7 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
 
     if(*mutex != NULL)
     {
-        pthread_mutex_destroy(&(*mutex)->lock);
+        (void)pthread_mutex_destroy(&(*mutex)->lock);
         status = ownPosixObjectFree((uint8_t *)(*mutex), TIVX_POSIX_TYPE_MUTEX);
         if ((vx_status)VX_SUCCESS != status)
         {

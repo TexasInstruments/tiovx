@@ -141,7 +141,7 @@ vx_status tivxEventClear(tivx_event event)
 
     if (NULL != event)
     {
-        appRtosSemaphoreReset((app_rtos_semaphore_handle_t)event);
+        (void)appRtosSemaphoreReset((app_rtos_semaphore_handle_t)event);
     }
     else
     {

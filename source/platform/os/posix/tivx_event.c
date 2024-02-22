@@ -90,8 +90,8 @@ vx_status tivxEventCreate(tivx_event *event)
 
         if(status!=0)
         {
-            pthread_cond_destroy(&tmp_event->cond);
-            pthread_mutex_destroy(&tmp_event->lock);
+            (void)pthread_cond_destroy(&tmp_event->cond);
+            (void)pthread_mutex_destroy(&tmp_event->lock);
             status = ownPosixObjectFree((uint8_t *)tmp_event, TIVX_POSIX_TYPE_EVENT);
             if ((vx_status)VX_SUCCESS != status)
             {
@@ -107,8 +107,8 @@ vx_status tivxEventCreate(tivx_event *event)
             *event = tmp_event;
         }
 
-        pthread_condattr_destroy(&cond_attr);
-        pthread_mutexattr_destroy(&mutex_attr);
+        (void)pthread_condattr_destroy(&cond_attr);
+        (void)pthread_mutexattr_destroy(&mutex_attr);
     }
 
     return (status);
@@ -120,8 +120,8 @@ vx_status tivxEventDelete(tivx_event *event)
 
     if(*event != NULL)
     {
-        pthread_cond_destroy(&(*event)->cond);
-        pthread_mutex_destroy(&(*event)->lock);
+        (void)pthread_cond_destroy(&(*event)->cond);
+        (void)pthread_mutex_destroy(&(*event)->lock);
         status = ownPosixObjectFree((uint8_t *)(*event), TIVX_POSIX_TYPE_EVENT);
         if ((vx_status)VX_SUCCESS != status)
         {

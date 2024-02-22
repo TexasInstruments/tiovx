@@ -264,7 +264,7 @@ void ownPlatformGetTargetName(vx_enum target_id, char *target_name)
 {
     uint32_t i;
 
-    snprintf(target_name, TIVX_TARGET_MAX_NAME, "UNKNOWN");
+    (void)snprintf(target_name, TIVX_TARGET_MAX_NAME, "UNKNOWN");
 
     if(target_id != (vx_enum)TIVX_TARGET_ID_INVALID)
     {
@@ -272,7 +272,7 @@ void ownPlatformGetTargetName(vx_enum target_id, char *target_name)
         {
             if (target_id == g_tivx_platform_info.target_info[i].target_id)
             {
-                snprintf(target_name, TIVX_TARGET_MAX_NAME, "%s", g_tivx_platform_info.target_info[i].target_name);
+                (void)snprintf(target_name, TIVX_TARGET_MAX_NAME, "%s", g_tivx_platform_info.target_info[i].target_name);
                 break;
             }
         }

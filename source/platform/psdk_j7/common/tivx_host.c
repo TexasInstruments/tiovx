@@ -29,21 +29,21 @@ static pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void tivxHostInit(void)
 {
-    pthread_mutex_lock(&g_mutex);
+    (void)pthread_mutex_lock(&g_mutex);
 
     tivxHostInitLocal();
 
-    pthread_mutex_unlock(&g_mutex);
+    (void)pthread_mutex_unlock(&g_mutex);
 
 }
 
 void tivxHostDeInit(void)
 {
-    pthread_mutex_lock(&g_mutex);
+    (void)pthread_mutex_lock(&g_mutex);
 
     tivxHostDeInitLocal();
 
-    pthread_mutex_unlock(&g_mutex);
+    (void)pthread_mutex_unlock(&g_mutex);
 }
 
 #else
