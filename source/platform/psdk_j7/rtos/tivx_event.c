@@ -45,15 +45,24 @@ vx_status tivxEventCreate(tivx_event *event)
 
 vx_status tivxEventDelete(tivx_event *event)
 {
-    vx_status status = (vx_status)VX_FAILURE;
+    vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_status_t ret_status = (app_rtos_status_t)APP_RTOS_STATUS_SUCCESS;
     app_rtos_semaphore_handle_t handle;
 
     if ((NULL != event) && (*event != NULL))
     {
         handle = (app_rtos_semaphore_handle_t)*event;
-        appRtosSemaphoreDelete(&handle);
+        ret_status = appRtosSemaphoreDelete(&handle);
+        if ((app_rtos_status_t)APP_RTOS_STATUS_SUCCESS != ret_status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Semaphore delete returned an error\n");
+            status = (vx_status)VX_FAILURE;
+        }
         *event = NULL;
-        status = (vx_status)VX_SUCCESS;
+    }
+    else
+    {
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);
@@ -61,12 +70,23 @@ vx_status tivxEventDelete(tivx_event *event)
 
 vx_status tivxEventPost(tivx_event event)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_status_t ret_status = APP_RTOS_STATUS_SUCCESS;
     if (NULL != event)
     {
-        appRtosSemaphorePost((app_rtos_semaphore_handle_t)event);
+        ret_status = appRtosSemaphorePost((app_rtos_semaphore_handle_t)event);
+        if(APP_RTOS_STATUS_SUCCESS != ret_status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "app IPC failed to unlock\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+    else
+    {
+        status = (vx_status)VX_FAILURE;
     }
 
-    return ((vx_status)VX_SUCCESS);
+    return (status);
 }
 
 vx_status tivxEventWait(tivx_event event, uint32_t timeout)
