@@ -107,10 +107,16 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
 vx_status tivxTaskDelete(tivx_task *task)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_status_t ret_status = APP_RTOS_STATUS_SUCCESS;
 
     if ((NULL != task) && (NULL != task->tsk_handle))
     {
-        appRtosTaskDelete((app_rtos_task_handle_t*)&task->tsk_handle);
+        ret_status = appRtosTaskDelete((app_rtos_task_handle_t*)&task->tsk_handle);
+        if (ret_status != (app_rtos_status_t)0)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Task_Delete: Task deletion failed\n");
+            status = (vx_status)VX_FAILURE;
+        }
     }
     else
     {

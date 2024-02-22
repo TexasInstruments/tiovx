@@ -37,6 +37,7 @@ vx_status tivxQueueCreate(
     uint32_t flags)
 {
     vx_status status = (vx_status)VX_FAILURE;
+    vx_status ret_status = (vx_status)VX_FAILURE;
 
     if ((NULL != queue) && (NULL != queue_memory) && (0U != max_elements))
     {
@@ -86,7 +87,12 @@ vx_status tivxQueueCreate(
         }
         else
         {
-            tivxQueueDelete(queue);
+            ret_status = tivxQueueDelete(queue);
+            if (ret_status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxQueueDelete() failed.\n");
+                status = ret_status;
+            }
         }
     }
 
@@ -96,6 +102,7 @@ vx_status tivxQueueCreate(
 vx_status tivxQueueDelete(tivx_queue *queue)
 {
     vx_status status = (vx_status)VX_FAILURE;
+    vx_status ret_status = (vx_status)VX_FAILURE;
 
     if (NULL != queue)
     {
@@ -103,16 +110,23 @@ vx_status tivxQueueDelete(tivx_queue *queue)
                 TIVX_QUEUE_FLAG_BLOCK_ON_GET) &&
             (NULL != queue->block_rd))
         {
-            tivxEventDelete(&queue->block_rd);
+            status = tivxEventDelete(&queue->block_rd);
+            if (status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
+            }
         }
         if (((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) ==
                 TIVX_QUEUE_FLAG_BLOCK_ON_PUT) &&
             (NULL != queue->block_wr))
         {
-            tivxEventDelete(&queue->block_wr);
+            ret_status = tivxEventDelete(&queue->block_wr);
+            if (ret_status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
+                status =  ret_status;
+            }
         }
-
-        status = (vx_status)VX_SUCCESS;
     }
 
     return (status);
@@ -121,6 +135,7 @@ vx_status tivxQueueDelete(tivx_queue *queue)
 vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 {
     vx_status status = (vx_status)VX_FAILURE;
+    vx_status ret_status = (vx_status)VX_FAILURE;
     uint32_t cookie;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
 
@@ -151,7 +166,12 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                 /* blocking on que get enabled */
 
                 /* post semaphore to unblock, blocked tasks */
-                tivxEventPost(queue->block_rd);
+                ret_status = tivxEventPost(queue->block_rd);
+                if (ret_status != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
+                    status = ret_status;
+                }
             }
 
             /* exit, with success */
@@ -215,6 +235,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
     vx_status status = (vx_status)VX_FAILURE;/* init status to error */
     uint32_t cookie;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
+    vx_status ret_status = (vx_status)VX_SUCCESS;
 
     do
     {
@@ -243,7 +264,12 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                 /* blocking on que put enabled,
                  * post semaphore to unblock, blocked tasks
                  */
-                tivxEventPost(queue->block_wr);
+                ret_status = tivxEventPost(queue->block_wr);
+                if (ret_status != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
+                    status = ret_status;
+                }
             }
 
             /* exit with success */

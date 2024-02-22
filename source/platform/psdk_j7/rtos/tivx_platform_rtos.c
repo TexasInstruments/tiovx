@@ -96,6 +96,7 @@ vx_status ownPlatformInit(void)
 
 void ownPlatformDeInit(void)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     int32_t i;
 
     ownIpcDeInit();
@@ -104,16 +105,26 @@ void ownPlatformDeInit(void)
     {
         if (NULL != g_tivx_platform_info.g_platform_lock[i])
         {
-            tivxMutexDelete(&g_tivx_platform_info.g_platform_lock[i]);
+            status = tivxMutexDelete(&g_tivx_platform_info.g_platform_lock[i]);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
+            }
         }
     }
 }
 
 void ownPlatformSystemLock(vx_enum lock_id)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
+
     if ((vx_enum)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
-        tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
+        status = tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
+        if(status != 0)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Mutex lock failed\n");
+        }
 
         if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {
@@ -122,15 +133,27 @@ void ownPlatformSystemLock(vx_enum lock_id)
              * data ref queue.
              * This lock in this platform is implemented via HW spinlock
              */
-            appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
+            status = appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
+            if ((vx_status)0 != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Failed to acquire HW lock\n");
+            }
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
         {
-            appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
+            status =appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
+            if ((vx_status)0 != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Failed to acquire HW lock\n");
+            }
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
-            appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
+            status = appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
+            if ((vx_status)0 != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Failed to acquire HW lock\n");
+            }
         }
         else
         {
@@ -141,28 +164,46 @@ void ownPlatformSystemLock(vx_enum lock_id)
 
 void ownPlatformSystemUnlock(vx_enum lock_id)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
+
     if ((vx_enum)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
         if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {
             /* release the lock taken during ownPlatformSystemLock */
-            appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
+            status = appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
+            if ((vx_status)0 != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Failed to release a HW lock\n");
+            }
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
         {
-            appIpcHwLockRelease(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID);
+            status = appIpcHwLockRelease(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID);
+            if ((vx_status)0 != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Failed to release a HW lock\n");
+            }
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
-            appIpcHwLockRelease(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID);
+            status = appIpcHwLockRelease(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID);
+            if ((vx_status)0 != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Failed to release a HW lock\n");
+            }
         }
         else
         {
             /* do nothing */
         }
 
-        tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
+        status = tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
             (uint32_t)lock_id]);
+        if(status != 0)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Mutex unlock failed\n");
+        }
     }
 }
 
