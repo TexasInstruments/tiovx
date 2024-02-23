@@ -68,6 +68,9 @@
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
 #include <TI/tivx_task.h>
+#include <stdio.h>
+
+/* #define FULL_CODE_COVERAGE */
 
 static tivx_target_kernel vx_test_target_target_kernel = NULL;
 
@@ -88,8 +91,12 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
 
+#if defined(FULL_CODE_COVERAGE)
+#if defined(C7X_FAMILY)
+#define TARGET_TEST_TASK_STACK_SIZE      64*1024U
+#else
 #define TARGET_TEST_TASK_STACK_SIZE      1024U
-
+#endif
 /* Note: there is probably a cleaner way of obtaining this value
  * with ifdefs, etc.
  * However, it should be greater than the below task values:
@@ -97,13 +104,21 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
  *  - OSAL_FREERTOS_CONFIGNUM_TASK for PDK FreeRTOS
  *  - OSAL_SAFERTOS_CONFIGNUM_TASK for PDK SafeRTOS
  *  - APP_RTOS_MAX_TASK_COUNT for MCU+ */
+#if defined(C7X_FAMILY)
+#define TARGET_TEST_MAX_TASKS            128U
+#else
 #define TARGET_TEST_MAX_TASKS            1024U
+#endif
 
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
 
+#if defined(C7X_FAMILY)
+#define TARGET_TEST_TASK_STACK_ALIGNMENT 8*1024U
+#else
 #define TARGET_TEST_TASK_STACK_ALIGNMENT 1024U
+#endif
 
-static uint8_t tivxTestTargetTaskStack
+static uint8_t tivxTestTargetTaskStack[TARGET_TEST_MAX_TASKS][TARGET_TEST_TASK_STACK_SIZE]
 __attribute__ ((section(".bss:taskStackSection")))
 __attribute__ ((aligned(TARGET_TEST_TASK_STACK_ALIGNMENT)))
     ;
@@ -112,6 +127,11 @@ __attribute__ ((aligned(TARGET_TEST_TASK_STACK_ALIGNMENT)))
 
 static void VX_CALLBACK tivxTestTask(void *app_var)
 {
+    do
+    {
+        tivxTaskWaitMsecs(1000);
+    }
+    while(1);
 }
 
 static vx_status tivxTestTargetTaskBoundary(void)
@@ -124,11 +144,6 @@ static vx_status tivxTestTargetTaskBoundary(void)
     tivxTaskSetDefaultCreateParams(&taskParams);
     taskParams.task_main = &tivxTestTask;
     taskParams.app_var = NULL;
-    #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-    taskParams.stack_ptr = &tivxTestTargetTaskStack;
-    #else
-    taskParams.stack_ptr = NULL;
-    #endif
     taskParams.stack_size = TARGET_TEST_TASK_STACK_SIZE;
     taskParams.core_affinity = TIVX_TASK_AFFINITY_ANY;
     taskParams.priority = 8;
@@ -137,6 +152,12 @@ static vx_status tivxTestTargetTaskBoundary(void)
      * tasks, so exiting once we hit the max */
     for (i = 0; i < TARGET_TEST_MAX_TASKS; i++)
     {
+        snprintf(taskParams.task_name, TIVX_MAX_TASK_NAME, "TEST_%d", i);
+        #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+        taskParams.stack_ptr = tivxTestTargetTaskStack[i];
+        #else
+        taskParams.stack_ptr = NULL;
+        #endif
         status = tivxTaskCreate(&taskHandle[i], &taskParams);
 
         if ((vx_status)VX_SUCCESS != status)
@@ -154,6 +175,7 @@ static vx_status tivxTestTargetTaskBoundary(void)
 
     return status;
 }
+#endif /* FULL_CODE_COVERAGE */
 
 static vx_status VX_CALLBACK tivxTestTargetProcess(
        tivx_target_kernel_instance kernel,
@@ -188,10 +210,12 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
 
     }
 
+#if defined(FULL_CODE_COVERAGE)
     if((vx_status)VX_SUCCESS == status)
     {
         status = tivxTestTargetTaskBoundary();
     }
+#endif /* FULL_CODE_COVERAGE */
 
     return status;
 }
