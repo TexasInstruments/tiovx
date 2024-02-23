@@ -133,27 +133,15 @@ void ownPlatformSystemLock(vx_enum lock_id)
              * data ref queue.
              * This lock in this platform is implemented via HW spinlock
              */
-            status = appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
-            if ((vx_status)0 != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Failed to acquire HW lock\n");
-            }
+            (void)appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
         {
-            status =appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
-            if ((vx_status)0 != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Failed to acquire HW lock\n");
-            }
+            (void)appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
-            status = appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
-            if ((vx_status)0 != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Failed to acquire HW lock\n");
-            }
+            (void)appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
         else
         {
@@ -171,27 +159,15 @@ void ownPlatformSystemUnlock(vx_enum lock_id)
         if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {
             /* release the lock taken during ownPlatformSystemLock */
-            status = appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
-            if ((vx_status)0 != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Failed to release a HW lock\n");
-            }
+            (void)appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
         {
-            status = appIpcHwLockRelease(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID);
-            if ((vx_status)0 != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Failed to release a HW lock\n");
-            }
+            (void)appIpcHwLockRelease(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
-            status = appIpcHwLockRelease(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID);
-            if ((vx_status)0 != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Failed to release a HW lock\n");
-            }
+            (void)appIpcHwLockRelease(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID);
         }
         else
         {

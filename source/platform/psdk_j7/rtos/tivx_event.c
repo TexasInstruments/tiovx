@@ -53,12 +53,15 @@ vx_status tivxEventDelete(tivx_event *event)
     {
         handle = (app_rtos_semaphore_handle_t)*event;
         ret_status = appRtosSemaphoreDelete(&handle);
-        if ((app_rtos_status_t)APP_RTOS_STATUS_SUCCESS != ret_status)
+        if ((app_rtos_status_t)APP_RTOS_STATUS_SUCCESS == ret_status)
+        {
+            *event = NULL;
+        }
+        else
         {
             VX_PRINT(VX_ZONE_ERROR, "Semaphore delete returned an error\n");
             status = (vx_status)VX_FAILURE;
         }
-        *event = NULL;
     }
     else
     {
