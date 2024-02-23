@@ -23,6 +23,7 @@
 #include "test_tiovx.h"
 #include "test_engine/test.h"
 #include "test_tiovx/test_tiovx.h"
+#include <tivx_raw_image.h>
 #include <VX/vx.h>
 #include <VX/vxu.h>
 
@@ -77,8 +78,100 @@ TEST(tivxInternalRawImage, negativeTestUnmapRawImagePatch)
     VX_CALL(tivxReleaseRawImage(&raw_image));
 }
 
+TEST(tivxInternalRawImage, negativeTestownDeriveRawImageBufferPointers)
+{
+    vx_image img;
+    vx_context context = context_->vx_context_;
+    tivx_raw_image raw_image;
+    vx_map_id map_id;
+    vx_imagepatch_addressing_t user_addr;
+    void **user_ptr;
+    vx_rectangle_t rect;
+    tivx_raw_image_create_params_t params;
+    uint8_t *map_addr;
+    vx_size  map_size;
+    vx_reference ref;
+
+    rect.start_x = 16;
+    rect.start_y = 19;
+    rect.end_x = 16 + 16;
+    rect.end_y = 19 + 21;
+
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_false_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height_before = 5;
+    params.meta_height_after = 2;
+
+    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+    ASSERT_VX_OBJECT(img = (vx_image)ownCreateReference(context, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, &context->base), (enum vx_type_e)VX_TYPE_IMAGE);
+    
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownDeriveRawImageBufferPointers((vx_reference)img));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownDeriveRawImageBufferPointers(NULL));
+
+    ref = (vx_reference)raw_image;
+    ref->obj_desc = NULL;
+    ASSERT_EQ_VX_STATUS( VX_ERROR_INVALID_VALUE, ownDeriveRawImageBufferPointers(ref));
+
+    VX_CALL(tivxReleaseRawImage(&raw_image));
+    VX_CALL(vxReleaseImage(&img));
+}
+
+TEST(tivxInternalRawImage, negativeTestownCopyAndMapCheckParams)
+{
+    vx_context context = context_->vx_context_;
+    tivx_raw_image raw_image;
+    vx_map_id map_id;
+    vx_imagepatch_addressing_t user_addr;
+    void **user_ptr;
+    vx_rectangle_t rect;
+    tivx_raw_image_create_params_t params;
+    uint8_t *map_addr;
+    vx_size  map_size;
+    tivx_obj_desc_raw_image_t *obj_desc;
+
+    rect.start_x = 16;
+    rect.start_y = 19;
+    rect.end_x = 16 + 16;
+    rect.end_y = 19 + 21;
+
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_false_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height_before = 5;
+    params.meta_height_after = 2;
+
+    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+
+    obj_desc = (tivx_obj_desc_raw_image_t *)raw_image->base.obj_desc;
+    obj_desc->create_type = TIVX_IMAGE_VIRTUAL;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxMapRawImagePatch(raw_image, &rect, 0, &map_id, &user_addr, (void **)&user_ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_ALLOC_BUFFER));
+    obj_desc->create_type = TIVX_IMAGE_NORMAL;
+    raw_image->base.is_virtual = vx_true_e;
+    raw_image->base.is_accessible = vx_false_e;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_OPTIMIZED_AWAY, tivxMapRawImagePatch(raw_image, &rect, 0, &map_id, &user_addr, (void **)&user_ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_ALLOC_BUFFER));
+
+    VX_CALL(tivxReleaseRawImage(&raw_image));
+}
+
 TESTCASE_TESTS(
     tivxInternalRawImage,
-    negativeTestUnmapRawImagePatch
+    negativeTestUnmapRawImagePatch,
+    negativeTestownDeriveRawImageBufferPointers,
+    negativeTestownCopyAndMapCheckParams
 )
 
