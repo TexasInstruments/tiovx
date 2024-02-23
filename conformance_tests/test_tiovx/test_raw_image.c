@@ -1303,6 +1303,27 @@ TEST(tivxRawImage, negativeTestCopyRawImagePatch)
     EXPECT_VX_ERROR(raw_image = tivxCreateRawImage(context, &params), VX_ERROR_INVALID_PARAMETERS);
 }
 
+TEST(tivxRawImage, negativeTestCreateRawImage)
+{
+    tivx_raw_image raw_image = NULL;
+    tivx_raw_image_create_params_t params;
+    
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 1;
+    params.line_interleaved = vx_true_e;
+    params.format[0].pixel_container = errInject(TIVX_RAW_IMAGE_P12_BIT);
+    params.format[0].msb = errInject(15u);
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = errInject(TIVX_RAW_IMAGE_P12_BIT);
+    params.format[2].msb = errInject(15u);
+    params.meta_height_before = 5;
+    params.meta_height_after = 0;
+
+    ASSERT(raw_image == tivxCreateRawImage(NULL, &params));
+}
+
 TESTCASE_TESTS(
     tivxRawImage,
     test_tivxCreateRawImage,
@@ -1319,4 +1340,6 @@ TESTCASE_TESTS(
     negativeTestivxCreateRawImage,
     testQueryRawImage,
     negativeTestCopyRawImagePatch1,
-    negativeTestCopyRawImagePatch)
+    negativeTestCopyRawImagePatch,
+    negativeTestCreateRawImage
+    )
