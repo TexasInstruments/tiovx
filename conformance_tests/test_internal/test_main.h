@@ -29,4 +29,5 @@ TESTCASE(tivxReferenceLock)
 TESTCASE(tivxInternalPyramid)
 TESTCASE(tivxInternalParameter)
 TESTCASE(tivxInternalTensor)
+TESTCASE(tivxInternalGraphStream)
 #endif
