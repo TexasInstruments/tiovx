@@ -38,6 +38,11 @@
 
 #include "shared_functions.h"
 
+/* The below header is used for getting the POSIX enums and  TIVX_EVENT_MAX_OBJECTS, TIVX_QUEUE_MAX_OBJECTS etc.*/
+#if !defined(R5F)
+#include <os/posix/tivx_platform_posix.h>
+#endif /* Not R5F */
+
 #define MAX_POINTS 100
 
 TESTCASE(tivxObjDescBoundary, CT_VXContext, ct_setup_vx_context, 0)
@@ -107,7 +112,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     vx_matrix matrix = NULL;
     vx_enum data_type = VX_TYPE_INT8;
 
-    // For Tensor
+    /* For Tensor */
     vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS;
     vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
     vx_enum dt = VX_TYPE_UINT8;
@@ -199,7 +204,158 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+/* The following tests are defined for POSIX only, as they are getting the
+max value and/or alloc/free functions from POSIX headers */
+#if !defined(R5F) /* Not R5F */
+
+TEST(tivxObjDescBoundary, negativeBoundaryTestownContextCreateCmdObj)
+{
+    vx_context context = context_->vx_context_;
+
+    int i, j;
+
+    tivx_event tmp_event[TIVX_EVENT_MAX_OBJECTS] ={NULL};
+
+    VX_CALL(vxReleaseContext(&context));
+
+    for (i = 0; i < TIVX_EVENT_MAX_OBJECTS; i++)
+    {
+        VX_CALL(tivxEventCreate(&tmp_event[i]));
+        if (NULL == tmp_event[i])
+        {
+            break;
+        }
+    }
+
+    /* Creating context to invoke static function ownContextCreateCmdObj() */
+    context = vxCreateContext();
+
+    for (j = 0; j < i-1; j++)
+    {
+        if (NULL == tmp_event[j])
+        {
+            break;
+        }
+        VX_CALL(tivxEventDelete(&tmp_event[j]));
+    }
+}
+
+
+TEST(tivxObjDescBoundary, negativeBoundaryTestownContextCreateCmdObj1)
+{
+    extern uint8_t *ownPosixObjectAlloc(vx_enum type);
+    extern vx_status ownPosixObjectFree(uint8_t *obj, vx_enum type);
+
+    vx_context context = context_->vx_context_;
+
+    int i, j;
+    uint8_t *obj[TIVX_QUEUE_MAX_OBJECTS] = {NULL};
+
+    VX_CALL(vxReleaseContext(&context));
+
+    /* Maxing out the POSIX QUEUE OBJECT */
+    for (i = 0; i < TIVX_QUEUE_MAX_OBJECTS; i++)
+    {
+        obj[i] = ownPosixObjectAlloc((vx_enum)TIVX_POSIX_TYPE_QUEUE);
+        if (NULL == obj[i])
+        {
+            break;
+        }
+    }
+
+    /* Deallocating 3 Queue objects so that the first 3 Queue allocations
+    from vxCreateContext() will go through */
+    for (int dealloc_count = 0; dealloc_count < 3; dealloc_count++, i--)
+    {
+        if (NULL == obj[i-1])
+        {
+            break;
+        }
+        VX_CALL(ownPosixObjectFree(obj[i-1], (vx_enum)TIVX_POSIX_TYPE_QUEUE));
+    }
+
+    /* Creating context to invoke static function ownContextCreateCmdObj() */
+    context = vxCreateContext();
+
+    /* Cleaning up */
+    for (j = 0; j < i-1; j++)
+    {
+        if (NULL == obj[j])
+        {
+            break;
+        }
+        VX_CALL(ownPosixObjectFree(obj[j], (vx_enum)TIVX_POSIX_TYPE_QUEUE));
+    }
+
+    /* Creating context, to take care of dangling_refs_count not zero error */
+    context = vxCreateContext();
+}
+
+#endif /* Not R5F */
+
+TEST(tivxObjDescBoundary, negativeBoundaryTestownContextCreateCmdObj2)
+{
+    vx_context context = context_->vx_context_;
+
+    int i, j;
+    tivx_obj_desc_t *obj_desc[TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST] = {NULL};
+
+    VX_CALL(vxReleaseContext(&context));
+
+    /* Maxing out the OBJECT DESCRIPTORS */
+    for (i = 0; i < TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST; i++)
+    {
+        obj_desc[i] = (tivx_obj_desc_t *)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_CMD, NULL);
+        if (NULL == obj_desc[i])
+        {
+            break;
+        }
+    }
+
+    /* Creating context to invoke static function ownContextCreateCmdObj() */
+    context = vxCreateContext();
+
+    /* Cleanup */
+    for (j = 0; j < i-1; j++)
+    {
+        if (NULL == obj_desc[j])
+        {
+            break;
+        }
+        VX_CALL(ownObjDescFree((tivx_obj_desc_t**)&obj_desc[j]));
+    }
+
+    /* Creating new context, to take care of dangling_refs_count not zero error */
+    context = vxCreateContext();
+}
+
+
+TEST(tivxObjDescBoundary, testownContextFlushCmdPendQueue)
+{
+    vx_context context = context_->vx_context_;
+
+    /* Flusing the Queue to hit ownContextFlushCmdPendQueue() */
+    VX_CALL(ownContextFlushCmdPendQueue(context));
+
+    uintptr_t data = 0;
+
+    /* Populating the pendQueue */
+    VX_CALL(tivxQueuePut(&context->pend_queue,
+                        data,
+                        TIVX_EVENT_TIMEOUT_NO_WAIT));
+
+    /* Flusing the Queue to hit negative section of ownContextFlushCmdPendQueue()
+    when tivxQueue is not empty */
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownContextFlushCmdPendQueue(context));
+}
+
 TESTCASE_TESTS(tivxObjDescBoundary,
         negativeTestObjDescBoundary,
-        negativeBoundaryThreshold
+        negativeBoundaryThreshold,
+#if !defined(R5F) /* Not R5F */
+        negativeBoundaryTestownContextCreateCmdObj,
+        negativeBoundaryTestownContextCreateCmdObj1,
+#endif  /* Not R5F */
+        negativeBoundaryTestownContextCreateCmdObj2,
+        testownContextFlushCmdPendQueue
         )
