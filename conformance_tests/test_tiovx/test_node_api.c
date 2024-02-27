@@ -122,6 +122,153 @@ TEST(tivxNodeApi, negativeTesttivxCreateNodeByStructure1)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+TEST(tivxNodeApi, negativeTestvxScaleImageNode)
+{
+    vx_graph graph = NULL;
+    vx_image src = NULL;
+    vx_image dst = NULL;
+    vx_enum type = (vx_enum)0;
+
+    ASSERT(NULL == vxScaleImageNode(graph, src, dst, type));
+}
+
+TEST(tivxNodeApi, negativeTestvxAddNode)
+{
+    vx_graph graph = NULL;
+    vx_image in1 = NULL;
+    vx_image in2 = NULL;
+    vx_enum policy = (vx_enum)0;
+    vx_image out = NULL;
+
+    ASSERT(NULL == vxAddNode(graph, in1, in2, policy, out));
+}
+
+TEST(tivxNodeApi, negativeTestvxCannyEdgeDetectorNode)
+{
+    vx_graph graph = NULL;
+    vx_image input = NULL;
+    vx_threshold hyst = NULL;
+    vx_int32 gradient_size = (vx_int32)0;
+    vx_enum norm_type = (vx_enum)0;
+    vx_image output = NULL;
+
+    ASSERT(NULL == vxCannyEdgeDetectorNode(graph, input, hyst, gradient_size, norm_type, output));
+}
+
+TEST(tivxNodeApi, negativeTestvxChannelExtractNode)
+{
+    vx_graph graph = NULL;
+    vx_image input = NULL;
+    vx_enum channelNum = (vx_enum)0;
+    vx_image output = NULL;
+
+    ASSERT(NULL == vxChannelExtractNode(graph, input, channelNum, output));
+}
+
+TEST(tivxNodeApi, negativeTestvxConvertDepthNode)
+{
+    vx_graph graph = NULL;
+    vx_image input = NULL;
+    vx_image output = NULL;
+    vx_enum policy = (vx_enum)0;
+    vx_scalar shift = NULL;
+
+    ASSERT(NULL == vxConvertDepthNode(graph, input, output, policy, shift));
+}
+
+TEST(tivxNodeApi, negativeTestvxFastCornersNode)
+{
+    vx_graph graph = NULL;
+    vx_image input = NULL;
+    vx_scalar strength_thresh = NULL;
+    vx_bool nonmax_suppression = false;
+    vx_array corners = NULL;
+    vx_scalar num_corners = NULL;
+
+    ASSERT(NULL == vxFastCornersNode(graph, input, strength_thresh, nonmax_suppression, corners, num_corners));
+}
+
+TEST(tivxNodeApi, negativeTestvxHalfScaleGaussianNode)
+{
+    vx_graph graph = NULL;
+    vx_image input = NULL;
+    vx_image output = NULL;
+    vx_int32 kernel_size = (vx_int32)0;
+
+    ASSERT(NULL == vxHalfScaleGaussianNode(graph, input, output, kernel_size));
+}
+
+TEST(tivxNodeApi, negativeTestvxHarrisCornersNode)
+{
+    vx_graph graph = NULL;
+    vx_image input = NULL;
+    vx_scalar strength_thresh = NULL;
+    vx_scalar min_distance = NULL;
+    vx_scalar sensitivity = NULL;
+    vx_int32 gradient_size = (vx_int32)0;
+    vx_int32 block_size = (vx_int32)0;
+    vx_array corners = NULL;
+    vx_scalar num_corners = NULL;
+
+    ASSERT(NULL == vxHarrisCornersNode(graph, input, strength_thresh, min_distance, sensitivity, gradient_size, block_size, corners, num_corners));
+
+}
+
+TEST(tivxNodeApi, negativeTestvxMultiplyNode)
+{
+    vx_graph graph = NULL;
+    vx_image in1 = NULL;
+    vx_image in2 = NULL;
+    vx_scalar scale = NULL;
+    vx_enum overflow_policy = (vx_enum)0;
+    vx_enum rounding_policy = (vx_enum)0;
+    vx_image out = NULL;
+
+    ASSERT(NULL == vxMultiplyNode(graph, in1, in2, scale, overflow_policy, rounding_policy, out));
+}
+
+TEST(tivxNodeApi, negativeTestvxNonLinearFilterNode)
+{
+    vx_graph graph = NULL;
+    vx_enum function = (vx_enum)0; 
+    vx_image input = NULL;
+    vx_matrix mask = NULL;
+    vx_image output = NULL;
+
+    ASSERT(NULL == vxNonLinearFilterNode(graph, function, input, mask, output));
+}
+
+TEST(tivxNodeApi, negativeTestvxOpticalFlowPyrLKNode)
+{
+    vx_graph graph = NULL;
+    vx_pyramid old_images = NULL;
+    vx_pyramid new_images = NULL;
+    vx_array old_points = NULL;
+    vx_array new_points_estimates = NULL;
+    vx_array new_points = NULL;
+    vx_enum termination = (vx_enum)0;
+    vx_scalar epsilon = NULL;
+    vx_scalar num_iterations = NULL;
+    vx_scalar use_initial_estimate = NULL;
+    vx_size window_dimension= (vx_int32)0;
+
+    ASSERT(NULL == vxOpticalFlowPyrLKNode(graph, old_images, new_images, old_points, new_points_estimates,
+                                            new_points, termination, epsilon, num_iterations, use_initial_estimate,
+                                            window_dimension));
+
+}
+
+TEST(tivxNodeApi, negativeTestvxSubtractNode)
+{
+    vx_graph graph = NULL;
+    vx_image in1 = NULL;
+    vx_image in2 = NULL;
+    vx_enum policy = (vx_enum)0;
+    vx_image out = NULL;
+
+    ASSERT(NULL == vxSubtractNode(graph, in1, in2, policy, out));
+}
+
 TESTCASE_TESTS(
     tivxNodeApi,
     negativeTestWarpAffineNode,
@@ -129,5 +276,17 @@ TESTCASE_TESTS(
     negativeTestRemapNode,
     negativeTesttivxCreateNodeByKernelName,
     negativeTesttivxCreateNodeByStructure,
-    negativeTesttivxCreateNodeByStructure1
+    negativeTesttivxCreateNodeByStructure1,
+    negativeTestvxScaleImageNode,
+    negativeTestvxAddNode,
+    negativeTestvxCannyEdgeDetectorNode,
+    negativeTestvxChannelExtractNode,
+    negativeTestvxConvertDepthNode,
+    negativeTestvxFastCornersNode,
+    negativeTestvxHalfScaleGaussianNode,
+    negativeTestvxHarrisCornersNode,
+    negativeTestvxMultiplyNode,
+    negativeTestvxNonLinearFilterNode,
+    negativeTestvxOpticalFlowPyrLKNode,
+    negativeTestvxSubtractNode
 )
