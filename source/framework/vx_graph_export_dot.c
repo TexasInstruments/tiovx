@@ -82,6 +82,7 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 static void getNodeColor(vx_node node, char *node_color_name);
+static uint32_t getDataRefObjDescSize(vx_reference ref);
 static int32_t exportAsJpg(const char *output_file_path, const char *output_file_prefix, const char *out_file_id_str, const char *in_filename);
 #ifndef PC
 static void exportTargetLegend(FILE *fp, vx_graph graph);
@@ -92,6 +93,8 @@ static void exportDataRefQueue(FILE *fp, tivx_data_ref_queue ref, uint32_t num_b
 static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
             uint32_t num_buf, vx_bool is_graph_parameter, vx_bool show_delay_links, uint32_t pipeline_depth);
 static void exportNodeObjDesc(FILE *fp, vx_node node, uint32_t pipe_id, const char *prefix);
+static void exportObjectArrayElements(FILE *fp, const vx_reference ref);
+static void exportPyramidElements(FILE *fp, const vx_reference ref);
 static void ownExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
                     tivx_data_ref_queue data_ref_q, uint32_t graph_parameter_index );
 static vx_status ownExportGraphDataRefQueuesToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
@@ -391,6 +394,105 @@ static void exportNodeObjDesc(FILE *fp, vx_node node, uint32_t pipe_id, const ch
     }
 }
 
+static uint32_t getDataRefObjDescSize(vx_reference ref)
+{
+    uint32_t size = 0;
+
+    /* Note: the obj_desc is not checked for NULL here because
+     * it is checked in the previous logic */
+    switch (ref->type)
+    {
+        case (vx_enum)VX_TYPE_ARRAY:
+        {
+            tivx_obj_desc_array_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
+
+            size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_CONVOLUTION:
+        {
+            tivx_obj_desc_convolution_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_convolution_t *)ref->obj_desc;
+
+            size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_DISTRIBUTION:
+        {
+            tivx_obj_desc_distribution_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
+
+            size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_IMAGE:
+        {
+            tivx_obj_desc_image_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
+
+            size   = ownImageGetBufferSize(obj_desc);
+            break;
+        }
+        case (vx_enum)TIVX_TYPE_RAW_IMAGE:
+        {
+            tivx_obj_desc_raw_image_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
+
+            /* Assume single buffer for now (interleaved, or single exposure) */
+            size   = obj_desc->mem_size[0];
+            break;
+        }
+        case (vx_enum)VX_TYPE_LUT:
+        {
+            tivx_obj_desc_lut_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_lut_t *)ref->obj_desc;
+
+            size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_MATRIX:
+        {
+            tivx_obj_desc_matrix_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
+
+            size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_REMAP:
+        {
+            tivx_obj_desc_remap_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_remap_t *)ref->obj_desc;
+
+            size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_TENSOR:
+        {
+            tivx_obj_desc_tensor_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
+
+            size   = obj_desc->mem_size;
+            break;
+        }
+        case (vx_enum)VX_TYPE_USER_DATA_OBJECT:
+        {
+            tivx_obj_desc_user_data_object_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_user_data_object_t *)ref->obj_desc;
+
+            size   = obj_desc->mem_size;
+            break;
+        }
+        default:
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Does not yet support type [%d]", ref->type);
+            break;
+        }
+    }
+    return size;
+}
+
+
 static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
 {
     if(ref != NULL)
@@ -398,6 +500,7 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
         char is_virtual[64]="";
         char is_virtual_label[64]="";
         char is_replicated_label[80]="";
+        char buffer_size_label[24]="";
         char line[TIVX_EXPORT_MAX_LINE_SIZE];
 
         if(ref->is_virtual != 0)
@@ -412,6 +515,16 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
         {
             (void)snprintf(is_replicated_label, 80, "| [in] %s", ref->scope->name);
         }
+
+        if ((ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
+            &&
+            (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
+        )
+        {
+            (void)snprintf(buffer_size_label, 24, "| size %d", getDataRefObjDescSize(ref));
+        }
+
+
         if(ref->obj_desc != NULL)
         {
             #if defined(LINUX) || defined(QNX)
@@ -420,12 +533,13 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
             #endif
             uint16_t obj_id;
             obj_id = ref->obj_desc->obj_desc_id;
-            TIVX_EXPORT_WRITELN(fp, "d_%d [shape=record %s, label=\"{%s %s %s | desc %d}\"]",
+            TIVX_EXPORT_WRITELN(fp, "d_%d [shape=record %s, label=\"{%s %s %s %s | desc %d}\"]",
                 obj_id,
                 is_virtual,
                 ref->name,
                 is_virtual_label,
                 is_replicated_label,
+                buffer_size_label,
                 obj_id
                 );
             #if defined(LINUX) || defined(QNX)
@@ -1066,6 +1180,51 @@ static vx_status ownExportGraphFirstPipelineToDot(vx_graph graph, const char *ou
     return status;
 }
 
+static void exportObjectArrayElements(FILE *fp, const vx_reference ref)
+{
+    uint32_t child_id=0;
+    tivx_objarray_t *obj_array = (tivx_objarray_t *)ref;
+    char line[TIVX_EXPORT_MAX_LINE_SIZE];
+
+    for (child_id=0; child_id < TIVX_OBJECT_ARRAY_MAX_ITEMS; child_id++)
+    {
+        if(obj_array->ref[child_id] != NULL)
+        {
+            exportDataRefObjDesc(fp, obj_array->ref[child_id]);
+            if(obj_array->ref[child_id]->obj_desc)
+            {
+                TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%d [style=dashed]",
+                    obj_array->ref[child_id]->obj_desc->obj_desc_id,
+                    ref->obj_desc->obj_desc_id);
+            }
+        }
+    }
+}
+
+static void exportPyramidElements(FILE *fp, const vx_reference ref)
+{
+    uint32_t child_id=0;
+    tivx_pyramid_t *pyramid = (tivx_pyramid_t *)ref;
+    vx_reference img_ref;
+    char line[TIVX_EXPORT_MAX_LINE_SIZE];
+
+    for (child_id=0; child_id < TIVX_PYRAMID_MAX_LEVEL_OBJECTS; child_id++)
+    {
+        if(pyramid->img[child_id] != NULL)
+        {
+            img_ref = (vx_reference)pyramid->img[child_id];
+            exportDataRefObjDesc(fp, img_ref);
+
+            if(img_ref->obj_desc)
+            {
+                TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%d [style=dashed]",
+                    img_ref->obj_desc->obj_desc_id,
+                    ref->obj_desc->obj_desc_id);
+            }
+        }
+    }
+}
+
 static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -1185,6 +1344,7 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
         TIVX_EXPORT_WRITELN(fp, "");
 
 
+        /* List the graph paramter references */
         for(prm_id=0; prm_id<graph->num_params; prm_id++)
         {
             if(graph->parameters[prm_id].queue_enable && graph->parameters[prm_id].data_ref_queue)
@@ -1209,18 +1369,29 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
                         }
 
                         exportDataRefObjDesc(fp, ref);
-                    }
-                    if(ref && ref->obj_desc)
-                    {
-                        TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%s",
-                            ref->obj_desc->obj_desc_id,
-                            graph->parameters[prm_id].data_ref_queue->base.name);
+
+                        if(ref->obj_desc)
+                        {
+                            TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%s",
+                                ref->obj_desc->obj_desc_id,
+                                graph->parameters[prm_id].data_ref_queue->base.name);
+                        }
+
+                        if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
+                        {
+                            exportObjectArrayElements(fp, ref);
+                        }
+                        else if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+                        {
+                            exportPyramidElements(fp, ref);
+                        }
                     }
                 }
             }
         }
         TIVX_EXPORT_WRITELN(fp, "");
 
+        /* List the internal references */
         for(prm_id=0; prm_id<graph->num_data_ref_q; prm_id++)
         {
             if(graph->data_ref_q_list[prm_id].data_ref_queue != NULL)
@@ -1248,6 +1419,15 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
                         TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%s",
                             ref->obj_desc->obj_desc_id,
                             graph->data_ref_q_list[prm_id].data_ref_queue->base.name);
+                    }
+
+                    if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
+                    {
+                        exportObjectArrayElements(fp, ref);
+                    }
+                    else if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+                    {
+                        exportPyramidElements(fp, ref);
                     }
                 }
             }

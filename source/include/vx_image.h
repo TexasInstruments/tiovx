@@ -79,10 +79,22 @@ typedef struct _vx_image
  *
  * \return VX_SUCCESS on success
  *
- * \ingroup group_tivx_array
+ * \ingroup group_vx_image
  */
 vx_status ownInitVirtualImage(
     vx_image img, vx_uint32 width, vx_uint32 height, vx_df_image format);
+
+/*!
+ * \brief function to retreive the buffer size of an image
+ *
+ * \param obj_desc       [in] image object descriptor
+ *
+ * \return size of buffer in bytes
+ *
+ * \ingroup group_vx_image
+ */
+uint32_t ownImageGetBufferSize(tivx_obj_desc_image_t *obj_desc);
+
 
 #ifdef __cplusplus
 }

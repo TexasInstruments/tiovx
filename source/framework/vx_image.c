@@ -51,8 +51,6 @@ static vx_status ownCopyAndMapCheckParams(
     const vx_rectangle_t* rect,
     vx_uint32 plane_index,
     vx_enum usage);
-static uint32_t ownGetBufferSize(tivx_obj_desc_image_t *obj_desc);
-
 
 static vx_bool ownIsSupportedFourcc(vx_df_image code)
 {
@@ -224,7 +222,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
 }
 
 
-static uint32_t ownGetBufferSize(tivx_obj_desc_image_t *obj_desc)
+uint32_t ownImageGetBufferSize(tivx_obj_desc_image_t *obj_desc)
 {
     uint16_t plane_idx;
     uint32_t size = 0;
@@ -260,7 +258,7 @@ static vx_status ownDestructImage(vx_reference ref)
             {
                 if(obj_desc->mem_ptr[0].host_ptr!=(uint64_t)(uintptr_t) NULL)
                 {
-                    size = ownGetBufferSize(obj_desc);
+                    size = ownImageGetBufferSize(obj_desc);
 
                     status = tivxMemBufferFree(&obj_desc->mem_ptr[0], size);
                     if ((vx_status)VX_SUCCESS != status)
@@ -310,7 +308,7 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
             || ((vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_UNIFORM)
              )
             {
-                size = ownGetBufferSize(obj_desc);
+                size = ownImageGetBufferSize(obj_desc);
 
                 /* memory is not allocated, so allocate it */
                 if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)(uintptr_t)NULL)
