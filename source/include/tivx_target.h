@@ -124,7 +124,7 @@ extern "C" {
  *
  * \ingroup group_tivx_target
  */
-#define TIVX_MAKE_TARGET_ID(cpu, target_inst)  ((((((uint32_t)cpu) & (uint32_t)TIVX_CPU_ID_MASK) << (uint32_t)TIVX_CPU_ID_SHIFT) |((((uint32_t)target_inst)&TIVX_TARGET_INST_MASK) << (uint32_t)TIVX_TARGET_INST_SHIFT)))
+#define TIVX_MAKE_TARGET_ID(cpu, target_inst)  (((((uint32_t)(((uint32_t)cpu) & (uint32_t)TIVX_CPU_ID_MASK)) << (uint32_t)TIVX_CPU_ID_SHIFT) |(((uint32_t)(((uint32_t)target_inst)&(uint32_t)TIVX_TARGET_INST_MASK)) << (uint32_t)TIVX_TARGET_INST_SHIFT)))
 
 /*! \brief Get CPU Id from given target
  *
