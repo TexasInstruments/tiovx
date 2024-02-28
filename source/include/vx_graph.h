@@ -423,7 +423,7 @@ vx_status ownGraphVerifyStreamingMode(vx_graph graph);
  *
  * \ingroup group_vx_graph
  */
-vx_status ownGraphFreeObjDesc(vx_graph graph);
+void ownGraphFreeObjDesc(vx_graph graph);
 
 /*! \brief Free graph streaming objects
  *
@@ -441,7 +441,7 @@ vx_status ownGraphCreateQueues(vx_graph graph);
  *
  * \ingroup group_vx_graph
  */
-vx_status ownGraphDeleteQueues(vx_graph graph);
+void ownGraphDeleteQueues(vx_graph graph);
 
 
 /*! \brief Schedule a graph for execution 'num_schedule' times
