@@ -48,14 +48,24 @@ static vx_status ownDestructGraph(vx_reference ref)
         {
             if((graph->parameters[i].queue_enable != (vx_bool)vx_false_e) && (graph->parameters[i].data_ref_queue != NULL))
             {
-                ownDataRefQueueRelease(&graph->parameters[i].data_ref_queue);
+                status1 = ownDataRefQueueRelease(&graph->parameters[i].data_ref_queue);
+                if((vx_status)VX_SUCCESS != status1)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
+                    status = status1;
+                }
             }
         }
         for(i=0; i<graph->num_data_ref_q; i++)
         {
             if(graph->data_ref_q_list[i].data_ref_queue != NULL)
             {
-                ownDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue);
+                status1 = ownDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue);
+                if((vx_status)VX_SUCCESS != status1)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
+                    status = status1;
+                }
             }
             if(graph->data_ref_q_list[i].num_buf > 1U)
             {
@@ -72,8 +82,12 @@ static vx_status ownDestructGraph(vx_reference ref)
                     {
                         data_ref = data_ref->scope;
                     }
-
-                    vxReleaseReference(&data_ref);
+                    status1 = vxReleaseReference(&data_ref);
+                    if((vx_status)VX_SUCCESS != status1)
+                    {
+                        status = status1;
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference\n");
+                    }
 
                     graph->data_ref_q_list[i].refs_list[buf_id] = NULL;
                 }
@@ -86,7 +100,12 @@ static vx_status ownDestructGraph(vx_reference ref)
         {
             if(graph->delay_data_ref_q_list[i].data_ref_queue != NULL)
             {
-                ownDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue);
+                status1 = ownDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue);
+                if((vx_status)VX_SUCCESS != status1)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
+                    status = status1;
+                }
             }
         }
 
@@ -128,11 +147,27 @@ static vx_status ownDestructGraph(vx_reference ref)
             VX_PRINT(VX_ZONE_INFO,"Done removing node %s\n", node_ref->name);
         }
     }
-
-    ownGraphDeleteQueues(graph);
-    ownGraphFreeObjDesc(graph);
-    tivxEventDelete(&graph->all_graph_completed_event);
-
+    status1 = ownGraphDeleteQueues(graph);
+    if((vx_status)VX_SUCCESS != status1)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to delete queues created during ownGraphCreateQueues \n");
+        status = status1;
+    }
+    status1 = ownGraphFreeObjDesc(graph);
+    if((vx_status)VX_SUCCESS != status1)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to free graph obj desc \n");
+        status = status1;
+    }
+    if(NULL != graph->all_graph_completed_event)
+    {
+        status1 = tivxEventDelete(&graph->all_graph_completed_event);
+        if(status1 != (vx_status)VX_SUCCESS)
+        {
+            status = status1;
+            VX_PRINT(VX_ZONE_ERROR,"Failed to delete event\n");
+        }
+    }
     return status;
 }
 
@@ -393,7 +428,11 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->num_supernodes = 0;
             graph->timeout_val = TIVX_DEFAULT_GRAPH_TIMEOUT;
 
-            ownResetGraphPerf(graph);
+            status = ownResetGraphPerf(graph);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to reset graph \n");
+            }
 
             for (idx = 0; idx < TIVX_GRAPH_MAX_DELAYS; idx++)
             {
@@ -423,7 +462,11 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             }
             if(status!=(vx_status)VX_SUCCESS)
             {
-                vxReleaseGraph(&graph);
+                status = vxReleaseGraph(&graph);
+                if((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to release reference to a graph \n");
+                }
 
                 VX_PRINT(VX_ZONE_ERROR, "Could not create graph\n");
                 graph = (vx_graph)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
@@ -794,7 +837,11 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
         if( graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL )
         {
             /* schedule graph one time */
-            ownGraphScheduleGraph(graph, 1);
+            status = ownGraphScheduleGraph(graph, 1);
+            if((vx_status)VX_SUCCESS !=status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to schedule graph for execution \n");
+            }
         }
         else
         if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
@@ -918,6 +965,7 @@ void ownGraphSetReverify(vx_graph graph)
 
 void ownSendGraphCompletedEvent(vx_graph graph)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     if((graph != NULL) && (graph->base.context != NULL))
     {
         if(graph->is_enable_send_complete_event != 0)
@@ -926,9 +974,13 @@ void ownSendGraphCompletedEvent(vx_graph graph)
 
             timestamp = tivxPlatformGetTimeInUsecs()*1000U; /* in nano-secs */
 
-            ownEventQueueAddEvent(&graph->base.context->event_queue,
+            status = ownEventQueueAddEvent(&graph->base.context->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
                         (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
+            }
         }
     }
 }

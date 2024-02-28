@@ -74,6 +74,7 @@ static vx_status ownGraphPipelineValidateRefsList(
     const vx_graph_parameter_queue_params_t graph_parameters_queue_param)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status1 = (vx_status)VX_SUCCESS;
     vx_meta_format meta_base = NULL, meta = NULL;
     vx_uint32 i;
 
@@ -120,7 +121,12 @@ static vx_status ownGraphPipelineValidateRefsList(
 
                 if (ownIsValidSpecificReference((vx_reference)meta, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
                 {
-                    ownReleaseMetaFormat(&meta);
+                    status1 = ownReleaseMetaFormat(&meta);
+                    if((vx_status)VX_SUCCESS != status1)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Failed to release meta format object \n");
+                        status = status1;
+                    }
                 }
             }
             else
@@ -133,7 +139,12 @@ static vx_status ownGraphPipelineValidateRefsList(
 
     if (ownIsValidSpecificReference((vx_reference)meta_base, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
     {
-        ownReleaseMetaFormat(&meta_base);
+        status1 = ownReleaseMetaFormat(&meta_base);
+        if((vx_status)VX_SUCCESS != status1)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to release meta format object \n");
+            status = status1;
+        }
     }
 
     return status;
@@ -313,7 +324,11 @@ vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
                  * a graph schedule then schedule the graph */
                 if(ownGraphDoScheduleGraphAfterEnqueue(graph, graph_parameter_index)==(vx_bool)vx_true_e)
                 {
-                    ownGraphScheduleGraph(graph, num_enqueue);
+                    status = ownGraphScheduleGraph(graph, num_enqueue);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to schedule graph \n");
+                    }
                 }
             }
         }
@@ -508,7 +523,7 @@ static void ownGraphEnqueueFreeObjDesc(vx_graph graph, const tivx_obj_desc_graph
 {
     if((obj_desc != NULL) && (obj_desc->pipeline_id < graph->pipeline_depth))
     {
-        tivxQueuePut(&graph->free_q, obj_desc->pipeline_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
+        (void)tivxQueuePut(&graph->free_q, obj_desc->pipeline_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
     }
 }
 
@@ -533,9 +548,15 @@ vx_status ownGraphCreateQueues(vx_graph graph)
 }
 
 
-void ownGraphDeleteQueues(vx_graph graph)
+vx_status ownGraphDeleteQueues(vx_graph graph)
 {
-    tivxQueueDelete(&graph->free_q);
+    vx_status status;
+    status = tivxQueueDelete(&graph->free_q);
+    if((vx_status)VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to delete a queue\n");
+    }
+    return status;
 }
 
 /* called during graph verify after pipeline_depth is calculated and set */
@@ -580,7 +601,7 @@ vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
                 graph->obj_desc[i]->exe_time_end_h = 0;
                 graph->obj_desc[i]->exe_time_end_l = 0;
 
-                ownGraphEnqueueFreeObjDesc(graph, graph->obj_desc[i]);
+                (void)ownGraphEnqueueFreeObjDesc(graph, graph->obj_desc[i]);
             }
         }
     }
@@ -588,18 +609,27 @@ vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
 }
 
 /* called during graph release */
-void ownGraphFreeObjDesc(vx_graph graph)
+vx_status ownGraphFreeObjDesc(vx_graph graph)
 {
     uint32_t i;
-
+    vx_status status = (vx_status)VX_SUCCESS;
     for(i=0; i<graph->pipeline_depth; i++)
     {
         if(graph->obj_desc[i]!=NULL)
         {
-            ownObjDescFree((tivx_obj_desc_t**)&graph->obj_desc[i]);
-            graph->obj_desc[i] = NULL;
+            status = ownObjDescFree((tivx_obj_desc_t**)&graph->obj_desc[i]);
+            if(status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to free the object descriptor\n");
+                status = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                graph->obj_desc[i] = NULL;
+            }
         }
     }
+    return status;
 }
 
 vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
@@ -608,132 +638,131 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
     tivx_obj_desc_graph_t *graph_obj_desc;
     uint32_t schedule_count = 0;
 
-    ownReferenceLock(&graph->base);
-
-    graph_obj_desc = ownGraphGetObjDesc(graph, pipeline_id);
-    if (graph_obj_desc != NULL)
+    if((vx_status)VX_SUCCESS == ownReferenceLock(&graph->base))
     {
-        vx_bool is_completed = (vx_bool)vx_false_e;
-
-        /* a leaf node completed so increment 'complete_leaf_nodes' */
-        graph_obj_desc->complete_leaf_nodes++;
-
-        /* if all leaf nodes completed, then graph is completed */
-        if(graph_obj_desc->complete_leaf_nodes==graph->num_leaf_nodes)
+        graph_obj_desc = ownGraphGetObjDesc(graph, pipeline_id);
+        if (graph_obj_desc != NULL)
         {
-            /* reset value to 0 for next graph run */
-            graph_obj_desc->complete_leaf_nodes = 0;
+            vx_bool is_completed = (vx_bool)vx_false_e;
 
-            is_completed = (vx_bool)vx_true_e;
-        }
+            /* a leaf node completed so increment 'complete_leaf_nodes' */
+            graph_obj_desc->complete_leaf_nodes++;
 
-        /* all leaf nodes completed, threfore graph is completed */
-        if(is_completed==(vx_bool)vx_true_e)
-        {
-            uint64_t end_time;
-            uint32_t i;
-
-            is_send_graph_complete_event = (vx_bool)vx_true_e;
-
-            /* a submitted graph is completed so decrement this field */
-
-            graph->submitted_count--;
-
-            /* update node performance */
-            for(i=0; i<graph->num_nodes; i++)
+            /* if all leaf nodes completed, then graph is completed */
+            if(graph_obj_desc->complete_leaf_nodes==graph->num_leaf_nodes)
             {
-                ownUpdateNodePerf(graph->nodes[i], graph_obj_desc->pipeline_id);
+                /* reset value to 0 for next graph run */
+                graph_obj_desc->complete_leaf_nodes = 0;
+
+                is_completed = (vx_bool)vx_true_e;
             }
 
-            if(graph->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL)
+            /* all leaf nodes completed, threfore graph is completed */
+            if(is_completed==(vx_bool)vx_true_e)
             {
-                /* delays need aging only if pipelining is not used */
-                for(i=0; i<TIVX_GRAPH_MAX_DELAYS; i++)
+                uint64_t end_time;
+                uint32_t i;
+
+                is_send_graph_complete_event = (vx_bool)vx_true_e;
+
+                /* a submitted graph is completed so decrement this field */
+
+                graph->submitted_count--;
+
+                /* update node performance */
+                for(i=0; i<graph->num_nodes; i++)
                 {
-                    if(graph->delays[i] != NULL)
+                    (void)ownUpdateNodePerf(graph->nodes[i], graph_obj_desc->pipeline_id);
+                }
+
+                if(graph->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL)
+                {
+                    /* delays need aging only if pipelining is not used */
+                    for(i=0; i<TIVX_GRAPH_MAX_DELAYS; i++)
                     {
-                        (void)vxAgeDelay(graph->delays[i]);
-                    }
-                    else
-                    {
-                        /* no more delays registered */
-                        break;
+                        if(graph->delays[i] != NULL)
+                        {
+                            (void)vxAgeDelay(graph->delays[i]);
+                        }
+                        else
+                        {
+                            /* no more delays registered */
+                            break;
+                        }
                     }
                 }
-            }
-            if ((vx_enum)graph_obj_desc->state == (vx_enum)VX_GRAPH_STATE_RUNNING)
-            {
-                graph_obj_desc->state = (vx_enum)VX_GRAPH_STATE_COMPLETED;
-            }
+                if ((vx_enum)graph_obj_desc->state == (vx_enum)VX_GRAPH_STATE_RUNNING)
+                {
+                    graph_obj_desc->state = (vx_enum)VX_GRAPH_STATE_COMPLETED;
+                }
 
-            end_time = tivxPlatformGetTimeInUsecs();
+                end_time = tivxPlatformGetTimeInUsecs();
 
-            tivx_uint64_to_uint32(
-               end_time,
-               &graph_obj_desc->exe_time_end_h,
-               &graph_obj_desc->exe_time_end_l
-              );
+                tivx_uint64_to_uint32(
+                   end_time,
+                   &graph_obj_desc->exe_time_end_h,
+                   &graph_obj_desc->exe_time_end_l
+                  );
 
-            ownLogRtTraceGraphExeEnd(end_time, graph_obj_desc);
+                ownLogRtTraceGraphExeEnd(end_time, graph_obj_desc);
 
-            ownUpdateGraphPerf(graph, graph_obj_desc->pipeline_id);
+                (void)ownUpdateGraphPerf(graph, graph_obj_desc->pipeline_id);
 
-            /* if submitted queue is empty then state of graph object
-             * is state on current completed graph pipeline instance
-             * else dont change the state of graph object
-             */
-            if ( graph->submitted_count == 0U )
-            {
-                graph->state = (int32_t)graph_obj_desc->state;
-            }
+                /* if submitted queue is empty then state of graph object
+                 * is state on current completed graph pipeline instance
+                 * else dont change the state of graph object
+                 */
+                if ( graph->submitted_count == 0U )
+                {
+                    graph->state = (int32_t)graph_obj_desc->state;
+                }
 
-            ownGraphEnqueueFreeObjDesc(graph, graph_obj_desc);
+                (void)ownGraphEnqueueFreeObjDesc(graph, graph_obj_desc);
 
-            VX_PRINT(VX_ZONE_INFO,"Graph Completed (graph=%d, pipe=%d)\n",
-                graph_obj_desc->base.obj_desc_id,
-                graph_obj_desc->pipeline_id
-                );
+                VX_PRINT(VX_ZONE_INFO,"Graph Completed (graph=%d, pipe=%d)\n",
+                    graph_obj_desc->base.obj_desc_id,
+                    graph_obj_desc->pipeline_id
+                    );
 
-            /* if there are any pending graph desc to be scehdule
-             * attempt to schedule them.
-             * graph->schedule_pending_count is copied to a local variable
-             * (schedule_count) and graph->schedule_pending_count is reset to 0.
-             *
-             * ownScheduleGraph, attempts to schedule the graph
-             * schedule_count times, internally it reinits graph->schedule_pending_count
-             * based on how many graph desc were scheduled
-             * and how many were left pending.
-             */
-            if(graph->schedule_pending_count > 0U)
-            {
-                schedule_count = graph->schedule_pending_count;
+                /* if there are any pending graph desc to be scehdule
+                 * attempt to schedule them.
+                 * graph->schedule_pending_count is copied to a local variable
+                 * (schedule_count) and graph->schedule_pending_count is reset to 0.
+                 *
+                 * ownScheduleGraph, attempts to schedule the graph
+                 * schedule_count times, internally it reinits graph->schedule_pending_count
+                 * based on how many graph desc were scheduled
+                 * and how many were left pending.
+                 */
+                if(graph->schedule_pending_count > 0U)
+                {
+                    schedule_count = graph->schedule_pending_count;
 
-                graph->schedule_pending_count = 0;
-            }
+                    graph->schedule_pending_count = 0;
+                }
 
-            /* if all submitted graphs completed and no more pending to be scheduled
-             * then post all graph completed event
-             */
-            if ( ( graph->submitted_count == 0U )
-                    && (schedule_count == 0U))
-            {
-                VX_PRINT(VX_ZONE_INFO,"All Graphs Completed\n");
+                /* if all submitted graphs completed and no more pending to be scheduled
+                 * then post all graph completed event
+                 */
+                if ( ( graph->submitted_count == 0U )
+                        && (schedule_count == 0U))
+                {
+                    VX_PRINT(VX_ZONE_INFO,"All Graphs Completed\n");
 
-                /* there are no more pending graphs to set event to indicate no more pending graphs */
-                tivxEventPost(graph->all_graph_completed_event);
+                    /* there are no more pending graphs to set event to indicate no more pending graphs */
+                    (void)tivxEventPost(graph->all_graph_completed_event);
+                }
             }
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Graph object descriptor is NULL\n");
+        }
+        (void)ownReferenceUnlock(&graph->base);
     }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Graph object descriptor is NULL\n");
-    }
-
-    ownReferenceUnlock(&graph->base);
-
     if(schedule_count > 0U)
     {
-        ownGraphScheduleGraph(graph, schedule_count);
+        (void)ownGraphScheduleGraph(graph, schedule_count);
     }
 
     return is_send_graph_complete_event;
@@ -742,97 +771,104 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
 vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_status tmp_status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_graph_t *graph_obj_desc;
     uint32_t total_num_schedule, schedule_id, node_id;
 
-    ownReferenceLock(&graph->base);
-
-    /* total number of times to schedule is user requested num_schedule
-     * + any other pending graph schedule
-     */
-    total_num_schedule = num_schedule + graph->schedule_pending_count;
-
-    for(schedule_id=0; schedule_id<total_num_schedule; schedule_id++)
+    if((vx_status)VX_SUCCESS == ownReferenceLock(&graph->base))
     {
-        graph_obj_desc = ownGraphDequeueFreeObjDesc(graph);
-        if(graph_obj_desc!=NULL)
+
+        /* total number of times to schedule is user requested num_schedule
+         * + any other pending graph schedule
+         */
+        total_num_schedule = num_schedule + graph->schedule_pending_count;
+
+        for(schedule_id=0; schedule_id<total_num_schedule; schedule_id++)
         {
-            uint64_t beg_time;
+            graph_obj_desc = ownGraphDequeueFreeObjDesc(graph);
+            if(graph_obj_desc!=NULL)
+            {
+                uint64_t beg_time;
 
-            beg_time = tivxPlatformGetTimeInUsecs();
+                beg_time = tivxPlatformGetTimeInUsecs();
 
-            tivx_uint64_to_uint32(
-                beg_time,
-                &graph_obj_desc->exe_time_beg_h,
-                &graph_obj_desc->exe_time_beg_l
-            );
-
-            ownLogRtTraceGraphExeStart(beg_time, graph_obj_desc);
-
-            ownGraphClearState(graph, graph_obj_desc->pipeline_id);
-
-            graph_obj_desc->state = (vx_enum)VX_GRAPH_STATE_RUNNING;
-            graph->state = (vx_enum)VX_GRAPH_STATE_RUNNING;
-
-            /* a graph is about to be submitted, clear all_graph_completed_event if not already cleared */
-            tivxEventClear(graph->all_graph_completed_event);
-
-            /* a graph is submitted for execution so increment below field */
-            graph->submitted_count++;
-
-            VX_PRINT(VX_ZONE_INFO,"Scheduling Graph (graph=%d, pipe=%d)\n",
-                graph_obj_desc->base.obj_desc_id,
-                graph_obj_desc->pipeline_id
+                tivx_uint64_to_uint32(
+                    beg_time,
+                    &graph_obj_desc->exe_time_beg_h,
+                    &graph_obj_desc->exe_time_beg_l
                 );
 
-            /* trigger graph execution by scheduling the head nodes
-             * Head nodes will trigger further nodes execution after
-             * their completion
-             * This will continue until leaf nodes executes
-             * After a leaf node executes, it will send a completion
-             * event.
-             * After all completion events are received, a graph is
-             * considered to have
-             * executed
-             */
-            for(node_id=0; node_id<graph->num_head_nodes; node_id++)
-            {
-                ownNodeKernelSchedule(graph->head_nodes[node_id], graph_obj_desc->pipeline_id);
+                ownLogRtTraceGraphExeStart(beg_time, graph_obj_desc);
+
+                ownGraphClearState(graph, graph_obj_desc->pipeline_id);
+
+                graph_obj_desc->state = (vx_enum)VX_GRAPH_STATE_RUNNING;
+                graph->state = (vx_enum)VX_GRAPH_STATE_RUNNING;
+
+                /* a graph is about to be submitted, clear all_graph_completed_event if not already cleared */
+                (void)tivxEventClear(graph->all_graph_completed_event);
+
+                /* a graph is submitted for execution so increment below field */
+                graph->submitted_count++;
+
+                VX_PRINT(VX_ZONE_INFO,"Scheduling Graph (graph=%d, pipe=%d)\n",
+                    graph_obj_desc->base.obj_desc_id,
+                    graph_obj_desc->pipeline_id
+                    );
+
+                /* trigger graph execution by scheduling the head nodes
+                 * Head nodes will trigger further nodes execution after
+                 * their completion
+                 * This will continue until leaf nodes executes
+                 * After a leaf node executes, it will send a completion
+                 * event.
+                 * After all completion events are received, a graph is
+                 * considered to have
+                 * executed
+                 */
+                for(node_id=0; node_id<graph->num_head_nodes; node_id++)
+                {
+                    tmp_status = ownNodeKernelSchedule(graph->head_nodes[node_id], graph_obj_desc->pipeline_id);
+                    if((vx_status)VX_SUCCESS != tmp_status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to schedule kernel\n");
+                        status = tmp_status;
+                    }
+                }
             }
+            else
+            {
+                /* For VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO/MANUAL,
+                 * lack of graph descriptor, implies multiple graphs executions
+                 * on-going in pipeline hence lack of graph obj desc means
+                 * this graph schedule MUST be kept pending and tried after a previous graph execution
+                 * completes.
+                 */
+                break;
+            }
+        }
+
+        if( (graph->schedule_mode!=(vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL) ||
+            ((vx_bool)vx_true_e == graph->is_streaming_enabled) )
+        {
+            /* Below logic updates the pending graph schedule
+             */
+            graph->schedule_pending_count = total_num_schedule - schedule_id;
         }
         else
         {
-            /* For VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO/MANUAL,
-             * lack of graph descriptor, implies multiple graphs executions
-             * on-going in pipeline hence lack of graph obj desc means
-             * this graph schedule MUST be kept pending and tried after a previous graph execution
-             * completes.
-             */
-            break;
+            if(schedule_id!=total_num_schedule)
+            {
+                /* for normal modes if all reqired graph schedules did not suceed
+                 * then this is a error condition as user has tried
+                 * doing schedule more times than is supported
+                 */
+                VX_PRINT(VX_ZONE_ERROR,"Free graph descriptor not available, cannot schedule graph\n");
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
+            }
         }
+        (void)ownReferenceUnlock(&graph->base);
     }
-
-    if( (graph->schedule_mode!=(vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL) ||
-        ((vx_bool)vx_true_e == graph->is_streaming_enabled) )
-    {
-        /* Below logic updates the pending graph schedule
-         */
-        graph->schedule_pending_count = total_num_schedule - schedule_id;
-    }
-    else
-    {
-        if(schedule_id!=total_num_schedule)
-        {
-            /* for normal modes if all reqired graph schedules did not suceed
-             * then this is a error condition as user has tried
-             * doing schedule more times than is supported
-             */
-            VX_PRINT(VX_ZONE_ERROR,"Free graph descriptor not available, cannot schedule graph\n");
-            status = (vx_status)VX_ERROR_NO_RESOURCES;
-        }
-    }
-    ownReferenceUnlock(&graph->base);
-
     return status;
 }
 
@@ -916,7 +952,7 @@ uint32_t ownGraphGetNumSchedule(vx_graph graph)
                 {
                     count = 0;
 
-                    ownDataRefQueueGetReadyQueueCount(
+                    (void)ownDataRefQueueGetReadyQueueCount(
                             graph->parameters[i].data_ref_queue, &count);
 
                     if(count<min_count)
