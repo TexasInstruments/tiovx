@@ -27,10 +27,7 @@ static vx_status ownDestructGraph(vx_reference ref)
     vx_status status1 = (vx_status)VX_SUCCESS;
     vx_graph graph = (vx_graph)ref;
 
-    if((vx_status)VX_SUCCESS != ownGraphFreeStreaming(graph))
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to free graph streaming objects\n");
-    }
+    ownGraphFreeStreaming(graph);
 
     {
         uint32_t i;
@@ -39,20 +36,14 @@ static vx_status ownDestructGraph(vx_reference ref)
         {
             if((graph->parameters[i].queue_enable != (vx_bool)vx_false_e) && (graph->parameters[i].data_ref_queue != NULL))
             {
-                if((vx_status)VX_SUCCESS != ownDataRefQueueRelease(&graph->parameters[i].data_ref_queue))
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
-                }
+                ownDataRefQueueRelease(&graph->parameters[i].data_ref_queue);
             }
         }
         for(i=0; i<graph->num_data_ref_q; i++)
         {
             if(graph->data_ref_q_list[i].data_ref_queue != NULL)
             {
-                if((vx_status)VX_SUCCESS != ownDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue))
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
-                }
+                ownDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue);
             }
             if(graph->data_ref_q_list[i].num_buf > 1U)
             {
@@ -70,11 +61,7 @@ static vx_status ownDestructGraph(vx_reference ref)
                         data_ref = data_ref->scope;
                     }
 
-                    if((vx_status)VX_SUCCESS != vxReleaseReference(&data_ref))
-                    {
-                        status = (vx_status)VX_FAILURE;
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference\n");
-                    }
+                    vxReleaseReference(&data_ref);
 
                     graph->data_ref_q_list[i].refs_list[buf_id] = NULL;
                 }
@@ -87,10 +74,7 @@ static vx_status ownDestructGraph(vx_reference ref)
         {
             if(graph->delay_data_ref_q_list[i].data_ref_queue != NULL)
             {
-                if((vx_status)VX_SUCCESS != ownDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue))
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
-                }
+                ownDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue);
             }
         }
 
@@ -133,19 +117,9 @@ static vx_status ownDestructGraph(vx_reference ref)
         }
     }
 
-    if((vx_status)VX_SUCCESS != ownGraphDeleteQueues(graph))
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to delete queues created during ownGraphCreateQueues \n");
-    }
-    if((vx_status)VX_SUCCESS != ownGraphFreeObjDesc(graph))
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to free graph obj desc \n");
-    }
-
-    if((vx_status)VX_SUCCESS != tivxEventDelete(&graph->all_graph_completed_event))
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to delete event\n");
-    }
+    ownGraphDeleteQueues(graph);
+    ownGraphFreeObjDesc(graph);
+    tivxEventDelete(&graph->all_graph_completed_event);
 
     return status;
 }
@@ -406,11 +380,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->num_supernodes = 0;
             graph->timeout_val = TIVX_DEFAULT_GRAPH_TIMEOUT;
 
-            status = ownResetGraphPerf(graph);
-            if((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to reset graph \n");
-            }
+            ownResetGraphPerf(graph);
 
             for (idx = 0; idx < TIVX_GRAPH_MAX_DELAYS; idx++)
             {
@@ -440,11 +410,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             }
             if(status!=(vx_status)VX_SUCCESS)
             {
-                status = vxReleaseGraph(&graph);
-                if((vx_status)VX_SUCCESS != status)
-                {
-                VX_PRINT(VX_ZONE_ERROR, "Failed to release reference to a graph \n");
-                }
+                vxReleaseGraph(&graph);
 
                 VX_PRINT(VX_ZONE_ERROR, "Could not create graph\n");
                 graph = (vx_graph)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
@@ -828,11 +794,7 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
         if( graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL )
         {
             /* schedule graph one time */
-            status = ownGraphScheduleGraph(graph, 1);
-            if((vx_status)VX_SUCCESS !=status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to schedule graph for execution \n");
-            }
+            ownGraphScheduleGraph(graph, 1);
         }
         else
         if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
@@ -956,7 +918,6 @@ void ownGraphSetReverify(vx_graph graph)
 
 void ownSendGraphCompletedEvent(vx_graph graph)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     if((graph != NULL) && (graph->base.context != NULL))
     {
         if(graph->is_enable_send_complete_event != 0)
@@ -965,13 +926,9 @@ void ownSendGraphCompletedEvent(vx_graph graph)
 
             timestamp = tivxPlatformGetTimeInUsecs()*1000U; /* in nano-secs */
 
-            status = ownEventQueueAddEvent(&graph->base.context->event_queue,
+            ownEventQueueAddEvent(&graph->base.context->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
                         (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
-            if((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
-            }
         }
     }
 }
