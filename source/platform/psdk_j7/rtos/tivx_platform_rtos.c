@@ -96,7 +96,6 @@ vx_status ownPlatformInit(void)
 
 void ownPlatformDeInit(void)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     int32_t i;
 
     ownIpcDeInit();
@@ -105,26 +104,17 @@ void ownPlatformDeInit(void)
     {
         if (NULL != g_tivx_platform_info.g_platform_lock[i])
         {
-            status = tivxMutexDelete(&g_tivx_platform_info.g_platform_lock[i]);
-            if((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
-            }
+            (void)tivxMutexDelete(&g_tivx_platform_info.g_platform_lock[i]);
         }
     }
 }
 
 void ownPlatformSystemLock(vx_enum lock_id)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((vx_enum)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
-        status = tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
-        if(status != 0)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Mutex lock failed\n");
-        }
+        (void)tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
 
         if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {
@@ -152,7 +142,6 @@ void ownPlatformSystemLock(vx_enum lock_id)
 
 void ownPlatformSystemUnlock(vx_enum lock_id)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((vx_enum)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
@@ -174,12 +163,8 @@ void ownPlatformSystemUnlock(vx_enum lock_id)
             /* do nothing */
         }
 
-        status = tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
+        (void)tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
             (uint32_t)lock_id]);
-        if(status != 0)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Mutex unlock failed\n");
-        }
     }
 }
 
