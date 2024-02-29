@@ -483,9 +483,40 @@ static uint32_t getDataRefObjDescSize(vx_reference ref)
             size   = obj_desc->mem_size;
             break;
         }
+        case (vx_enum)VX_TYPE_SCALAR:
+        {
+            tivx_obj_desc_scalar_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_scalar_t *)ref->obj_desc;
+
+            switch (obj_desc->data_type)
+            {
+                case (vx_enum)VX_TYPE_CHAR:     size = sizeof(obj_desc->data.chr); break;
+                case (vx_enum)VX_TYPE_INT8:     size = sizeof(obj_desc->data.s08); break;
+                case (vx_enum)VX_TYPE_UINT8:    size = sizeof(obj_desc->data.u08); break;
+                case (vx_enum)VX_TYPE_INT16:    size = sizeof(obj_desc->data.s16); break;
+                case (vx_enum)VX_TYPE_UINT16:   size = sizeof(obj_desc->data.u16); break;
+                case (vx_enum)VX_TYPE_INT32:    size = sizeof(obj_desc->data.s32); break;
+                case (vx_enum)VX_TYPE_UINT32:   size = sizeof(obj_desc->data.u32); break;
+                case (vx_enum)VX_TYPE_INT64:    size = sizeof(obj_desc->data.s64); break;
+                case (vx_enum)VX_TYPE_UINT64:   size = sizeof(obj_desc->data.u64); break;
+            #ifdef OVX_SUPPORT_HALF_FLOAT
+                case (vx_enum)VX_TYPE_FLOAT16:  size = sizeof(obj_desc->data.f16); break;
+            #endif
+                case (vx_enum)VX_TYPE_FLOAT32:  size = sizeof(obj_desc->data.f32); break;
+                case (vx_enum)VX_TYPE_FLOAT64:  size = sizeof(obj_desc->data.f64); break;
+                case (vx_enum)VX_TYPE_DF_IMAGE: size = sizeof(obj_desc->data.fcc); break;
+                case (vx_enum)VX_TYPE_ENUM:     size = sizeof(obj_desc->data.enm); break;
+                case (vx_enum)VX_TYPE_SIZE:     size = sizeof(obj_desc->data.size); break;
+                case (vx_enum)VX_TYPE_BOOL:     size = sizeof(obj_desc->data.boolean); break;
+                default:
+                    VX_PRINT(VX_ZONE_ERROR, "scalar data type is not supported\n");
+                    break;
+            }
+            break;
+        }
         default:
         {
-            VX_PRINT(VX_ZONE_ERROR, "Does not yet support type [%d]", ref->type);
+            VX_PRINT(VX_ZONE_ERROR, "Does not yet support type [%d]\n", ref->type);
             break;
         }
     }
