@@ -79,14 +79,14 @@ static void tivxInitLocal(void)
 
 #if defined(LINUX) || defined(QNX)
         /* Initialize the POSIX objects */
-        ownPosixObjectInit();
+        (void)ownPosixObjectInit();
 #endif
 
         /* Initialize resource logging */
         ownLogResourceInit();
 
         /* Initialize platform */
-        ownPlatformInit();
+        (void)ownPlatformInit();
 
         /* Initialize Target */
         ownTargetInit();
@@ -198,7 +198,7 @@ static void tivxDeInitLocal(void)
 
 #if defined(LINUX) || defined(QNX)
             /* DeInitialize the POSIX objects */
-            ownPosixObjectDeInit();
+            (void)ownPosixObjectDeInit();
 #endif
 
             VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");

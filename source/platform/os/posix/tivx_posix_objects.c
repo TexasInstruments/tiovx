@@ -151,7 +151,7 @@ uint8_t *ownPosixObjectAlloc(vx_enum type)
                 break;
         }
 
-        tivxMutexUnlock(g_tivx_objects_lock);
+        (void)tivxMutexUnlock(g_tivx_objects_lock);
     }
 
     return (obj);
@@ -219,7 +219,7 @@ vx_status ownPosixObjectFree(uint8_t *obj, vx_enum type)
                     break;
             }
 
-            tivxMutexUnlock(g_tivx_objects_lock);
+            (void)tivxMutexUnlock(g_tivx_objects_lock);
         }
     }
 
