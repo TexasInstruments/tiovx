@@ -192,13 +192,13 @@ uint16_t ownIpcGetHostPortId(uint16_t cpu_id)
 void ownIpcInit(void)
 {
     /* Register IPC Handler */
-    appIpcRegisterNotifyHandler(tivxIpcHandler);
+    (void)appIpcRegisterNotifyHandler(tivxIpcHandler);
 }
 
 void ownIpcDeInit(void)
 {
     /* Un-Register IPC Handler */
-    appIpcRegisterNotifyHandler(NULL);
+    (void)appIpcRegisterNotifyHandler(NULL);
 }
 
 vx_bool tivxIsTargetEnabled(const char target_name[])

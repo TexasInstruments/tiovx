@@ -158,7 +158,7 @@ void ownPlatformDeInit(void)
     {
         if (NULL != g_tivx_platform_info.g_platform_lock[i])
         {
-            tivxMutexDelete(&g_tivx_platform_info.g_platform_lock[i]);
+            (void)tivxMutexDelete(&g_tivx_platform_info.g_platform_lock[i]);
         }
     }
 }
@@ -167,7 +167,7 @@ void ownPlatformSystemLock(vx_enum lock_id)
 {
     if (lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
-        tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
+        (void)tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
 
         if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {
@@ -177,17 +177,17 @@ void ownPlatformSystemLock(vx_enum lock_id)
              * This lock in this platform is implemented via HW spinlock
              */
             (void)sem_wait(g_tivx_platform_info.semaphore_data_ref);
-            appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
+            (void)appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
         {
             (void)sem_wait(g_tivx_platform_info.semaphore_log_mem);
-            appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
+            (void)appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
             (void)sem_wait(g_tivx_platform_info.semaphore);
-            appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
+            (void)appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
         else
         {
@@ -203,17 +203,17 @@ void ownPlatformSystemUnlock(vx_enum lock_id)
         if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {
             /* release the lock taken during ownPlatformSystemLock */
-            appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
+            (void)appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
             (void)sem_post(g_tivx_platform_info.semaphore_data_ref);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
         {
-            appIpcHwLockRelease(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID);
+            (void)appIpcHwLockRelease(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID);
             (void)sem_post(g_tivx_platform_info.semaphore_log_mem);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
-            appIpcHwLockRelease(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID);
+            (void)appIpcHwLockRelease(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID);
             (void)sem_post(g_tivx_platform_info.semaphore);
         }
         else
@@ -221,7 +221,7 @@ void ownPlatformSystemUnlock(vx_enum lock_id)
             /* do nothing */
         }
 
-        tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
+        (void)tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
             (uint32_t)lock_id]);
     }
 }

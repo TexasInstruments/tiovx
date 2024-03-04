@@ -73,7 +73,7 @@ static void tivxHostInitLocal(void)
            memory footprint so the linker on the non-host cores can optimize out symbols needed on the host.
          */
         ownRegisterFunctionsForHost();
-        ownObjectInit();
+        (void)ownObjectInit();
         tivxRegisterOpenVXCoreKernels();
         tivxRegisterOpenVXExtKernels();
 
@@ -113,7 +113,7 @@ static void tivxHostDeInitLocal(void)
         if (0U == gInitCount)
         {
             VX_PRINT(VX_ZONE_INIT, "De-Initialization Done for HOST !!!\n");
-            ownObjectDeInit();
+            (void)ownObjectDeInit();
             tivxUnRegisterOpenVXExtKernels();
             tivxUnRegisterOpenVXCoreKernels();
         }
