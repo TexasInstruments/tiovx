@@ -1715,12 +1715,20 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
         * if yes then do nothing */
         for(i = 0; i < graph->num_params; i++)
         {
-            vx_reference gparam_ref;
-            gparam_ref = ownNodeGetParameterRef(graph->parameters[i].node, graph->parameters[i].index);
-            if ((param_ref == gparam_ref) && (graph->parameters[i].queue_enable == (vx_bool)vx_true_e))
+            if(i < TIVX_GRAPH_MAX_PARAMS)
             {
-                skip_add_data_ref_q = (vx_bool)vx_true_e;
-                break;
+                vx_reference gparam_ref;
+                gparam_ref = ownNodeGetParameterRef(graph->parameters[i].node, graph->parameters[i].index);
+                if ((param_ref == gparam_ref) && (graph->parameters[i].queue_enable == (vx_bool)vx_true_e))
+                {
+                    skip_add_data_ref_q = (vx_bool)vx_true_e;
+                    break;
+                }
+            }
+            else
+            {
+                status = (vx_status)VX_ERROR_INVALID_VALUE;
+                VX_PRINT(VX_ZONE_ERROR,"Supplied parameter has an incorrect value\n");
             }
         }
     }
