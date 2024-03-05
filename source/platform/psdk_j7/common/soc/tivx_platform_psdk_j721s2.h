@@ -24,7 +24,7 @@ extern "C" {
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_TARGETS            (44u)
+#define TIVX_PLATFORM_MAX_TARGETS            (43u)
 
 /*! \brief Macro to check the alignment of the size of
  *         the shared memory entry
