@@ -558,46 +558,66 @@ vx_status ownGraphVerifyStreamingMode(vx_graph graph)
 vx_status ownGraphFreeStreaming(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_status tmp_status = (vx_status)VX_SUCCESS;
+
     if (graph->is_streaming_enabled != 0)
     {
-        /* Clear event and send user event */
-        status = tivxEventClear(graph->delete_done);
-        if (status != (vx_status)VX_SUCCESS)
+        if (NULL != graph->delete_done)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventClear() failed.\n");
+            /* Clear event and send user event */
+            tmp_status = tivxEventClear(graph->delete_done);
+            if (tmp_status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxEventClear() failed.\n");
+                status = tmp_status;
+            }
         }
 
-        status = tivxSendUserGraphEvent(graph, DELETE, NULL);
-        if (status != (vx_status)VX_SUCCESS)
+        tmp_status = tivxSendUserGraphEvent(graph, DELETE, NULL);
+        if (tmp_status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+            status = tmp_status;
         }
 
-        status = tivxEventWait(graph->delete_done, graph->timeout_val);
-        if (status != (vx_status)VX_SUCCESS)
+        if (NULL != graph->delete_done)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
+            tmp_status = tivxEventWait(graph->delete_done, graph->timeout_val);
+            if (tmp_status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
+                status = tmp_status;
+            }
         }
 
         (void)tivxTaskDelete(&graph->streaming_task_handle);
 
-        status = ownEventQueueDelete(&graph->event_queue);
-        if (status != (vx_status)VX_SUCCESS)
+        tmp_status = ownEventQueueDelete(&graph->event_queue);
+        if (tmp_status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to delete event queue.\n");
+            status = tmp_status;
         }
 
-        status = tivxEventDelete(&graph->stop_done);
-        if (status != (vx_status)VX_SUCCESS)
+        if (NULL != graph->stop_done)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
+            tmp_status = tivxEventDelete(&graph->stop_done);
+            if (tmp_status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
+                status = tmp_status;
+            }
         }
 
 
-        status = tivxEventDelete(&graph->delete_done);
-        if (status != (vx_status)VX_SUCCESS)
+        if (NULL != graph->delete_done)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
+            tmp_status = tivxEventDelete(&graph->delete_done);
+            if (tmp_status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
+                status = tmp_status;
+            }
         }
 
     }
