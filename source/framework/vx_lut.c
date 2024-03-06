@@ -21,13 +21,14 @@
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseLUT(vx_lut *lut)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)lut, (vx_enum)VX_TYPE_LUT, (vx_enum)VX_EXTERNAL, NULL));
+        vxCastRefFromLUTP(lut), (vx_enum)VX_TYPE_LUT, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 vx_lut VX_API_CALL vxCreateLUT(
     vx_context context, vx_enum data_type, vx_size count)
 {
     vx_lut lut = NULL;
+    vx_reference ref = NULL;
     vx_size dim = 0;
     tivx_obj_desc_lut_t *obj_desc = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
@@ -63,12 +64,14 @@ vx_lut VX_API_CALL vxCreateLUT(
 
         if (0U != dim)
         {
-            lut = (vx_lut)ownCreateReference(context, (vx_enum)VX_TYPE_LUT,
+            ref = ownCreateReference(context, (vx_enum)VX_TYPE_LUT,
                 (vx_enum)VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)lut) == (vx_status)VX_SUCCESS) &&
-                (lut->base.type == (vx_enum)VX_TYPE_LUT))
+            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
+                (ref->type == (vx_enum)VX_TYPE_LUT))
             {
+                /* status set to NULL due to preceding type check */
+                lut = vxCastRefAsLUT(ref,NULL);
                 /* assign refernce type specific callback's */
                 lut->base.destructor_callback = &ownDestructReferenceGeneric;
                 lut->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
@@ -76,7 +79,7 @@ vx_lut VX_API_CALL vxCreateLUT(
                     &ownReleaseReferenceBufferGeneric;
 
                 obj_desc = (tivx_obj_desc_lut_t*)ownObjDescAlloc(
-                    (vx_enum)TIVX_OBJ_DESC_LUT, (vx_reference)lut);
+                    (vx_enum)TIVX_OBJ_DESC_LUT, vxCastRefFromLUT(lut));
                 if(obj_desc==NULL)
                 {
                     status = vxReleaseLUT(&lut);
@@ -117,7 +120,7 @@ vx_status VX_API_CALL vxQueryLUT(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)lut, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromLUT(lut), (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -212,7 +215,7 @@ vx_status VX_API_CALL vxCopyLUT(
     vx_uint32 size;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)lut, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromLUT(lut), (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -286,7 +289,7 @@ vx_status VX_API_CALL vxMapLUT(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)lut, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromLUT(lut), (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -316,7 +319,7 @@ vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)lut, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromLUT(lut), (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )

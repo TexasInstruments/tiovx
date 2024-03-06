@@ -1288,7 +1288,8 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
 
         if (ref->type == (vx_enum)VX_TYPE_IMAGE)
         {
-            vx_image image = (vx_image)ref;
+            /* status set to NULL due to preceding type check */
+            vx_image image = vxCastRefAsImage(ref,NULL);
 
             if (NULL == image->parent)
             {
@@ -1473,12 +1474,13 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
 #endif
             {
                 num_levels = obj_desc->num_levels;
-                pyramid    = (vx_pyramid)ref;
+                /* status set to NULL due to preceding type check */
+                pyramid = vxCastRefAsPyramid(ref,NULL);
                 numMemElem = 0;
 
                 for (i = 0; i < num_levels; i++)
                 {
-                    img_ref      = (vx_reference)pyramid->img[i];
+                    img_ref = vxCastRefFromImage(pyramid->img[i]);
                     img_obj_desc = (tivx_obj_desc_image_t *)img_ref->obj_desc;
 
 #ifdef LDRA_UNTESTABLE_CODE
@@ -1763,7 +1765,8 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
 
         if (ref->type == (vx_enum)VX_TYPE_IMAGE)
         {
-            vx_image image = (vx_image)ref;
+            /* status set to NULL due to preceding type check */
+            vx_image image = vxCastRefAsImage(ref,NULL);
 
             if (NULL == image->parent)
             {
@@ -1949,7 +1952,8 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
 #endif
             {
                 num_levels = obj_desc->num_levels;
-                pyramid    = (vx_pyramid)ref;
+                /* status set to NULL due to preceding type check */
+                pyramid = vxCastRefAsPyramid(ref,NULL);
 
                 if (num_levels > max_num_entries)
                 {
@@ -1966,7 +1970,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
                 {
                     for (i = 0; i < num_levels; i++)
                     {
-                        img_ref      = (vx_reference)pyramid->img[i];
+                        img_ref = vxCastRefFromImage(pyramid->img[i]);
                         img_obj_desc = (tivx_obj_desc_image_t *)img_ref->obj_desc;
                         total_size   = 0;
 #ifdef LDRA_UNTESTABLE_CODE

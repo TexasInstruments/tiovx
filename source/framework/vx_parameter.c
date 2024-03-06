@@ -22,23 +22,24 @@ static vx_status ownDestructParameter(vx_reference ref);
 static vx_status ownDestructParameter(vx_reference ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_parameter param = (vx_parameter)ref;
 
-    if(param != NULL)
+    if((ref != NULL) && (ref->type == (vx_enum)VX_TYPE_PARAMETER))
     {
-        if (ownIsValidSpecificReference((vx_reference)param->node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
+        /* status set to NULL due to preceding type check */
+        vx_parameter param = vxCastRefAsParameter(ref, NULL);
+        if (ownIsValidSpecificReference(vxCastRefFromNode(param->node), (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
         {
             vx_node node = (vx_node)param->node;
-            status = ownReleaseReferenceInt((vx_reference *)&node, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
+            status = ownReleaseReferenceInt(vxCastRefFromNodeP(&node), (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Release internal parameter node reference failed!\n");
             }
         }
-        if (ownIsValidSpecificReference((vx_reference)param->kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
+        if (ownIsValidSpecificReference(vxCastRefFromKernel(param->kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
         {
             vx_kernel kernel = (vx_kernel)param->kernel;
-            status = ownReleaseReferenceInt((vx_reference *)&kernel, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_INTERNAL, NULL);
+            status = ownReleaseReferenceInt(vxCastRefFromKernelP(&kernel), (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_INTERNAL, NULL);
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Release internal parameter kernel reference failed!\n");
@@ -106,13 +107,15 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
 {
     vx_parameter parameter = NULL;
 
-    if (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromKernel(kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
     {
         if ((index < TIVX_KERNEL_MAX_PARAMS) && (index < kernel->signature.num_parameters))
         {
-            parameter = (vx_parameter)ownCreateReference(kernel->base.context, (vx_enum)VX_TYPE_PARAMETER, (vx_enum)VX_EXTERNAL, &kernel->base.context->base);
-            if ((vxGetStatus((vx_reference)parameter) == (vx_status)VX_SUCCESS) && (parameter->base.type == (vx_enum)VX_TYPE_PARAMETER))
+            vx_reference ref = ownCreateReference(kernel->base.context, (vx_enum)VX_TYPE_PARAMETER, (vx_enum)VX_EXTERNAL, &kernel->base.context->base);
+            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)VX_TYPE_PARAMETER))
             {
+                /* status set to NULL due to preceding type check */
+                parameter = vxCastRefAsParameter(ref, NULL);
                 parameter->base.destructor_callback = &ownDestructParameter;
                 parameter->base.release_callback = &ownReleaseReferenceBufferGeneric;
                 parameter->index = index;
@@ -136,7 +139,8 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
 VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uint32 index)
 {
     vx_parameter param = NULL;
-    if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
+
+    if (ownIsValidSpecificReference(vxCastRefFromNode(node), (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
         if (node->kernel == NULL)
         {
@@ -148,9 +152,11 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uin
         {
             if ((index < TIVX_KERNEL_MAX_PARAMS) && (index < node->kernel->signature.num_parameters))
             {
-                param = (vx_parameter)ownCreateReference(node->base.context, (vx_enum)VX_TYPE_PARAMETER, (vx_enum)VX_EXTERNAL, &node->base);
-                if ((vxGetStatus((vx_reference)param) == (vx_status)VX_SUCCESS) && (param->base.type == (vx_enum)VX_TYPE_PARAMETER))
+                vx_reference ref = ownCreateReference(node->base.context, (vx_enum)VX_TYPE_PARAMETER, (vx_enum)VX_EXTERNAL, &node->base);
+                if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)VX_TYPE_PARAMETER))
                 {
+                    /* status set to NULL due to preceding type check */
+                    param = vxCastRefAsParameter(ref, NULL);
                     param->base.destructor_callback = &ownDestructParameter;
                     param->base.release_callback = &ownReleaseReferenceBufferGeneric;
                     param->index = index;
@@ -175,7 +181,7 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uin
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseParameter(vx_parameter *param)
 {
-    return ownReleaseReferenceInt((vx_reference *)param, (vx_enum)VX_TYPE_PARAMETER, (vx_enum)VX_EXTERNAL, NULL);
+    return ownReleaseReferenceInt(vxCastRefFromParameterP(param), (vx_enum)VX_TYPE_PARAMETER, (vx_enum)VX_EXTERNAL, NULL);
 }
 
 
@@ -185,7 +191,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
     vx_enum type = 0;
     vx_enum data_type = 0;
 
-    if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_false_e)
+    if (ownIsValidSpecificReference(vxCastRefFromNode(node), (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "Supplied node was not actually a node\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -241,8 +247,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                        vx_type_e types instead of the more generic (vx_enum)VX_TYPE_SCALAR since the spec
                        doesn't specify that only (vx_enum)VX_TYPE_SCALAR should be used for scalar types in
                        this function. */
-                    if((type == (vx_enum)VX_TYPE_SCALAR) &&
-                       (vxQueryScalar((vx_scalar)value, (vx_enum)VX_SCALAR_TYPE, &data_type, sizeof(data_type)) == (vx_status)VX_SUCCESS))
+                    /* status set to NULL due to type check */
+                    if((type == (vx_enum)VX_TYPE_SCALAR) && 
+                       (vxQueryScalar(vxCastRefAsScalar(value,NULL), (vx_enum)VX_SCALAR_TYPE, &data_type, sizeof(data_type)) == (vx_status)VX_SUCCESS))
                     {
                         if(data_type != node->kernel->signature.types[index])
                         {
@@ -317,7 +324,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByReference(vx_parameter parameter, vx_reference value)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-    if (ownIsValidSpecificReference((vx_reference)parameter, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromParameter(parameter), (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_true_e)
     {
         if (parameter->node != NULL)
         {
@@ -330,7 +337,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByReference(vx_parameter parame
 VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if (ownIsValidSpecificReference((vx_reference)parameter, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromParameter(parameter), (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_true_e)
     {
         switch (attribute)
         {

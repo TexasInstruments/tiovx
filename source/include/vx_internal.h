@@ -26,6 +26,7 @@
 #include <VX/vx.h>
 #include <VX/vx_khr_pipelining.h>
 #include <TI/tivx.h>
+#include <VX/vx_khr_safe_casts.h>
 #include <TI/tivx_mem.h>
 #include <TI/tivx_obj_desc.h>
 #include <TI/tivx_target_kernel.h>

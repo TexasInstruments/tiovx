@@ -55,7 +55,7 @@ static vx_bool ownIsValidObject(vx_enum type)
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseObjectArray(vx_object_array *arr)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)arr, (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, NULL));
+        vxCastRefFromObjectArrayP(arr), (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 vx_object_array VX_API_CALL vxCreateObjectArray(
@@ -70,17 +70,19 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
         if (((vx_bool)vx_true_e == ownIsValidObject(exemplar->type)) &&
             (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS))
         {
-            objarr = (vx_object_array)ownCreateReference(context, (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, &context->base);
-            if ((vxGetStatus((vx_reference)objarr) == (vx_status)VX_SUCCESS) &&
-                (objarr->base.type == (vx_enum)VX_TYPE_OBJECT_ARRAY))
+            vx_reference ref = ownCreateReference(context, (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, &context->base);
+            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
+                (ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY))
             {
+                /* status set to NULL due to preceding type check */
+                objarr = vxCastRefAsObjectArray(ref,NULL);
                 /* assign refernce type specific callback's */
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
                 objarr->base.obj_desc = ownObjDescAlloc(
-                    (vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
+                    (vx_enum)TIVX_OBJ_DESC_OBJARRAY, vxCastRefFromObjectArray(objarr));
                 if(objarr->base.obj_desc==NULL)
                 {
                     status = vxReleaseObjectArray(&objarr);
@@ -137,10 +139,11 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
     vx_graph graph, vx_reference exemplar, vx_size count)
 {
     vx_object_array objarr = NULL;
+    vx_reference ref = NULL;
     vx_context context;
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) ==
+    if ((ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) ==
                 (vx_bool)vx_true_e) &&
         (NULL != exemplar))
     {
@@ -149,19 +152,21 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
         if (((vx_bool)vx_true_e == ownIsValidObject(exemplar->type)) &&
             (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS))
         {
-            objarr = (vx_object_array)ownCreateReference(
+            ref = ownCreateReference(
                 context, (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)objarr) == (vx_status)VX_SUCCESS) &&
-                (objarr->base.type == (vx_enum)VX_TYPE_OBJECT_ARRAY))
+            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
+                (ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY))
             {
+                /* status set to NULL due to preceding type check */
+                objarr = vxCastRefAsObjectArray(ref,NULL);
                 /* assign refernce type specific callback's */
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
                 objarr->base.obj_desc = ownObjDescAlloc(
-                    (vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
+                    (vx_enum)TIVX_OBJ_DESC_OBJARRAY, vxCastRefFromObjectArray(objarr));
                 if(objarr->base.obj_desc==NULL)
                 {
                     status = vxReleaseObjectArray(&objarr);
@@ -224,7 +229,7 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
 {
     vx_reference ref = NULL;
 
-    if (ownIsValidSpecificReference((vx_reference)objarr, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
+    if (ownIsValidSpecificReference(vxCastRefFromObjectArray(objarr), (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
     {
         vx_context context = ownGetContext();
         if (ownIsValidContext(context) == (vx_bool)vx_true_e)
@@ -245,7 +250,7 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
         tivx_obj_desc_object_array_t *obj_desc =
             (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
-        if ((ownIsValidSpecificReference((vx_reference)objarr, (vx_enum)VX_TYPE_OBJECT_ARRAY) ==
+        if ((ownIsValidSpecificReference(vxCastRefFromObjectArray(objarr), (vx_enum)VX_TYPE_OBJECT_ARRAY) ==
                 (vx_bool)vx_true_e) && (obj_desc != NULL) &&
             (index < obj_desc->num_items) &&
             (objarr->base.is_virtual == (vx_bool)vx_false_e))
@@ -277,7 +282,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((ownIsValidSpecificReference((vx_reference)objarr, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromObjectArray(objarr), (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
         ||
         (objarr->base.obj_desc == NULL)
         )
@@ -435,10 +440,12 @@ static vx_status ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t num_
 static vx_status ownDestructObjArray(vx_reference ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_object_array objarr = (vx_object_array)ref;
+    vx_object_array objarr = NULL;
 
-    if(objarr->base.type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
+    if(ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
     {
+        /* status set to NULL due to preceding type check */
+        objarr = vxCastRefAsObjectArray(ref,NULL);
         if(objarr->base.obj_desc!=NULL)
         {
             tivx_obj_desc_object_array_t *obj_desc =
@@ -464,12 +471,14 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i=0;
-    vx_object_array objarr = (vx_object_array)objarr_ref;
+    vx_object_array objarr = NULL;
     tivx_obj_desc_object_array_t *obj_desc = NULL;
     vx_reference ref;
 
-    if(objarr->base.type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
+    if(objarr_ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
     {
+        /* status set to NULL due to preceding type check */
+        objarr = vxCastRefAsObjectArray(objarr_ref,NULL);
         if(objarr->base.obj_desc != NULL)
         {
             obj_desc = (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;

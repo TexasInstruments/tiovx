@@ -90,7 +90,7 @@ static vx_bool ownIsValidImage(vx_image image)
 {
     vx_bool is_valid;
 
-    if ((ownIsValidSpecificReference((vx_reference)image, (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e) &&
+    if ((ownIsValidSpecificReference(vxCastRefFromImage(image), (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e) &&
         (image->base.obj_desc != NULL) &&
         (ownIsSupportedFourcc(((tivx_obj_desc_image_t*)image->base.obj_desc)->
             format) == (vx_bool)vx_true_e)
@@ -243,11 +243,13 @@ static vx_status ownDestructImage(vx_reference ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *obj_desc = NULL;
-    vx_image image = (vx_image)ref;
+    vx_image image = NULL;
     uint32_t size = 0;
 
     if(ref->type == (vx_enum)VX_TYPE_IMAGE)
     {
+        /* status set to NULL due to preceding type check */
+        image = vxCastRefAsImage(ref,NULL);
         obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
 
         if(obj_desc!=NULL)
@@ -280,7 +282,7 @@ static vx_status ownDestructImage(vx_reference ref)
         {
             if (NULL != image->parent)
             {
-                status = ownReleaseReferenceInt((vx_reference *)&image->parent, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_INTERNAL, NULL);
+                status = ownReleaseReferenceInt(vxCastRefFromImageP(&image->parent), (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_INTERNAL, NULL);
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Image parent object release failed!\n");
@@ -533,7 +535,7 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
             /*! should not get here unless there's a bug in the
              * ownIsSupportedFourcc call.
              */
-            vxAddLogEntry((vx_reference)image, (vx_status)VX_ERROR_INVALID_PARAMETERS, "FourCC format is invalid!\n");
+            vxAddLogEntry(vxCastRefFromImage(image), (vx_status)VX_ERROR_INVALID_PARAMETERS, "FourCC format is invalid!\n");
             break;
     }
 }
@@ -568,6 +570,7 @@ static vx_image ownCreateImageInt(vx_context context,
 {
     vx_image image = NULL;
     tivx_obj_desc_image_t *obj_desc = NULL;
+    vx_reference ref = NULL;
 
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -575,15 +578,17 @@ static vx_image ownCreateImageInt(vx_context context,
         {
             if (ownIsValidDimensions(width, height, color) == (vx_bool)vx_true_e)
             {
-                image = (vx_image)ownCreateReference(context, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, &context->base);
-                if ( (vxGetStatus((vx_reference)image) == (vx_status)VX_SUCCESS) && (image->base.type == (vx_enum)VX_TYPE_IMAGE) )
+                ref = ownCreateReference(context, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, &context->base);
+                if ( (vxGetStatus(ref) == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)VX_TYPE_IMAGE) )
                 {
+                    /* status set to NULL due to preceding type check */
+                    image = vxCastRefAsImage(ref, NULL);
                     /* assign refernce type specific callback's */
                     image->base.destructor_callback = &ownDestructImage;
                     image->base.mem_alloc_callback = &ownAllocImageBuffer;
                     image->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
-                    obj_desc = (tivx_obj_desc_image_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_IMAGE, (vx_reference)image);
+                    obj_desc = (tivx_obj_desc_image_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_IMAGE, vxCastRefFromImage(image));
 
                     if(obj_desc == NULL)
                     {
@@ -608,13 +613,13 @@ static vx_image ownCreateImageInt(vx_context context,
             }
             else
             {
-                vxAddLogEntry((vx_reference)context, (vx_status)VX_ERROR_INVALID_DIMENSION, "Requested Image Dimensions was invalid!\n");
+                vxAddLogEntry(vxCastRefFromContext(context), (vx_status)VX_ERROR_INVALID_DIMENSION, "Requested Image Dimensions was invalid!\n");
                 image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_DIMENSION);
             }
         }
         else
         {
-            vxAddLogEntry((vx_reference)context, (vx_status)VX_ERROR_INVALID_FORMAT, "Requested Image Format was invalid!\n");
+            vxAddLogEntry(vxCastRefFromContext(context), (vx_status)VX_ERROR_INVALID_FORMAT, "Requested Image Format was invalid!\n");
             image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_FORMAT);
         }
     }
@@ -685,7 +690,7 @@ static vx_status ownCopyAndMapCheckParams(
     if(status == (vx_status)VX_SUCCESS)
     {
         /* allocate if not already allocated */
-        status = ownAllocImageBuffer((vx_reference)image);
+        status = ownAllocImageBuffer(vxCastRefFromImage(image));
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "image allocation failed\n");
@@ -747,7 +752,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
     {
         image = (vx_image)ownCreateImageInt(context, addrs[0].dim_x, addrs[0].dim_y, color, TIVX_IMAGE_FROM_HANDLE);
 
-        if ( (vxGetStatus((vx_reference)image) == (vx_status)VX_SUCCESS) && (image->base.type == (vx_enum)VX_TYPE_IMAGE) )
+        if ( (vxGetStatus(vxCastRefFromImage(image)) == (vx_status)VX_SUCCESS) && (image->base.type == (vx_enum)VX_TYPE_IMAGE) )
         {
             vx_uint32 plane_idx = 0;
             vx_status status = (vx_status)VX_SUCCESS;
@@ -825,11 +830,11 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
 
     if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
-        context = vxGetContext((vx_reference)image);
+        context = vxGetContext(vxCastRefFromImage(image));
 
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
         /* perhaps the parent hasn't been allocated yet? */
-        if(ownAllocImageBuffer((vx_reference)image)==(vx_status)VX_SUCCESS)
+        if(ownAllocImageBuffer(vxCastRefFromImage(image))==(vx_status)VX_SUCCESS)
         {
             format = (vx_enum)obj_desc->format;
 
@@ -942,7 +947,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
 
                 subimage = (vx_image)ownCreateImageInt(context, width, height, (uint32_t)subimage_format, TIVX_IMAGE_FROM_CHANNEL);
 
-                if ((vxGetStatus((vx_reference)subimage) == (vx_status)VX_SUCCESS) && (subimage->base.type == (vx_enum)VX_TYPE_IMAGE))
+                if ((vxGetStatus(vxCastRefFromImage(subimage)) == (vx_status)VX_SUCCESS) && (subimage->base.type == (vx_enum)VX_TYPE_IMAGE))
                 {
                     ownLinkParentSubimage(image, subimage);
 
@@ -990,7 +995,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
 
     if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
-        context = vxGetContext((vx_reference)image);
+        context = vxGetContext(vxCastRefFromImage(image));
 
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
@@ -1005,7 +1010,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
         else
         {
             /* perhaps the parent hasn't been allocated yet? */
-            if(ownAllocImageBuffer((vx_reference)image)==(vx_status)VX_SUCCESS)
+            if(ownAllocImageBuffer(vxCastRefFromImage(image))==(vx_status)VX_SUCCESS)
             {
                 format = (vx_enum)obj_desc->format;
                 width  = rect->end_x - rect->start_x;
@@ -1022,7 +1027,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
                 {
                     subimage = (vx_image)ownCreateImageInt(context, width, height, (uint32_t)format, TIVX_IMAGE_FROM_ROI);
 
-                    if ((vxGetStatus((vx_reference)subimage) == (vx_status)VX_SUCCESS) &&
+                    if ((vxGetStatus(vxCastRefFromImage(subimage)) == (vx_status)VX_SUCCESS) &&
                         (subimage->base.type == (vx_enum)VX_TYPE_IMAGE))
                     {
                         ownLinkParentSubimage(image, subimage);
@@ -1065,14 +1070,14 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
 VX_API_ENTRY vx_image VX_API_CALL vxCreateVirtualImage(vx_graph graph, vx_uint32 width, vx_uint32 height, vx_df_image format)
 {
     vx_image image = NULL;
-    vx_reference gref = (vx_reference)graph;
+    vx_reference gref = vxCastRefFromGraph(graph);
 
     if (ownIsValidSpecificReference(gref, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         /* for now virtual image is same as normal image */
         image = (vx_image)ownCreateImageInt(graph->base.context,
             width, height, format, TIVX_IMAGE_NORMAL);
-        if ((vxGetStatus((vx_reference)image) == (vx_status)VX_SUCCESS) && (image->base.type == (vx_enum)VX_TYPE_IMAGE))
+        if ((vxGetStatus(vxCastRefFromImage(image)) == (vx_status)VX_SUCCESS) && (image->base.type == (vx_enum)VX_TYPE_IMAGE))
         {
             ownReferenceSetScope(&image->base, &graph->base);
             image->base.is_virtual = (vx_bool)vx_true_e;
@@ -1094,7 +1099,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
     else
     {
         image = vxCreateImage(context, width, height, format);
-        if (vxGetStatus((vx_reference)image) == (vx_status)VX_SUCCESS)
+        if (vxGetStatus(vxCastRefFromImage(image)) == (vx_status)VX_SUCCESS)
         {
             vx_uint32 x, y, p;
             vx_size planes = 0;
@@ -1285,7 +1290,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                     break;
                 }
             }
-            if (vxGetStatus((vx_reference)image) == (vx_status)VX_SUCCESS)
+            if (vxGetStatus(vxCastRefFromImage(image)) == (vx_status)VX_SUCCESS)
             {
                 /* lock the image from being modified again! */
                 ((tivx_obj_desc_image_t *)image->base.obj_desc)->create_type =
@@ -1302,13 +1307,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseImage(vx_image* image)
     if (image != NULL)
     {
         vx_image this_image = image[0];
-        if (ownIsValidSpecificReference((vx_reference)this_image, (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
+        if (ownIsValidSpecificReference(vxCastRefFromImage(this_image), (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
         {
             vx_image parent = this_image->parent;
 
             /* clear this image from its parent' subimages list */
             if ((NULL != parent) &&
-                (ownIsValidSpecificReference((vx_reference)parent, (vx_enum)VX_TYPE_IMAGE) ==
+                (ownIsValidSpecificReference(vxCastRefFromImage(parent), (vx_enum)VX_TYPE_IMAGE) ==
                     (vx_bool)vx_true_e) )
             {
                 vx_uint32 subimage_idx;
@@ -1325,7 +1330,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseImage(vx_image* image)
         }
     }
 
-    return ownReleaseReferenceInt((vx_reference *)image, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
+    return ownReleaseReferenceInt(vxCastRefFromImageP(image), (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
 }
 
 
@@ -1498,12 +1503,12 @@ VX_API_ENTRY vx_size VX_API_CALL vxComputeImagePatchSize(vx_image image,
             }
             else
             {
-                vxAddLogEntry((vx_reference)image, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Plane index %u is out of bounds!", plane_index);
+                vxAddLogEntry(vxCastRefFromImage(image), (vx_status)VX_ERROR_INVALID_PARAMETERS, "Plane index %u is out of bounds!", plane_index);
             }
         }
         else
         {
-            vxAddLogEntry((vx_reference)image, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Input rect out of bounds!");
+            vxAddLogEntry(vxCastRefFromImage(image), (vx_status)VX_ERROR_INVALID_PARAMETERS, "Input rect out of bounds!");
         }
     }
     return size;
@@ -2249,7 +2254,7 @@ vx_status ownInitVirtualImage(
 {
     vx_status status = (vx_status)VX_FAILURE;
 
-    if ((ownIsValidSpecificReference((vx_reference)img, (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromImage(img), (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
         &&
         (img->base.obj_desc != NULL))
     {

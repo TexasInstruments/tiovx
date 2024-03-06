@@ -280,7 +280,7 @@ VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if(ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
+    if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
         if ( ((vx_bool)vx_true_e == graph->is_streaming_enabled) &&
              ((vx_bool)vx_true_e == graph->is_streaming_alloc) )
@@ -321,7 +321,7 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if(ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
+    if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
         if ((vx_bool)vx_true_e == graph->is_streaming)
         {
@@ -381,7 +381,7 @@ vx_status tivxWaitGraphEvent(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if(ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
+    if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
         /* Call general wait function */
         status = vxWaitEventQueue(&graph->event_queue, event, do_not_block);
@@ -399,14 +399,14 @@ vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_node trigger_nod
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
-    if(ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
+    if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
         graph->is_streaming_enabled = (vx_bool)vx_true_e;
         graph->is_pipelining_enabled = (vx_bool)vx_true_e;
 
         status = (vx_status)VX_SUCCESS;
 
-        if(ownIsValidSpecificReference((vx_reference)trigger_node, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e)
+        if(ownIsValidSpecificReference(vxCastRefFromNode(trigger_node), (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e)
         {
             int32_t i;
 
@@ -441,7 +441,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_task_create_params_t streamingTaskParams;
 
-    if(ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
+    if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
         if ((vx_bool)vx_true_e == graph->is_streaming_enabled)
         {
@@ -467,7 +467,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     if ( ((vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode) &&
                          ((vx_bool)vx_true_e == graph->trigger_node_set) )
                     {
-                        status = ownRegisterEvent((vx_reference)graph->nodes[graph->trigger_node_index], TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0, STREAMING_EVENT);
+                        status = ownRegisterEvent(vxCastRefFromNode(graph->nodes[graph->trigger_node_index]), TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0, STREAMING_EVENT);
                     }
                     else
                     {
@@ -542,7 +542,7 @@ vx_status ownGraphVerifyStreamingMode(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if(ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
+    if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
         if ( ((vx_bool)vx_true_e == graph->is_streaming_enabled) &&
              ((graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO) ||

@@ -32,6 +32,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                               vx_uint32 dst_height)
 {
     vx_remap remap = NULL;
+    vx_reference ref = NULL;
     tivx_obj_desc_remap_t *obj_desc = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -39,15 +40,17 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
     {
         if ((src_width != 0U) && (src_height != 0U) && (dst_width != 0U) && (dst_height != 0U))
         {
-            remap = (vx_remap)ownCreateReference(context, (vx_enum)VX_TYPE_REMAP, (vx_enum)VX_EXTERNAL, &context->base);
-            if ((vxGetStatus((vx_reference)remap) == (vx_status)VX_SUCCESS) && (remap->base.type == (vx_enum)VX_TYPE_REMAP))
+            ref = ownCreateReference(context, (vx_enum)VX_TYPE_REMAP, (vx_enum)VX_EXTERNAL, &context->base);
+            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)VX_TYPE_REMAP))
             {
+                /* status set to NULL due to preceding type check */
+                remap = vxCastRefAsRemap(ref, NULL);
                 /* assign refernce type specific callback's */
                 remap->base.destructor_callback = &ownDestructReferenceGeneric;
                 remap->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 remap->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
-                obj_desc = (tivx_obj_desc_remap_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_REMAP, (vx_reference)remap);
+                obj_desc = (tivx_obj_desc_remap_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_REMAP, vxCastRefFromRemap(remap));
                 if(obj_desc==NULL)
                 {
                     status = vxReleaseRemap(&remap);
@@ -88,7 +91,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseRemap(vx_remap *table)
 {
-    return ownReleaseReferenceInt( (vx_reference*)table, (vx_enum)VX_TYPE_REMAP, (vx_enum)VX_EXTERNAL, NULL);
+    return ownReleaseReferenceInt(vxCastRefFromRemapP(table), (vx_enum)VX_TYPE_REMAP, (vx_enum)VX_EXTERNAL, NULL);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribute, void *ptr, vx_size size)
@@ -96,7 +99,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_remap_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)remap, (vx_enum)VX_TYPE_REMAP) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromRemap(remap), (vx_enum)VX_TYPE_REMAP) == (vx_bool)vx_false_e)
         ||
         (remap->base.obj_desc == NULL))
     {
@@ -168,7 +171,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
     vx_status status = (vx_status)VX_FAILURE;
     tivx_obj_desc_remap_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)remap, (vx_enum)VX_TYPE_REMAP) == (vx_bool)vx_true_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromRemap(remap), (vx_enum)VX_TYPE_REMAP) == (vx_bool)vx_true_e)
          &&
         (remap->base.obj_desc != NULL)
          )
@@ -240,7 +243,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetRemapPoint(vx_remap remap, vx_uint32 dst
     vx_status status = (vx_status)VX_FAILURE;
     tivx_obj_desc_remap_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)remap, (vx_enum)VX_TYPE_REMAP) == (vx_bool)vx_true_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromRemap(remap), (vx_enum)VX_TYPE_REMAP) == (vx_bool)vx_true_e)
          &&
         (remap->base.obj_desc != NULL)
          )

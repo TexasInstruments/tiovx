@@ -315,7 +315,8 @@ static vx_status ownGraphValidRectCallback(
         {
             graph->in_valid_rect_ptr[num_in_image] = &graph->in_valid_rect[num_in_image];
 
-            tivxCheckStatus(&status, vxGetValidRegionImage((vx_image)ref, &graph->in_valid_rect[num_in_image]));
+            /* status set to NULL due to preceding type check */
+            tivxCheckStatus(&status, vxGetValidRegionImage(vxCastRefAsImage(ref, NULL), &graph->in_valid_rect[num_in_image]));
 
             num_in_image++;
         }
@@ -348,7 +349,8 @@ static vx_status ownGraphValidRectCallback(
                                     graph->out_valid_rect_ptr);
                     if(tmp_status==(vx_status)VX_SUCCESS)
                     {
-                        tivxCheckStatus(&status, vxSetImageValidRectangle((vx_image)ref, &graph->out_valid_rect[0]));
+                        /* status set to NULL due to preceding type check */
+                        tivxCheckStatus(&status, vxSetImageValidRectangle(vxCastRefAsImage(ref, NULL), &graph->out_valid_rect[0]));
                     }
                 }
                 else
@@ -357,7 +359,8 @@ static vx_status ownGraphValidRectCallback(
                     vx_status tmp_status;
                     vx_size levels, k;
 
-                    tivxCheckStatus(&status, vxQueryPyramid((vx_pyramid)ref, (vx_enum)VX_PYRAMID_LEVELS, &levels, sizeof(levels)));
+                    /* status set to NULL due to preceding type check */
+                    tivxCheckStatus(&status, vxQueryPyramid(vxCastRefAsPyramid(ref, NULL), (vx_enum)VX_PYRAMID_LEVELS, &levels, sizeof(levels)));
 
                     if(status==(vx_status)VX_SUCCESS)
                     {
@@ -373,7 +376,8 @@ static vx_status ownGraphValidRectCallback(
                         {
                             for(k=0; k<levels; k++)
                             {
-                                vx_image img = vxGetPyramidLevel((vx_pyramid)ref, (uint32_t)k);
+                                /* status set to NULL due to preceding type check */
+                                vx_image img = vxGetPyramidLevel(vxCastRefAsPyramid(ref, NULL), (uint32_t)k);
 
                                 tivxCheckStatus(&status, vxSetImageValidRectangle(img, &graph->out_valid_rect[k]));
 
@@ -419,7 +423,7 @@ static vx_status ownGraphInitVirtualNode(
             if (((vx_enum)VX_OUTPUT == node->kernel->signature.directions[i]) &&
                 ((vx_bool)vx_true_e == ref->is_virtual))
             {
-                if ((ref->scope->type == (vx_enum)VX_TYPE_GRAPH) && (ref->scope != (vx_reference)graph))
+                if ((ref->scope->type == (vx_enum)VX_TYPE_GRAPH) && (ref->scope != vxCastRefFromGraph(graph)))
                 {
                     status = (vx_status)VX_ERROR_INVALID_SCOPE;
                     VX_PRINT(VX_ZONE_ERROR,"invalid scope\n");
@@ -430,7 +434,8 @@ static vx_status ownGraphInitVirtualNode(
                     switch (mf->type)
                     {
                         case (vx_enum)VX_TYPE_SCALAR:
-                            status = vxQueryScalar((vx_scalar)ref,
+                            /* status set to NULL due to preceding type check */
+                            status = vxQueryScalar(vxCastRefAsScalar(ref, NULL),
                                 (vx_enum)VX_SCALAR_TYPE, &type, sizeof(type));
                             /* For scalar, just check if type is correct or
                                 not */
@@ -456,18 +461,21 @@ static vx_status ownGraphInitVirtualNode(
                             }
                             else
                             {
-                                status = ownInitVirtualImage((vx_image)ref,
+                                /* status set to NULL due to preceding type check */
+                                status = ownInitVirtualImage(vxCastRefAsImage(ref, NULL),
                                     mf->img.width, mf->img.height,
                                     mf->img.format);
                             }
                             break;
                         case (vx_enum)VX_TYPE_ARRAY:
+                            /* status set to NULL due to preceding type check */
                             status = ownInitVirtualArray(
-                                (vx_array)ref, mf->arr.item_type,
+                                vxCastRefAsArray(ref, NULL), mf->arr.item_type,
                                 mf->arr.capacity);
                             break;
                         case (vx_enum)VX_TYPE_PYRAMID:
-                            pmd = (vx_pyramid)ref;
+                            /* status set to NULL due to preceding type check */
+                            pmd = vxCastRefAsPyramid(ref, NULL);
 
                             status = vxQueryPyramid(
                                 pmd, (vx_enum)VX_PYRAMID_LEVELS, &levels,
@@ -663,7 +671,7 @@ static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_referenc
         {
             is_match = (vx_bool)vx_true_e;
         }
-        else if (((vx_reference)graph != ref2->scope) &&
+        else if ((vxCastRefFromGraph(graph) != ref2->scope) &&
             (ref1 == ref2->scope))
         {
             is_match = (vx_bool)vx_true_e;
@@ -671,8 +679,9 @@ static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_referenc
         else if ( ((vx_enum)VX_TYPE_IMAGE==ref1->type) &&
                   ((vx_enum)VX_TYPE_IMAGE==ref2->type) )
         {
-            vx_image image_ref1 = (vx_image)ref1;
-            vx_image image_ref2 = (vx_image)ref2;
+            /* status set to NULL due to preceding type check */
+            vx_image image_ref1 = vxCastRefAsImage(ref1, NULL);
+            vx_image image_ref2 = vxCastRefAsImage(ref2, NULL);
             vx_image parent_ref1 = image_ref1->parent;
             vx_image parent_ref2 = image_ref2->parent;
 
@@ -976,7 +985,7 @@ static vx_status ownGraphAllocateDataObject(vx_node node_cur, uint32_t prm_cur_i
         /* if this is part of delay then allocate memory for all
          * delay objects
          */
-        status = ownReferenceAllocMem((vx_reference)ref->delay);
+        status = ownReferenceAllocMem(vxCastRefFromDelay(ref->delay));
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Memory allocation for delay objects failed\n");
@@ -1264,7 +1273,7 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
 
     if (ref != NULL)
     {
-        if((ownIsValidSpecificReference((vx_reference)ref->delay, (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e))
+        if((ownIsValidSpecificReference(vxCastRefFromDelay(ref->delay), (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e))
         {
             uint32_t delay_slot_index;
             vx_delay delay = (vx_delay)ref->delay;
@@ -1348,7 +1357,7 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
     else
     {
         vx_reference node_ref;
-        node_ref = (vx_reference)node;
+        node_ref = vxCastRefFromNode(node);
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR,"Graph parameter of node %s at index %d is NULL \n", node_ref->name, idx);
     }
@@ -1560,13 +1569,15 @@ static vx_status ownGraphUpdateObjArrRefAfterKernetInit(vx_object_array exemplar
             if ((ownIsValidSpecificReference(ref->ref[i], (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
               && (ownIsValidSpecificReference(exemplar->ref[i], (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e))
             {
-                tivxCheckStatus(&status, ownGraphUpdateImageRefAfterKernetInit((vx_image)exemplar->ref[i], (vx_image)ref->ref[i]));
+                /* status set to NULL due to preceding type check */
+                tivxCheckStatus(&status, ownGraphUpdateImageRefAfterKernetInit(vxCastRefAsImage(exemplar->ref[i], NULL), vxCastRefAsImage(ref->ref[i], NULL)));
             }
             else
             if ((ownIsValidSpecificReference(ref->ref[i], (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
               && (ownIsValidSpecificReference(exemplar->ref[i], (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e))
             {
-                tivxCheckStatus(&status, ownGraphUpdatePyramidRefAfterKernetInit((vx_pyramid)exemplar->ref[i], (vx_pyramid)ref->ref[i]));
+                /* status set to NULL due to preceding type check */
+                tivxCheckStatus(&status, ownGraphUpdatePyramidRefAfterKernetInit(vxCastRefAsPyramid(exemplar->ref[i], NULL), vxCastRefAsPyramid(ref->ref[i], NULL)));
             }
             else
             {
@@ -1588,19 +1599,22 @@ static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_reference exemplar, vx_
     if ((ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
         && (ownIsValidSpecificReference(exemplar, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e))
     {
-        status = ownGraphUpdatePyramidRefAfterKernetInit((vx_pyramid)exemplar, (vx_pyramid)ref);
+        /* status set to NULL due to preceding type check */
+        status = ownGraphUpdatePyramidRefAfterKernetInit(vxCastRefAsPyramid(exemplar, NULL), vxCastRefAsPyramid(ref, NULL));
     }
     else
     if ((ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
         && (ownIsValidSpecificReference(exemplar, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e))
     {
-        status = ownGraphUpdateObjArrRefAfterKernetInit((vx_object_array)exemplar, (vx_object_array)ref);
+        /* status set to NULL due to preceding type check */
+        status = ownGraphUpdateObjArrRefAfterKernetInit(vxCastRefAsObjectArray(exemplar, NULL), vxCastRefAsObjectArray(ref, NULL));
     }
     else
     if ((ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
       && (ownIsValidSpecificReference(exemplar, (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e))
     {
-        status = ownGraphUpdateImageRefAfterKernetInit((vx_image)exemplar, (vx_image)ref);
+        /* status set to NULL due to preceding type check */
+        status = ownGraphUpdateImageRefAfterKernetInit(vxCastRefAsImage(exemplar, NULL), vxCastRefAsImage(ref, NULL));
     }
     else
     {
@@ -1611,13 +1625,15 @@ static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_reference exemplar, vx_
     if ((ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
       && (ownIsValidSpecificReference(exemplar->scope, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e))
     {
-        status = ownGraphUpdatePyramidRefAfterKernetInit((vx_pyramid)exemplar->scope, (vx_pyramid)ref->scope);
+        /* status set to NULL due to preceding type check */
+        status = ownGraphUpdatePyramidRefAfterKernetInit(vxCastRefAsPyramid(exemplar->scope, NULL), vxCastRefAsPyramid(ref->scope, NULL));
     }
     else
     if ((ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
       && (ownIsValidSpecificReference(exemplar->scope, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e))
     {
-        status = ownGraphUpdateObjArrRefAfterKernetInit((vx_object_array)exemplar->scope, (vx_object_array)ref->scope);
+        /* status set to NULL due to preceding type check */
+        status = ownGraphUpdateObjArrRefAfterKernetInit(vxCastRefAsObjectArray(exemplar->scope, NULL), vxCastRefAsObjectArray(ref->scope, NULL));
     }
     else
     {
@@ -1716,7 +1732,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
         || (param_ref == NULL) /* no reference specified at node,index */
         || (   (ownGraphGetNumInNodes(graph, node, idx) == 0U)
             && !((param_ref->delay != NULL) /* leaf parameter and not a delay */
-            && (ownIsValidSpecificReference((vx_reference)param_ref->delay, (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e))
+            && (ownIsValidSpecificReference(vxCastRefFromDelay(param_ref->delay), (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e))
            )
         )
     {
@@ -1790,12 +1806,14 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
                         {
                             if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                             {
-                                vx_pyramid pyramid = (vx_pyramid)ref;
-                                ref = (vx_reference)pyramid->img[0];
+                                /* status set to NULL due to preceding type check */
+                                vx_pyramid pyramid = vxCastRefAsPyramid(ref, NULL);
+                                ref = vxCastRefFromImage(pyramid->img[0]);
                             }
                             else if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                             {
-                                vx_object_array object_array = (vx_object_array)ref;
+                                /* status set to NULL due to preceding type check */
+                                vx_object_array object_array = vxCastRefAsObjectArray(ref, NULL);
                                 ref = object_array->ref[0];
                             }
                             else
@@ -1947,14 +1965,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
         meta[i] = ownCreateMetaFormat(graph->base.context);
 
         /* This should not fail at all */
-        if (vxGetStatus((vx_reference)meta[i]) != (vx_status)VX_SUCCESS)
+        if (vxGetStatus(vxCastRefFromMetaFormat(meta[i])) != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Unable to create meta format object\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
 
-    if((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
+    if((ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
         ((vx_status)VX_SUCCESS == status))
     {
         if((vx_status)VX_SUCCESS == ownReferenceLock(&graph->base))

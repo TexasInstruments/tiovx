@@ -115,6 +115,7 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
 VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum data_type, const void* ptr)
 {
     vx_scalar scalar = NULL;
+    vx_reference ref = NULL;
     tivx_obj_desc_scalar_t *obj_desc = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -127,14 +128,16 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
         }
         else
         {
-            scalar = (vx_scalar)ownCreateReference(context, (vx_enum)VX_TYPE_SCALAR, (vx_enum)VX_EXTERNAL, &context->base);
-            if ((vxGetStatus((vx_reference)scalar) == (vx_status)VX_SUCCESS) && (scalar->base.type == (vx_enum)VX_TYPE_SCALAR))
+            ref = ownCreateReference(context, (vx_enum)VX_TYPE_SCALAR, (vx_enum)VX_EXTERNAL, &context->base);
+            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)VX_TYPE_SCALAR))
             {
+                /* status set to NULL due to preceding type check */
+                scalar = vxCastRefAsScalar(ref, NULL);
                 /* assign refernce type specific callback's */
                 scalar->base.destructor_callback = &ownDestructReferenceGeneric;
                 scalar->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
-                obj_desc = (tivx_obj_desc_scalar_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SCALAR, (vx_reference)scalar);
+                obj_desc = (tivx_obj_desc_scalar_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SCALAR, vxCastRefFromScalar(scalar));
                 if(obj_desc==NULL)
                 {
                     status = vxReleaseScalar(&scalar);
@@ -151,7 +154,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
                 }
                 else
                 {
-                    vx_reference scalar_ref   = (vx_reference)scalar;
+                    vx_reference scalar_ref   = vxCastRefFromScalar(scalar);
                     scalar_ref->is_accessible = (vx_bool)vx_true_e;
                     obj_desc->data_type = (vx_uint32)data_type;
                     scalar->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
@@ -172,7 +175,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseScalar(vx_scalar *s)
 {
-    return ownReleaseReferenceInt((vx_reference *)s, (vx_enum)VX_TYPE_SCALAR, (vx_enum)VX_EXTERNAL, NULL);
+    return ownReleaseReferenceInt(vxCastRefFromScalarP(s), (vx_enum)VX_TYPE_SCALAR, (vx_enum)VX_EXTERNAL, NULL);
 } /* vxReleaseScalar() */
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attribute, void* ptr, vx_size size)
@@ -180,7 +183,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attri
     vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar pscalar = (vx_scalar)scalar;
 
-    if (ownIsValidSpecificReference((vx_reference)pscalar,(vx_enum)VX_TYPE_SCALAR) == (vx_bool)vx_false_e)
+    if (ownIsValidSpecificReference(vxCastRefFromScalar(pscalar),(vx_enum)VX_TYPE_SCALAR) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -216,7 +219,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyScalar(vx_scalar scalar, void* user_ptr
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((vx_bool)vx_false_e == ownIsValidSpecificReference((vx_reference)scalar, (vx_enum)VX_TYPE_SCALAR))
+    if ((vx_bool)vx_false_e == ownIsValidSpecificReference(vxCastRefFromScalar(scalar), (vx_enum)VX_TYPE_SCALAR))
     {
         VX_PRINT(VX_ZONE_ERROR, "invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;

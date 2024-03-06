@@ -27,14 +27,17 @@ vx_distribution VX_API_CALL vxCreateDistribution(
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
+        vx_reference ref;
         if ((0U != num_bins) && (0U != range))
         {
-            dist = (vx_distribution)ownCreateReference(context,
+            ref = ownCreateReference(context,
                 (vx_enum)VX_TYPE_DISTRIBUTION, (vx_enum)VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)dist) == (vx_status)VX_SUCCESS) &&
-                (dist->base.type == (vx_enum)VX_TYPE_DISTRIBUTION))
+            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
+                (ref->type == (vx_enum)VX_TYPE_DISTRIBUTION))
             {
+                /*status set to NULL due to preceding type check*/
+                dist = vxCastRefAsDistribution(ref, NULL);
                 /* assign refernce type specific callback's */
                 dist->base.destructor_callback = &ownDestructReferenceGeneric;
                 dist->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
@@ -42,7 +45,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                     &ownReleaseReferenceBufferGeneric;
 
                 obj_desc = (tivx_obj_desc_distribution_t*)ownObjDescAlloc(
-                    (vx_enum)TIVX_OBJ_DESC_DISTRIBUTION, (vx_reference)dist);
+                    (vx_enum)TIVX_OBJ_DESC_DISTRIBUTION, vxCastRefFromDistribution(dist));
                 if(obj_desc==NULL)
                 {
                     status = vxReleaseDistribution(&dist);
@@ -81,7 +84,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseDistribution(vx_distribution *dist)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)dist, (vx_enum)VX_TYPE_DISTRIBUTION, (vx_enum)VX_EXTERNAL, NULL));
+        vxCastRefFromDistributionP(dist), (vx_enum)VX_TYPE_DISTRIBUTION, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 vx_status VX_API_CALL vxQueryDistribution(
@@ -90,7 +93,7 @@ vx_status VX_API_CALL vxQueryDistribution(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference((vx_reference)dist, (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromDistribution(dist), (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
@@ -188,7 +191,7 @@ vx_status VX_API_CALL vxCopyDistribution(
     vx_uint32 size;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference((vx_reference)dist, (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromDistribution(dist), (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
@@ -263,7 +266,7 @@ vx_status VX_API_CALL vxMapDistribution(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)dist, (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromDistribution(dist), (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_false_e)
         ||
         (dist->base.obj_desc == NULL)
         )
@@ -293,7 +296,7 @@ vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference((vx_reference)dist, (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromDistribution(dist), (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
