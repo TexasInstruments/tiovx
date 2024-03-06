@@ -104,56 +104,69 @@ vx_reference tivxCreateReferenceFromExemplar(
     switch (exemplar->type)
     {
         case (vx_enum)VX_TYPE_LUT:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreateLutFromExemplar(
-                context, (vx_lut)exemplar);
+                context, (vxCastRefAsLUT(exemplar, NULL)));
             break;
         case (vx_enum)VX_TYPE_REMAP:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreateRemapFromExemplar(
-                context, (vx_remap)exemplar);
+                context, vxCastRefAsRemap(exemplar, NULL));
             break;
         case (vx_enum)VX_TYPE_MATRIX:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreateMatrixFromExemplar(
-                context, (vx_matrix)exemplar);
+                context, vxCastRefAsMatrix(exemplar, NULL));
             break;
         case (vx_enum)VX_TYPE_PYRAMID:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreatePyramidFromExemplar(
-                context, (vx_pyramid)exemplar);
+                context, vxCastRefAsPyramid(exemplar, NULL));
             break;
         case (vx_enum)VX_TYPE_IMAGE:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreateImageFromExemplar(
-                context, (vx_image)exemplar);
+                context, vxCastRefAsImage(exemplar, NULL));
             break;
         case (vx_enum)VX_TYPE_ARRAY:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreateArrayFromExemplar(
-                context, (vx_array)exemplar);
+                context, vxCastRefAsArray(exemplar, NULL));
             break;
         case (vx_enum)VX_TYPE_SCALAR:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreateScalarFromExemplar(
-                context, (vx_scalar)exemplar);
+                context, vxCastRefAsScalar(exemplar, NULL));
             break;
         case (vx_enum)VX_TYPE_DISTRIBUTION:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreateDistributionFromExemplar(
-                context, (vx_distribution)exemplar);
+                context, vxCastRefAsDistribution(exemplar, NULL));
             break;
         case (vx_enum)VX_TYPE_THRESHOLD:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreateThresholdFromExemplar(
-                context, (vx_threshold)exemplar);
+                context, vxCastRefAsThreshold(exemplar, NULL));
             break;
         case (vx_enum)VX_TYPE_CONVOLUTION:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreateConvolutionFromExemplar(
-                context, (vx_convolution)exemplar);
+                context, vxCastRefAsConvolution(exemplar, NULL));
             break;
         case (vx_enum)VX_TYPE_OBJECT_ARRAY:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreateObjectArrayFromExemplar(
-                context, (vx_object_array)exemplar);
+                context, vxCastRefAsObjectArray(exemplar, NULL));
             break;
         case (vx_enum)VX_TYPE_TENSOR:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreateTensorFromExemplar(
-                context, (vx_tensor)exemplar);
+                context, vxCastRefAsTensor(exemplar, NULL));
             break;
         case VX_TYPE_USER_DATA_OBJECT:
+            /*status set to NULL due to preceding type check*/
             ref = ownCreateUserDataObjectFromExemplar(
-                context, (vx_user_data_object)exemplar);
+                context, vxCastRefAsUserDataObject(exemplar, NULL));
             break;
         case TIVX_TYPE_RAW_IMAGE:
             ref = ownCreateRawImageFromExemplar(
@@ -186,7 +199,7 @@ static vx_reference ownCreateLutFromExemplar(
         lut = vxCreateLUT(context, data_type, count);
     }
 
-    return (vx_reference)lut;
+    return vxCastRefFromLUT(lut);
 }
 
 static vx_reference ownCreateRemapFromExemplar(
@@ -213,7 +226,7 @@ static vx_reference ownCreateRemapFromExemplar(
             dst_height);
     }
 
-    return (vx_reference)rem;
+    return vxCastRefFromRemap(rem);
 }
 
 static vx_reference ownCreateMatrixFromExemplar(
@@ -236,7 +249,7 @@ static vx_reference ownCreateMatrixFromExemplar(
         mat = vxCreateMatrix(context, type, columns, rows);
     }
 
-    return (vx_reference)mat;
+    return vxCastRefFromMatrix(mat);
 }
 
 static vx_reference ownCreatePyramidFromExemplar(
@@ -263,7 +276,7 @@ static vx_reference ownCreatePyramidFromExemplar(
             format);
     }
 
-    return (vx_reference)pmd;
+    return vxCastRefFromPyramid(pmd);
 }
 
 static vx_reference ownCreateImageFromExemplar(
@@ -285,7 +298,7 @@ static vx_reference ownCreateImageFromExemplar(
         img = vxCreateImage(context, width, height, format);
     }
 
-    return (vx_reference)img;
+    return vxCastRefFromImage(img);
 }
 
 static vx_reference ownCreateArrayFromExemplar(
@@ -306,7 +319,7 @@ static vx_reference ownCreateArrayFromExemplar(
         arr = vxCreateArray(context, type, capacity);
     }
 
-    return (vx_reference)arr;
+    return vxCastRefFromArray(arr);
 }
 
 static vx_reference ownCreateScalarFromExemplar(
@@ -325,7 +338,7 @@ static vx_reference ownCreateScalarFromExemplar(
         sc = vxCreateScalar(context, type, NULL);
     }
 
-    return (vx_reference)sc;
+    return vxCastRefFromScalar(sc);
 }
 
 static vx_reference ownCreateDistributionFromExemplar(
@@ -348,7 +361,7 @@ static vx_reference ownCreateDistributionFromExemplar(
         dist = vxCreateDistribution(context, num_bins, offset, range);
     }
 
-    return (vx_reference)dist;
+    return vxCastRefFromDistribution(dist);
 }
 
 static vx_reference ownCreateThresholdFromExemplar(
@@ -371,7 +384,7 @@ static vx_reference ownCreateThresholdFromExemplar(
         thr = vxCreateThreshold(context, thr_type, data_type);
     }
 
-    return (vx_reference)thr;
+    return vxCastRefFromThreshold(thr);
 }
 
 static vx_reference ownCreateConvolutionFromExemplar(
@@ -390,7 +403,7 @@ static vx_reference ownCreateConvolutionFromExemplar(
         conv = vxCreateConvolution(context, columns, rows);
     }
 
-    return (vx_reference)conv;
+    return vxCastRefFromConvolution(conv);
 }
 
 static vx_reference ownCreateObjectArrayFromExemplar(
@@ -424,7 +437,7 @@ static vx_reference ownCreateObjectArrayFromExemplar(
         }
     }
 
-    return (vx_reference)objarr;
+    return vxCastRefFromObjectArray(objarr);
 }
 
 static vx_reference ownCreateTensorFromExemplar(
@@ -447,7 +460,7 @@ static vx_reference ownCreateTensorFromExemplar(
         tensor = vxCreateTensor(context, num_dims, dims, type, fixed);
     }
 
-    return (vx_reference)tensor;
+    return vxCastRefFromTensor(tensor);
 }
 
 static vx_reference ownCreateUserDataObjectFromExemplar(
@@ -468,7 +481,7 @@ static vx_reference ownCreateUserDataObjectFromExemplar(
         user_data_object = vxCreateUserDataObject(context, type_name, size, NULL);
     }
 
-    return (vx_reference)user_data_object;
+    return vxCastRefFromUserDataObject(user_data_object);
 }
 
 static vx_reference ownCreateRawImageFromExemplar(

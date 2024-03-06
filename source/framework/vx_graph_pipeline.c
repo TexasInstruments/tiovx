@@ -119,7 +119,7 @@ static vx_status ownGraphPipelineValidateRefsList(
                     break;
                 }
 
-                if (ownIsValidSpecificReference((vx_reference)meta, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
+                if (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
                 {
                     status1 = ownReleaseMetaFormat(&meta);
                     if((vx_status)VX_SUCCESS != status1)
@@ -137,7 +137,7 @@ static vx_status ownGraphPipelineValidateRefsList(
         }
     }
 
-    if (ownIsValidSpecificReference((vx_reference)meta_base, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta_base), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
     {
         status1 = ownReleaseMetaFormat(&meta_base);
         if((vx_status)VX_SUCCESS != status1)
@@ -159,7 +159,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
@@ -410,7 +410,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                 /* Note: this assumes it is replicated.  In the future, this assumption could be removed */
                 else if(ref->type==(vx_enum)VX_TYPE_OBJECT_ARRAY)
                 {
-                    vx_object_array obj_arr = (vx_object_array)ref;
+                    /* status set to NULL due to preceding type check */
+                    vx_object_array obj_arr = vxCastRefAsObjectArray(ref, NULL);
 
                     refs[ref_id] = obj_arr->ref[0];
                 }
@@ -418,9 +419,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                 /* Note: this assumes it is replicated.  In the future, this assumption could be removed */
                 else if(ref->type==(vx_enum)VX_TYPE_PYRAMID)
                 {
-                    vx_pyramid pyr = (vx_pyramid)ref;
+                    /* status set to NULL due to preceding type check */
+                    vx_pyramid pyr = vxCastRefAsPyramid(ref, NULL);
 
-                    refs[ref_id] = (vx_reference)pyr->img[0];
+                    refs[ref_id] = vxCastRefFromImage(pyr->img[0]);
                 }
                 /* If the ref type is an array element that didn't match the graph parameter type, return parent of element */
                 else if((vx_bool)vx_true_e == ref->is_array_element)
@@ -578,7 +580,7 @@ vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
     {
         for(i=0; i<graph->pipeline_depth; i++)
         {
-            graph->obj_desc[i] = (tivx_obj_desc_graph_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_GRAPH, (vx_reference)graph);
+            graph->obj_desc[i] = (tivx_obj_desc_graph_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_GRAPH, vxCastRefFromGraph(graph));
             if(graph->obj_desc[i]==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unable to alloc graph obj desc\n");
@@ -904,7 +906,7 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
@@ -995,7 +997,7 @@ vx_status ownGraphValidatePipelineParameters(vx_graph graph)
                 vx_reference node_ref;
                 vx_reference param_ref;
 
-                node_ref  = (vx_reference)node;
+                node_ref  = vxCastRefFromNode(node);
                 param_ref = (vx_reference)node->parameters[node_idx];
 
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -1099,7 +1101,7 @@ void ownGraphDetectAndSetNumBuf(vx_graph graph)
                             uint32_t optimal_num_buf;
                             vx_reference node_ref;
 
-                            node_ref = (vx_reference)node_cur;
+                            node_ref = vxCastRefFromNode(node_cur);
                             optimal_num_buf = ownGraphGetOptimalNumBuf(graph, ref);
 
                             /* Given that 0 is the default value, this if statement checks

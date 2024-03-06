@@ -113,6 +113,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
     const void *ptr)
 {
     vx_user_data_object user_data_object = NULL;
+    vx_reference ref = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
@@ -125,18 +126,20 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
 
         if( NULL == user_data_object )
         {
-            user_data_object = (vx_user_data_object)ownCreateReference(context, VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, &context->base);
+            ref = ownCreateReference(context, VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)user_data_object) == (vx_status)VX_SUCCESS) &&
-                (user_data_object->base.type == VX_TYPE_USER_DATA_OBJECT))
+            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
+                (ref->type == VX_TYPE_USER_DATA_OBJECT))
             {
+                /* status set to NULL due to preceding type check */
+                user_data_object = vxCastRefAsUserDataObject(ref, NULL);
                 /* assign reference type specific callback's */
                 user_data_object->base.destructor_callback = &ownDestructReferenceGeneric;
                 user_data_object->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 user_data_object->base.release_callback = &ownReleaseReferenceBufferGeneric;
                 user_data_object->base.kernel_callback = &userDataKernelCallback;
                 user_data_object->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
-                    (vx_enum)TIVX_OBJ_DESC_USER_DATA_OBJECT, (vx_reference)user_data_object);
+                    (vx_enum)TIVX_OBJ_DESC_USER_DATA_OBJECT, vxCastRefFromUserDataObject(user_data_object));
                 if(user_data_object->base.obj_desc==NULL)
                 {
                     status = vxReleaseUserDataObject(&user_data_object);
@@ -178,7 +181,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseUserDataObject(vx_user_data_object *user_data_object)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)user_data_object, VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, NULL));
+        vxCastRefFromUserDataObjectP(user_data_object), VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
@@ -187,7 +190,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)user_data_object, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromUserDataObject(user_data_object), VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e)
             || (user_data_object->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryUserDataObject failed\n");
@@ -248,7 +251,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)user_data_object, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromUserDataObject(user_data_object), VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e)
             || (user_data_object->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"vxSetUserDataObjectAttribute failed\n");
@@ -288,7 +291,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
     vx_uint8 *start_ptr;
 
-    if ((ownIsValidSpecificReference((vx_reference)user_data_object, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
+    if ((ownIsValidSpecificReference(vxCastRefFromUserDataObject(user_data_object), VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
         (user_data_object->base.obj_desc == NULL)
         )
     {
@@ -376,7 +379,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
     vx_uint32 i;
 
-    if ((ownIsValidSpecificReference((vx_reference)user_data_object, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
+    if ((ownIsValidSpecificReference(vxCastRefFromUserDataObject(user_data_object), VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
         (user_data_object->base.obj_desc == NULL)
         )
     {
@@ -461,7 +464,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapUserDataObject(vx_user_data_object use
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((ownIsValidSpecificReference((vx_reference)user_data_object, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
+    if ((ownIsValidSpecificReference(vxCastRefFromUserDataObject(user_data_object), VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
         (user_data_object->base.obj_desc == NULL)
         )
     {

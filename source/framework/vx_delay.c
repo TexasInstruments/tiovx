@@ -18,7 +18,7 @@
 
 #include <vx_internal.h>
 
-#define tivxIsValidDelay(d) (ownIsValidSpecificReference((vx_reference)(d), (vx_enum)VX_TYPE_DELAY) == (vx_bool)vx_true_e)
+#define tivxIsValidDelay(d) (ownIsValidSpecificReference(vxCastRefFromDelay(d), (vx_enum)VX_TYPE_DELAY) == (vx_bool)vx_true_e)
 #define tivxIsValidGraph(g) (ownIsValidSpecificReference((vx_reference)(g), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
 
 static vx_bool ownIsValidObject(vx_enum type);
@@ -146,7 +146,7 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
     if(status == (vx_bool)vx_true_e)
     {
         /* Increment a reference to the delay */
-        (void)ownIncrementReference((vx_reference)delay, (vx_enum)VX_INTERNAL);
+        (void)ownIncrementReference(vxCastRefFromDelay(delay), (vx_enum)VX_INTERNAL);
     }
 
     return status;
@@ -208,7 +208,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
 
     if (check_status == (vx_bool)vx_true_e) /* Release the delay */
     {
-        vx_reference ref=(vx_reference)delay;
+        vx_reference ref=vxCastRefFromDelay(delay);
         status = ownReleaseReferenceInt(&ref, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
         if((vx_status)VX_SUCCESS != status)
         {
@@ -244,7 +244,7 @@ static void ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
         /* release pyramid delays */
         for (i = 0; i < delay->pyr_num_levels; i++)
         {
-            status = ownReleaseReferenceInt((vx_reference *)&(delay->pyr_delay[i]), (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
+            status = ownReleaseReferenceInt(vxCastRefFromDelayP(&(delay->pyr_delay[i])), (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to destroy pyramid delay reference\n");
@@ -258,7 +258,7 @@ static void ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
         /* release object array delays */
         for (i = 0; i < delay->obj_arr_num_items; i++)
         {
-            status = ownReleaseReferenceInt((vx_reference *)&(delay->obj_arr_delay[i]), (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
+            status = ownReleaseReferenceInt(vxCastRefFromDelayP(&(delay->obj_arr_delay[i])), (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to destroy object array reference\n");
@@ -286,12 +286,14 @@ static void ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
 
 static vx_status ownDestructDelay(vx_reference ref)
 {
-    vx_delay delay = (vx_delay)ref;
+   
 
 #ifdef LDRA_UNTESTABLE_CODE
-    if(delay->base.type == (vx_enum)VX_TYPE_DELAY)
+    if(ref->type == (vx_enum)VX_TYPE_DELAY)
 #endif
     {
+        /*status set to NULL due to preceding type check*/
+        vx_delay delay = vxCastRefAsDelay(ref, NULL);
         ownReleaseRefFromDelay(delay, delay->count);
     }
     return (vx_status)VX_SUCCESS;
@@ -301,13 +303,15 @@ static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i=0;
-    vx_delay delay = (vx_delay)delay_ref;
-    vx_reference ref;
+    
 
 #ifdef LDRA_UNTESTABLE_CODE
-    if(delay->base.type == (vx_enum)VX_TYPE_DELAY)
+    if(delay_ref->type == (vx_enum)VX_TYPE_DELAY)
 #endif
     {
+        /*status set to NULL due to preceding type check*/
+        vx_delay delay = vxCastRefAsDelay(delay_ref, NULL);
+        vx_reference ref;
         for (i = 0u; i < delay->count; i++)
         {
             ref = delay->refs[i];
@@ -386,10 +390,12 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
         {
             if ((ownIsValidReference(exemplar) != (vx_bool)vx_false_e) && (ownIsValidObject(exemplar->type) != (vx_bool)vx_false_e))
             {
-                delay = (vx_delay)ownCreateReference(
+                ref = ownCreateReference(
                                         context, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_EXTERNAL, &context->base);
-                if ( (vxGetStatus((vx_reference)delay) == (vx_status)VX_SUCCESS) && (delay->base.type == (vx_enum)VX_TYPE_DELAY) )
+                if ( (vxGetStatus(ref) == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)VX_TYPE_DELAY) )
                 {
+                    /*status set to NULL due to preceding type check*/
+                    delay = vxCastRefAsDelay(ref, NULL);
                     ownDelayInit(delay, count, exemplar->type);
 
                     for(i=0; i<count; i++)
@@ -417,36 +423,44 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                         vx_size num_items, item_idx;
                         vx_enum item_type;
                         vx_delay objarrdelay;
-
-                        status = vxQueryObjectArray((vx_object_array)exemplar, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &num_items, sizeof(num_items));
+                        /*status set to NULL due to preceding type check*/
+                        status = vxQueryObjectArray(vxCastRefAsObjectArray(exemplar, NULL), (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &num_items, sizeof(num_items));
                         delay->obj_arr_num_items = 0;
                         if(status == (vx_status)VX_SUCCESS)
                         {
-                            status = vxQueryObjectArray((vx_object_array)exemplar, (vx_enum)VX_OBJECT_ARRAY_ITEMTYPE, &item_type, sizeof(item_type));
+                            /*status set to NULL due to preceding type check*/
+                            status = vxQueryObjectArray(vxCastRefAsObjectArray(exemplar, NULL), (vx_enum)VX_OBJECT_ARRAY_ITEMTYPE, &item_type, sizeof(item_type));
                             if ((vx_status)VX_SUCCESS == status)
                             {
                                 for (item_idx = 0; item_idx < num_items; item_idx++)
                                 {
-                                    objarrdelay = (vx_delay)ownCreateReference(context, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, (vx_reference)delay);
-                                    delay->obj_arr_delay[item_idx] = objarrdelay;
-                                    if ( (vxGetStatus((vx_reference)objarrdelay) == (vx_status)VX_SUCCESS) && (objarrdelay->base.type == (vx_enum)VX_TYPE_DELAY) )
+                                    ref = ownCreateReference(context, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, vxCastRefFromDelay(delay));
+                                    /*status set to NULL due to preceding type check*/
+                                    delay->obj_arr_delay[item_idx] = vxCastRefAsDelay(ref, NULL);
+                                    if ( (vxGetStatus(ref) == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)VX_TYPE_DELAY) )
                                     {
+                                        /*status set to NULL due to preceding type check*/
+                                        objarrdelay = vxCastRefAsDelay(ref, NULL);
                                         ownDelayInit(objarrdelay, count, item_type);
                                         for (i = 0; i < count; i++)
                                         {
-                                            ref = (vx_reference)vxGetObjectArrayItem((vx_object_array)delay->refs[i], (vx_uint32)item_idx);
+                                            if(delay->refs[i]->type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
+                                            {
+                                                /*status set to NULL due to preceding type check*/
+                                                ref = (vx_reference)vxGetObjectArrayItem(vxCastRefAsObjectArray(delay->refs[i], NULL), (vx_uint32)item_idx);
 
-                                            if (NULL != ref)
-                                            {
-                                                status = ownAddRefToDelay(objarrdelay, ref, i);
-                                            }
-                                            /* removed the status check as the status would be 
-                                             * always success from the above conditions 
-                                             */
-                                            else 
-                                            {
-                                                VX_PRINT(VX_ZONE_ERROR, "reference was not added to delay\n");
-                                                break;
+                                                if (NULL != ref)
+                                                {
+                                                    status = ownAddRefToDelay(objarrdelay, ref, i);
+                                                }
+                                                /* removed the status check as the status would be 
+                                                * always success from the above conditions 
+                                                 */
+                                                else 
+                                                {
+                                                    VX_PRINT(VX_ZONE_ERROR, "reference was not added to delay\n");
+                                                    break;
+                                                }
                                             }
                                         }
                                         delay->obj_arr_num_items++;
@@ -459,23 +473,30 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                     {
                         vx_size levels, level_idx;
                         vx_delay pyrdelay;
-
-                        status = vxQueryPyramid((vx_pyramid)exemplar, (vx_enum)VX_PYRAMID_LEVELS, &levels, sizeof(levels));
+                        /*status set to NULL due to preceding type check*/
+                        status = vxQueryPyramid(vxCastRefAsPyramid(exemplar, NULL), (vx_enum)VX_PYRAMID_LEVELS, &levels, sizeof(levels));
                         delay->pyr_num_levels = 0;
                         if(status == (vx_status)VX_SUCCESS)
                         {
                             for (level_idx = 0; level_idx < levels; level_idx++)
                             {
-                                pyrdelay = (vx_delay)ownCreateReference(context, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, (vx_reference)delay);
-                                delay->pyr_delay[level_idx] = pyrdelay;
-                                if ( (vxGetStatus((vx_reference)pyrdelay) == (vx_status)VX_SUCCESS) && (pyrdelay->base.type == (vx_enum)VX_TYPE_DELAY) )
+                                ref = ownCreateReference(context, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, vxCastRefFromDelay(delay));
+                                /*status set to NULL due to preceding type check*/
+                                delay->pyr_delay[level_idx] = vxCastRefAsDelay(ref, NULL);
+                                if ( (vxGetStatus((ref)) == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)VX_TYPE_DELAY) )
                                 {
+                                    /*status set to NULL due to preceding type check*/
+                                    pyrdelay = vxCastRefAsDelay((ref), NULL);
                                     ownDelayInit(pyrdelay, count, (vx_enum)VX_TYPE_IMAGE);
                                     for (i = 0; i < count; i++)
                                     {
-                                        ref = (vx_reference)vxGetPyramidLevel((vx_pyramid)delay->refs[i], (vx_uint32)level_idx);
-                                        /* removed status always returning success */
-                                        (void)ownAddRefToDelay(pyrdelay, ref, i);
+                                        if(delay->refs[i]->type == (vx_enum)VX_TYPE_PYRAMID)
+                                        {
+                                            /*status set to NULL due to preceding type check*/
+                                            ref = vxCastRefFromImage(vxGetPyramidLevel(vxCastRefAsPyramid(delay->refs[i], NULL), (vx_uint32)level_idx));
+                                            /* removed status always returning success */
+                                            (void)ownAddRefToDelay(pyrdelay, ref, i);
+                                        }
                                     }
                                     delay->pyr_num_levels++;
                                 }
@@ -589,7 +610,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay,
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseDelay(vx_delay *d)
 {
-    return ownReleaseReferenceInt((vx_reference *)d, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_EXTERNAL, NULL);
+    return ownReleaseReferenceInt(vxCastRefFromDelayP(d), (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_EXTERNAL, NULL);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)

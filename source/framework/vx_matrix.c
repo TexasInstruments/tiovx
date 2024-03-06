@@ -81,6 +81,7 @@ static vx_status VX_CALLBACK matrixKernelCallback(vx_enum kernel_enum, vx_bool v
 static vx_matrix ownCreateMatrix(vx_reference scope, vx_enum data_type, vx_size columns, vx_size rows, vx_bool is_virtual)
 {
     vx_matrix matrix = NULL;
+    vx_reference ref = NULL;
     vx_size dim = 0U;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 	vx_status status = (vx_status)VX_SUCCESS;
@@ -125,19 +126,21 @@ static vx_matrix ownCreateMatrix(vx_reference scope, vx_enum data_type, vx_size 
 
         if ((rows != 0U) && (columns != 0U) && (dim != 0UL))
         {
-            matrix = (vx_matrix)ownCreateReference(context, (vx_enum)VX_TYPE_MATRIX,
+            ref = ownCreateReference(context, (vx_enum)VX_TYPE_MATRIX,
                 (vx_enum)VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)matrix) == (vx_status)VX_SUCCESS) &&
-                (matrix->base.type == (vx_enum)VX_TYPE_MATRIX))
+            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
+                (ref->type == (vx_enum)VX_TYPE_MATRIX))
             {
+                /* status set to NULL due to preceding type check */
+                matrix = vxCastRefAsMatrix(ref,NULL);
                 /* assign refernce type specific callback's */
                 matrix->base.destructor_callback = &ownDestructReferenceGeneric;
                 matrix->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 matrix->base.release_callback = &ownReleaseReferenceBufferGeneric;
                 matrix->base.kernel_callback = &matrixKernelCallback;
                 obj_desc = (tivx_obj_desc_matrix_t*)ownObjDescAlloc(
-                    (vx_enum)TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
+                    (vx_enum)TIVX_OBJ_DESC_MATRIX, vxCastRefFromMatrix(matrix));
                 if(obj_desc==NULL)
                 {
                     status = vxReleaseMatrix(&matrix);
@@ -239,19 +242,21 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     {
         dim = sizeof(vx_uint8);
 
-        matrix = (vx_matrix)ownCreateReference(context, (vx_enum)VX_TYPE_MATRIX,
+        vx_reference matrix_ref = ownCreateReference(context, (vx_enum)VX_TYPE_MATRIX,
             (vx_enum)VX_EXTERNAL, &context->base);
 
-        if ((vxGetStatus((vx_reference)matrix) == (vx_status)VX_SUCCESS) &&
-            (matrix->base.type == (vx_enum)VX_TYPE_MATRIX))
+        if ((vxGetStatus(matrix_ref) == (vx_status)VX_SUCCESS) &&
+            (matrix_ref->type == (vx_enum)VX_TYPE_MATRIX))
         {
+            /* status set to NULL due to preceding type check */
+            matrix = vxCastRefAsMatrix(matrix_ref,NULL);
             /* assign refernce type specific callback's */
             matrix->base.destructor_callback = &ownDestructReferenceGeneric;
             matrix->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
             matrix->base.release_callback = &ownReleaseReferenceBufferGeneric;
             matrix->base.kernel_callback = &matrixKernelCallback;
             obj_desc = (tivx_obj_desc_matrix_t*)ownObjDescAlloc(
-                (vx_enum)TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
+                (vx_enum)TIVX_OBJ_DESC_MATRIX, vxCastRefFromMatrix(matrix));
             if(obj_desc==NULL)
             {
                 status = vxReleaseMatrix(&matrix);
@@ -413,7 +418,7 @@ vx_status VX_API_CALL vxQueryMatrix(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)matrix, (vx_enum)VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromMatrix(matrix), (vx_enum)VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
         ||
         (matrix->base.obj_desc == NULL)
         )
@@ -509,7 +514,7 @@ vx_status VX_API_CALL vxQueryMatrix(
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseMatrix(vx_matrix *matrix)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)matrix, (vx_enum)VX_TYPE_MATRIX, (vx_enum)VX_EXTERNAL, NULL));
+        vxCastRefFromMatrixP(matrix), (vx_enum)VX_TYPE_MATRIX, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 vx_status VX_API_CALL vxCopyMatrix(
@@ -519,7 +524,7 @@ vx_status VX_API_CALL vxCopyMatrix(
     vx_uint32 size;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)matrix, (vx_enum)VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromMatrix(matrix), (vx_enum)VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
         ||
         (matrix->base.obj_desc == NULL)
         )

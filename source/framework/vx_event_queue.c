@@ -342,17 +342,20 @@ vx_status ownRegisterEvent(vx_reference ref,
         if( ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_COMPLETED) ||
             ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_ERROR) )
         {
-            vx_node node = (vx_node)ref;
+            /*status set to NULL due to preceding type check*/
+            vx_node node = vxCastRefAsNode(ref, NULL);
 
             if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
             {
                 node->is_graph_event = (vx_bool)vx_true_e;
-                status = ownNodeRegisterEvent((vx_node)ref, (vx_enum)event_type, app_value);
+                /*status set to NULL due to preceding type check*/
+                status = ownNodeRegisterEvent(vxCastRefAsNode(ref, NULL), (vx_enum)event_type, app_value);
             }
             else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)
             {
                 node->is_context_event = (vx_bool)vx_true_e;
-                status = ownNodeRegisterEvent((vx_node)ref, (vx_enum)event_type, app_value);
+                /*status set to NULL due to preceding type check*/
+                status = ownNodeRegisterEvent(vxCastRefAsNode(ref, NULL), (vx_enum)event_type, app_value);
             }
             else
             {
@@ -365,12 +368,14 @@ vx_status ownRegisterEvent(vx_reference ref,
     {
         if((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_COMPLETED)
         {
-            status = ownGraphRegisterCompletionEvent((vx_graph)ref, app_value);
+            /*status set to NULL due to preceding type check*/
+            status = ownGraphRegisterCompletionEvent(vxCastRefAsGraph(ref, NULL), app_value);
         }
         else
         if((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED)
         {
-            status = ownGraphRegisterParameterConsumedEvent((vx_graph)ref, param, app_value);
+            /*status set to NULL due to preceding type check*/
+            status = ownGraphRegisterParameterConsumedEvent(vxCastRefAsGraph(ref, NULL), param, app_value);
         }
         else
         {

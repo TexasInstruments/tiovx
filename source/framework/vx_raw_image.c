@@ -520,7 +520,7 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
         }
         else
         {
-            vxAddLogEntry((vx_reference)context, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Requested create parameters was invalid!\n");
+            vxAddLogEntry(vxCastRefFromContext(context), (vx_status)VX_ERROR_INVALID_PARAMETERS, "Requested create parameters was invalid!\n");
             raw_image = (tivx_raw_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
         }
     }

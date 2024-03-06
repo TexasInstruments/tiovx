@@ -15,7 +15,6 @@
  */
 
 #include <vx_internal.h>
-#include <VX/vx_khr_safe_casts.h>
 
 /*
 Example Implementation of "safe casts"

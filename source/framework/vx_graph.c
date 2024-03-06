@@ -25,157 +25,161 @@ static vx_status ownDestructGraph(vx_reference ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_status status1 = (vx_status)VX_SUCCESS;
-    vx_graph graph = (vx_graph)ref;
+    vx_graph graph = NULL;
 
-    if ((vx_bool)vx_true_e == graph->is_streaming_alloc)
+    if (ref->type == (vx_enum)VX_TYPE_GRAPH)
     {
-        status1 = ownGraphFreeStreaming(graph);
-        if((vx_status)VX_SUCCESS != status1)
-        {
-            status = status1;
-            VX_PRINT(VX_ZONE_ERROR,"Failed to free graph streaming objects\n");
-        }
-        else
-        {
-            graph->is_streaming_alloc = (vx_bool)vx_false_e;
-        }
-    }
+        /* status set to NULL due to preceding type check */
+        graph = vxCastRefAsGraph(ref, NULL);
 
-    {
-        uint32_t i;
-
-        for(i=0; i<graph->num_params; i++)
+        if ((vx_bool)vx_true_e == graph->is_streaming_alloc)
         {
-            if((graph->parameters[i].queue_enable != (vx_bool)vx_false_e) && (graph->parameters[i].data_ref_queue != NULL))
+            status1 = ownGraphFreeStreaming(graph);
+            if((vx_status)VX_SUCCESS != status1)
             {
-                status1 = ownDataRefQueueRelease(&graph->parameters[i].data_ref_queue);
-                if((vx_status)VX_SUCCESS != status1)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
-                    status = status1;
-                }
+                status = status1;
+                VX_PRINT(VX_ZONE_ERROR,"Failed to free graph streaming objects\n");
+            }
+            else
+            {
+                graph->is_streaming_alloc = (vx_bool)vx_false_e;
             }
         }
-        for(i=0; i<graph->num_data_ref_q; i++)
+
         {
-            if(graph->data_ref_q_list[i].data_ref_queue != NULL)
-            {
-                status1 = ownDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue);
-                if((vx_status)VX_SUCCESS != status1)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
-                    status = status1;
-                }
-            }
-            if(graph->data_ref_q_list[i].num_buf > 1U)
-            {
-                vx_bool is_replicated
-                            = ownNodeIsPrmReplicated(graph->data_ref_q_list[i].node, graph->data_ref_q_list[i].index);
-                uint32_t buf_id;
+            uint32_t i;
 
-                /* additional references allocated during verify, release them */
-                for(buf_id=1; buf_id<graph->data_ref_q_list[i].num_buf; buf_id++)
+            for(i=0; i<graph->num_params; i++)
+            {
+                if((graph->parameters[i].queue_enable != (vx_bool)vx_false_e) && (graph->parameters[i].data_ref_queue != NULL))
                 {
-                    vx_reference data_ref = graph->data_ref_q_list[i].refs_list[buf_id];
-
-                    if(is_replicated != 0)
-                    {
-                        data_ref = data_ref->scope;
-                    }
-                    status1 = vxReleaseReference(&data_ref);
+                    status1 = ownDataRefQueueRelease(&graph->parameters[i].data_ref_queue);
                     if((vx_status)VX_SUCCESS != status1)
                     {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
                         status = status1;
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference\n");
+                    }
+                }
+            }
+            for(i=0; i<graph->num_data_ref_q; i++)
+            {
+                if(graph->data_ref_q_list[i].data_ref_queue != NULL)
+                {
+                    status1 = ownDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue);
+                    if((vx_status)VX_SUCCESS != status1)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
+                        status = status1;
+                    }
+                }
+                if(graph->data_ref_q_list[i].num_buf > 1U)
+                {
+                    vx_bool is_replicated
+                                = ownNodeIsPrmReplicated(graph->data_ref_q_list[i].node, graph->data_ref_q_list[i].index);
+                    uint32_t buf_id;
+
+                        /* additional references allocated during verify, release them */
+                        for(buf_id=1; buf_id<graph->data_ref_q_list[i].num_buf; buf_id++)
+                        {
+                            vx_reference data_ref = graph->data_ref_q_list[i].refs_list[buf_id];
+
+                        if(is_replicated != 0)
+                        {
+                            data_ref = data_ref->scope;
+                        }
+
+                        status1 = vxReleaseReference(&data_ref);
+                        if((vx_status)VX_SUCCESS != status1)
+                        {
+                            status = status1;
+                            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference\n");
+                        }
+
+                            graph->data_ref_q_list[i].refs_list[buf_id] = NULL;
+                        }
+
+                    graph->data_ref_q_list[i].node  = NULL;
+                    graph->data_ref_q_list[i].index = 0;
+                }
+            }
+            for(i=0; i<graph->num_delay_data_ref_q; i++)
+            {
+                if(graph->delay_data_ref_q_list[i].data_ref_queue != NULL)
+                {
+                    status1 = ownDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue);
+                    if((vx_status)VX_SUCCESS != status1)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
+                        status = status1;
+                    }
+                }
+            }
+
+                #if defined(BUILD_BAM)
+                for(i=0; i<graph->num_supernodes; i++)
+                {
+                    status1 = ownReleaseReferenceInt((vx_reference *)&graph->supernodes[i], TIVX_TYPE_SUPER_NODE, (vx_enum)VX_INTERNAL, NULL);
+
+                    if (status1 != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
+                        status = status1;
                     }
 
-                    graph->data_ref_q_list[i].refs_list[buf_id] = NULL;
+                    graph->supernodes[i] = NULL;
                 }
-
-                graph->data_ref_q_list[i].node  = NULL;
-                graph->data_ref_q_list[i].index = 0;
-            }
-        }
-        for(i=0; i<graph->num_delay_data_ref_q; i++)
-        {
-            if(graph->delay_data_ref_q_list[i].data_ref_queue != NULL)
-            {
-                status1 = ownDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue);
-                if((vx_status)VX_SUCCESS != status1)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
-                    status = status1;
-                }
-            }
+                graph->num_supernodes = 0;
+                #endif
         }
 
-        #if defined(BUILD_BAM)
-        for(i=0; i<graph->num_supernodes; i++)
+        while (graph->num_nodes != 0U)
         {
-            status1 = ownReleaseReferenceInt((vx_reference *)&graph->supernodes[i], TIVX_TYPE_SUPER_NODE, (vx_enum)VX_INTERNAL, NULL);
-
+            vx_node node = graph->nodes[0];
+            vx_reference node_ref;
+            node_ref = vxCastRefFromNode(node);
+            VX_PRINT(VX_ZONE_INFO,"Removing node %s\n", node_ref->name);
+            status1 = vxRemoveNode(&node);
             if (status1 != (vx_status)VX_SUCCESS)
             {
-                VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
+                VX_PRINT(VX_ZONE_ERROR, "removing node %s failed.\n", node_ref->name);
                 status = status1;
             }
-
-            graph->supernodes[i] = NULL;
+            else
+            {
+                VX_PRINT(VX_ZONE_INFO,"Done removing node %s\n", node_ref->name);
+            }
         }
-        graph->num_supernodes = 0;
-        #endif
-    }
 
-    while (graph->num_nodes != 0U)
-    {
-        vx_node node = graph->nodes[0];
-        vx_reference node_ref;
-
-        node_ref = (vx_reference)node;
-
-        VX_PRINT(VX_ZONE_INFO,"Removing node %s\n", node_ref->name);
-
-        status1 = vxRemoveNode(&node);
-
-        if (status1 != (vx_status)VX_SUCCESS)
+        status1 = ownGraphDeleteQueues(graph);
+        if((vx_status)VX_SUCCESS != status1)
         {
-            VX_PRINT(VX_ZONE_ERROR, "removing node %s failed.\n", node_ref->name);
+            VX_PRINT(VX_ZONE_ERROR,"Failed to delete queues created during ownGraphCreateQueues \n");
             status = status1;
         }
-        else
+        status1 = ownGraphFreeObjDesc(graph);
+        if((vx_status)VX_SUCCESS != status1)
         {
-            VX_PRINT(VX_ZONE_INFO,"Done removing node %s\n", node_ref->name);
-        }
-    }
-    status1 = ownGraphDeleteQueues(graph);
-    if((vx_status)VX_SUCCESS != status1)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to delete queues created during ownGraphCreateQueues \n");
-        status = status1;
-    }
-    status1 = ownGraphFreeObjDesc(graph);
-    if((vx_status)VX_SUCCESS != status1)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to free graph obj desc \n");
-        status = status1;
-    }
-    if(NULL != graph->all_graph_completed_event)
-    {
-        status1 = tivxEventDelete(&graph->all_graph_completed_event);
-        if(status1 != (vx_status)VX_SUCCESS)
-        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to free graph obj desc \n");
             status = status1;
-            VX_PRINT(VX_ZONE_ERROR,"Failed to delete event\n");
+        }
+        if(NULL != graph->all_graph_completed_event)
+        {
+            status1 = tivxEventDelete(&graph->all_graph_completed_event);
+            if(status1 != (vx_status)VX_SUCCESS)
+            {
+                status = status1;
+                VX_PRINT(VX_ZONE_ERROR,"Failed to delete event\n");
+            }
         }
     }
     return status;
-}
+}   
 
 static vx_status ownResetGraphPerf(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         graph->perf.tmp = 0;
         graph->perf.beg = 0;
@@ -198,7 +202,7 @@ vx_status ownUpdateGraphPerf(vx_graph graph, uint32_t pipeline_id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) ==
+    if ((ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) ==
             (vx_bool)vx_true_e) &&
             (pipeline_id < graph->pipeline_depth))
     {
@@ -237,7 +241,7 @@ int32_t ownGraphGetFreeNodeIndex(vx_graph graph)
 {
     int32_t free_index = -(int32_t)1;
 
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if(graph->num_nodes < TIVX_GRAPH_MAX_NODES)
         {
@@ -256,7 +260,7 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t idx)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if( (idx < (int32_t)TIVX_GRAPH_MAX_NODES) && (idx == (int32_t)graph->num_nodes) )
         {
@@ -321,7 +325,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
     vx_status status1 = (vx_status)VX_SUCCESS;
     uint32_t i;
 
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         /* remove node from head nodes and leaf nodes if found */
         for(i=0; i < graph->num_head_nodes; i++)
@@ -356,7 +360,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
                 graph->nodes[i] = graph->nodes[graph->num_nodes-1U];
                 graph->nodes[graph->num_nodes-1U] = NULL;
                 graph->num_nodes--;
-                status1 = ownReleaseReferenceInt((vx_reference *)&node, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
+                status1 = ownReleaseReferenceInt(vxCastRefFromNodeP(&node), (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
 
                 if (status1 != (vx_status)VX_SUCCESS)
                 {
@@ -393,13 +397,17 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
 {
     vx_graph  graph = NULL;
     uint32_t idx;
+    vx_reference ref = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        graph = (vx_graph)ownCreateReference(context, (vx_enum)VX_TYPE_GRAPH, (vx_enum)VX_EXTERNAL, &context->base);
-        if ( (vxGetStatus((vx_reference)graph) == (vx_status)VX_SUCCESS) && (graph->base.type == (vx_enum)VX_TYPE_GRAPH) )
+        ref = ownCreateReference(context, (vx_enum)VX_TYPE_GRAPH, (vx_enum)VX_EXTERNAL, &context->base);
+        
+        if ( (vxGetStatus(ref) == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)VX_TYPE_GRAPH) )
         {
+            /* status set to NULL due to preceding type check */
+            graph = vxCastRefAsGraph(ref, NULL);
             graph->base.destructor_callback = &ownDestructGraph;
             graph->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
@@ -469,7 +477,9 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
                 }
 
                 VX_PRINT(VX_ZONE_ERROR, "Could not create graph\n");
-                graph = (vx_graph)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
+                ref = ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
+                /* status set to NULL due to preceding type check */
+                graph = vxCastRefAsGraph(ref, NULL);
             }
 
         }
@@ -481,7 +491,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
 VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum attribute, const void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         switch (attribute)
         {
@@ -623,14 +633,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseGraph(vx_graph *g)
 {
-    return ownReleaseReferenceInt((vx_reference *)g, (vx_enum)VX_TYPE_GRAPH, (vx_enum)VX_EXTERNAL, NULL);
+    return ownReleaseReferenceInt(vxCastRefFromGraphP(g), (vx_enum)VX_TYPE_GRAPH, (vx_enum)VX_EXTERNAL, NULL);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_parameter param)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    if ((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
-        (ownIsValidSpecificReference((vx_reference)param, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_true_e))
+    if ((ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
+        (ownIsValidSpecificReference(vxCastRefFromParameter(param), (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_true_e))
     {
         if(graph->num_params < TIVX_GRAPH_MAX_PARAMS)
         {
@@ -654,8 +664,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    else if ((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
-              (ownIsValidSpecificReference((vx_reference)param, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_false_e))
+    else if ((ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
+              (ownIsValidSpecificReference(vxCastRefFromParameter(param), (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_false_e))
     {
         if(graph->num_params < TIVX_GRAPH_MAX_PARAMS)
         {
@@ -684,7 +694,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
 VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx_uint32 index, vx_reference value)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if ((index < TIVX_GRAPH_MAX_PARAMS) && (index < graph->num_params))
         {
@@ -716,7 +726,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
 VX_API_ENTRY vx_parameter VX_API_CALL vxGetGraphParameterByIndex(vx_graph graph, vx_uint32 index)
 {
     vx_parameter parameter = NULL;
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if ((index < TIVX_GRAPH_MAX_PARAMS) && (index < graph->num_params))
         {
@@ -734,7 +744,7 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetGraphParameterByIndex(vx_graph graph,
 VX_API_ENTRY vx_bool VX_API_CALL vxIsGraphVerified(vx_graph graph)
 {
     vx_bool verified = (vx_bool)vx_false_e;
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         verified = graph->verified;
     }
@@ -748,9 +758,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
     vx_bool is_registered = (vx_bool)vx_false_e;
     vx_bool is_full = (vx_bool)vx_true_e;
 
-    if(ownIsValidSpecificReference((vx_reference)delay, (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e)
+    if(ownIsValidSpecificReference(vxCastRefFromDelay(delay), (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e)
     {
-        if(ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
+        if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
         {
             /* check if this particular delay is already registered in the graph */
             for (i = 0; i < TIVX_GRAPH_MAX_DELAYS; i++)
@@ -804,7 +814,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxProcessGraph(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if(ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
+    if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
         status = vxScheduleGraph(graph);
         if(status == (vx_status)VX_SUCCESS)
@@ -895,7 +905,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if(ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
+    if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
         if (graph->is_streaming_enabled != 0)
         {
@@ -928,7 +938,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if(ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) ==
+    if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) ==
             (vx_bool)vx_true_e)
     {
         if ((graph->state == (vx_enum)VX_GRAPH_STATE_RUNNING)
@@ -1002,7 +1012,7 @@ vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
@@ -1028,7 +1038,7 @@ vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
@@ -1079,7 +1089,7 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t idx)
 {
     vx_node node = NULL;
 
-    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if(vxIsGraphVerified(graph) != 0)
         {
@@ -1087,7 +1097,7 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t idx)
             {
                 node = graph->nodes[idx];
 
-                if(ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
+                if(ownIsValidSpecificReference(vxCastRefFromNode(node), (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
                 {
                     /* valid node return it */
                 }

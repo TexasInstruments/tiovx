@@ -23,13 +23,14 @@ static vx_status ownAllocThresholdBuffer(vx_reference ref);
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseThreshold(vx_threshold *thresh)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)thresh, (vx_enum)VX_TYPE_THRESHOLD, (vx_enum)VX_EXTERNAL, NULL));
+        vxCastRefFromThresholdP(thresh), (vx_enum)VX_TYPE_THRESHOLD, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 vx_threshold VX_API_CALL vxCreateThreshold(
     vx_context context, vx_enum thr_type, vx_enum data_type)
 {
     vx_threshold thresh = NULL;
+    vx_reference ref = NULL;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -40,12 +41,14 @@ vx_threshold VX_API_CALL vxCreateThreshold(
             (((vx_enum)VX_TYPE_INT64 != data_type) &&
              ((vx_enum)VX_TYPE_UINT64 != data_type)))
         {
-            thresh = (vx_threshold)ownCreateReference(context, (vx_enum)VX_TYPE_THRESHOLD,
+            ref = ownCreateReference(context, (vx_enum)VX_TYPE_THRESHOLD,
                 (vx_enum)VX_EXTERNAL, &context->base);
                 
-            if ((vxGetStatus((vx_reference)thresh) == (vx_status)VX_SUCCESS) &&
-                (thresh->base.type == (vx_enum)VX_TYPE_THRESHOLD))
+            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
+                (ref->type == (vx_enum)VX_TYPE_THRESHOLD))
             {
+                /* status set to NULL due to preceding type check */
+                thresh = vxCastRefAsThreshold(ref, NULL);
                 /* assign refernce type specific callback's */
                 thresh->base.destructor_callback = &ownDestructReferenceGeneric;
                 thresh->base.mem_alloc_callback = &ownAllocThresholdBuffer;
@@ -53,7 +56,7 @@ vx_threshold VX_API_CALL vxCreateThreshold(
                     &ownReleaseReferenceBufferGeneric;
 
                 obj_desc = (tivx_obj_desc_threshold_t*)ownObjDescAlloc(
-                    (vx_enum)TIVX_OBJ_DESC_THRESHOLD, (vx_reference)thresh);
+                    (vx_enum)TIVX_OBJ_DESC_THRESHOLD, vxCastRefFromThreshold(thresh));
                 if(obj_desc==NULL)
                 {
                     status = vxReleaseThreshold(&thresh);
@@ -89,7 +92,7 @@ vx_status VX_API_CALL vxQueryThreshold(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)thresh, (vx_enum)VX_TYPE_THRESHOLD) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromThreshold(thresh), (vx_enum)VX_TYPE_THRESHOLD) == (vx_bool)vx_false_e)
         ||
         (thresh->base.obj_desc == NULL)
         )
@@ -197,7 +200,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference((vx_reference)thresh, (vx_enum)VX_TYPE_THRESHOLD) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromThreshold(thresh), (vx_enum)VX_TYPE_THRESHOLD) == (vx_bool)vx_false_e)
         ||
         (thresh->base.obj_desc == NULL)
         )

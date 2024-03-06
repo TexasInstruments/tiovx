@@ -82,7 +82,7 @@ vx_meta_format ownCreateMetaFormat(vx_context context)
         meta = (vx_meta_format)ownCreateReference(
             context, (vx_enum)VX_TYPE_META_FORMAT, (vx_enum)VX_EXTERNAL, &context->base);
 
-        if ((vxGetStatus((vx_reference)meta) == (vx_status)VX_SUCCESS) &&
+        if ((vxGetStatus(vxCastRefFromMetaFormat(meta)) == (vx_status)VX_SUCCESS) &&
             (meta->base.type == (vx_enum)VX_TYPE_META_FORMAT))
         {
             meta->size = sizeof(tivx_meta_format_t);
@@ -97,7 +97,7 @@ vx_meta_format ownCreateMetaFormat(vx_context context)
 vx_status ownReleaseMetaFormat(vx_meta_format *meta)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)meta, (vx_enum)VX_TYPE_META_FORMAT, (vx_enum)VX_EXTERNAL, NULL));
+        vxCastRefFromMetaFormatP(meta), (vx_enum)VX_TYPE_META_FORMAT, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
@@ -105,7 +105,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ( ownIsValidSpecificReference((vx_reference)meta, (vx_enum)VX_TYPE_META_FORMAT) ==
+    if ( ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta), (vx_enum)VX_TYPE_META_FORMAT) ==
             (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "Invalid meta format reference\n");
@@ -671,92 +671,104 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
         switch (exemplar->type)
         {
             case (vx_enum)VX_TYPE_IMAGE:
-                status = ownInitMetaFormatWithImage(meta, (vx_image)exemplar);
+                /* status set to NULL due to preceding type check */
+                status = ownInitMetaFormatWithImage(meta, vxCastRefAsImage(exemplar, NULL));
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Image init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_ARRAY:
-                status = ownInitMetaFormatWithArray(meta, (vx_array)exemplar);
+                /* status set to NULL due to preceding type check */
+                status = ownInitMetaFormatWithArray(meta, vxCastRefAsArray(exemplar, NULL));
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Array init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_SCALAR:
+                /* status set to NULL due to preceding type check */
                 status = ownInitMetaFormatWithScalar(
-                    meta, (vx_scalar)exemplar);
+                    meta, vxCastRefAsScalar(exemplar, NULL));
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Scalar init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_PYRAMID:
+                /* status set to NULL due to preceding type check */
                 status = ownInitMetaFormatWithPyramid(
-                    meta, (vx_pyramid)exemplar);
+                    meta, vxCastRefAsPyramid(exemplar, NULL));
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Pyramid init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_MATRIX:
+                /* status set to NULL due to preceding type check */
                 status = ownInitMetaFormatWithMatrix(
-                    meta, (vx_matrix)exemplar);
+                    meta, vxCastRefAsMatrix(exemplar, NULL));
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Matrix init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_DISTRIBUTION:
+                /* status set to NULL due to preceding type check */
                 status = ownInitMetaFormatWithDistribution(
-                    meta, (vx_distribution)exemplar);
+                    meta, vxCastRefAsDistribution(exemplar, NULL));
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Distribution init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_THRESHOLD:
+                /* status set to NULL due to preceding type check */
                 status = ownInitMetaFormatWithThreshold(
-                    meta, (vx_threshold)exemplar);
+                    meta, vxCastRefAsThreshold(exemplar, NULL));
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Threshold init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_REMAP:
+                /* status set to NULL due to preceding type check */
                 status = ownInitMetaFormatWithRemap(
-                    meta, (vx_remap)exemplar);
+                    meta, vxCastRefAsRemap(exemplar, NULL));
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Remap init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_LUT:
+                /* status set to NULL due to preceding type check */
                 status = ownInitMetaFormatWithLut(
-                    meta, (vx_lut)exemplar);
+                    meta, vxCastRefAsLUT(exemplar, NULL));
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "LUT init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_OBJECT_ARRAY:
+                /* status set to NULL due to preceding type check */
                 status = ownInitMetaFormatWithObjectArray(
-                    meta, (vx_object_array)exemplar);
+                    meta, vxCastRefAsObjectArray(exemplar, NULL));
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Object array init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_TENSOR:
-                status = ownInitMetaFormatWithTensor(meta, (vx_tensor)exemplar);
+                /* status set to NULL due to preceding type check */
+                status = ownInitMetaFormatWithTensor(meta, vxCastRefAsTensor(exemplar, NULL));
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Tensor init meta format failure\n");
                 }
                 break;
             case VX_TYPE_USER_DATA_OBJECT:
-                status = ownInitMetaFormatWithUserDataObject(meta, (vx_user_data_object)exemplar);
+                /* status set to NULL due to preceding type check */
+                status = ownInitMetaFormatWithUserDataObject(meta, vxCastRefAsUserDataObject(exemplar, NULL));
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "User Data Object init meta format failure\n");
@@ -987,8 +999,8 @@ static vx_bool ownIsMetaFormatImageEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->img.width  == meta2->img.width) &&
              (meta1->img.height == meta2->img.height) &&
@@ -1010,8 +1022,8 @@ static vx_bool ownIsMetaFormatArrayEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->arr.item_type == meta2->arr.item_type) &&
              (meta1->arr.capacity  == meta2->arr.capacity) )
@@ -1032,8 +1044,8 @@ static vx_bool ownIsMetaFormatScalarEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( meta1->sc.type == meta2->sc.type )
         {
@@ -1053,8 +1065,8 @@ static vx_bool ownIsMetaFormatPyramidEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->pmd.width  == meta2->pmd.width) &&
              (meta1->pmd.height == meta2->pmd.height) &&
@@ -1078,8 +1090,8 @@ static vx_bool ownIsMetaFormatMatrixEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->mat.type  == meta2->mat.type) &&
              (meta1->mat.rows  == meta2->mat.rows) &&
@@ -1101,8 +1113,8 @@ static vx_bool ownIsMetaFormatDistributionEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->dist.bins   == meta2->dist.bins) &&
              (meta1->dist.offset == meta2->dist.offset) &&
@@ -1124,8 +1136,8 @@ static vx_bool ownIsMetaFormatRemapEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->remap.src_width  == meta2->remap.src_width) &&
              (meta1->remap.src_height == meta2->remap.src_height) &&
@@ -1148,8 +1160,8 @@ static vx_bool ownIsMetaFormatThresholdEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( meta1->thres.type  == meta2->thres.type )
         {
@@ -1169,8 +1181,8 @@ static vx_bool ownIsMetaFormatObjectArrayEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->objarr.item_type == meta2->objarr.item_type) &&
              (meta1->objarr.num_items == meta2->objarr.num_items) )
@@ -1191,8 +1203,8 @@ static vx_bool ownIsMetaFormatLutEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->lut.type  == meta2->lut.type) &&
              (meta1->lut.count == meta2->lut.count) )
@@ -1214,8 +1226,8 @@ static vx_bool ownIsMetaFormatTensorEqual(
     vx_bool is_equal = (vx_bool)vx_false_e;
     vx_uint32 i;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->tensor.number_of_dimensions == meta2->tensor.number_of_dimensions) &&
              (meta1->tensor.data_type == meta2->tensor.data_type) &&
@@ -1247,8 +1259,8 @@ static vx_bool ownIsMetaFormatUserDataObjectEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->user_data_object.size == meta2->user_data_object.size) &&
              ( 0 == strncmp(meta1->user_data_object.type_name, meta2->user_data_object.type_name, VX_MAX_REFERENCE_NAME) ) )
@@ -1270,8 +1282,8 @@ static vx_bool ownIsMetaFormatRawImageEqual(
     vx_bool is_equal = (vx_bool)vx_false_e;
     vx_uint32 i;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->raw_image.width              == meta2->raw_image.width) &&
              (meta1->raw_image.height             == meta2->raw_image.height) &&
@@ -1307,8 +1319,8 @@ vx_bool ownIsMetaFormatEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         switch (ref_type)
         {
