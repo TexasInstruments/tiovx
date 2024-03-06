@@ -46,7 +46,7 @@ Thus we argue that all 126 of the pointer casts in this file are "safe"
 static vx_reference getRefAs(vx_reference ref, vx_enum type, vx_status *status);
 static vx_reference castRefAs(vx_reference ref, vx_enum type, vx_status *status);
 
-#define __DEFINE_SAFE_DOWNCASTS__(typename, Name, TYPE)\
+#define DEFINE_SAFE_DOWNCASTS(typename, Name, TYPE)\
 /*! \brief safely get a new vx_reference for the given vx_##typename variable*/\
 VX_API_ENTRY vx_reference vxGetRefFrom##Name(const vx_##typename *typename)\
 {\
@@ -77,7 +77,7 @@ VX_API_ENTRY const vx_reference *vxCastRefFrom##Name##ConstP(const vx_##typename
     return (const vx_reference *)p_##typename;\
 }
 
-#define __DEFINE_SAFE_CASTS__(typename, Name, TYPE) \
+#define DEFINE_SAFE_CASTS(typename, Name, TYPE) \
 /*! \brief safely get a new vx_##typename or an error object from a vx_reference*/\
 VX_API_ENTRY vx_##typename vxGetRefAs##Name(const vx_reference *ref, vx_status *status)\
 {\
@@ -98,32 +98,32 @@ VX_API_ENTRY vx_##typename vxCastRefAs##Name(vx_reference ref, vx_status *status
     return (vx_##typename)castRefAs(ref, (vx_enum)VX_TYPE_##TYPE, status);\
 }\
 \
-__DEFINE_SAFE_DOWNCASTS__(typename, Name, TYPE)
+DEFINE_SAFE_DOWNCASTS(typename, Name, TYPE)
 
-__DEFINE_SAFE_CASTS__(array, Array, ARRAY)
-__DEFINE_SAFE_CASTS__(convolution, Convolution, CONVOLUTION)
-__DEFINE_SAFE_DOWNCASTS__(context, Context, CONTEXT)
-__DEFINE_SAFE_CASTS__(delay, Delay, DELAY)
-__DEFINE_SAFE_CASTS__(distribution, Distribution, DISTRIBUTION)
-__DEFINE_SAFE_CASTS__(graph, Graph, GRAPH)
-__DEFINE_SAFE_CASTS__(image, Image, IMAGE)
+DEFINE_SAFE_CASTS(array, Array, ARRAY)
+DEFINE_SAFE_CASTS(convolution, Convolution, CONVOLUTION)
+DEFINE_SAFE_DOWNCASTS(context, Context, CONTEXT)
+DEFINE_SAFE_CASTS(delay, Delay, DELAY)
+DEFINE_SAFE_CASTS(distribution, Distribution, DISTRIBUTION)
+DEFINE_SAFE_CASTS(graph, Graph, GRAPH)
+DEFINE_SAFE_CASTS(image, Image, IMAGE)
 #ifdef VX_TYPE_IMPORT
-__DEFINE_SAFE_DOWNCASTS__(import, Import, IMPORT)
+DEFINE_SAFE_DOWNCASTS(import, Import, IMPORT)
 #endif
-__DEFINE_SAFE_CASTS__(kernel, Kernel, KERNEL)
-__DEFINE_SAFE_CASTS__(lut, LUT, LUT)
-__DEFINE_SAFE_CASTS__(matrix, Matrix, MATRIX)
-__DEFINE_SAFE_DOWNCASTS__(meta_format, MetaFormat, META_FORMAT)
-__DEFINE_SAFE_CASTS__(node, Node, NODE)
-__DEFINE_SAFE_CASTS__(object_array, ObjectArray, OBJECT_ARRAY)
-__DEFINE_SAFE_CASTS__(parameter, Parameter, PARAMETER)
-__DEFINE_SAFE_CASTS__(pyramid, Pyramid, PYRAMID)
-__DEFINE_SAFE_CASTS__(remap, Remap, REMAP)
-__DEFINE_SAFE_CASTS__(scalar, Scalar, SCALAR)
-__DEFINE_SAFE_CASTS__(tensor, Tensor, TENSOR)
-__DEFINE_SAFE_CASTS__(threshold, Threshold, THRESHOLD)
+DEFINE_SAFE_CASTS(kernel, Kernel, KERNEL)
+DEFINE_SAFE_CASTS(lut, LUT, LUT)
+DEFINE_SAFE_CASTS(matrix, Matrix, MATRIX)
+DEFINE_SAFE_DOWNCASTS(meta_format, MetaFormat, META_FORMAT)
+DEFINE_SAFE_CASTS(node, Node, NODE)
+DEFINE_SAFE_CASTS(object_array, ObjectArray, OBJECT_ARRAY)
+DEFINE_SAFE_CASTS(parameter, Parameter, PARAMETER)
+DEFINE_SAFE_CASTS(pyramid, Pyramid, PYRAMID)
+DEFINE_SAFE_CASTS(remap, Remap, REMAP)
+DEFINE_SAFE_CASTS(scalar, Scalar, SCALAR)
+DEFINE_SAFE_CASTS(tensor, Tensor, TENSOR)
+DEFINE_SAFE_CASTS(threshold, Threshold, THRESHOLD)
 #ifdef VX_TYPE_USER_DATA_OBJECT
-__DEFINE_SAFE_CASTS__(user_data_object, UserDataObject, USER_DATA_OBJECT)
+DEFINE_SAFE_CASTS(user_data_object, UserDataObject, USER_DATA_OBJECT)
 #endif
 
 static vx_reference getRefAs(vx_reference ref, vx_enum type, vx_status *status)
