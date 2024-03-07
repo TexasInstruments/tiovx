@@ -175,7 +175,7 @@ uint16_t ownIpcGetHostPortId(uint16_t cpu_id)
     uint32_t vsdk_cpu_id;
     uint32_t host_port_id = 0;
 
-    if( cpu_id < (vx_enum)TIVX_CPU_ID_MAX)
+    if((int32_t)cpu_id < (vx_enum)TIVX_CPU_ID_MAX)
     {
         vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
 
