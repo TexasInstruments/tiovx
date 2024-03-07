@@ -197,13 +197,22 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
     return status;
 } /* own_host_mem_to_scalar() */
 
-VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum data_type, const void* ptr)
+static vx_scalar ownCreateScalar(vx_reference scope, vx_enum data_type, const void *ptr, vx_bool is_virtual)
 {
     vx_scalar scalar = NULL;
     vx_reference ref = NULL;
     tivx_obj_desc_scalar_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
+    vx_context context;
+	vx_status status = (vx_status)VX_SUCCESS;
 
+    if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    {
+        context = vxGetContext(scope);
+    }
+    else
+    {
+        context = (vx_context)scope;
+    }
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if (!TIVX_TYPE_IS_SCALAR(data_type))
@@ -256,6 +265,11 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
         }
     }
     return (vx_scalar)scalar;
+}
+
+VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum data_type, const void* ptr)
+{
+    return ownCreateScalar((vx_reference)context, data_type, ptr, vx_false_e);
 } /* vxCreateScalar() */
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseScalar(vx_scalar *s)

@@ -17,8 +17,6 @@
 
 #include <vx_internal.h>
 
-static vx_status ownDestructParameter(vx_reference ref);
-
 static vx_status ownDestructParameter(vx_reference ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;

@@ -49,6 +49,12 @@ typedef enum _tivx_reftype_e {
  */
 typedef vx_status (*tivx_reference_callback_f)(vx_reference ref);
 
+/*! \brief Callback type used to register destructor
+ *    callbacks from object derived from references
+ * \ingroup group_vx_reference
+ */
+typedef vx_status (* VX_API_CALL tivx_reference_destructor_callback_f)(vx_reference *ref);
+
 /*! \brief Callback type used to register release
  *    callbacks from object derived from references
  * \ingroup group_vx_reference
@@ -211,6 +217,18 @@ vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype);
  */
 vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype);
 
+/*! \brief Returns the total reference count of the object.
+ * \param [in] ref The reference to print.
+ * \ingroup group_vx_reference
+ */
+vx_uint32 ownTotalReferenceCount(vx_reference ref);
+
+/*! \brief Print reference information
+ * \param [in] ref The reference.
+ * \ingroup group_vx_reference
+ */
+void ownPrintReference(vx_reference ref);
+
 /*! \brief This returns true if the type is within the definition of types in OpenVX.
  * \note VX_TYPE_INVALID is not valid for determining a type.
  * \param [in] ref_type The \ref vx_type_e value.
@@ -263,6 +281,13 @@ vx_size ownSizeOfEnumType(vx_enum item_type);
  * \ingroup group_vx_reference
  */
 void ownReferenceSetScope(vx_reference ref, vx_reference scope);
+
+
+/*! \brief Create reference from a exemplar object
+ * \ingroup group_vx_reference
+ */
+vx_reference ownCreateReferenceFromExemplar(
+    vx_context context, vx_reference exemplar);
 
 
 /*! \brief Return reference given a obj desc ID
