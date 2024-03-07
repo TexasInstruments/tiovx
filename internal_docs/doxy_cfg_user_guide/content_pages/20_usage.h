@@ -148,6 +148,7 @@
          the vx_object_array element and the vx_object_array itself must be released in order to avoid having a dangling reference when releasing the
          OpenVX context.
        - The order in which the vx_object_array and the vx_object_array elements are to be released is not mandated by the framework
+       - A \ref vx_object_array cannot have a \ref vx_object_array as an exemplar.  If this is attempted, the creation of the object array will return an error
  */
 
 /*!
