@@ -50,8 +50,9 @@ TESTCASE(tivxInternalApis, CT_VXContext, ct_setup_vx_context, 0)
 
 TEST(tivxInternalApis, negativeTestInternalNode)
 {
+    #define VX_TYPE_EVENT_DEFAULT 0
     vx_context context = context_->vx_context_;
-
+    vx_uint32 app_default = 0;
     vx_node node = NULL;
     vx_meta_format meta = NULL;
     vx_reference prm_ref[TIVX_KERNEL_MAX_PARAMS] = {NULL};
@@ -67,11 +68,14 @@ TEST(tivxInternalApis, negativeTestInternalNode)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownNodeKernelValidate(node, &meta));
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownNodeUserKernelExecute(node, prm_ref));
-
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
     ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownNodeUserKernelExecute(node, prm_ref));
+    node->is_kernel_created = (vx_bool)vx_true_e;
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownNodeUserKernelExecute(node, prm_ref));
+    node->is_kernel_created = (vx_bool)vx_false_e;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownNodeRegisterEvent(node, VX_TYPE_EVENT_DEFAULT, app_default));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));

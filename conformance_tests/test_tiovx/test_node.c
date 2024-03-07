@@ -59,6 +59,7 @@ TEST(tivxNode, negativeTestQueryNode)
     ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryNode(node, VX_NODE_PERFORMANCE, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryNode(node, VX_NODE_STATUS, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryNode(node, TIVX_NODE_IS_TIMED_OUT, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryNode(node, VX_NODE_STATUS, &udata, sizeof(vx_status)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryNode(node, VX_NODE_LOCAL_DATA_SIZE, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryNode(node, VX_NODE_LOCAL_DATA_PTR, &udata, size));
@@ -78,6 +79,39 @@ TEST(tivxNode, negativeTestQueryNode)
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseKernel(&kernel));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxNode, negativeTestQueryNode1)
+{
+    #define VX_NODE_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_uint32 udata = 0, np = 0;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    vx_pyramid src_pyr, dst_pyr;
+    ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, TIVX_NODE_MAX_REPLICATE, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    ASSERT_VX_OBJECT(dst_pyr = vxCreatePyramid(context, TIVX_NODE_MAX_REPLICATE, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    vx_image src_image, dst_image;
+    vx_node src_node;
+    /* Replicating nodes */
+    ASSERT_VX_OBJECT(src_image = vxGetPyramidLevel((vx_pyramid)src_pyr, 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image = vxGetPyramidLevel((vx_pyramid)dst_pyr, 0), VX_TYPE_IMAGE);
+    vx_bool replicate[] = { vx_true_e, vx_true_e };
+    ASSERT_VX_OBJECT(src_node = vxBox3x3Node(graph, src_image, dst_image), VX_TYPE_NODE);
+    VX_CALL(vxReplicateNode(graph, src_node, replicate, 2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryNode(src_node, VX_NODE_IS_REPLICATED, &udata, sizeof(vx_bool)));
+
+    /* Releasing objects */
+    VX_CALL(vxReleasePyramid(&src_pyr));
+    VX_CALL(vxReleasePyramid(&dst_pyr));
+    VX_CALL(vxReleaseImage(&src_image));
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseNode(&src_node));
     VX_CALL(vxReleaseGraph(&graph));
 }
 
@@ -272,6 +306,8 @@ TEST(tivxNode, negativeTestSetNodeTileSize)
     vx_node node;
     uint32_t get_num_buf = 1;
 
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, tivxSetNodeTileSize(node, 0, 0));
+
     ASSERT_VX_OBJECT(input = vxCreateImage(context, 16, 32, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(output = vxCreateImage(context, 128, 64, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(map = vxCreateRemap(context, 16, 32, 128, 64), VX_TYPE_REMAP);
@@ -289,11 +325,11 @@ TEST(tivxNode, negativeTestSetNodeTileSize)
     VX_CALL(vxReleaseImage(&input));
 }
 
-
 TESTCASE_TESTS(
     tivxNode,
     negativeTestCreateGenericNode,
     negativeTestQueryNode,
+    negativeTestQueryNode1,
     negativeTestSetNodeAttribute,
     negativeTestRemoveNode,
     negativeTestAssignNodeCallback,
