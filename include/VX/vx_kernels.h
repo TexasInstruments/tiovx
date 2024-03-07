@@ -289,6 +289,21 @@ enum vx_kernel_e {
 
     /* insert new kernels here */
     VX_KERNEL_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
+
+    /*! \brief The data object copy kernel.
+    * \see group vision_function_copy
+    */
+    VX_KERNEL_COPY = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x37,
+	
+	/*! \brief The data object swap kernel.
+	* \see group_vision_function_swap
+	*/
+	VX_KERNEL_SWAP = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x2d,
+
+    /*! \brief The data object move kernel.
+    * \see group_vision_function_move
+    */
+    VX_KERNEL_MOVE = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x2e,
 };
 
 #ifdef  __cplusplus

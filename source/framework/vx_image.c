@@ -20,6 +20,13 @@
 
 #define TIVX_IMG_ALIGN_BYTES    (64U)
 #define TIVX_IMG_ALIGN(size)    (((size + (TIVX_IMG_ALIGN_BYTES-1U)) / TIVX_IMG_ALIGN_BYTES) * TIVX_IMG_ALIGN_BYTES)
+static vx_status isImageCopyable(vx_image input, vx_image output);
+static vx_status isImageSwapable(vx_image input, vx_image output);
+static vx_status copyImage(vx_image input, vx_image output);
+//static vx_status assignNewPointers(const vx_image image, const tivx_shared_mem_ptr_t prev_ptrs[TIVX_IMAGE_MAX_PLANES], const vx_uint32 depth);
+static vx_status swapImage(vx_image input, vx_image output);
+static vx_status moveImage(vx_image input, vx_image output);
+static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
 
 static vx_bool ownIsSupportedFourcc(vx_df_image code);
 static vx_bool ownIsValidImage(vx_image image);
@@ -367,6 +374,163 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
     return status;
 }
 
+static vx_status isImageCopyable(vx_image input, vx_image output)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_image_t *in_objd = (tivx_obj_desc_image_t *)input->base.obj_desc;
+    tivx_obj_desc_image_t *out_objd = (tivx_obj_desc_image_t *)output->base.obj_desc;
+    if (vx_false_e == ownIsValidImage(input))
+    {
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if (vx_false_e == ownIsValidImage(output))
+    {
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if (TIVX_IMAGE_UNIFORM == out_objd->create_type)
+    {
+        /* If the output image cannot be uniform, as these are defined to be read-only */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((in_objd->width != out_objd->width) &&
+        ((0 != out_objd->width) ||
+         (vx_false_e == output->base.is_virtual)))
+    {
+        /* output width must be the same as input width unless output is virtual with width zero */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((in_objd->height != out_objd->height) &&
+             ((0 != out_objd->height) ||
+              (vx_false_e == output->base.is_virtual)))
+    {
+        /* output height must be the same as input height unless output is virtual with height zero */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((in_objd->format != out_objd->format) &&
+             ((VX_DF_IMAGE_VIRT != out_objd->format) ||
+              (vx_false_e == output->base.is_virtual)))
+    {
+        /* Output format must be the same as input format unless output is virtual with virtual format */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else
+    {
+        /* All OK, so we propagate metadata and valid region */
+        out_objd->color_range = in_objd->color_range;
+        out_objd->color_space = in_objd->color_space;
+        out_objd->valid_roi = in_objd->valid_roi;
+        out_objd->width = in_objd->width;
+        out_objd->height = in_objd->height;
+        out_objd->format = in_objd->format;
+    }
+    return status;
+}
+
+static vx_status isImageSwapable(vx_image input, vx_image output)
+{
+    tivx_obj_desc_image_t *in_objd = (tivx_obj_desc_image_t *)input->base.obj_desc;
+    vx_status status = isImageCopyable(input, output);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        if ((uint32_t)TIVX_IMAGE_UNIFORM == in_objd->create_type)
+        {
+            /* Neither image can be uniform */
+            status = VX_ERROR_NOT_COMPATIBLE;
+        }
+        else if ((NULL != input->parent) ||
+                 (NULL != output->parent))
+        {
+            /* Neither image may be a sub-image */
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+    return status;
+}
+
+static vx_status copyImage(vx_image input, vx_image output)
+{
+    /* Copy entire image by using the high-level functions.
+       NOTE that this will need updating if uniform images are
+       implemented in a more efficient manner!
+       The images must be copyable!
+     */
+    vx_uint32 i;
+    tivx_obj_desc_image_t *objd = (tivx_obj_desc_image_t *)input->base.obj_desc;
+    vx_rectangle_t rect = {
+        .start_x =0, .start_y = 0,
+        .end_x = objd->width,
+        .end_y = objd->height
+    };
+    vx_map_id map_id;
+    vx_imagepatch_addressing_t addr;
+    void *ptr;
+    vx_status status;
+    for (i = 0; i < objd->planes; ++i)
+    {
+        status = vxMapImagePatch(input, &rect, i, &map_id, &addr, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            status = vxCopyImagePatch(output, &rect, i, &addr, ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+        }
+        vxUnmapImagePatch(input, map_id);
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            break;
+        }
+    }
+    return status;
+}
+
+static vx_status swapImage(const vx_image input, const vx_image output)
+{
+    /* Swap images handles by using the high-level functions
+        The images must be copyable!
+    */
+    vx_uint32 planes = ((tivx_obj_desc_image_t *)input->base.obj_desc)->planes;
+    void *ptrs_in[TIVX_IMAGE_MAX_PLANES];
+    void *ptrs_out[TIVX_IMAGE_MAX_PLANES];
+    vx_status status = vxSwapImageHandle(input, NULL, ptrs_in, planes);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        status = vxSwapImageHandle(output, ptrs_in, ptrs_out, planes);
+    }
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        status = vxSwapImageHandle(input, ptrs_out, NULL, planes);
+    }
+    return status;
+}
+
+static vx_status moveImage(const vx_image input, const vx_image output)
+{
+    /* Swap images handles by using the high-level functions
+        The images must be copyable!
+    */
+    vx_uint32 planes = ((tivx_obj_desc_image_t *)input->base.obj_desc)->planes;
+    void *ptrs_in[TIVX_IMAGE_MAX_PLANES];
+    vx_status status = vxSwapImageHandle(input, NULL, ptrs_in, planes);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        status = vxSwapImageHandle(output, ptrs_in, NULL, planes);
+    }
+    return status;
+}
+
+static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
+{
+    /*
+        Decode the kernel operation - simple version!
+    */
+    vx_image input = (vx_image)params[0];
+    vx_image output = (vx_image)params[1];
+    switch (kernel_enum)
+    {
+        case VX_KERNEL_COPY: return validate_only ? isImageCopyable(input, output) : copyImage(input, output);
+        case VX_KERNEL_SWAP: return validate_only ? isImageSwapable(input, output) : swapImage(input, output);
+        case VX_KERNEL_MOVE: return validate_only ? isImageSwapable(input, output) : moveImage(input, output);
+        default:             return VX_ERROR_NOT_SUPPORTED;
+    }
+}
 static void ownInitPlane(vx_image image,
                  vx_uint32 idx,
                  vx_uint32 size_of_ch,
@@ -580,6 +744,7 @@ static vx_image ownCreateImageInt(vx_context context,
                     image->base.destructor_callback = &ownDestructImage;
                     image->base.mem_alloc_callback = &ownAllocImageBuffer;
                     image->base.release_callback = &ownReleaseReferenceBufferGeneric;
+                    image->base.kernel_callback = &imageKernelCallback;
 
                     obj_desc = (tivx_obj_desc_image_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_IMAGE, (vx_reference)image);
 
