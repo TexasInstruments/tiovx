@@ -1352,6 +1352,79 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourceSink, Arg, STREAMING_PARAMETERS)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+
+/*
+ *       n1         scalar         n2
+ * SCALAR_SOURCE2 -- SCALAR -- SCALAR_SINK2
+ *
+ *       n3         scalar         n4
+ * SCALAR_SOURCE2 -- SCALAR -- SCALAR_SINK2
+ *
+ * 2 Scalar source2 nodes connected to 2 scalar sink2 nodes
+ * Error will be shown in a print statement if the scalar sink fails
+ *
+ */
+TEST_WITH_ARG(tivxSourceNode, testNew2Source2Sink, Arg, STREAMING_PARAMETERS)
+{
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_uint8  scalar_val = 0;
+    vx_scalar scalar, scalar2;
+    uint32_t num_streams = 0;
+    vx_node n1, n2, n3, n4;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(scalar2 = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(n1 = tivxScalarSource2Node(graph, scalar), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(n3 = tivxScalarSource2Node(graph, scalar2), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(n4 = tivxScalarSink2Node(graph, scalar2), VX_TYPE_NODE);
+
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n3));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    VX_CALL(vxStartGraphStreaming(graph));
+
+    tivxTaskWaitMsecs(arg_->stream_time);
+
+    VX_CALL(vxStopGraphStreaming(graph));
+
+    VX_CALL(vxQueryGraph(graph, TIVX_GRAPH_STREAM_EXECUTIONS, &num_streams, sizeof(num_streams)));
+
+    ASSERT(num_streams != 0);
+
+    VX_CALL(vxReleaseScalar(&scalar2));
+    VX_CALL(vxReleaseScalar(&scalar));
+    VX_CALL(vxReleaseNode(&n4));
+    VX_CALL(vxReleaseNode(&n3));
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseGraph(&graph));
+    tivxTestKernelsUnLoadKernels(context);
+}
+
 TEST_WITH_ARG(tivxSourceNode, testNewSourcePipeline, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
@@ -2391,6 +2464,7 @@ TESTCASE_TESTS(tivxSourceNode,
                testSinkObjArray6,
                testSinkObjArray7,
                testNewSourceSink,
+               testNew2Source2Sink,
                testNewSourcePipeline,
                testNewSourceSinkPipeline,
                testNewSourceIntermediatePipeline,
