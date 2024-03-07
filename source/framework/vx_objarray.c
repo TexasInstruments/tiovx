@@ -37,7 +37,7 @@ static vx_status isObjectArrayCopyable(vx_object_array input, vx_object_array ou
 {
     /* Q: do we have to do anything for any images in the container?
             elsewhere in the framework this is not done, but what about the valid region?
-            it seems like an omission, but probably beyond the scope at present...*/    
+            it seems like an omission, but probably beyond the scope at present...*/
     if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
     {
          return VX_SUCCESS;

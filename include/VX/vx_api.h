@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,7 @@ extern "C" {
 /*! \brief Creates a <tt>\ref vx_context</tt>.
  * \details This creates a top-level object context for OpenVX.
  * \note This is required to do anything else.
- * \returns The reference to the implementation context <tt>\ref vx_context</tt>. Any possible errors 
+ * \returns The reference to the implementation context <tt>\ref vx_context</tt>. Any possible errors
  * preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_context
  * \post <tt>\ref vxReleaseContext</tt>
@@ -60,7 +60,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *context);
  * \param [in] reference The reference from which to extract the context.
  * \ingroup group_context
  * \return The overall context that created the particular
- * reference. Any possible errors preventing a successful creation should be 
+ * reference. Any possible errors preventing a successful creation should be
  * checked using <tt>\ref vxGetStatus</tt>.
  */
 VX_API_ENTRY vx_context VX_API_CALL vxGetContext(vx_reference reference);
@@ -97,7 +97,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetContextAttribute(vx_context context, vx_
  * \param [in] reference The reference to the object to hint at.
  * This could be <tt>\ref vx_context</tt>, <tt>\ref vx_graph</tt>, <tt>\ref vx_node</tt>, <tt>\ref vx_image</tt>, <tt>\ref vx_array</tt>, or any other reference.
  * \param [in] hint A <tt>\ref vx_hint_e</tt> \a hint to give to a \ref vx_context. This is a platform-specific optimization or implementation mechanism.
- * \param [in] data Optional vendor specific data. 
+ * \param [in] data Optional vendor specific data.
  * \param [in] data_size Size of the data structure \p data.
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No error.
@@ -110,12 +110,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxHint(vx_reference reference, vx_enum hint, 
 /*! \brief Provides a generic API to give platform-specific directives to the implementations.
  * \param [in] reference The reference to the object to set the directive on.
  * This could be <tt>\ref vx_context</tt>, <tt>\ref vx_graph</tt>, <tt>\ref vx_node</tt>, <tt>\ref vx_image</tt>, <tt>\ref vx_array</tt>, or any other reference.
- * \param [in] directive The directive to set. See <tt>\ref vx_directive_e</tt>. 
+ * \param [in] directive The directive to set. See <tt>\ref vx_directive_e</tt>.
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No error.
  * \retval VX_ERROR_INVALID_REFERENCE If context or reference is invalid.
  * \retval VX_ERROR_NOT_SUPPORTED If the directive is not supported.
- * \note The performance counter directives are only available for the reference \ref vx_context. 
+ * \note The performance counter directives are only available for the reference \ref vx_context.
  *       Error VX_ERROR_NOT_SUPPORTED is returned when used with any other reference.
  * \ingroup group_directive
  */
@@ -173,7 +173,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
  *
  * The allocated library ID is from available pool of library IDs (1..255)
  * reserved for dynamic allocation. The returned libraryId can be used by
- * user-kernel library developer to specify individual kernel enum IDs in 
+ * user-kernel library developer to specify individual kernel enum IDs in
  * a header file, shown below:
  * \code
  * #define MY_KERNEL_ID1(libraryId) (VX_KERNEL_BASE(VX_ID_USER,libraryId) + 0);
@@ -194,7 +194,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
  * \param [in] context  The reference to the implementation context.
  * \param [in] target_enum  The default immediate mode target enum to be set
  * to the <tt>\ref vx_context</tt> object. Use a <tt>\ref vx_target_e</tt>.
- * \param [in] target_string  The target name ASCII string. This contains a valid value 
+ * \param [in] target_string  The target name ASCII string. This contains a valid value
  * when target_enum is set to <tt>\ref VX_TARGET_STRING</tt>, otherwise it is ignored.
  * \ingroup group_context
  * \return A <tt>\ref vx_status_e</tt> enumeration.
@@ -228,20 +228,20 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImage(vx_context context, vx_uint32 wi
  * \param [in] img The reference to the parent image.
  * \param [in] rect The region of interest rectangle. Must contain points within
  * the parent image pixel space.
- * \returns An image reference <tt>\ref vx_image</tt> to the sub-image. Any possible errors preventing a 
+ * \returns An image reference <tt>\ref vx_image</tt> to the sub-image. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_image
  */
 VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image img, const vx_rectangle_t *rect);
 
 /*! \brief Creates a reference to an image object that has a singular,
- * uniform value in all pixels. The uniform image created is read-only. 
+ * uniform value in all pixels. The uniform image created is read-only.
  * \param [in] context The reference to the implementation context.
  * \param [in] width The image width in pixels.
  * \param [in] height The image height in pixels.
  * \param [in] color The VX_DF_IMAGE (\ref vx_df_image_e) code that represents the format of the image and the color space.
  * \param [in] value The pointer to the pixel value to which to set all pixels. See <tt>\ref vx_pixel_value_t</tt>.
- * \returns An image reference <tt>\ref vx_image</tt>. Any possible errors preventing a 
+ * \returns An image reference <tt>\ref vx_image</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * <tt>\see vxMapImagePatch</tt> to obtain direct memory access to the image data.
  * \note <tt>\ref vxMapImagePatch</tt> and <tt>\ref vxUnmapImagePatch</tt> may be called with
@@ -274,7 +274,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
  * \param [in] width The width of the image in pixels. A value of zero informs the interface that the value is unspecified.
  * \param [in] height The height of the image in pixels. A value of zero informs the interface that the value is unspecified.
  * \param [in] color The VX_DF_IMAGE (<tt>\ref vx_df_image_e</tt>) code that represents the format of the image and the color space. A value of <tt>\ref VX_DF_IMAGE_VIRT</tt> informs the interface that the format is unspecified.
- * \returns An image reference <tt>\ref vx_image</tt>. Any possible errors preventing a 
+ * \returns An image reference <tt>\ref vx_image</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \note Passing this reference to <tt>\ref vxMapImagePatch</tt> will return an error.
  * \ingroup group_image
@@ -286,51 +286,51 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateVirtualImage(vx_graph graph, vx_uint32
  * \param [in] color See the <tt>\ref vx_df_image_e</tt> codes. This mandates the
  * number of planes needed to be valid in the \a addrs and \a ptrs arrays based on the format given.
  * \param [in] addrs[] The array of image patch addressing structures that
- * define the dimension and stride of the array of pointers. See note below. 
+ * define the dimension and stride of the array of pointers. See note below.
  * \param [in] ptrs[] The array of platform-defined references to each plane. See note below.
  * \param [in] memory_type <tt>\ref vx_memory_type_e</tt>. When giving <tt>\ref VX_MEMORY_TYPE_HOST</tt>
  * the \a ptrs array is assumed to be HOST accessible pointers to memory.
- * \returns An image reference <tt>\ref vx_image</tt>. Any possible errors preventing a 
+ * \returns An image reference <tt>\ref vx_image</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
- * \note The user must call vxMapImagePatch prior to accessing the pixels of an image, even if the 
- * image was created via <tt>\ref vxCreateImageFromHandle</tt>. Reads or writes to memory referenced 
- * by ptrs[ ] after calling <tt>\ref vxCreateImageFromHandle</tt> without first calling 
+ * \note The user must call vxMapImagePatch prior to accessing the pixels of an image, even if the
+ * image was created via <tt>\ref vxCreateImageFromHandle</tt>. Reads or writes to memory referenced
+ * by ptrs[ ] after calling <tt>\ref vxCreateImageFromHandle</tt> without first calling
  * <tt>\ref vxMapImagePatch</tt> will result in undefined behavior.
- * The property of addr[] and ptrs[] arrays is kept by the caller (It means that the implementation will 
- * make an internal copy of the provided information. \a addr and \a ptrs can then simply be application's 
+ * The property of addr[] and ptrs[] arrays is kept by the caller (It means that the implementation will
+ * make an internal copy of the provided information. \a addr and \a ptrs can then simply be application's
  * local variables).
- * Only \a dim_x, \a dim_y, \a stride_x and \a stride_y fields of the <tt>\ref vx_imagepatch_addressing_t</tt> need to be 
+ * Only \a dim_x, \a dim_y, \a stride_x and \a stride_y fields of the <tt>\ref vx_imagepatch_addressing_t</tt> need to be
  * provided by the application. Other fields (\a step_x, \a step_y, \a scale_x & \a scale_y) are ignored by this function.
- * The layout of the imported memory must follow a row-major order. In other words, \a stride_x should be 
- * sufficiently large so that there is no overlap between data elements corresponding to different 
+ * The layout of the imported memory must follow a row-major order. In other words, \a stride_x should be
+ * sufficiently large so that there is no overlap between data elements corresponding to different
  * pixels, and \a stride_y >= \a stride_x * \a dim_x.
  *
  * In order to release the image back to the application we should use <tt>\ref vxSwapImageHandle</tt>.
- * 
- * Import type of the created image is available via the image attribute <tt>\ref vx_image_attribute_e</tt> parameter. 
+ *
+ * Import type of the created image is available via the image attribute <tt>\ref vx_image_attribute_e</tt> parameter.
  *
  * \ingroup group_image
  */
 VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx_df_image color, const vx_imagepatch_addressing_t addrs[], void *const ptrs[], vx_enum memory_type);
 
 /*! \brief Swaps the image handle of an image previously created from handle.
- * 
- * This function sets the new image handle (i.e. pointer to all image planes)  
+ *
+ * This function sets the new image handle (i.e. pointer to all image planes)
  * and returns the previous one.
  *
  * Once this function call has completed, the application gets back the
  * ownership of the memory referenced by the previous handle. This memory
- * contains up-to-date pixel data, and the application can safely reuse or 
+ * contains up-to-date pixel data, and the application can safely reuse or
  * release it.
  *
  * The memory referenced by the new handle must have been allocated
  * consistently with the image properties since the import type,
  * memory layout and dimensions are unchanged (see addrs, color, and
  * memory_type in <tt>\ref vxCreateImageFromHandle</tt>).
- * 
+ *
  * All images created from ROI with this image as parent or ancestor
  * will automatically use the memory referenced by the new handle.
- * 
+ *
  * The behavior of <tt>\ref vxSwapImageHandle</tt> when called from a user node is undefined.
  * \param [in] image The reference to an image created from handle
  * \param [in] new_ptrs[] pointer to a caller owned array that contains
@@ -341,16 +341,16 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
  * \arg new_ptrs is NULL: the previous image storage memory is reclaimed by the
  * caller, while no new handle is provided.
  * \param [out] prev_ptrs[] pointer to a caller owned array in which
- * the application returns the previous image handle 
+ * the application returns the previous image handle
  * \arg prev_ptrs is non NULL. prev_ptrs must have at least as many
  * elements as the number of image planes. For each i such as
  * 0 < i < nbPlanes , prev_ptrs[i] is set to the address of the previous storage
  * memory for plane i.
  * \arg prev_ptrs NULL : the previous handle is not returned.
  * \param [in] num_planes Number of planes in the image. This must be set equal to the number of planes of the input image.
- *  The number of elements in new_ptrs and prev_ptrs arrays must be equal to or greater than num_planes. 
- * If either array has more than num_planes elements, the extra elements are ignored. If either array is smaller 
- * than num_planes, the results are undefined. 
+ *  The number of elements in new_ptrs and prev_ptrs arrays must be equal to or greater than num_planes.
+ * If either array has more than num_planes elements, the extra elements are ignored. If either array is smaller
+ * than num_planes, the results are undefined.
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_ERROR_INVALID_REFERENCE image is not a valid image
  * reference.
@@ -394,13 +394,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
  *
  * An implementation may defer the actual object destruction after its total
  * reference count is zero (potentially until context destruction). Thus,
- * releasing an image created from handle 
- * (see <tt>\ref vxCreateImageFromHandle</tt>) and all others objects that may 
+ * releasing an image created from handle
+ * (see <tt>\ref vxCreateImageFromHandle</tt>) and all others objects that may
  * reference it (nodes, ROI for instance) are not sufficient to get back the
  * ownership of the memory referenced by the current image handle. The only way
  * for this is to call <tt>\ref vxSwapImageHandle</tt>) before releasing the
  * image.
- * 
+ *
  * \param [in] image The pointer to the image to release.
  * \post After returning from this function the reference is zeroed.
  * \return A <tt>\ref vx_status_e</tt> enumeration.
@@ -453,7 +453,7 @@ VX_API_ENTRY void * VX_API_CALL vxFormatImagePatchAddress2d(void *ptr, vx_uint32
  * \retval VX_ERROR_INVALID_PARAMETERS Invalid rect.
  * \retval VX_SUCCESS Valid image.
  * \note This rectangle can be passed directly to <tt>\ref vxMapImagePatch</tt> to get
- * the full valid region of the image. 
+ * the full valid region of the image.
  * \ingroup group_image
  */
 VX_API_ENTRY vx_status VX_API_CALL vxGetValidRegionImage(vx_image image, vx_rectangle_t *rect);
@@ -533,7 +533,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(vx_image image, const vx_rec
 * location pointed by (*ptr) contains the image patch data; writing into this memory
 * is allowed only for the location of pixels only and will result in a modification
 * of the written pixels in the image object once the patch is unmapped. Writing into
-* a gap between pixels (when addr->stride_x > pixel size in bytes or addr->stride_y > addr->stride_x*addr->dim_x) 
+* a gap between pixels (when addr->stride_x > pixel size in bytes or addr->stride_y > addr->stride_x*addr->dim_x)
 * is forbidden and its behavior is undefined.
 * \arg VX_WRITE_ONLY: after the function call, the memory location pointed by (*ptr)
 * contains undefined data; writing each pixel of the patch is required prior to
@@ -583,7 +583,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
  *     VX_CHANNEL_Y from YUV4, IYUV, NV12, NV21
  *     VX_CHANNEL_U from YUV4, IYUV
  *     VX_CHANNEL_V from YUV4, IYUV
- * 
+ *
  * \param [in] img          The reference to the parent image.
  * \param [in] channel      The <tt>\ref vx_channel_e</tt> channel to use.
 
@@ -595,18 +595,18 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image img, vx_enum
 
 
 /*! \brief Sets the valid rectangle for an image according to a supplied rectangle.
- * \note Setting or changing the valid region from within a user node by means other than the call-back, for 
- * example by calling <tt>\ref vxSetImageValidRectangle</tt>, might result in an incorrect valid region calculation 
+ * \note Setting or changing the valid region from within a user node by means other than the call-back, for
+ * example by calling <tt>\ref vxSetImageValidRectangle</tt>, might result in an incorrect valid region calculation
  * by the framework.
  * \param [in] image  The reference to the image.
  * \param [in] rect   The value to be set to the image valid rectangle. A NULL indicates that the valid region is the entire image.
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors.
  * \retval VX_ERROR_INVALID_REFERENCE  The image is not a <tt>\ref vx_image</tt>.
- * \retval VX_ERROR_INVALID_PARAMETERS The rect does not define a proper valid rectangle. 
+ * \retval VX_ERROR_INVALID_PARAMETERS The rect does not define a proper valid rectangle.
  * \ingroup group_image
  */
-VX_API_ENTRY vx_status VX_API_CALL vxSetImageValidRectangle(vx_image image, const vx_rectangle_t *rect); 
+VX_API_ENTRY vx_status VX_API_CALL vxSetImageValidRectangle(vx_image image, const vx_rectangle_t *rect);
 
 
 
@@ -739,7 +739,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
 
  * org.khronos.openvx.remap
 
- * org.khronos.openvx.halfscale_gaussian 
+ * org.khronos.openvx.halfscale_gaussian
 
  * org.khronos.openvx.laplacian_pyramid
 
@@ -755,7 +755,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
 
 * \param [in] context The reference to the implementation context.
  * \param [in] name The string of the name of the kernel to get.
- * \return A kernel reference or zero if an error occurred. Any possible errors 
+ * \return A kernel reference or zero if an error occurred. Any possible errors
  * preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \retval 0 The kernel name is not found in the context.
  * \ingroup group_kernel
@@ -771,7 +771,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const v
  * loaded libraries.
  * \param [in] context The reference to the implementation context.
  * \param [in] kernel A value from <tt>\ref vx_kernel_e</tt> or a vendor or client-defined value.
- * \return A <tt>\ref vx_kernel</tt>. Any possible errors 
+ * \return A <tt>\ref vx_kernel</tt>. Any possible errors
  * preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \retval 0 The kernel enumeration is not found in the context.
  * \ingroup group_kernel
@@ -819,7 +819,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel);
  * \param [in] init The kernel initialization function.
  * \param [in] deinit The kernel de-initialization function.
  * \ingroup group_user_kernels
- * \return <tt>\ref vx_kernel</tt>. Any possible errors 
+ * \return <tt>\ref vx_kernel</tt>. Any possible errors
  * preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \retval 0 Indicates that an error occurred when adding the kernel.
  * \retval * Kernel added to OpenVX.
@@ -834,7 +834,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                              vx_kernel_deinitialize_f deinit);
 
 /*! \brief This API is called after all parameters have been added to the
- * kernel and the kernel is \e ready to be used. Notice that the reference to the kernel created 
+ * kernel and the kernel is \e ready to be used. Notice that the reference to the kernel created
  * by vxAddUserKernel is still valid after the call to vxFinalizeKernel.
  * \param [in] kernel The reference to the loaded kernel from <tt>\ref vxAddUserKernel</tt>.
  * \return A <tt>\ref vx_status_e</tt> enumeration. If an error occurs, the kernel is not available
@@ -848,8 +848,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel);
 /*! \brief Allows users to set the signatures of the custom kernel.
  * \param [in] kernel The reference to the kernel added with <tt>\ref vxAddUserKernel</tt>.
  * \param [in] index The index of the parameter to add.
- * \param [in] dir The direction of the parameter. This must be either <tt>\ref VX_INPUT</tt> or 
- * <tt>\ref VX_OUTPUT</tt>. <tt>\ref VX_BIDIRECTIONAL</tt> is not supported for this function. 
+ * \param [in] dir The direction of the parameter. This must be either <tt>\ref VX_INPUT</tt> or
+ * <tt>\ref VX_OUTPUT</tt>. <tt>\ref VX_BIDIRECTIONAL</tt> is not supported for this function.
  * \param [in] data_type The type of parameter. This must be a value from <tt>\ref vx_type_e</tt>.
  * \param [in] state The state of the parameter (required or not). This must be a value from <tt>\ref vx_parameter_state_e</tt>.
  * \return A <tt>\ref vx_status_e</tt> enumerated value.
@@ -860,19 +860,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel);
  */
 VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel, vx_uint32 index, vx_enum dir, vx_enum data_type, vx_enum state);
 
-/*! \brief Removes a <tt>\ref vx_kernel</tt> from the <tt>\ref vx_context</tt> 
- * and releases it. 
+/*! \brief Removes a <tt>\ref vx_kernel</tt> from the <tt>\ref vx_context</tt>
+ * and releases it.
  * \param [in] kernel The reference to the kernel to remove. Returned from <tt>\ref vxAddUserKernel</tt>.
  * \note Any kernel enumerated in the base standard
  * cannot be removed; only kernels added through <tt>\ref vxAddUserKernel</tt> can
  * be removed.
- * \return A <tt>\ref vx_status_e</tt> enumeration. The function returns to the 
+ * \return A <tt>\ref vx_status_e</tt> enumeration. The function returns to the
  * application full control over the memory resources provided at the kernel creation time.
  * \retval VX_ERROR_INVALID_REFERENCE If an invalid kernel is passed in.
  * \retval VX_ERROR_INVALID_PARAMETER If a base kernel is passed in.
- * \retval VX_FAILURE If the application has not released all references to the kernel 
- * object OR if the application has not released all references to a node that is using 
- * this kernel OR if the application has not released all references to a graph which 
+ * \retval VX_FAILURE If the application has not released all references to the kernel
+ * object OR if the application has not released all references to a node that is using
+ * this kernel OR if the application has not released all references to a graph which
  * has nodes that is using this kernel.
  * \ingroup group_user_kernels
  */
@@ -893,7 +893,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
 /*! \brief Retrieves a <tt>\ref vx_parameter</tt> from a <tt>\ref vx_kernel</tt>.
  * \param [in] kernel The reference to the kernel.
  * \param [in] index The index of the parameter.
- * \return A <tt>\ref vx_parameter</tt>.Any possible errors 
+ * \return A <tt>\ref vx_parameter</tt>.Any possible errors
  * preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \retval 0 Either the kernel or index is invalid.
  * \retval * The parameter reference.
@@ -907,7 +907,7 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
 
 /*! \brief Creates an empty graph.
  * \param [in] context The reference to the implementation context.
- * \returns A graph reference <tt>\ref vx_graph</tt>. Any possible errors preventing a 
+ * \returns A graph reference <tt>\ref vx_graph</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_graph
  */
@@ -982,15 +982,15 @@ forced verification.
  */
 VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph);
 
-/*! \brief Waits for a specific graph to complete. If the graph has been scheduled multiple 
- * times since the last call to vxWaitGraph, then vxWaitGraph returns only when the last 
+/*! \brief Waits for a specific graph to complete. If the graph has been scheduled multiple
+ * times since the last call to vxWaitGraph, then vxWaitGraph returns only when the last
  * scheduled execution completes.
  * \param [in] graph The graph to wait on.
  * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS The graph has successfully completed execution and its outputs are the 
- * valid results of the most recent execution. 
- * \retval VX_FAILURE An error occurred or the graph was never scheduled. Output data of the 
- * graph is undefined. 
+ * \retval VX_SUCCESS The graph has successfully completed execution and its outputs are the
+ * valid results of the most recent execution.
+ * \retval VX_FAILURE An error occurred or the graph was never scheduled. Output data of the
+ * graph is undefined.
  * \pre <tt>\ref vxScheduleGraph</tt>
  * \ingroup group_graph
  */
@@ -1045,7 +1045,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
 /*! \brief Retrieves a <tt>\ref vx_parameter</tt> from a <tt>\ref vx_graph</tt>.
  * \param [in] graph The graph.
  * \param [in] index The index of the parameter.
- * \return <tt>\ref vx_parameter</tt> reference. Any possible errors 
+ * \return <tt>\ref vx_parameter</tt> reference. Any possible errors
  * preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \retval 0 if the index is out of bounds.
  * \retval * The parameter reference.
@@ -1075,9 +1075,9 @@ VX_API_ENTRY vx_bool VX_API_CALL vxIsGraphVerified(vx_graph graph);
  * to use along with the parameter setting API.
  * \param [in] graph The reference to the graph in which this node exists.
  * \param [in] kernel The kernel reference to associate with this new node.
- * \returns A node reference <tt>\ref vx_node</tt>. Any possible errors preventing a 
+ * \returns A node reference <tt>\ref vx_node</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
- * \note A call to this API sets all parameters to NULL. 
+ * \note A call to this API sets all parameters to NULL.
  * \ingroup group_adv_node
  * \post Call <tt>\ref vxSetParameterByIndex</tt> for as many parameters as needed to be set.
  */
@@ -1156,12 +1156,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxAssignNodeCallback(vx_node node, vx_nodecom
  */
 VX_API_ENTRY vx_nodecomplete_f VX_API_CALL vxRetrieveNodeCallback(vx_node node);
 
-/*! \brief Sets the node target to the provided value. A success invalidates the graph 
+/*! \brief Sets the node target to the provided value. A success invalidates the graph
  * that the node belongs to (<tt>\ref vxVerifyGraph</tt> must be called before the next execution)
  * \param [in] node  The reference to the <tt>\ref vx_node</tt> object.
  * \param [in] target_enum  The target enum to be set to the <tt>\ref vx_node</tt> object.
  * Use a <tt>\ref vx_target_e</tt>.
- * \param [in] target_string  The target name ASCII string. This contains a valid value 
+ * \param [in] target_string  The target name ASCII string. This contains a valid value
  * when target_enum is set to <tt>\ref VX_TARGET_STRING</tt>, otherwise it is ignored.
  * \ingroup group_node
  * \return A <tt>\ref vx_status_e</tt> enumeration.
@@ -1173,16 +1173,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
 
 /*! \brief Creates replicas of the same node first_node to process a set of objects
  * stored in <tt>\ref vx_pyramid</tt> or <tt>\ref vx_object_array</tt>.
- * first_node needs to have as parameter levels 0 of a <tt>\ref vx_pyramid</tt> or the index 0 of a <tt>\ref vx_object_array</tt>. 
- * Replica nodes are not accessible by the application through any means. An application request for removal of 
- * first_node from the graph will result in removal of all replicas. Any change of parameter or attribute of 
- * first_node will be propagated to the replicas. <tt>\ref vxVerifyGraph</tt> shall enforce consistency of parameters and attributes 
+ * first_node needs to have as parameter levels 0 of a <tt>\ref vx_pyramid</tt> or the index 0 of a <tt>\ref vx_object_array</tt>.
+ * Replica nodes are not accessible by the application through any means. An application request for removal of
+ * first_node from the graph will result in removal of all replicas. Any change of parameter or attribute of
+ * first_node will be propagated to the replicas. <tt>\ref vxVerifyGraph</tt> shall enforce consistency of parameters and attributes
  * in the replicas.
- * \param [in] graph The reference to the graph. 
+ * \param [in] graph The reference to the graph.
  * \param [in] first_node The reference to the node in the graph that will be replicated.
- * \param [in] replicate an array of size equal to the number of node parameters, vx_true_e for the parameters 
- * that should be iterated over (should be a reference to a vx_pyramid or a vx_object_array), 
- * vx_false_e for the parameters that should be the same across replicated nodes and for optional 
+ * \param [in] replicate an array of size equal to the number of node parameters, vx_true_e for the parameters
+ * that should be iterated over (should be a reference to a vx_pyramid or a vx_object_array),
+ * vx_false_e for the parameters that should be the same across replicated nodes and for optional
  * parameters that are not used. Should be vx_true_e for all output and bidirectional parameters.
  * \param [in] number_of_parameters number of elements in the replicate array
  * \return A <tt>\ref vx_status_e</tt> enumeration.
@@ -1201,7 +1201,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
 /*! \brief Retrieves a <tt>\ref vx_parameter</tt> from a <tt>\ref vx_node</tt>.
  * \param [in] node The node from which to extract the parameter.
  * \param [in] index The index of the parameter to which to get a reference.
- * \return <tt>\ref vx_parameter</tt>. Any possible errors 
+ * \return <tt>\ref vx_parameter</tt>. Any possible errors
  * preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_parameter
  */
@@ -1260,7 +1260,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter param, vx_enum 
  * <tt>\ref VX_TYPE_INVALID</tt> and less than <tt>\ref VX_TYPE_SCALAR_MAX</tt>.
  * \param [in] ptr The pointer to the initial value of the scalar.
  * \ingroup group_scalar
- * \returns A scaler reference <tt>\ref vx_scalar</tt>. Any possible errors preventing a 
+ * \returns A scaler reference <tt>\ref vx_scalar</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  */
 VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum data_type, const void *ptr);
@@ -1323,7 +1323,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyScalar(vx_scalar scalar, void *user_ptr
 VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum attribute, void *ptr, vx_size size);
 
 /*! \brief Releases a reference. The reference may potentially refer to multiple OpenVX objects of different types.
- * This function can be used instead of calling a specific release function for each individual object type 
+ * This function can be used instead of calling a specific release function for each individual object type
  * (e.g. vxRelease<object>). The object will not be destroyed until its total reference count is zero.
  * \note After returning from this function the reference is zeroed.
  * \param [in] ref_ptr The pointer to the reference of the object to release.
@@ -1353,7 +1353,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRetainReference(vx_reference ref);
  *
  * This function is used to associate a name to a referenced object. This name
  * can be used by the OpenVX implementation in log messages and any
- * other reporting mechanisms.  
+ * other reporting mechanisms.
  *
  * The OpenVX implementation will not check if the name is unique in
  * the reference scope (context or graph). Several references can then
@@ -1398,15 +1398,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay, vx_enum attribut
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseDelay(vx_delay *delay);
 
 /*! \brief Creates a Delay object.
- * \details This function uses a subset of the attributes defining the metadata of 
- * the exemplar, ignoring the object. It does not alter the exemplar or keep or release 
+ * \details This function uses a subset of the attributes defining the metadata of
+ * the exemplar, ignoring the object. It does not alter the exemplar or keep or release
  * the reference to the exemplar. For the definition of supported attributes
  * see \ref vxSetMetaFormatAttribute.
- * 
+ *
  * \param [in] context The reference to the system context.
  * \param [in] exemplar The exemplar object.
  * \param [in] slots The number of reference in the delay.
- * \returns A delay reference <tt>\ref vx_delay</tt>. Any possible errors preventing a 
+ * \returns A delay reference <tt>\ref vx_delay</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_delay
  */
@@ -1418,13 +1418,13 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
  * \param [in] delay The reference to the delay object.
  * \param [in] index An index into the delay from which to extract the
  * reference.
- * \return <tt>\ref vx_reference</tt>. Any possible errors 
+ * \return <tt>\ref vx_reference</tt>. Any possible errors
  * preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \note The delay index is in the range \f$ [-count+1,0] \f$. 0 is always the
  * \e current object.
  * \ingroup group_delay
  * \note A reference from a delay object must not be given to its associated
- * release API (e.g. <tt>\ref vxReleaseImage</tt>) unless <tt>\ref vxRetainReference</tt> is used. 
+ * release API (e.g. <tt>\ref vxReleaseImage</tt>) unless <tt>\ref vxRetainReference</tt> is used.
  */
 VX_API_ENTRY vx_reference VX_API_CALL vxGetReferenceFromDelay(vx_delay delay, vx_int32 index);
 
@@ -1444,7 +1444,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay);
  *
  * This function registers a delay object to be auto-aged by the graph.
  * This delay object will be automatically aged after each successful completion of
- * this graph. Aging of a delay object cannot be called during graph execution. 
+ * this graph. Aging of a delay object cannot be called during graph execution.
  * A graph abandoned due to a node callback will trigger an auto-aging.
  *
  * If a delay is registered for auto-aging multiple times in a same graph,
@@ -1489,14 +1489,14 @@ VX_API_ENTRY void VX_API_CALL vxRegisterLogCallback(vx_context context, vx_log_c
  LUT
  =============================================================================*/
 
-/*! \brief Creates LUT object of a given type. The value of <tt>\ref VX_LUT_OFFSET</tt> is equal to 0 
+/*! \brief Creates LUT object of a given type. The value of <tt>\ref VX_LUT_OFFSET</tt> is equal to 0
  * for data_type = <tt>\ref VX_TYPE_UINT8</tt>, and (vx_uint32)(count/2) for <tt>\ref VX_TYPE_INT16</tt>.
  * \param [in] context The reference to the context.
  * \param [in] data_type The type of data stored in the LUT.
  * \param [in] count The number of entries desired.
  * \if OPENVX_STRICT_1_0
- * \note For OpenVX 1.0, data_type can only be \ref VX_TYPE_UINT8 or \ref VX_TYPE_INT16. If data_type 
- * is \ref VX_TYPE_UINT8, count should be not greater than 256. If data_type is \ref VX_TYPE_INT16, 
+ * \note For OpenVX 1.0, data_type can only be \ref VX_TYPE_UINT8 or \ref VX_TYPE_INT16. If data_type
+ * is \ref VX_TYPE_UINT8, count should be not greater than 256. If data_type is \ref VX_TYPE_INT16,
  * count should not be greater than 65536.
  * \endif
  * \returns An LUT reference <tt>\ref vx_lut</tt>. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
@@ -1609,13 +1609,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id);
  DISTRIBUTION
  =============================================================================*/
 
-/*! \brief Creates a reference to a 1D Distribution of a consecutive interval [offset, offset + range - 1] 
+/*! \brief Creates a reference to a 1D Distribution of a consecutive interval [offset, offset + range - 1]
  * defined by a start offset and valid range, divided equally into numBins parts.
  * \param [in] context The reference to the overall context.
  * \param [in] numBins The number of bins in the distribution.
  * \param [in] offset The start offset into the range value that marks the begining of the 1D Distribution.
- * \param [in] range  The total number of the consecutive values of the distribution interval. 
- * \returns A distribution reference <tt>\ref vx_distribution</tt>. Any possible errors preventing a 
+ * \param [in] range  The total number of the consecutive values of the distribution interval.
+ * \returns A distribution reference <tt>\ref vx_distribution</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_distribution
  */
@@ -1731,7 +1731,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapDistribution(vx_distribution distribut
  * \param [in] c The reference to the overall context.
  * \param [in] thresh_type The type of threshold to create.
  * \param [in] data_type The data type of the threshold's value(s).
- * \returns An threshold reference <tt>\ref vx_threshold</tt>. Any possible errors preventing a 
+ * \returns An threshold reference <tt>\ref vx_threshold</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_threshold
  */
@@ -1777,7 +1777,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryThreshold(vx_threshold thresh, vx_enum
  * \param [in] data_type The unit format of the matrix. <tt>\ref VX_TYPE_UINT8</tt> or <tt>\ref VX_TYPE_INT32</tt> or <tt>\ref VX_TYPE_FLOAT32</tt>.
  * \param [in] columns The first dimensionality.
  * \param [in] rows The second dimensionality.
- * \returns An matrix reference <tt>\ref vx_matrix</tt>. Any possible errors preventing a 
+ * \returns An matrix reference <tt>\ref vx_matrix</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_matrix
  */
@@ -1832,26 +1832,26 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyMatrix(vx_matrix matrix, void *user_ptr
 
 /*! \brief Creates a reference to a matrix object from a boolean pattern.
  *
- * The matrix created by this function is of type <tt>\ref vx_uint8</tt>, with the value 0 representing False, 
+ * The matrix created by this function is of type <tt>\ref vx_uint8</tt>, with the value 0 representing False,
  * and the value 255 representing True. It supports patterns described below. See <tt>\ref vx_pattern_e</tt>.
- * - VX_PATTERN_BOX is a matrix with dimensions equal to the given number of rows and columns, and all cells equal to 255.  
+ * - VX_PATTERN_BOX is a matrix with dimensions equal to the given number of rows and columns, and all cells equal to 255.
  *   Dimensions of 3x3 and 5x5 must be supported.
- * - VX_PATTERN_CROSS is a matrix with dimensions equal to the given number of rows and columns, which both must be odd numbers.  
- *   All cells in the center row and center column are equal to 255, and the rest are equal to zero.  
+ * - VX_PATTERN_CROSS is a matrix with dimensions equal to the given number of rows and columns, which both must be odd numbers.
+ *   All cells in the center row and center column are equal to 255, and the rest are equal to zero.
  *   Dimensions of 3x3 and 5x5 must be supported.
  * - VX_PATTERN_DISK is an RxC matrix, where R and C are odd and cell (c, r) is 255 if: \n
  *   (r-R/2 + 0.5)^2 / (R/2)^2 + (c-C/2 + 0.5)^2/(C/2)^2 is less than or equal to 1,\n and 0 otherwise.
  * - VX_PATTERN_OTHER is any other pattern than the above (matrix created is still binary, with a value of 0 or 255).
- * 
- * If the matrix was created via <tt>\ref vxCreateMatrixFromPattern</tt>, this attribute must be set to the 
+ *
+ * If the matrix was created via <tt>\ref vxCreateMatrixFromPattern</tt>, this attribute must be set to the
  * appropriate pattern enum. Otherwise the attribute must be set to VX_PATTERN_OTHER.
  * The vx_matrix objects returned by this function are read-only. The behavior when attempting to modify such a matrix is undefined.
  *
  * \param [in] context The reference to the overall context.
- * \param [in] pattern The pattern of the matrix. See <tt>\ref VX_MATRIX_PATTERN</tt>. 
+ * \param [in] pattern The pattern of the matrix. See <tt>\ref VX_MATRIX_PATTERN</tt>.
  * \param [in] columns The first dimensionality.
  * \param [in] rows The second dimensionality.
- * \returns An matrix reference <tt>\ref vx_matrix</tt> of type <tt>\ref vx_uint8</tt>. Any possible errors preventing a 
+ * \returns An matrix reference <tt>\ref vx_matrix</tt> of type <tt>\ref vx_uint8</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_matrix
  */
@@ -1869,7 +1869,7 @@ VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrixFromPattern(vx_context context,
  * \param [in] rows The rows dimension of the convolution.
  * Must be odd and greater than or equal to 3 and less than the value returned
  * from <tt>\ref VX_CONTEXT_CONVOLUTION_MAX_DIMENSION</tt>.
- * \returns A convolution reference <tt>\ref vx_convolution</tt>. Any possible errors preventing a 
+ * \returns A convolution reference <tt>\ref vx_convolution</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_convolution
  */
@@ -1947,7 +1947,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyConvolutionCoefficients(vx_convolution 
  * \param [in] width The width of the 0th level image in pixels.
  * \param [in] height The height of the 0th level image in pixels.
  * \param [in] format The format of all images in the pyramid. NV12, NV21, IYUV, UYVY and YUYV formats are not supported.
- * \returns A pyramid reference <tt>\ref vx_pyramid</tt> to the sub-image. Any possible errors preventing a 
+ * \returns A pyramid reference <tt>\ref vx_pyramid</tt> to the sub-image. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_pyramid
  */
@@ -1975,7 +1975,7 @@ VX_API_ENTRY vx_pyramid VX_API_CALL vxCreatePyramid(vx_context context, vx_size 
  * \param [in] width The width of the 0th level image in pixels. This may be set to zero to indicate to the interface that the value is unspecified.
  * \param [in] height The height of the 0th level image in pixels. This may be set to zero to indicate to the interface that the value is unspecified.
  * \param [in] format The format of all images in the pyramid. This may be set to <tt>\ref VX_DF_IMAGE_VIRT</tt> to indicate that the format is unspecified.
- * \returns A pyramid reference <tt>\ref vx_pyramid</tt>. Any possible errors preventing a 
+ * \returns A pyramid reference <tt>\ref vx_pyramid</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \note Images extracted with <tt>\ref vxGetPyramidLevel</tt> behave as Virtual Images and
  * cause <tt>\ref vxMapImagePatch</tt> to return errors.
@@ -2006,11 +2006,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleasePyramid(vx_pyramid *pyr);
 VX_API_ENTRY vx_status VX_API_CALL vxQueryPyramid(vx_pyramid pyr, vx_enum attribute, void *ptr, vx_size size);
 
 /*! \brief Retrieves a level of the pyramid as a <tt>\ref vx_image</tt>, which can be used
- * elsewhere in OpenVX. A call to vxReleaseImage is necessary to release an image for each 
+ * elsewhere in OpenVX. A call to vxReleaseImage is necessary to release an image for each
  * call of vxGetPyramidLevel.
  * \param [in] pyr The pyramid object.
  * \param [in] index The index of the level, such that index is less than levels.
- * \return A <tt>\ref vx_image</tt> reference. Any possible errors 
+ * \return A <tt>\ref vx_image</tt> reference. Any possible errors
  * preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \retval 0 Indicates that the index or the object is invalid.
  * \ingroup group_pyramid
@@ -2028,7 +2028,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid pyr, vx_uint32 in
  * \param [in] dst_width Width of the destination image in pixels.
  * \param [in] dst_height Height of the destination image in pixels.
  * \ingroup group_remap
- * \returns A remap reference <tt>\ref vx_remap</tt>. Any possible errors preventing a 
+ * \returns A remap reference <tt>\ref vx_remap</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  */
 VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
@@ -2094,9 +2094,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap r, vx_enum attribute, v
  * User must specify the Array capacity (i.e., the maximal number of items that the array can hold).
  *
  * \param [in] context      The reference to the overall Context.
- * \param [in] item_type    The type of objects to hold. Types allowed are: plain scalar types (i.e. 
+ * \param [in] item_type    The type of objects to hold. Types allowed are: plain scalar types (i.e.
  *                          type with enum below <tt>\ref VX_TYPE_SCALAR_MAX</tt>), <tt>\ref VX_TYPE_RECTANGLE</tt>,
- *                          <tt>\ref VX_TYPE_KEYPOINT</tt>, <tt>\ref VX_TYPE_COORDINATES2D</tt>, <tt>\ref VX_TYPE_COORDINATES3D</tt> and 
+ *                          <tt>\ref VX_TYPE_KEYPOINT</tt>, <tt>\ref VX_TYPE_COORDINATES2D</tt>, <tt>\ref VX_TYPE_COORDINATES3D</tt> and
  *                          user registered structures. Use:
  *                          \arg <tt>\ref VX_TYPE_RECTANGLE</tt> for <tt>\ref vx_rectangle_t</tt>.
  *                          \arg <tt>\ref VX_TYPE_KEYPOINT</tt> for <tt>\ref vx_keypoint_t</tt>.
@@ -2105,7 +2105,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap r, vx_enum attribute, v
  *                          \arg <tt>\ref vx_enum</tt> returned from <tt>\ref vxRegisterUserStruct</tt>.
  * \param [in] capacity     The maximal number of items that the array can hold.
  *
- * \returns An array reference <tt>\ref vx_array</tt>. Any possible errors preventing a 
+ * \returns An array reference <tt>\ref vx_array</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  *
  * \ingroup group_array
@@ -2130,15 +2130,15 @@ VX_API_ENTRY vx_array VX_API_CALL vxCreateArray(vx_context context, vx_enum item
  * \endcode
  *
  * \param [in] graph        The reference to the parent graph.
- * \param [in] item_type    The type of objects to hold. Types allowed are: plain scalar types (i.e. 
+ * \param [in] item_type    The type of objects to hold. Types allowed are: plain scalar types (i.e.
  *                          type with enum below <tt>\ref VX_TYPE_SCALAR_MAX</tt>), <tt>\ref VX_TYPE_RECTANGLE</tt>,
- *                          <tt>\ref VX_TYPE_KEYPOINT</tt>, <tt>\ref VX_TYPE_COORDINATES2D</tt>, <tt>\ref VX_TYPE_COORDINATES3D</tt> and 
- *                          user registered structures. 
+ *                          <tt>\ref VX_TYPE_KEYPOINT</tt>, <tt>\ref VX_TYPE_COORDINATES2D</tt>, <tt>\ref VX_TYPE_COORDINATES3D</tt> and
+ *                          user registered structures.
  *                          This may to set to zero to indicate an unspecified item type.
  * \param [in] capacity     The maximal number of items that the array can hold.
  *                          This may be to set to zero to indicate an unspecified capacity.
  * \see vxCreateArray for a type list.
- * \returns A array reference <tt>\ref vx_array</tt>. Any possible errors preventing a 
+ * \returns A array reference <tt>\ref vx_array</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  *
  * \ingroup group_array
@@ -2314,13 +2314,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapArrayRange(vx_array array, vx_size range
 * \ingroup group_array
 * \pre <tt>\ref vxMapArrayRange</tt> returning the same map_id value
 */
-VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array array, vx_map_id map_id); 
+VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array array, vx_map_id map_id);
 
 /*!
  * \brief Accesses a specific indexed element in an array.
  * \param [in] ptr The base pointer for the array range.
  * \param [in] index The index of the element, not byte, to access.
- * \param [in] stride The 'number of bytes' between the beginning of two consecutive elements. 
+ * \param [in] stride The 'number of bytes' between the beginning of two consecutive elements.
  * \ingroup group_array
  */
 #define vxFormatArrayPointer(ptr, index, stride) \
@@ -2331,7 +2331,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array array, vx_map_id m
  * \param [in] type The type of the item to access.
  * \param [in] ptr The base pointer for the array range.
  * \param [in] index The index of the element, not byte, to access.
- * \param [in] stride The 'number of bytes' between the beginning of two consecutive elements. 
+ * \param [in] stride The 'number of bytes' between the beginning of two consecutive elements.
  * \ingroup group_array
  */
 #define vxArrayItem(type, ptr, index, stride) \
@@ -2344,17 +2344,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array array, vx_map_id m
 /*!
  * \brief Creates a reference to an ObjectArray of count objects.
  *
- * It uses the metadata of the exemplar to determine the object attributes, 
- * ignoring the object data. It does not alter the exemplar or keep or release 
- * the reference to the exemplar. For the definition of supported attributes see 
- * <tt>\ref vxSetMetaFormatAttribute</tt>. In case the exemplar is a virtual object 
- * it must be of immutable metadata, thus it is not allowed to be dimensionless or formatless. 
- * 
- * \param [in] context      The reference to the overall Context.
- * \param [in] exemplar     The exemplar object that defines the metadata of the created objects in the ObjectArray. 
- * \param [in] count        Number of Objects to create in the ObjectArray.  
+ * It uses the metadata of the exemplar to determine the object attributes,
+ * ignoring the object data. It does not alter the exemplar or keep or release
+ * the reference to the exemplar. For the definition of supported attributes see
+ * <tt>\ref vxSetMetaFormatAttribute</tt>. In case the exemplar is a virtual object
+ * it must be of immutable metadata, thus it is not allowed to be dimensionless or formatless.
  *
- * \returns An ObjectArray reference <tt>\ref vx_object_array</tt>. Any possible errors preventing a 
+ * \param [in] context      The reference to the overall Context.
+ * \param [in] exemplar     The exemplar object that defines the metadata of the created objects in the ObjectArray.
+ * \param [in] count        Number of Objects to create in the ObjectArray.
+ *
+ * \returns An ObjectArray reference <tt>\ref vx_object_array</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>. Data objects are not initialized by this function.
  *
  * \ingroup group_object_array
@@ -2364,38 +2364,38 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(vx_context context,
 /*!
  * \brief Creates an opaque reference to a virtual ObjectArray with no direct user access.
  *
- * This function creates an ObjectArray of count objects with similar behavior as 
- * <tt>\ref vxCreateObjectArray</tt>. The only difference is that the objects that are 
+ * This function creates an ObjectArray of count objects with similar behavior as
+ * <tt>\ref vxCreateObjectArray</tt>. The only difference is that the objects that are
  * created are virtual in the given graph.
  *
- * \param [in] graph      Reference to the graph where to create the virtual ObjectArray.  
- * \param [in] exemplar   The exemplar object that defines the type of object in the ObjectArray. 
- *                        Only exemplar type of <tt>\ref vx_image</tt>, <tt>\ref vx_array</tt> and 
- *                        <tt>\ref vx_pyramid</tt> are allowed.  
- * \param [in] count      Number of Objects to create in the ObjectArray. 
- * \returns               A ObjectArray reference <tt>\ref vx_object_array</tt>. Any possible errors preventing a 
+ * \param [in] graph      Reference to the graph where to create the virtual ObjectArray.
+ * \param [in] exemplar   The exemplar object that defines the type of object in the ObjectArray.
+ *                        Only exemplar type of <tt>\ref vx_image</tt>, <tt>\ref vx_array</tt> and
+ *                        <tt>\ref vx_pyramid</tt> are allowed.
+ * \param [in] count      Number of Objects to create in the ObjectArray.
+ * \returns               A ObjectArray reference <tt>\ref vx_object_array</tt>. Any possible errors preventing a
  *                        successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_object_array
  */
 VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(vx_graph graph, vx_reference exemplar, vx_size count);
 
 /*!
- * \brief                 Retrieves the reference to the OpenVX Object in location index of the ObjectArray. 
- *                
+ * \brief                 Retrieves the reference to the OpenVX Object in location index of the ObjectArray.
+ *
  * This is a vx_reference, which can be used elsewhere in OpenVX. A call to vxRelease<Object> or <tt>\ref vxReleaseReference</tt>
- * is necessary to release the Object for each call to this function. 
+ * is necessary to release the Object for each call to this function.
  *
  * \param [in] arr       The ObjectArray.
  * \param [in] index     The index of the object in the ObjectArray.
- * \return A reference to an OpenVX data object. 
+ * \return A reference to an OpenVX data object.
  * \ingroup group_object_array
  */
 VX_API_ENTRY vx_reference VX_API_CALL vxGetObjectArrayItem(vx_object_array arr, vx_uint32 index);
 
 /*!
  * \brief Releases a reference of an ObjectArray object.
- * 
- * The object may not be garbage collected until its total reference and its contained objects 
+ *
+ * The object may not be garbage collected until its total reference and its contained objects
  * count is zero. After returning from this function the reference is zeroed/cleared.
  *
  * \param [in] arr          The pointer to the ObjectArray to release.
@@ -2407,7 +2407,7 @@ VX_API_ENTRY vx_reference VX_API_CALL vxGetObjectArrayItem(vx_object_array arr, 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseObjectArray(vx_object_array *arr);
 
 /*!
- * \brief Queries an atribute from the ObjectArray. 
+ * \brief Queries an atribute from the ObjectArray.
  *
  * \param [in] arr          The reference to the ObjectArray.
  * \param [in] attribute    The attribute to query. Use a <tt>\ref vx_object_array_attribute_e</tt>.
@@ -2429,8 +2429,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryObjectArray(vx_object_array arr, vx_en
  =============================================================================*/
 
 /*! \brief This function allows a user to set the attributes of a <tt>\ref vx_meta_format</tt> object in a kernel output validator.
- * 
- * The \ref vx_meta_format object contains two types of information : data object meta data and 
+ *
+ * The \ref vx_meta_format object contains two types of information : data object meta data and
  * some specific information that defines how the valid region of an image changes
  *
  * The meta data attributes that can be set are identified by this list:
@@ -2446,7 +2446,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryObjectArray(vx_object_array arr, vx_en
  * - \ref VX_VALID_RECT_CALLBACK
  * \note For vx_image, a specific attribute can be used to specify the valid region evolution. This information is not a meta data.
  *
- * \param [in] meta The reference to the \ref vx_meta_format struct to set 
+ * \param [in] meta The reference to the \ref vx_meta_format struct to set
  * \param [in] attribute Use the subset of data object attributes that define the meta data of this object or attributes from <tt>\ref vx_meta_format</tt>.
  * \param [in] ptr The input pointer of the value to set on the meta format object.
  * \param [in] size The size in bytes of the object to which \a ptr points.

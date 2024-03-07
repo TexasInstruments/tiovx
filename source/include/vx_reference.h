@@ -49,6 +49,12 @@ typedef enum _tivx_reftype_e {
  */
 typedef vx_status (*tivx_reference_callback_f)(vx_reference ref);
 
+/*! \brief Callback type used to register destructor
+ *    callbacks from object derived from references
+ * \ingroup group_vx_reference
+ */
+typedef vx_status (* VX_API_CALL tivx_reference_destructor_callback_f)(vx_reference *ref);
+
 /*! \brief Callback type used to register release
  *    callbacks from object derived from references
  * \ingroup group_vx_reference

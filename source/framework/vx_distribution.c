@@ -62,7 +62,6 @@ static vx_distribution ownCreateDistribution(vx_reference scope, vx_size num_bin
     tivx_obj_desc_distribution_t *obj_desc = NULL;
     vx_context context;
 	vx_status status = (vx_status)VX_SUCCESS;
-
     if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         context = vxGetContext(scope);

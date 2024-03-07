@@ -223,8 +223,8 @@ static vx_scalar ownCreateScalar(vx_reference scope, vx_enum data_type, const vo
                 /* assign refernce type specific callback's */
                 scalar->base.destructor_callback = &ownDestructReferenceGeneric;
                 scalar->base.release_callback = &ownReleaseReferenceBufferGeneric;
-
-                obj_desc = (tivx_obj_desc_scalar_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SCALAR, vxCastRefFromScalar(scalar));
+				scalar->base.kernel_callback = &scalarKernelCallback;
+                obj_desc = (tivx_obj_desc_scalar_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SCALAR, (vx_reference)scalar);
                 if(obj_desc==NULL)
                 {
                     status = vxReleaseScalar(&scalar);
