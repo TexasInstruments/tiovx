@@ -281,12 +281,12 @@ static vx_bool ownCopyMoveReplaceOutputCompatible(vx_reference new_reference, vx
             {
                 /* can't replace sub images or uniform images*/
                 tivx_obj_desc_image_t *obj_desc = (tivx_obj_desc_image_t *)old_reference->obj_desc;
-                break;
-            }
-            case VX_TYPE_TENSOR:
-            {
-                /* can't replace sub-tensors */
-                tivx_obj_desc_tensor_t *obj_desc = ( tivx_obj_desc_tensor_t *)old_reference->obj_desc;
+                if (TIVX_IMAGE_FROM_ROI == obj_desc->create_type ||
+                    TIVX_IMAGE_FROM_CHANNEL == obj_desc->create_type ||
+                    TIVX_IMAGE_UNIFORM == obj_desc->create_type)
+                {
+                    ret = vx_false_e;
+                }                                    
                 break;
             }
             default:
