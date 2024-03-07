@@ -214,7 +214,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                         unsigned long   micro;
 
                         /* timeout is expected to be in milli-sec. */
-                        micro = tv.tv_usec + ((uint64_t)timeout * 1000);
+                        micro = (uint64_t)tv.tv_usec + ((uint64_t)timeout * 1000U);
                         sec   = (uint32_t)tv.tv_sec;
 
                         if (micro >= 1000000LLU)
