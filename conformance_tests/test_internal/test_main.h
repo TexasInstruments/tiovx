@@ -31,4 +31,5 @@ TESTCASE(tivxInternalParameter)
 TESTCASE(tivxInternalTensor)
 TESTCASE(tivxInternalGraph)
 TESTCASE(tivxInternalGraphStream)
+TESTCASE(tivxInternalNode)
 #endif
