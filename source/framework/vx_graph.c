@@ -27,7 +27,19 @@ static vx_status ownDestructGraph(vx_reference ref)
     vx_status status1 = (vx_status)VX_SUCCESS;
     vx_graph graph = (vx_graph)ref;
 
-    ownGraphFreeStreaming(graph);
+    if ((vx_bool)vx_true_e == graph->is_streaming_alloc)
+    {
+        status1 = ownGraphFreeStreaming(graph);
+        if((vx_status)VX_SUCCESS != status1)
+        {
+            status = status1;
+            VX_PRINT(VX_ZONE_ERROR,"Failed to free graph streaming objects\n");
+        }
+        else
+        {
+            graph->is_streaming_alloc = (vx_bool)vx_false_e;
+        }
+    }
 
     {
         uint32_t i;
@@ -365,6 +377,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->graph_completed_app_value = 0;
             graph->is_streaming   = (vx_bool)vx_false_e;
             graph->is_streaming_enabled   = (vx_bool)vx_false_e;
+            graph->is_streaming_alloc = (vx_bool)vx_false_e;
             graph->trigger_node_set   = (vx_bool)vx_false_e;
             graph->is_enable_send_complete_event = (vx_bool)vx_false_e;
             graph->stop_done = NULL;

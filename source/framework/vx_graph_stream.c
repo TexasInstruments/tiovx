@@ -282,7 +282,8 @@ VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph)
 
     if(ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
-        if ((vx_bool)vx_true_e == graph->is_streaming_enabled)
+        if ( ((vx_bool)vx_true_e == graph->is_streaming_enabled) &&
+             ((vx_bool)vx_true_e == graph->is_streaming_alloc) )
         {
             if ((vx_bool)vx_false_e == graph->is_streaming)
             {
@@ -304,7 +305,7 @@ VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph)
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "streaming has not been enabled. Please enable streaming prior to verifying graph\n");
-            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
     else
@@ -346,7 +347,7 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
         }
         else
         {
-            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Streaming has not been started\n");
         }
     }
@@ -505,6 +506,11 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                             {
                                 VX_PRINT(VX_ZONE_ERROR, "streaming task could not be created\n");
                             }
+                            else
+                            {
+                                /* Everything necessary for streaming has been created */
+                                graph->is_streaming_alloc = (vx_bool)vx_true_e;
+                            }
                         }
                         else
                         {
@@ -560,67 +566,64 @@ vx_status ownGraphFreeStreaming(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
     vx_status tmp_status = (vx_status)VX_SUCCESS;
 
-    if (graph->is_streaming_enabled != 0)
+    if (NULL != graph->delete_done)
     {
-        if (NULL != graph->delete_done)
-        {
-            /* Clear event and send user event */
-            tmp_status = tivxEventClear(graph->delete_done);
-            if (tmp_status != (vx_status)VX_SUCCESS)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "tivxEventClear() failed.\n");
-                status = tmp_status;
-            }
-        }
-
-        tmp_status = tivxSendUserGraphEvent(graph, DELETE, NULL);
+        /* Clear event and send user event */
+        tmp_status = tivxEventClear(graph->delete_done);
         if (tmp_status != (vx_status)VX_SUCCESS)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+            VX_PRINT(VX_ZONE_ERROR, "tivxEventClear() failed.\n");
             status = tmp_status;
         }
-
-        if (NULL != graph->delete_done)
-        {
-            tmp_status = tivxEventWait(graph->delete_done, graph->timeout_val);
-            if (tmp_status != (vx_status)VX_SUCCESS)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
-                status = tmp_status;
-            }
-        }
-
-        (void)tivxTaskDelete(&graph->streaming_task_handle);
-
-        tmp_status = ownEventQueueDelete(&graph->event_queue);
-        if (tmp_status != (vx_status)VX_SUCCESS)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Failed to delete event queue.\n");
-            status = tmp_status;
-        }
-
-        if (NULL != graph->stop_done)
-        {
-            tmp_status = tivxEventDelete(&graph->stop_done);
-            if (tmp_status != (vx_status)VX_SUCCESS)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
-                status = tmp_status;
-            }
-        }
-
-
-        if (NULL != graph->delete_done)
-        {
-            tmp_status = tivxEventDelete(&graph->delete_done);
-            if (tmp_status != (vx_status)VX_SUCCESS)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
-                status = tmp_status;
-            }
-        }
-
     }
+
+    tmp_status = tivxSendUserGraphEvent(graph, DELETE, NULL);
+    if (tmp_status != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+        status = tmp_status;
+    }
+
+    if (NULL != graph->delete_done)
+    {
+        tmp_status = tivxEventWait(graph->delete_done, graph->timeout_val);
+        if (tmp_status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
+            status = tmp_status;
+        }
+    }
+
+    (void)tivxTaskDelete(&graph->streaming_task_handle);
+
+    tmp_status = ownEventQueueDelete(&graph->event_queue);
+    if (tmp_status != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to delete event queue.\n");
+        status = tmp_status;
+    }
+
+    if (NULL != graph->stop_done)
+    {
+        tmp_status = tivxEventDelete(&graph->stop_done);
+        if (tmp_status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
+            status = tmp_status;
+        }
+    }
+
+
+    if (NULL != graph->delete_done)
+    {
+        tmp_status = tivxEventDelete(&graph->delete_done);
+        if (tmp_status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
+            status = tmp_status;
+        }
+    }
+
     return status;
 }
 

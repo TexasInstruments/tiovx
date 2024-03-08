@@ -2125,7 +2125,7 @@ TEST(tivxGraphStreaming, negativeTestStartGraphStreaming)
     ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, kernel_id), VX_TYPE_KERNEL);
     ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphStreaming(graph, node));
-    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxStartGraphStreaming(graph));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxStartGraphStreaming(graph));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseKernel(&kernel));
@@ -2147,7 +2147,7 @@ TEST(tivxGraphStreaming, negativeTestStopGraphStreaming)
     ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, kernel_id), VX_TYPE_KERNEL);
     ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphStreaming(graph, node));
-    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxStartGraphStreaming(graph));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxStartGraphStreaming(graph));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxStopGraphStreaming(graph));
 
     VX_CALL(vxReleaseNode(&node));
