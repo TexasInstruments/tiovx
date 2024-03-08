@@ -1800,7 +1800,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                     if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U) &&
                         (NULL != node->kernel))
                     {
-                        vx_uint32   timeout_val = *(vx_uint32*)ptr;
+                        const vx_uint32   timeout_val = *(const vx_uint32*)ptr;
 
                         /* Validate the timeout. It cannot be zero. */
                         if (timeout_val == 0U)
