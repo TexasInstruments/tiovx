@@ -194,7 +194,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
             case (vx_enum)TIVX_KERNEL_TIMEOUT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    vx_uint32   timeout_val = *(vx_uint32*)ptr;
+                    const vx_uint32   timeout_val = *(const vx_uint32*)ptr;
 
                     /* Validate the timeout. It cannot be zero. */
                     if (timeout_val == 0U)
