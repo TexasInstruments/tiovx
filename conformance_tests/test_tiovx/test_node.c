@@ -303,7 +303,7 @@ TEST(tivxNode, negativeTestSetNodeTileSize)
     vx_enum interp = VX_INTERPOLATION_NEAREST_NEIGHBOR;
     vx_remap map;
     vx_graph graph;
-    vx_node node;
+    vx_node node = 0;
     uint32_t get_num_buf = 1;
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, tivxSetNodeTileSize(node, 0, 0));
