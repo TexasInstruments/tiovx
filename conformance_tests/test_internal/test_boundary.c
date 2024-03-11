@@ -92,7 +92,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     vx_image img1;
     vx_threshold vxt=NULL;
     vx_object_array vxoa = NULL;
-    vx_node node = NULL;
+    vx_node node = NULL, node1 = NULL, node2 = NULL;
     tivx_shared_mem_ptr_t tsmp;
     uint32_t size = 1024U;
     vx_object_array src_object_array;
@@ -134,6 +134,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     vx_size levels = 1;
     vx_float32 scale = 0.9f;
     vx_df_image format = VX_DF_IMAGE_U8;
+    vx_kernel kernel;
 
     tivx_raw_image raw_image;
     tivx_raw_image_create_params_t params;
@@ -157,7 +158,8 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     vx_graph graph = NULL;
     vx_tensor tensor;
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node2 = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
     img = (vx_image)ownCreateReference(context, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, &context->base);
     for (i = 0; i < TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST-1; i++)
     {
@@ -188,6 +190,8 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     EXPECT_VX_ERROR(pymd1 = vxCreateVirtualPyramid(graph, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(raw_image = tivxCreateRawImage(context, &params), VX_ERROR_NO_RESOURCES);
     ASSERT_EQ_VX_STATUS(VX_FAILURE, ownNodeKernelInitKernelName(node));
+    EXPECT_VX_ERROR(node1 = vxCreateGenericNode(graph, kernel), VX_ERROR_NO_RESOURCES);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, ownNodeCreateUserCallbackCommand(node2, 0));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric((vx_reference)img));
     for (j = 0; j < i-1; j++)
     {
@@ -201,6 +205,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     {
         VX_CALL(ownReleaseReferenceInt((vx_reference*)&img, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL));
     }
+    VX_CALL(vxReleaseNode(&node2));
     VX_CALL(vxReleaseGraph(&graph));
 }
 
