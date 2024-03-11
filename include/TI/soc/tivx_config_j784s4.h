@@ -296,7 +296,7 @@ extern "C" {
 /*! \brief Max number raw image objects supported
  * \ingroup group_tivx_raw_image_cfg
  */
-#define TIVX_RAW_IMAGE_MAX_OBJECTS         (96u)
+#define TIVX_RAW_IMAGE_MAX_OBJECTS         (256u)
 
 
 /*
