@@ -114,9 +114,163 @@ TEST(tivxInternalNode, negativeTestAddInOutNode)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+TEST(tivxInternalNode, negativeTestGetNextNode)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+
+    ASSERT(NULL == ownNodeGetNextNode(node, 0));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+    tivx_obj_desc_node_t *desc = node->obj_desc[0];
+    node->obj_desc[0] = NULL;
+    ASSERT(NULL == ownNodeGetNextNode(node, 0));
+    node->obj_desc[0] = desc;
+    node->obj_desc[0]->num_out_nodes = 0;
+    ASSERT(NULL == ownNodeGetNextNode(node, 0));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalNode, negativeTestGetNextInNode)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+
+    ASSERT(NULL == ownNodeGetNextInNode(node, 0));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+    tivx_obj_desc_node_t *desc = node->obj_desc[0];
+    node->obj_desc[0] = NULL;
+    ASSERT(NULL == ownNodeGetNextInNode(node, 0));
+    node->obj_desc[0] = desc;
+    node->obj_desc[0]->num_in_nodes = 0;
+    ASSERT(NULL == ownNodeGetNextInNode(node, 0));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalNode, negativeTestNodeClearExecuteState)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+
+    ownNodeClearExecuteState(node, 0);
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+
+    ownNodeClearExecuteState(node, TIVX_GRAPH_MAX_PIPELINE_DEPTH);
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalNode, negativeTestNodeIsPrmReplicated)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+
+    ASSERT(vx_false_e == ownNodeIsPrmReplicated(node, 0));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+    tivx_obj_desc_node_t *desc = node->obj_desc[0];
+    node->obj_desc[0] = NULL;
+    ASSERT(vx_false_e == ownNodeIsPrmReplicated(node, 0));
+    node->obj_desc[0] = desc;
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalNode, negativeTestDestructNode)
+{ 
+    #define VX_DEFAULT 0
+    vx_context context = context_->vx_context_;
+    vx_delay   src_delay;
+    vx_graph   graph = 0;
+    vx_image   image, image1;
+    vx_node    box_node;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image1 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src_delay = vxCreateDelay(context, (vx_reference)image, 2), VX_TYPE_DELAY);
+    ASSERT_VX_OBJECT(box_node = vxBox3x3Node(graph, image1, (vx_image)vxGetReferenceFromDelay(src_delay, 0)), VX_TYPE_NODE);
+
+    VX_CALL(vxReleaseDelay(&src_delay));
+    VX_CALL(vxReleaseImage(&image1));
+
+    VX_CALL(vxReleaseImage(&image));
+    VX_CALL(vxReleaseNode(&box_node));
+
+    vx_reference value = ((graph->nodes[0])->parameters[1]);
+    vx_bool res = ownRemoveAssociationToDelay(value, (graph->nodes[0]), 1);
+    ASSERT(res == (vx_bool)vx_true_e);
+    VX_CALL(vxReleaseGraph(&graph));
+
+}
+
+TEST(tivxInternalNode, negativeTestNodeRemoveNode)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+    vx_graph g1 = node->graph;
+    node->graph = NULL;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxRemoveNode(&node));
+    node->graph = g1;
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalNode, negativeTestNodeCreateUserCallbackCommand)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownNodeCreateUserCallbackCommand(node, 0));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownNodeCreateUserCallbackCommand(node, TIVX_GRAPH_MAX_PIPELINE_DEPTH));
+
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxInternalNode,
     negativeTestSetNodeParameterNumBufByIndex,
     negativeTestNodeGetParameterNumBuf,
     negativeTestInitNodeObjDesc,
-    negativeTestAddInOutNode
+    negativeTestAddInOutNode,
+    negativeTestGetNextNode,
+    negativeTestGetNextInNode,
+    negativeTestNodeClearExecuteState,
+    negativeTestNodeIsPrmReplicated,
+    negativeTestDestructNode,
+    negativeTestNodeRemoveNode,
+    negativeTestNodeCreateUserCallbackCommand
     )
