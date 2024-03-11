@@ -124,17 +124,17 @@ extern "C" {
 /*! \brief Max data ref queue in graph
  * \ingroup group_vx_graph_cfg
  */
-#define TIVX_GRAPH_MAX_DATA_REF_QUEUE      (32u)
+#define TIVX_GRAPH_MAX_DATA_REF_QUEUE      (96u)
 
 /*! \brief Max possible nodes in graph
  * \ingroup group_vx_graph_cfg
  */
-#define TIVX_GRAPH_MAX_NODES               (64u)
+#define TIVX_GRAPH_MAX_NODES               (128u)
 
 /*! \brief Max possible data references in a graph
  * \ingroup group_vx_graph_cfg
  */
-#define TIVX_GRAPH_MAX_DATA_REF            (128u)
+#define TIVX_GRAPH_MAX_DATA_REF            (512u)
 
 /*! \brief Max number graph objects supported
  * \ingroup group_vx_graph_cfg
@@ -163,7 +163,7 @@ extern "C" {
 /*! \brief Max number node objects supported
  * \ingroup group_vx_node_cfg
  */
-#define TIVX_NODE_MAX_OBJECTS              (72u)
+#define TIVX_NODE_MAX_OBJECTS              (128u)
 
 
 /*
@@ -282,7 +282,7 @@ extern "C" {
 /*! \brief Max number pyramid objects supported
  * \ingroup group_vx_pyramid_cfg
  */
-#define TIVX_PYRAMID_MAX_OBJECTS           (64u)
+#define TIVX_PYRAMID_MAX_OBJECTS           (128u)
 
 
 /*

@@ -124,17 +124,17 @@ extern "C" {
 /*! \brief Max data ref queue in graph
  * \ingroup group_vx_graph_cfg
  */
-#define TIVX_GRAPH_MAX_DATA_REF_QUEUE      (32u)
+#define TIVX_GRAPH_MAX_DATA_REF_QUEUE      (96u)
 
 /*! \brief Max possible nodes in graph
  * \ingroup group_vx_graph_cfg
  */
-#define TIVX_GRAPH_MAX_NODES               (64u)
+#define TIVX_GRAPH_MAX_NODES               (128u)
 
 /*! \brief Max possible data references in a graph
  * \ingroup group_vx_graph_cfg
  */
-#define TIVX_GRAPH_MAX_DATA_REF            (128u)
+#define TIVX_GRAPH_MAX_DATA_REF            (512u)
 
 /*! \brief Max number graph objects supported
  * \ingroup group_vx_graph_cfg
@@ -163,7 +163,7 @@ extern "C" {
 /*! \brief Max number node objects supported
  * \ingroup group_vx_node_cfg
  */
-#define TIVX_NODE_MAX_OBJECTS              (64u)
+#define TIVX_NODE_MAX_OBJECTS              (128u)
 
 
 /*
@@ -236,7 +236,7 @@ extern "C" {
 /*! \brief Max number image objects supported
  * \ingroup group_vx_image_cfg
  */
-#define TIVX_IMAGE_MAX_OBJECTS             (640u + 1u)
+#define TIVX_IMAGE_MAX_OBJECTS             (1024u + 1u)
 
 
 /*
@@ -282,7 +282,7 @@ extern "C" {
 /*! \brief Max number pyramid objects supported
  * \ingroup group_vx_pyramid_cfg
  */
-#define TIVX_PYRAMID_MAX_OBJECTS           (64u)
+#define TIVX_PYRAMID_MAX_OBJECTS           (128u)
 
 
 /*
@@ -351,7 +351,7 @@ extern "C" {
 /*! \brief Max number user data objects supported
  * \ingroup group_vx_user_data_cfg
  */
-#define TIVX_USER_DATA_OBJECT_MAX_OBJECTS  (176u)
+#define TIVX_USER_DATA_OBJECT_MAX_OBJECTS  (194u)
 
 
 /*
@@ -419,7 +419,7 @@ extern "C" {
 /*! \brief Maximum number obj descriptors that are present in shared memory
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (2048u)
+#define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (3072u)
 
 
 /*
