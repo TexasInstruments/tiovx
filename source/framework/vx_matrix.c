@@ -95,8 +95,8 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                     obj_desc->origin_y = (uint32_t)rows/2U;
                     obj_desc->pattern = (vx_enum)VX_PATTERN_OTHER;
                     obj_desc->mem_size = (uint32_t)columns*(uint32_t)rows*(uint32_t)dim;
-                    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
-                    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
+                    obj_desc->mem_ptr.host_ptr = (uint64_t)0;
+                    obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
                     obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
                     matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
@@ -204,8 +204,8 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
                 matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
 
-                obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
-                obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
+                obj_desc->mem_ptr.host_ptr = (uint64_t)0;
+                obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
 
                 /* Allocate memory for matrix since matrix need to be
                    filled up with a pattern  */
@@ -248,7 +248,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
         }
     }
 
-    if (((vx_status)VX_SUCCESS == status) && ((uint64_t)(uintptr_t)NULL != obj_desc->mem_ptr.host_ptr))
+    if (((vx_status)VX_SUCCESS == status) && ((uint64_t)0 != obj_desc->mem_ptr.host_ptr))
     {
         tivxCheckStatus(&status, tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr,
             obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
@@ -460,7 +460,7 @@ vx_status VX_API_CALL vxCopyMatrix(
 
         /* Memory still not allocated */
         if (((vx_enum)VX_READ_ONLY == usage) &&
-            ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
+            ((uint64_t)0 == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "Memory is not allocated\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;

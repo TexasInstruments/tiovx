@@ -71,8 +71,8 @@ vx_convolution VX_API_CALL vxCreateConvolution(
                     obj_desc->rows = (uint32_t)rows;
                     obj_desc->scale = 1;
                     obj_desc->mem_size = (uint32_t)columns*(uint32_t)rows*(uint32_t)sizeof(vx_int16);
-                    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
-                    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
+                    obj_desc->mem_ptr.host_ptr = (uint64_t)0;
+                    obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
                     obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
                     cnvl->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
@@ -257,7 +257,7 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
 
         /* Memory still not allocated */
         if (((vx_enum)VX_READ_ONLY == usage) &&
-            ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
+            ((uint64_t)0 == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "Memory still not allocated\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;

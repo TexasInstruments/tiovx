@@ -99,8 +99,8 @@ vx_lut VX_API_CALL vxCreateLUT(
                     obj_desc->item_size = (uint32_t)dim;
                     obj_desc->num_items = (uint32_t)count;
                     obj_desc->mem_size = (uint32_t)dim * (uint32_t)count;
-                    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
-                    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
+                    obj_desc->mem_ptr.host_ptr = (uint64_t)0;
+                    obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
                     obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
                     lut->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
@@ -231,7 +231,7 @@ vx_status VX_API_CALL vxCopyLUT(
 
         /* Memory still not allocated */
         if (((vx_enum)VX_READ_ONLY == usage) &&
-            ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
+            ((uint64_t)0 == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "Memory is not allocated\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;

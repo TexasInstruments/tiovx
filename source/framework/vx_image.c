@@ -311,7 +311,7 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                 size = ownImageGetBufferSize(obj_desc);
 
                 /* memory is not allocated, so allocate it */
-                if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)(uintptr_t)NULL)
+                if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)0)
                 {
                     /* Two conditions may fail inside function mem pointer null and size zero
                      * to handle that put a status check here
@@ -319,7 +319,7 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                     if((vx_status)VX_SUCCESS == tivxMemBufferAlloc(&obj_desc->mem_ptr[0], size, (vx_enum)TIVX_MEM_EXTERNAL))
                     {
 
-                        if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)(uintptr_t)NULL)
+                        if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)0)
                         {
                             /* could not allocate memory */
                             VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
@@ -417,8 +417,8 @@ static void ownInitPlane(vx_image image,
         obj_desc->mem_size[idx] = mem_size;
 
         obj_desc->mem_ptr[idx].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
-        obj_desc->mem_ptr[idx].host_ptr = (uint64_t)(uintptr_t)NULL;
-        obj_desc->mem_ptr[idx].shared_ptr = (uint64_t)(uintptr_t)NULL;
+        obj_desc->mem_ptr[idx].host_ptr = (uint64_t)0;
+        obj_desc->mem_ptr[idx].shared_ptr = (uint64_t)0;
 
         image->mem_offset[idx] = 0;
     }
@@ -796,7 +796,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
 
                     mem_ptr->mem_heap_region =  (vx_enum)TIVX_MEM_EXTERNAL;
                     mem_ptr->host_ptr = (uint64_t)(uintptr_t)ptrs[plane_idx];
-                    if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
+                    if(mem_ptr->host_ptr!=(uint64_t)0)
                     {
                         /* ptrs[plane_idx] can be NULL */
                         mem_ptr->shared_ptr = tivxMemHost2SharedPtr(mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
@@ -2217,8 +2217,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
             {
                 if (new_ptrs == NULL)
                 {
-                    obj_desc->mem_ptr[p].host_ptr = (uint64_t)(uintptr_t)NULL;
-                    obj_desc->mem_ptr[p].shared_ptr = (uint64_t)(uintptr_t)NULL;
+                    obj_desc->mem_ptr[p].host_ptr = (uint64_t)0;
+                    obj_desc->mem_ptr[p].shared_ptr = (uint64_t)0;
                 }
                 else
                 {

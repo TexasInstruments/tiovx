@@ -69,8 +69,8 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                     obj_desc->dst_width = dst_width;
                     obj_desc->dst_height = dst_height;
                     obj_desc->mem_size = dst_width*dst_height*(vx_uint32)sizeof(tivx_remap_point_t);
-                    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
-                    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
+                    obj_desc->mem_ptr.host_ptr = (uint64_t)0;
+                    obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
                     obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
                     remap->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
@@ -179,7 +179,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
         {
             obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;
 
-            if(obj_desc->mem_ptr.host_ptr != (uint64_t)(uintptr_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr != (uint64_t)0)
             {
                 if ((dst_x < obj_desc->dst_width) &&
                     (dst_y < obj_desc->dst_height))
@@ -247,7 +247,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetRemapPoint(vx_remap remap, vx_uint32 dst
     {
         obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;
 
-        if(obj_desc->mem_ptr.host_ptr != (uint64_t)(uintptr_t)NULL)
+        if(obj_desc->mem_ptr.host_ptr != (uint64_t)0)
         {
             if ((dst_x < obj_desc->dst_width) &&
                 (dst_y < obj_desc->dst_height))

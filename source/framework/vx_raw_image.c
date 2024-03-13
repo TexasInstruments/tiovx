@@ -181,7 +181,7 @@ static vx_status ownDestructRawImage(vx_reference ref)
             {
                 for(exp_idx=0; exp_idx < obj_desc->params.num_exposures; exp_idx++)
                 {
-                    if(obj_desc->mem_ptr[exp_idx].host_ptr != (uint64_t)(uintptr_t)NULL)
+                    if(obj_desc->mem_ptr[exp_idx].host_ptr != (uint64_t)0)
                     {
                         status = tivxMemBufferFree(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx]);
                         if ((vx_status)VX_SUCCESS != status)
@@ -245,7 +245,7 @@ vx_status ownDeriveRawImageBufferPointers(vx_reference ref)
                         exposure_offset = exp_idx;
                     }
 
-                    if(obj_desc->mem_ptr[alloc_idx].host_ptr != (uint64_t)(uintptr_t)NULL)
+                    if(obj_desc->mem_ptr[alloc_idx].host_ptr != (uint64_t)0)
                     {
                         img_byte_offset = ownComputePatchOffset(0, img_line_offset+exposure_offset,
                                                                 &obj_desc->imagepatch_addr[exp_idx]);
@@ -280,14 +280,14 @@ vx_status ownDeriveRawImageBufferPointers(vx_reference ref)
                     {
                         VX_PRINT(VX_ZONE_INFO, "host_ptr is NULL so setting derived pointers also to NULL!\n");
 
-                        obj_desc->img_ptr[exp_idx].host_ptr = (uint64_t)(uintptr_t)NULL;
-                        obj_desc->img_ptr[exp_idx].shared_ptr = (uint64_t)(uintptr_t)NULL;
+                        obj_desc->img_ptr[exp_idx].host_ptr = (uint64_t)0;
+                        obj_desc->img_ptr[exp_idx].shared_ptr = (uint64_t)0;
 
-                        obj_desc->meta_before_ptr[exp_idx].host_ptr = (uint64_t)(uintptr_t)NULL;
-                        obj_desc->meta_before_ptr[exp_idx].shared_ptr = (uint64_t)(uintptr_t)NULL;
+                        obj_desc->meta_before_ptr[exp_idx].host_ptr = (uint64_t)0;
+                        obj_desc->meta_before_ptr[exp_idx].shared_ptr = (uint64_t)0;
 
-                        obj_desc->meta_after_ptr[exp_idx].host_ptr = (uint64_t)(uintptr_t)NULL;
-                        obj_desc->meta_after_ptr[exp_idx].shared_ptr = (uint64_t)(uintptr_t)NULL;
+                        obj_desc->meta_after_ptr[exp_idx].host_ptr = (uint64_t)0;
+                        obj_desc->meta_after_ptr[exp_idx].shared_ptr = (uint64_t)0;
                     }
                 }
             }
@@ -329,7 +329,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                 for(exp_idx=0; exp_idx < obj_desc->params.num_exposures; exp_idx++)
                 {
                     /* memory is not allocated, so allocate it */
-                    if( (obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)(uintptr_t)NULL) &&
+                    if( (obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)0) &&
                         ((obj_desc->params.line_interleaved == (vx_bool)vx_false_e) || (exp_idx == 0U))
                       )
                     {
@@ -340,7 +340,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                          */
                         (void)tivxMemBufferAlloc(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx], (vx_enum)TIVX_MEM_EXTERNAL);
 
-                        if(obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)(uintptr_t)NULL)
+                        if(obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)0)
                         {
                             /* could not allocate memory */
                             VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
@@ -460,8 +460,8 @@ static void ownInitRawImage(tivx_raw_image image, tivx_raw_image_create_params_t
         }
 
         obj_desc->mem_ptr[exp_idx].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
-        obj_desc->mem_ptr[exp_idx].host_ptr = (uint64_t)(uintptr_t)NULL;
-        obj_desc->mem_ptr[exp_idx].shared_ptr = (uint64_t)(uintptr_t)NULL;
+        obj_desc->mem_ptr[exp_idx].host_ptr = (uint64_t)0;
+        obj_desc->mem_ptr[exp_idx].shared_ptr = (uint64_t)0;
 
         tivx_obj_desc_memcpy(&obj_desc->imagepatch_addr[exp_idx], &imagepatch_addr, (uint32_t)sizeof(vx_imagepatch_addressing_t));
         tivx_obj_desc_memcpy(&obj_desc->img_ptr[exp_idx], &obj_desc->mem_ptr[exp_idx], (uint32_t)sizeof(tivx_shared_mem_ptr_t));

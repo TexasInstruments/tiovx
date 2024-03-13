@@ -319,7 +319,7 @@ vx_status ownAllocReferenceBufferGeneric(vx_reference ref)
             (void)ownReferenceGetMemAttrsFromObjDesc(ref, &mem_ptr, &mem_size);
 
             /* memory is not allocated, so allocate it */
-            if(mem_ptr->host_ptr == (uint64_t)(uintptr_t)NULL)
+            if(mem_ptr->host_ptr == (uint64_t)0)
             {
                 status = tivxMemBufferAlloc(
                     mem_ptr, mem_size,
@@ -327,7 +327,7 @@ vx_status ownAllocReferenceBufferGeneric(vx_reference ref)
 
                 if ((vx_status)VX_SUCCESS == status)
                 {
-                    if(mem_ptr->host_ptr==(uint64_t)(uintptr_t)NULL)
+                    if(mem_ptr->host_ptr==(uint64_t)0)
                     {
                         /* could not allocate memory */
                         VX_PRINT(VX_ZONE_ERROR,"Could not allocate array memory\n");
@@ -387,7 +387,7 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
             */
             (void)ownReferenceGetMemAttrsFromObjDesc(ref, &mem_ptr, &mem_size);
 
-            if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
+            if(mem_ptr->host_ptr!=(uint64_t)0)
             {
                 status = tivxMemBufferFree(
                     mem_ptr, mem_size);
@@ -1637,7 +1637,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                     mem_ptr  = mem_ptr_arr[i];
                     mem_size = mem_size_arr[i];
 
-                    if (mem_ptr[0].host_ptr != (uint64_t)(uintptr_t)NULL)
+                    if (mem_ptr[0].host_ptr != (uint64_t)0)
                     {
                         VX_PRINT(VX_ZONE_INFO,
                                  "Non-NULL handle detected. Overwriting.\n");
@@ -1649,7 +1649,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
 
                     for (j = 1; j < num_planes[i]; j++)
                     {
-                        if (mem_ptr[0].host_ptr != (uint64_t)(uintptr_t)NULL)
+                        if (mem_ptr[0].host_ptr != (uint64_t)0)
                         {
                             mem_ptr[j].host_ptr        = mem_ptr[(int32_t)j-1].host_ptr + mem_size[(int32_t)j-1];
                             mem_ptr[j].shared_ptr      = tivxMemHost2SharedPtr(
@@ -1658,8 +1658,8 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                         }
                         else
                         {
-                            mem_ptr[j].host_ptr        = (uint64_t)(uintptr_t)NULL;
-                            mem_ptr[j].shared_ptr      = (uint64_t)(uintptr_t)NULL;
+                            mem_ptr[j].host_ptr        = (uint64_t)0;
+                            mem_ptr[j].shared_ptr      = (uint64_t)0;
                         }
 
                         mem_ptr[j].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
@@ -1675,7 +1675,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                     {
                         mem_ptr[i].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
 
-                        if (mem_ptr[i].host_ptr != (uint64_t)(uintptr_t)NULL)
+                        if (mem_ptr[i].host_ptr != (uint64_t)0)
                         {
                             VX_PRINT(VX_ZONE_INFO,
                                     "Non-NULL handle detected. Overwriting.\n");
@@ -1687,7 +1687,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                         {
                             for (j = 1; j < numPlanes; j++)
                             {
-                                if (mem_ptr[0].host_ptr != (uint64_t)(uintptr_t)NULL)
+                                if (mem_ptr[0].host_ptr != (uint64_t)0)
                                 {
                                     mem_ptr[j].host_ptr        = mem_ptr[(int32_t)j-1].host_ptr + mem_size[(int32_t)j-1];
                                     mem_ptr[j].shared_ptr      = tivxMemHost2SharedPtr(
@@ -1696,8 +1696,8 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                                 }
                                 else
                                 {
-                                    mem_ptr[j].host_ptr        = (uint64_t)(uintptr_t)NULL;
-                                    mem_ptr[j].shared_ptr      = (uint64_t)(uintptr_t)NULL;
+                                    mem_ptr[j].host_ptr        = (uint64_t)0;
+                                    mem_ptr[j].shared_ptr      = (uint64_t)0;
                                 }
                             } /* for (j = 1; j < numPlanes; j++) */
                         } /* for (i = 0; i < numMemElem; i++) */
