@@ -1594,16 +1594,19 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
             else
             {
-                for (i = 0; i < numMemElem; i++)
+                if (mem_size != NULL)
                 {
-                    if (mem_size[i] != size[i])
+                    for (i = 0; i < numMemElem; i++)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,
-                                 "[Entry %d] Memory size mis-match: Expecting [%d] "
-                                 "but given [%d]\n",
-                                 i, mem_size[i], size[i]);
+                        if (mem_size[i] != size[i])
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,
+                                    "[Entry %d] Memory size mis-match: Expecting [%d] "
+                                    "but given [%d]\n",
+                                    i, mem_size[i], size[i]);
 
-                        status = (vx_status)VX_FAILURE;
+                            status = (vx_status)VX_FAILURE;
+                        }
                     }
                 }
             }
@@ -1666,36 +1669,39 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
             else
             {
-                for (i = 0; i < numMemElem; i++)
+                if (mem_ptr != NULL)
                 {
-                    mem_ptr[i].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
-
-                    if (mem_ptr[i].host_ptr != (uint64_t)(uintptr_t)NULL)
+                    for (i = 0; i < numMemElem; i++)
                     {
-                        VX_PRINT(VX_ZONE_INFO,
-                                 "Non-NULL handle detected. Overwriting.\n");
-                    }
+                        mem_ptr[i].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
 
-                    mem_ptr[i].host_ptr   = (uint64_t)(uintptr_t)addr[i];
-                    mem_ptr[i].shared_ptr = shared_ptr[i];
-                    if (ref->type == (vx_enum)VX_TYPE_IMAGE)
-                    {
-                        for (j = 1; j < numPlanes; j++)
+                        if (mem_ptr[i].host_ptr != (uint64_t)(uintptr_t)NULL)
                         {
-                            if (mem_ptr[0].host_ptr != (uint64_t)(uintptr_t)NULL)
+                            VX_PRINT(VX_ZONE_INFO,
+                                    "Non-NULL handle detected. Overwriting.\n");
+                        }
+
+                        mem_ptr[i].host_ptr   = (uint64_t)(uintptr_t)addr[i];
+                        mem_ptr[i].shared_ptr = shared_ptr[i];
+                        if (ref->type == (vx_enum)VX_TYPE_IMAGE)
+                        {
+                            for (j = 1; j < numPlanes; j++)
                             {
-                                mem_ptr[j].host_ptr        = mem_ptr[(int32_t)j-1].host_ptr + mem_size[(int32_t)j-1];
-                                mem_ptr[j].shared_ptr      = tivxMemHost2SharedPtr(
-                                        mem_ptr[j].host_ptr,
-                                        (vx_enum)TIVX_MEM_EXTERNAL);
-                            }
-                            else
-                            {
-                                mem_ptr[j].host_ptr        = (uint64_t)(uintptr_t)NULL;
-                                mem_ptr[j].shared_ptr      = (uint64_t)(uintptr_t)NULL;
-                            }
-                        } /* for (j = 1; j < numPlanes; j++) */
-                    } /* for (i = 0; i < numMemElem; i++) */
+                                if (mem_ptr[0].host_ptr != (uint64_t)(uintptr_t)NULL)
+                                {
+                                    mem_ptr[j].host_ptr        = mem_ptr[(int32_t)j-1].host_ptr + mem_size[(int32_t)j-1];
+                                    mem_ptr[j].shared_ptr      = tivxMemHost2SharedPtr(
+                                            mem_ptr[j].host_ptr,
+                                            (vx_enum)TIVX_MEM_EXTERNAL);
+                                }
+                                else
+                                {
+                                    mem_ptr[j].host_ptr        = (uint64_t)(uintptr_t)NULL;
+                                    mem_ptr[j].shared_ptr      = (uint64_t)(uintptr_t)NULL;
+                                }
+                            } /* for (j = 1; j < numPlanes; j++) */
+                        } /* for (i = 0; i < numMemElem; i++) */
+                    }
                 }
             }
         }
@@ -1997,10 +2003,13 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
         if ((status == (vx_status)VX_SUCCESS) &&
             (ref->type != (vx_enum)VX_TYPE_PYRAMID))
         {
-            for (i = 0; i < numMemElem; i++)
+            if ((mem_ptr != NULL) && (mem_size != NULL))
             {
-                addr[i] = (void *)(uintptr_t)mem_ptr[i].host_ptr;
-                size[i] = mem_size[i];
+                for (i = 0; i < numMemElem; i++)
+                {
+                    addr[i] = (void *)(uintptr_t)mem_ptr[i].host_ptr;
+                    size[i] = mem_size[i];
+                }
             }
 
             /* Update the entry count. */
