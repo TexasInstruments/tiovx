@@ -251,8 +251,8 @@ static void ownInitTensorObject(
         obj_desc->stride[i] = 0;
     }
 
-    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
-    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
+    obj_desc->mem_ptr.host_ptr = (uint64_t)0;
+    obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
     obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
 
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i ++)
@@ -615,7 +615,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
 
         /* Memory still not allocated */
         if (((vx_enum)VX_READ_ONLY == usage) &&
-            ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
+            ((uint64_t)0 == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "Memory is not allocated\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;

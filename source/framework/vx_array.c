@@ -492,7 +492,7 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL) )
+    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)0) )
     {
         VX_PRINT(VX_ZONE_ERROR,"Array object descriptor or host pointer is NULL\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -539,7 +539,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL) )
+    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)0) )
     {
         VX_PRINT(VX_ZONE_ERROR,"Array object descriptor or host pointer is NULL\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -659,7 +659,7 @@ vx_status VX_API_CALL vxMapArrayRange(
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL) )
+    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)0) )
     {
         VX_PRINT(VX_ZONE_ERROR,"Array object descriptor or host pointer is NULL\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -750,7 +750,7 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL) )
+    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)0) )
     {
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
@@ -806,8 +806,8 @@ static void ownInitArrayObject(
 
     obj_desc->mem_size =
         obj_desc->item_size * (uint32_t)capacity;
-    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
-    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
+    obj_desc->mem_ptr.host_ptr = (uint64_t)0;
+    obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
     obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
 
     arr->base.is_virtual = is_virtual;

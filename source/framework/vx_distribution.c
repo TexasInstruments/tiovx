@@ -112,8 +112,8 @@ static vx_distribution ownCreateDistribution(vx_reference scope, vx_size num_bin
                     obj_desc->offset = (vx_uint32)offset;
                     obj_desc->num_win = (vx_uint32)range/(vx_uint32)num_bins;
                     obj_desc->mem_size = (vx_uint32)num_bins * (vx_uint32)sizeof(vx_int32);
-                    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
-                    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
+                    obj_desc->mem_ptr.host_ptr = (uint64_t)0;
+                    obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
                     obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
                     dist->base.obj_desc = (tivx_obj_desc_t*)obj_desc;
                 }
@@ -264,7 +264,7 @@ vx_status VX_API_CALL vxCopyDistribution(
 
         /* Memory still not allocated */
         if (((vx_enum)VX_READ_ONLY == usage) &&
-            ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
+            ((uint64_t)0 == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "Memory still allocated\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -354,7 +354,7 @@ vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
 
-    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL))
+    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)0))
     {
         VX_PRINT(VX_ZONE_ERROR, "object descriptor is NULL or host ptr is NULL\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
