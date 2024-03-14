@@ -84,6 +84,14 @@ typedef struct _vx_image
 vx_status ownInitVirtualImage(
     vx_image img, vx_uint32 width, vx_uint32 height, vx_df_image format);
 
+/*!
+ * \brief Internal image creation function
+ */
+vx_image ownCreateImageInt(vx_context context,
+                                  vx_uint32 width,
+                                  vx_uint32 height,
+                                  vx_df_image color,
+                                  tivx_image_create_type_e create_type);
 #ifdef __cplusplus
 }
 #endif

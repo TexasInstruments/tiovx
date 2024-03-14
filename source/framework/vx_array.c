@@ -20,6 +20,7 @@
 
 static void ownInitArrayObject(
     vx_array arr, vx_enum item_type, vx_size capacity, vx_bool is_virtual);
+static vx_array  ownCreateArray(vx_reference scope, vx_enum item_type, vx_size capacity, vx_bool is_virtual);    
 static vx_size ownGetArrayItemSize(vx_context context, vx_enum item_type);
 static vx_bool ownIsValidArrayItemType(vx_context context, vx_enum item_type);
 static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output);
@@ -244,16 +245,31 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseArray(vx_array *arr)
     return (ownReleaseReferenceInt(
         (vx_reference*)arr, (vx_enum)VX_TYPE_ARRAY, (vx_enum)VX_EXTERNAL, NULL));
 }
-vx_array VX_API_CALL vxCreateArray(
-    vx_context context, vx_enum item_type, vx_size capacity)
+  
+vx_array VX_API_CALL vxCreateArray(vx_context context, vx_enum item_type, vx_size capacity)
+{
+    return ownCreateArray(&context->base, item_type, capacity, vx_false_e);
+}
+  
+static vx_array  ownCreateArray(vx_reference scope, vx_enum item_type, vx_size capacity, vx_bool is_virtual)
 {
     vx_array arr = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_context context;
 
+    if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    {
+        context = vxGetContext(scope);
+    }
+    else
+    {
+        context = (vx_context)scope;
+    }
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if ((capacity > 0U) &&
-            ((vx_bool)vx_true_e == ownIsValidArrayItemType(context, item_type)))
+        if (is_virtual ||
+            ((capacity > 0U) &&
+            ((vx_bool)vx_true_e == ownIsValidArrayItemType(context, item_type))))
         {
             arr = (vx_array)ownCreateReference(context, (vx_enum)VX_TYPE_ARRAY,
                 (vx_enum)VX_EXTERNAL, &context->base);
@@ -261,7 +277,7 @@ vx_array VX_API_CALL vxCreateArray(
             if ((vxGetStatus((vx_reference)arr) == (vx_status)VX_SUCCESS) &&
                 (arr->base.type == (vx_enum)VX_TYPE_ARRAY))
             {
-                /* assign refernce type specific callback's */
+                /* assign reference type specific callbacks */
                 arr->base.destructor_callback = &ownDestructReferenceGeneric;
                 arr->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 arr->base.release_callback =
@@ -284,7 +300,11 @@ vx_array VX_API_CALL vxCreateArray(
                 }
                 else
                 {
-                    ownInitArrayObject(arr, item_type, capacity, (vx_bool)vx_false_e);
+                    ownInitArrayObject(arr, item_type, capacity, is_virtual);
+                    if (is_virtual)
+                    {                                        
+                        ownReferenceSetScope(&arr->base, scope);
+                    }
                 }
             }
         }
@@ -342,7 +362,6 @@ vx_array VX_API_CALL vxCreateVirtualArray(
             }
         }
     }
-
     return (arr);
 }
 
