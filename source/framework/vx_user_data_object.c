@@ -135,7 +135,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                 user_data_object->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 user_data_object->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+				user_data_object->base.kernel_callback = &userDataKernelCallback;
                 user_data_object->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_USER_DATA_OBJECT, (vx_reference)user_data_object);
                 if(user_data_object->base.obj_desc==NULL)

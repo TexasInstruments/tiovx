@@ -28,6 +28,57 @@ static vx_status ownAddRefToObjArray(vx_context context,
 static vx_status ownReleaseRefFromObjArray(
             vx_object_array objarr, uint32_t num_items);
 
+
+/*! \brief check to see if input object array can be copied to output.
+ * Number of items and item types must always be equal.
+ * Same function is used to validate for swapping.
+*/
+static vx_status isObjectArrayCopyable(vx_object_array input, vx_object_array output)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_object_array_t *in_objd = (tivx_obj_desc_object_array_t *)input->base.obj_desc;
+    tivx_obj_desc_object_array_t *out_objd = (tivx_obj_desc_object_array_t *)output->base.obj_desc;
+    if ((vx_false_e == ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_OBJECT_ARRAY)) ||
+        (vx_false_e == ownIsValidSpecificReference(&output->base, (vx_enum)VX_TYPE_OBJECT_ARRAY)) ||
+        (input == output) ||
+        (in_objd->num_items != out_objd->num_items) ||
+        (in_objd->item_type != out_objd->item_type))
+    {
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    /* Q: do we have to do anything for any images in the container?
+            elsewhere in the framework this is not done, but what about the valid region?
+            it seems like an omission, but probably beyond the scope at present...*/
+    return status;
+}
+
+static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    if (validate_only)
+    {
+        return isObjectArrayCopyable((vx_object_array)params[0], (vx_object_array)params[1]);
+    }
+    else    /* dispatch to each sub-object in turn */
+    {
+        vx_uint32 item;
+        for (item = 0; item < ((tivx_obj_desc_object_array_t *)params[0]->obj_desc)->num_items && VX_SUCCESS == status; ++item)
+        {
+            vx_reference p2[2] = {((vx_object_array)params[0])->ref[item], ((vx_object_array)params[1])->ref[item]};
+            vx_kernel_callback_rb_f kf = p2[0]->kernel_callback;
+            if (kf)
+            {
+                status = (*kf)(kernel_enum, vx_false_e, optimization, p2, 2);
+            }
+            else
+            {
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+            }
+        }
+    }
+    return status;
+}
+
 static vx_bool ownIsValidObject(vx_enum type)
 {
     vx_bool status = (vx_bool)vx_false_e;
@@ -78,6 +129,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
+				objarr->base.kernel_callback = &objectArrayKernelCallback;
 
                 objarr->base.obj_desc = ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
@@ -159,7 +211,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
-
+				objarr->base.kernel_callback = &objectArrayKernelCallback;
                 objarr->base.obj_desc = ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
                 if(objarr->base.obj_desc==NULL)
