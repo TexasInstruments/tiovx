@@ -104,11 +104,20 @@ typedef struct _vx_user_data_object
     tivx_reference_t base;
     /*! \brief Mapping done via vxMapUserDataObject() */
     tivx_user_data_object_map_info_t maps[TIVX_USER_DATA_OBJECT_MAX_MAPS];
-
+    /*! \brief If this is supplementary data, pointer to owner */
+    vx_reference owner;
+    /*! \brief if this is supplementary data shadowing another, pointer to the other */
+    vx_user_data_object parent;
 } tivx_user_data_object_t;
 
+/*! \brief internal creation function for user data object
+*/
+vx_user_data_object ownCreateUserDataObject(vx_context context,
+                                            const vx_char *type_name,
+                                            vx_size size, const void *ptr);
 
-
+/*! \brief Internal read-only object creation function */
+vx_user_data_object ownCreateReadOnlyUserDataObject(vx_user_data_object parent);
 
 #ifdef __cplusplus
 }

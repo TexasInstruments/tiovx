@@ -122,4 +122,5 @@ TESTCASE(bpExtStandardNodes)
 TESTCASE(bpExtFramework)
 TESTCASE(tivxImage2)
 TESTCASE(copySwap)
+TESTCASE(supplementary_data)
 #endif

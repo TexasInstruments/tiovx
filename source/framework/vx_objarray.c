@@ -53,6 +53,25 @@ static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_b
             ((vx_status)VX_SUCCESS == status)) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR011 */
             {
                 status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
+                /* Not all the condition combinations of the below block are testable since, per definition,  we cannot have a callback 
+                   if the input has no supplementary */
+                if (((vx_status)VX_SUCCESS == status) &&
+                    (NULL != p2[0]->supplementary_data) &&
+                    (NULL != p2[1]->supplementary_data) &&
+                    (NULL != p2[0]->supplementary_data->base.kernel_callback))
+                {
+                    vx_reference supp_params[2] = {&p2[0]->supplementary_data->base, &p2[1]->supplementary_data->base};
+                    /* The negative condition of the below block is untestable since a negative return value from the callback function
+                       is linked to map/unmap functions contained in the copy generic functions */
+                    if ((vx_status)VX_SUCCESS == p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_true_e, supp_params[0], supp_params[1]))
+                    {
+                        status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_false_e, supp_params[0], supp_params[1]);
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_WARNING, "No Supplementary data available, no copy/swap possible.\n");
+                }
             }
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM006 */

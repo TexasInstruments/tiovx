@@ -152,6 +152,9 @@ typedef struct _vx_reference {
     /*! \brief object descriptor */
     tivx_obj_desc_t *obj_desc;
 
+    /*! \brief supplementary data */
+    vx_user_data_object supplementary_data;
+
 } tivx_reference_t;
 
 /**
@@ -320,7 +323,6 @@ vx_status ownDestructReferenceGeneric(vx_reference ref);
  * \ingroup group_vx_reference
  */
 vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output);
-
 
 /*! \brief There are several reference types that are swaped in the same way
  *         This API generalizes this in order to enhance code reuse

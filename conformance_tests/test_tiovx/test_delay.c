@@ -66,6 +66,26 @@ TEST(tivxDelay, negativeTestCreateDelayTypeImage)
     }
 }
 
+TEST(tivxDelay, negativeTestCreateDelayTypePyramid)
+{
+    vx_context context = context_->vx_context_;
+    vx_delay src_delay;
+    vx_pyramid src_pyr[TIVX_PYRAMID_MAX_OBJECTS];
+    int i;
+
+    for (i = 0; i < TIVX_PYRAMID_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(src_pyr[i] = vxCreatePyramid(context, 2, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    }
+
+    EXPECT_VX_ERROR(src_delay = vxCreateDelay(context, (vx_reference)src_pyr[0], 2), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < TIVX_PYRAMID_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleasePyramid(&src_pyr[i]));
+    }
+}
+
 TEST(tivxDelay, testCreateDelayTypeConvolution)
 {
     vx_context context = context_->vx_context_;
@@ -176,6 +196,6 @@ TESTCASE_TESTS(
     negativeTestAgeDelay,
     negativeTestCreateDelayTypeImage,
     testCreateDelayTypeRawImage,
-    testCreateDelayTypeConvolution
-
+    testCreateDelayTypeConvolution,
+    negativeTestCreateDelayTypePyramid
 )
