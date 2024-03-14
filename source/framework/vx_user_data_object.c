@@ -67,6 +67,7 @@
 User Data Object HELPER FUNCTIONS
 =============================================================================*/
 
+static void ownInitUserDataObjectCallbacks(vx_user_data_object user_data_object);
 static void ownInitUserDataObjectObject(
     vx_user_data_object user_data_object, const vx_char* type_name, vx_size size);
 
@@ -75,6 +76,9 @@ static void ownInitUserDataObjectObject(
 {
     vx_uint32 i;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
+
+    user_data_object->owner = NULL;
+    user_data_object->parent = NULL;
 
     obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
 
@@ -98,9 +102,52 @@ static void ownInitUserDataObjectObject(
         user_data_object->maps[i].map_addr = NULL;
         user_data_object->maps[i].map_size = 0;
     }
-
 }
 
+static vx_status ownDestructUserDataObject(vx_reference ref)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_user_data_object_t *obj_desc = NULL;
+
+    if(ref->type == VX_TYPE_USER_DATA_OBJECT)
+    {
+        if (NULL != ((vx_user_data_object)ref)->parent)
+        {
+            (void)vxReleaseUserDataObject(&((vx_user_data_object)ref)->parent);
+        }
+        else
+        {
+            obj_desc = (tivx_obj_desc_user_data_object_t *)ref->obj_desc;
+            if(obj_desc != NULL)
+            {
+                if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
+                {
+                    status = tivxMemBufferFree(
+                        &obj_desc->mem_ptr, obj_desc->mem_size);
+                }
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+#ifdef LDRA_UNTESTABLE_CODE                  
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Object descriptor free failed!\n");
+                    }
+#endif
+                }                
+            }
+        }
+    }
+    return (vx_status)VX_SUCCESS;
+}
+
+static void ownInitUserDataObjectCallbacks(vx_user_data_object user_data_object)
+{
+    user_data_object->base.destructor_callback = &ownDestructUserDataObject;
+    user_data_object->base.mem_alloc_callback  = &ownAllocReferenceBufferGeneric;
+    user_data_object->base.release_callback    = &ownReleaseReferenceBufferGeneric;
+    user_data_object->base.kernel_callback     = &ownKernelCallbackGeneric;
+}
 
 /*==============================================================================
    User Data Object API FUNCTIONS
@@ -112,9 +159,17 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
     vx_size size,
     const void *ptr)
 {
+    return ownCreateUserDataObject(context, type_name, size, ptr);
+}
+
+vx_user_data_object ownCreateUserDataObject(
+    vx_context context,
+    const vx_char *type_name,
+    vx_size size,
+    const void *ptr)
+{
     vx_user_data_object user_data_object = NULL;
     vx_reference ref = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -134,11 +189,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                 /* status set to NULL due to preceding type check */
                 user_data_object = vxCastRefAsUserDataObject(ref, NULL);
                 /* assign reference type specific callback's */
-                user_data_object->base.destructor_callback = &ownDestructReferenceGeneric;
-                user_data_object->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
-                user_data_object->base.release_callback =
-                    &ownReleaseReferenceBufferGeneric;
-                user_data_object->base.kernel_callback = &ownKernelCallbackGeneric;
+                ownInitUserDataObjectCallbacks(user_data_object);
                 user_data_object->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_USER_DATA_OBJECT, vxCastRefFromUserDataObject(user_data_object));
                 if(user_data_object->base.obj_desc==NULL)
@@ -155,13 +206,12 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                 }
                 else
                 {
+                    vx_status status = (vx_status)VX_SUCCESS;
                     ownInitUserDataObjectObject(user_data_object, type_name, size);
-
                     if (NULL != ptr)
                     {
                         status = vxCopyUserDataObject(user_data_object, 0, size, (void*)ptr, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
                     }
-
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         (void)vxReleaseUserDataObject(&user_data_object);
@@ -174,6 +224,22 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
         }
     }
 
+    return (user_data_object);
+}
+
+vx_user_data_object ownCreateReadOnlyUserDataObject(vx_user_data_object parent)
+{
+    vx_user_data_object user_data_object = NULL;
+    user_data_object = (vx_user_data_object)ownCreateReference(parent->base.context, (vx_enum)VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, &parent->base.context->base);
+
+    if (vxGetStatus((vx_reference)user_data_object) == (vx_status)VX_SUCCESS)
+    {
+        /* assign reference type specific callback's */
+        ownInitUserDataObjectCallbacks(user_data_object);
+        user_data_object->base.obj_desc = parent->base.obj_desc;
+        user_data_object->parent = parent;
+        (void)vxRetainReference(&parent->base);
+    }
     return (user_data_object);
 }
 
@@ -240,7 +306,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
                 break;
         }
     }
-
     return status;
 }
 
@@ -256,6 +321,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetUserDataObjectAttribute(
         VX_PRINT(VX_ZONE_ERROR,"vxSetUserDataObjectAttribute failed\n");
         VX_PRINT(VX_ZONE_ERROR,"Reference is invalid or object descriptor is NULL\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    }
+    else if (user_data_object->parent ||
+             (user_data_object->owner &&
+              tivxFlagIsBitSet(user_data_object->owner->obj_desc->flags, TIVX_REF_FLAG_IS_INPUT)))
+    {   /* read-only! */
+        VX_PRINT(VX_ZONE_ERROR, "Attempt to write to read-only data\n");
+        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
     else
     {
@@ -326,6 +398,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
             VX_PRINT(VX_ZONE_ERROR, "Invalid offset or size parameter\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
+
+        if (((vx_enum)VX_READ_ONLY != usage) &&
+            (user_data_object->parent ||
+             (user_data_object->owner &&
+              tivxFlagIsBitSet(user_data_object->owner->obj_desc->flags, TIVX_REF_FLAG_IS_INPUT))))
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Attempt to write to read-only data\n");
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        }
+
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -408,6 +490,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid offset or size parameter\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        }
+        if (((vx_enum)VX_READ_ONLY != usage) &&
+            (user_data_object->parent ||
+             (user_data_object->owner &&
+              tivxFlagIsBitSet(user_data_object->owner->obj_desc->flags, TIVX_REF_FLAG_IS_INPUT))))
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Attempt to write to read-only data\n");
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
     }
 
