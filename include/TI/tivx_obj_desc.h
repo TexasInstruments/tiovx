@@ -133,6 +133,15 @@ extern "C" {
  */
 #define TIVX_NODE_FLAG_IS_SUPERNODE  (0x00000010u)
 
+/*! \brief flag set when kernel is called to indicate that this is an input parameter */
+#define TIVX_REF_FLAG_IS_INPUT (0x00000020u)
+
+/*! \brief flag set when kernel is called to indicate that we're in the kernel function  */
+#define TIVX_REF_FLAG_IS_IN_KERNEL (0x00000040u)
+
+/*! \brief flag set when a ref is associated with a verified graph  */
+#define TIVX_REF_FLAG_IS_IN_GRAPH (0x00000080u)
+
 /*! \brief State of a node object descriptor to indicate it is IDLE
  *
  * \ingroup group_tivx_obj_desc
@@ -321,8 +330,11 @@ typedef struct _tivx_obj_desc_t {
     /*! \brief holds the CPU ID of the OpenVX host for this object descriptor */
     volatile uint32_t host_cpu_id;
 
+    /*! \brief ID of supplementary data object descriptor in shared memory */
+    volatile uint16_t supp_data_ID;
+  
     /*! \brief reserved to make 64b aligned */
-    volatile uint32_t rsv0;
+    volatile uint16_t rsv0;
 
     /*! \brief holds the index of the IPC port on OpenVX host for this object descriptor for each remote CPU
      *
@@ -331,7 +343,6 @@ typedef struct _tivx_obj_desc_t {
      *         TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU MUST be <= TIVX_CPU_ID_MAX
      * */
     volatile uint16_t host_port_id[TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU];
-
 
 } tivx_obj_desc_t;
 
@@ -514,8 +525,10 @@ typedef struct _tivx_obj_desc_image
     volatile uint32_t color_range;
     /*! \brief image plane buffer size */
     volatile uint32_t mem_size[TIVX_IMAGE_MAX_PLANES];
+    /*! \brief object descriptor ID of parent (if any) */
+    volatile uint16_t parent_ID;
     /*! \brief reserved for 64b alignment */
-    volatile uint32_t rsv[1];
+    volatile uint16_t rsv[1];
     /*! \brief the value to use to fill for a uniform image.
      *
      * bit 0.. 7 - Component 0 - R or Y or U8.
@@ -886,6 +899,10 @@ typedef struct _tivx_obj_desc_tensor
     volatile uint32_t stride[TIVX_CONTEXT_MAX_TENSOR_DIMS];
     /*! \brief Buffer size */
     volatile uint32_t mem_size;
+    /*! \brief object descriptor ID of parent (if any) */
+    volatile uint16_t parent_ID;
+    /*! \brief alignment */
+    volatile uint16_t align[1];
 } tivx_obj_desc_tensor_t;
 
 /*!

@@ -158,6 +158,9 @@ typedef struct _vx_reference {
     /*! \brief object descriptor */
     tivx_obj_desc_t *obj_desc;
 
+    /*! \brief supplementary data */
+    vx_user_data_object supplementary_data;
+
 } tivx_reference_t;
 
 /**
@@ -328,6 +331,12 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output);
  * \ingroup group_vx_reference
  */
 vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output);
+/*! \brief Add an already allocated supplementary data reference to a ref
+*/
+vx_status ownInheritSupplementaryData(vx_reference ref, vx_reference parent);
+
+/*! \brief create a supplementary data ref and add it to ref */
+vx_status ownCreateSupplementaryData(vx_reference ref);
 
 /*! \brief Object specific function that is called for generic kernel operations
  *         such as Copy, move, swap and Select

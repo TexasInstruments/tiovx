@@ -30,6 +30,7 @@
 static vx_status setNodeTarget(vx_node node);
 static vx_status vx_isBorderModeSupported(vx_enum mode_to_check, const vx_enum supported_modes[], vx_size num_modes);
 static vx_status vx_useImmediateBorderMode(vx_context context, vx_node node, const vx_enum supported_modes[], vx_size num_modes);
+static vx_status ownCallKernelFunc(vx_reference input, vx_reference output, vx_enum kernel);
 
 static vx_status setNodeTarget(vx_node node)
 {
@@ -1346,4 +1347,41 @@ VX_API_ENTRY vx_status VX_API_CALL vxuSwap(vx_context context, vx_reference firs
 VX_API_ENTRY vx_status VX_API_CALL vxuMove(vx_context context, vx_reference first, vx_reference second)
 {
     return ownCallKernelFunc(first, second, (vx_enum)VX_KERNEL_MOVE);
+}
+
+static vx_status ownCallKernelFunc(vx_reference input, vx_reference output, vx_enum kernel)
+{
+    vx_status status = VX_SUCCESS;
+    vx_reference params[] = {input, output};
+    if (ownIsValidReference(input))
+    {
+        if (input->kernel_callback)
+        {
+            status = input->kernel_callback(kernel, vx_true_e, 0, params, 2);
+            if (VX_SUCCESS == status)
+            {
+                status = input->kernel_callback(kernel, vx_false_e, 0, params, 2);
+            }
+            if (VX_SUCCESS == status &&
+                input->supplementary_data &&
+                output->supplementary_data &&
+                input->supplementary_data->base.kernel_callback)
+            {
+                vx_reference supp_params[2] = {&input->supplementary_data->base, &output->supplementary_data->base};
+                if (VX_SUCCESS == input->supplementary_data->base.kernel_callback(kernel, vx_true_e, 0, supp_params, 2))
+                {
+                    status = input->supplementary_data->base.kernel_callback(kernel, vx_false_e, 0, supp_params, 2);
+                }
+            }
+        }
+        else
+        {
+            status = VX_ERROR_NOT_SUPPORTED;
+        }
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    return status;
 }

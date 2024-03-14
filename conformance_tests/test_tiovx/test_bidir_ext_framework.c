@@ -177,7 +177,7 @@ vx_node createUserNode(vx_graph graph, vx_image input, vx_image bidir)
 }
 
 /* Function to get a parameter, add it to a graph and then release it */
-vx_status addParameterToGraph(vx_graph graph, vx_node node, vx_uint32 num)
+static vx_status addParameterToGraph(vx_graph graph, vx_node node, vx_uint32 num)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_parameter p = vxGetParameterByIndex(node, num);

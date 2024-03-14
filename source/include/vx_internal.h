@@ -26,6 +26,7 @@
 #include <VX/vx.h>
 #include <VX/vx_khr_pipelining.h>
 #include <VX/vx_khr_swap_move.h>
+#include <VX/vx_khr_supplementary_data.h>
 #include <TI/tivx.h>
 #include <VX/vx_khr_safe_casts.h>
 #include <TI/tivx_mem.h>

@@ -21,7 +21,7 @@
 static vx_status ownDestructNode(vx_reference ref);
 static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pipeline_id);
 static vx_status ownRemoveNodeInt(const vx_node *n);
-static void ownNodeUserKernelSetParamsAccesible(vx_reference params[], vx_uint32 num_params, vx_bool is_accessible);
+static void ownNodeUserKernelSetParamsAccesible(vx_kernel kernel, vx_reference params[], vx_uint32 num_params, vx_bool is_accessible);
 static uint16_t ownNodeGetObjDescId(vx_node node, uint32_t pipeline_id);
 
 static vx_status ownDestructNode(vx_reference ref)
@@ -213,15 +213,40 @@ static vx_status ownRemoveNodeInt(const vx_node *n)
     return status;
 }
 
-static void ownNodeUserKernelSetParamsAccesible(vx_reference params[], vx_uint32 num_params, vx_bool is_accessible)
+static void ownNodeUserKernelSetParamsAccesible(vx_kernel kernel, vx_reference params[], vx_uint32 num_params, vx_bool is_accessible)
 {
     vx_uint32 i;
-
     for(i=0; i<num_params ; i++)
     {
-        if( (params[i] != NULL) && (params[i]->is_virtual != (vx_bool)vx_false_e))
+        if (params[i])
         {
-            params[i]->is_accessible = is_accessible;
+            if (is_accessible)
+            {
+                /* Set flag to say we are in the kernel function */
+                tivxFlagBitSet(&params[i]->obj_desc->flags, TIVX_REF_FLAG_IS_IN_KERNEL);
+                /* And just in case it hasn't been set elsewhere */
+                tivxFlagBitSet(&params[i]->obj_desc->flags, TIVX_REF_FLAG_IS_IN_GRAPH);
+            }
+            else
+            {
+                /* Clear flag that says we are in the kernel function */
+                tivxFlagBitClear(&params[i]->obj_desc->flags, TIVX_REF_FLAG_IS_IN_KERNEL);
+            }
+            if (VX_INPUT ==  kernel->signature.directions[i])
+            {
+                if (is_accessible)
+                {
+                    tivxFlagBitSet(&params[i]->obj_desc->flags, TIVX_REF_FLAG_IS_INPUT);
+                }
+                else
+                {
+                    tivxFlagBitClear(&params[i]->obj_desc->flags, TIVX_REF_FLAG_IS_INPUT);
+                }
+            }
+            if((params[i]->is_virtual != (vx_bool)vx_false_e))
+            {
+                params[i]->is_accessible = is_accessible;
+            }
         }
     }
 }
@@ -242,13 +267,25 @@ vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[])
             for (i = 0; i < num_params; i ++)
             {
                 meta[i]->type = node->kernel->signature.types[i];
+                if (node->parameters[i] &&
+                    node->parameters[i]->is_virtual)
+                {
+                    node->parameters[i]->is_accessible = vx_true_e;
+                }
             }
 
             VX_PRINT(VX_ZONE_INFO, "Validating kernel %s\n", node->kernel->name);
 
             status = node->kernel->validate(node, node->parameters,
                 num_params, meta);
-
+            for (i = 0; i < num_params; i ++)
+            {
+                if (node->parameters[i] &&
+                    node->parameters[i]->is_virtual)
+                {
+                    node->parameters[i]->is_accessible = vx_false_e;
+                }
+            }
         }
     }
     else
@@ -859,21 +896,21 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
                             }
                         }
 
-                        ownNodeUserKernelSetParamsAccesible(params, num_params, (vx_bool)vx_true_e);
+                        ownNodeUserKernelSetParamsAccesible(node->kernel, params, num_params, (vx_bool)vx_true_e);
 
                         tivxCheckStatus(&status, node->kernel->function(node, params, num_params));
 
-                        ownNodeUserKernelSetParamsAccesible(params, num_params, (vx_bool)vx_false_e);
+                        ownNodeUserKernelSetParamsAccesible(node->kernel, params, num_params, (vx_bool)vx_false_e);
                     }
                 }
                 else
                 {
-                    ownNodeUserKernelSetParamsAccesible(prm_ref, num_params, (vx_bool)vx_true_e);
+                    ownNodeUserKernelSetParamsAccesible(node->kernel, prm_ref, num_params, (vx_bool)vx_true_e);
 
                     /* user has given user kernel function so call it */
                     status = node->kernel->function(node, prm_ref, num_params);
 
-                    ownNodeUserKernelSetParamsAccesible(prm_ref, num_params, (vx_bool)vx_false_e);
+                    ownNodeUserKernelSetParamsAccesible(node->kernel, prm_ref, num_params, (vx_bool)vx_false_e);
                 }
             }
             else

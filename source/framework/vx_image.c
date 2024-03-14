@@ -215,6 +215,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
 
     /* refer to our parent image and internally refcount it */
     subimage->parent = parent;
+    ((tivx_obj_desc_image_t *)subimage->base.obj_desc)->parent_ID = parent->base.obj_desc->obj_desc_id;
 
     /* it will find free space for subimage since this was checked before */
     for (p = 0; p < TIVX_IMAGE_MAX_SUBIMAGES; p++)
@@ -233,6 +234,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
     }
 
     (void)ownIncrementReference(&parent->base, (vx_enum)VX_INTERNAL);
+
 }
 
 static uint16_t ownGetNumParentSubimages(const vx_image image)
@@ -808,6 +810,7 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
     obj_desc->valid_roi.start_y = 0;
     obj_desc->valid_roi.end_x = width;
     obj_desc->valid_roi.end_y = height;
+    obj_desc->parent_ID = (vx_uint16)TIVX_OBJ_DESC_INVALID;
 
     switch (format)
     {

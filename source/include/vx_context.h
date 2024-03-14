@@ -44,6 +44,10 @@ extern "C" {
 */
 #define TIVX_CONTEXT_MAX_NONLINEAR_DIM (9)
 
+/*! \brief The maximum number of types supported for supplementary data
+* \ingroup group_vx_context_cfg
+*/
+
 /*! \brief Context used while sorting a graph
  * \ingroup group_vx_context
  */
@@ -149,6 +153,7 @@ typedef struct _vx_context {
 
     /*! Event queue */
     tivx_event_queue_t event_queue;
+
 } tivx_context_t;
 
 /**

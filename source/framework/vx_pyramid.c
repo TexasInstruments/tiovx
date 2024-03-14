@@ -249,13 +249,10 @@ VX_API_ENTRY vx_pyramid VX_API_CALL vxCreatePyramid(
                     }
 
                     status = ownInitPyramid(prmd);
-
-                    if ((vx_status)VX_SUCCESS != status)
+                    if (VX_SUCCESS != status)
                     {
-                        if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd))
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
-                        }
+                        vxReleasePyramid(&prmd);
+                        prmd = (vx_pyramid)ownGetErrorObject(context, status);
                     }
                 }
             }
