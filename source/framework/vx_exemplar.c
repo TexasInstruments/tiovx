@@ -61,8 +61,6 @@
 */
 
 
-
-
 #include <vx_internal.h>
 
 
@@ -162,7 +160,10 @@ vx_reference tivxCreateReferenceFromExemplar(
         default:
             break;
     }
-
+    if (exemplar->supplementary_data)
+    {
+        vxSetSupplementaryUserDataObject(ref, exemplar->supplementary_data);
+    }
     return (ref);
 }
 
@@ -262,7 +263,17 @@ static vx_reference ownCreatePyramidFromExemplar(
         pmd = vxCreatePyramid(context, levels, scale, width, height,
             format);
     }
-
+    if ((vx_enum)VX_SUCCESS == vxGetStatus((vx_reference)pmd))
+    {
+        vx_uint32 i;
+        for (i = 0; (i < levels) && ((vx_enum)VX_SUCCESS == status); ++i)
+        {
+            if (exemplar->img[i]->base.supplementary_data)
+            {
+                status = vxSetSupplementaryUserDataObject(&pmd->img[i]->base, exemplar->img[i]->base.supplementary_data);
+            }
+        }
+    }
     return (vx_reference)pmd;
 }
 

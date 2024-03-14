@@ -293,7 +293,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             matrix->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
             matrix->base.release_callback =
                 &ownReleaseReferenceBufferGeneric;
-
+            matrix->base.kernel_callback = &matrixKernelCallback;
             obj_desc = (tivx_obj_desc_matrix_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
             if(obj_desc==NULL)
