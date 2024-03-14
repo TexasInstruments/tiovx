@@ -50,11 +50,6 @@ static void ownInitPlane(vx_image image,
                  vx_uint32 bits_per_pixel  /* Valid when (size_of_ch == 0), otherwise don't care */);
 static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_df_image format);
 static vx_status ownIsFreeSubimageAvailable(vx_image image);
-static vx_image ownCreateImageInt(vx_context context,
-                                     vx_uint32 width,
-                                     vx_uint32 height,
-                                     vx_df_image color,
-                                     tivx_image_create_type_e create_type);
 static vx_status ownCopyAndMapCheckParams(
     vx_image image,
     const vx_rectangle_t* rect,
@@ -914,7 +909,7 @@ static vx_status ownIsFreeSubimageAvailable(vx_image image)
     return status;
 }
 
-static vx_image ownCreateImageInt(vx_context context,
+vx_image ownCreateImageInt(vx_context context,
                                      vx_uint32 width,
                                      vx_uint32 height,
                                      vx_df_image color,
