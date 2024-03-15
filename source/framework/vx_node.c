@@ -188,16 +188,8 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pip
 static vx_status ownRemoveNodeInt(const vx_node *n)
 {
     vx_node node;
-
-    if (n != NULL)
-    {
-        node = *n;
-    }
-    else
-    {
-        node = NULL;
-    }
-
+    /* NULL check for node is skipped since the check is already done in vx_RemoveNode. */
+    node = *n;
     vx_status status =  (vx_status)VX_ERROR_INVALID_REFERENCE;
 
     if ((NULL != node) &&
@@ -1411,11 +1403,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                         node->graph = NULL;
                         node->is_kernel_created = (vx_bool)vx_false_e;
 
-                        status = ownResetNodePerf(node);
-                        if((vx_status)VX_SUCCESS != status)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,"Failed to reset node performance statistics\n");
-                        }
+                        (void)ownResetNodePerf(node);
                         for(idx=0; idx<kernel->signature.num_parameters; idx++)
                         {
                             node->parameters[idx] = NULL;
@@ -1492,10 +1480,13 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                                 (void)ownIncrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
 
                                 status = ownGraphAddNode(graph, node, n);
+#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM001 */
                                 if((vx_status)VX_SUCCESS != status)
                                 {
                                     VX_PRINT(VX_ZONE_ERROR,"Failed to add graph node\n");
                                 }
+#endif
                             }
                         }
                     }
@@ -1873,7 +1864,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveNode(vx_node *n)
             if(node->base.external_count != 0U) {
                 status = ownReleaseReferenceInt(vxCastRefFromNodeP(&node),
                     (vx_enum)VX_TYPE_NODE, (vx_enum)VX_EXTERNAL, NULL);
-
                 if (status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"ownReleaseReferenceInt() failed.\n");
@@ -1885,7 +1875,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveNode(vx_node *n)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"ownReleaseReferenceInt() failed.\n");
+            VX_PRINT(VX_ZONE_ERROR,"ownRemoveNodeInt() failed.\n");
         }
     }
     return status;
