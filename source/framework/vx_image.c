@@ -57,6 +57,12 @@ static vx_status ownCopyAndMapCheckParams(
     const vx_rectangle_t* rect,
     vx_uint32 plane_index,
     vx_enum usage);
+static vx_status ownSwapImageCheck(tivx_obj_desc_image_t *obj_desc, vx_image image, void* const new_ptrs[], void* prev_ptrs[], vx_size num_planes);
+static vx_status ownSwapImage(tivx_obj_desc_image_t *obj_desc, vx_image image, void* const new_ptrs[],void* prev_ptrs[], vx_size image_planes);
+static void ownSwapImageMap(tivx_obj_desc_image_t *obj_desc, void* prev_ptrs[], vx_size image_planes);
+static void ownSwapImageUnmap(tivx_obj_desc_image_t *obj_desc, void* const new_ptrs[], vx_size image_planes);
+static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[]);
+static vx_status ownSwapSubImage2(tivx_obj_desc_image_t *obj_desc, vx_image image, void* const new_ptrs[]);
 
 static vx_bool ownIsSupportedFourcc(vx_df_image code)
 {
@@ -2410,10 +2416,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint16_t image_planes;
-    vx_uint32 i;
-    vx_uint32 p;
-    vx_image subimage;
-    tivx_obj_desc_image_t *obj_desc = NULL, *si_obj_desc = NULL;
+    tivx_obj_desc_image_t *obj_desc = NULL;
 
     if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
@@ -2421,123 +2424,186 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
 
         image_planes = (uint16_t)obj_desc->planes;
 
-        if(num_planes != image_planes)
-        {
-            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "number of planes is not equal to the number of image planes\n");
-        }
-
-        if(status == (vx_status)VX_SUCCESS)
-        {
-            if (new_ptrs != NULL)
-            {
-                for (p = 0; p < image_planes; p++)
-                {
-                    if (new_ptrs[p] == NULL)
-                    {
-                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                        VX_PRINT(VX_ZONE_ERROR, "Plane %d is NULL\n", p);
-                    }
-                }
-            }
-        }
-
-        if(status == (vx_status)VX_SUCCESS)
-        {
-            if ((prev_ptrs != NULL) && (image->parent != NULL))
-            {
-                /* do not return prev pointers for subimages */
-                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Previous pointers are not returned for subimages\n");
-            }
-        }
-
-        if(status == (vx_status)VX_SUCCESS)
-        {
-            if ((prev_ptrs != NULL) && (image->parent == NULL))
-            {
-                /* return previous image handles */
-                for (p = 0; p < image_planes; p++)
-                {
-                    prev_ptrs[p] = (void*)(uintptr_t)obj_desc->mem_ptr[p].host_ptr;
-
-                    if (NULL != prev_ptrs[p])
-                    {
-                        tivxCheckStatus(&status, tivxMemBufferMap(prev_ptrs[p], obj_desc->mem_size[p],
-                                                                  (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
-                    }
-                }
-            }
-
-            /* visit each subimage of this image and reclaim its pointers */
-            for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; i++)
-            {
-                subimage = image->subimages[i];
-
-                if (subimage != NULL)
-                {
-                    si_obj_desc = (tivx_obj_desc_image_t *)subimage->base.obj_desc;
-
-                    if (new_ptrs == NULL)
-                    {
-                        status = vxSwapImageHandle(subimage, (void**)NULL, (void**)NULL, si_obj_desc->planes);
-                    }
-                    else
-                    {
-                        vx_uint8* ptrs[4];
-
-                        if((vx_enum)si_obj_desc->create_type == (vx_enum)TIVX_IMAGE_FROM_ROI)
-                        {
-                            for (p = 0; p < si_obj_desc->planes; p++)
-                            {
-                                ptrs[p] = &(((vx_uint8*)new_ptrs[p])[subimage->mem_offset[p]]);
-                            }
-
-                            status = vxSwapImageHandle(subimage, (void**)ptrs, (void**)NULL, si_obj_desc->planes);
-                        }
-                        else if((vx_enum)si_obj_desc->create_type == (vx_enum)TIVX_IMAGE_FROM_CHANNEL)
-                        {
-                            ptrs[0] = new_ptrs[subimage->channel_plane];
-
-                            status = vxSwapImageHandle(subimage, (void**)ptrs, (void**)NULL, si_obj_desc->planes);
-                        }
-                        else
-                        {
-                            /* Should not hit this condition */
-                            VX_PRINT(VX_ZONE_ERROR, "Invalid image create type\n");
-                            status = (vx_status)VX_FAILURE;
-                        }
-                    }
-                }
-            }
-
-            /* reclaim previous and set new handles for this image */
-            for (p = 0; p < image_planes; p++)
-            {
-                if (new_ptrs == NULL)
-                {
-                    obj_desc->mem_ptr[p].host_ptr = (uint64_t)0;
-                    obj_desc->mem_ptr[p].shared_ptr = (uint64_t)0;
-                }
-                else
-                {
-                    /* set new pointers for subimage */
-                    obj_desc->mem_ptr[p].host_ptr = (uint64_t)(uintptr_t)new_ptrs[p];
-                    obj_desc->mem_ptr[p].shared_ptr = tivxMemHost2SharedPtr((uint64_t)(uintptr_t)new_ptrs[p], (int32_t)obj_desc->mem_ptr[p].mem_heap_region);
-
-                    if (NULL != new_ptrs[p])
-                    {
-                        tivxCheckStatus(&status, tivxMemBufferUnmap(new_ptrs[p], obj_desc->mem_size[p],
-                                                                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
-                    }
-                }
-            }
-        }
+        status = ownSwapImage(obj_desc, image, new_ptrs, prev_ptrs, image_planes);
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Invalid image reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    }
+
+    return status;
+}
+
+static vx_status ownSwapImageCheck(tivx_obj_desc_image_t *obj_desc, vx_image image, void* const new_ptrs[],void* prev_ptrs[], vx_size num_planes)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint16_t image_planes;
+    vx_uint32 p;
+
+    image_planes = (uint16_t)obj_desc->planes;
+
+    if(num_planes != image_planes)
+    {
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "number of planes is not equal to the number of image planes\n");
+    }
+
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        if (new_ptrs != NULL)
+        {
+            for (p = 0; p < image_planes; p++)
+            {
+                if (new_ptrs[p] == NULL)
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "Plane %d is NULL\n", p);
+                }
+            }
+        }
+    }
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        if ((prev_ptrs != NULL) && (image->parent != NULL))
+        {
+            /* do not return prev pointers for subimages */
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Previous pointers are not returned for subimages\n");
+        }
+    }
+
+    return status;
+}
+
+static vx_status ownSwapSubImage2(tivx_obj_desc_image_t *obj_desc, vx_image image, void* const new_ptrs[])
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    status = ownSwapImageCheck(obj_desc, image, new_ptrs, NULL, obj_desc->planes);
+
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        status = ownSwapSubImage(image, (void**)new_ptrs);
+        ownSwapImageUnmap(obj_desc, (void**)new_ptrs, obj_desc->planes);
+    }
+
+    return status;
+}
+
+static void ownSwapImageMap(tivx_obj_desc_image_t *obj_desc, void* prev_ptrs[], vx_size image_planes)
+{
+    vx_uint32 p;
+
+    /* return previous image handles */
+    for (p = 0; p < image_planes; p++)
+    {
+        prev_ptrs[p] = (void*)(uintptr_t)obj_desc->mem_ptr[p].host_ptr;
+
+        if (NULL != prev_ptrs[p])
+        {
+            (void)tivxMemBufferMap(prev_ptrs[p], obj_desc->mem_size[p],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        }
+    }
+}
+
+static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32 i, p;
+    vx_image subimage;
+    tivx_obj_desc_image_t *si_obj_desc = NULL;
+
+    /* visit each subimage of this image and reclaim its pointers */
+    for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; i++)
+    {
+        subimage = next_image->subimages[i];
+
+        if (subimage != NULL)
+        {
+            si_obj_desc = (tivx_obj_desc_image_t *)subimage->base.
+                obj_desc;
+
+            if (new_ptrs == NULL)
+            {
+                status = ownSwapSubImage2(si_obj_desc, subimage, (void**)NULL);
+            }
+            else
+            {
+                vx_uint8* ptrs[4] = {NULL};
+
+                if((vx_enum)si_obj_desc->create_type==(vx_enum)TIVX_IMAGE_FROM_ROI)
+                {
+                    for (p = 0; p < si_obj_desc->planes; p++)
+                    {
+                        ptrs[p] = &(((vx_uint8*)new_ptrs[p])[subimage->mem_offset[p]]);
+                    }
+
+                    status = ownSwapSubImage2(si_obj_desc, subimage, (void**)ptrs);
+                }
+                else
+                if((vx_enum)si_obj_desc->create_type==(vx_enum)TIVX_IMAGE_FROM_CHANNEL)
+                {
+                    ptrs[0] = new_ptrs[subimage->channel_plane];
+
+                    status = ownSwapSubImage2(si_obj_desc, subimage, (void**)ptrs);
+                }
+                else
+                {
+                    /* Should not hit this condition */
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid image create type\n");
+                    status = (vx_status)VX_FAILURE;
+                }
+            }
+        }
+    }
+
+    return status;
+}
+
+static void ownSwapImageUnmap(tivx_obj_desc_image_t *obj_desc, void* const new_ptrs[], vx_size image_planes)
+{
+    vx_uint32 p;
+
+    for (p = 0; p < image_planes; p++)
+    {
+        if (new_ptrs == NULL)
+        {
+            obj_desc->mem_ptr[p].host_ptr = (uint64_t)(uintptr_t)NULL;
+            obj_desc->mem_ptr[p].shared_ptr = (uint64_t)(uintptr_t)NULL;
+        }
+        else
+        {
+            /* set new pointers for subimage */
+            obj_desc->mem_ptr[p].host_ptr = (uint64_t)(uintptr_t)new_ptrs[p];
+            obj_desc->mem_ptr[p].shared_ptr = tivxMemHost2SharedPtr((uint64_t)(uintptr_t)new_ptrs[p], (int32_t)obj_desc->mem_ptr[p].mem_heap_region);
+
+            if (NULL != new_ptrs[p])
+            {
+                (void)tivxMemBufferUnmap(new_ptrs[p], obj_desc->mem_size[p],
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            }
+        }
+    }
+}
+
+static vx_status ownSwapImage(tivx_obj_desc_image_t *obj_desc, vx_image image, void* const new_ptrs[],void* prev_ptrs[], vx_size image_planes)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    status = ownSwapImageCheck(obj_desc, image, new_ptrs, prev_ptrs, image_planes);
+
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        if ((prev_ptrs != NULL) && (image->parent == NULL))
+        {
+            ownSwapImageMap(obj_desc, prev_ptrs, image_planes);
+        }
+
+        status = ownSwapSubImage(image, new_ptrs);
+
+        ownSwapImageUnmap(obj_desc, new_ptrs, image_planes);
     }
 
     return status;
