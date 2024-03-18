@@ -258,7 +258,7 @@ static vx_status ownDestructImage(vx_reference ref)
                 || ((vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_UNIFORM)
              )
             {
-                if(obj_desc->mem_ptr[0].host_ptr!=(uint64_t)(uintptr_t) NULL)
+                if(obj_desc->mem_ptr[0].host_ptr!=(uint64_t)0)
                 {
                     size = ownImageGetBufferSize(obj_desc);
 
