@@ -88,7 +88,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_IMAGE_MAX_PLANES   (3u)
+#define TIVX_IMAGE_MAX_PLANES   (4u)
 
 /*!
  * \brief Max possible dimensions of data in a tensor
