@@ -256,6 +256,193 @@ TEST(tivxInternalNode, negativeTestNodeCreateUserCallbackCommand)
     ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownNodeCreateUserCallbackCommand(node, TIVX_GRAPH_MAX_PIPELINE_DEPTH));
 
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalNode, negativeTestNodeSetParameter)
+{
+    #define NODE0_COMPLETED_EVENT     (2u)
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+    vx_reference src = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(src = (vx_reference)vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    VX_CALL(vxSetParameterByIndex(node, 0, (vx_reference)src));
+    vx_reference tmp = (vx_reference)(node->parameters[0]);
+    uint32_t tmp_magic = tmp->magic;
+    tmp->magic = TIVX_BAD_MAGIC;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownNodeSetParameter(node, 0 , (vx_reference)src));
+    tmp->magic = tmp_magic;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownNodeSetParameter(node, 0, (vx_reference)src));
+
+    VX_CALL(vxReleaseReference(&src));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalNode, negativeTestNodeCheckAndSendErrorEvent)
+{
+    #define NODE0_COMPLETED_EVENT     (2u)
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+    vx_reference src = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+
+    VX_CALL(vxRegisterEvent((vx_reference)node, VX_EVENT_NODE_ERROR, 0, NODE0_COMPLETED_EVENT));
+    VX_CALL(vxDisableEvents(((&(node->base))->context)));
+    tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc[0];
+    ownNodeCheckAndSendErrorEvent(node_obj_desc, 0, (vx_status)node_obj_desc->exe_status);
+
+    VX_CALL(vxEnableEvents(((&(node->base))->context)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownRegisterEvent(((vx_reference)node), TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_ERROR, 0, NODE0_COMPLETED_EVENT));
+    ownEventQueueEnableEvents(&node->graph->event_queue, (vx_bool)vx_false_e);
+    ownNodeCheckAndSendErrorEvent(node_obj_desc, 0, (vx_status)node_obj_desc->exe_status);
+
+    node_obj_desc->base.host_ref = 0;
+    ownNodeCheckAndSendErrorEvent(node_obj_desc, 0, (vx_status)node_obj_desc->exe_status);
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalNode, negativeTestNodeCheckAndSendCompletionEvent)
+{
+    #define NODE0_COMPLETED_EVENT     (2u)
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+    vx_reference src = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+
+    VX_CALL(vxRegisterEvent((vx_reference)node, VX_EVENT_NODE_COMPLETED, 0, NODE0_COMPLETED_EVENT));
+    VX_CALL(vxDisableEvents(((&(node->base))->context)));
+    tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc[0];
+    ownNodeCheckAndSendCompletionEvent(node_obj_desc, 0);
+
+    VX_CALL(vxEnableEvents(((&(node->base))->context)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownRegisterEvent(((vx_reference)node), TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0, NODE0_COMPLETED_EVENT));
+    ownEventQueueEnableEvents(&node->graph->event_queue, (vx_bool)vx_false_e);
+    ownNodeCheckAndSendCompletionEvent(node_obj_desc, 0);
+
+    node_obj_desc->base.host_ref = 0;
+    ownNodeCheckAndSendCompletionEvent(node_obj_desc, 0);
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalNode, negativeTestNodeReplaceOut)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL, node1 = NULL, node2 = NULL, node3 = NULL, node4 = NULL;
+    vx_image image1, image2;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+
+    // Creating a node
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+    // Creating a new node
+    ASSERT_VX_OBJECT(node1 = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+
+    // Creating three nodes for output node
+    ASSERT_VX_OBJECT(image1 = vxCreateImage(context, 100, 100, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image2 = vxCreateImage(context, 100, 100, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(node2 = vxNotNode(graph, image1, image2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node3 = vxNotNode(graph, image1, image2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node4 = vxNotNode(graph, image1, image2), VX_TYPE_NODE);
+
+    // Adding output nodes to node
+    ASSERT(VX_SUCCESS == ownNodeAddOutNode(node, node2));
+    ASSERT(VX_SUCCESS == ownNodeAddOutNode(node, node3));
+    ASSERT(VX_SUCCESS == ownNodeAddOutNode(node, node4));
+    ASSERT(VX_SUCCESS == ownNodeReplaceOutNode(node, node2, node1));
+    ASSERT(VX_SUCCESS == ownNodeReplaceOutNode(node, node3, node1));
+
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseImage(&image1));
+    VX_CALL(vxReleaseImage(&image2));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalNode, negativeTestNodeReplaceIn)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL, node1 = NULL, node2 = NULL, node3 = NULL, node4 = NULL;
+    vx_image image1, image2;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+
+    // Creating a node
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+
+    // Creating a new node
+    ASSERT_VX_OBJECT(node1 = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+
+    // Creating three nodes for input node
+    ASSERT_VX_OBJECT(image1 = vxCreateImage(context, 100, 100, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image2 = vxCreateImage(context, 100, 100, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(node2 = vxNotNode(graph, image1, image2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node3 = vxNotNode(graph, image1, image2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node4 = vxNotNode(graph, image1, image2), VX_TYPE_NODE);
+
+    // Adding input nodes to node
+    ASSERT(VX_SUCCESS == ownNodeAddInNode(node, node2));
+    ASSERT(VX_SUCCESS == ownNodeAddInNode(node, node3));
+    ASSERT(VX_SUCCESS == ownNodeAddInNode(node, node4));
+    ASSERT(VX_SUCCESS == ownNodeReplaceInNode(node, node2, node1));
+    ASSERT(VX_SUCCESS == ownNodeReplaceInNode(node, node3, node1));
+
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseImage(&image1));
+    VX_CALL(vxReleaseImage(&image2));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+
+TEST(tivxInternalNode, negativeTestNodeAllocObjDescForPipeline)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+    vx_reference src = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+
+    node->pipeline_depth = 0;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownNodeAllocObjDescForPipeline(node, 2));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
@@ -272,5 +459,11 @@ TESTCASE_TESTS(tivxInternalNode,
     negativeTestNodeIsPrmReplicated,
     negativeTestDestructNode,
     negativeTestNodeRemoveNode,
-    negativeTestNodeCreateUserCallbackCommand
+    negativeTestNodeCreateUserCallbackCommand,
+    negativeTestNodeSetParameter,
+    negativeTestNodeCheckAndSendErrorEvent,
+    negativeTestNodeCheckAndSendCompletionEvent,
+    negativeTestNodeReplaceOut,
+    negativeTestNodeReplaceIn,
+    negativeTestNodeAllocObjDescForPipeline
     )

@@ -192,6 +192,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     ASSERT_EQ_VX_STATUS(VX_FAILURE, ownNodeKernelInitKernelName(node));
     EXPECT_VX_ERROR(node1 = vxCreateGenericNode(graph, kernel), VX_ERROR_NO_RESOURCES);
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, ownNodeCreateUserCallbackCommand(node2, 0));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, ownNodeAllocObjDescForPipeline(node2, 2));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric((vx_reference)img));
     for (j = 0; j < i-1; j++)
     {
