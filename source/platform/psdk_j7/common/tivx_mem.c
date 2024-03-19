@@ -77,7 +77,7 @@ vx_status tivxMemBufferAlloc(
             mem_ptr->host_ptr = (uintptr_t)appMemAlloc(
                 heap_id, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
 
-            if ((uintptr_t)NULL != mem_ptr->host_ptr)
+            if ((uint64_t)0 != mem_ptr->host_ptr)
             {
                 mem_ptr->mem_heap_region = (uint32_t)mem_heap_region;
                 mem_ptr->shared_ptr = (uint64_t)tivxMemHost2SharedPtr(
@@ -254,8 +254,8 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
                 appMemCloseDmaBufFd(mem_ptr->dma_buf_fd);
                 mem_ptr->dma_buf_fd = (int32_t)-1;
                 mem_ptr->dma_buf_fd_offset = (uint32_t)0U;
-                mem_ptr->host_ptr = (uintptr_t)NULL;
-                mem_ptr->shared_ptr = (uintptr_t)NULL;
+                mem_ptr->host_ptr = 0;
+                mem_ptr->shared_ptr = 0;
             }
             else
             {
