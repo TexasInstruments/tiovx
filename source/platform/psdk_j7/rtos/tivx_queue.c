@@ -139,7 +139,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
     uint32_t cookie;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
 
-    do
+    for(;;)
     {
         /* disable interrupts */
         cookie = (uint32_t)HwiP_disable();
@@ -225,7 +225,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
             break;
         }
     }
-    while (1 == 1);
+  
 
     return (status);
 }
@@ -237,7 +237,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
     volatile vx_bool do_break = (vx_bool)vx_false_e;
     vx_status ret_status = (vx_status)VX_SUCCESS;
 
-    do
+    for(;;)
     {
         /* disable interrupts */
         cookie = (uint32_t)HwiP_disable();
@@ -324,7 +324,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
             break;
         }
     }
-    while (1 == 1);
+    
 
     return (status);
 }
