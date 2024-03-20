@@ -2276,8 +2276,6 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
                             {
                                 destination->supplementary_data = supp;
                                 destination->obj_desc->supp_data_ID = supp->base.obj_desc->obj_desc_id;
-                                tivx_obj_desc_user_data_object_t * dst_obj_desc_int = (tivx_obj_desc_user_data_object_t *)destination->supplementary_data->base.obj_desc;
-                                printf ("host pointer %x", dst_obj_desc_int->mem_ptr.host_ptr);
                                 supp->owner = destination;
                             }
                         }
