@@ -306,7 +306,8 @@ static vx_status ownDeallocateUserKernelId(vx_context context, vx_kernel kernel)
         if ( (kernel->enumeration >= (int32_t)VX_KERNEL_BASE(VX_ID_USER, 0U)) &&
              (kernel->enumeration <  (int32_t)(VX_KERNEL_BASE(VX_ID_USER, 0U) + (int32_t)TIVX_MAX_KERNEL_ID)) )
         {
-            uint32_t dynamic_user_kernel_idx = kernel->enumeration - VX_KERNEL_BASE(VX_ID_USER, 0U);
+            int32_t idx = kernel->enumeration - VX_KERNEL_BASE(VX_ID_USER, 0U);
+            uint32_t dynamic_user_kernel_idx = (uint32_t)idx;
 
             context->is_dynamic_user_kernel_id_used[dynamic_user_kernel_idx] = (vx_bool)vx_false_e;
             context->num_dynamic_user_kernel_id--;
