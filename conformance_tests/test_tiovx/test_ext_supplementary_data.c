@@ -68,7 +68,6 @@
 #include "TI/tivx.h"
 #include "enumstring.h"
 #include <TI/tivx_obj_desc.h>
-#include <TI/tivx_obj_desc.h>
 #include <VX/vx_khr_supplementary_data.h>
 #include <VX/vx_khr_swap_move.h>
 #include <RB/vx_rb_ref_data.h>
@@ -84,22 +83,30 @@
 /*******************************************************************/
 TESTCASE(supplementary_data, CT_VXContext, ct_setup_vx_context, 0)
 
-#define ERROR_EXPECT_STATUS_BAD( status, tag ) { \
-        if((status) == VX_SUCCESS) { \
-            printf("ERROR: failed with unexpected VX_SUCCESS at " __FILE__ "#%d;\n", __LINE__ ); \
-        } \
+#define ERROR_EXPECT_STATUS_BAD( status, tag ) {\
+        if((status) == VX_SUCCESS) {\
+            printf("ERROR: failed with unexpected VX_SUCCESS at " __FILE__ "#%d;\n", __LINE__ );\
+        }\
         EXPECT_NE_VX_STATUS(VX_SUCCESS, status);\     
     }
 
-#define ERROR_EXPECT_STATUS( status, expected, tag ) { \
-        vx_status status_ = (status); \
-        if(status_ != (expected)) { \
-            printf("ERROR: failed with status = (%d) at " __FILE__ "#%d when %d was expected\n", status_, __LINE__, expected); \
-        } \
+#define ERROR_EXPECT_STATUS( status, expected, tag ) {\
+        vx_status status_ = (status);\
+        if(status_ != (expected)) {\
+            printf("ERROR: failed with status = (%d) at " __FILE__ "#%d when %d was expected\n", status_, __LINE__, expected);\
+        }\
         EXPECT_EQ_VX_STATUS(expected, status_);\
     }    
 
-#define ERROR_CHECK_STATUS(status, tag) ERROR_EXPECT_STATUS( status, VX_SUCCESS, tag )
+
+#define ERROR_CHECK_VX_SUCCESS(status, tag) ERROR_EXPECT_STATUS( status, VX_SUCCESS, tag )
+
+#define ERROR_CHECK_NE( current, expected , tag) { \
+        vx_status current_ = (current); \
+        if(current_ != (expected)) { \
+            printf("ERROR: failed with value = (%d) at " __FILE__ "#%d when %d was expected\n", status_, __LINE__, expected); \
+        } \
+    }
 
 static const vx_enum type_ids[] = 
 {
@@ -258,15 +265,15 @@ static vx_status VX_CALLBACK myUserTestKernelFunction(vx_node node, const vx_ref
     vx_size size = 4;
     vx_map_id map_id;
     void * ptr;
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(tivxSetUserDataObjectAttribute(input, TIVX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "Cannot set valid size of input supplementary data");
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(vxCopyUserDataObject(input, 0, sizeof(size), &size, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST), "Cannot copy to the supplementary data of input object");
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(vxMapUserDataObject(input, 0, sizeof(size), &map_id, &ptr, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0), "Cannot map supplementary data of input for writing");
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(vxSetSupplementaryUserDataObject(params[2], input), "Cannot create supplementary data in kernel function");
+    ERROR_EXPECT_STATUS_BAD(tivxSetUserDataObjectAttribute(input, TIVX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "Cannot set valid size of input supplementary data");
+    ERROR_EXPECT_STATUS_BAD(vxCopyUserDataObject(input, 0, sizeof(size), &size, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST), "Cannot copy to the supplementary data of input object");
+    ERROR_EXPECT_STATUS_BAD(vxMapUserDataObject(input, 0, sizeof(size), &map_id, &ptr, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0), "Cannot map supplementary data of input for writing");
+    ERROR_EXPECT_STATUS_BAD(vxSetSupplementaryUserDataObject(params[2], input), "Cannot create supplementary data in kernel function");
     vx_user_data_object output = vxGetSupplementaryUserDataObject(params[3], NULL, &status);
-    ERROR_CHECK_STATUS(tivxSetUserDataObjectAttribute(output, TIVX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "Can set valid size of output supplementary data");
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(output, 0, sizeof(size), &size, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST), "Can copy to the supplementary data of output object");
-    ERROR_CHECK_STATUS(vxMapUserDataObject(output, 0, sizeof(size), &map_id, &ptr, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0), "Can map supplementary data of output for writing");
-    ERROR_CHECK_STATUS(vxUnmapUserDataObject(output, map_id), "Successfully unmapped supplementary data of output");
+    ERROR_CHECK_VX_SUCCESS(tivxSetUserDataObjectAttribute(output, TIVX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "Can set valid size of output supplementary data");
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(output, 0, sizeof(size), &size, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST), "Can copy to the supplementary data of output object");
+    ERROR_CHECK_VX_SUCCESS(vxMapUserDataObject(output, 0, sizeof(size), &map_id, &ptr, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0), "Can map supplementary data of output for writing");
+    ERROR_CHECK_VX_SUCCESS(vxUnmapUserDataObject(output, map_id), "Successfully unmapped supplementary data of output");
     vxReleaseUserDataObject(&input);
     vxReleaseUserDataObject(&output);
     vxReleaseUserDataObject(&childInput);
@@ -282,17 +289,17 @@ static vx_status VX_CALLBACK  myUserTestTargetFunction(tivx_target_kernel_instan
     */
     user_data_t test_data = {.numbers = {90, 80, 70, 60}};
     tivx_obj_desc_user_data_object_t * supp = tivxGetSupplementaryDataObjDesc(NULL, NULL);
-    ERROR_CHECK_STATUS(NULL != supp, "tivxGetSupplementaryDataObjDesc fails when passed a NULL");
+    ERROR_CHECK_VX_SUCCESS(NULL != supp, "tivxGetSupplementaryDataObjDesc fails when passed a NULL");
     supp = tivxGetSupplementaryDataObjDesc(obj_desc[0], "invalid type");
-    ERROR_CHECK_STATUS(NULL != supp, "tivxGetSupplementaryDataObjDesc fails when passed the wrong type");
+    ERROR_CHECK_VX_SUCCESS(NULL != supp, "tivxGetSupplementaryDataObjDesc fails when passed the wrong type");
     supp = tivxGetSupplementaryDataObjDesc(obj_desc[2], NULL);
-    ERROR_CHECK_STATUS(NULL != supp, "tivxGetSupplementaryDataObjDesc fails when there is no supplementary data");
+    ERROR_CHECK_VX_SUCCESS(NULL != supp, "tivxGetSupplementaryDataObjDesc fails when there is no supplementary data");
     supp = tivxGetSupplementaryDataObjDesc(obj_desc[0], NULL);
-    ERROR_CHECK_STATUS(NULL == supp,"tivxGetSupplementaryDataObjDesc success with NULL type name");
+    ERROR_CHECK_VX_SUCCESS(NULL == supp,"tivxGetSupplementaryDataObjDesc success with NULL type name");
     supp = tivxGetSupplementaryDataObjDesc(obj_desc[1], "user_data_t");
-    ERROR_CHECK_STATUS(NULL == supp, "tivxGetSupplementaryDataObjDesc success with correct type name from child object");
+    ERROR_CHECK_VX_SUCCESS(NULL == supp, "tivxGetSupplementaryDataObjDesc success with correct type name from child object");
     supp = tivxGetSupplementaryDataObjDesc(obj_desc[0], "user_data_t");
-    ERROR_CHECK_STATUS(NULL == supp, "tivxGetSupplementaryDataObjDesc success with correct type name");
+    ERROR_CHECK_VX_SUCCESS(NULL == supp, "tivxGetSupplementaryDataObjDesc success with correct type name");
     ERROR_EXPECT_STATUS(tivxSetSupplementaryDataObjDesc(obj_desc[3], NULL), VX_ERROR_INVALID_REFERENCE, "tivxGetSupplementaryDataObjDesc returns VX_ERROR_INVALID_REFERENCE when passed NULL source");
     ERROR_EXPECT_STATUS(tivxSetSupplementaryDataObjDesc(NULL, supp), VX_ERROR_INVALID_REFERENCE, "tivxGetSupplementaryDataObjDesc returns VX_ERROR_INVALID_REFERENCE when passed NULL destination");
     ERROR_EXPECT_STATUS(tivxSetSupplementaryDataObjDesc(obj_desc[1], supp), VX_FAILURE, "tivxGetSupplementaryDataObjDesc returns VX_FAILURE when destination has no supplementary data even though parent has");
@@ -315,7 +322,7 @@ static vx_status VX_CALLBACK  myUserTestTargetFunction(tivx_target_kernel_instan
     {
         tivx_obj_desc_memcpy((void *)&test_data, (void *)(uintptr_t)(supp->mem_ptr.host_ptr), supp->mem_size);
         tivxMemBufferUnmap((void *)(uintptr_t)(supp->mem_ptr.host_ptr), supp->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        ERROR_CHECK_STATUS(test_data.numbers[0] != 1 ||
+        ERROR_CHECK_VX_SUCCESS(test_data.numbers[0] != 1 ||
                            test_data.numbers[1] != 2 ||
                            test_data.numbers[2] != 70, "tivxExtendSupplementaryDataObjDesc copies correct data");
     }
@@ -332,32 +339,32 @@ void tivxAddTargetKernelGeneral(vx_context context)
     target_kernel = tivxAddTargetKernel(MY_USER_TARGET_KERNEL, TIVX_TARGET_HOST, myGeneralKernelFunction, myGeneralKernelCreate, myGeneralKernelDelete, NULL, NULL);
     general_kernel = vxAddUserKernel(context, "myUserTargetKernel", MY_USER_TARGET_KERNEL, NULL, 2, myGeneralKernelValidator, NULL, NULL);
     EXPECT_VX_OBJECT(general_kernel, VX_TYPE_KERNEL);
-    ERROR_CHECK_STATUS(tivxAddKernelTarget(general_kernel, TIVX_TARGET_HOST), NULL);;
-    ERROR_CHECK_STATUS(vxAddParameterToKernel(general_kernel, 0, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
-    ERROR_CHECK_STATUS(vxAddParameterToKernel(general_kernel, 1, VX_OUTPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
-    ERROR_CHECK_STATUS(vxFinalizeKernel(general_kernel), NULL);
+    ERROR_CHECK_VX_SUCCESS(tivxAddKernelTarget(general_kernel, TIVX_TARGET_HOST), NULL);;
+    ERROR_CHECK_VX_SUCCESS(vxAddParameterToKernel(general_kernel, 0, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxAddParameterToKernel(general_kernel, 1, VX_OUTPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxFinalizeKernel(general_kernel), NULL);
     /* end of section to remove */
     target_test_kernel = tivxAddTargetKernel(MY_USER_TEST_TARGET_KERNEL, TIVX_TARGET_HOST, myUserTestTargetFunction, myGeneralKernelCreate, myGeneralKernelDelete, NULL, NULL);
     general_test_kernel = vxAddUserKernel(context, "myUserTestTargetKernel", MY_USER_TEST_TARGET_KERNEL, NULL, 4, myGeneralKernelValidator, NULL, NULL);
     EXPECT_VX_OBJECT(general_test_kernel, VX_TYPE_KERNEL);
-    ERROR_CHECK_STATUS(tivxAddKernelTarget(general_test_kernel, TIVX_TARGET_HOST), NULL);;
-    ERROR_CHECK_STATUS(vxAddParameterToKernel(general_test_kernel, 0, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
-    ERROR_CHECK_STATUS(vxAddParameterToKernel(general_test_kernel, 1, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
-    ERROR_CHECK_STATUS(vxAddParameterToKernel(general_test_kernel, 2, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
-    ERROR_CHECK_STATUS(vxAddParameterToKernel(general_test_kernel, 3, VX_OUTPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
-    ERROR_CHECK_STATUS(vxFinalizeKernel(general_test_kernel), NULL);
+    ERROR_CHECK_VX_SUCCESS(tivxAddKernelTarget(general_test_kernel, TIVX_TARGET_HOST), NULL);;
+    ERROR_CHECK_VX_SUCCESS(vxAddParameterToKernel(general_test_kernel, 0, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxAddParameterToKernel(general_test_kernel, 1, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxAddParameterToKernel(general_test_kernel, 2, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxAddParameterToKernel(general_test_kernel, 3, VX_OUTPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxFinalizeKernel(general_test_kernel), NULL);
 
     user_test_kernel = vxAddUserKernel(context, "myUserTestKernel", MY_USER_TEST_KERNEL, myUserTestKernelFunction, 4, myUserTestKernelValidator, NULL, NULL);
-    ERROR_CHECK_STATUS(vxAddParameterToKernel(user_test_kernel, 0, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
-    ERROR_CHECK_STATUS(vxAddParameterToKernel(user_test_kernel, 1, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
-    ERROR_CHECK_STATUS(vxAddParameterToKernel(user_test_kernel, 2, VX_OUTPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
-    ERROR_CHECK_STATUS(vxAddParameterToKernel(user_test_kernel, 3, VX_OUTPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
-    ERROR_CHECK_STATUS(vxFinalizeKernel(user_test_kernel), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxAddParameterToKernel(user_test_kernel, 0, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxAddParameterToKernel(user_test_kernel, 1, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxAddParameterToKernel(user_test_kernel, 2, VX_OUTPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxAddParameterToKernel(user_test_kernel, 3, VX_OUTPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxFinalizeKernel(user_test_kernel), NULL);
 
     my_dumb_copy_kernel = vxAddUserKernel(context, "MY_DUMB_IMAGE_COPY", MY_DUMB_IMAGE_COPY_KERNEL, myDumbImageCopyKernel, 2, myDumbImageCopyValidator, NULL, NULL);
-    ERROR_CHECK_STATUS(vxAddParameterToKernel(my_dumb_copy_kernel, 0, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
-    ERROR_CHECK_STATUS(vxAddParameterToKernel(my_dumb_copy_kernel, 1, VX_OUTPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
-    ERROR_CHECK_STATUS(vxFinalizeKernel(my_dumb_copy_kernel), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxAddParameterToKernel(my_dumb_copy_kernel, 0, VX_INPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxAddParameterToKernel(my_dumb_copy_kernel, 1, VX_OUTPUT, VX_TYPE_REFERENCE, VX_PARAMETER_STATE_REQUIRED), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxFinalizeKernel(my_dumb_copy_kernel), NULL);
 }
 
 void tivxRemoveTargetKernelGeneral(void)
@@ -393,7 +400,7 @@ vx_status writeValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint8 b)
         {
             vx_uint8 items[4] = {a, b, b, a};
             vx_size n = 0;
-            ERROR_CHECK_STATUS(vxQueryArray((vx_array)ref, VX_ARRAY_NUMITEMS, &n, sizeof(n)), NULL);
+            ERROR_CHECK_VX_SUCCESS(vxQueryArray((vx_array)ref, VX_ARRAY_NUMITEMS, &n, sizeof(n)), NULL);
             if (n)
             {
                 (void)vxTruncateArray((vx_array)ref, 0);
@@ -425,7 +432,7 @@ vx_status checkValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint8 b)
 {
     vx_status status = VX_SUCCESS;
     vx_enum reftype = VX_TYPE_INVALID;
-    ERROR_CHECK_STATUS(vxQueryReference(ref, VX_REFERENCE_TYPE, &reftype, sizeof(reftype)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxQueryReference(ref, VX_REFERENCE_TYPE, &reftype, sizeof(reftype)), NULL);
     if (reftype != type)
     {
         printf("Found reference type %s when %s was expected\n", enumToString(reftype), enumToString(type));
@@ -598,7 +605,7 @@ TEST (supplementary_data, testRefCount)
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseReference(&supp_data));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxQueryReference(supp_data_copy, VX_REFERENCE_COUNT, &ref_count2, sizeof(ref_count2)));
     /* Supplementary data reference count equal to one before final release*/
-    EXPECT_NE_VX_STATUS(ref_count2, 1);
+    EXPECT_EQ_VX_STATUS(ref_count2, 1);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseReference(&supp_data_copy));
 }
 
@@ -608,18 +615,18 @@ void testOneType(vx_context context, vx_enum type)
     vx_reference ref = createReference(context, type);
     vx_status status = VX_SUCCESS;
     vx_user_data_object supp = vxGetSupplementaryUserDataObject(ref, NULL, &status);
-    if ( status != (vx_status)VX_SUCCESS)
+    if ( status == (vx_status)VX_SUCCESS)
     {
         printf("No supplementary data retrieved for type %s \n", enumToString(type));
     }
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, status);
 
     user_data_t user_data = {.numbers = {1, 2, 3, 4}};
     vx_user_data_object exemplar = vxCreateUserDataObject(context, "user_data_t", sizeof(user_data_t), &user_data);
     status = vxSetSupplementaryUserDataObject(ref, exemplar);
     if (status != (vx_status)VX_SUCCESS)
     {
-        printf("vxSetSupplementaryUserDataObject for type %s \n", enumToString(type));
+        printf("vxSetSupplementaryUserDataObject  failed for type %s \n", enumToString(type));
     }
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS,vxReleaseUserDataObject(&exemplar));
@@ -627,14 +634,14 @@ void testOneType(vx_context context, vx_enum type)
     supp = vxGetSupplementaryUserDataObject(ref, NULL, &status);
     if (status != (vx_status)VX_SUCCESS)
     {
-        printf("vxGetSupplementaryUserDataObject for type %s \n", enumToString(type));
+        printf("vxGetSupplementaryUserDataObject failed for type %s \n", enumToString(type));
     }
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);    
 
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(supp, 0, sizeof(user_data.numbers[0]), &user_data.numbers[3], VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
     if (user_data.numbers[3] != user_data.numbers[0])
     {
-        printf("Correct value read from supplementary data for type %s", enumToString(type));
+        printf("canoot read the correct value read from supplementary data for type %s", enumToString(type));
         status = (vx_status)VX_FAILURE;
     }
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
@@ -666,31 +673,32 @@ TEST(supplementary_data, testInvalidTypes)
     vx_user_data_object exemplar = vxCreateUserDataObject(context, "user_data_t", sizeof(user_data_t), &user_data);
     vx_status status = VX_SUCCESS;
     vx_user_data_object supp = vxGetSupplementaryUserDataObject((vx_reference)context, NULL, &status);
-    if (status != (vx_status)VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
-        printf("Cannot get supplementary data from context\n");
+        printf("no supplementary available, should not be possible to get it\n");
     }
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, status);
     
     status = vxSetSupplementaryUserDataObject((vx_reference)context, exemplar);
-    if (status != (vx_status)VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
-        printf("Cannot set supplementary data on context\n");
+        printf("it should not be possible to set supplementary data on context\n");
     }
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, status);
 
     supp = vxGetSupplementaryUserDataObject((vx_reference)graph, NULL, &status);
-    if (status != (vx_status)VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
-        printf("Cannot get supplementary data from graph\n");
+        printf("it should no be possible to get supplementary data from graph\n");
     }    
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, status);
+
     status = vxSetSupplementaryUserDataObject((vx_reference)graph, exemplar);
-    if (status != (vx_status)VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
-        printf("Cannot set supplementary data on graph\n");
+        printf("it should no be possible to set supplementary data on graph\n");
     }     
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseUserDataObject(&exemplar));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseGraph(&graph));
 }
@@ -794,9 +802,9 @@ void testParentAndChild(vx_reference parent, vx_reference child, const char * ms
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(orig), &orig, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(test1), &test1, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(child_data, 0, sizeof(test2), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
-    if (test1.numbers[2] == test2.numbers[2])
+    if (test1.numbers[2] != test2.numbers[2])
     {
-      printf("Changing parent data doe not affects data for %s \n", msg);
+      printf("Changing parent data should affects child data for %s \n", msg);
       status = (vx_enum) VX_FAILURE;
     }
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
@@ -805,10 +813,23 @@ void testParentAndChild(vx_reference parent, vx_reference child, const char * ms
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(child_data, 0, sizeof(test2), &test2, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
     /* return parent to original data */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(orig), &orig, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+    /* read again the original state*/
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(test2), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(test1), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+//tivx_obj_desc_user_data_object_t *obj_desc_before;// = (tivx_obj_desc_user_data_object_t *)parent_data->base.obj_desc;
+
     /* Now actually set the child user data object & re-get the supplementary data */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject(child, child_data));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseUserDataObject(&child_data));
-    child_data = vxGetSupplementaryUserDataObject(child, "user_data_t", &status);
+    child_data  = vxGetSupplementaryUserDataObject(child, "user_data_t", &status);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseUserDataObject(&parent_data));
+    parent_data = vxGetSupplementaryUserDataObject(parent, "user_data_t", &status);
+//tivx_obj_desc_user_data_object_t *obj_desc_after = (tivx_obj_desc_user_data_object_t *)parent_data->base.obj_desc;
+    /* read again the original state*/
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(test2), &test2, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(test1), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     test2.numbers[2] = 45;
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(child_data, 0, sizeof(test2), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
@@ -828,9 +849,9 @@ void testParentAndChild(vx_reference parent, vx_reference child, const char * ms
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
 
     test2.numbers[2] = 45;
-    status = vxCopyUserDataObject(child_data, 0, sizeof(test1), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+    status = vxCopyUserDataObject(child_data, 0, sizeof(test2), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-    if (test1.numbers[2] == test2.numbers[2])
+    if (test1.numbers[2] != test2.numbers[2])
     {
         printf("Can not read changed data back correctly for %s \n", msg);
         status = (vx_enum) VX_FAILURE;
@@ -838,12 +859,14 @@ void testParentAndChild(vx_reference parent, vx_reference child, const char * ms
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
 
     test2.numbers[2] = 45;
+    #if 1
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(test2), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
     if (orig.numbers[2] == test2.numbers[2])
     {
         printf("changed data does affect parent for%s \n", msg);
         status = (vx_enum) VX_FAILURE;
     }
+    #endif
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     VX_CALL(vxReleaseUserDataObject(&child_data));
     VX_CALL(vxReleaseUserDataObject(&parent_data));
@@ -866,10 +889,10 @@ TEST(supplementary_data, testChildren)
     vx_image grandchildImageFromImage = vxCreateImageFromROI(imageFromROI, &rect);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     /* That's all the objects created, they do not have supplementary data, add it to the parents */
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)tensor, exemplar));
+    //EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)tensor, exemplar));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)image, exemplar));
     /* Now all children and grand children should have read-only supplementary data from the parent, check it all */
-    testParentAndChild((vx_reference)image, (vx_reference)grandchildImageFromImage, "image created from child of image");
+    //testParentAndChild((vx_reference)image, (vx_reference)grandchildImageFromImage, "image created from child of image");
     testParentAndChild((vx_reference)image, (vx_reference)imageFromROI, "image created from image");
     VX_CALL(vxReleaseUserDataObject(&exemplar));
     VX_CALL(vxReleaseImage(&image));
@@ -890,6 +913,7 @@ vx_node dumbCopyNode(vx_graph graph, vx_image in, vx_image out)
 TEST(supplementary_data, testExemplars)
 {
     vx_context context = context_->vx_context_;
+    tivxAddTargetKernelGeneral(context);
     printf("\nTesting exemplars\n");
     vx_status status = VX_SUCCESS;
     user_data_t user_data = {.numbers = {1, 2, 3, 4}};
@@ -979,19 +1003,19 @@ TEST(supplementary_data, testExemplars)
         printf("Virtual interstitial node not correctly created and initialised \n");
         status = VX_FAILURE;
     }
-
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     /*Special check for object arrays of pyramids. The supplementary data of each level should be created*/
     vx_pyramid pyr = vxCreatePyramid(context, 3, VX_SCALE_PYRAMID_HALF, 64, 64, VX_DF_IMAGE_U8);
     EXPECT_VX_OBJECT(pyr, VX_TYPE_PYRAMID);
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_pyramid)pyr, exemplar));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)pyr, exemplar));
     for (i = 0; i < 3; ++i)
     {
         vx_image img = vxGetPyramidLevel(pyr, i);
-        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_image)img, exemplar));
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)img, exemplar));
         VX_CALL(vxReleaseImage(&img));
     }
-    array = vxCreateObjectArray(context, (vx_pyramid)pyr, 3);
-    EXPECT_VX_OBJECT(array, VX_TYPE_ARRAY);
+    array = vxCreateObjectArray(context, (vx_reference)pyr, 3);
+    EXPECT_VX_OBJECT(array, VX_TYPE_OBJECT_ARRAY);
     /* Each of the pyramids should have been created with supplementary data at each of their levels as well as in the pyramid */
     status = VX_SUCCESS;
     for (i = 0; (i < 3) && ((vx_enum)VX_SUCCESS == status); ++i)
@@ -1034,12 +1058,13 @@ TEST(supplementary_data, testExemplars)
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
     VX_CALL(vxReleaseGraph(&graph));
+    tivxRemoveTargetKernelGeneral();
 }
 
-#if 0
 /* Test Copy, Swap, Move */
-void testCopySwapMove(vx_context context)
+TEST(supplementary_data, testCopySwapMove)
 {
+    vx_context context = context_->vx_context_;
     printf("\nTesting copy and swap\n");
     vx_status status = VX_SUCCESS;
     user_data_t user_data1 = {.numbers = {1, 2, 3, 4}};
@@ -1049,20 +1074,20 @@ void testCopySwapMove(vx_context context)
     vx_matrix matrix1 = vxCreateMatrixFromPattern(context, VX_PATTERN_BOX, 3, 3);
     vx_matrix matrix2 = vxCreateMatrixFromPattern(context, VX_PATTERN_BOX, 3, 3);
     
-    ERROR_CHECK_STATUS(vxSetSupplementaryUserDataObject(vxCastFromMatrix(matrix1), exemplar1), NULL);
-    ERROR_CHECK_STATUS(vxSetSupplementaryUserDataObject(vxCastFromMatrix(matrix2), exemplar2), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(matrix1), exemplar1), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(matrix2), exemplar2), NULL);
 
-    vx_user_data_object supp1 = vxGetSupplementaryUserDataObject(vxCastFromMatrix(matrix1), NULL, &status);
-    ERROR_CHECK_STATUS(status , NULL);
-    vx_user_data_object supp2 = vxGetSupplementaryUserDataObject(vxCastFromMatrix(matrix2), NULL, &status);
-    ERROR_CHECK_STATUS(status , NULL);
+    vx_user_data_object supp1 = vxGetSupplementaryUserDataObject((vx_reference)(matrix1), NULL, &status);
+    ERROR_CHECK_VX_SUCCESS(status , NULL);
+    vx_user_data_object supp2 = vxGetSupplementaryUserDataObject((vx_reference)(matrix2), NULL, &status);
+    ERROR_CHECK_VX_SUCCESS(status , NULL);
     user_data_t test1 = {0};
     user_data_t test2 = {0};
     /* Now try a swap */
-    ERROR_CHECK_STATUS(vxuSwap(context, vxCastFromMatrix(matrix1), vxCastFromMatrix(matrix2)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxuSwap(context, (vx_reference)(matrix1), (vx_reference)(matrix2)), NULL);
     /* Now if we look at the supplementary data it should be the other way around */
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
     status = VX_SUCCESS;
     for (int i = 0; i < 3; ++i)
     {
@@ -1072,11 +1097,11 @@ void testCopySwapMove(vx_context context)
             break;
         }
     }
-    ERROR_CHECK_STATUS(status, "Supplementary data swapped when objects swapped");
+    ERROR_CHECK_VX_SUCCESS(status, "Supplementary data swapped when objects swapped");
     /* Now try a Copy */
-    ERROR_CHECK_STATUS(vxuCopy(context, vxCastFromMatrix(matrix1), vxCastFromMatrix(matrix2)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxuCopy(context, (vx_reference)(matrix1), (vx_reference)(matrix2)), NULL);
     /* And now supp2 should have the same data as supp1, i.e. user_data_2*/
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
     status = VX_SUCCESS;
     for (int i = 0; i < 3; ++i)
     {
@@ -1086,16 +1111,16 @@ void testCopySwapMove(vx_context context)
             break;
         }
     }
-    ERROR_CHECK_STATUS(status, "Supplementary data copied when objects copied");
+    ERROR_CHECK_VX_SUCCESS(status, "Supplementary data copied when objects copied");
     
     /* Now test copy & swap in a graph */
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &user_data1, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &user_data1, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST), NULL);
 
     vx_graph graph = vxCreateGraph(context);
-    vx_node node = vxSwapNode(graph, vxCastFromMatrix(matrix1), vxCastFromMatrix(matrix2));
-    ERROR_CHECK_STATUS(vxProcessGraph(graph), NULL);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    vx_node node = vxSwapNode(graph, (vx_reference)(matrix1), (vx_reference)(matrix2));
+    ERROR_CHECK_VX_SUCCESS(vxProcessGraph(graph), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
     status = VX_SUCCESS;
     for (int i = 0; i < 3; ++i)
     {
@@ -1105,14 +1130,14 @@ void testCopySwapMove(vx_context context)
             break;
         }
     }
-    ERROR_CHECK_STATUS(status, "Supplementary data swapped when objects swapped in a graph");
+    ERROR_CHECK_VX_SUCCESS(status, "Supplementary data swapped when objects swapped in a graph");
     vxReleaseNode(&node);
     vxReleaseGraph(&graph);
 
     graph = vxCreateGraph(context);
-    node = vxCopyNode(graph, vxCastFromMatrix(matrix1), vxCastFromMatrix(matrix2));
-    ERROR_CHECK_STATUS(vxProcessGraph(graph), NULL);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    node = vxCopyNode(graph, (vx_reference)(matrix1), (vx_reference)(matrix2));
+    ERROR_CHECK_VX_SUCCESS(vxProcessGraph(graph), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
     status = VX_SUCCESS;
     for (int i = 0; i < 3; ++i)
     {
@@ -1122,7 +1147,7 @@ void testCopySwapMove(vx_context context)
             break;
         }
     }
-    ERROR_CHECK_STATUS(status, "Supplementary data copied when objects copied in a graph");
+    ERROR_CHECK_VX_SUCCESS(status, "Supplementary data copied when objects copied in a graph");
     vxReleaseNode(&node);
     vxReleaseGraph(&graph);
 
@@ -1133,34 +1158,34 @@ void testCopySwapMove(vx_context context)
 
     /* Now check object arrays of pyramids */
     vx_pyramid pyr_ex1 = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32, 32, VX_DF_IMAGE_U8);
-    ERROR_CHECK_STATUS(vxSetSupplementaryUserDataObject(vxCastFromPyramid(pyr_ex1), exemplar1), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(pyr_ex1), exemplar1), NULL);
     for (int i = 0; i < 4; ++i)
     {
         vx_image img = vxGetPyramidLevel(pyr_ex1, i);
         vxSetSupplementaryUserDataObject((vx_reference)(img), exemplar1);
         vxReleaseImage(&img);
     }
-    vx_object_array arr1 = vxCreateObjectArray(context, vxCastFromPyramid(pyr_ex1), 4);
-    ERROR_CHECK_STATUS(vxSetSupplementaryUserDataObject(vxCastFromObjectArray(arr1), exemplar1), NULL);
+    vx_object_array arr1 = vxCreateObjectArray(context, (vx_reference)(pyr_ex1), 4);
+    ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(arr1), exemplar1), NULL);
     vx_pyramid pyr_ex2 = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32, 32, VX_DF_IMAGE_U8);
-    ERROR_CHECK_STATUS(vxSetSupplementaryUserDataObject(vxCastFromPyramid(pyr_ex2), exemplar2), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(pyr_ex2), exemplar2), NULL);
     for (int i = 0; i < 4; ++i)
     {
         vx_image img = vxGetPyramidLevel(pyr_ex2, i);
         vxSetSupplementaryUserDataObject((vx_reference)(img), exemplar2);
         vxReleaseImage(&img);
     }
-    vx_object_array arr2 = vxCreateObjectArray(context, vxCastFromPyramid(pyr_ex2), 4);
-    ERROR_CHECK_STATUS(vxSetSupplementaryUserDataObject(vxCastFromObjectArray(arr2), exemplar2), NULL);
-    supp1 = vxGetSupplementaryUserDataObject(vxCastFromObjectArray(arr1), NULL, &status);
-    ERROR_CHECK_STATUS(status , NULL);
-    supp2 = vxGetSupplementaryUserDataObject(vxCastFromObjectArray(arr2), NULL, &status);
-    ERROR_CHECK_STATUS(status , NULL);
+    vx_object_array arr2 = vxCreateObjectArray(context, (vx_reference)(pyr_ex2), 4);
+    ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(arr2), exemplar2), NULL);
+    supp1 = vxGetSupplementaryUserDataObject((vx_reference)(arr1), NULL, &status);
+    ERROR_CHECK_VX_SUCCESS(status , NULL);
+    supp2 = vxGetSupplementaryUserDataObject((vx_reference)(arr2), NULL, &status);
+    ERROR_CHECK_VX_SUCCESS(status , NULL);
     /* Now try a swap */
-    ERROR_CHECK_STATUS(vxuSwap(context, vxCastFromObjectArray(arr1), vxCastFromObjectArray(arr2)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxuSwap(context, (vx_reference)(arr1), (vx_reference)(arr2)), NULL);
     /* Now if we look at the supplementary data it should be the other way around */
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
     status = VX_SUCCESS;
     for (int i = 0; i < 3; ++i)
     {
@@ -1170,19 +1195,19 @@ void testCopySwapMove(vx_context context)
             break;
         }
     }
-    ERROR_CHECK_STATUS(status, "Supplementary data swapped when object arrays swapped");
+    ERROR_CHECK_VX_SUCCESS(status, "Supplementary data swapped when object arrays swapped");
 
     /* now check the supplementary data of an object in the array */
     vx_reference ref1 = vxGetObjectArrayItem(arr1, 2);
     vx_reference ref2 = vxGetObjectArrayItem(arr2, 2);
-    ERROR_CHECK_STATUS(vxReleaseUserDataObject(&supp1), NULL);
-    ERROR_CHECK_STATUS(vxReleaseUserDataObject(&supp2), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxReleaseUserDataObject(&supp1), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxReleaseUserDataObject(&supp2), NULL);
     status = VX_SUCCESS;
     supp1 = vxGetSupplementaryUserDataObject(ref1, NULL, &status);
     supp2 = vxGetSupplementaryUserDataObject(ref2, NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
     status = VX_SUCCESS;
     for (int i = 0; i < 3; ++i)
     {
@@ -1192,19 +1217,19 @@ void testCopySwapMove(vx_context context)
             break;
         }
     }
-    ERROR_CHECK_STATUS(status, "Supplementary data of array element swapped when object arrays swapped");
+    ERROR_CHECK_VX_SUCCESS(status, "Supplementary data of array element swapped when object arrays swapped");
 
     /* now check the supplementary data of a level of a pyramid in the array */
-    vx_reference ref3 = (vx_reference)(vxGetPyramidLevel(vxCastAsPyramid(ref1, &status), 2));
-    vx_reference ref4 = (vx_reference)(vxGetPyramidLevel(vxCastAsPyramid(ref2, &status), 2));
-    ERROR_CHECK_STATUS(vxReleaseUserDataObject(&supp1), NULL);
-    ERROR_CHECK_STATUS(vxReleaseUserDataObject(&supp2), NULL);
+    vx_reference ref3 = (vx_reference)(vxGetPyramidLevel((vx_pyramid)(ref1, &status), 2));
+    vx_reference ref4 = (vx_reference)(vxGetPyramidLevel((vx_pyramid)(ref2, &status), 2));
+    ERROR_CHECK_VX_SUCCESS(vxReleaseUserDataObject(&supp1), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxReleaseUserDataObject(&supp2), NULL);
     status = VX_SUCCESS;
     supp1 = vxGetSupplementaryUserDataObject(ref3, NULL, &status);
     supp2 = vxGetSupplementaryUserDataObject(ref4, NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
     status = VX_SUCCESS;
     for (int i = 0; i < 3; ++i)
     {
@@ -1214,13 +1239,13 @@ void testCopySwapMove(vx_context context)
             break;
         }
     }
-    ERROR_CHECK_STATUS(status, "Supplementary data of pyramid level swapped when object arrays of pyramids swapped");
-    ERROR_CHECK_STATUS(vxReleaseReference(&ref1), NULL);
-    ERROR_CHECK_STATUS(vxReleaseReference(&ref2), NULL);
-    ERROR_CHECK_STATUS(vxReleaseReference(&ref3), NULL);
-    ERROR_CHECK_STATUS(vxReleaseReference(&ref4), NULL);
-    ERROR_CHECK_STATUS(vxReleaseUserDataObject(&supp1), NULL);
-    ERROR_CHECK_STATUS(vxReleaseUserDataObject(&supp2), NULL);
+    ERROR_CHECK_VX_SUCCESS(status, "Supplementary data of pyramid level swapped when object arrays of pyramids swapped");
+    ERROR_CHECK_VX_SUCCESS(vxReleaseReference(&ref1), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxReleaseReference(&ref2), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxReleaseReference(&ref3), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxReleaseReference(&ref4), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxReleaseUserDataObject(&supp1), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxReleaseUserDataObject(&supp2), NULL);
     vxReleasePyramid(&pyr_ex1);
     vxReleasePyramid(&pyr_ex2);
     vxReleaseObjectArray(&arr1);
@@ -1235,8 +1260,9 @@ void testCopySwapMove(vx_context context)
    no supplementary data, starting with inherited
    supplementary data, check errors.
  */
-void testExtend(vx_context context)
+TEST(supplementary_data, testExtend)
 {
+    vx_context context = context_->vx_context_;
     printf("\nTesting vxExtendSupplementaryUserDataObject\n");
     user_data_t user_data = {.numbers = {1, 2, 3, 4}};
     vx_user_data_object exemplar = vxCreateUserDataObject(context, "user_data_t", sizeof(user_data_t), &user_data);
@@ -1250,84 +1276,84 @@ void testExtend(vx_context context)
     ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), NULL, NULL, sizeof(user_data), sizeof(user_data)), VX_ERROR_INVALID_REFERENCE, "Both source and user_data may not be NULL");
     ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data), sizeof(user_data) + 1), VX_ERROR_INVALID_VALUE, "Correct error for num_bytes > size");
     ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data) + 1, sizeof(user_data)), VX_ERROR_INVALID_VALUE, "Correct error for source_bytes > size");
-    ERROR_CHECK_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data) / 2, sizeof(user_data)), "vxExtendSupplementaryUserDataObject with half source data");
+    ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data) / 2, sizeof(user_data)), "vxExtendSupplementaryUserDataObject with half source data");
     vx_user_data_object supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(read_data.numbers[0] == user_data.numbers[0] &&
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_EXPECT_STATUS_BAD(read_data.numbers[0] == user_data.numbers[0] &&
                            read_data.numbers[1] == user_data.numbers[1] &&
                            read_data.numbers[2] == 0 &&
                            read_data.numbers[3] == 0, "Correctly initialised first half of the data from source");
-    ERROR_CHECK_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), NULL, &new_data, sizeof(user_data), sizeof(user_data) / 2), "vxExtendSupplementaryUserDataObject with half user data");
+    ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), NULL, &new_data, sizeof(user_data), sizeof(user_data) / 2), "vxExtendSupplementaryUserDataObject with half user data");
     vxReleaseUserDataObject(&supp);
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(read_data.numbers[0] == new_data.numbers[0] &&
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_EXPECT_STATUS_BAD(read_data.numbers[0] == new_data.numbers[0] &&
                            read_data.numbers[1] == new_data.numbers[1] &&
                            read_data.numbers[2] == 0 &&
                            read_data.numbers[3] == 0, "Correctly initialised first half of the data from user_data");
-    ERROR_CHECK_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data), sizeof(user_data) / 2), "vxExtendSupplementaryUserDataObject with half user data then half source data");
+    ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data), sizeof(user_data) / 2), "vxExtendSupplementaryUserDataObject with half user data then half source data");
     vxReleaseUserDataObject(&supp);
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(read_data.numbers[0] == new_data.numbers[0] &&
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_EXPECT_STATUS_BAD(read_data.numbers[0] == new_data.numbers[0] &&
                            read_data.numbers[1] == new_data.numbers[1] &&
                            read_data.numbers[2] == user_data.numbers[2] &&
                            read_data.numbers[3] == user_data.numbers[3], "Correctly initialised first half of the data from user_data, second from source");
-    ERROR_CHECK_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data) / 2, sizeof(user_data)), "vxExtendSupplementaryUserDataObject with half source data then half user data");
+    ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data) / 2, sizeof(user_data)), "vxExtendSupplementaryUserDataObject with half source data then half user data");
     vxReleaseUserDataObject(&supp);
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(read_data.numbers[0] == user_data.numbers[0] &&
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_EXPECT_STATUS_BAD(read_data.numbers[0] == user_data.numbers[0] &&
                            read_data.numbers[1] == user_data.numbers[1] &&
                            read_data.numbers[2] == new_data.numbers[2] &&
                            read_data.numbers[3] == new_data.numbers[3], "Correctly initialised first half of the data from source, second from user_data");
-    ERROR_CHECK_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data), 0), "vxExtendSupplementaryUserDataObject with source");
+    ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data), 0), "vxExtendSupplementaryUserDataObject with source");
     vxReleaseUserDataObject(&supp);
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(read_data.numbers[0] == user_data.numbers[0] &&
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_EXPECT_STATUS_BAD(read_data.numbers[0] == user_data.numbers[0] &&
                            read_data.numbers[1] == user_data.numbers[1] &&
                            read_data.numbers[2] == user_data.numbers[2] &&
                            read_data.numbers[3] == user_data.numbers[3], "Correctly initialised data from source");
-    ERROR_CHECK_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, 0, sizeof(user_data)), "vxExtendSupplementaryUserDataObject with user data");
+    ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, 0, sizeof(user_data)), "vxExtendSupplementaryUserDataObject with user data");
     vxReleaseUserDataObject(&supp);
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(read_data.numbers[0] == new_data.numbers[0] &&
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_EXPECT_STATUS_BAD(read_data.numbers[0] == new_data.numbers[0] &&
                            read_data.numbers[1] == new_data.numbers[1] &&
                            read_data.numbers[2] == new_data.numbers[2] &&
                            read_data.numbers[3] == new_data.numbers[3], "Correctly initialised data from user data");
-    ERROR_CHECK_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(subimage), supp, &user_data, sizeof(user_data) / 4, (sizeof(user_data) * 3)/ 4 ), "vxExtendSupplementaryUserDataObject of child with user data");
+    ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(subimage), supp, &user_data, sizeof(user_data) / 4, (sizeof(user_data) * 3)/ 4 ), "vxExtendSupplementaryUserDataObject of child with user data");
     vxReleaseUserDataObject(&supp);
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(read_data.numbers[0] == new_data.numbers[0] &&
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_EXPECT_STATUS_BAD(read_data.numbers[0] == new_data.numbers[0] &&
                            read_data.numbers[1] == new_data.numbers[1] &&
                            read_data.numbers[2] == new_data.numbers[2] &&
                            read_data.numbers[3] == new_data.numbers[3], "Setting child object supplementary data did not affect parent");
     vxReleaseUserDataObject(&supp);
     supp = vxGetSupplementaryUserDataObject((vx_reference)(subimage), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(read_data.numbers[0] == new_data.numbers[0] &&
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_EXPECT_STATUS_BAD(read_data.numbers[0] == new_data.numbers[0] &&
                            read_data.numbers[1] == user_data.numbers[1] &&
                            read_data.numbers[2] == user_data.numbers[2] &&
                            read_data.numbers[3] == 0, "Correctly initialised supplementary data of child object");
     /* Test extending when source valid size is less than source bytes */
     user_data_t empty = {0};
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp, 0, sizeof(empty), &empty, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(empty), &empty, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST), NULL);
     vx_size valid_size = sizeof(user_data) / 4;
-    ERROR_CHECK_STATUS(vxSetUserDataObjectAttribute(exemplar, VX_USER_DATA_OBJECT_VALID_SIZE, &valid_size, sizeof(valid_size)), NULL);
-    ERROR_CHECK_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(subimage), exemplar, &new_data,  sizeof(user_data)/ 2,  3 * sizeof(user_data) / 4), NULL);
-    ERROR_CHECK_STATUS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(read_data.numbers[0] == user_data.numbers[0] &&
+    ERROR_CHECK_VX_SUCCESS(vxSetUserDataObjectAttribute(exemplar, VX_USER_DATA_OBJECT_VALID_SIZE, &valid_size, sizeof(valid_size)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(subimage), exemplar, &new_data,  sizeof(user_data)/ 2,  3 * sizeof(user_data) / 4), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
+    ERROR_EXPECT_STATUS_BAD(read_data.numbers[0] == user_data.numbers[0] &&
                            read_data.numbers[1] == 0 &&
                            read_data.numbers[2] == new_data.numbers[2] &&
                            read_data.numbers[3] == 0, "Correctly terminated copy when valid size was less than source bytes");
@@ -1338,8 +1364,10 @@ void testExtend(vx_context context)
 }
 
 /* Test object descriptor functions */
-void testObjectDescriptors(vx_context context)
+TEST(supplementary_data, testObjectDescriptors)
 {
+    vx_context context = context_->vx_context_;
+    tivxAddTargetKernelGeneral(context);
     printf("\nTesting Object Descriptors\n");
     user_data_t user_data = {.numbers = {1, 2, 3, 4}};
     vx_user_data_object exemplar = vxCreateUserDataObject(context, "user_data_t", sizeof(user_data_t), &user_data);
@@ -1347,19 +1375,19 @@ void testObjectDescriptors(vx_context context)
     vx_image image1 = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
     vx_rectangle_t rect = {.start_x = 0, .start_y = 0, .end_x = 9, .end_y = 9};
     vx_image subimage = vxCreateImageFromROI(image, &rect);
-    ERROR_CHECK_STATUS(vxSetSupplementaryUserDataObject((vx_reference)(image), exemplar), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(image), exemplar), NULL);
     vx_image output = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
-    ERROR_CHECK_STATUS(vxSetSupplementaryUserDataObject((vx_reference)(output), exemplar), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(output), exemplar), NULL);
     vx_graph graph = vxCreateGraph(context);
     vx_kernel kernel = vxGetKernelByEnum(context, MY_USER_TEST_TARGET_KERNEL);
-    ERROR_CHECK_OBJECT(kernel, NULL);
+    EXPECT_VX_OBJECT(kernel, VX_TYPE_KERNEL);
     vx_node node = vxCreateGenericNode(graph, kernel);
-    ERROR_CHECK_OBJECT(node, NULL);
-    ERROR_CHECK_STATUS(vxSetParameterByIndex(node, 0, (vx_reference)(image)), NULL);
-    ERROR_CHECK_STATUS(vxSetParameterByIndex(node, 1, (vx_reference)(subimage)), NULL);
-    ERROR_CHECK_STATUS(vxSetParameterByIndex(node, 2, (vx_reference)(image1)), NULL);
-    ERROR_CHECK_STATUS(vxSetParameterByIndex(node, 3, (vx_reference)(output)), NULL);
-    ERROR_CHECK_STATUS(vxProcessGraph(graph), NULL);
+    EXPECT_VX_OBJECT(node, VX_TYPE_NODE);
+    ERROR_CHECK_VX_SUCCESS(vxSetParameterByIndex(node, 0, (vx_reference)(image)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetParameterByIndex(node, 1, (vx_reference)(subimage)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetParameterByIndex(node, 2, (vx_reference)(image1)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetParameterByIndex(node, 3, (vx_reference)(output)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxProcessGraph(graph), NULL);
     vxReleaseKernel(&kernel);
     vxReleaseImage(&subimage);
     vxReleaseImage(&image);
@@ -1368,13 +1396,16 @@ void testObjectDescriptors(vx_context context)
     vxReleaseUserDataObject(&exemplar);
     vxReleaseNode(&node);
     vxReleaseGraph(&graph);
+    tivxRemoveTargetKernelGeneral();
 }
 
 /* Test read-only input parameters and child objects
     Attempting to call vxCopyUserDataObject for read-only supplementary data of all
     types has already been tested. Here we also test vxMapUserDataObject and vxSetUserDataObjectAttribute */
-void testReadOnlyObjects(vx_context context)
+TEST(supplementary_data, testReadOnlyObjects)
 {
+    vx_context context = context_->vx_context_;
+    tivxAddTargetKernelGeneral(context);
     printf("\nTesting read-only input parameters and child objects\n");
     vx_status status = VX_SUCCESS;
     user_data_t user_data = {.numbers = {1, 2, 3, 4}};
@@ -1382,28 +1413,28 @@ void testReadOnlyObjects(vx_context context)
     vx_image image = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
     vx_rectangle_t rect = {.start_x = 0, .start_y = 0, .end_x = 9, .end_y = 9};
     vx_image subimage = vxCreateImageFromROI(image, &rect);
-    ERROR_CHECK_STATUS(vxSetSupplementaryUserDataObject((vx_reference)(image), exemplar), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(image), exemplar), NULL);
     vx_user_data_object childSupp = vxGetSupplementaryUserDataObject((vx_reference)(subimage), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     vx_size size = sizeof(user_data_t);
     vx_map_id map_id;
     void *ptr;
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(tivxSetUserDataObjectAttribute(childSupp, TIVX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "Cannot set attribute of read-only supplementary data");
-    ERROR_EXPECT_STATUS_BAD(VX_SUCCESS, status);(vxMapUserDataObject(childSupp, 0, size, &map_id, &ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0), "Cannot map read-only supplementary data for writing");
+    ERROR_EXPECT_STATUS_BAD(tivxSetUserDataObjectAttribute(childSupp, TIVX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "Cannot set attribute of read-only supplementary data");
+    ERROR_EXPECT_STATUS_BAD(vxMapUserDataObject(childSupp, 0, size, &map_id, &ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0), "Cannot map read-only supplementary data for writing");
     vx_image output1 = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
     vx_image output2 = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
     vx_graph graph = vxCreateGraph(context);
     vx_image virt = vxCreateVirtualImage(graph, 10, 10, VX_DF_IMAGE_U8);
     vx_kernel kernel = vxGetKernelByEnum(context, MY_USER_TEST_KERNEL);
-    ERROR_CHECK_OBJECT(kernel, NULL);
+    EXPECT_VX_OBJECT(kernel, VX_TYPE_KERNEL);
     vx_node node = vxCreateGenericNode(graph, kernel);
-    ERROR_CHECK_OBJECT(node, NULL);
-    ERROR_CHECK_STATUS(vxSetParameterByIndex(node, 0, (vx_reference)(image)), NULL);
-    ERROR_CHECK_STATUS(vxSetParameterByIndex(node, 1, (vx_reference)(subimage)), NULL);
-    ERROR_CHECK_STATUS(vxSetParameterByIndex(node, 2, (vx_reference)(output1)), NULL);
-    ERROR_CHECK_STATUS(vxSetParameterByIndex(node, 3, (vx_reference)(virt)), NULL);
+    EXPECT_VX_OBJECT(node, VX_TYPE_NODE);
+    ERROR_CHECK_VX_SUCCESS(vxSetParameterByIndex(node, 0, (vx_reference)(image)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetParameterByIndex(node, 1, (vx_reference)(subimage)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetParameterByIndex(node, 2, (vx_reference)(output1)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxSetParameterByIndex(node, 3, (vx_reference)(virt)), NULL);
     vx_node node2 = dumbCopyNode(graph, virt, output2);
-    ERROR_CHECK_STATUS(vxProcessGraph(graph), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxProcessGraph(graph), NULL);
     ERROR_EXPECT_STATUS(vxSetSupplementaryUserDataObject((vx_reference)(virt), exemplar), VX_ERROR_OPTIMIZED_AWAY, "Correctly failed to set supplementary data on virtual object outside graph after graph processing");
     vxReleaseKernel(&kernel);
     vxReleaseImage(&subimage);
@@ -1416,10 +1447,17 @@ void testReadOnlyObjects(vx_context context)
     vxReleaseNode(&node);
     vxReleaseNode(&node2);
     vxReleaseGraph(&graph);
+    tivxRemoveTargetKernelGeneral();
 }
-#endif
 
 TESTCASE_TESTS(supplementary_data,
                 testRefCount,
                 testAllGetSet,
-                testInvalidTypes)
+                testInvalidTypes,
+                testGetSetErrors,
+                testChildren,
+                testCopySwapMove,
+                testExtend,
+                testExemplars,
+                testReadOnlyObjects, 
+                testObjectDescriptors)

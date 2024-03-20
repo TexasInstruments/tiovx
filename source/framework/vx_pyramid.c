@@ -121,6 +121,17 @@ static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool 
             if (kf)
             {
                 status = (*kf)(kernel_enum, vx_false_e, optimization, p2, 2);
+                if (VX_SUCCESS == status &&
+                    p2[0]->supplementary_data &&
+                    p2[1]->supplementary_data &&
+                    p2[0]->supplementary_data->base.kernel_callback)
+                {
+                    vx_reference supp_params[2] = {&p2[0]->supplementary_data->base, &p2[1]->supplementary_data->base};
+                    if (VX_SUCCESS == p2[0]->supplementary_data->base.kernel_callback(kernel_enum, vx_true_e, 0, supp_params, 2))
+                    {
+                        status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, vx_false_e, 0, supp_params, 2);
+                    }
+                }
             }
             else
             {
