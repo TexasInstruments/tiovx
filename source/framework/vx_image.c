@@ -2488,11 +2488,11 @@ static vx_status ownSwapSubImageCheckRemap(tivx_obj_desc_image_t *obj_desc, vx_i
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status = ownSwapImageCheck(obj_desc, image, new_ptrs, NULL, obj_desc->planes);
+    status = ownSwapImageCheck(obj_desc, image, new_ptrs, (void **)NULL, obj_desc->planes);
 
     if(status == (vx_status)VX_SUCCESS)
     {
-        ownSwapImageUnmap(obj_desc, (void**)new_ptrs, obj_desc->planes);
+        ownSwapImageUnmap(obj_desc, new_ptrs, obj_desc->planes);
     }
 
     return status;
@@ -2523,7 +2523,7 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
     tivx_obj_desc_image_t *si_obj_desc = NULL;
     vx_image next_image;
     vx_image image_arr[TIVX_IMAGE_MAX_OBJECTS] = {NULL};
-    void* new_ptrs_arr[TIVX_IMAGE_MAX_OBJECTS][TIVX_IMAGE_MAX_PLANES] = {{NULL}};
+    void* new_ptrs_arr[TIVX_IMAGE_MAX_OBJECTS][TIVX_IMAGE_MAX_PLANES] = {NULL};
     void* next_new_ptrs[TIVX_IMAGE_MAX_PLANES] = {NULL};
 
     image_arr[0u] = image;
