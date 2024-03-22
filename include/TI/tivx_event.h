@@ -97,7 +97,7 @@ extern "C" {
  *
  * \ingroup group_tivx_event
  */
-typedef struct _tivx_event_t *tivx_event;
+typedef struct tivx_vx_event_t *tivx_event;
 
 
 /*!

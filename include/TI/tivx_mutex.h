@@ -79,7 +79,7 @@ extern "C" {
  *
  * \ingroup group_tivx_mutex
  */
-typedef struct _tivx_mutex_t *tivx_mutex;
+typedef struct tivx_vx_mutex_t *tivx_mutex;
 
 
 /*!
