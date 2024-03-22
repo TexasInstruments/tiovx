@@ -4,15 +4,51 @@
     This section of the user guide describes relevant safety recommendations required for the ASIL-B certification
     of the TI OpenVX framework.  This activity is planned to be finalized in July 2024.
 
-    In scope for this safety project is TI's implementation of the OpenVX framework (source/framework), the OS platform
-    layer (source/platform) and the dependent utils of TIOVX (app_utils).
-
     Please reference the TI software safety qualification approach for more information about what all collateral
     shall be provided for final certification of the SW module.
 
+    - \subpage TIOVX_SAFETY_SCOPE - Details the scope of what is considered for safety within TIOVX.
     - \subpage TIOVX_SAFETY_RECOMMENDATIONS - Various TIOVX safety recommendations when designing a SW system.
     - \subpage TIOVX_SAFETY_FEATURES - Description of features within TIOVX which can be useful when designing a SW system.
     - \subpage TIOVX_SAFETY_TOOLING - Description of provided tooling for helping enable a safety application using TIOVX.
+ */
+
+/*!
+    \page TIOVX_SAFETY_SCOPE TIOVX Safety Scope
+
+    \tableofcontents
+
+     \section TIOVX_SAFETY_SCOPE_OVERALL What is and is not in scope for TIOVX safety
+
+    What is in scope for TIOVX safety:
+    - TI's implementation of the OpenVX framework (source/framework) with few exceptions listed in the "out of scope" section below.
+    - The OS platform layer (source/platform)
+    - The dependent utils of TIOVX within app_utils.  The specific libraries within this component are listed below:
+        - utils/ipc
+        - utils/mem
+        - utils/misc
+        - utils/rtos
+        - utils/timer
+
+    Please note the following which are out of scope for safety of TIOVX:
+    - OpenVX standard kernels
+    - Supernode extension (Note: this is not yet enabled on J7 platforms, but there are still references to it in the framework.
+      These are thus commented out and disabled.)
+    - VXU functions
+    - Debug logging functionality
+    - RT logging functionality
+    - Export to dot file functionality
+
+    Important note to how application shall be written using TIOVX that are used for safety: the "vx-" or "tivx-" functions shall only be used
+    within a safety application, not the "own-" prefixed functions.  These functions shall only be called within the context of the framework itself,
+    not applications.
+
+     \section TIOVX_SAFETY_SCOPE_OS_SUPPORT TIOVX OS Support
+
+     The aspects of TIOVX which are considered under the safety qualification effort are the framework, platform layer and associated utils layers.  For the
+     remote cores supported via TIOVX safety, the safety OS which is supported is SafeRTOS.  For the host side components, given that the Linux and QNX OS
+     layers do not support safety, a safety OS would need to be used in place of Linux and QNX.  Please note though that the generic POSIX platform layer will
+     have safety qualification collateral (e.g., MISRA-C, Code Coverage, Requirement documentation, etc).
  */
 
 /*!
@@ -120,13 +156,6 @@
 
      For more information about how to use this API, please refer to the Producer/Consumer application within vision_apps as well as the test cases
      found at tiovx/conformance_tests/test_tiovx/test_tivxMem.c
-
-     \section TIOVX_SAFETY_OS_SUPPORT TIOVX OS Support
-
-     The aspects of TIOVX which are considered under the safety qualification effort are the framework, platform layer and associated utils layers.  For the
-     remote cores supported via TIOVX safety, the safety OS which is supported is SafeRTOS.  For the host side components, given that the Linux and QNX OS
-     layers do not support safety, a safety OS would need to be used in place of Linux and QNX.  Please note though that the generic POSIX platform layer will
-     have safety qualification collateral (e.g., MISRA-C, Code Coverage, Requirement documentation, etc).
 
  */
 
