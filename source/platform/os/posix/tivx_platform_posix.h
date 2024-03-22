@@ -122,7 +122,7 @@ enum tivx_posix_type_e {
  *
  * \ingroup group_tivx_platform
  */
-typedef struct _tivx_event_t {
+typedef struct tivx_vx_event_t {
 
     uint16_t is_set;
     pthread_mutex_t lock;
@@ -135,7 +135,7 @@ typedef struct _tivx_event_t {
  *
  * \ingroup group_tivx_platform
  */
-typedef struct _tivx_mutex_t {
+typedef struct tivx_vx_mutex_t {
 
   pthread_mutex_t lock;
 
@@ -145,14 +145,14 @@ typedef struct _tivx_mutex_t {
  *
  * \ingroup group_tivx_platform
  */
-typedef struct _tivx_queue_context *tivx_queue_context;
+typedef struct tivx_vx_queue_context *tivx_queue_context;
 
 /*!
  * \brief Typedef for a queue context
  *
  * \ingroup group_tivx_platform
  */
-typedef struct _tivx_queue_context {
+typedef struct tivx_vx_queue_context {
 
   pthread_mutex_t lock;
   pthread_cond_t  condGet;
@@ -164,14 +164,14 @@ typedef struct _tivx_queue_context {
  *
  * \ingroup group_tivx_platform
  */
-typedef struct _tivx_task_context *tivx_task_context;
+typedef struct tivx_vx_task_context *tivx_task_context;
 
 /*!
  * \brief Typedef for a task context
  *
  * \ingroup group_tivx_platform
  */
-typedef struct _tivx_task_context {
+typedef struct tivx_vx_task_context {
 
   pthread_t hndl;
 
@@ -182,7 +182,7 @@ typedef struct _tivx_task_context {
  *
  * \ingroup group_tivx_platform
  */
-typedef struct _tivx_platform_posix_t
+typedef struct tivx_vx_platform_posix_t
 {
     tivx_event_t             event[TIVX_EVENT_MAX_OBJECTS];
     /**< Event Objects */

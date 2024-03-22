@@ -63,7 +63,6 @@
 #include <tivx_platform_posix.h>
 #include <tivx_objects.h>
 #include <errno.h>
-#include <sys/time.h>
 
 static tivx_platform_posix_t g_tivx_posix_objects;
 static tivx_mutex g_tivx_objects_lock = NULL;
