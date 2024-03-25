@@ -11,7 +11,7 @@
 #include <utils/console_io/include/app_log.h>
 #include <utils/timer/include/app_timer.h>
 
-char *tivxPlatformGetEnv(const char *env_var);
+const char *tivxPlatformGetEnv(const char *env_var);
 
 uint64_t tivxPlatformGetTimeInUsecs(void)
 {
@@ -33,7 +33,7 @@ void ownPlatformDeactivate(void)
 
 }
 
-char *tivxPlatformGetEnv(const char *env_var)
+const char *tivxPlatformGetEnv(const char *env_var)
 {
     const char *value=" ";
 
@@ -41,7 +41,7 @@ char *tivxPlatformGetEnv(const char *env_var)
     {
         value="/test_data/";
     }
-    return ((char *)value);
+    return (value);
 }
 
 #if defined(A72) || defined(A53)
