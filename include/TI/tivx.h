@@ -535,7 +535,9 @@ void tivxPrintAllResourceStats(void);
 vx_status tivxExportAllResourceMaxUsedValueToFile(void);
 
 /*!
- * \brief Exports memory consumption information to console or a specified file
+ * \brief Exports memory consumption information to console or a specified file.
+ *        Note that the object descriptor values returned by this API are local only to the
+ *        process/core this is being called on.
  *
  * \param [in] outputFile Character pointer to indicate name of file where output is desired
  *
