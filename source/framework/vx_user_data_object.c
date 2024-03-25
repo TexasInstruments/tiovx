@@ -128,14 +128,13 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
             user_data_object = (vx_user_data_object)ownCreateReference(context, VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus((vx_reference)user_data_object) == (vx_status)VX_SUCCESS) &&
-                (user_data_object->base.type == VX_TYPE_USER_DATA_OBJECT))                
+                (user_data_object->base.type == VX_TYPE_USER_DATA_OBJECT))
             {
                 /* assign reference type specific callback's */
                 user_data_object->base.destructor_callback = &ownDestructReferenceGeneric;
                 user_data_object->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
-                user_data_object->base.release_callback =
-                    &ownReleaseReferenceBufferGeneric;
-				user_data_object->base.kernel_callback = &userDataKernelCallback;
+                user_data_object->base.release_callback = &ownReleaseReferenceBufferGeneric;
+                user_data_object->base.kernel_callback = &userDataKernelCallback;
                 user_data_object->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_USER_DATA_OBJECT, (vx_reference)user_data_object);
                 if(user_data_object->base.obj_desc==NULL)
