@@ -813,27 +813,17 @@ void testParentAndChild(vx_reference parent, vx_reference child, const char * ms
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(child_data, 0, sizeof(test2), &test2, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
     /* return parent to original data */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(orig), &orig, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-
-    /* read again the original state*/
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(test2), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(test1), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
-//tivx_obj_desc_user_data_object_t *obj_desc_before;// = (tivx_obj_desc_user_data_object_t *)parent_data->base.obj_desc;
-
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(orig), &orig, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(child_data, 0, sizeof(orig), &orig, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
     /* Now actually set the child user data object & re-get the supplementary data */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject(child, child_data));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseUserDataObject(&child_data));
     child_data  = vxGetSupplementaryUserDataObject(child, "user_data_t", &status);
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseUserDataObject(&parent_data));
-    parent_data = vxGetSupplementaryUserDataObject(parent, "user_data_t", &status);
-//tivx_obj_desc_user_data_object_t *obj_desc_after = (tivx_obj_desc_user_data_object_t *)parent_data->base.obj_desc;
-    /* read again the original state*/
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(test2), &test2, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(test1), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
-
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
+
     test2.numbers[2] = 45;
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(child_data, 0, sizeof(test2), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
-    if (test1.numbers[2] == test2.numbers[2])
+    if (orig.numbers[2] != test2.numbers[2])
     {
       printf("Can not read data back correctly for %s \n", msg);
       status = (vx_enum) VX_FAILURE;
@@ -841,16 +831,9 @@ void testParentAndChild(vx_reference parent, vx_reference child, const char * ms
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
 
     /* Should be able to copy to it now */
-    status = vxCopyUserDataObject(child_data, 0, sizeof(test1), &test1, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
-    if ((vx_enum)VX_SUCCESS != status)
-    {
-        printf("Can not write to the new supplementary data object for %s \n", msg);
-    }
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(child_data, 0, sizeof(test1), &test1, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
     test2.numbers[2] = 45;
-    status = vxCopyUserDataObject(child_data, 0, sizeof(test2), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS,vxCopyUserDataObject(child_data, 0, sizeof(test2), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
     if (test1.numbers[2] != test2.numbers[2])
     {
         printf("Can not read changed data back correctly for %s \n", msg);
@@ -859,14 +842,12 @@ void testParentAndChild(vx_reference parent, vx_reference child, const char * ms
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
 
     test2.numbers[2] = 45;
-    #if 1
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(parent_data, 0, sizeof(test2), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
-    if (orig.numbers[2] == test2.numbers[2])
+    if (orig.numbers[2] != test2.numbers[2])
     {
         printf("changed data does affect parent for%s \n", msg);
         status = (vx_enum) VX_FAILURE;
     }
-    #endif
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     VX_CALL(vxReleaseUserDataObject(&child_data));
     VX_CALL(vxReleaseUserDataObject(&parent_data));
@@ -892,7 +873,7 @@ TEST(supplementary_data, testChildren)
     //EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)tensor, exemplar));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)image, exemplar));
     /* Now all children and grand children should have read-only supplementary data from the parent, check it all */
-    //testParentAndChild((vx_reference)image, (vx_reference)grandchildImageFromImage, "image created from child of image");
+    testParentAndChild((vx_reference)image, (vx_reference)grandchildImageFromImage, "image created from child of image");    
     testParentAndChild((vx_reference)image, (vx_reference)imageFromROI, "image created from image");
     VX_CALL(vxReleaseUserDataObject(&exemplar));
     VX_CALL(vxReleaseImage(&image));
@@ -1220,10 +1201,10 @@ TEST(supplementary_data, testCopySwapMove)
     ERROR_CHECK_VX_SUCCESS(status, "Supplementary data of array element swapped when object arrays swapped");
 
     /* now check the supplementary data of a level of a pyramid in the array */
-    vx_reference ref3 = (vx_reference)(vxGetPyramidLevel((vx_pyramid)(ref1, &status), 2));
-    vx_reference ref4 = (vx_reference)(vxGetPyramidLevel((vx_pyramid)(ref2, &status), 2));
     ERROR_CHECK_VX_SUCCESS(vxReleaseUserDataObject(&supp1), NULL);
     ERROR_CHECK_VX_SUCCESS(vxReleaseUserDataObject(&supp2), NULL);
+    vx_reference ref3 = (vx_reference)(vxGetPyramidLevel((vx_pyramid)ref1, 2));
+    vx_reference ref4 = (vx_reference)(vxGetPyramidLevel((vx_pyramid)ref2, 2));
     status = VX_SUCCESS;
     supp1 = vxGetSupplementaryUserDataObject(ref3, NULL, &status);
     supp2 = vxGetSupplementaryUserDataObject(ref4, NULL, &status);
