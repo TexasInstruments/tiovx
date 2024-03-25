@@ -498,6 +498,12 @@
  */
 
 /*!
+ * \defgroup group_tivx_ext_host_resource_log Resource Logging APIs
+ * \brief APIs for resource logging on the host
+ * \ingroup group_tivx_ext_host
+ */
+
+/*!
  * \defgroup group_tivx_log_rt_trace_target Real-time Trace APIs
  * \brief APIs for real-time event trace operations on the target
  * \ingroup group_tivx_ext_target
