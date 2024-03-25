@@ -106,7 +106,7 @@ extern "C" {
 /*!
  * \brief Max size of macro
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_host_resource_log
  */
 #define TIVX_RESOURCE_NAME_MAX (39u)
 
@@ -193,7 +193,7 @@ extern "C" {
 /*! \brief Struct containing config parameters of given static resource. Allows
  *         for a log to be kept of the resources used throughout runtime.
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_host_resource_log
  */
 
 typedef struct _tivx_resource_stats_t {
@@ -503,14 +503,14 @@ vx_enum tivxGetSelfCpuId(void);
  * \retval VX_SUCCESS No errors.
  * \retval VX_FAILURE Unable to find "resource_name" in list of resources
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_host_resource_log
  */
 vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_t *stats);
 
 /*!
  * \brief Prints out resource stats
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_host_resource_log
  */
 void tivxPrintAllResourceStats(void);
 
@@ -530,7 +530,7 @@ void tivxPrintAllResourceStats(void);
  * \retval VX_SUCCESS Output was successfully written to file
  * \retval VX_FAILURE Unable to open output file, or TIVX_LOG_RESOURCE_ENABLE was not defined
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_host_resource_log
  */
 vx_status tivxExportAllResourceMaxUsedValueToFile(void);
 
@@ -552,7 +552,7 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void);
  * \retval VX_FAILURE Unable to open output file, or TIVX_LOG_RESOURCE_ENABLE was not defined
  *
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_host_resource_log
  */
 vx_status tivxExportMemoryConsumption(char * outputFile, const char * unit, vx_enum displayMode);
 
@@ -695,7 +695,7 @@ uint64_t tivxPlatformGetTimeInUsecs(void);
  * \param [in] output_file_path String specifying the ouput file path
  * \param [in] output_file_prefix String specifying the filename prefix of the output file
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_host_resource_log
  */
 vx_status VX_API_CALL tivxExportGraphToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
 
