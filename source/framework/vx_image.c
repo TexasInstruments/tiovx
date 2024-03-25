@@ -1275,8 +1275,8 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
         if ((NULL == rect) ||
-            (rect->start_x > rect->end_x) ||
-            (rect->start_y > rect->end_y) ||
+            (rect->start_x >= rect->end_x) ||
+            (rect->start_y >= rect->end_y) ||
             (rect->end_x > obj_desc->width) ||
             (rect->end_y > obj_desc->height))
         {
