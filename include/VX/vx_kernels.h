@@ -294,16 +294,16 @@ enum vx_kernel_e {
     * \see group vision_function_copy
     */
     VX_KERNEL_COPY = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x37,
-	
-	/*! \brief The data object swap kernel.
-	* \see group_vision_function_swap
-	*/
-	VX_KERNEL_SWAP = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x2d,
+
+    /*! \brief The data object swap kernel.
+    * \see group_vision_function_swap
+    */
+    VX_KERNEL_SWAP = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x41,
 
     /*! \brief The data object move kernel.
     * \see group_vision_function_move
     */
-    VX_KERNEL_MOVE = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x2e,
+    VX_KERNEL_MOVE = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x42,
 };
 
 #ifdef  __cplusplus

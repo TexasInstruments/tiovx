@@ -117,7 +117,7 @@ static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool 
         for (lvl = 0; lvl < ((tivx_obj_desc_pyramid_t *)params[0]->obj_desc)->num_levels && VX_SUCCESS == status; ++lvl)
         {
             vx_reference p2[2] = {&((vx_pyramid)params[0])->img[lvl]->base, &((vx_pyramid)params[1])->img[lvl]->base};
-            vx_kernel_callback_rb_f kf = p2[0]->kernel_callback;
+            vx_kernel_callback_f kf = p2[0]->kernel_callback;
             if (kf)
             {
                 status = (*kf)(kernel_enum, vx_false_e, optimization, p2, 2);

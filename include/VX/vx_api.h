@@ -753,7 +753,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
 
  * org.khronos.openvx.move
 
-
 * \param [in] context The reference to the implementation context.
  * \param [in] name The string of the name of the kernel to get.
  * \return A kernel reference or zero if an error occurred. Any possible errors 

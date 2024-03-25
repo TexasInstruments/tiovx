@@ -65,7 +65,7 @@ static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_b
         for (item = 0; item < ((tivx_obj_desc_object_array_t *)params[0]->obj_desc)->num_items && VX_SUCCESS == status; ++item)
         {
             vx_reference p2[2] = {((vx_object_array)params[0])->ref[item], ((vx_object_array)params[1])->ref[item]};
-            vx_kernel_callback_rb_f kf = p2[0]->kernel_callback;
+            vx_kernel_callback_f kf = p2[0]->kernel_callback;
             if (kf)
             {
                 status = (*kf)(kernel_enum, vx_false_e, optimization, p2, 2);

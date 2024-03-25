@@ -65,7 +65,7 @@ typedef vx_status (* VX_API_CALL tivx_reference_release_callback_f)(vx_reference
  * involving generic references, such as Copy, Select, Swap or Pass
  * \ingroup group_vx_reference
  */
-typedef vx_status (*vx_kernel_callback_rb_f)(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
+typedef vx_status (*vx_kernel_callback_f)(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
 
 /*! \brief The most basic type in the OpenVX system. Any type that inherits
  *  from tivx_reference_t must have a vx_reference_t as its first member
@@ -122,7 +122,7 @@ typedef struct _vx_reference {
     /* \brief Object specific function that is called for generic kernel operations
      * such as Copy and Select
     */
-    vx_kernel_callback_rb_f kernel_callback;
+    vx_kernel_callback_f kernel_callback;
 
     /*! \brief Lock to take for the reference */
     tivx_mutex lock;
