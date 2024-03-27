@@ -1500,8 +1500,8 @@ TESTCASE_TESTS(copySwap,
                testVxu,
                testVxuCopy,
                testCopyRemoval,
-               testMoveRemoval)//,
-//               testCopySequence,
-//			   testSubObjectsOfImages,
-//    		   testDelays,
-//			   testContainers)
+               testMoveRemoval,
+               testCopySequence,
+			   testSubObjectsOfImages,
+    		   testDelays,
+			   testContainers)

@@ -117,4 +117,6 @@ TESTCASE(tivxNestedUserNode)
 TESTCASE(tivxTgKnl)
 TESTCASE(bpExtStandardNodes)
 TESTCASE(bpExtFramework)
+TESTCASE(copySwap)
+TESTCASE(supplementary_data)
 #endif
