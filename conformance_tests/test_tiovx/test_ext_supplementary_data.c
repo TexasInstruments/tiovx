@@ -489,7 +489,7 @@ vx_status checkValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint8 b)
 }
 
 /* Create a non-virtual example reference of the given type */
-vx_reference createReference(vx_context context, vx_enum type)
+vx_reference createRef(vx_context context, vx_enum type)
 {
     vx_reference ref = NULL;
     switch (type)
@@ -612,7 +612,7 @@ TEST (supplementary_data, testRefCount)
 /* Test creation getting and setting and getting again of supplementary data for one type */
 void testOneType(vx_context context, vx_enum type)
 {
-    vx_reference ref = createReference(context, type);
+    vx_reference ref = createRef(context, type);
     vx_status status = VX_SUCCESS;
     vx_user_data_object supp = vxGetSupplementaryUserDataObject(ref, NULL, &status);
     if ( status == (vx_status)VX_SUCCESS)
