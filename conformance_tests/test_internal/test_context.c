@@ -49,7 +49,7 @@ TEST(tivxInternalContext, negativeTestContextLock)
     vx_kernel_validate_f validate = NULL;
     vx_kernel_initialize_f initialize = NULL;
     vx_kernel_deinitialize_f deinitialize = NULL;
-    
+
     lock1 = context->lock;
     lock2 = context->log_lock;
     VX_CALL(vxQueryContext(context, VX_CONTEXT_UNIQUE_KERNELS, &nkernels, sizeof(nkernels)));
@@ -81,7 +81,96 @@ TEST(tivxInternalContext, negativeTestContextLock)
     ct_free_mem((void *)kernel_table);
 }
 
+TEST(tivxInternalContext, negativeTestOwnContextGetUniqueKernels)
+{
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_uint32 nkernels = 0;
+    vx_kernel kernel   = 0;
+    uint32_t i;
+
+    uint32_t num_unique_kernels = context->num_unique_kernels;
+
+    /* Reducing the num_unique_kernels by 1 */
+    context->num_unique_kernels = (context->num_unique_kernels) - 1;
+
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_UNIQUE_KERNELS, &nkernels, sizeof(nkernels)));
+
+    vx_kernel_info_t *kernel_table = (vx_kernel_info_t *)malloc((nkernels + 1)*sizeof(vx_kernel_info_t));
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxQueryContext(context, VX_CONTEXT_UNIQUE_KERNEL_TABLE, kernel_table, nkernels*sizeof(vx_kernel_info_t)));
+
+    for (i = 0; i < nkernels; i++)
+    {
+        ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, kernel_table[i].enumeration), VX_TYPE_KERNEL);
+        VX_CALL(vxReleaseKernel(&kernel));
+        ASSERT_VX_OBJECT(kernel = vxGetKernelByName(context, kernel_table[i].name), VX_TYPE_KERNEL);
+        VX_CALL(vxReleaseKernel(&kernel));
+    }
+
+    /* Resetting to the initial value */
+    context->num_unique_kernels = num_unique_kernels;
+
+    free(kernel_table);
+}
+
+/* Test to maximize the context references and fail ownAddReferenceToContext */
+TEST(tivxInternalContext, negativeTestOwnAddReferenceToContext)
+{
+    vx_context context = context_->vx_context_;
+    vx_uint32 width = 640, height = 480, add_ref_count, remove_ref_count;
+
+    vx_image image = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB);
+
+    /* Repeatedly add reference to the context with the same image reference to max out the references
+    until it fails */
+    for(add_ref_count = 0; add_ref_count < TIVX_CONTEXT_MAX_REFERENCES; add_ref_count++)
+    {
+        if (!ownAddReferenceToContext(context, (vx_reference)image))
+        {
+            break;
+        }
+    }
+
+    /* Cleanup */
+    for(remove_ref_count = 0; remove_ref_count < add_ref_count; remove_ref_count++)
+    {
+        if (!ownRemoveReferenceFromContext(context, (vx_reference)image))
+        {
+            break;
+        }
+    }
+    VX_CALL(vxReleaseImage(&image));
+}
+
+// TODO: Need to clarify
+/* Not actually a negative test as the portion to be hit will not result in the failure of the API */
+/* Test to fail the setting of the reference name inside ownAddReferenceToContext */
+TEST(tivxInternalContext, negativeTestOwnAddReferenceToContext1)
+{
+    vx_context context = context_->vx_context_;
+    vx_uint32 width = 640, height = 480, image_count, array_count, j;
+    vx_image image;
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+
+    /* Manually setting the magic parameter to BAD, so that the vxSetReferenceName fails */
+    image->base.magic = TIVX_BAD_MAGIC;
+
+    ASSERT((vx_bool)vx_true_e == ownAddReferenceToContext(context, (vx_reference)image));
+
+    /* Resetting the magic value */
+    image->base.magic = TIVX_MAGIC;
+
+    ASSERT((vx_bool)vx_true_e == ownRemoveReferenceFromContext(context, (vx_reference)image));
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
 TESTCASE_TESTS(
     tivxInternalContext,
-    negativeTestContextLock
+    negativeTestContextLock,
+    negativeTestOwnContextGetUniqueKernels,
+    negativeTestOwnAddReferenceToContext,
+    negativeTestOwnAddReferenceToContext1
 )
