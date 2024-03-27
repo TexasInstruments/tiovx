@@ -161,6 +161,8 @@ The below points outline the standard review process and guidelines for making a
 - TI shall mark each set of conversations as "Resolved" once it has deemed it resolved.
 - After fixes to visual reviews, TI will run through static analysis checker and give feedback report.
 - After fixes to static analysis checker and assuming that all conformance tests are still passing, TI will run through a validation cycle.
+- Once the issues are resolved and the pull request is ready to merge, TI will provide an ID number to tag the issue with.  This ID number shall be added in brackets at the beginning of the first line of the commit message.
+- The full set of commits shall be squashed into a single commit and rebased to the tip of the main branch with all merge conflicts addressed by the submitter.  For more information on how to do so, please see the link [here](https://www.redswitches.com/blog/squash-commits/).
 - Based on when all issues are closed, TI aims to merge after the next release so that external features are in place for sufficient testing throughout the inter-release period.
 
 ## Coding Guidelines
