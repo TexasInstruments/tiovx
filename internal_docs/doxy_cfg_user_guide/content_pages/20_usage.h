@@ -381,12 +381,12 @@
 
     File to change: Dependent on chosen CPU.  Available options:
     - MPU Targets: source/platform/psdk_j7/common/tivx_target_config_mpu1_0.c
-    - R5F Targets: source/platform/psdk_j7/rtos/tivx_target_config_r5f.c
+    - R5F Targets: source/platform/psdk_j7/rtos/<soc>/tivx_target_config_r5f_<soc>.c
     - C66X Targets: source/platform/psdk_j7/rtos/tivx_target_config_c66.c
     - C7X Targets: source/platform/psdk_j7/rtos/tivx_target_config_c7.c
 
     Required Changes: The target thread must created in the appropriate file depending on the CPU that this new thread must be run on.  The API to create the new thread
-    is ownTargetCreate().  Each of these files are slightly different in the way that they call this API.  Regardless of the file, the ownTargetCreate() must be called
+    is tivxPlatformCreateTargetId().  Each of these files are slightly different in the way that they call this API.  Regardless of the file, the tivxPlatformCreateTargetId() must be called
     with the first argument being the target ID enumeration created in \ref STEP3.  The second parameter will be dependent on the desired parameters of the developer.
 
     \subsection STEP6 Step 6
@@ -396,6 +396,16 @@
     Optional Changes: In the case that PC emulation mode is needed, the #define from \ref STEP1 and the TIVX_TARGET_ID_CPU1 enumeration must be added to the TIVX_TARGET_INFO structure
     in a similar way as \ref STEP4.  For example, the DSP1 target is added to this structure with the line { \ref TIVX_TARGET_DSP1, \ref TIVX_TARGET_ID_CPU1 }.
 
+    \section TIOVX_TARGET_PRIORITY Disclaimer about "priority" argument for TIOVX targets
+
+    One of the parameters to the \ref tivxPlatformCreateTargetId API is "priority".  The value of the priority set for this argument is based on the OS priorities of which the core is running.
+    Therefore, when adding a new target to a given core, the developer should be aware of which OS is being used on that core.  This is of particular interest because the priority ordering is
+    different in Linux vs in QNX/FreeRTOS/SafeRTOS.  A few references for this information can be found for <a href="https://stackoverflow.com/questions/3649281/how-to-increase-thread-priority-in-pthreads" target="_blank">Linux</a>,
+    <a href="https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.neutrino.prog/topic/overview_Priority_range.html" target="_blank">QNX</a>, and <a href="https://www.freertos.org/RTOS-task-priority.html" target="_blank">FreeRTOS</a>.
+
+    TIOVX supports Linux/QNX on the A72 and FreeRTOS/SafeRTOS on the R5F/C66/C7X and thus the priorities set for the tasks running on each of these cores is taken into account and optimized for
+    the use cases of interest for the TIOVX framework.  For instance, the capture target is running at the highest priority level for the R5F OS in order to prioritze the receiving of capture
+    frames within a given system.
  */
 
 
