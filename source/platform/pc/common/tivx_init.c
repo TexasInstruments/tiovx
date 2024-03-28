@@ -126,7 +126,7 @@ void tivxInit(void)
         tivxRegisterTutorialTargetKernels();
         #endif
 
-        #if defined (SOC_J721E)
+        #if defined (SOC_J721E) || defined (SOC_J722S)
             tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
             tivxRegisterOpenVXCoreTargetKernels();
             #ifdef BUILD_TUTORIAL
@@ -172,7 +172,7 @@ void tivxInit(void)
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
         tivxRegisterTestKernelsTargetDspKernels();
 
-        #if defined (SOC_J721E)
+        #if defined (SOC_J721E) || defined (SOC_J722S)
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
         tivxRegisterTestKernelsTargetDspKernels();
         #endif
