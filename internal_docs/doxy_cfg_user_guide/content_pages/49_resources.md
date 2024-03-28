@@ -39,6 +39,20 @@ and other material relevant to TIOVX.
 - <a href="https://e2e.ti.com/support/processors/f/791/t/882592" target="_blank">Target kernel create callback error</a>
 - <a href="https://e2e.ti.com/support/processors/f/791/p/899651/3325723#3325723" target="_blank">What is an OpenVX target and how is this used within the framework?</a>
 - <a href="https://e2e.ti.com/support/processors/f/791/t/920477" target="_blank">Issues with multi channel support in OpenVX</a>
+- <a href="https://e2e.ti.com/f/791/t/1312348" target="_blank">SK-TDA4VM: How to build and compile tiovx on board</a>
+- <a href="https://e2e.ti.com/f/791/t/1325797" target="_blank">Adding my own software program and build on the EVM</a>
+- <a href="https://e2e.ti.com/f/791/t/1106172" target="_blank">TDA4VM: TIOVX Optimization Comparison for J721E and J721S2</a>
+- <a href="https://e2e.ti.com/f/791/t/1256312" target="_blank">TDA4VM: OpenVX Host on R5F and node Target on A72 (Linux)</a>
+- <a href="https://e2e.ti.com/f/791/t/1250032" target="_blank">TDA4VM: Process OpenVX Graph while simultaneously configuring a camera</a>
+- <a href="https://e2e.ti.com/f/791/t/1297110" target="_blank">TDA4VM: Integrate Switch Channel functionality in an OpenVX node</a>
+- <a href="https://e2e.ti.com/f/791/t/1302098" target="_blank">TDA4VM: Stream camera of 2 datatypes using 2 Capture nodes and 2 Graphs on the same csi-rx instance</a>
+- <a href="https://e2e.ti.com/f/791/t/1306674" target="_blank">TDA4VM: Enable CSI-TX output instead of DSS output in the capture demos of vision_apps</a>
+- <a href="https://e2e.ti.com/f/791/t/1078116 " target="_blank">Adapt the single video camera demo to a multiple graph version</a>
+- <a href="https://e2e.ti.com/f/791/t/1084620" target="_blank">Run the multi-cam demo with Dual Graph</a>
+- <a href="https://e2e.ti.com/f/791/t/1165996" target="_blank">TDA4VM: Starting openVX application automatically at Linux boot</a>
+- <a href="https://e2e.ti.com/f/791/t/1009550" target="_blank">Support for Panning and Zoom in the display node of OpenVX</a>
+- <a href="https://e2e.ti.com/f/791/t/1032039" target="_blank">How to provide different set of parameters in replicated node, like two look up table for LDC module</a>
+- <a href="https://e2e.ti.com/f/791/t/930770" target="_blank">TDA4VM: How to do a run time logging of events in an OpenVX application?</a>
 
 # TI Support
 
