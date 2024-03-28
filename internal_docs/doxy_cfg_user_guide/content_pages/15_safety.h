@@ -56,6 +56,25 @@
 
     \tableofcontents
 
+     \section TIOVX_SAFETY_INITIALIZATION TIOVX Initialization in Safety Systems
+
+     TI provides sample host side application code along with target side sample firmware within the "vision_apps" project (included with the PSDK RTOS).
+     This serves as an example for how the initializations should be done within a system integrating TIOVX.  There are several modules within the "app_utils"
+     project which require initialization in order for TIOVX to work properly, including such items as shared memory, IPC, Sciclient, etc.
+
+     For host side initialization of TIOVX, the appInit function within vision_apps/utils/app_init shall be called.  This functions calls the appCommonInit,
+     \ref tivxInit and \ref tivxHostInit calls.  The appCommonInit call performs the necessary host side initializations outside of TIOVX, including the
+     set up of shared memory, IPC, timers as well as some optional initializations such as logging, performance measurement, etc.  This function is supported on
+     both Linux and QNX, with the only difference across the two is the resource table usage on Linux (not supported on QNX).  The API also ensures that
+     these initializations are only performed once per system, in the case of multi-threaded or multi-process designs.
+
+     For target side initialization of TIOVX, the example initialization of firmware occur within the vision_apps/platform/<soc>/rtos/common/app_init.c.
+     This file is common across all remote cores of the system and has modules enabled/disabled based on the settings in vision_apps/platform/<soc>/rtos/common/app_cfg*.h.
+     In order for TIOVX to be properly enabled, the ENABLE_TIOVX, ENABLE_IPC and ENABLE_SCICLIENT must be set.  Additionally, depending on the kernels
+     enabled in the system, certain memory sections may also be required if they are depended on by the respective kernels.
+
+     Within the ENABLE_TIOVX macro, the key initialization call in order for TIOVX to be enabled properly is \ref tivxInit.
+
      \section TIOVX_SAFETY_USAGE TIOVX Usage Recommendations for Safety
 
      When utilizing TIOVX within a safety system, there are a few things to note regarding the implementation
