@@ -2510,7 +2510,11 @@ vx_status ownNodeAllocObjDescForPipeline(vx_node node, uint32_t pipeline_depth)
             }
         }
     }
-
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid pipeline depth for node\n");
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+    }
 
     return status;
 }
