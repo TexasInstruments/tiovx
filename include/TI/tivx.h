@@ -312,6 +312,9 @@ typedef enum _tivx_attribute_extensions_e {
     TIVX_NODE_IS_TIMED_OUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xd,
 
     /*! \brief Query the reference to see if the associated buffer has been allocated.
+     * Note that this is only applicable in the case that the buffer has been allocated
+     * by the framework.  It does update if the buffer has been imported to or exported
+     * from the vx_reference.
      * Read-Only. Can be read at initialization as well as at runtime.
      * Use a <tt>\ref vx_bool</tt> parameter.
      */
