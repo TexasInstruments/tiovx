@@ -103,7 +103,6 @@ kernel.setParameterRelationship(["IN_TENSOR",  "OUT_TENSOR"], [Attribute.Tensor.
 
 # Setting target cores
 kernel.setTarget(Target.MCU2_0)
-kernel.setTarget(Target.MCU2_1)
 kernel.setTarget(Target.MPU_0)
 kernel.setTarget(Target.DSP1)
 kernel.setTarget(Target.DSP_C7_1)
