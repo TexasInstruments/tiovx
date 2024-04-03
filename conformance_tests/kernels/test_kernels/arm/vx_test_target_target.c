@@ -71,6 +71,8 @@
 #include <stdio.h>
 
 /* #define FULL_CODE_COVERAGE */
+/* Maximum length of testcase function name */
+#define MAX_LENGTH 64
 
 static tivx_target_kernel vx_test_target_target_kernel = NULL;
 
@@ -124,6 +126,15 @@ __attribute__ ((aligned(TARGET_TEST_TASK_STACK_ALIGNMENT)))
     ;
 
 #endif
+static tivx_target_kernel_instance test_kernel = NULL;
+
+typedef struct {
+    vx_status (*funcPtr)(uint8_t);
+    char funcName[MAX_LENGTH];
+    vx_status status;
+} FuncInfo;
+
+FuncInfo arrOfFuncs[];
 
 static void VX_CALLBACK tivxTestTask(void *app_var)
 {
@@ -134,7 +145,7 @@ static void VX_CALLBACK tivxTestTask(void *app_var)
     while(1);
 }
 
-static vx_status tivxTestTargetTaskBoundary(void)
+static vx_status tivxTestTargetTaskBoundary(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_task taskHandle[TARGET_TEST_MAX_TASKS];
@@ -172,9 +183,162 @@ static vx_status tivxTestTargetTaskBoundary(void)
     {
         status = tivxTaskDelete(&taskHandle[i]);
     }
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
     return status;
 }
+
+static vx_status tivxTestTargetObjDescCmpMemset(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    char *kernel_name="test_kernel";
+    char str[2][12]={"test_kernel","main_kernel"};
+    int32_t ret_value=0;
+
+    ret_value = tivx_obj_desc_strncmp(kernel_name, str[0], strlen(str[0]));
+    if(ret_value != 0)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: tivx_obj_desc_strncmp for same string ARGS \n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+       VX_PRINT(VX_ZONE_INFO,"Same string\n");
+    }
+
+    ret_value = tivx_obj_desc_strncmp(kernel_name, str[1], strlen(str[1]));
+    if(ret_value == 0)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: tivx_obj_desc_strncmp for different string ARGS\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+       VX_PRINT(VX_ZONE_INFO,"Different string\n");
+    }
+
+    tivx_obj_desc_memset(str[0],'A',sizeof(str[0]));
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestTargetDebugZone(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_enum zone = VX_ZONE_INFO;
+
+    if(vx_true_e != tivx_get_debug_zone(zone))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result:VX_ZONE_INFO is cleared\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(vx_false_e != tivx_get_debug_zone(VX_ZONE_TARGET))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result:VX_ZONE_TARGET is enabled\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(vx_false_e != tivx_get_debug_zone(-1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for the ARG:-1\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(vx_false_e != tivx_get_debug_zone(VX_ZONE_MAX))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for the ARG:'VX_ZONE_MAX'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tivx_set_debug_zone(-1);
+    tivx_set_debug_zone(VX_ZONE_MAX);
+    tivx_clr_debug_zone(-1);
+    tivx_clr_debug_zone(VX_ZONE_MAX);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetKernelInstance(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_enum *state = NULL;
+
+    uint32_t *targetId = (uint32_t *)tivxMemAlloc(sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+    vx_border_t *border_mode = (vx_border_t *)tivxMemAlloc(sizeof(vx_border_t),TIVX_MEM_EXTERNAL);
+
+    if((vx_status)VX_ERROR_INVALID_PARAMETERS != tivxSetTargetKernelInstanceContext(NULL,NULL,0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' target kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_ERROR_INVALID_PARAMETERS != tivxGetTargetKernelInstanceState(NULL,state))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' target kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_ERROR_INVALID_PARAMETERS != tivxGetTargetKernelTargetId(NULL,0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' target kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if((vx_status)VX_ERROR_INVALID_PARAMETERS != tivxGetTargetKernelInstanceContext(NULL,NULL,0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' target kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    tivxGetTargetKernelInstanceBorderMode(NULL,NULL);
+    tivxGetTargetKernelInstanceBorderMode(test_kernel,NULL);
+
+    if((vx_bool)vx_false_e != tivxIsTargetKernelInstanceReplicated(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' target kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(NULL != tivxTargetKernelInstanceGetKernel(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' target kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tivxMemFree((void *)targetId,sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+    tivxMemFree((void *)border_mode,sizeof(vx_border_t), TIVX_MEM_EXTERNAL);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestTargetKernelInstance(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t *targetId = (uint32_t *)tivxMemAlloc(sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+    vx_border_t *border_mode = (vx_border_t *)tivxMemAlloc(sizeof(vx_border_t),TIVX_MEM_EXTERNAL);
+
+    if((vx_status)VX_SUCCESS != tivxGetTargetKernelTargetId(test_kernel,targetId))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result:Failed to get kernel ID\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    tivxGetTargetKernelInstanceBorderMode(test_kernel,border_mode);
+
+    tivxMemFree((void *)targetId,sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+    tivxMemFree((void *)border_mode,sizeof(vx_border_t), TIVX_MEM_EXTERNAL);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+FuncInfo arrOfFuncs[] = {
+    {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
+    {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
+    {tivxTestTargetDebugZone, "",VX_SUCCESS},
+    {tivxNegativeTestTargetKernelInstance, "",VX_SUCCESS},
+    {tivxTestTargetKernelInstance,"",VX_SUCCESS}
+};
 #endif /* FULL_CODE_COVERAGE */
 
 static vx_status VX_CALLBACK tivxTestTargetProcess(
@@ -211,10 +375,56 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
     }
 
 #if defined(FULL_CODE_COVERAGE)
+    uint8_t i = 0;
+    uint8_t pcount = 0;
+    uint8_t fcount = 0;
+    vx_status status1 = (vx_status)VX_SUCCESS;
+    uint32_t size= sizeof(arrOfFuncs)/sizeof(arrOfFuncs[0]);
+    test_kernel = kernel;
+    tivx_set_debug_zone(VX_ZONE_INFO);
+
     if((vx_status)VX_SUCCESS == status)
     {
-        status = tivxTestTargetTaskBoundary();
+        for(i=0;i<size;i++)
+        {
+            status1 = arrOfFuncs[i].funcPtr(i);
+            if((vx_status)VX_SUCCESS != status1)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"[ !FAILED! ] TARGET TESTCASE: %s\n",arrOfFuncs[i].funcName);
+                arrOfFuncs[i].status=status1;
+                status = status1;
+                fcount++;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_INFO,"[ PASSED ] TARGET TESTCASE: %s\n",arrOfFuncs[i].funcName);
+                pcount++;
+            }
+        }
     }
+    VX_PRINT(VX_ZONE_INFO,"------------------REMOTE-CORE TESTCASES SUMMARY-------------------------\n");
+    VX_PRINT(VX_ZONE_INFO,"[ ALL DONE ] %d test(s) from 1 test case(s) ran\n",i);
+    VX_PRINT(VX_ZONE_INFO,"[ PASSED   ] %d test(s)\n",pcount);
+    if(fcount>0)
+    {
+        i=0;
+        VX_PRINT(VX_ZONE_INFO,"[ FAILED   ] %d test(s), listed below:\n",fcount);
+        while(i<size)
+        {
+            if(arrOfFuncs[i].status!= VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_INFO,"[ FAILED   ] %s\n",arrOfFuncs[i].funcName);
+            }
+            i++;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_INFO,"[ FAILED   ] %d test(s)\n",fcount);
+    }
+    VX_PRINT(VX_ZONE_INFO,"------------------------------------------------------------------------\n");
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
 #endif /* FULL_CODE_COVERAGE */
 
     return status;
