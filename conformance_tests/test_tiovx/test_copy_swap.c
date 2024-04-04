@@ -125,7 +125,7 @@ vx_reference createReference(vx_context context, vx_enum type)
         {
             vx_image image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
             ref = (vx_reference)vxCreateObjectArray(context, (vx_reference)image, 4);
-            vxReleaseImage(&image);
+            VX_CALL(vxReleaseImage(&image));
             break;
         }
         case VX_TYPE_PYRAMID:
@@ -205,7 +205,7 @@ static vx_status writeValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
         {
             vx_image image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 0);
             writeImage(image, a, b);
-            vxReleaseImage(&image);
+            VX_CALL(vxReleaseImage(&image));
             image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 1);
             writeImage(image, b, a);
             vxReleaseImage(&image);
@@ -221,10 +221,10 @@ static vx_status writeValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
         {
             vx_image image = vxGetPyramidLevel((vx_pyramid)ref, 0);
             writeImage(image, a, b);
-            vxReleaseImage(&image);
+            VX_CALL(vxReleaseImage(&image));
             image = (vx_image)vxGetPyramidLevel((vx_pyramid)ref, 1);
             writeImage(image, b, a);
-            vxReleaseImage(&image);
+            VX_CALL(vxReleaseImage(&image));
             break;
         }
         case VX_TYPE_REMAP:
@@ -416,20 +416,20 @@ static vx_status checkValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
         {
             vx_image image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 0);
             status = checkImage(image, a, b);
-            vxReleaseImage(&image);
+            VX_CALL(vxReleaseImage(&image));
             image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 1);
             status |= checkImage(image, b, a);
-            vxReleaseImage(&image);
+            VX_CALL(vxReleaseImage(&image));
             break;
         }
         case VX_TYPE_PYRAMID:
         {
             vx_image image = vxGetPyramidLevel((vx_pyramid)ref, 0);
             status = checkImage(image, a, b);
-            vxReleaseImage(&image);
+            VX_CALL(vxReleaseImage(&image));
             image = (vx_image)vxGetPyramidLevel((vx_pyramid)ref, 1);
             status |= checkImage(image, b, a);
-            vxReleaseImage(&image);
+            VX_CALL(vxReleaseImage(&image));
             break;
         }
         case VX_TYPE_REMAP:
@@ -798,6 +798,7 @@ TEST (copySwap, testSubObjectsOfImages )
         vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),
         vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8)
     };
+
     vx_rectangle_t rect1 = {.start_x = 0, .start_y = 2, .end_x = 10, .end_y = 10};
     vx_rectangle_t rect0 = {.start_x = 0, .start_y = 0, .end_x = 10, .end_y = 8};
     vx_image sub_images[] = {
