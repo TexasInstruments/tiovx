@@ -21,7 +21,6 @@ Implementation file for the COPY, SWAP, and MOVE kernels
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <VX/vx_khr_swap_move.h>
-#include <TI/tivx_obj_desc.h>
 #include <vx_internal.h>
 #include <tivx_core_host_priv.h>
 

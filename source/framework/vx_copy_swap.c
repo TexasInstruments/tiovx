@@ -67,7 +67,7 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
         for all the in nodes of the old node we add the out nodes of the old node
         and remove the old node from the out nodes.
     */
-    for (i = 0; i < old_obj->num_out_nodes && VX_SUCCESS == status; ++i)
+    for (i = 0; (i < old_obj->num_out_nodes) && ((vx_status)VX_SUCCESS == status); ++i)
     {
         vx_uint16 out_node_id = old_obj->out_node_id[i];
         vx_node out_node = (vx_node)ownReferenceGetHandleFromObjDescId(out_node_id);
@@ -101,7 +101,7 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
         }
 
     }
-    for (i = 0; i < old_obj->num_in_nodes && VX_SUCCESS == status; ++i)
+    for (i = 0; (i < old_obj->num_in_nodes) && ((vx_status)VX_SUCCESS == status); ++i)
     {
         vx_uint16 in_node_id = old_obj->in_node_id[i];
         vx_node in_node = (vx_node)ownReferenceGetHandleFromObjDescId(in_node_id);
@@ -286,7 +286,7 @@ static vx_bool ownCopyMoveReplaceOutputCompatible(vx_reference new_reference, vx
                     TIVX_IMAGE_UNIFORM == obj_desc->create_type)
                 {
                     ret = vx_false_e;
-                }                                    
+                }
                 break;
             }
             default:
@@ -330,7 +330,7 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
     }
     /* First, look for Move nodes with the first parameter connected to another node's input,
         this is illegal and will cause the graph to fail verification */
-    for (i = 0; i < num_copy_move_nodes && (vx_status)VX_SUCCESS == status; i++)
+    for (i = 0; (i < num_copy_move_nodes) && ((vx_status)VX_SUCCESS == status); i++)
     {
         vx_node node = graph->nodes[copy_move_indices[i]];
         if (VX_KERNEL_MOVE == node->kernel->enumeration)
@@ -338,7 +338,7 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
             vx_reference first = node->parameters[0];
             vx_uint32 j;
             /* Check for Move nodes with bidirectional attached to another input */
-            for (j = 0; j < graph->num_nodes && (vx_status)VX_SUCCESS == status; ++j)
+            for (j = 0; (j < graph->num_nodes) && ((vx_status)VX_SUCCESS == status); ++j)
             {
                 if (i != j)
                 {
@@ -383,8 +383,8 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                         int j;
                         for (j = 0; j < num_copy_move_nodes; ++j)
                         {
-                            if (copy_move_indices[j] < TIVX_GRAPH_MAX_NODES &&
-                                i != j)
+                            if ((copy_move_indices[j] < (vx_uint16)TIVX_GRAPH_MAX_NODES) &&
+                                (i != j))
                             {
                                 if (first == graph->nodes[copy_move_indices[j]]->parameters[0])
                                 {
@@ -426,9 +426,9 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
         node_removed = vx_false_e;
         /* Look for nodes with input non-virtual and output virtual,
         and output not connected to a bidirectional of another node */
-        for (i = 0; i < num_copy_move_nodes && VX_SUCCESS == status; i++)
+        for (i = 0; (i < num_copy_move_nodes) && ((vx_status)VX_SUCCESS == status); i++)
         {
-            if (copy_move_indices[i] < TIVX_GRAPH_MAX_NODES)
+            if (copy_move_indices[i] < (vx_uint16)TIVX_GRAPH_MAX_NODES)
             {
                 vx_node node = graph->nodes[copy_move_indices[i]];
                 vx_reference first = node->parameters[0];
@@ -488,9 +488,9 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
        can adjust execution orders appropriately.
        We don't need to iterate here, since the status (virtual or not) if
        the parameters won't change.*/
-    for (i = 0; i < num_copy_move_nodes && VX_SUCCESS == status; ++i)
+    for (i = 0; (i < num_copy_move_nodes) && ((vx_enum)VX_SUCCESS == status); ++i)
     {
-        if (copy_move_indices[i] < TIVX_GRAPH_MAX_NODES)
+        if (copy_move_indices[i] < (vx_uint16)TIVX_GRAPH_MAX_NODES)
         {
             vx_node node = graph->nodes[copy_move_indices[i]];
             vx_reference first = node->parameters[0];
@@ -505,8 +505,8 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                     int j;
                     for (j = 0; j < num_copy_move_nodes; ++j)
                     {
-                        if (copy_move_indices[j] < TIVX_GRAPH_MAX_NODES &&
-                            i != j)
+                        if ((copy_move_indices[j] < (vx_uint16)TIVX_GRAPH_MAX_NODES) &&
+                            (i != j))
                         {
                             if (first == graph->nodes[copy_move_indices[j]]->parameters[0])
                             {
@@ -541,7 +541,7 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                     {
                         /* we can remove this node, propagating the input reference */
                         status = ownCopyMoveRemoveNode(graph, copy_move_indices[i], second, first, bid_node);
-                        if (VX_SUCCESS == status)
+                        if ((vx_enum)VX_SUCCESS == status)
                         {
                             node_removed = vx_true_e;
                             /* and mark as removed from our list */
@@ -659,9 +659,9 @@ vx_status VX_CALLBACK userDataKernelCallback(vx_enum kernel_enum, vx_bool valida
     vx_user_data_object output = (vx_user_data_object)params[1];
     switch (kernel_enum)
     {
-        case VX_KERNEL_COPY:    return validate_only ? isUserDataCopyable(input, output) : copyUserData(input, output);
+        case VX_KERNEL_COPY: return validate_only ? isUserDataCopyable(input, output) : copyUserData(input, output);
         case VX_KERNEL_SWAP:
         case VX_KERNEL_MOVE: return validate_only ? isUserDataCopyable(input, output) : swapUserData(input, output);
-        default:                return VX_ERROR_NOT_SUPPORTED;
+        default:             return VX_ERROR_NOT_SUPPORTED;
     }
 }

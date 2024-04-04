@@ -532,7 +532,6 @@ static vx_status adjustMemoryPointer(vx_reference ref, uint64_t offset[TIVX_IMAG
     vx_status status = VX_SUCCESS;
     vx_reference stack[TIVX_IMAGE_MAX_SUBIMAGES];
     vx_image *subimages = NULL;
-    vx_tensor *subtensors = NULL;
     vx_uint32 stack_pointer = 0;
     vx_uint32 i;
 
