@@ -299,17 +299,6 @@ typedef enum _tivx_reference_attribute_extensions_e {
 
 } tivx_reference_attribute_extensions_e;
 
-/*! \brief TI attribute extensions for the user data object
- *
- * \ingroup group_tivx_ext_host
- */
-typedef enum _tivx_user_data_object_attribute_extensions_e {
-
-    /*! \brief Sets the valid data size within the user data object */
-    TIVX_USER_DATA_OBJECT_VALID_SIZE = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_USER_DATA_OBJECT) + 0x0
-
-} tivx_user_data_object_attribute_extensions_e;
-
 /*! \brief TI attribute extensions for the kernel object
  *
  * \ingroup group_tivx_ext_host
@@ -924,24 +913,6 @@ vx_status VX_API_CALL tivxNodeSendCommandTimed(vx_node node,
  *
  */
 vx_node tivxGraphGetNode(vx_graph graph, uint32_t idx);
-
-/*!
- * \brief Sets attributes on the user data object
- *
- * \param [in] user_data_object  The reference to the user data object.
- * \param [in] attribute         The attribute to modify. Use a <tt>\ref vx_user_data_object_attribute_e</tt>.
- * \param [in] ptr               The pointer to the value to which to set the attribute.
- * \param [in] size              The size in bytes of the container to which \a ptr points.
- *
- * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS                   No errors.
- * \retval VX_ERROR_INVALID_REFERENCE   If the \a user_data_object is not a <tt>\ref vx_user_data_object</tt>.
- * \retval VX_ERROR_NOT_SUPPORTED       If the \a attribute is not a value supported on this implementation.
- * \retval VX_ERROR_INVALID_PARAMETERS  If any of the other parameters are incorrect.
- *
- * \ingroup group_tivx_ext_host
- */
-VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(vx_user_data_object user_data_object, vx_enum attribute, const void *ptr, vx_size size);
 
 /*! \brief Sets the tile size for a given node in a graph. This is only valid for
  * BAM-enabled kernels on C66 DSP.

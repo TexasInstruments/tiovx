@@ -227,7 +227,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case (vx_enum)TIVX_USER_DATA_OBJECT_VALID_SIZE:
+            case (vx_enum)VX_USER_DATA_OBJECT_VALID_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->valid_mem_size;
@@ -248,7 +248,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(
+VX_API_ENTRY vx_status VX_API_CALL vxSetUserDataObjectAttribute(
     vx_user_data_object user_data_object, vx_enum attribute, const void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -266,7 +266,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(
         obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
         switch (attribute)
         {
-            case (vx_enum)TIVX_USER_DATA_OBJECT_VALID_SIZE:
+            case (vx_enum)VX_USER_DATA_OBJECT_VALID_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     obj_desc->valid_mem_size = (vx_uint32)*(const vx_size *)ptr;

@@ -10,9 +10,9 @@ and other material relevant to TIOVX.
 - <a href="https://www.khronos.org/registry/OpenVX/" target="_blank">Khronos OpenVX Registry</a> - Location with all OpenVX related specs.
 
 # Specs
-- <a href="https://www.khronos.org/registry/OpenVX/specs/1.1/html/index.html" target="_blank">OpenVX 1.1 Spec</a> - Base specification for the version of OpenVX that TIOVX is compliant to
-- <a href="https://www.khronos.org/registry/OpenVX/extensions/vx_khr_pipelining/1.0.1/vx_khr_pipelining_1_0_1.html" target="_blank">OpenVX Pipelining and Streaming Extension</a> - TIOVX implements this extension
-- <a href="https://www.khronos.org/registry/OpenVX/extensions/vx_khr_user_data_object/1.0/vx_khr_user_data_object_1_0.html" target="_blank">OpenVX User Data Object Extension</a> - TIOVX implements this extension
+- <a href="https://registry.khronos.org/OpenVX/specs/1.1/html/index.html" target="_blank">OpenVX 1.1 Spec</a> - Base specification for the version of OpenVX that TIOVX is compliant to
+- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/1.1/html/vx_khr_pipelining_1_1_0.html" target="_blank">OpenVX Pipelining and Streaming Extension</a> - TIOVX implements this extension
+- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_user_data_object/1.1/vx_khr_user_data_object_1_1.html" target="_blank">OpenVX User Data Object Extension</a> - TIOVX implements this extension
 - <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_bidirectional_parameters/vx_khr_bidirectional_parameters_1_3_1.html" target="_blank">OpenVX Bidirectional parameters Extension</a> - TIOVX implements this extension
 
 # Tutorials/Presentations
