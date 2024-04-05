@@ -35,21 +35,17 @@ static vx_status ownReleaseRefFromObjArray(
 */
 static vx_status isObjectArrayCopyable(vx_object_array input, vx_object_array output)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_object_array_t *in_objd = (tivx_obj_desc_object_array_t *)input->base.obj_desc;
-    tivx_obj_desc_object_array_t *out_objd = (tivx_obj_desc_object_array_t *)output->base.obj_desc;
-    if ((vx_false_e == ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_OBJECT_ARRAY)) ||
-        (vx_false_e == ownIsValidSpecificReference(&output->base, (vx_enum)VX_TYPE_OBJECT_ARRAY)) ||
-        (input == output) ||
-        (in_objd->num_items != out_objd->num_items) ||
-        (in_objd->item_type != out_objd->item_type))
-    {
-        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-    }
     /* Q: do we have to do anything for any images in the container?
             elsewhere in the framework this is not done, but what about the valid region?
-            it seems like an omission, but probably beyond the scope at present...*/
-    return status;
+            it seems like an omission, but probably beyond the scope at present...*/    
+    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
+    {
+         return VX_SUCCESS;
+    }
+    else
+    {
+        return VX_ERROR_NOT_COMPATIBLE;
+    }
 }
 
 static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)

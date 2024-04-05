@@ -62,26 +62,7 @@ static vx_status isMatrixCopyable(vx_matrix input, vx_matrix output)
  */
 static vx_status copyMatrix(vx_matrix input, vx_matrix output)
 {
-    tivx_obj_desc_matrix_t *ip_obj_desc = (tivx_obj_desc_matrix_t *)input->base.obj_desc;
-    tivx_obj_desc_matrix_t *op_obj_desc = (tivx_obj_desc_matrix_t *)output->base.obj_desc;
-    vx_status status = ownReferenceLock((vx_reference)output);
-    if (((vx_status)VX_SUCCESS == status) &&
-        (ip_obj_desc->mem_size <= op_obj_desc->mem_size))
-    {
-        status = tivxMemBufferMap((void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        if ((vx_status)VX_SUCCESS == status)
-        {
-            status = tivxMemBufferMap((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, op_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                memcpy((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, (void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size);
-                tivxMemBufferUnmap((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, op_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-            }
-            tivxMemBufferUnmap((void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        }
-    }
-    ownReferenceUnlock((vx_reference)output);
-    return status;
+    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
 }
 
 /*! \brief swap input and output pointers
@@ -89,18 +70,7 @@ static vx_status copyMatrix(vx_matrix input, vx_matrix output)
  */
 static vx_status swapMatrix(vx_matrix input, vx_matrix output)
 {
-    vx_status status =  ownReferenceLock((vx_reference)output);
-    if ((vx_status)VX_SUCCESS == status)
-    {
-        tivx_obj_desc_matrix_t *ip_obj_desc = (tivx_obj_desc_matrix_t *)input->base.obj_desc;
-        tivx_obj_desc_matrix_t *op_obj_desc = (tivx_obj_desc_matrix_t *)output->base.obj_desc;
-        tivx_shared_mem_ptr_t mem_ptr;
-        mem_ptr = op_obj_desc->mem_ptr;
-        op_obj_desc->mem_ptr = ip_obj_desc->mem_ptr;
-        ip_obj_desc->mem_ptr = mem_ptr;
-    }
-    ownReferenceUnlock((vx_reference)output);
-    return status;
+    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
 }
 
 /* Call back function that handles the copy, swap and move kernels */

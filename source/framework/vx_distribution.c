@@ -31,19 +31,9 @@ static vx_status VX_CALLBACK distributionKernelCallback(vx_enum kernel_enum, vx_
  */
 static vx_status isDistributionCopyable(vx_distribution input, vx_distribution output)
 {
-    tivx_obj_desc_distribution_t *ip_obj_desc = (tivx_obj_desc_distribution_t *)input->base.obj_desc;
-    tivx_obj_desc_distribution_t *op_obj_desc = (tivx_obj_desc_distribution_t *)output->base.obj_desc;
-    if ((input != output) &&
-        (ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e) &&
-        (op_obj_desc != NULL) &&
-        (ownIsValidSpecificReference(&output->base, (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e) &&
-        (op_obj_desc != NULL) &&
-        (ip_obj_desc->num_bins == op_obj_desc->num_bins) &&
-        (ip_obj_desc->offset == op_obj_desc->offset) &&
-        (ip_obj_desc->range == op_obj_desc->range)
-        )
+    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
     {
-        return VX_SUCCESS;
+         return VX_SUCCESS;
     }
     else
     {
@@ -59,26 +49,7 @@ static vx_status isDistributionCopyable(vx_distribution input, vx_distribution o
  */
 static vx_status copyDistribution(vx_distribution input, vx_distribution output)
 {
-    tivx_obj_desc_distribution_t *ip_obj_desc = (tivx_obj_desc_distribution_t *)input->base.obj_desc;
-    tivx_obj_desc_distribution_t *op_obj_desc = (tivx_obj_desc_distribution_t *)output->base.obj_desc;
-    vx_status status = ownReferenceLock((vx_reference)output);
-    if (((vx_status)VX_SUCCESS == status) &&
-        (ip_obj_desc->mem_size <= op_obj_desc->mem_size))
-    {
-        status = tivxMemBufferMap((void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        if ((vx_status)VX_SUCCESS == status)
-        {
-            status = tivxMemBufferMap((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, op_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                memcpy((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, (void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size);
-                tivxMemBufferUnmap((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, op_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-            }
-            tivxMemBufferUnmap((void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        }
-    }
-    ownReferenceUnlock((vx_reference)output);
-    return status;
+    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
 }
 
 /*! \brief swap input and output pointers
@@ -86,18 +57,7 @@ static vx_status copyDistribution(vx_distribution input, vx_distribution output)
  */
 static vx_status swapDistribution(vx_distribution input, vx_distribution output)
 {
-    vx_status status =  ownReferenceLock((vx_reference)output);
-    if ((vx_status)VX_SUCCESS == status)
-    {
-        tivx_obj_desc_distribution_t *ip_obj_desc = (tivx_obj_desc_distribution_t *)input->base.obj_desc;
-        tivx_obj_desc_distribution_t *op_obj_desc = (tivx_obj_desc_distribution_t *)output->base.obj_desc;
-        tivx_shared_mem_ptr_t mem_ptr;
-        mem_ptr = op_obj_desc->mem_ptr;
-        op_obj_desc->mem_ptr = ip_obj_desc->mem_ptr;
-        ip_obj_desc->mem_ptr = mem_ptr;
-    }
-    ownReferenceUnlock((vx_reference)output);
-    return status;
+    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
 }
 
 /* Call back function that handles the copy, swap and move kernels */

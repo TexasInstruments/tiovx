@@ -34,17 +34,9 @@ static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool v
  */
 static vx_status isScalarCopyable(vx_scalar input, vx_scalar output)
 {
-    tivx_obj_desc_scalar_t *ip_obj_desc = (tivx_obj_desc_scalar_t *)input->base.obj_desc;
-    tivx_obj_desc_scalar_t *op_obj_desc = (tivx_obj_desc_scalar_t *)output->base.obj_desc;
-    if ((input != output) &&
-        (ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_SCALAR) == (vx_bool)vx_true_e) &&
-        (op_obj_desc != NULL) &&
-        (ownIsValidSpecificReference(&output->base, (vx_enum)VX_TYPE_SCALAR) == (vx_bool)vx_true_e) &&
-        (op_obj_desc != NULL) &&
-        (ip_obj_desc->data_type == op_obj_desc->data_type)
-        )
+    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
     {
-        return VX_SUCCESS;
+         return VX_SUCCESS;
     }
     else
     {

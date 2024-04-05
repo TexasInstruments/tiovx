@@ -104,24 +104,14 @@ static vx_status isArrayCopyable(vx_array input, vx_array output)
  */
 static vx_status isArraySwapable(vx_array input, vx_array output)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->base.obj_desc;
-    tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->base.obj_desc;
-    if (vx_false_e == ownIsValidInputAndOutputArrays(input, output))
+    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
     {
-        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+         return VX_SUCCESS;
     }
-    else if (op_obj_desc->item_type != ip_obj_desc->item_type)
+    else
     {
-        /* Types must match */
-        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        return VX_ERROR_NOT_COMPATIBLE;
     }
-    else if (op_obj_desc->capacity != ip_obj_desc->capacity)
-    {
-        /* Output must have same capacity as input */
-        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-    }
-    return status;
 }
 
 /*! \brief Copy input to output
@@ -131,28 +121,7 @@ static vx_status isArraySwapable(vx_array input, vx_array output)
  */
 static vx_status copyArray(vx_array input, vx_array output)
 {
-    tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->base.obj_desc;
-    tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->base.obj_desc;
-    vx_status status = (vx_status)VX_FAILURE;
-    if (ip_obj_desc->mem_size <= op_obj_desc->mem_size)
-    {
-        ownReferenceLock((vx_reference)output);
-        status = tivxMemBufferMap((void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        if (VX_SUCCESS == status)
-        {
-            status = tivxMemBufferMap((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, op_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-            if (VX_SUCCESS == status)
-            {
-                memcpy((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, (void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size);
-                op_obj_desc->num_items = ip_obj_desc->num_items;
-                tivxMemBufferUnmap((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, op_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-
-            }
-            tivxMemBufferUnmap((void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        }
-        ownReferenceUnlock((vx_reference)output);
-    }
-    return status;
+    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
 }
 
 /*! \brief swap input and output pointers
@@ -162,24 +131,7 @@ static vx_status copyArray(vx_array input, vx_array output)
  */
 static vx_status swapArray(vx_array input, vx_array output)
 {
-    tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->base.obj_desc;
-    tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->base.obj_desc;
-    tivx_shared_mem_ptr_t mem_ptr;
-    vx_status status = ownReferenceLock((vx_reference)input);
-    if ((vx_status)VX_SUCCESS == status)
-    {
-        if ((vx_status)VX_SUCCESS == status)
-        {
-            vx_size num_items = op_obj_desc->num_items;
-            op_obj_desc->num_items = ip_obj_desc->num_items;
-            ip_obj_desc->num_items = num_items;
-            mem_ptr = op_obj_desc->mem_ptr;
-            op_obj_desc->mem_ptr = ip_obj_desc->mem_ptr;
-            ip_obj_desc->mem_ptr = mem_ptr;
-        }
-    }
-    ownReferenceUnlock((vx_reference)input);
-    return status;
+    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
 }
 
 /* Call back function that handles the copy, swap and move kernels */

@@ -116,29 +116,8 @@ static vx_status isTensorSwappable(vx_tensor input, vx_tensor output)
  */
 static vx_status copyTensor(vx_tensor input, vx_tensor output)
 {
-    tivx_obj_desc_tensor_t *ip_obj_desc = (tivx_obj_desc_tensor_t *)input->base.obj_desc;
-    tivx_obj_desc_tensor_t *op_obj_desc = (tivx_obj_desc_tensor_t *)output->base.obj_desc;
-    vx_status status = ownReferenceLock(&output->base);
-    if (((vx_status)VX_SUCCESS == status) &&
-        (ip_obj_desc->mem_size <= op_obj_desc->mem_size))
-    {
-        status = tivxMemBufferMap((void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        if ((vx_status)VX_SUCCESS == status)
-        {
-            status = tivxMemBufferMap((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, op_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                memcpy((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, (void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size);
-                tivxMemBufferUnmap((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, op_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-            }
-            tivxMemBufferUnmap((void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        }
-    }
-    ownReferenceUnlock(&output->base);
-    return status;
+    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
 }
-
-
 
 
 /*! \brief Swap orMove the input tensor to the output

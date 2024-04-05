@@ -303,6 +303,21 @@ vx_status ownAllocReferenceBufferGeneric(vx_reference ref);
  */
 vx_status ownDestructReferenceGeneric(vx_reference ref);
 
+/*! \brief There are several reference types that are copied in the same way
+ *         This API generalizes this in order to enhance code reuse
+ *         This API must only be called on the host
+ * \ingroup group_vx_reference
+ */
+vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output);
+
+
+/*! \brief There are several reference types that are swaped in the same way
+ *         This API generalizes this in order to enhance code reuse
+ *         This API must only be called on the host
+ * \ingroup group_vx_reference
+ */
+vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output);
+
 #ifdef __cplusplus
 }
 #endif
