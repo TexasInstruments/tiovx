@@ -31,18 +31,9 @@ static vx_status VX_CALLBACK lutKernelCallback(vx_enum kernel_enum, vx_bool vali
  */
 static vx_status isLutCopyable(vx_lut input, vx_lut output)
 {
-    tivx_obj_desc_lut_t *ip_obj_desc = (tivx_obj_desc_lut_t *)input->base.obj_desc;
-    tivx_obj_desc_lut_t *op_obj_desc = (tivx_obj_desc_lut_t *)output->base.obj_desc;
-    if ((input != output) &&
-        (ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_true_e) &&
-        (op_obj_desc != NULL) &&
-        (ownIsValidSpecificReference(&output->base, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_true_e) &&
-        (op_obj_desc != NULL) &&
-        (ip_obj_desc->item_type == op_obj_desc->item_type) &&
-        (ip_obj_desc->num_items == op_obj_desc->num_items)
-        )
+    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
     {
-        return VX_SUCCESS;
+         return VX_SUCCESS;
     }
     else
     {
@@ -58,26 +49,7 @@ static vx_status isLutCopyable(vx_lut input, vx_lut output)
  */
 static vx_status copyLut(vx_lut input, vx_lut output)
 {
-    tivx_obj_desc_lut_t *ip_obj_desc = (tivx_obj_desc_lut_t *)input->base.obj_desc;
-    tivx_obj_desc_lut_t *op_obj_desc = (tivx_obj_desc_lut_t *)output->base.obj_desc;
-    vx_status status = ownReferenceLock((vx_reference)output);
-    if (((vx_status)VX_SUCCESS == status) &&
-        (ip_obj_desc->mem_size <= op_obj_desc->mem_size))
-    {
-        status = tivxMemBufferMap((void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        if ((vx_status)VX_SUCCESS == status)
-        {
-            status = tivxMemBufferMap((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, op_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                memcpy((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, (void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size);
-                tivxMemBufferUnmap((void *)(uintptr_t)op_obj_desc->mem_ptr.host_ptr, op_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-            }
-            tivxMemBufferUnmap((void *)(uintptr_t)ip_obj_desc->mem_ptr.host_ptr, ip_obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        }
-    }
-    ownReferenceUnlock((vx_reference)output);
-    return status;
+    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
 }
 
 /*! \brief swap input and output pointers
@@ -85,18 +57,7 @@ static vx_status copyLut(vx_lut input, vx_lut output)
  */
 static vx_status swapLut(vx_lut input, vx_lut output)
 {
-    vx_status status =  ownReferenceLock((vx_reference)output);
-    if ((vx_status)VX_SUCCESS == status)
-    {
-        tivx_obj_desc_lut_t *ip_obj_desc = (tivx_obj_desc_lut_t *)input->base.obj_desc;
-        tivx_obj_desc_lut_t *op_obj_desc = (tivx_obj_desc_lut_t *)output->base.obj_desc;
-        tivx_shared_mem_ptr_t mem_ptr;
-        mem_ptr = op_obj_desc->mem_ptr;
-        op_obj_desc->mem_ptr = ip_obj_desc->mem_ptr;
-        ip_obj_desc->mem_ptr = mem_ptr;
-    }
-    ownReferenceUnlock((vx_reference)output);
-    return status;
+    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
 }
 
 /* Call back function that handles the copy, swap and move kernels */
