@@ -81,6 +81,7 @@ TEST(tivxInternalContext, negativeTestContextLock)
     ct_free_mem((void *)kernel_table);
 }
 
+/* Test to hit negative portion of ownContextGetUniqueKernels() */
 TEST(tivxInternalContext, negativeTestOwnContextGetUniqueKernels)
 {
     vx_graph graph;
@@ -96,8 +97,9 @@ TEST(tivxInternalContext, negativeTestOwnContextGetUniqueKernels)
 
     VX_CALL(vxQueryContext(context, VX_CONTEXT_UNIQUE_KERNELS, &nkernels, sizeof(nkernels)));
 
-    vx_kernel_info_t *kernel_table = (vx_kernel_info_t *)malloc((nkernels + 1)*sizeof(vx_kernel_info_t));
+    vx_kernel_info_t *kernel_table = (vx_kernel_info_t *)ct_alloc_mem((nkernels + 1)*sizeof(vx_kernel_info_t));
 
+    /* The follwing call should fail along with ownContextGetUniqueKernels(), as we have reduced the max kernels (num_unique_kernels) */
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxQueryContext(context, VX_CONTEXT_UNIQUE_KERNEL_TABLE, kernel_table, nkernels*sizeof(vx_kernel_info_t)));
 
     for (i = 0; i < nkernels; i++)
@@ -111,10 +113,10 @@ TEST(tivxInternalContext, negativeTestOwnContextGetUniqueKernels)
     /* Resetting to the initial value */
     context->num_unique_kernels = num_unique_kernels;
 
-    free(kernel_table);
+    ct_free_mem(kernel_table);
 }
 
-/* Test to maximize the context references and fail ownAddReferenceToContext */
+/* Test to maximize the context references and to fail ownAddReferenceToContext() */
 TEST(tivxInternalContext, negativeTestOwnAddReferenceToContext)
 {
     vx_context context = context_->vx_context_;
@@ -143,9 +145,7 @@ TEST(tivxInternalContext, negativeTestOwnAddReferenceToContext)
     VX_CALL(vxReleaseImage(&image));
 }
 
-// TODO: Need to clarify
-/* Not actually a negative test as the portion to be hit will not result in the failure of the API */
-/* Test to fail the setting of the reference name inside ownAddReferenceToContext */
+/* Test to fail the setting of the reference name inside ownAddReferenceToContext() */
 TEST(tivxInternalContext, negativeTestOwnAddReferenceToContext1)
 {
     vx_context context = context_->vx_context_;
@@ -157,20 +157,149 @@ TEST(tivxInternalContext, negativeTestOwnAddReferenceToContext1)
     /* Manually setting the magic parameter to BAD, so that the vxSetReferenceName fails */
     image->base.magic = TIVX_BAD_MAGIC;
 
-    ASSERT((vx_bool)vx_true_e == ownAddReferenceToContext(context, (vx_reference)image));
+    /* Adding Reference to Context should fail, as vxSetReferenceName fails */
+    ASSERT((vx_bool)vx_false_e == ownAddReferenceToContext(context, (vx_reference)image));
 
     /* Resetting the magic value */
     image->base.magic = TIVX_MAGIC;
 
-    ASSERT((vx_bool)vx_true_e == ownRemoveReferenceFromContext(context, (vx_reference)image));
-
+    /* Cleanup */
     VX_CALL(vxReleaseImage(&image));
 }
+
+/* Test to cover negative portions of ownAddKernelToContext() */
+TEST(tivxInternalContext, negativeTestOwnAddKernelToContext)
+{
+    vx_context context = context_->vx_context_;
+    vx_kernel kernel;
+    vx_uint32 numParams = 0;
+    vx_enum kernel_id;
+
+    VX_CALL(vxAllocateUserKernelId(context, &kernel_id));
+
+    const vx_char kernel_name[VX_MAX_KERNEL_NAME] = "tempKernel";
+
+    ASSERT_VX_OBJECT(kernel = vxAddUserKernel(
+                        context,
+                        kernel_name,
+                        kernel_id,
+                        NULL,
+                        numParams,
+                        NULL,
+                        NULL,
+                        NULL), VX_TYPE_KERNEL);
+
+    /* Kernel Reference Invalid, valid context */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAddKernelToContext(context, NULL));
+    /* Invalid Context and Invalid kernel reference*/
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAddKernelToContext(NULL, kernel));
+     /* Invalid Context and Kernel Reference Invalid */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAddKernelToContext(NULL, NULL));
+
+    /* Remove kernel */
+    VX_CALL(vxRemoveKernel(kernel));
+}
+
+/* Test to hit negative portions of ownIsKernelInContext() */
+TEST(tivxInternalContext, negativeTestOwnIsKernelInContext)
+{
+    vx_context context = context_->vx_context_;
+    vx_bool is_found;
+    const vx_char kernel_name[VX_MAX_KERNEL_NAME] = "NotRelevant";
+
+    /* CONTEXT = NULL */
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownIsKernelInContext(NULL, 0, kernel_name, &is_found));
+    /* is_found = NULL */
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownIsKernelInContext(context, 0, kernel_name, NULL));
+    /* Kernel name = NULL */
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownIsKernelInContext(context, 0, NULL, &is_found));
+}
+
+/* Test to hit negative portion of ownRemoveKernelFromContext() */
+TEST(tivxInternalContext, negativeTestOwnRemoveKernelFromContext)
+{
+    vx_context context = context_->vx_context_;
+    vx_kernel kernel;
+    tivx_mutex lock1;
+    vx_uint32 numParams = 0;
+    vx_enum kernel_id;
+
+    lock1 = context->lock;
+
+    VX_CALL(vxAllocateUserKernelId(context, &kernel_id));
+
+    const vx_char kernel_name[VX_MAX_KERNEL_NAME] = "tempKernel";
+
+   ASSERT_VX_OBJECT(kernel = vxAddUserKernel(
+                        context,
+                        kernel_name,
+                        kernel_id,
+                        NULL,
+                        numParams,
+                        NULL,
+                        NULL,
+                        NULL), VX_TYPE_KERNEL);
+
+    VX_CALL(ownAddKernelToContext(context, kernel));
+
+    /* Kernel Reference Invalid, valid context */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownRemoveKernelFromContext(context, NULL));
+
+    /* Invalid Context */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownRemoveKernelFromContext(NULL, kernel));
+
+    /* Invalid Context and Kernel Reference Invalid */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownRemoveKernelFromContext(NULL, NULL));
+
+    /* Removing lock */
+    context->lock=NULL;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownRemoveKernelFromContext(context, kernel));
+
+    /* Resetting the lock */
+    context->lock=lock1;
+
+    /* Removing actual context */
+    VX_CALL(ownRemoveKernelFromContext(context, kernel));
+
+    /* Invoking again with already removed kernel to hit negative portion */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownRemoveKernelFromContext(context, kernel));
+
+    VX_CALL(vxRemoveKernel(kernel));
+}
+
+/* Test to cover negative portion of ownReleaseReferenceBufferGeneric() */
+TEST(tivxInternalContext, negativeTestOwnReleaseReferenceBufferGeneric)
+{
+    vx_context context = context_->vx_context_;
+    vx_uint32 width = 640, height = 480;
+
+    vx_image image;
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE); ;
+
+    vx_reference ref = &(image->base);
+
+    /* Tampering the reference type */
+    vx_enum type = ref->type;
+    ref->type = VX_TYPE_INVALID;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownReleaseReferenceBufferGeneric(&ref));
+
+    /* Resetting the actual type */
+    ref->type = type;
+
+    /* Releasing image */
+    VX_CALL(vxReleaseImage(&image));
+}
+
 
 TESTCASE_TESTS(
     tivxInternalContext,
     negativeTestContextLock,
     negativeTestOwnContextGetUniqueKernels,
     negativeTestOwnAddReferenceToContext,
-    negativeTestOwnAddReferenceToContext1
+    negativeTestOwnAddReferenceToContext1,
+    negativeTestOwnAddKernelToContext,
+    negativeTestOwnIsKernelInContext,
+    negativeTestOwnRemoveKernelFromContext,
+    negativeTestOwnReleaseReferenceBufferGeneric
 )
