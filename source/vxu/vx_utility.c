@@ -1308,21 +1308,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxuRemap(vx_context context, vx_image input, 
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL vxuCopy(vx_context context, vx_reference input, vx_reference output)
-{
-    return ownCallKernelFunc(input, output, VX_KERNEL_COPY);
-}
-
-VX_API_ENTRY vx_status VX_API_CALL vxuSwap(vx_context context, vx_reference first, vx_reference second)
-{
-    return ownCallKernelFunc(first, second, VX_KERNEL_SWAP);
-}
-
-VX_API_ENTRY vx_status VX_API_CALL vxuMove(vx_context context, vx_reference first, vx_reference second)
-{
-    return ownCallKernelFunc(first, second, VX_KERNEL_MOVE);
-}
-
 static vx_status ownCallKernelFunc(vx_reference input, vx_reference output, vx_enum kernel)
 {
     vx_status status = (vx_status)VX_SUCCESS;
