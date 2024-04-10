@@ -87,7 +87,7 @@ TESTCASE(supplementary_data, CT_VXContext, ct_setup_vx_context, 0)
         if((status) == VX_SUCCESS) {\
             printf("ERROR: failed with unexpected VX_SUCCESS at " __FILE__ "#%d;\n", __LINE__ );\
         }\
-        EXPECT_NE_VX_STATUS(VX_SUCCESS, status);\     
+        EXPECT_NE_VX_STATUS(VX_SUCCESS, status);\
     }
 
 #define ERROR_EXPECT_STATUS( status, expected, tag ) {\
@@ -188,11 +188,11 @@ vx_status myUserTestKernelValidator(vx_node node, const vx_reference parameters[
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)supp));
     /* Successfully created supplementary on virtual object data in validator */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject(parameters[3], supp));
-    VX_CALL(vxReleaseUserDataObject(&supp));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseUserDataObject(&supp));
     supp = vxGetSupplementaryUserDataObject(parameters[0], NULL, NULL);
     /* Successfully got supplementary data from virtual object in validator */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)supp));
-    VX_CALL(vxReleaseUserDataObject(&supp));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseUserDataObject(&supp));
     return VX_SUCCESS;
 }
 
@@ -328,7 +328,7 @@ static vx_status VX_CALLBACK  myUserTestTargetFunction(tivx_target_kernel_instan
     }
     else
     {
-        FAIL("ERROR - Could not map the supplementary data!");
+        ERROR_CHECK_VX_SUCCESS(VX_FAILURE, "ERROR - Could not map the supplementary data!");
     }
     return VX_SUCCESS;
 }
@@ -579,7 +579,7 @@ TEST (supplementary_data, testRefCount)
     vx_status status = (vx_status)VX_SUCCESS;
 
     /* First, set supplementary data on an object */
-    vx_reference test_object = (vx_image)vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+    vx_reference test_object = (vx_reference)vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject(test_object, exemplar));
     VX_CALL(vxReleaseUserDataObject(&exemplar));
 
@@ -908,7 +908,7 @@ TEST(supplementary_data, testExemplars)
     int i;
     for (i = 0; i < 4; ++i)
     {
-        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_image)images[i], exemplar));
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)images[i], exemplar));
     }
     vx_object_array array = vxCreateObjectArray(context, (vx_reference)(images[0]), 3);
     /* Each of the objects should have been created with supplementary data from the exemplar */

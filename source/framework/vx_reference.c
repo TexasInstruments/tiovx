@@ -617,19 +617,6 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
 
     if (ownIsValidSpecificReference(ref, ref_type) == (vx_bool)vx_true_e)
     {
-        //if there is a parent then decrement the parent itself
-        if ((vx_enum) VX_TYPE_USER_DATA_OBJECT == ref_type)
-        {
-            //cast to user object data
-            vx_user_data_object ref_user = (vx_user_data_object)ref;
-            //check if there is a parent
-            if (ref_user->parent != NULL)
-            {
-                //if yes replease the ref to decrement
-                ref = (vx_reference)ref_user->parent;
-            }
-        }
-         
         if (ownDecrementReference(ref, reftype) == 0U)
         {
             tivx_reference_callback_f destructor = special_destructor;

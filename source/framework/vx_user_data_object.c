@@ -103,6 +103,33 @@ static vx_status ownInitUserDataObjectObject(vx_user_data_object user_data_objec
     return status;
 }
 
+static vx_status ownDestructUserDataObject(vx_reference ref)
+{
+    tivx_obj_desc_user_data_object_t *obj_desc = NULL;
+
+    if(ref->type == VX_TYPE_USER_DATA_OBJECT)
+    {
+        if (((vx_user_data_object)ref)->parent)
+        {
+            vxReleaseUserDataObject(&((vx_user_data_object)ref)->parent);
+        }
+        else
+        {
+            obj_desc = (tivx_obj_desc_user_data_object_t *)ref->obj_desc;
+            if(obj_desc != NULL)
+            {
+                if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
+                {
+                    tivxMemBufferFree(
+                        &obj_desc->mem_ptr, obj_desc->mem_size);
+                }
+
+                ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            }
+        }
+    }
+    return (vx_status)VX_SUCCESS;
+}
 
 /*==============================================================================
    User Data Object API FUNCTIONS
@@ -159,7 +186,7 @@ vx_user_data_object ownCreateUserDataObject(
                 (user_data_object->base.type == VX_TYPE_USER_DATA_OBJECT))
             {
                 /* assign reference type specific callback's */
-                user_data_object->base.destructor_callback = &ownDestructReferenceGeneric;
+                user_data_object->base.destructor_callback = &ownDestructUserDataObject;
                 user_data_object->base.mem_alloc_callback  = &ownAllocReferenceBufferGeneric;
                 user_data_object->base.release_callback    = &ownReleaseReferenceBufferGeneric;
 				user_data_object->base.kernel_callback     = &userDataKernelCallback;
@@ -238,7 +265,7 @@ vx_user_data_object ownCreateReadOnlyUserDataObject(vx_user_data_object parent)
     {
         /* assign reference type specific callback's */
         user_data_object->base.destructor_callback =
-            (tivx_reference_destructor_callback_f)&ownDestructReferenceGeneric;
+            (tivx_reference_destructor_callback_f)&ownDestructUserDataObject;
         user_data_object->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
         user_data_object->base.release_callback =
             (tivx_reference_release_callback_f)&ownReleaseReferenceBufferGeneric;

@@ -251,7 +251,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                     }
 
                     status = ownInitPyramid(prmd);
-                    if (VX_SUCCESS != status)
+                    if ((vx_status)VX_SUCCESS != status)
                     {
                         vxReleasePyramid(&prmd);
                         prmd = (vx_pyramid)ownGetErrorObject(context, status);
