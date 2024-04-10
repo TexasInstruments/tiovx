@@ -524,16 +524,6 @@ vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_
 void ownSendGraphCompletedEvent(vx_graph graph);
 
 /*!
- * \brief Checks if 'ref' is valid ref that can be enqueued
- *
- *  'ref' is compared against pre-registered ref's that can be enqueued
- *  to confirm that ref can be enqueued.
- *
- * \ingroup group_vx_graph
- */
-vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_parameter_index, vx_reference ref);
-
-/*!
  * \brief Counts number of enqueued 'refs' and returns number of times graph can be scheduled successfully
  *
  *  Value returned is minimum of number of refs enqueued at each graph parameter

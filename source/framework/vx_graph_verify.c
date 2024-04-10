@@ -190,10 +190,15 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
         /* 'ref' not present in 'data_ref' list so add it */
         graph->data_ref[i] = ref;
         graph->data_ref_num_in_nodes[i] = 0;
+        graph->data_ref_num_out_nodes[i] = 0;
         if((uint32_t)VX_OUTPUT != prm_dir)
         {
             /* input */
             graph->data_ref_num_in_nodes[i]++;
+        }
+        else
+        {
+            graph->data_ref_num_out_nodes[i]++;
         }
         graph->num_data_ref++;
         ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", (uint16_t)graph->num_data_ref);
@@ -797,6 +802,13 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
     {
         node_cur = graph->nodes[node_cur_idx];
         uint32_t num_node_params = ownNodeGetNumParameters(node_cur);
+        if (16 < num_node_params)
+        {
+            /* HARD limit on the number of kernel parameters that can be processed */
+            VX_PRINT(VX_ZONE_ERROR, "No more than 16 parameters are allowed per kernel!");
+            status = VX_ERROR_NO_RESOURCES;
+        }
+
         if (TIVX_KERNEL_MAX_PARAMS < num_node_params)
         {
             /* HARD limit on the number of kernel parameters that can be processed */
