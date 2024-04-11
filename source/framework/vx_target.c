@@ -643,7 +643,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
 
                 for (buf_idx = 0; buf_idx < ((int32_t)num_bufs - 1); buf_idx++)
                 {
-                    ownTargetNodeDescAcquireAllParametersForPipeup(node_obj_desc, prm_obj_desc_id);
+                    ownTargetNodeDescAcquireAllParameters(node_obj_desc, prm_obj_desc_id, &is_node_blocked, (vx_bool)vx_true_e);
                     ownTargetNodeDescNodeExecuteKernel(node_obj_desc, prm_obj_desc_id);
                 }
 
@@ -656,7 +656,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
                 }
             }
 
-            ownTargetNodeDescAcquireAllParameters(node_obj_desc, prm_obj_desc_id, &is_node_blocked);
+            ownTargetNodeDescAcquireAllParameters(node_obj_desc, prm_obj_desc_id, &is_node_blocked, (vx_bool)vx_false_e);
 
             if(is_node_blocked==(vx_bool)vx_false_e)
             {
