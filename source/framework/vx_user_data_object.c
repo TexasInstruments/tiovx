@@ -105,6 +105,7 @@ static vx_status ownInitUserDataObjectObject(vx_user_data_object user_data_objec
 
 static vx_status ownDestructUserDataObject(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
 
     if(ref->type == VX_TYPE_USER_DATA_OBJECT)
@@ -120,11 +121,17 @@ static vx_status ownDestructUserDataObject(vx_reference ref)
             {
                 if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
                 {
-                    tivxMemBufferFree(
+                    status = tivxMemBufferFree(
                         &obj_desc->mem_ptr, obj_desc->mem_size);
                 }
-
-                ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Object descriptor free failed!\n");
+                    }
+                }                
             }
         }
     }
@@ -189,7 +196,7 @@ vx_user_data_object ownCreateUserDataObject(
                 user_data_object->base.destructor_callback = &ownDestructUserDataObject;
                 user_data_object->base.mem_alloc_callback  = &ownAllocReferenceBufferGeneric;
                 user_data_object->base.release_callback    = &ownReleaseReferenceBufferGeneric;
-				user_data_object->base.kernel_callback     = &userDataKernelCallback;
+                user_data_object->base.kernel_callback     = &userDataKernelCallback;
                 user_data_object->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_USER_DATA_OBJECT, (vx_reference)user_data_object);
                 if(user_data_object->base.obj_desc==NULL)
@@ -218,27 +225,6 @@ vx_user_data_object ownCreateUserDataObject(
                         if (NULL != ptr)
                         {
                             status = vxCopyUserDataObject(user_data_object, 0, size, (void*)ptr, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
-                        }
-                        else
-                        {
-                            status = ownAllocReferenceBufferGeneric(&user_data_object->base);
-
-                            if (status == (vx_status)VX_SUCCESS)
-                            {
-                                vx_uint8 *start_ptr;
-                                tivx_obj_desc_user_data_object_t *obj_desc = NULL;
-
-                                obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
-                                start_ptr = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr;
-
-                                tivxCheckStatus(&status, tivxMemBufferMap(start_ptr, (uint32_t)size,
-                                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
-
-                                memset(start_ptr, 0, size);
-
-                                tivxCheckStatus(&status, tivxMemBufferUnmap(start_ptr, (uint32_t)size,
-                                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
-                            }
                         }
                     }
 
