@@ -127,6 +127,7 @@ __attribute__ ((aligned(TARGET_TEST_TASK_STACK_ALIGNMENT)))
 
 #endif
 static tivx_target_kernel_instance test_kernel = NULL;
+static tivx_obj_desc_t *test_obj_desc = NULL;
 
 typedef struct {
     vx_status (*funcPtr)(uint8_t);
@@ -135,6 +136,19 @@ typedef struct {
 } FuncInfo;
 
 FuncInfo arrOfFuncs[];
+
+vx_status create_function(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg);
+vx_status process_function(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg);
+
+vx_status create_function(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg) 
+{
+    return (VX_SUCCESS);
+}
+
+vx_status process_function(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg) 
+{
+    return (VX_SUCCESS);
+}
 
 static void VX_CALLBACK tivxTestTask(void *app_var)
 {
@@ -265,9 +279,6 @@ static vx_status tivxNegativeTestTargetKernelInstance(uint8_t id)
     vx_status status = (vx_status)VX_SUCCESS;
     vx_enum *state = NULL;
 
-    uint32_t *targetId = (uint32_t *)tivxMemAlloc(sizeof(uint32_t), TIVX_MEM_EXTERNAL);
-    vx_border_t *border_mode = (vx_border_t *)tivxMemAlloc(sizeof(vx_border_t),TIVX_MEM_EXTERNAL);
-
     if((vx_status)VX_ERROR_INVALID_PARAMETERS != tivxSetTargetKernelInstanceContext(NULL,NULL,0))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' target kernel instance\n");
@@ -303,9 +314,6 @@ static vx_status tivxNegativeTestTargetKernelInstance(uint8_t id)
         status = (vx_status)VX_FAILURE;
     }
 
-    tivxMemFree((void *)targetId,sizeof(uint32_t), TIVX_MEM_EXTERNAL);
-    tivxMemFree((void *)border_mode,sizeof(vx_border_t), TIVX_MEM_EXTERNAL);
-
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
     return status;
@@ -332,12 +340,161 @@ static vx_status tivxTestTargetKernelInstance(uint8_t id)
     return status;
 }
 
+static vx_status tivxNegativeTestTargetGetObjDescElement(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    /* hit 'elem_idx' > obj_desc_object_array->num_items condition */
+    uint16_t elem_idx = 2;
+    tivx_obj_desc_t *obj_desc = NULL;
+
+    tivx_obj_desc_object_array_t *obj_desc_object_array = (tivx_obj_desc_object_array_t *)tivxMemAlloc(sizeof(tivx_obj_desc_object_array_t),TIVX_MEM_EXTERNAL);
+    obj_desc_object_array->num_items = 1;
+    obj_desc = &(obj_desc_object_array->base);
+    obj_desc->type = (vx_enum)TIVX_OBJ_DESC_OBJARRAY;
+
+    if(NULL != tivxGetObjDescElement(obj_desc, elem_idx))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result for the ARG: 'elem_idx' > obj_desc_object_array->num_items\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    tivxMemFree((void *) obj_desc_object_array,sizeof(tivx_obj_desc_object_array_t), TIVX_MEM_EXTERNAL);
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestTargetQueryNumTargetKernel(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t *ptr = (uint32_t *)tivxMemAlloc(sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+    
+    if((vx_status)VX_SUCCESS != tivxQueryNumTargetKernel(ptr))
+    {
+       VX_PRINT(VX_ZONE_ERROR,"Invalid result:Failed to query number of target kernels\n");
+       status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_ERROR_INVALID_PARAMETERS != tivxQueryNumTargetKernel(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tivxMemFree((void *)ptr,sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestAddTargetKernelInternal(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32 num_target_kernels;
+    tivx_target_kernel ttk[TIVX_TARGET_KERNEL_MAX+1] = {NULL};
+    vx_uint32 priv_arg = 0;
+    int32_t i = 0;
+    vx_enum kernel_id = 0;
+    char tname[] = {'t', 'i', 'o', 'v', 'x'};
+
+    if(NULL != tivxAddTargetKernel(0,NULL,NULL,NULL,NULL,NULL,NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for ARG:'NULL'\n");
+        status = (vx_status)VX_FAILURE;
+    }  
+
+    tivxQueryNumTargetKernel(&num_target_kernels);
+
+    for (i=num_target_kernels; i<TIVX_TARGET_KERNEL_MAX; i++) 
+    {
+        kernel_id = (vx_enum)(i);
+        ttk[i] = tivxAddTargetKernel(kernel_id, tname, process_function, create_function, NULL, NULL, (void *)(&priv_arg));
+        if(NULL == ttk[i])
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to add target kernel\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    kernel_id = TIVX_TARGET_KERNEL_MAX;
+
+    /* Trying to allocate TIVX_TARGET_KERNEL_MAX+1 */
+    ttk[i] = tivxAddTargetKernel(kernel_id, tname, process_function, create_function, NULL, NULL, (void *)(&priv_arg));
+    if(NULL != ttk[i])
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result: TIVX_TARGET_KERNEL_MAX+1 allocation'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    for (i=num_target_kernels; i<TIVX_TARGET_KERNEL_MAX; i++) 
+    {
+        if((vx_status)VX_SUCCESS != tivxRemoveTargetKernel(ttk[i]))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to remove target kernel\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestRemoveTargetKernel(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32 ttkaddress = 0;
+    
+    if((vx_status)VX_FAILURE != tivxRemoveTargetKernel(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for ARG:'NULL'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != tivxRemoveTargetKernel((tivx_target_kernel)(&ttkaddress)))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for ARG:'&ttkaddress'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestTargetObjDescAllocFree(uint8_t id)
+{
+    extern tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref);
+    extern vx_status ownObjDescFree(tivx_obj_desc_t **obj_desc);
+
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *obj_desc=NULL;
+
+    obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc((vx_enum)test_obj_desc->type, NULL);
+    if(NULL == obj_desc)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to allocate memory\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if((vx_status)VX_SUCCESS != ownObjDescFree((tivx_obj_desc_t**)&obj_desc))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to deallocate memory\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
     {tivxTestTargetDebugZone, "",VX_SUCCESS},
     {tivxNegativeTestTargetKernelInstance, "",VX_SUCCESS},
-    {tivxTestTargetKernelInstance,"",VX_SUCCESS}
+    {tivxTestTargetKernelInstance, "",VX_SUCCESS},
+    {tivxNegativeTestTargetGetObjDescElement,"",VX_SUCCESS},
+    {tivxTestTargetQueryNumTargetKernel, "",VX_SUCCESS},
+    {tivxNegativeTestAddTargetKernelInternal,"",VX_SUCCESS},
+    {tivxNegativeTestRemoveTargetKernel, "",VX_SUCCESS},
+    {tivxTestTargetObjDescAllocFree,"",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
@@ -381,6 +538,7 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
     vx_status status1 = (vx_status)VX_SUCCESS;
     uint32_t size= sizeof(arrOfFuncs)/sizeof(arrOfFuncs[0]);
     test_kernel = kernel;
+    test_obj_desc=obj_desc[0];
     tivx_set_debug_zone(VX_ZONE_INFO);
 
     if((vx_status)VX_SUCCESS == status)
