@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2019 The Khronos Group Inc.
+ * Copyright (c) 2012-2024 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ Implementation file for the COPY, SWAP, and MOVE kernels
 
 #include <TI/tivx.h>
 #include <VX/vx.h>
-#include <VX/vx_khr_swap_move.h>
 #include <vx_internal.h>
+#include <VX/vx_khr_swap_move.h>
 #include <tivx_core_host_priv.h>
 
 #define VX_KERNEL_COPY_MAX_PARAMS (2U)
@@ -30,6 +30,9 @@ Implementation file for the COPY, SWAP, and MOVE kernels
 #define VX_KERNEL_SWAP_MAX_PARAMS (2U)
 #define VX_KERNEL_SWAP_FIRST_IDX (0U)
 #define VX_KERNEL_SWAP_SECOND_IDX (1U)
+#define VX_KERNEL_MOVE_MAX_PARAMS (2U)
+#define VX_KERNEL_MOVE_FIRST_IDX (0U)
+#define VX_KERNEL_MOVE_SECOND_IDX (1U)
 
 static vx_kernel vx_copy_kernel = NULL;
 static vx_kernel vx_swap_kernel = NULL;
@@ -51,22 +54,14 @@ static vx_status VX_CALLBACK vxKernelCopySwapMoveProcess(vx_node node,
 static inline vx_status call_kernel_func(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[])
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if (ownIsValidReference(params[1]))
+    if (NULL != params[0]->kernel_callback)
     {
-        if (NULL != params[0]->kernel_callback)
-        {
-            status = (params[0]->kernel_callback)(kernel_enum, validate_only, optimization, params, 2U);
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Not supported\n");
-            status = VX_ERROR_NOT_SUPPORTED;
-        }
+        status = (params[0]->kernel_callback)(kernel_enum, validate_only, optimization, params, 2U);
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        VX_PRINT(VX_ZONE_ERROR, "Not supported\n");
+        status = VX_ERROR_NOT_SUPPORTED;
     }
     return status;
 }
@@ -259,7 +254,7 @@ vx_status tivxAddKernelMove(vx_context context)
                 VX_KERNEL_MOVE_NAME,
                 VX_KERNEL_MOVE,
                 vxKernelCopySwapMoveProcess,
-                VX_KERNEL_SWAP_MAX_PARAMS,
+                VX_KERNEL_MOVE_MAX_PARAMS,
                 vxAddKernelCopySwapMoveValidate,
                 vxAddKernelCopySwapMoveInitialize,
                 NULL);
@@ -267,7 +262,7 @@ vx_status tivxAddKernelMove(vx_context context)
     if ((vx_status)VX_SUCCESS == status)
     {
         status = vxAddParameterToKernel(kernel,
-                        VX_KERNEL_SWAP_FIRST_IDX,
+                        VX_KERNEL_MOVE_FIRST_IDX,
                         (vx_enum)VX_BIDIRECTIONAL,
                         (vx_enum)VX_TYPE_REFERENCE,
                         (vx_enum)VX_PARAMETER_STATE_REQUIRED);
@@ -275,7 +270,7 @@ vx_status tivxAddKernelMove(vx_context context)
     if ((vx_status)VX_SUCCESS == status)
     {
         status = vxAddParameterToKernel(kernel,
-                        VX_KERNEL_SWAP_SECOND_IDX,
+                        VX_KERNEL_MOVE_SECOND_IDX,
                         (vx_enum)VX_OUTPUT,
                         (vx_enum)VX_TYPE_REFERENCE,
                         (vx_enum)VX_PARAMETER_STATE_REQUIRED);
@@ -287,7 +282,7 @@ vx_status tivxAddKernelMove(vx_context context)
     if (status != (vx_status)VX_SUCCESS)
     {
         vxReleaseKernel(&kernel);
-        vx_swap_kernel = NULL;
+        vx_move_kernel = NULL;
     }
     else
     {
