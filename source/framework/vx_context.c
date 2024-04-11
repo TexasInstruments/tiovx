@@ -527,7 +527,6 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t idx;
 
-#ifdef LDRA_UNTESTABLE_CODE
     if(ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid context\n");
@@ -539,7 +538,6 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
-#endif
     {
         status = ownContextLock(context);
         if((vx_status)VX_SUCCESS != status)
@@ -582,7 +580,6 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t idx;
 
-#ifdef LDRA_UNTESTABLE_CODE
     if(ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid context\n");
@@ -594,7 +591,6 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
-#endif
     {
         status = ownContextLock(context);
         if((vx_status)VX_SUCCESS != status)
