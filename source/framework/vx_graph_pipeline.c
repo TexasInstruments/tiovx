@@ -141,7 +141,7 @@ static vx_status ownGraphPipelineValidateRefsList(
     return status;
 }
 
-static vx_status ownDecrementEnqueueCount(vx_reference ref) // mfl7si part of RBOVX-98
+static vx_status ownDecrementEnqueueCount(vx_reference ref)
 {
     ref->obj_desc->flags &= ~TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED;
     if (ref->obj_desc->num_enqueues)
@@ -156,8 +156,8 @@ static vx_status ownDecrementEnqueueCount(vx_reference ref) // mfl7si part of RB
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "Reference enqueue count underflow!");
-        return VX_FAILURE;
+        /* for a delay, ignore the count if it was already zero, this is the case for pipelining */
+        return VX_SUCCESS;
     }
 }
 

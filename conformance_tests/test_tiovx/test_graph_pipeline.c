@@ -555,6 +555,39 @@ static void addParameterToGraph(vx_graph graph, vx_node node, vx_uint32 num)
     vxReleaseParameter(&p);
 }
 
+/* Function to create a very simple graph using NOT nodes */
+static vx_graph simpleGraph(vx_context context)
+{
+    vx_graph graph = vxCreateGraph(context);
+    vx_image input = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+    vx_image output1 = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+    vx_image output2 = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+    vx_node node1 = vxNotNode(graph, input, output1);
+    vx_node node2 = vxNotNode(graph, output1, output2);
+    addParameterToGraph(graph, node1, 0);
+    addParameterToGraph(graph, node1, 1);
+    addParameterToGraph(graph, node2, 1);
+    vxReleaseImage(&input);
+    vxReleaseImage(&output1);
+    vxReleaseImage(&output2);
+    vxReleaseNode(&node1);
+    vxReleaseNode(&node2);
+    return graph;
+}
+
+/* Write some data on an image */
+static void writeImage(vx_image image, vx_uint8 a, vx_uint8 b)
+{
+    vx_map_id id;
+    vx_rectangle_t rect = {.start_x = 0, .end_x = 1, .start_y = 0, .end_y = 2};
+    vx_imagepatch_addressing_t ipa;
+    void *ptr;
+    vxMapImagePatch(image, &rect, 0, &id, &ipa, &ptr, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
+    *(vx_uint8 *)vxFormatImagePatchAddress2d(ptr, 0, 0, &ipa) = a;
+    *(vx_uint8 *)vxFormatImagePatchAddress2d(ptr, 0, 1, &ipa) = b;
+    vxUnmapImagePatch(image, id);
+}
+
 /*
  *  d0      n0     d2
  *  IMG --  OR -- IMG (*)
@@ -6718,7 +6751,55 @@ TEST(tivxGraphPipeline, testDoubleInputEnqueue)
     vxReleaseNode(&node2);
     vxReleaseGraph(&graph1);
     vxReleaseGraph(&graph2);
+}
 
+/* Test what happens when enqueueing the same reference again, should fail!
+  Note: From the pipelining extension specification notes on vxGraphParameterEnqueueReadyRef:
+
+  "This function essentially transfers ownership of the reference from the application to the graph.
+  User MUST use vxGraphParameterDequeueDoneRef to get back the processed or consumed references."
+  
+  Therefore, enqueuing the same reference twice SHOULD return an error!
+
+  Note: we modify this rule, proposed change is two rules:
+1) A reference may not be enqueued to an output or bidirectional parameter if it is already queued elsewhere
+2) A reference may not be enqueued to an input parameter if it is already queued for an output or bidirectional parameter.
+
+These rules allow a reference to be queued many times as an input, but only once as an output or modifiable parameter. They also imply the use of a count for input enqueuing and dequeuing.
+*/
+TEST(tivxGraphPipeline, testIllegelDoubleEnqueuing)
+{
+    vx_context context = context_->vx_context_;
+    printf("\nTest illegal double enqueueing\n");
+    vx_graph graph = simpleGraph(context);
+    vx_image images[3];
+    for (int i = 0; i < 3; ++i)
+    {
+        images[i] = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+        writeImage(images[i], 1, 2);
+    }
+    vx_graph_parameter_queue_params_t graph_params[3] = 
+    {
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)images, .refs_list_size = 3},
+        {.graph_parameter_index = 1, .refs_list = (vx_reference *)images, .refs_list_size = 3},
+        {.graph_parameter_index = 2, .refs_list = (vx_reference *)images, .refs_list_size = 3}
+    };
+    tivxSetGraphPipelineDepth(graph, 2);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&images[0], 1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference *)&images[1], 1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference *)&images[2], 1));
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&images[1], 1) ||
+                        vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference *)&images[2], 1) ||
+                        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference *)&images[0], 1));
+    vxWaitGraph(graph);
+    
+    for (int i = 0; i < 3; ++i)
+    {
+        vxReleaseImage(&images[i]);
+    }
+    vxReleaseGraph(&graph);
 }
 
 TEST(tivxGraphPipelineLdra, negativeTestSetGraphScheduleConfig)
@@ -6855,7 +6936,8 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testGraphPipelineErrorDetection,
     testBufferDepthDetection1,
     testBufferDepthDetection2,
-    testDoubleInputEnqueue
+    testDoubleInputEnqueue,
+    testIllegelDoubleEnqueuing
 )
 
 TESTCASE_TESTS(
