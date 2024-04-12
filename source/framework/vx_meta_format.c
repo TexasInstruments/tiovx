@@ -326,6 +326,45 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 break;
 
+            case (vx_enum)VX_MATRIX_SIZE:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    meta->mat.size = *(const vx_size *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Matrix size error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)VX_MATRIX_PATTERN:
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
+                {
+                    meta->mat.pattern = *(vx_enum *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Matrix pattern error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)VX_MATRIX_ORIGIN:
+                if (VX_CHECK_PARAM(ptr, size, vx_coordinates2d_t, 0x3U))
+                {
+                    vx_coordinates2d_t *rect = (vx_coordinates2d_t *)ptr;
+
+                    meta->mat.origin.x = rect->x;
+                    meta->mat.origin.y = rect->y;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Matrix origin error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
             case (vx_enum)VX_DISTRIBUTION_BINS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
@@ -864,10 +903,16 @@ static vx_status ownInitMetaFormatWithMatrix(
 
     tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_TYPE, &meta->mat.type,
         sizeof(meta->mat.type)));
-    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)(vx_enum)VX_MATRIX_ROWS, &meta->mat.rows,
+    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_ROWS, &meta->mat.rows,
         sizeof(meta->mat.rows)));
     tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_COLUMNS, &meta->mat.cols,
         sizeof(meta->mat.cols)));
+    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_SIZE, &meta->mat.size,
+        sizeof(meta->mat.size)));
+    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_PATTERN, &meta->mat.pattern,
+        sizeof(meta->mat.pattern)));
+    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_ORIGIN, &meta->mat.origin,
+        sizeof(meta->mat.origin)));
 
     return status;
 }
@@ -1093,9 +1138,13 @@ static vx_bool ownIsMetaFormatMatrixEqual(
     if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
          (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
-        if ( (meta1->mat.type  == meta2->mat.type) &&
-             (meta1->mat.rows  == meta2->mat.rows) &&
-             (meta1->mat.cols  == meta2->mat.cols) )
+        if ( (meta1->mat.type     == meta2->mat.type) &&
+             (meta1->mat.rows     == meta2->mat.rows) &&
+             (meta1->mat.cols     == meta2->mat.cols) &&
+             (meta1->mat.size     == meta2->mat.size) &&
+             (meta1->mat.pattern  == meta2->mat.pattern) &&
+             (meta1->mat.origin.x == meta2->mat.origin.x) &&
+             (meta1->mat.origin.y == meta2->mat.origin.y))
         {
             is_equal = (vx_bool)vx_true_e;
         }

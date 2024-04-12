@@ -98,6 +98,12 @@ typedef struct _vx_meta_format
         vx_size rows;
         /*! The N dimension of the matrix */
         vx_size cols;
+        /*! The size of the matrix */
+        vx_size size;
+        /*! The pattern of the matrix */
+        vx_enum pattern;
+        /*! The origin of the matrix */
+        vx_coordinates2d_t origin;
     } mat;
 
     /*!< \brief structure containing information about distribution
