@@ -87,9 +87,93 @@ vx_meta_format ownCreateMetaFormat(vx_context context)
         if ((vxGetStatus(vxCastRefFromMetaFormat(meta)) == (vx_status)VX_SUCCESS) &&
             (meta->base.type == (vx_enum)VX_TYPE_META_FORMAT))
         {
+            vx_int32 i;
+
             meta->size = sizeof(tivx_meta_format_t);
             meta->type = (vx_enum)VX_TYPE_INVALID;
             meta->valid_rect_callback = NULL;
+
+            /* Initialize image meta */
+            meta->img.width  = 0U;
+            meta->img.height = 0U;
+            meta->img.format = (vx_enum)VX_TYPE_INVALID;
+
+            /* Initialize pyramid meta */
+            meta->pmd.width  = 0U;
+            meta->pmd.height = 0U;
+            meta->pmd.format = (vx_enum)VX_TYPE_INVALID;
+            meta->pmd.levels = 0U;
+            meta->pmd.scale  = 0.0f;
+
+            /* Initialize scalar meta*/
+            meta->sc.type    = (vx_enum)VX_TYPE_INVALID;
+
+            /* Initialize array meta */
+            meta->arr.item_type = (vx_enum)VX_TYPE_INVALID;
+            meta->arr.capacity  = 0U;
+
+            /* Initialize matrix meta */
+            meta->mat.type = (vx_enum)VX_TYPE_INVALID;
+            meta->mat.rows = 0U;
+            meta->mat.cols = 0U;
+
+            /* Initialize distribution meta */
+            meta->dist.bins = 0U;
+            meta->dist.offset = 0;
+            meta->dist.range = 0U;
+
+            /* Initialize convolution meta */
+            meta->conv.rows = 0U;
+            meta->conv.cols = 0U;
+            meta->conv.scale = 0U;
+            meta->conv.size = 0U;
+
+            /* Initialize remap meta */
+            meta->remap.src_width = 0U;
+            meta->remap.src_height = 0U;
+            meta->remap.dst_width = 0U;
+            meta->remap.dst_height = 0U;
+
+            /* Initialize LUT meta */
+            meta->lut.type = (vx_enum)VX_TYPE_INVALID;
+            meta->lut.count = 0U;
+
+            /* Initialize threshold meta */
+            meta->thres.type = (vx_enum)VX_TYPE_INVALID;
+
+            /* Initialize object array meta */
+            meta->objarr.item_type = (vx_enum)VX_TYPE_INVALID;
+            meta->objarr.num_items = 0U;
+
+            /* Initialize tensor meta */
+            meta->tensor.number_of_dimensions = 0U;
+            meta->tensor.data_type = (vx_enum)VX_TYPE_INVALID;
+            meta->tensor.fixed_point_position = 0;
+            meta->tensor.scaling_divisor = 0U;
+            meta->tensor.scaling_divisor_fixed_point_position = 0U;
+
+            for (i = 0; i < TIVX_CONTEXT_MAX_TENSOR_DIMS; i++)
+            {
+                meta->tensor.dimensions[i] = 0U;
+                meta->tensor.strides[i] = 0U;
+            }
+            /* Initialize user data object meta */
+            meta->user_data_object.type_name[0] = (char)0;
+            meta->user_data_object.size = 0U;
+
+            /* Initialize raw image meta */
+            meta->raw_image.width = 0U;
+            meta->raw_image.height = 0U;
+            meta->raw_image.num_exposures = 0U;
+            meta->raw_image.line_interleaved = (vx_bool)vx_false_e;
+            meta->raw_image.meta_height_before = 0U;
+            meta->raw_image.meta_height_after = 0U;
+
+            for (i = 0; i < TIVX_RAW_IMAGE_MAX_EXPOSURES; i++)
+            {
+                meta->raw_image.format[i].pixel_container = 0U;
+                meta->raw_image.format[i].msb = 0U;
+            }
         }
     }
 
