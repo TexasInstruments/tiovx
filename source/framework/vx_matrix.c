@@ -20,8 +20,6 @@
 
 static vx_matrix ownCreateMatrix(vx_reference scope, vx_enum data_type, vx_size columns, vx_size rows, vx_bool is_virtual);
 static vx_status isMatrixCopyable(vx_matrix input, vx_matrix output);
-static vx_status copyMatrix(vx_matrix input, vx_matrix output);
-static vx_status swapMatrix(vx_matrix input, vx_matrix output);
 static vx_status VX_CALLBACK matrixKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
 
 /*! \brief This function is called to find out if it is OK to copy the input to the output.
@@ -54,25 +52,6 @@ static vx_status isMatrixCopyable(vx_matrix input, vx_matrix output)
     }
 }
 
-/*! \brief Copy input to output
- * The input must be copyable to the output; checks done already.
- * Note that locking a reference actually locks the context, so we only lock
- * one reference!
-
- */
-static vx_status copyMatrix(vx_matrix input, vx_matrix output)
-{
-    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
-}
-
-/*! \brief swap input and output pointers
- * Input and output must be swappable; checks done already.
- */
-static vx_status swapMatrix(vx_matrix input, vx_matrix output)
-{
-    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
-}
-
 /* Call back function that handles the copy, swap and move kernels */
 static vx_status VX_CALLBACK matrixKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
 {
@@ -83,9 +62,9 @@ static vx_status VX_CALLBACK matrixKernelCallback(vx_enum kernel_enum, vx_bool v
     vx_matrix output = (vx_matrix)params[1];
     switch (kernel_enum)
     {
-        case VX_KERNEL_COPY:    return validate_only ? isMatrixCopyable(input, output) : copyMatrix(input, output);
+        case VX_KERNEL_COPY:    return validate_only ? isMatrixCopyable(input, output) : ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output);
         case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:     return validate_only ? isMatrixCopyable(input, output) : swapMatrix(input, output);
+        case VX_KERNEL_MOVE:     return validate_only ? isMatrixCopyable(input, output) : ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
         default:                return VX_ERROR_NOT_SUPPORTED;
     }
 }

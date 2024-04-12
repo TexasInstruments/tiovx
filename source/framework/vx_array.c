@@ -24,9 +24,6 @@ static vx_size ownGetArrayItemSize(vx_context context, vx_enum item_type);
 static vx_bool ownIsValidArrayItemType(vx_context context, vx_enum item_type);
 static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output);
 static vx_status isArrayCopyable(vx_array input, vx_array output);
-static vx_status isArraySwapable(vx_array input, vx_array output);
-static vx_status copyArray(vx_array input, vx_array output);
-static vx_status swapArray(vx_array input, vx_array output);
 static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
 
 /*! \brief checks that the input and output references are not the same, and that both are valid arrays
@@ -97,56 +94,19 @@ static vx_status isArrayCopyable(vx_array input, vx_array output)
     return status;
 }
 
-/*! \brief This function is called to find out if it is OK to swap the input with the output.
- * Both item type and capacity must be the same.
- * \returns VX_SUCCESS if it is, otherwise another error code.
- *
- */
-static vx_status isArraySwapable(vx_array input, vx_array output)
-{
-    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
-    {
-         return VX_SUCCESS;
-    }
-    else
-    {
-        return VX_ERROR_NOT_COMPATIBLE;
-    }
-}
-
-/*! \brief Copy input to output
- * The input must be copyable to the output; checks done already.
- * Note that locking a reference actually locks the context, so we only lock
- * one reference!
- */
-static vx_status copyArray(vx_array input, vx_array output)
-{
-    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
-}
-
-/*! \brief swap input and output pointers
- * Input and output must be swappable; checks done already.
- * Note that locking a reference actually locks the context, so we only lock
- * one reference!
- */
-static vx_status swapArray(vx_array input, vx_array output)
-{
-    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
-}
-
 /* Call back function that handles the copy, swap and move kernels */
 static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
 {
     /*
         Decode the kernel operation - simple version!
     */
-    vx_array input = (vx_array)params[0];
-    vx_array output = (vx_array)params[1];
+    vx_reference input = (vx_reference)params[0];
+    vx_reference output = (vx_reference)params[1];
     switch (kernel_enum)
     {
-        case VX_KERNEL_COPY:    return validate_only ? isArrayCopyable(input, output) : copyArray(input, output);
+        case VX_KERNEL_COPY:    return validate_only ? isArrayCopyable((vx_array)input, (vx_array)output) : ownCopyReferenceGeneric(input, output);
         case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:    return validate_only ? isArraySwapable(input, output) : swapArray(input, output);
+        case VX_KERNEL_MOVE:    return validate_only ? tivxIsReferenceMetaFormatEqual(input, output) : ownSwapReferenceGeneric(input, output);
         default:                return VX_ERROR_NOT_SUPPORTED;
     }
 }

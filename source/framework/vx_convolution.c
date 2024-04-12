@@ -53,25 +53,6 @@ static vx_status isConvolutionCopyable(vx_convolution input, vx_convolution outp
     }
 }
 
-/*! \brief Copy input to output
- * The input must be copyable to the output; checks done already.
- * Note that locking a reference actually locks the context, so we only lock
- * one reference!
-
- */
-static vx_status copyConvolution(vx_convolution input, vx_convolution output)
-{
-    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
-}
-
-/*! \brief swap input and output pointers
- * Input and output must be swappable; checks done already.
- */
-static vx_status swapConvolution(vx_convolution input, vx_convolution output)
-{
-    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
-}
-
 /* Call back function that handles the copy, swap and move kernels */
 static vx_status VX_CALLBACK convolutionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
 {
@@ -82,9 +63,9 @@ static vx_status VX_CALLBACK convolutionKernelCallback(vx_enum kernel_enum, vx_b
     vx_convolution output = (vx_convolution)params[1];
     switch (kernel_enum)
     {
-        case VX_KERNEL_COPY:    return validate_only ? isConvolutionCopyable(input, output) : copyConvolution(input, output);
+        case VX_KERNEL_COPY:    return validate_only ? isConvolutionCopyable(input, output) : ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output);
         case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:    return validate_only ? isConvolutionCopyable(input, output) : swapConvolution(input, output);
+        case VX_KERNEL_MOVE:    return validate_only ? isConvolutionCopyable(input, output) : ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
         default:                return VX_ERROR_NOT_SUPPORTED;
     }
 }

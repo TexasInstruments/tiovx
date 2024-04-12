@@ -19,46 +19,7 @@
 #include <vx_internal.h>
 
 static vx_lut ownCreateLUT(vx_reference scope, vx_enum data_type, vx_size count, vx_bool is_virtual);
-static vx_status isLutCopyable(vx_lut input, vx_lut output);
-static vx_status copyLut(vx_lut input, vx_lut output);
-static vx_status swapLut(vx_lut input, vx_lut output);
 static vx_status VX_CALLBACK lutKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
-
-/*! \brief This function is called to find out if it is OK to copy the input to the output.
- * Item type and number must be equal
- * \returns VX_SUCCESS if it is, otherwise another error code.
- *
- */
-static vx_status isLutCopyable(vx_lut input, vx_lut output)
-{
-    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
-    {
-         return VX_SUCCESS;
-    }
-    else
-    {
-        return VX_ERROR_NOT_COMPATIBLE;
-    }
-}
-
-/*! \brief Copy input to output
- * The input must be copyable to the output; checks done already.
- * Note that locking a reference actually locks the context, so we only lock
- * one reference!
-
- */
-static vx_status copyLut(vx_lut input, vx_lut output)
-{
-    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
-}
-
-/*! \brief swap input and output pointers
- * Input and output must be swappable; checks done already.
- */
-static vx_status swapLut(vx_lut input, vx_lut output)
-{
-    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
-}
 
 /* Call back function that handles the copy, swap and move kernels */
 static vx_status VX_CALLBACK lutKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
@@ -66,13 +27,13 @@ static vx_status VX_CALLBACK lutKernelCallback(vx_enum kernel_enum, vx_bool vali
     /*
         Decode the kernel operation - simple version!
     */
-    vx_lut input = (vx_lut)params[0];
-    vx_lut output = (vx_lut)params[1];
+    vx_reference input = (vx_reference)params[0];
+    vx_reference output = (vx_reference)params[1];
     switch (kernel_enum)
     {
-        case VX_KERNEL_COPY:    return validate_only ? isLutCopyable(input, output) : copyLut(input, output);
+        case VX_KERNEL_COPY:    return validate_only ? tivxIsReferenceMetaFormatEqual(input, output) : ownCopyReferenceGeneric(input, output);
         case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:    return validate_only ? isLutCopyable(input, output) : swapLut(input, output);
+        case VX_KERNEL_MOVE:    return validate_only ? tivxIsReferenceMetaFormatEqual(input, output) : ownSwapReferenceGeneric(input, output);
         default:                return VX_ERROR_NOT_SUPPORTED;
     }
 }

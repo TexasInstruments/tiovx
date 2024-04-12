@@ -30,7 +30,6 @@ Tensor HELPER FUNCTIONS
 
 static vx_status isTensorCopyable(vx_tensor input, vx_tensor output);
 static vx_status isTensorSwappable(vx_tensor input, vx_tensor output);
-static vx_status copyTensor(vx_tensor input, vx_tensor output);
 static vx_status moveOrSwapTensor(vx_tensor input, vx_tensor output);
 static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
 static vx_bool ownIsValidTensor(vx_tensor tensor);
@@ -109,17 +108,6 @@ static vx_status isTensorSwappable(vx_tensor input, vx_tensor output)
 
 }
 
-
-/*! \brief Copy the input tensor to the output
- * If memory sizes are equal, do a memcpy, otherwise
- * use the high-level routines.
- */
-static vx_status copyTensor(vx_tensor input, vx_tensor output)
-{
-    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
-}
-
-
 /*! \brief Swap orMove the input tensor to the output
  * Note this is the same as swap if the input is not virtual
  */
@@ -156,7 +144,7 @@ static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool v
     vx_tensor output = (vx_tensor)params[1];
     switch (kernel_enum)
     {
-        case VX_KERNEL_COPY:    return validate_only ? isTensorCopyable(input, output)  : copyTensor(input, output);
+        case VX_KERNEL_COPY:    return validate_only ? isTensorCopyable(input, output)  : ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output);
         case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
         case VX_KERNEL_MOVE: 	return validate_only ? isTensorSwappable(input, output) : moveOrSwapTensor(input, output);
         default:                return VX_ERROR_NOT_SUPPORTED;
