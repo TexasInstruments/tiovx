@@ -547,6 +547,14 @@ static vx_node test_user_kernel_node(vx_graph graph,
     return node;
 }
 
+/* Function to get a parameter, add it to a graph and then release it */
+static void addParameterToGraph(vx_graph graph, vx_node node, vx_uint32 num)
+{
+    vx_parameter p = vxGetParameterByIndex(node, num);
+    vxAddParameterToGraph(graph, p);
+    vxReleaseParameter(&p);
+}
+
 /*
  *  d0      n0     d2
  *  IMG --  OR -- IMG (*)
@@ -6640,6 +6648,79 @@ TEST(tivxGraphPipeline, testBufferDepthDetection2)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+TEST(tivxGraphPipeline, testDoubleInputEnqueue)
+{
+    /* We should be able to enqueue the same reference on two separate inputs on the same graph 
+      and also on another graph at the same time */
+    vx_context context = context_->vx_context_;
+
+    printf("\nTest legal multiple enqueuing\n");
+    vx_graph graph1 = vxCreateGraph(context);
+    vx_graph graph2 = vxCreateGraph(context);
+    vx_image images[3] =
+    {
+        vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8)
+    };
+    vx_node node1 = vxAndNode(graph1, images[0], images[1], images[2]);
+    vx_node node2 = vxAndNode(graph2, images[0], images[1], images[2]);
+    addParameterToGraph(graph1, node1, 0); /* Input */
+    addParameterToGraph(graph1, node1, 1); /* Input */
+    addParameterToGraph(graph1, node1, 2); /* Output */
+    addParameterToGraph(graph2, node2, 0); /* Input */
+    addParameterToGraph(graph2, node2, 1); /* Input */
+    addParameterToGraph(graph2, node2, 2); /* Output */
+    vx_graph_parameter_queue_params_t graph_params[3] = 
+    {
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)images, .refs_list_size = 3},
+        {.graph_parameter_index = 1, .refs_list = (vx_reference *)images, .refs_list_size = 3},
+        {.graph_parameter_index = 2, .refs_list = (vx_reference *)images, .refs_list_size = 3}
+    };
+    tivxSetGraphPipelineDepth(graph1, 2);
+    tivxSetGraphPipelineDepth(graph2, 2);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph1, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph2, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+    if (vxVerifyGraph(graph1) || vxVerifyGraph(graph2))
+    {
+        printf("A graph did not verify \n");
+    }
+    else
+    {
+        vx_status status;
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 0, (vx_reference *)&images[0], 1));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, status = vxGraphParameterEnqueueReadyRef(graph1, 1, (vx_reference *)&images[0], 1));
+        if (VX_SUCCESS == status)
+        {
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, status = vxGraphParameterEnqueueReadyRef(graph2, 0, (vx_reference *)&images[0], 1));
+            if (VX_SUCCESS == status)
+            {
+                ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph2, 1, (vx_reference *)&images[0], 1));
+                ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph2, 2, (vx_reference *)&images[2], 1));
+                ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph2));
+            }
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 2, (vx_reference *)&images[1], 1));
+        }
+        else
+        {
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 1, (vx_reference *)&images[1], 1));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 2, (vx_reference *)&images[2], 1));
+        }
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, status);
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph1));
+    }
+
+    for (int i = 0; i < 3; ++i)
+    {
+        vxReleaseImage(&images[i]);
+    }
+    vxReleaseNode(&node1);
+    vxReleaseNode(&node2);
+    vxReleaseGraph(&graph1);
+    vxReleaseGraph(&graph2);
+
+}
+
 TEST(tivxGraphPipelineLdra, negativeTestSetGraphScheduleConfig)
 {
     #define VX_GRAPH_SCHEDULE_MODE_DEFAULT 0
@@ -6773,7 +6854,8 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testGraphPipelineDepthDetectionBranches,
     testGraphPipelineErrorDetection,
     testBufferDepthDetection1,
-    testBufferDepthDetection2
+    testBufferDepthDetection2,
+    testDoubleInputEnqueue
 )
 
 TESTCASE_TESTS(

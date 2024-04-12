@@ -24,8 +24,8 @@
 // calc number of arguments - from 1 to 32
 #define CT_EXPAND(x) x
 #define CT_EXPANDN(...) __VA_ARGS__
-#define CT_VAARG_NUMS(_32, _31, _30, _29, _28, _27, _26, _25, _24, _23, _22, _21, _20, _19, _18, _17, _16, _15, _14, _13, _12, _11, _10, _9, _8, _7, _6, _5, _4, _3, _2, _1, _0, ...) _0
-#define CT_VAARG_NUM(...) CT_EXPAND(CT_VAARG_NUMS(__VA_ARGS__, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0))
+#define CT_VAARG_NUMS(_33, _32, _31, _30, _29, _28, _27, _26, _25, _24, _23, _22, _21, _20, _19, _18, _17, _16, _15, _14, _13, _12, _11, _10, _9, _8, _7, _6, _5, _4, _3, _2, _1, _0, ...) _0
+#define CT_VAARG_NUM(...) CT_EXPAND(CT_VAARG_NUMS(__VA_ARGS__, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0))
 
 // apply macro for every argument
 #define CT_FOREACH0(OP, ...) CT_EXPAND(OP(__VA_ARGS__))
@@ -61,6 +61,7 @@
 #define CT_FOREACH30(OP, op_args, x, y, z, p, ...) CT_FOREACH4(OP,op_args,x,y,z,p), CT_EXPAND(CT_FOREACH26(OP,op_args,__VA_ARGS__))
 #define CT_FOREACH31(OP, op_args, x, y, z, p, ...) CT_FOREACH4(OP,op_args,x,y,z,p), CT_EXPAND(CT_FOREACH27(OP,op_args,__VA_ARGS__))
 #define CT_FOREACH32(OP, op_args, x, y, z, p, ...) CT_FOREACH4(OP,op_args,x,y,z,p), CT_EXPAND(CT_FOREACH28(OP,op_args,__VA_ARGS__))
+#define CT_FOREACH33(OP, op_args, x, y, z, p, ...) CT_FOREACH4(OP,op_args,x,y,z,p), CT_EXPAND(CT_FOREACH29(OP,op_args,__VA_ARGS__))
 #define CT_FOREACH_HELPER2(OP, op_args, qty, ...) CT_EXPAND(CT_FOREACH##qty(OP, op_args, __VA_ARGS__))
 #define CT_FOREACH_HELPER(OP, op_args, qty, ...)  CT_FOREACH_HELPER2(OP, op_args, qty, __VA_ARGS__)
 
