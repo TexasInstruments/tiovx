@@ -68,8 +68,6 @@ static vx_bool ownIsMetaFormatTensorEqual(
     vx_meta_format meta1, vx_meta_format meta2);
 static vx_bool ownIsMetaFormatScalarEqual(
     vx_meta_format meta1, vx_meta_format meta2);
-static vx_bool ownIsMetaFormatTensorEqual(
-    vx_meta_format meta1, vx_meta_format meta2);
 static vx_bool ownIsMetaFormatRemapEqual(
     vx_meta_format meta1, vx_meta_format meta2);
 static vx_bool ownIsMetaFormatThresholdEqual(
@@ -580,7 +578,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                     const vx_size *p = ptr;
                     vx_size num_dims = size / sizeof(vx_size);
 
-                    /* Use 'for' loop instead of memcpy since interface type size is different from obj_desc size */
                     for(i=0; i<(int32_t)num_dims; i++)
                     {
                         meta->tensor.dimensions[i] = p[i];
@@ -617,6 +614,53 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "VX_TENSOR_FIXED_POINT_POSITION error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)TIVX_TENSOR_SCALING_DIVISOR:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
+                {
+                    meta->tensor.scaling_divisor = *(const vx_uint8 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_TENSOR_SCALING_DIVISOR error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
+                {
+                    meta->tensor.scaling_divisor_fixed_point_position = *(const vx_uint8 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)TIVX_TENSOR_STRIDES:
+                if ((size <= (sizeof(vx_size)*(vx_size)TIVX_CONTEXT_MAX_TENSOR_DIMS)) && (((vx_size)ptr & 0x3U) == 0U))
+                {
+                    int32_t i;
+                    const vx_size *p = ptr;
+                    vx_size num_dims = size / sizeof(vx_size);
+
+                    for(i=0; i<(int32_t)num_dims; i++)
+                    {
+                        meta->tensor.strides[i] = p[i];
+                    }
+                    for(;i<TIVX_CONTEXT_MAX_TENSOR_DIMS; i++)
+                    {
+                        meta->tensor.strides[i] = 0;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_TENSOR_STRIDES error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1077,6 +1121,12 @@ static vx_status ownInitMetaFormatWithTensor(
         sizeof(meta->tensor.data_type)));
     tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)VX_TENSOR_FIXED_POINT_POSITION, &meta->tensor.fixed_point_position,
         sizeof(meta->tensor.fixed_point_position)));
+    tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)TIVX_TENSOR_SCALING_DIVISOR, &meta->tensor.scaling_divisor,
+        sizeof(meta->tensor.scaling_divisor)));
+    tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION, &meta->tensor.scaling_divisor_fixed_point_position,
+        sizeof(meta->tensor.scaling_divisor_fixed_point_position)));
+    tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)TIVX_TENSOR_STRIDES, &meta->tensor.strides,
+        sizeof(meta->tensor.strides)));
 
     return (status);
 }
@@ -1380,13 +1430,16 @@ static vx_bool ownIsMetaFormatTensorEqual(
     if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
          (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
-        if ( (meta1->tensor.number_of_dimensions == meta2->tensor.number_of_dimensions) &&
-             (meta1->tensor.data_type == meta2->tensor.data_type) &&
-             (meta1->tensor.fixed_point_position == meta2->tensor.fixed_point_position) )
+        if ( (meta1->tensor.number_of_dimensions                 == meta2->tensor.number_of_dimensions) &&
+             (meta1->tensor.data_type                            == meta2->tensor.data_type) &&
+             (meta1->tensor.fixed_point_position                 == meta2->tensor.fixed_point_position) &&
+             (meta1->tensor.scaling_divisor                      == meta2->tensor.scaling_divisor) &&
+             (meta1->tensor.scaling_divisor_fixed_point_position == meta2->tensor.scaling_divisor_fixed_point_position) )
         {
             for (i = 0; i < meta1->tensor.number_of_dimensions; i++)
             {
-                if (meta1->tensor.dimensions[i] != meta2->tensor.dimensions[i])
+                if ((meta1->tensor.dimensions[i] != meta2->tensor.dimensions[i]) ||
+                    (meta1->tensor.strides[i]    != meta2->tensor.strides[i]))
                 {
                     break;
                 }

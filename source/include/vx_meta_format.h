@@ -179,6 +179,12 @@ typedef struct _vx_meta_format
         vx_enum data_type;
         /*! \brief The fixed point precision of the tensor */
         vx_int8 fixed_point_position;
+        /*! \brief The scaling divisor of the tensor */
+        vx_uint8 scaling_divisor;
+        /*! \brief The fixed point position of the scaling divisor */
+        vx_uint8 scaling_divisor_fixed_point_position;
+        /*! \brief The strides of the tensor */
+        vx_size strides[TIVX_CONTEXT_MAX_TENSOR_DIMS];
     } tensor;
 
     /*!< \brief structure containing information about user data object
