@@ -30,6 +30,8 @@ static vx_status ownInitMetaFormatWithMatrix(
     vx_meta_format meta, vx_matrix exemplar);
 static vx_status ownInitMetaFormatWithDistribution(
     vx_meta_format meta, vx_distribution exemplar);
+static vx_status ownInitMetaFormatWithConvolution(
+    vx_meta_format meta, vx_convolution exemplar);
 static vx_status ownInitMetaFormatWithRemap(
     vx_meta_format meta, vx_remap exemplar);
 static vx_status ownInitMetaFormatWithLut(
@@ -47,6 +49,8 @@ static vx_status ownInitMetaFormatWithRawImage(
 static vx_bool ownIsMetaFormatArrayEqual(
     vx_meta_format meta1, vx_meta_format meta2);
 static vx_bool ownIsMetaFormatDistributionEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatConvolutionEqual(
     vx_meta_format meta1, vx_meta_format meta2);
 static vx_bool ownIsMetaFormatImageEqual(
     vx_meta_format meta1, vx_meta_format meta2);
@@ -397,6 +401,54 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Distribution range error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)VX_CONVOLUTION_SCALE:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    meta->conv.scale = *(const vx_uint32 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Convolution scale error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)VX_CONVOLUTION_COLUMNS:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    meta->conv.cols = *(const vx_size *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Convolution columns error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)VX_CONVOLUTION_ROWS:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    meta->conv.rows = *(const vx_size *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Convolution rows error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)VX_CONVOLUTION_SIZE:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    meta->conv.size = *(const vx_size *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Convolution size error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -761,6 +813,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                     VX_PRINT(VX_ZONE_ERROR, "Distribution init meta format failure\n");
                 }
                 break;
+            case (vx_enum)VX_TYPE_CONVOLUTION:
+                /* status set to NULL due to preceding type check */
+                status = ownInitMetaFormatWithConvolution(
+                    meta, vxCastRefAsConvolution(exemplar, NULL));
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Convolution init meta format failure\n");
+                }
+                break;
             case (vx_enum)VX_TYPE_THRESHOLD:
                 /* status set to NULL due to preceding type check */
                 status = ownInitMetaFormatWithThreshold(
@@ -928,6 +989,23 @@ static vx_status ownInitMetaFormatWithDistribution(
         sizeof(meta->dist.offset)));
     tivxCheckStatus(&status, vxQueryDistribution(exemplar, (vx_enum)VX_DISTRIBUTION_RANGE, &meta->dist.range,
         sizeof(meta->dist.range)));
+
+    return status;
+}
+
+static vx_status ownInitMetaFormatWithConvolution(
+    vx_meta_format meta, vx_convolution exemplar)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivxCheckStatus(&status, vxQueryConvolution(exemplar, (vx_enum)VX_CONVOLUTION_ROWS, &meta->conv.rows,
+        sizeof(meta->conv.rows)));
+    tivxCheckStatus(&status, vxQueryConvolution(exemplar, (vx_enum)VX_CONVOLUTION_COLUMNS, &meta->conv.cols,
+        sizeof(meta->conv.cols)));
+    tivxCheckStatus(&status, vxQueryConvolution(exemplar, (vx_enum)VX_CONVOLUTION_SCALE, &meta->conv.scale,
+        sizeof(meta->conv.scale)));
+    tivxCheckStatus(&status, vxQueryConvolution(exemplar, (vx_enum)VX_CONVOLUTION_SIZE, &meta->conv.size,
+        sizeof(meta->conv.size)));
 
     return status;
 }
@@ -1180,6 +1258,30 @@ static vx_bool ownIsMetaFormatDistributionEqual(
     return is_equal;
 }
 
+static vx_bool ownIsMetaFormatConvolutionEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = (vx_bool)vx_false_e;
+
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    {
+        if ( (meta1->conv.rows  == meta2->conv.rows) &&
+             (meta1->conv.cols  == meta2->conv.cols) &&
+             (meta1->conv.scale == meta2->conv.scale) &&
+             (meta1->conv.size  == meta2->conv.size) )
+        {
+            is_equal = (vx_bool)vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "Convolution object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
 static vx_bool ownIsMetaFormatRemapEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
@@ -1390,6 +1492,9 @@ vx_bool ownIsMetaFormatEqual(
                 break;
             case (vx_enum)VX_TYPE_DISTRIBUTION:
                 is_equal = ownIsMetaFormatDistributionEqual(meta1, meta2);
+                break;
+            case (vx_enum)VX_TYPE_CONVOLUTION:
+                is_equal = ownIsMetaFormatConvolutionEqual(meta1, meta2);
                 break;
             case (vx_enum)VX_TYPE_THRESHOLD:
                 is_equal = ownIsMetaFormatThresholdEqual(meta1, meta2);

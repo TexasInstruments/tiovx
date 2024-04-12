@@ -117,6 +117,19 @@ typedef struct _vx_meta_format
         vx_uint32 range;
     } dist;
 
+    /*!< \brief structure containing information about convolution
+                used when type is set to VX_TYPE_CONVOLUTION */
+    struct {
+        /*! Indicates the number of rows in the convolution. */
+        vx_size rows;
+        /*! Indicates the number of columns in the convolution. */
+        vx_size cols;
+        /*! Indicates the scale of the convolution matrix. */
+        vx_uint32 scale;
+        /*! Indicates the total size of the convolution matrix in bytes. */
+        vx_size size;
+    } conv;
+
     /*!< \brief structure containing information about remap
                 used when type is set to VX_TYPE_REMAP */
     struct {
