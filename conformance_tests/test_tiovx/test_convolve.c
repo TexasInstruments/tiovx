@@ -18,6 +18,7 @@
 #include "test_tiovx.h"
 #include <VX/vx.h>
 #include <string.h>
+#include "test_utils_mem_operations.h"
 
 #define MAX_CONV_SIZE 15
 #define MAX_NODES     10
@@ -435,7 +436,7 @@ TEST_WITH_ARG(tivxConvolve, testConvolveSupernode, Arg,
 
     VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
 
-    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[0] = node1);
     ASSERT_NO_FAILURE(node_list[1] = node2);
     ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
@@ -564,30 +565,32 @@ TEST(tivxConvolve, negativeTestCreateConvolution)
     ASSERT(NULL == vxCreateConvolution(context, 3, 1));
 }
 
+/* Sample application to show the usage of test_utils_mem_operations APIs */
 TEST(tivxConvolve, negativeTestMemBufferAlloc)
 {
     vx_context context = context_->vx_context_;
-
-    tivx_shared_mem_ptr_t tsmp;
-    uint32_t size = 1024U;
     vx_enum mheap_region = TIVX_MEM_EXTERNAL;
     vx_status status = VX_SUCCESS;
 
-    while (status != VX_ERROR_NO_MEMORY) {
+    tivx_shared_mem_info_t *tivx_shared_mem_info_array;
+    uint32_t num_chunks;
 
-    	status = tivxMemBufferAlloc(&tsmp, size, mheap_region);
-    }
+    /* Allocating memory until exhausted */
+    VX_CALL(test_utils_max_out_heap_mem(&tivx_shared_mem_info_array, &num_chunks, mheap_region));
+
+    /* Releasing allocated memory */
+    VX_CALL(test_utils_release_maxed_out_heap_mem(tivx_shared_mem_info_array, num_chunks));
 }
 
 TESTCASE_TESTS(
     tivxConvolve,
-    testGraphProcessing, 
+    testGraphProcessing,
     negativeTestBorderMode,
     testConvolveSupernode,
     negativeTestQueryConvolution,
     negativeTestSetConvolutionAttribute,
     negativeTestCopyConvolutionCoefficients,
-    negativeTestCreateConvolution/*,
-    negativeTestMemBufferAlloc*/
+    negativeTestCreateConvolution,
+    negativeTestMemBufferAlloc
 )
 
