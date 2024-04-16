@@ -30,6 +30,7 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
 */
 static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output)
 {
+    vx_bool res = (vx_bool)vx_false_e;
     if ((input != output) &&
         (ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e) &&
         (input->base.obj_desc != NULL) &&
@@ -37,12 +38,9 @@ static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output)
         (output->base.obj_desc != NULL)
         )
     {
-        return vx_true_e;
+        res = (vx_bool)vx_true_e;
     }
-    else
-    {
-        return vx_false_e;
-    }
+    return res;
 }
 
 /*! \brief This function is called to find out if it is OK to copy the input to the output.

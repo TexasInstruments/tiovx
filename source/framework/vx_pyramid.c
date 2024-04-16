@@ -208,7 +208,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                 prmd->base.mem_alloc_callback = &ownAllocPyramidBuffer;
                 prmd->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-				prmd->base.kernel_callback = &pyramidKernelCallback;
+                prmd->base.kernel_callback = &pyramidKernelCallback;
                 obj_desc = (tivx_obj_desc_pyramid_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_PYRAMID, (vx_reference)prmd);
                 if(obj_desc==NULL)
@@ -340,7 +340,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
             prmd->base.mem_alloc_callback = &ownAllocPyramidBuffer;
             prmd->base.release_callback =
                 &ownReleaseReferenceBufferGeneric;
-			prmd->base.kernel_callback = &pyramidKernelCallback;
+            prmd->base.kernel_callback = &pyramidKernelCallback;
             obj_desc = (tivx_obj_desc_pyramid_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_PYRAMID, (vx_reference)prmd);
             if(obj_desc==NULL)

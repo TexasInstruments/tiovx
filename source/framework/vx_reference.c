@@ -422,32 +422,43 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
     volatile uint32_t       op_mem_size = 0;
     vx_status status;
 
-    status = ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
-    status = ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
-
-    status = ownReferenceLock(output);
-    if (((vx_status)VX_SUCCESS == status) &&
-        (ip_mem_size <= op_mem_size))
+    if((vx_bool)vx_true_e == ownIsGenericAllocReferenceType(input->type) &&
+       (vx_bool)vx_true_e == ownIsGenericAllocReferenceType(output->type))
     {
-        status = tivxMemBufferMap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        if ((vx_status)VX_SUCCESS == status)
+        /* added void here as this status check of
+        * ownReferenceGetMemAttrsFromObjDesc will always be true if
+        * the previous condition is true
+        */
+        (void)ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
+        (void)ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
+        status = ownReferenceLock(output);
+        if (((vx_status)VX_SUCCESS == status) &&
+            (ip_mem_size <= op_mem_size))
         {
-            status = tivxMemBufferMap((void *)(uintptr_t)op_mem_ptr->host_ptr, op_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            status = tivxMemBufferMap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
             if ((vx_status)VX_SUCCESS == status)
             {
-                memcpy((void *)(uintptr_t)op_mem_ptr->host_ptr, (void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size);
-                if ((vx_enum)VX_TYPE_ARRAY == input->type)
+                status = tivxMemBufferMap((void *)(uintptr_t)op_mem_ptr->host_ptr, op_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                if ((vx_status)VX_SUCCESS == status)
                 {
-                    tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->obj_desc;
-                    tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->obj_desc;
-                    op_obj_desc->num_items = ip_obj_desc->num_items;
+                    memcpy((void *)(uintptr_t)op_mem_ptr->host_ptr, (void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size);
+                    if ((vx_enum)VX_TYPE_ARRAY == input->type)
+                    {
+                        tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->obj_desc;
+                        tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->obj_desc;
+                        op_obj_desc->num_items = ip_obj_desc->num_items;
+                    }
+                    status =  tivxMemBufferUnmap((void *)(uintptr_t)op_mem_ptr->host_ptr, op_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
                 }
-                status =  tivxMemBufferUnmap((void *)(uintptr_t)op_mem_ptr->host_ptr, op_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                status =  tivxMemBufferUnmap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
             }
-            status =  tivxMemBufferUnmap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
+        status =  ownReferenceUnlock((vx_reference)output);
     }
-    status =  ownReferenceUnlock((vx_reference)output);
+    else
+    {
+        status = (vx_status)VX_FAILURE;
+    }
 
     return status;
 }
@@ -460,26 +471,34 @@ vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
     tivx_shared_mem_ptr_t  *op_mem_ptr = NULL;
     volatile uint32_t       op_mem_size = 0;
     
-    status = ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
-    status = ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
-
-    status =  ownReferenceLock((vx_reference)output);
-    if ((vx_status)VX_SUCCESS == status)
+    if((vx_bool)vx_true_e == ownIsGenericAllocReferenceType(input->type) &&
+       (vx_bool)vx_true_e == ownIsGenericAllocReferenceType(output->type))
     {
-        tivx_shared_mem_ptr_t mem_ptr;
-        mem_ptr = *op_mem_ptr;
-        *op_mem_ptr = *ip_mem_ptr;
-        *ip_mem_ptr = mem_ptr;
-        if ((vx_enum)VX_TYPE_ARRAY == input->type)
+        /* added void here as this status check of
+        * ownReferenceGetMemAttrsFromObjDesc will always be true if
+        * the previous condition is true
+        */
+        (void)ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
+        (void)ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
+
+        status =  ownReferenceLock((vx_reference)output);
+        if ((vx_status)VX_SUCCESS == status)
         {
-            tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->obj_desc;
-            tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->obj_desc;
-            vx_size num_items = op_obj_desc->num_items;
-            op_obj_desc->num_items = ip_obj_desc->num_items;
-            ip_obj_desc->num_items = num_items;    
-        }         
+            tivx_shared_mem_ptr_t mem_ptr;
+            mem_ptr = *op_mem_ptr;
+            *op_mem_ptr = *ip_mem_ptr;
+            *ip_mem_ptr = mem_ptr;
+            if ((vx_enum)VX_TYPE_ARRAY == input->type)
+            {
+                tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->obj_desc;
+                tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->obj_desc;
+                vx_size num_items = op_obj_desc->num_items;
+                op_obj_desc->num_items = ip_obj_desc->num_items;
+                ip_obj_desc->num_items = num_items;
+            }
+        }
+        status =  ownReferenceUnlock((vx_reference)output);
     }
-    status =  ownReferenceUnlock((vx_reference)output);
     return status;    
 }
 
