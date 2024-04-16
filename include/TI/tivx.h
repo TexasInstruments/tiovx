@@ -318,7 +318,23 @@ typedef enum _tivx_attribute_extensions_e {
      * Read-Only. Can be read at initialization as well as at runtime.
      * Use a <tt>\ref vx_bool</tt> parameter.
      */
-    TIVX_REFERENCE_BUFFER_IS_ALLOCATED = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xe
+    TIVX_REFERENCE_BUFFER_IS_ALLOCATED = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xe,
+
+    /*! \brief Parameter allowing an application to query or set the stride Y alignment of
+     * a vx_image.  By default, this value will be set to \ref TIVX_DEFAULT_STRIDE_Y_ALIGN.
+     * Care must be taken to understand the requirements of the hardware which is consuming
+     * or producing the \ref vx_image.  Hardware which is being used via an OpenVX node
+     * has verification time errors thrown if the alignment is not in accordance with the
+     * requirements of the hardware, but alignment requirements of other hardware which
+     * is outside the scope of TIOVX (i.e., codecs) must be understood by the application
+     * developer and taken into consideration when creating the image consumed by that
+     * hardware. (For instance, the default value was originally chosen since this is a
+     * requirement of codec used on TI Jacinto devices)
+     * Read-Write. Can be read at any time, but only written to prior to the allocation
+     * of the buffer.
+     * Use a <tt>\ref vx_uint32</tt> parameter.
+     */
+    TIVX_IMAGE_STRIDE_Y_ALIGNMENT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xf
 
 } tivx_attribute_extensions_e;
 

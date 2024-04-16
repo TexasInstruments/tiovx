@@ -253,6 +253,7 @@ TEST(tivxImage, negativeTestQueryImage)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_MEMORY_TYPE, &size, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryImage(img, attribute, &size, size));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(img, VX_IMAGE_SIZE, &size, sizeof(vx_size)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &size, size));
     VX_CALL(vxReleaseImage(&img));
 }
 
@@ -374,10 +375,14 @@ TEST(tivxImage, testQueryImage)
 
     vx_image image = NULL;
     vx_imagepatch_addressing_t image_addr;
+    vx_uint32 stride_y_alignment;
 
     ASSERT_VX_OBJECT(image = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_IMAGEPATCH_ADDRESSING,  &image_addr,  sizeof(image_addr)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT,  &stride_y_alignment,  sizeof(stride_y_alignment)));
 
+    /* Default stride alignment is 16 as defined in TIVX_DEFAULT_STRIDE_Y_ALIGN */
+    ASSERT_EQ_INT(16, stride_y_alignment);
     ASSERT_EQ_INT(640, image_addr.dim_x);
     ASSERT_EQ_INT(480, image_addr.dim_y);
     ASSERT_EQ_INT(1, image_addr.stride_x);
@@ -389,6 +394,90 @@ TEST(tivxImage, testQueryImage)
 
     VX_CALL(vxReleaseImage(&image));
 }
+
+TEST(tivxImage, testSetImageStride)
+{
+    #define TEST1_STRIDE_Y_ALIGNMENT 64
+    #define TEST2_STRIDE_Y_ALIGNMENT 8
+    vx_context context = context_->vx_context_;
+
+    vx_image image = NULL;
+    vx_imagepatch_addressing_t image_addr;
+    vx_uint32 stride_y_alignment, set_stride_y_alignment = TEST1_STRIDE_Y_ALIGNMENT;
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 648, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_IMAGEPATCH_ADDRESSING,  &image_addr,  sizeof(image_addr)));
+
+    /* Originally aligned to 16 for stride, so confirming here */
+    ASSERT_EQ_INT(656, image_addr.stride_y);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &set_stride_y_alignment, sizeof(set_stride_y_alignment)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_IMAGEPATCH_ADDRESSING,  &image_addr,  sizeof(image_addr)));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT,  &stride_y_alignment,  sizeof(stride_y_alignment)));
+
+    ASSERT_EQ_INT(TEST1_STRIDE_Y_ALIGNMENT, stride_y_alignment);
+    ASSERT_EQ_INT(704, image_addr.stride_y);
+
+    /* Now setting to an alignment of 8 and querying */
+    set_stride_y_alignment = TEST2_STRIDE_Y_ALIGNMENT;
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &set_stride_y_alignment, sizeof(set_stride_y_alignment)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_IMAGEPATCH_ADDRESSING,  &image_addr,  sizeof(image_addr)));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT,  &stride_y_alignment,  sizeof(stride_y_alignment)));
+
+    ASSERT_EQ_INT(TEST2_STRIDE_Y_ALIGNMENT, stride_y_alignment);
+    ASSERT_EQ_INT(648, image_addr.stride_y);
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
+TEST(tivxImage, negativeTestSetImageStride)
+{
+    #define TEST_STRIDE_Y_ALIGNMENT 64
+    vx_context context = context_->vx_context_;
+
+    vx_image image = NULL;
+    vx_uint32 stride_y_alignment;
+    vx_size set_stride_y_alignment = TEST_STRIDE_Y_ALIGNMENT;
+
+    vx_pixel_value_t val = {{ 0xAB }};
+    vx_size memsz;
+    vx_size count_pixels = 0;
+    vx_uint32 i;
+    vx_uint32 j;
+    vx_uint8* buffer;
+    vx_uint8* buffer0;
+    vx_rectangle_t rect             = { 0, 0, 640, 480 };
+    vx_imagepatch_addressing_t addr = { 640, 480, 1, 640 };
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    /* This is expected to fail due to incorrect type parameter for setting the stride */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetImageAttribute(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &set_stride_y_alignment, sizeof(set_stride_y_alignment)));
+
+    memsz = vxComputeImagePatchSize(image, &rect, 0);
+    ASSERT(memsz >= 640*480);
+
+    ASSERT(buffer = ct_alloc_mem(memsz));
+    buffer0 = buffer;
+
+    // copy image data to our buffer
+    VX_CALL(vxCopyImagePatch(image, &rect, 0, &addr, buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+
+    /* This is expected to fail since the image has already been allocated */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetImageAttribute(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &stride_y_alignment, sizeof(stride_y_alignment)));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT,  &stride_y_alignment,  sizeof(stride_y_alignment)));
+
+    /* Ensure this has not been updated since the previous calls failed */
+    ASSERT_EQ_INT(16, stride_y_alignment);
+
+    VX_CALL(vxReleaseImage(&image));
+    ct_free_mem(buffer);
+}
+
 TEST(tivxImage, negativeTestSubmage)
 {
     vx_context context = context_->vx_context_;
@@ -453,4 +542,6 @@ TESTCASE_TESTS(
     negativeTestSwapImageHandle,
     negativeTestIsValidDimension,
     negativeTestSubmage,
-    testQueryImage)
+    testQueryImage,
+    testSetImageStride,
+    negativeTestSetImageStride)
