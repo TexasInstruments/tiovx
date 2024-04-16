@@ -104,7 +104,7 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
     {
         case VX_KERNEL_COPY:    return validate_only ? isArrayCopyable((vx_array)input, (vx_array)output) : ownCopyReferenceGeneric(input, output);
         case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:    return validate_only ? tivxIsReferenceMetaFormatEqual(input, output) : ownSwapReferenceGeneric(input, output);
+        case VX_KERNEL_MOVE:    return validate_only ? !tivxIsReferenceMetaFormatEqual(input, output) : ownSwapReferenceGeneric(input, output);
         default:                return VX_ERROR_NOT_SUPPORTED;
     }
 }

@@ -31,9 +31,9 @@ static vx_status VX_CALLBACK lutKernelCallback(vx_enum kernel_enum, vx_bool vali
     vx_reference output = (vx_reference)params[1];
     switch (kernel_enum)
     {
-        case VX_KERNEL_COPY:    return validate_only ? tivxIsReferenceMetaFormatEqual(input, output) : ownCopyReferenceGeneric(input, output);
+        case VX_KERNEL_COPY:    return validate_only ? !tivxIsReferenceMetaFormatEqual(input, output) : ownCopyReferenceGeneric(input, output);
         case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:    return validate_only ? tivxIsReferenceMetaFormatEqual(input, output) : ownSwapReferenceGeneric(input, output);
+        case VX_KERNEL_MOVE:    return validate_only ? !tivxIsReferenceMetaFormatEqual(input, output) : ownSwapReferenceGeneric(input, output);
         default:                return VX_ERROR_NOT_SUPPORTED;
     }
 }
