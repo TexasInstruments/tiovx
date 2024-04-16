@@ -123,7 +123,7 @@ vx_reference createReference(vx_context context, vx_enum type)
         {
             vx_image image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
             ref = (vx_reference)vxCreateObjectArray(context, (vx_reference)image, 4);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             break;
         }
         case VX_TYPE_PYRAMID:
@@ -203,26 +203,26 @@ static vx_status writeValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
         {
             vx_image image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 0);
             writeImage(image, a, b);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 1);
             writeImage(image, b, a);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 2);
             writeImage(image, b, a);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 3);
             writeImage(image, b, a);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             break;
         }
         case VX_TYPE_PYRAMID:
         {
             vx_image image = vxGetPyramidLevel((vx_pyramid)ref, 0);
             writeImage(image, a, b);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             image = (vx_image)vxGetPyramidLevel((vx_pyramid)ref, 1);
             writeImage(image, b, a);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             break;
         }
         case VX_TYPE_REMAP:
@@ -414,20 +414,20 @@ static vx_status checkValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
         {
             vx_image image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 0);
             status = checkImage(image, a, b);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 1);
             status |= checkImage(image, b, a);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             break;
         }
         case VX_TYPE_PYRAMID:
         {
             vx_image image = vxGetPyramidLevel((vx_pyramid)ref, 0);
             status = checkImage(image, a, b);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             image = (vx_image)vxGetPyramidLevel((vx_pyramid)ref, 1);
             status |= checkImage(image, b, a);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             break;
         }
         case VX_TYPE_REMAP:
