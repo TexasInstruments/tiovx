@@ -8,6 +8,7 @@ CSOURCES    := $(call all-c-files)
 IDIRS       += $(TIOVX_PATH)/conformance_tests/kernels/include
 IDIRS       += $(TIOVX_PATH)/conformance_tests/kernels/test_kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
+IDIRS       += $(TIOVX_PATH)/source/include
 
 include $(FINALE)
 

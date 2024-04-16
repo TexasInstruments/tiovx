@@ -69,6 +69,7 @@
 #include "tivx_kernels_target_utils.h"
 #include <TI/tivx_task.h>
 #include <stdio.h>
+#include <tivx_obj_desc_priv.h>
 
 /* #define FULL_CODE_COVERAGE */
 /* Maximum length of testcase function name */
@@ -460,9 +461,6 @@ static vx_status tivxNegativeTestRemoveTargetKernel(uint8_t id)
 
 static vx_status tivxTestTargetObjDescAllocFree(uint8_t id)
 {
-    extern tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref);
-    extern vx_status ownObjDescFree(tivx_obj_desc_t **obj_desc);
-
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_t *obj_desc=NULL;
 
