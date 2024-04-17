@@ -22,8 +22,6 @@ static vx_convolution VX_API_CALL ownCreateConvolution(vx_reference scope, vx_si
 static vx_bool vxIsPowerOfTwo(vx_uint32 a);
 static int8_t isodd(size_t a);
 static vx_status isConvolutionCopyable(vx_convolution input, vx_convolution output);
-static vx_status copyConvolution(vx_convolution input, vx_convolution output);
-static vx_status swapConvolution(vx_convolution input, vx_convolution output);
 static vx_status VX_CALLBACK convolutionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
 
 /*! \brief This function is called to find out if it is OK to copy the input to the output.
@@ -79,6 +77,7 @@ static vx_status VX_CALLBACK convolutionKernelCallback(vx_enum kernel_enum, vx_b
                 res = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
     }
+    return (res);
 }
 
 static vx_convolution VX_API_CALL ownCreateConvolution(vx_reference scope, vx_size columns, vx_size rows, vx_bool is_virtual)

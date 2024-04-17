@@ -56,22 +56,20 @@ static vx_status isMatrixCopyable(vx_matrix input, vx_matrix output)
 static vx_status VX_CALLBACK matrixKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
 {
     vx_status res;
-    vx_matrix input = (vx_matrix)params[0];
-    vx_matrix output = (vx_matrix)params[1];
     if ((vx_bool)vx_true_e == validate_only)
     {
-        res == isMatrixCopyable(input, output))
+        res = isMatrixCopyable((vx_matrix)params[0], (vx_matrix)params[1]);
     }
     else
     {
         switch (kernel_enum)
         {
             case VX_KERNEL_COPY:
-                res = ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output);
+                res = ownCopyReferenceGeneric(params[0], params[1]);
                 break;
             case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
             case VX_KERNEL_MOVE:
-                res = ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
+                res = ownSwapReferenceGeneric(params[0], params[1]);
                 break;
             default:
                 res = (vx_status)VX_ERROR_NOT_SUPPORTED;

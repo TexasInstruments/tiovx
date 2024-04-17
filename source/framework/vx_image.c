@@ -25,7 +25,6 @@ static vx_status isImageSwapable(vx_image input, vx_image output);
 static vx_status copyImage(vx_image input, vx_image output);
 //static vx_status assignNewPointers(const vx_image image, const tivx_shared_mem_ptr_t prev_ptrs[TIVX_IMAGE_MAX_PLANES], const vx_uint32 depth);
 static vx_status swapImage(vx_image input, vx_image output);
-static vx_status moveImage(vx_image input, vx_image output);
 static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
 
 static vx_bool ownIsSupportedFourcc(vx_df_image code);

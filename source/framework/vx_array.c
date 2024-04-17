@@ -133,6 +133,7 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
         default:
             res = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
+    return(res);
 }
 
 /* Function to get the size of user defined structure */

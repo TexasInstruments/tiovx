@@ -97,6 +97,7 @@ static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool v
             res = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
     }
+    return (res);
 }
 
 static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
