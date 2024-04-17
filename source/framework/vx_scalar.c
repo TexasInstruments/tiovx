@@ -22,27 +22,9 @@
 static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr);
 static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr);
 static vx_scalar ownCreateScalar(vx_reference scope, vx_enum data_type, const void *ptr, vx_bool is_virtual);
-static vx_status isScalarCopyable(vx_scalar input, vx_scalar output);
 static vx_status copyScalar(vx_scalar input, vx_scalar output);
 static vx_status swapScalar(vx_scalar input, vx_scalar output);
 static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
-
-/*! \brief This function is called to find out if it is OK to copy the input to the output.
- * Data type must be the same
- * \returns VX_SUCCESS if it is, otherwise another error code.
- *
- */
-static vx_status isScalarCopyable(vx_scalar input, vx_scalar output)
-{
-    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
-    {
-         return VX_SUCCESS;
-    }
-    else
-    {
-        return VX_ERROR_NOT_COMPATIBLE;
-    }
-}
 
 /*! \brief Copy input to output
  * The input must be copyable to the output; checks done already.
@@ -86,17 +68,34 @@ static vx_status swapScalar(vx_scalar input, vx_scalar output)
 /* Call back function that handles the copy, swap and move kernels */
 static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
 {
-    /*
-        Decode the kernel operation - simple version!
-    */
-    vx_scalar input = (vx_scalar)params[0];
-    vx_scalar output = (vx_scalar)params[1];
-    switch (kernel_enum)
+    vx_status res;
+    if ((vx_bool)vx_true_e == validate_only)
     {
-        case VX_KERNEL_COPY:    return validate_only ? isScalarCopyable(input, output) : copyScalar(input, output);
+        if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(params[0], params[1]))
+        {
+            res = (vx_status)VX_SUCCESS;
+        }
+        else
+        {
+            res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+    }
+    else
+    {
+        vx_scalar input = (vx_scalar)params[0];
+        vx_scalar output = (vx_scalar)params[1];
+        switch (kernel_enum)
+        {
+            case VX_KERNEL_COPY:
+                res = copyScalar(input, output);
+                break;
         case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:    return validate_only ? isScalarCopyable(input, output) : swapScalar(input, output);
-        default:                return VX_ERROR_NOT_SUPPORTED;
+        case VX_KERNEL_MOVE:
+                res = swapScalar(input, output);
+                break;
+        default:
+            res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        }
     }
 }
 

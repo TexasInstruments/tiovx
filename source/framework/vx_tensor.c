@@ -124,7 +124,7 @@ static vx_status moveOrSwapTensor(vx_tensor input, vx_tensor output)
         input->base.obj_desc  = op_obj_desc;
         output->base.obj_desc = ip_obj_desc;
         //swap destructors
-        tivx_reference_destructor_callback_f destructor = (tivx_reference_destructor_callback_f)output->base.destructor_callback;
+        tivx_reference_callback_f destructor = output->base.destructor_callback;
         output->base.destructor_callback = input->base.destructor_callback;
         input->base.destructor_callback = (tivx_reference_callback_f)destructor;
     }
@@ -137,18 +137,36 @@ static vx_status moveOrSwapTensor(vx_tensor input, vx_tensor output)
  */
 static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
 {
-    /*
-        Decode the kernel operation - simple version!
-    */
+    vx_status res;
     vx_tensor input = (vx_tensor)params[0];
     vx_tensor output = (vx_tensor)params[1];
     switch (kernel_enum)
     {
-        case VX_KERNEL_COPY:    return validate_only ? isTensorCopyable(input, output)  : ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output);
+        case VX_KERNEL_COPY:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                res =  isTensorCopyable(input, output);
+            }
+            else
+            {
+                res = ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output);
+            }
+            break;
         case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE: 	return validate_only ? isTensorSwappable(input, output) : moveOrSwapTensor(input, output);
-        default:                return VX_ERROR_NOT_SUPPORTED;
+        case VX_KERNEL_MOVE:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                res =  isTensorSwappable(input, output);
+            }
+            else
+            {
+                res = moveOrSwapTensor(input, output);
+            }
+            break;
+        default:
+            res =  (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
+    return (res);
 }
 
 

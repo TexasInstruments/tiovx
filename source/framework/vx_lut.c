@@ -24,18 +24,36 @@ static vx_status VX_CALLBACK lutKernelCallback(vx_enum kernel_enum, vx_bool vali
 /* Call back function that handles the copy, swap and move kernels */
 static vx_status VX_CALLBACK lutKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
 {
-    /*
-        Decode the kernel operation - simple version!
-    */
+    vx_status res;
     vx_reference input = (vx_reference)params[0];
     vx_reference output = (vx_reference)params[1];
-    switch (kernel_enum)
+    if ((vx_bool)vx_true_e == validate_only)
     {
-        case VX_KERNEL_COPY:    return validate_only ? !tivxIsReferenceMetaFormatEqual(input, output) : ownCopyReferenceGeneric(input, output);
-        case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:    return validate_only ? !tivxIsReferenceMetaFormatEqual(input, output) : ownSwapReferenceGeneric(input, output);
-        default:                return VX_ERROR_NOT_SUPPORTED;
+        if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(input, output))
+        {
+            res = (vx_status)VX_SUCCESS;
+        }
+        else
+        {
+            res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
     }
+    else
+    {
+        switch (kernel_enum)
+        {
+            case VX_KERNEL_COPY:
+                res = ownCopyReferenceGeneric(input, output);
+                break;
+            case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+            case VX_KERNEL_MOVE:
+                res = ownSwapReferenceGeneric(input, output);
+                break;
+            default:
+                res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        }
+    }
+    return (res);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseLUT(vx_lut *lut)

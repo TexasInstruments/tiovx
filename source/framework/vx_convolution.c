@@ -56,17 +56,28 @@ static vx_status isConvolutionCopyable(vx_convolution input, vx_convolution outp
 /* Call back function that handles the copy, swap and move kernels */
 static vx_status VX_CALLBACK convolutionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
 {
-    /*
-        Decode the kernel operation - simple version!
-    */
+    vx_status res;
     vx_convolution input = (vx_convolution)params[0];
     vx_convolution output = (vx_convolution)params[1];
-    switch (kernel_enum)
+
+    if ((vx_bool)vx_true_e == validate_only)
     {
-        case VX_KERNEL_COPY:    return validate_only ? isConvolutionCopyable(input, output) : ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output);
-        case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:    return validate_only ? isConvolutionCopyable(input, output) : ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
-        default:                return VX_ERROR_NOT_SUPPORTED;
+        res = isConvolutionCopyable(input, output);
+    }
+    else
+    {
+        switch (kernel_enum)
+        {
+            case VX_KERNEL_COPY:
+                res = ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output);
+                break;
+            case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+            case VX_KERNEL_MOVE:
+                res = ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
+                break;
+            default:
+                res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        }
     }
 }
 

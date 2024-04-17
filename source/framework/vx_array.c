@@ -95,17 +95,43 @@ static vx_status isArrayCopyable(vx_array input, vx_array output)
 /* Call back function that handles the copy, swap and move kernels */
 static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
 {
-    /*
-        Decode the kernel operation - simple version!
-    */
+    vx_status res;
     vx_reference input = (vx_reference)params[0];
     vx_reference output = (vx_reference)params[1];
+
     switch (kernel_enum)
     {
-        case VX_KERNEL_COPY:    return validate_only ? isArrayCopyable((vx_array)input, (vx_array)output) : ownCopyReferenceGeneric(input, output);
-        case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:    return validate_only ? !tivxIsReferenceMetaFormatEqual(input, output) : ownSwapReferenceGeneric(input, output);
-        default:                return VX_ERROR_NOT_SUPPORTED;
+        case VX_KERNEL_COPY:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                res =  isArrayCopyable((vx_array)input, (vx_array)output);
+            }
+            else
+            {
+                res = ownCopyReferenceGeneric(input, output);
+            }
+            break;
+        case VX_KERNEL_SWAP:
+        case VX_KERNEL_MOVE:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(input, output))
+                {
+                    res = (vx_status)VX_SUCCESS;
+                }
+                else
+                {
+                    res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+                }
+
+            }
+            else
+            {
+                res = ownSwapReferenceGeneric(input, output);
+            }
+            break;
+        default:
+            res = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
 }
 

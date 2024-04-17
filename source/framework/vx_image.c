@@ -602,7 +602,7 @@ static vx_status swapImage(const vx_image input, const vx_image output)
         vx_uint32 i;
         vx_uint64 offsets[TIVX_IMAGE_MAX_PLANES];
         vx_imagepatch_addressing_t addrs;
-        tivx_reference_destructor_callback_f destructor;
+        tivx_reference_callback_f destructor;
         vx_enum creation_type;
         uint32_t mem_size;
         for (i = 0; i < TIVX_IMAGE_MAX_PLANES; ++i)
@@ -637,21 +637,36 @@ static vx_status swapImage(const vx_image input, const vx_image output)
 
 static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
 {
-    /*
-        Decode the kernel operation - simple version!
-    */
+    vx_status res;
     vx_image input = (vx_image)params[0];
     vx_image output = (vx_image)params[1];
     switch (kernel_enum)
     {
-    case VX_KERNEL_COPY:
-        return validate_only ? isImageCopyable(input, output) : copyImage(input, output);
-    case VX_KERNEL_SWAP:
-    case VX_KERNEL_MOVE:
-        return validate_only ? isImageSwapable(input, output) : swapImage(input, output);
-    default:
-        return VX_ERROR_NOT_SUPPORTED;
+        case VX_KERNEL_COPY:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                res =  isImageCopyable(input, output);
+            }
+            else
+            {
+                res = copyImage(input, output);
+            }
+            break;
+        case VX_KERNEL_SWAP:
+        case VX_KERNEL_MOVE:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                res =  isImageSwapable(input, output);
+            }
+            else
+            {
+                res = swapImage(input, output);
+            }
+            break;
+        default:
+            res = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
+    return (res);
 }
 static void ownInitPlane(vx_image image,
                  vx_uint32 idx,
