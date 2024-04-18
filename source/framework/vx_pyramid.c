@@ -22,6 +22,8 @@
 static vx_status ownDestructPyramid(vx_reference ref);
 static vx_status ownAllocPyramidBuffer(vx_reference ref);
 static vx_status ownInitPyramid(vx_pyramid prmd);
+static vx_status isPyramidCopyable(vx_reference input, vx_reference output);
+static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
 
 static const vx_float32 gOrbScaleFactor
     [TIVX_PYRAMID_MAX_LEVELS_ORB] =
@@ -44,6 +46,90 @@ static const vx_float32 gOrbScaleFactor
     0.07432544468767006f,
     0.0625f
 };
+
+/*! \brief check to see if input pyramid can be copied to output.
+ * Number of levels and scale must always be equal; for non-virtual
+ * output the width, height and format must also agree.
+ * Same function is used to validate for swapping.
+*/
+static vx_status isPyramidCopyable(vx_reference input, vx_reference output)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_pyramid_t *in_objd = (tivx_obj_desc_pyramid_t *)input->obj_desc;
+    tivx_obj_desc_pyramid_t *out_objd = (tivx_obj_desc_pyramid_t *)output->obj_desc;
+    if (((vx_bool)vx_false_e == ownIsValidSpecificReference(input, (vx_enum)VX_TYPE_PYRAMID)) ||
+        ((vx_bool)vx_false_e == ownIsValidSpecificReference(output, (vx_enum)VX_TYPE_PYRAMID)) ||
+        (input == output))
+    {
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((in_objd->num_levels != out_objd->num_levels) ||
+             (in_objd->scale != out_objd->scale))
+    {
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((in_objd->width != out_objd->width) &&
+        ((0U != out_objd->width) ||
+         ((vx_bool)vx_false_e == output->is_virtual)))
+    {
+        /* output width must be the same as input width unless output is virtual with width zero */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((in_objd->height != out_objd->height) &&
+             ((0U != out_objd->height) ||
+              ((vx_bool)vx_false_e == output->is_virtual)))
+    {
+        /* output height must be the same as input height unless output is virtual with height zero */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((in_objd->format != out_objd->format) &&
+             (((vx_df_image)VX_DF_IMAGE_VIRT != out_objd->format) ||
+              ((vx_bool)vx_false_e == output->is_virtual)))
+    {
+        /* Output format must be the same as input format unless output is virtual with virtual format */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else
+    {
+        /* All OK, so we propagate metadata */
+        out_objd->format = in_objd->format;
+        out_objd->height = in_objd->height;
+        out_objd->width = in_objd->width;
+    }
+    return status;
+}
+
+static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_reference input, vx_reference output)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    if ((vx_bool)vx_true_e == validate_only)
+    {
+        status = isPyramidCopyable(input, output);
+    }
+    else    /* dispatch to each sub-image in turn */
+    {
+        vx_uint32 lvl;
+        for (lvl = 0U; (lvl < ((tivx_obj_desc_pyramid_t *)input->obj_desc)->num_levels) && ((vx_status)VX_SUCCESS == status); ++lvl)
+        {
+            vx_reference p2[2] = {&(vxCastRefAsPyramid(input, &status)->img[lvl]->base), &(vxCastRefAsPyramid(output, &status)->img[lvl]->base)};
+            vx_kernel_callback_f kf = p2[0]->kernel_callback;
+            if (NULL != kf)
+            {
+                status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
+            }
+#ifdef LDRA_UNTESTABLE_CODE
+/*  this code cannot be reached because the callback applies only on objArray, so the cast must be successfull.
+    The kernel callback is also set during the object creation and cannot be NULL*/
+            else
+            {
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+            }
+#endif
+        }
+    }
+    return status;
+}
+
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleasePyramid(vx_pyramid *prmd)
 {
@@ -123,7 +209,7 @@ VX_API_ENTRY vx_pyramid VX_API_CALL vxCreatePyramid(
                 prmd->base.mem_alloc_callback = &ownAllocPyramidBuffer;
                 prmd->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+                prmd->base.kernel_callback = &pyramidKernelCallback;
                 obj_desc = (tivx_obj_desc_pyramid_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_PYRAMID, vxCastRefFromPyramid(prmd));
                 if(obj_desc==NULL)
@@ -193,13 +279,15 @@ VX_API_ENTRY vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 i
         if ((ownIsValidSpecificReference(vxCastRefFromPyramid(prmd),
             (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e) && /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR001 */
             (prmd->base.obj_desc != NULL) &&
-            (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->
-                num_levels))
+            (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->num_levels) &&
+            ((NULL != prmd->img[0]) ||
+                ((vx_status)VX_SUCCESS == ownInitPyramid(prmd))))
+ 
         {
             img = prmd->img[index];
 
             /* Should increment the reference count,
-             * To release this image, app should explicitely call ReleaseImage.
+             * To release this image, app should explicitly call ReleaseImage.
              * Setting it as void since return value 'count' not used further
              */
             (void)ownIncrementReference(&img->base, (vx_enum)VX_EXTERNAL);
@@ -252,7 +340,7 @@ VX_API_ENTRY vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
             prmd->base.mem_alloc_callback = &ownAllocPyramidBuffer;
             prmd->base.release_callback =
                 &ownReleaseReferenceBufferGeneric;
-
+            prmd->base.kernel_callback = &pyramidKernelCallback;
             obj_desc = (tivx_obj_desc_pyramid_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_PYRAMID, vxCastRefFromPyramid(prmd));
             if(obj_desc==NULL)
@@ -481,57 +569,54 @@ static vx_status ownDestructPyramid(vx_reference ref)
     vx_uint32 i = 0;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
-    if(ref->type == (vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR006 */
+    /* status check set to NULL due to guaranteed type in internal function */
+    vx_pyramid prmd = vxCastRefAsPyramid(ref, NULL);
+
+    obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
+    if(obj_desc == NULL)
     {
-        /* status set to NULL due to preceding type check */
-        vx_pyramid prmd = vxCastRefAsPyramid(ref, NULL);
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
+    }
+    else
+    {
 
-        obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
-        if(obj_desc == NULL)
+        for (i = 0; i < obj_desc->num_levels; i++)
         {
-            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-            VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
-        }
-        else
-        {
-
-            for (i = 0; i < obj_desc->num_levels; i++)
+            if ((NULL != prmd->img[i]) &&
+                (vxGetStatus(vxCastRefFromImage(prmd->img[i])) == (vx_status)VX_SUCCESS))
             {
-                if ((NULL != prmd->img[i]) &&
-                    (vxGetStatus(vxCastRefFromImage(prmd->img[i])) == (vx_status)VX_SUCCESS))
-                {
-                    /* decrement the internal counter on the image, not the
-                    * external one. Setting it as void since return value
-                    * 'count' is not used further.
-                    */
-                    (void)ownDecrementReference(vxCastRefFromImage(prmd->img[i]), (vx_enum)VX_INTERNAL);
+                /* decrement the internal counter on the image, not the
+                * external one. Setting it as void since return value
+                * 'count' is not used further.
+                */
+                (void)ownDecrementReference(vxCastRefFromImage(prmd->img[i]), (vx_enum)VX_INTERNAL);
 
-                    status = ownReleaseReferenceInt(vxCastRefFromImageP(&prmd->img[i]),
-                            (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
+                status = ownReleaseReferenceInt(vxCastRefFromImageP(&prmd->img[i]),
+                        (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM003 */
-                    if ((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "Pyramid level %d release failed\n", i);
-                        break;
-                    }
-#endif
-                }
-            }
-        }
-        if(prmd->base.type == (vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR007 */
-        {
-            if(prmd->base.obj_desc!=NULL)
-            {
-                status = ownObjDescFree((tivx_obj_desc_t**)&prmd->base.obj_desc);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM006 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "Pyramid object descriptor free failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Pyramid level %d release failed\n", i);
+                    break;
                 }
 #endif
             }
+        }
+    }
+    if(prmd->base.type == (vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR007 */
+    {
+        if(prmd->base.obj_desc!=NULL)
+        {
+            status = ownObjDescFree((tivx_obj_desc_t**)&prmd->base.obj_desc);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM006 */
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Pyramid object descriptor free failed\n");
+            }
+#endif
         }
     }
     return status;
@@ -554,8 +639,17 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
 
     for (i = 0; i < obj_desc->num_levels; i++)
     {
-        img = vxCreateImage(prmd->base.context, w, h,
-            obj_desc->format);
+        /* If this is a virtual pyramid, the images must be virtual images */
+        if (prmd->base.is_virtual)
+        {
+            img = vxCreateVirtualImage((vx_graph)(prmd->base.scope), w, h,
+                obj_desc->format);
+        }
+        else
+        {
+            img = vxCreateImage(prmd->base.context, w, h,
+                obj_desc->format);
+        }
 
         if (vxGetStatus(vxCastRefFromImage(img)) == (vx_status)VX_SUCCESS)
         {
