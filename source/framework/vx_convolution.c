@@ -48,7 +48,7 @@ VX_API_ENTRY vx_convolution VX_API_CALL vxCreateConvolution(
                 cnvl->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 cnvl->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+                cnvl->base.kernel_callback = &ownKernelCallbackGeneric;
                 obj_desc = (tivx_obj_desc_convolution_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_CONVOLUTION, vxCastRefFromConvolution(cnvl));
                 if(obj_desc==NULL)

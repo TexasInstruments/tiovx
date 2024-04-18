@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-
-
 #include <vx_internal.h>
 
 #define tivxIsValidDelay(d) (ownIsValidSpecificReference(vxCastRefFromDelay(d), (vx_enum)VX_TYPE_DELAY) == (vx_bool)vx_true_e)

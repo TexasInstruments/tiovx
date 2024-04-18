@@ -157,4 +157,13 @@ vx_status tivxRemoveKernelWarpPerspective(vx_context context);
 vx_status tivxRemoveKernelXor(vx_context context);
 vx_status tivxRemoveKernelSuperNode(vx_context context);
 
+vx_status tivxAddKernelCopy(vx_context context);
+vx_status tivxRemoveKernelCopy(vx_context context);
+
+vx_status tivxAddKernelSwap(vx_context context);
+vx_status tivxRemoveKernelSwap(vx_context context);
+
+vx_status tivxAddKernelMove(vx_context context);
+vx_status tivxRemoveKernelMove(vx_context context);
+
 #endif /* TIVX_CORE_HOST_PRIV_H_ */
