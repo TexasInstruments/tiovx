@@ -240,6 +240,19 @@
      timeout values to the custom node.  The \ref tivxTaskWaitMsecs can then be used when setting the timeout.
      Please reference the target kernel implementation of the tivxCmdTimeoutTestNode for an example of how this can
      be achieved.
+
+     \section TIOVX_SAFETY_FEATURES_EVENT TIOVX Event API
+
+     TIOVX supports the event handling API which is included in the OpenVX Pipelining and Streaming Extension (link found in \ref RESOURCES).
+
+     This event handling API can be useful for detecting node level errors by using VX_EVENT_NODE_ERROR within the \ref vx_event_type_e
+     enumeration.  This allows an application to use the \ref vxRegisterEvent API to know when an error has occurred within the process
+     callback of a node.
+
+     One limitation of this approach is that the exact error code is not provided, only an event which signals that an error has occurred.
+     At present, the suggested approach for determining any further information is to additionally register a control callback within the
+     node which can be queried by the application if an error has occurred.
+
  */
 
 /*!
