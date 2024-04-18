@@ -84,7 +84,6 @@ static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph);
 static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx);
 static vx_status ownGraphDetectSourceSink(vx_graph graph);
 static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check);
-static vx_status ownGraphAllocateDataObject(vx_node node_cur, uint32_t prm_cur_idx, vx_reference ref);
 static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph, vx_node node,
                                                                 uint32_t idx, tivx_data_ref_queue data_ref_q);
 static vx_status ownGraphCreateAndLinkDataReferenceQueues(vx_graph graph);
@@ -104,6 +103,71 @@ static vx_status ownGraphUpdateImageRefAfterKernetInit(vx_image exemplar, vx_ima
 static vx_status ownGraphUpdateObjArrRefAfterKernetInit(vx_object_array exemplar, vx_object_array ref);
 static vx_status ownGraphUpdatePyramidRefAfterKernetInit(vx_pyramid exemplar, vx_pyramid ref);
 static vx_status ownGraphAddSingleDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check);
+
+/* Validate graph parameters; two parameters should not point to the same node & index, and two parameters should not have the same initial reference set. */
+static vx_status ownGraphValidateParameters(vx_graph graph)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32  param_idx;
+    for (param_idx = 1; param_idx < graph->num_params; ++param_idx)
+    {
+        vx_uint32 nxt_idx = 0U;
+        vx_reference param_ref = graph->parameters[param_idx-1U].node->parameters[graph->parameters[param_idx-1U].index];
+
+        for (nxt_idx = param_idx; nxt_idx < graph->num_params; ++nxt_idx)
+        {
+            if (param_ref == graph->parameters[nxt_idx].node->parameters[graph->parameters[nxt_idx].index])
+            {
+                status =(vx_status)VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid graph parameters: #%u and #%u both attached to reference \"%s\"\n", param_idx - 1U, nxt_idx, param_ref->name);
+            }
+        }
+    }
+    return status;
+}
+
+/* Link graph parameters if not pipelining or streaming */
+static vx_status ownGraphLinkParameters(vx_graph graph)
+{
+    vx_uint32 p_index;
+    vx_status status = (vx_status)VX_SUCCESS;
+    for (p_index = 0; p_index < graph->num_params; ++p_index)
+    {
+        vx_node node = graph->parameters[p_index].node;
+        vx_uint32 index = graph->parameters[p_index].index;
+        vx_reference ref = node->parameters[index];
+        vx_uint32 node_idx;
+        graph->parameters[p_index].num_other = 0;
+        for (node_idx = 0; node_idx < graph->num_nodes;++node_idx)
+        {
+            vx_node this_node = graph->nodes[node_idx];
+            vx_uint32 this_index;
+            for (this_index = 0; this_index < this_node->kernel->signature.num_parameters; this_index++)
+            {
+                if ((this_node != node) || (this_index != index))
+                {
+                    if (this_node->parameters[this_index] == ref)
+                    {
+                        if (graph->parameters[p_index].num_other >= TIVX_GRAPH_MAX_PARAM_REFS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "Too many linked references for graph parameter %d, increase TIVX_GRAPH_MAX_PARAM_REFS\n", p_index);
+                            status = (vx_status)VX_ERROR_NO_RESOURCES;
+                            break;
+                        }
+                        else
+                        {               
+                            /* we have another occurrence of the reference in the graph, record it */
+                            graph->parameters[p_index].params_list[graph->parameters[p_index].num_other].node = this_node;
+                            graph->parameters[p_index].params_list[graph->parameters[p_index].num_other].index = this_index;
+                            graph->parameters[p_index].num_other++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return status;
+}
 
 /* Add's data reference to a list, increments number of times it is referred as input node */
 static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check)
@@ -892,12 +956,25 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                     }
                 }
                 if ((prm_cur_dir == (uint32_t)VX_BIDIRECTIONAL) &&
-                    (ref1->is_virtual == (vx_bool)vx_true_e) &&
-                    ( (outputs_attached != 1U) || (inputs_attached == 0U)))
+                    (ref1->is_virtual == (vx_bool)vx_true_e))
                 {
-                    /* A virtual bidirectional parameter must be connected to exactly one output and at least one input */
-                    status = (vx_status)VX_FAILURE;
-                    VX_PRINT(VX_ZONE_ERROR,"Virtual bidirectional parameter must be connected to an output and at least one input at index %d failed\n", node_cur_idx);
+                    /* A virtual bidirectional parameter must be connected to exactly one output and at least one input,
+                    except if the kernel is VX_KERNEL_MOVE */
+                    if (outputs_attached != 1U)
+                    {
+                        status = (vx_status)VX_FAILURE;
+                        VX_PRINT(VX_ZONE_ERROR,"Virtual bidirectional parameter must be connected to one output at index %d failed\n", node_cur_idx);
+                    }
+                    else if (((vx_enum)VX_KERNEL_MOVE != node_cur->kernel->enumeration) &&
+                             (inputs_attached == 0U))
+                    {
+                        status = (vx_status)VX_FAILURE;
+                        VX_PRINT(VX_ZONE_ERROR,"Virtual bidirectional parameter must be connected to at least one input at index %d failed\n", node_cur_idx);
+                    }
+                    else
+                    {
+                        /* Do nothing, required by MISRA-C */
+                    }
                 }
             }
         }
@@ -964,7 +1041,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
     return status;
 }
 
-static vx_status ownGraphAllocateDataObject(vx_node node_cur, uint32_t prm_cur_idx, vx_reference ref)
+vx_status ownGraphAllocateDataObject(vx_node node_cur, uint32_t prm_cur_idx, vx_reference ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -1995,10 +2072,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Unable to calculate out nodes and in nodes for each node\n");
                 }
+                else
+                {
+                    /* Optimise out Copy and Move nodes where possible */
+                    status = ownGraphProcessCopyMoveNodes(graph);
+                }
 
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                vx_bool has_cycle = (vx_bool)vx_false_e;
+                if(status == (vx_status)VX_SUCCESS)
+                {
+                    vx_bool has_cycle = (vx_bool)vx_false_e;
 
                     if((vx_status)VX_SUCCESS == ownContextLock(graph->base.context))
                     {
@@ -2040,6 +2122,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Node kernel Validate failed\n");
                     }
+                }
+
+                /* Detect errors in graph parameter assignment */
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    status = ownGraphValidateParameters(graph);
+                }
+
+                /* Collect multiple references into each graph parameter */
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    status = ownGraphLinkParameters(graph);
                 }
 
                 /* Detects errors in pipelining parameters being set as graph parameter and multiple buffers at node */

@@ -623,6 +623,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxuRemap(vx_context context,
                   vx_enum policy,
                   vx_image output);
 
+
+/*! \brief [Immediate] Copies data from one reference to another.
+ * \param [in] context The reference to the overall context.
+ * \param [in] input A reference to an OpenVX data object
+ * \param [out] output A reference to an OpenVX object of the same type as the input.
+ * \ingroup group_vision_function_copy
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS Success
+ * \retval * An error occurred. See <tt>\ref vx_status_e</tt>.
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxuCopy(vx_context context, vx_reference input, vx_reference output);
+
 #ifdef __cplusplus
 }
 #endif
