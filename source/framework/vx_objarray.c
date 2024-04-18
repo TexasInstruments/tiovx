@@ -28,6 +28,47 @@ static vx_status ownAddRefToObjArray(vx_context context,
 static vx_status ownReleaseRefFromObjArray(
             vx_object_array objarr, uint32_t num_items);
 
+static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    if (num_params == 2U)
+    {
+        if ((vx_bool)vx_true_e == validate_only)
+        {
+            if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(params[0], params[1]))
+            {
+                status = (vx_status)VX_SUCCESS;
+            }
+            else
+            {
+                status =  (vx_status)VX_ERROR_NOT_COMPATIBLE;
+            }
+        }
+        else    /* dispatch to each sub-object in turn */
+        {
+            vx_uint32 item;
+            for (item = 0U; (item < ((tivx_obj_desc_object_array_t *)params[0U]->obj_desc)->num_items) && ((vx_status)VX_SUCCESS == status); ++item)
+            {
+                vx_reference p2[2] = {vxCastRefAsObjectArray(params[0U], &status)->ref[item], vxCastRefAsObjectArray(params[1], &status)->ref[item]};
+                vx_kernel_callback_f kf = p2[0]->kernel_callback;
+                if ((kf != NULL) && ((vx_status)VX_SUCCESS == status))
+                {
+                    status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2, 2);
+                }
+                else
+                {
+                    status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                }
+            }
+        }
+    }
+    else
+    {
+        status =  (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    return status;
+}
+
 static vx_bool ownIsValidObject(vx_enum type)
 {
     vx_bool status = (vx_bool)vx_false_e;
@@ -80,7 +121,7 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
-
+                objarr->base.kernel_callback = &objectArrayKernelCallback;
                 objarr->base.obj_desc = ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, vxCastRefFromObjectArray(objarr));
                 if(objarr->base.obj_desc==NULL)
@@ -167,7 +208,7 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
-
+                objarr->base.kernel_callback = &objectArrayKernelCallback;
                 objarr->base.obj_desc = ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, vxCastRefFromObjectArray(objarr));
                 if(objarr->base.obj_desc==NULL)

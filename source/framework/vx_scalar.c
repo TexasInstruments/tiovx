@@ -21,6 +21,91 @@
 
 static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr);
 static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr);
+static vx_status copyScalar(vx_reference input, vx_reference output);
+static vx_status swapScalar(vx_reference input, vx_reference output);
+static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params);
+
+/*! \brief Copy input to output
+ * The input must be copyable to the output; checks done already.
+ * Note that locking a reference actually locks the context, so we only lock
+ * one reference!
+
+ */
+static vx_status copyScalar(vx_reference input, vx_reference output)
+{
+    tivx_obj_desc_scalar_t *ip_obj_desc = (tivx_obj_desc_scalar_t *)input->obj_desc;
+    tivx_obj_desc_scalar_t *op_obj_desc = (tivx_obj_desc_scalar_t *)output->obj_desc;
+    vx_status status = ownReferenceLock(output);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        /* Just copy the entire union from input to output
+           use the extra memcopy for volatile struct */
+        tivx_obj_desc_memcpy(&op_obj_desc->data, &ip_obj_desc->data, (uint32_t)sizeof(op_obj_desc->data));
+    }
+    status = ownReferenceUnlock(output);
+    return status;
+}
+
+/*! \brief swap input and output data
+ * Input and output must be swappable; checks done already.
+ */
+static vx_status swapScalar(vx_reference input, vx_reference output)
+{
+    vx_status status =  ownReferenceLock(output);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        tivx_obj_desc_scalar_t *ip_obj_desc = (tivx_obj_desc_scalar_t *)input->obj_desc;
+        tivx_obj_desc_scalar_t *op_obj_desc = (tivx_obj_desc_scalar_t *)output->obj_desc;
+        tivx_obj_desc_scalar_t data_obj;
+        tivx_obj_desc_memcpy(&data_obj.data, &op_obj_desc->data, (uint32_t)sizeof(data_obj.data));
+        tivx_obj_desc_memcpy(&op_obj_desc->data, &ip_obj_desc->data, (uint32_t)sizeof(op_obj_desc->data));
+        tivx_obj_desc_memcpy(&ip_obj_desc->data, &data_obj.data, (uint32_t)sizeof(ip_obj_desc->data));
+    }
+    status = ownReferenceUnlock(output);
+    return status;
+}
+
+/* Call back function that handles the copy, swap and move kernels */
+static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params)
+{
+    vx_status res;
+
+    if (2U != num_params)
+    {
+        res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+    }
+    else
+    {
+        if ((vx_bool)vx_true_e == validate_only)
+        {
+            if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(params[0], params[1]))
+            {
+                res = (vx_status)VX_SUCCESS;
+            }
+            else
+            {
+                res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+            }
+        }
+        else
+        {
+            switch (kernel_enum)
+            {
+                case (vx_enum)VX_KERNEL_COPY:
+                    res = copyScalar(params[0], params[1]);
+                    break;
+                case (vx_enum)VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+                case (vx_enum)VX_KERNEL_MOVE:
+                    res = swapScalar(params[0], params[1]);
+                    break;
+                default:
+                    res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                    break;
+            }
+        }
+    }
+    return (res);
+}
 
 static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
 {
@@ -142,7 +227,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
                 /* assign refernce type specific callback's */
                 scalar->base.destructor_callback = &ownDestructReferenceGeneric;
                 scalar->base.release_callback = &ownReleaseReferenceBufferGeneric;
-
+                scalar->base.kernel_callback = &scalarKernelCallback;
                 obj_desc = (tivx_obj_desc_scalar_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SCALAR, vxCastRefFromScalar(scalar));
                 if(obj_desc==NULL)
                 {

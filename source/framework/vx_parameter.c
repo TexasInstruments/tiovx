@@ -155,6 +155,11 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uin
             vxAddLogEntry(&node->base, (vx_status)VX_ERROR_INVALID_NODE, "Node was created without a kernel! Fatal Error!\n");
             param = (vx_parameter)ownGetErrorObject(node->base.context, (vx_status)VX_ERROR_INVALID_NODE);
         }
+        else if (NULL == node->graph)
+        {
+            /* Node has been removed from a graph */
+            param = (vx_parameter)ownGetErrorObject(node->base.context, (vx_status)VX_ERROR_OPTIMIZED_AWAY);
+        }
         else
         {
             if ((index < TIVX_KERNEL_MAX_PARAMS) && (index < node->kernel->signature.num_parameters))
@@ -241,33 +246,38 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 
             if(status == (vx_status)VX_SUCCESS)
             {
-                /* if it was a valid reference then get the type from it */
-                if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type)))
+                /* Where the kernel signature type is a VX_TYPE_REFERENCE we accept any parameter type,
+                    otherwise, we have to check that the type matches. */
+                if ((vx_enum)VX_TYPE_REFERENCE != node->kernel->signature.types[index])
                 {
-                    VX_PRINT(VX_ZONE_PARAMETER, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
-                }
-                /* Check that signature type matches reference type*/
-                if (node->kernel->signature.types[index] != type)
-                {
-                    /* Check special case where signature is a specific scalar type.
-                       This can happen if the vxAddParameterToKernel() passes one of the scalar
-                       vx_type_e types instead of the more generic (vx_enum)VX_TYPE_SCALAR since the spec
-                       doesn't specify that only (vx_enum)VX_TYPE_SCALAR should be used for scalar types in
-                       this function. */
-                    /* status set to NULL due to type check */
-                    if((type == (vx_enum)VX_TYPE_SCALAR) && 
-                       (vxQueryScalar(vxCastRefAsScalar(value,NULL), (vx_enum)VX_SCALAR_TYPE, &data_type, sizeof(data_type)) == (vx_status)VX_SUCCESS))
+                    /* if it was a valid reference then get the type from it */
+                    if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type)))
                     {
-                        if(data_type != node->kernel->signature.types[index])
+                        VX_PRINT(VX_ZONE_PARAMETER, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
+                    }
+                    /* Check that signature type matches reference type*/
+                    if (node->kernel->signature.types[index] != type)
+                    {
+                        /* Check special case where signature is a specific scalar type.
+                           This can happen if the vxAddParameterToKernel() passes one of the scalar
+                           vx_type_e types instead of the more generic (vx_enum)VX_TYPE_SCALAR since the spec
+                           doesn't specify that only (vx_enum)VX_TYPE_SCALAR should be used for scalar types in
+                           this function. */
+                        /* status set to NULL due to type check */
+                        if((type == (vx_enum)VX_TYPE_SCALAR) &&
+                          (vxQueryScalar(vxCastRefAsScalar(value,NULL), (vx_enum)VX_SCALAR_TYPE, &data_type, sizeof(data_type)) == (vx_status)VX_SUCCESS))
                         {
-                            VX_PRINT(VX_ZONE_ERROR, "Invalid scalar type 0x%08x!\n", data_type);
+                            if(data_type != node->kernel->signature.types[index])
+                            {
+                                VX_PRINT(VX_ZONE_ERROR, "Invalid scalar type 0x%08x!\n", data_type);
+                                status = (vx_status)VX_ERROR_INVALID_TYPE;
+                            }
+                        }
+                        else
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "Invalid type 0x%08x!\n", type);
                             status = (vx_status)VX_ERROR_INVALID_TYPE;
                         }
-                    }
-                    else
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "Invalid type 0x%08x!\n", type);
-                        status = (vx_status)VX_ERROR_INVALID_TYPE;
                     }
                 }
             }
@@ -295,6 +305,32 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                     if (res == (vx_bool)vx_false_e) {
                         VX_PRINT(VX_ZONE_ERROR, "Internal error adding delay association\n");
                         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+                    }
+                }
+            }
+
+            /* Check for node replication; ref should be first element of an object array or pyramid */
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                if ((vx_bool)vx_true_e == node->replicated_flags[index])
+                {
+                    if ((vx_enum)VX_TYPE_OBJECT_ARRAY == value->scope->type)
+                    {
+                        if (vxCastRefAsObjectArray(value->scope, NULL)->ref[0] != value)
+                        {
+                            status = (vx_status)VX_ERROR_INVALID_SCOPE;
+                        }
+                    }
+                    else if ((vx_enum)VX_TYPE_PYRAMID == value->scope->type)
+                    {
+                        if (vxCastRefAsPyramid(value->scope, NULL)->img[0] != vxCastRefAsImage(value, NULL))
+                        {
+                            status = (vx_status)VX_ERROR_INVALID_SCOPE;
+                        }
+                    }
+                    else
+                    {
+                        status = (vx_status)VX_ERROR_INVALID_SCOPE;
                     }
                 }
             }
