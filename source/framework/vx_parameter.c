@@ -17,8 +17,6 @@
 
 #include <vx_internal.h>
 
-static vx_status ownDestructParameter(vx_reference ref);
-
 static vx_status ownDestructParameter(vx_reference ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -147,6 +145,11 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uin
             /* this can probably never happen */
             vxAddLogEntry(&node->base, (vx_status)VX_ERROR_INVALID_NODE, "Node was created without a kernel! Fatal Error!\n");
             param = (vx_parameter)ownGetErrorObject(node->base.context, (vx_status)VX_ERROR_INVALID_NODE);
+        }
+        else if (NULL == node->graph)
+        {
+            /* Node has been removed from a graph */
+            param = (vx_parameter)ownGetErrorObject(node->base.context, (vx_status)VX_ERROR_OPTIMIZED_AWAY);
         }
         else
         {
@@ -288,6 +291,32 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                     if (res == (vx_bool)vx_false_e) {
                         VX_PRINT(VX_ZONE_ERROR, "Internal error adding delay association\n");
                         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+                    }
+                }
+            }
+
+            /* Check for node replication; ref should be first element of an object array or pyramid */
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                if (vx_true_e == node->replicated_flags[index])
+                {
+                    if ((vx_enum)VX_TYPE_OBJECT_ARRAY == value->scope->type)
+                    {
+                        if (((vx_object_array)value->scope)->ref[0] != value)
+                        {
+                            status = (vx_status)VX_ERROR_INVALID_SCOPE;
+                        }
+                    }
+                    else if ((vx_enum)VX_TYPE_PYRAMID == value->scope->type)
+                    {
+                        if (((vx_pyramid)value->scope)->img[0] != (vx_image)value)
+                        {
+                            status = (vx_status)VX_ERROR_INVALID_SCOPE;
+                        }
+                    }
+                    else
+                    {
+                        status = (vx_status)VX_ERROR_INVALID_SCOPE;
                     }
                 }
             }

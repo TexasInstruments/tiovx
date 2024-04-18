@@ -18,13 +18,57 @@
 
 #include <vx_internal.h>
 
-vx_distribution VX_API_CALL vxCreateDistribution(
-    vx_context context, vx_size num_bins, vx_int32 offset, vx_uint32 range)
+static vx_distribution ownCreateDistribution(vx_reference scope, vx_size num_bins, vx_int32 offset, vx_uint32 range, vx_bool is_virtual);
+static vx_status VX_CALLBACK distributionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
+
+/* Call back function that handles the copy, swap and move kernels */
+static vx_status VX_CALLBACK distributionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_refer
+{
+    vx_status res;
+    if ((vx_bool)vx_true_e == validate_only)
+    {
+        if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(params[0], params[1]))
+        {
+            res = (vx_status)VX_SUCCESS;
+        }
+        else
+        {
+            res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
++
+    }
+    else
+    {
+        switch (kernel_enum)
+        {
+            case VX_KERNEL_COPY:
+                res = ownCopyReferenceGeneric(params[0], params[1]);
+                break;
+            case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+            case VX_KERNEL_MOVE:
+                res = ownSwapReferenceGeneric(params[0], params[1]);
+                break;
+            default:
+                res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        }
+    }
+    return (res);
+}
+
+static vx_distribution ownCreateDistribution(vx_reference scope, vx_size num_bins, vx_int32 offset, vx_uint32 range, vx_bool is_virtual)
 {
     vx_distribution dist = NULL;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
-
+    vx_context context;
+	vx_status status = (vx_status)VX_SUCCESS;
+    if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    {
+        context = vxGetContext(scope);
+    }
+    else
+    {
+        context = (vx_context)scope;
+    }
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         vx_reference ref;
@@ -43,7 +87,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                 dist->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 dist->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+                dist->base.kernel_callback = &distributionKernelCallback;
                 obj_desc = (tivx_obj_desc_distribution_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_DISTRIBUTION, vxCastRefFromDistribution(dist));
                 if(obj_desc==NULL)
@@ -79,6 +123,16 @@ vx_distribution VX_API_CALL vxCreateDistribution(
     }
 
     return (dist);
+}
+
+VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(vx_context context, vx_size numBins, vx_int32 offset, vx_uint32 range)
+{
+    return ownCreateDistribution((vx_reference)context, numBins, offset, range, vx_false_e);
+}
+
+VX_API_ENTRY vx_distribution VX_API_CALL vxCreateVirtualDistribution(vx_graph graph, vx_size numBins, vx_int32 offset, vx_uint32 range)
+{
+    return ownCreateDistribution((vx_reference)graph, numBins, offset, range, vx_true_e);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseDistribution(vx_distribution *dist)

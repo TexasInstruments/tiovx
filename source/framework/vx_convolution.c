@@ -18,8 +18,67 @@
 
 #include <vx_internal.h>
 
+static vx_convolution VX_API_CALL ownCreateConvolution(vx_reference scope, vx_size columns, vx_size rows, vx_bool is_virtual);
 static vx_bool vxIsPowerOfTwo(vx_uint32 a);
 static int8_t isodd(size_t a);
+static vx_status isConvolutionCopyable(vx_convolution input, vx_convolution output);
+static vx_status VX_CALLBACK convolutionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
+
+/*! \brief This function is called to find out if it is OK to copy the input to the output.
+ * Columns rows and scale must be the same
+ * \returns VX_SUCCESS if it is, otherwise another error code.
+ *
+ */
+static vx_status isConvolutionCopyable(vx_convolution input, vx_convolution output)
+{
+    tivx_obj_desc_convolution_t *ip_obj_desc = (tivx_obj_desc_convolution_t *)input->base.obj_desc;
+    tivx_obj_desc_convolution_t *op_obj_desc = (tivx_obj_desc_convolution_t *)output->base.obj_desc;
+    if ((input != output) &&
+        (ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_CONVOLUTION) == (vx_bool)vx_true_e) &&
+        (op_obj_desc != NULL) &&
+        (ownIsValidSpecificReference(&output->base, (vx_enum)VX_TYPE_CONVOLUTION) == (vx_bool)vx_true_e) &&
+        (op_obj_desc != NULL) &&
+        (ip_obj_desc->columns == op_obj_desc->columns) &&
+        (ip_obj_desc->rows == op_obj_desc->rows) &&
+        (ip_obj_desc->scale == op_obj_desc->scale)
+        )
+    {
+        return (vx_status)VX_SUCCESS;
+    }
+    else
+    {
+        return (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+}
+
+/* Call back function that handles the copy, swap and move kernels */
+static vx_status VX_CALLBACK convolutionKernelCallback(vx_enum kernel_enum, vx_bool validate_only
+{
+    vx_status res;
+    vx_convolution input = (vx_convolution)params[0];
+    vx_convolution output = (vx_convolution)params[1];
++
+    if ((vx_bool)vx_true_e == validate_only)
+    {
+        res = isConvolutionCopyable(input, output);
+    }
+    else
+    {
+        switch (kernel_enum)
+        {
+            case VX_KERNEL_COPY:
+                res = ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output);
+                break;
+            case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+            case VX_KERNEL_MOVE:
+                res = ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
+                break;
+            default:
+                res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        }
+    }
+    return (res);
+}
 
 vx_convolution VX_API_CALL vxCreateConvolution(
     vx_context context, vx_size columns, vx_size rows)
@@ -49,7 +108,7 @@ vx_convolution VX_API_CALL vxCreateConvolution(
                 cnvl->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 cnvl->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+                cnvl->base.kernel_callback = &convolutionKernelCallback;
                 obj_desc = (tivx_obj_desc_convolution_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_CONVOLUTION, vxCastRefFromConvolution(cnvl));
                 if(obj_desc==NULL)

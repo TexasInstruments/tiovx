@@ -75,6 +75,8 @@
 #include <tivx_log_rt_trace.h>
 #include <tivx_log_resource.h>
 #include <tivx_kernels_host_utils.h>
+#include <vx_copy_swap.h>
+#include <VX/vxu.h>
 
 
 #ifdef __cplusplus

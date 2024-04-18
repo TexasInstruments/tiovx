@@ -18,21 +18,67 @@
 
 #include <vx_internal.h>
 
+static vx_lut ownCreateLUT(vx_reference scope, vx_enum data_type, vx_size count, vx_bool is_virtual);
+static vx_status VX_CALLBACK lutKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
+
+/* Call back function that handles the copy, swap and move kernels */
+static vx_status VX_CALLBACK lutKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
+{
+    vx_status res;
+    vx_reference input = (vx_reference)params[0];
+    vx_reference output = (vx_reference)params[1];
+    if ((vx_bool)vx_true_e == validate_only)
+    {
+        if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(input, output))
+        {
+            res = (vx_status)VX_SUCCESS;
+        }
+        else
+        {
+            res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+    }
+    else
+    {
+        switch (kernel_enum)
+        {
+            case VX_KERNEL_COPY:
+                res = ownCopyReferenceGeneric(input, output);
+                break;
+            case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+            case VX_KERNEL_MOVE:
+                res = ownSwapReferenceGeneric(input, output);
+                break;
+            default:
+                res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        }
+    }
+    return (res);
+}
+
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseLUT(vx_lut *lut)
 {
     return (ownReleaseReferenceInt(
         vxCastRefFromLUTP(lut), (vx_enum)VX_TYPE_LUT, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-vx_lut VX_API_CALL vxCreateLUT(
-    vx_context context, vx_enum data_type, vx_size count)
+static vx_lut ownCreateLUT(vx_reference scope, vx_enum data_type, vx_size count, vx_bool is_virtual)
 {
     vx_lut lut = NULL;
     vx_reference ref = NULL;
     vx_size dim = 0;
     tivx_obj_desc_lut_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
+    vx_context context;
+	vx_status status = (vx_status)VX_SUCCESS;
 
+    if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    {
+        context = vxGetContext(scope);
+    }
+    else
+    {
+        context = (vx_context)scope;
+    }
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if ((data_type == (vx_enum)VX_TYPE_INT8) || (data_type == (vx_enum)VX_TYPE_UINT8) || (data_type == (vx_enum)VX_TYPE_CHAR))
@@ -77,7 +123,7 @@ vx_lut VX_API_CALL vxCreateLUT(
                 lut->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 lut->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+                lut->base.kernel_callback = &lutKernelCallback;
                 obj_desc = (tivx_obj_desc_lut_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_LUT, vxCastRefFromLUT(lut));
                 if(obj_desc==NULL)
@@ -112,6 +158,16 @@ vx_lut VX_API_CALL vxCreateLUT(
     }
 
     return (lut);
+}
+
+vx_lut VX_API_CALL vxCreateLUT(vx_context context, vx_enum data_type, vx_size count)
+{
+    return ownCreateLUT((vx_reference)context, data_type, count, vx_false_e);
+}
+
+vx_lut VX_API_CALL vxCreateVirtualLUT(vx_graph graph, vx_enum data_type, vx_size count)
+{
+    return ownCreateLUT((vx_reference)graph, data_type, count, vx_true_e);
 }
 
 vx_status VX_API_CALL vxQueryLUT(

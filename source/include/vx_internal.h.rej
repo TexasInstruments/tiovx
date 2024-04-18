@@ -1,0 +1,9 @@
+diff a/source/include/vx_internal.h b/source/include/vx_internal.h	(rejected hunks)
+@@ -25,6 +25,7 @@
+ 
+ #include <VX/vx.h>
+ #include <VX/vx_khr_pipelining.h>
++#include <VX/vx_khr_swap_move.h>
+ #include <TI/tivx.h>
+ #include <TI/tivx_mem.h>
+ #include <TI/tivx_obj_desc.h>
