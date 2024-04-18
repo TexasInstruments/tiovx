@@ -187,6 +187,18 @@
 
      For information about ensuring that all resources have been freed appropriately, please reference \ref TIOVX_SAFETY_TOOLING.
 
+     \section TIOVX_SAFETY_SPINLOCK_USAGE TIOVX Spinlock Usage and Recommendations
+
+     There are a few different scenarios in which a spinlock is required to be used by TIOVX in order to provide exclusive access amongst the multiple cores
+     which may require access to a given piece of information.  The 3 scenarios are listed below along with the spinlock ID which is used for that scenario:
+
+     - Run time event logger: \ref TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID
+     - Object descriptor table: \ref TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID
+     - Data reference queue: \ref TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID
+
+     There is no resource manager for spinlocks within the SDK.  Therefore, it is important for an application developer to guarantee that no other piece of
+     software assumes access to these locks.  If other software components are using these locks, it will cause significant delays in execution of TIOVX.
+
  */
 
 /*!
