@@ -345,20 +345,12 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_t *base_obj_desc = NULL;
 
-    if((vx_bool)vx_true_e == ownIsGenericReferenceType(ref->type))
-    {
-        base_obj_desc = (tivx_obj_desc_t *)ref->obj_desc;
+    base_obj_desc = (tivx_obj_desc_t *)ref->obj_desc;
 
-        if(base_obj_desc == NULL)
-        {
-            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-            VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
-        }
-    }
-    else
+    if(base_obj_desc == NULL)
     {
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-        VX_PRINT(VX_ZONE_ERROR, "Invalid reference provided to destructor!\n");
+        VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -402,6 +394,152 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
     return status;
 }
 
+vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
+{
+    tivx_shared_mem_ptr_t  *ip_mem_ptr = NULL;
+    uint32_t                ip_mem_size = 0;
+    tivx_shared_mem_ptr_t  *op_mem_ptr = NULL;
+    uint32_t                op_mem_size = 0;
+    vx_status status;
+     /* added void here as this status check of
+    * ownReferenceGetMemAttrsFromObjDesc will always be true if
+    * the previous condition is true
+    */
+    (void)ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
+    (void)ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
+    status = ownReferenceLock(output);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+#ifdef LDRA_UNTESTABLE_CODE
+        /* internal memory footprint could be different if the object is allocated via a component external to OVX
+           and that is imported with a create from handle function.
+           there are currently two functions to do that, one for images vxCreateImageFromHandle and vxCreateTensorFromHandle
+           the vxCreateImageFromHandle is covered by another test and vxCreateTensorFromHandle is not implemented in the TI 
+           ovx implementation. This exception can be removed as soon as the vxCreateTensorFromHandle function is available */
+        if (ip_mem_size <= op_mem_size)
+#endif
+        {
+            tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size, 
+                                                      (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)op_mem_ptr->host_ptr, op_mem_size, 
+                                                          (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    (void)memcpy((void *)(uintptr_t)op_mem_ptr->host_ptr, (void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size);
+                    /* copy specific fields*/
+                    if ((vx_enum)VX_TYPE_ARRAY == input->type)
+                    {
+                        tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->obj_desc;
+                        tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->obj_desc;
+                        op_obj_desc->num_items = ip_obj_desc->num_items;
+                    }
+                    else if ((vx_enum)VX_TYPE_USER_DATA_OBJECT == input->type)
+                    {
+                        tivx_obj_desc_user_data_object_t *ip_obj_desc = (tivx_obj_desc_user_data_object_t *)input->obj_desc;
+                        tivx_obj_desc_user_data_object_t *op_obj_desc = (tivx_obj_desc_user_data_object_t *)output->obj_desc;
+                        op_obj_desc->valid_mem_size = ip_obj_desc->valid_mem_size;
+                    }
+                    else
+                    {
+                        /* Do nothing, required by MISRA-C */
+                    }
+                    tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)op_mem_ptr->host_ptr, op_mem_size,
+                                                                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+                }
+                tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size,
+                                                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+            }
+        }
+#ifdef LDRA_UNTESTABLE_CODE
+        /* see corresponding if statement above */
+        else
+        {
+            status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+#endif
+        status = ownReferenceUnlock(output);
+    }
+
+    return status;
+}
+
+vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
+{
+    vx_status status = (vx_status)VX_FAILURE;
+    tivx_shared_mem_ptr_t  *ip_mem_ptr = NULL;
+    uint32_t                ip_mem_size = 0;
+    tivx_shared_mem_ptr_t  *op_mem_ptr = NULL;
+    uint32_t                op_mem_size = 0;
+
+    /* added void here as this status check of
+    * ownReferenceGetMemAttrsFromObjDesc will always be true if
+    * the previous condition is true
+    */
+    (void)ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
+    (void)ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
+
+    /*lock only one reference as this is locking the global vx context*/
+    status = ownReferenceLock(output);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        tivx_shared_mem_ptr_t mem_ptr;
+        tivx_obj_desc_memcpy(&mem_ptr, op_mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
+        tivx_obj_desc_memcpy(op_mem_ptr, ip_mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
+        tivx_obj_desc_memcpy(ip_mem_ptr, &mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
+
+        if ((vx_enum)VX_TYPE_ARRAY == input->type)
+        {
+            tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->obj_desc;
+            tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->obj_desc;
+            uint32_t num_items = op_obj_desc->num_items;
+            op_obj_desc->num_items = ip_obj_desc->num_items;
+            ip_obj_desc->num_items = num_items;
+        }
+        (void)ownReferenceUnlock(output);
+    }
+    return status;    
+}
+
+vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
+{
+    vx_status res= (vx_status)VX_ERROR_NOT_SUPPORTED;
+       
+    if ((vx_bool)vx_true_e == validate_only)
+    {
+        if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(input, output))
+        {
+            res = (vx_status)VX_SUCCESS;
+        }
+        else
+        {
+            res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+    }
+    else
+    {
+        switch (kernel_enum)
+        {
+            case (vx_enum)VX_KERNEL_COPY:
+                res = ownCopyReferenceGeneric(input, output);
+                break;
+            case (vx_enum)VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+            case (vx_enum)VX_KERNEL_MOVE:
+                res = ownSwapReferenceGeneric(input, output);
+                break;
+#ifdef LDRA_UNTESTABLE_CODE
+/* the interface for copy, move and swap is done via the direct adressing mode (vxu_...-) or when creating the corresponding specific node
+   so this is not possible to reach this code because the kernel type is specified by the private functions */       
+            default:
+                res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                break;
+#endif
+        }
+    }
+    return (res);
+}
+
 vx_status ownCreateReferenceLock(vx_reference ref)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -412,7 +550,7 @@ vx_status ownCreateReferenceLock(vx_reference ref)
 
         if((ref->type==(vx_enum)VX_TYPE_CONTEXT) || (ref->type==(vx_enum)VX_TYPE_GRAPH))
         {
-            /* create referencec only for context and graph
+            /* create reference only for context and graph
              * for others use the context lock
              */
             status = tivxMutexCreate(&ref->lock);

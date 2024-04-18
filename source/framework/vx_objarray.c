@@ -28,6 +28,44 @@ static vx_status ownAddRefToObjArray(vx_context context,
 static vx_status ownReleaseRefFromObjArray(
             vx_object_array objarr, uint32_t num_items);
 
+static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    if ((vx_bool)vx_true_e == validate_only)
+    {
+        if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(input, output))
+        {
+            status = (vx_status)VX_SUCCESS;
+        }
+        else
+        {
+            status =  (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+    }
+    else    /* dispatch to each sub-object in turn */
+    {
+        vx_uint32 item;
+        for (item = 0U; (item < ((tivx_obj_desc_object_array_t *)input->obj_desc)->num_items) && ((vx_status)VX_SUCCESS == status); ++item)
+        {
+            vx_reference p2[2] = {vxCastRefAsObjectArray(input, &status)->ref[item], vxCastRefAsObjectArray(output, &status)->ref[item]};
+            vx_kernel_callback_f kf = p2[0]->kernel_callback;
+            if ((kf != NULL) && ((vx_status)VX_SUCCESS == status))
+            {
+                status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
+            }
+#ifdef LDRA_UNTESTABLE_CODE
+/*  this code cannot be reached because the callback applies only on objArray, so the cast must be successfull.
+    The kernel callback is also set during the object creation so it cannot be NULL*/    
+            else
+            {
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+            }
+#endif
+        }
+    }
+    return status;
+}
+
 static vx_bool ownIsValidObject(vx_enum type)
 {
     vx_bool status = (vx_bool)vx_false_e;
@@ -80,7 +118,7 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
-
+                objarr->base.kernel_callback = &objectArrayKernelCallback;
                 objarr->base.obj_desc = ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, vxCastRefFromObjectArray(objarr));
                 if(objarr->base.obj_desc==NULL)
@@ -152,11 +190,11 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
             {
                 /* status set to NULL due to preceding type check */
                 objarr = vxCastRefAsObjectArray(ref,NULL);
-                /* assign refernce type specific callback's */
+                /* assign reference type specific callback's */
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
-
+                objarr->base.kernel_callback = &objectArrayKernelCallback;
                 objarr->base.obj_desc = ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, vxCastRefFromObjectArray(objarr));
                 if(objarr->base.obj_desc==NULL)
@@ -181,6 +219,9 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
 
                     ownLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
 
+                    objarr->base.is_virtual = (vx_bool)vx_true_e;
+                    ownReferenceSetScope(&objarr->base, &graph->base);
+
                     status = ownInitObjArrayFromObject(context, objarr, exemplar);
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1859- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT003 */
@@ -196,13 +237,8 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                         objarr = (vx_object_array)ownGetErrorObject(
                             context, (vx_status)VX_ERROR_NO_RESOURCES);
                     }
-                    else
 /* END: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT003 */
 #endif
-                    {
-                        objarr->base.is_virtual = (vx_bool)vx_true_e;
-                        ownReferenceSetScope(&objarr->base, &graph->base);
-                    }
                 }
             }
         }
@@ -240,8 +276,7 @@ VX_API_ENTRY vx_reference VX_API_CALL vxGetObjectArrayItem(
         if ((ownIsValidSpecificReference(vxCastRefFromObjectArray(objarr), (vx_enum)VX_TYPE_OBJECT_ARRAY) ==
                 (vx_bool)vx_true_e) && /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR001 */
                 (obj_desc != NULL) &&
-            (index < obj_desc->num_items) &&
-            (objarr->base.is_virtual == (vx_bool)vx_false_e))
+            (index < obj_desc->num_items))
         {
             ref = ownReferenceGetHandleFromObjDescId(obj_desc->obj_desc_id[index]);
 
@@ -343,6 +378,7 @@ static vx_status ownInitObjArrayFromObject(
         if(status == (vx_status)VX_SUCCESS)
         {
             status = ownAddRefToObjArray(context, objarr, ref, i);
+            ref->is_virtual = objarr->base.is_virtual;
         }
         else
         {
@@ -443,34 +479,31 @@ static vx_status ownDestructObjArray(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     vx_object_array objarr = NULL;
 
-    if(ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR004 */
+    /* status check set to NULL due to guaranteed type in internal function */
+    objarr = vxCastRefAsObjectArray(ref,NULL);
+    if(objarr->base.obj_desc!=NULL)
     {
-        /* status set to NULL due to preceding type check */
-        objarr = vxCastRefAsObjectArray(ref,NULL);
-        if(objarr->base.obj_desc!=NULL)
+        tivx_obj_desc_object_array_t *obj_desc =
+            (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
+
+        status = ownReleaseRefFromObjArray(objarr, obj_desc->num_items);
+
+        if ((vx_status)VX_SUCCESS == status) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR005 */
         {
-            tivx_obj_desc_object_array_t *obj_desc =
-                (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
-
-            status = ownReleaseRefFromObjArray(objarr, obj_desc->num_items);
-
-            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR005 */
-            {
-                status = ownObjDescFree(&objarr->base.obj_desc);
+            status = ownObjDescFree(&objarr->base.obj_desc);
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM005 */
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Object array object descriptor release failed!\n");
-                }
-#endif
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Object array object descriptor release failed!\n");
             }
+#endif
         }
-        else
-        {
-            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-            VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
-        }
+    }
+    else
+    {
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
     }
     return status;
 }
