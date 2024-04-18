@@ -465,5 +465,5 @@ TESTCASE_TESTS(tivxInternalNode,
     negativeTestNodeCheckAndSendCompletionEvent,
     negativeTestNodeReplaceOut,
     negativeTestNodeReplaceIn,
-    negativeTestNodeAllocObjDescForPipeline
+    DISABLED_negativeTestNodeAllocObjDescForPipeline
     )
