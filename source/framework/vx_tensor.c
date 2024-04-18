@@ -100,12 +100,7 @@ static vx_status isTensorSwappable(vx_tensor input, vx_tensor output)
 	{
 		status = (vx_status)VX_ERROR_NOT_SUPPORTED;
 	}
-
 	return status;
-
-
-    return status;
-
 }
 
 /*! \brief Swap orMove the input tensor to the output
@@ -116,19 +111,16 @@ static vx_status moveOrSwapTensor(vx_tensor input, vx_tensor output)
     vx_status status =  ownReferenceLock(&output->base);
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivx_obj_desc_tensor_t *ip_obj_desc = (tivx_obj_desc_tensor_t *)input->base.obj_desc;
-        tivx_obj_desc_tensor_t *op_obj_desc = (tivx_obj_desc_tensor_t *)output->base.obj_desc;
-        vx_uint64 offset[TIVX_IMAGE_MAX_PLANES] = {0};
-
-        //swap objects
-        input->base.obj_desc  = op_obj_desc;
-        output->base.obj_desc = ip_obj_desc;
         //swap destructors
         tivx_reference_callback_f destructor = output->base.destructor_callback;
         output->base.destructor_callback = input->base.destructor_callback;
         input->base.destructor_callback = (tivx_reference_callback_f)destructor;
+        //swap objects
+        tivx_obj_desc_t *op_obj_desc = output->base.obj_desc;
+        output->base.obj_desc = input->base.obj_desc;
+        input->base.obj_desc  = op_obj_desc;
     }
-    ownReferenceUnlock(&output->base);
+    status = ownReferenceUnlock(&output->base);
     return status;
 }
 

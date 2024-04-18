@@ -391,7 +391,7 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
             {
                 status = tivxMemBufferFree(
                     mem_ptr, mem_size);
-#ifdef LDRA_UNTESTABLE_CODE 
+#ifdef LDRA_UNTESTABLE_CODE
 /* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM003 */
                 if((vx_status)VX_SUCCESS != status)
                 {
@@ -466,12 +466,12 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
 
 vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
 {
-    vx_status status;
+    vx_status status = (vx_status)VX_FAILURE;
     tivx_shared_mem_ptr_t  *ip_mem_ptr = NULL;
     volatile uint32_t       ip_mem_size = 0;
     tivx_shared_mem_ptr_t  *op_mem_ptr = NULL;
     volatile uint32_t       op_mem_size = 0;
-    
+
     if((vx_bool)vx_true_e == ownIsGenericAllocReferenceType(input->type) &&
        (vx_bool)vx_true_e == ownIsGenericAllocReferenceType(output->type))
     {
@@ -500,7 +500,7 @@ vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
         }
         status =  ownReferenceUnlock((vx_reference)output);
     }
-    return status;    
+    return status;
 }
 
 vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum ref_type, vx_reference scope)
@@ -581,10 +581,10 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
                     ref->external_count--;
                 }
             }
-        
+
             result = ref->internal_count + ref->external_count;
             (void)ownReferenceUnlock(ref);
-        }    
+        }
     }
     return result;
 }
@@ -913,16 +913,16 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetReferenceAttribute(vx_reference ref, v
                 if ((VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U) && (NULL != ref->obj_desc)))
                 {
                     vx_bool is_ref_invalid;
-                    
+
                     is_ref_invalid = *(const vx_bool *)ptr;
-                    
+
                     if ((vx_bool)vx_true_e == is_ref_invalid)
                     {
 						tivxFlagBitSet(&ref->obj_desc->flags, TIVX_REF_FLAG_IS_INVALID);
 					}
 					else
 					{
-						tivxFlagBitClear(&ref->obj_desc->flags, TIVX_REF_FLAG_IS_INVALID);	
+						tivxFlagBitClear(&ref->obj_desc->flags, TIVX_REF_FLAG_IS_INVALID);
 					}
                 }
                 else
@@ -1230,7 +1230,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
     if (status == (vx_status)VX_SUCCESS)
     {
         status = vxSetMetaFormatFromReference(mf1, ref1);
-#ifdef LDRA_UNTESTABLE_CODE 
+#ifdef LDRA_UNTESTABLE_CODE
 /* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_INVALID_META_UM001 */
         if (status != (vx_status)VX_SUCCESS)
         {
