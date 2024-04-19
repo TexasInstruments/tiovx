@@ -18,7 +18,6 @@
 
 #include <vx_internal.h>
 
-static vx_convolution VX_API_CALL ownCreateConvolution(vx_reference scope, vx_size columns, vx_size rows, vx_bool is_virtual);
 static vx_bool vxIsPowerOfTwo(vx_uint32 a);
 static int8_t isodd(size_t a);
 static vx_status isConvolutionCopyable(vx_convolution input, vx_convolution output);
