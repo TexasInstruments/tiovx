@@ -466,7 +466,7 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
 
 vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
 {
-    vx_status status;
+    vx_status status = (vx_status)VX_FAILURE;
     tivx_shared_mem_ptr_t  *ip_mem_ptr = NULL;
     volatile uint32_t       ip_mem_size = 0;
     tivx_shared_mem_ptr_t  *op_mem_ptr = NULL;

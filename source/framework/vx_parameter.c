@@ -237,35 +237,39 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 
             if(status == (vx_status)VX_SUCCESS)
             {
-                /* if it was a valid reference then get the type from it */
-                if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type)))
+                /* Where the kernel signature type is a VX_TYPE_REFERENCE we accept any parameter type,
+                    otherwise, we have to check that the type matches. */
+                if ((vx_enum)VX_TYPE_REFERENCE != node->kernel->signature.types[index])
                 {
-                    VX_PRINT(VX_ZONE_PARAMETER, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
-                }
-                /* Check that signature type matches reference type*/
-                if (node->kernel->signature.types[index] != type)
-                {
-                    /* Check special case where signature is a specific scalar type.
-                       This can happen if the vxAddParameterToKernel() passes one of the scalar
-                       vx_type_e types instead of the more generic (vx_enum)VX_TYPE_SCALAR since the spec
-                       doesn't specify that only (vx_enum)VX_TYPE_SCALAR should be used for scalar types in
-                       this function. */
-                    /* status set to NULL due to type check */
-                    if((type == (vx_enum)VX_TYPE_SCALAR) && 
-                       (vxQueryScalar(vxCastRefAsScalar(value,NULL), (vx_enum)VX_SCALAR_TYPE, &data_type, sizeof(data_type)) == (vx_status)VX_SUCCESS))
-                    {
-                        if(data_type != node->kernel->signature.types[index])
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "Invalid scalar type 0x%08x!\n", data_type);
-                            status = (vx_status)VX_ERROR_INVALID_TYPE;
-                        }
-                    }
-                    else
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "Invalid type 0x%08x!\n", type);
-                        status = (vx_status)VX_ERROR_INVALID_TYPE;
-                    }
-                }
+	                    /* if it was a valid reference then get the type from it */
+	                    if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type)))
+	                    VX_PRINT(VX_ZONE_PARAMETER, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
+	                }
+	                /* Check that signature type matches reference type*/
+	                if (node->kernel->signature.types[index] != type)
+	                {
+	                    /* Check special case where signature is a specific scalar type.
+	                       This can happen if the vxAddParameterToKernel() passes one of the scalar
+	                       vx_type_e types instead of the more generic (vx_enum)VX_TYPE_SCALAR since the spec
+	                       doesn't specify that only (vx_enum)VX_TYPE_SCALAR should be used for scalar types in
+	                       this function. */
+	                    /* status set to NULL due to type check */
+	                    if((type == (vx_enum)VX_TYPE_SCALAR) && 
+	                       (vxQueryScalar(vxCastRefAsScalar(value,NULL), (vx_enum)VX_SCALAR_TYPE, &data_type, sizeof(data_type)) == (vx_status)VX_SUCCESS))
+	                    {
+	                        if(data_type != node->kernel->signature.types[index])
+	                        {
+	                            VX_PRINT(VX_ZONE_ERROR, "Invalid scalar type 0x%08x!\n", data_type);
+	                            status = (vx_status)VX_ERROR_INVALID_TYPE;
+	                        }
+	                    }
+	                    else
+	                    {
+	                        VX_PRINT(VX_ZONE_ERROR, "Invalid type 0x%08x!\n", type);
+	                        status = (vx_status)VX_ERROR_INVALID_TYPE;
+	                    }
+	                }
+				}
             }
 
             if(status == (vx_status)VX_SUCCESS)
