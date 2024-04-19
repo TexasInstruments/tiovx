@@ -70,6 +70,7 @@
 #include <TI/tivx_task.h>
 #include <stdio.h>
 #include <tivx_obj_desc_priv.h>
+#include <tivx_obj_desc_queue.h>
 
 /* #define FULL_CODE_COVERAGE */
 /* Maximum length of testcase function name */
@@ -482,6 +483,63 @@ static vx_status tivxTestTargetObjDescAllocFree(uint8_t id)
     return status;
 }
 
+static vx_status tivxTestTargetObjDescQueueCreateRelease(uint8_t id)
+{
+    uint16_t *objdesc_id = (uint16_t *)tivxMemAlloc(sizeof(uint16_t), TIVX_MEM_EXTERNAL);
+    uint32_t *count = (uint32_t *)tivxMemAlloc(sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if((vx_status)VX_SUCCESS != ownObjDescQueueCreate(objdesc_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to create object descriptor queue\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_SUCCESS != ownObjDescQueueRelease(objdesc_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to release object descriptor queue\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tivxMemFree((void *)objdesc_id, sizeof(uint16_t), TIVX_MEM_EXTERNAL);
+    tivxMemFree((void *)count, sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetObjDescQueueReleaseGetCount(uint8_t id)
+{
+    uint16_t qid=0;
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint16_t val = (uint16_t)TIVX_OBJ_DESC_INVALID;
+
+    if((vx_status)VX_FAILURE != ownObjDescQueueRelease(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownObjDescQueueRelease( &val))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'TIVX_OBJ_DESC_INVALID'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownObjDescQueueRelease(&qid))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid queue id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownObjDescQueueGetCount(0,NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -492,7 +550,9 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestTargetQueryNumTargetKernel, "",VX_SUCCESS},
     {tivxNegativeTestAddTargetKernelInternal,"",VX_SUCCESS},
     {tivxNegativeTestRemoveTargetKernel, "",VX_SUCCESS},
-    {tivxTestTargetObjDescAllocFree,"",VX_SUCCESS}
+    {tivxTestTargetObjDescAllocFree,"",VX_SUCCESS},
+    {tivxTestTargetObjDescQueueCreateRelease, "",VX_SUCCESS},
+    {tivxNegativeTestTargetObjDescQueueReleaseGetCount, "",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
