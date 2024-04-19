@@ -215,6 +215,13 @@
 
      There is no resource manager for spinlocks within the SDK.  Therefore, it is important for an application developer to guarantee that no other piece of
      software assumes access to these locks.  If other software components are using these locks, it will cause significant delays in execution of TIOVX.
+
+     \section TIOVX_SAFETY_IPC TIOVX IPC Implementation
+
+     The remote core IPC utils uses a locally set endpoint number which it uses to communicate amongst HLOS and other RTOS cores.  Therefore, the RTOS
+     remote cores are trusting the HLOS to use the proper endpoint; otherwise, the communication may be sent to the wrong endpoint.  If an application uses
+     the default IPC utils, this is already taken care of, but if an application uses some other means of establishing IPC across cores, issues could arise
+     if this fact is not considered.
  */
 
 /*!
