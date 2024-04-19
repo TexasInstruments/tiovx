@@ -109,6 +109,8 @@
      A critical component of safety SW systems is the memory management scheme.  Please reference the section \ref TIOVX_MEMORY_MANAGEMENT
      for details on how memory management is handled in TIOVX and how it facilitates safety.
 
+     \subsection TIOVX_SAFETY_MEMORY_MANAGEMENT_APPLICATION Requirements for Application Usage of OpenVX data objects
+
      OpenVX has a clear “initialization” phase, “run-time” phase, and “deinit” phase for each graph.  The initialization phase for a graph
      ends when the call to \ref vxVerifyGraph returns.  With one specific case exception listed below, all of the resources are initialized, and
      at no point in the run-time phase the framework or kernels allocate memory. (Note that it is possible that the application itself may still
@@ -138,6 +140,15 @@
 
      When designing applications, the application shall not selectively delete graphs or memory associated with OpenVX objects.  Rather, it should persist throughout
      the duration of the application.  The reason for this is that selective deletion and re-creation of various OpenVX objects can lead to memory fragmentation.
+
+     \subsection TIOVX_SAFETY_MEMORY_MANAGEMENT_OBJ_DESCRIPTOR_TABLE Requirement for object descriptor table
+
+     As mentioned above and in the \ref TIOVX_MEMORY_MANAGEMENT documentation, TIOVX uses a table of object descriptors in non-cached memory which are exchanged
+     across nodes in order to access data buffers.  Upon firmware boot, this table is reset by the remote core firmware and not on the host side.  Furthermore,
+     this table is modified by the framework when new object descriptors are populated or removed from the table.
+
+     From the application side, it is necessary to avoid applications writing into this memory, as this will corrupt the object descriptors and therefore could
+     result in invalid reads or writes from remote cores.
 
      \subsection TIOVX_SAFETY_EXTERNALLY_ALLOCATED_MEMORY Requirements for Memory Allocated Outside of TIOVX Framework
 
