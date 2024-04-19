@@ -150,6 +150,12 @@
      From the application side, it is necessary to avoid applications writing into this memory, as this will corrupt the object descriptors and therefore could
      result in invalid reads or writes from remote cores.
 
+     \subsection TIOVX_SAFETY_MEMORY_MANAGEMENT_PHYS_ADDR Note about Physical Addresses
+
+     As a note to application developers, physical addresses are used in multiple places within user space (for instance, with the API \ref tivxMemTranslateVirtAddr).
+     This is important to note, as a misbehaving application could corrupt this value and cause crashes on remote cores.  Care should be taken to avoid corrupting
+     these values within the application.
+
      \subsection TIOVX_SAFETY_EXTERNALLY_ALLOCATED_MEMORY Requirements for Memory Allocated Outside of TIOVX Framework
 
      Certain API's allow an OpenVX data object to be associated with memory allocated from outside of the framework.  There are several important constraints
@@ -209,7 +215,6 @@
 
      There is no resource manager for spinlocks within the SDK.  Therefore, it is important for an application developer to guarantee that no other piece of
      software assumes access to these locks.  If other software components are using these locks, it will cause significant delays in execution of TIOVX.
-
  */
 
 /*!
