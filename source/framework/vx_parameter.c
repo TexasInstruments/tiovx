@@ -242,7 +242,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                 if ((vx_enum)VX_TYPE_REFERENCE != node->kernel->signature.types[index])
                 {
 	                    /* if it was a valid reference then get the type from it */
-	                    if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type)))
+	                if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type)))
+                    {
 	                    VX_PRINT(VX_ZONE_PARAMETER, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
 	                }
 	                /* Check that signature type matches reference type*/
@@ -254,7 +255,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 	                       doesn't specify that only (vx_enum)VX_TYPE_SCALAR should be used for scalar types in
 	                       this function. */
 	                    /* status set to NULL due to type check */
-	                    if((type == (vx_enum)VX_TYPE_SCALAR) && 
+	                    if((type == (vx_enum)VX_TYPE_SCALAR) &&
 	                       (vxQueryScalar(vxCastRefAsScalar(value,NULL), (vx_enum)VX_SCALAR_TYPE, &data_type, sizeof(data_type)) == (vx_status)VX_SUCCESS))
 	                    {
 	                        if(data_type != node->kernel->signature.types[index])
