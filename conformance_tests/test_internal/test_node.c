@@ -448,6 +448,28 @@ TEST(tivxInternalNode, negativeTestNodeAllocObjDescForPipeline)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+/* Testcase to hit failure condition of ownReleaseReferenceInt() called by vxRemoveNode*/
+TEST(tivxInternalNode, negativeTestNodeRemoveNode1)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+    tivx_mutex lock = NULL;
+
+    lock = context->lock;
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+
+    context->lock = NULL;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxRemoveNode(&node));
+    context->lock = lock;
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxInternalNode,
     negativeTestSetNodeParameterNumBufByIndex,
     negativeTestNodeGetParameterNumBuf,
@@ -465,5 +487,6 @@ TESTCASE_TESTS(tivxInternalNode,
     negativeTestNodeCheckAndSendCompletionEvent,
     negativeTestNodeReplaceOut,
     negativeTestNodeReplaceIn,
-    DISABLED_negativeTestNodeAllocObjDescForPipeline
+    DISABLED_negativeTestNodeAllocObjDescForPipeline,
+    negativeTestNodeRemoveNode1
     )
