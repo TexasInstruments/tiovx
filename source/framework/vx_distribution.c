@@ -22,7 +22,7 @@ static vx_distribution ownCreateDistribution(vx_reference scope, vx_size num_bin
 static vx_status VX_CALLBACK distributionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
 
 /* Call back function that handles the copy, swap and move kernels */
-static vx_status VX_CALLBACK distributionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_refer
+static vx_status VX_CALLBACK distributionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
 {
     vx_status res;
     if ((vx_bool)vx_true_e == validate_only)
@@ -35,7 +35,7 @@ static vx_status VX_CALLBACK distributionKernelCallback(vx_enum kernel_enum, vx_
         {
             res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
         }
-+
+
     }
     else
     {

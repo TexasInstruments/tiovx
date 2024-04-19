@@ -52,12 +52,12 @@ static vx_status isConvolutionCopyable(vx_convolution input, vx_convolution outp
 }
 
 /* Call back function that handles the copy, swap and move kernels */
-static vx_status VX_CALLBACK convolutionKernelCallback(vx_enum kernel_enum, vx_bool validate_only
+static vx_status VX_CALLBACK convolutionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
 {
     vx_status res;
     vx_convolution input = (vx_convolution)params[0];
     vx_convolution output = (vx_convolution)params[1];
-+
+
     if ((vx_bool)vx_true_e == validate_only)
     {
         res = isConvolutionCopyable(input, output);
@@ -79,6 +79,7 @@ static vx_status VX_CALLBACK convolutionKernelCallback(vx_enum kernel_enum, vx_b
     }
     return (res);
 }
+
 
 vx_convolution VX_API_CALL vxCreateConvolution(
     vx_context context, vx_size columns, vx_size rows)
