@@ -1313,6 +1313,21 @@ static vx_status tivxNegativeTestObjDescAlloc(uint8_t id)
 
     return status;
 }
+
+static vx_status tivxNegativeTestTargetGetHandle(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if ((vx_status)VX_ERROR_NO_RESOURCES != ownTargetCreate((vx_enum)INVALID_ARG, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
 #endif
 
 /*Test case to fail the condition 'if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q)' 
@@ -1637,7 +1652,9 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTriggerNode,"",VX_SUCCESS},
     {tivxNegativeTestTargetQueueObjDesc,"",VX_SUCCESS},
     {tivxNegativeTestObjDescAlloc,"",VX_SUCCESS},
+    {tivxNegativeTestTargetGetHandle,"",VX_SUCCESS},
     #endif
+
     {tivxNegativeTestTargetNodeDescAcquireAllParameter, "", VX_SUCCESS},
     {tivxBranchTestTargetNodeDescAcquireParameter, "",VX_SUCCESS},
     {tivxBranchTestTargetNodeDescAcquireParam,"",VX_SUCCESS},

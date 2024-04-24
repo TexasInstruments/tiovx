@@ -1324,7 +1324,8 @@ vx_status ownTargetDelete(vx_enum target_id)
     target = ownTargetGetHandle(target_id);
 
     /* delete task */
-
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM003 */
     if (NULL != target)
     {
         /* set flag to break target from main loop */
@@ -1334,14 +1335,11 @@ vx_status ownTargetDelete(vx_enum target_id)
         status = ownTargetQueueObjDesc(target_id, (vx_enum)TIVX_OBJ_DESC_INVALID);
         if((vx_status)VX_SUCCESS == status)
         {
-#ifdef HOST_ONLY
-/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM003 */
             /* wait until target exit is done */
             while(target->targetExitDone==(vx_bool)vx_false_e)
             {
                     tivxTaskWaitMsecs(1);
             }
-#endif
             /* error status is not required
              * as it found to return always true
              */
@@ -1357,6 +1355,7 @@ vx_status ownTargetDelete(vx_enum target_id)
         }
     }
     else
+#endif
     {
         VX_PRINT(VX_ZONE_ERROR, "Target delete failed due to invalid target ID\n");
         status = (vx_status)VX_ERROR_INVALID_VALUE;
