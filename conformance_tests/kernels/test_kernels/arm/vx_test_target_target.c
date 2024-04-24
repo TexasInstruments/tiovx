@@ -540,6 +540,21 @@ static vx_status tivxNegativeTestTargetObjDescQueueReleaseGetCount(uint8_t id)
     return status;
 }
 
+static vx_status tivxNegativeTestReferenceGetObjDescId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if( TIVX_OBJ_DESC_INVALID != ownReferenceGetObjDescId(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -552,7 +567,8 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestRemoveTargetKernel, "",VX_SUCCESS},
     {tivxTestTargetObjDescAllocFree,"",VX_SUCCESS},
     {tivxTestTargetObjDescQueueCreateRelease, "",VX_SUCCESS},
-    {tivxNegativeTestTargetObjDescQueueReleaseGetCount, "",VX_SUCCESS}
+    {tivxNegativeTestTargetObjDescQueueReleaseGetCount, "",VX_SUCCESS},
+    {tivxNegativeTestReferenceGetObjDescId,"",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
