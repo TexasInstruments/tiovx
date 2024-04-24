@@ -71,6 +71,12 @@
  */
 
 /*!
+ * \defgroup group_vision_function_obj_array_split Object Array Split Kernel APIs
+ * \brief Object Array Split Kernels
+ * \ingroup group_vision_function_hwa
+ */
+
+/*!
  * \defgroup group_tivx_ext_common_kernel Common Kernel API's
  * \brief APIs accessible on both host and target kernels
  * \ingroup group_tivx_ext_common
