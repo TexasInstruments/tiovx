@@ -70,6 +70,7 @@
 #include <TI/tivx_task.h>
 #include <stdio.h>
 #include <tivx_obj_desc_priv.h>
+#include <tivx_target_kernel_priv.h>
 #include <tivx_obj_desc_queue.h>
 #include <tivx_target_kernel_instance.h>
 
@@ -604,6 +605,97 @@ static vx_status tivxNegativeTestTargetKernelInstanceGetIndex(uint8_t id)
     return status;
 }
 
+static vx_status tivxNegativeTestTargetKernelCreate(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *test_params[TIVX_KERNEL_MAX_PARAMS] = {NULL};
+    vx_enum idx = test_kernel->kernel_id;
+    test_kernel->kernel_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
+
+    if((vx_status)VX_FAILURE != ownTargetKernelCreate(test_kernel,test_params,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'test_kernel->kernel_id' = TIVX_OBJ_DESC_INVALID\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+    test_kernel->kernel_id = idx;
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetKernelControl(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *test_params[TIVX_KERNEL_MAX_PARAMS] = {NULL};
+    vx_enum idx = test_kernel->kernel_id;
+    test_kernel->kernel_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
+
+    if( (vx_status)VX_FAILURE != ownTargetKernelControl(test_kernel,1,test_params,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'test_kernel->kernel_id' = TIVX_OBJ_DESC_INVALID\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+    test_kernel->kernel_id = idx;
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetKernelExecute(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *test_params[TIVX_KERNEL_MAX_PARAMS] = {NULL};
+    vx_enum idx = test_kernel->kernel_id;
+    test_kernel->kernel_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
+
+    if((vx_status)VX_FAILURE != ownTargetKernelExecute(test_kernel,test_params,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'test_kernel->kernel_id' = TIVX_OBJ_DESC_INVALID\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+    test_kernel->kernel_id = idx;
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetKernelDelete(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *test_params[TIVX_KERNEL_MAX_PARAMS] = {NULL};
+    vx_enum idx = test_kernel->kernel_id;
+    test_kernel->kernel_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
+
+    if((vx_status)VX_FAILURE != ownTargetKernelDelete(test_kernel,test_params,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'test_kernel->kernel_id' = TIVX_OBJ_DESC_INVALID\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+    test_kernel->kernel_id = idx;
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetKernelGet(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if(NULL != ownTargetKernelInstanceAlloc(1,NULL,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: kernel_name = 'NULL'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -620,7 +712,12 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestReferenceGetObjDescId,"",VX_SUCCESS},
     {tivxTestTargetObjDescQueueGetCount, "",VX_SUCCESS},
     {tivxNegativeTestTargetKernelInstanceFree, "",VX_SUCCESS},
-    {tivxNegativeTestTargetKernelInstanceGetIndex, "",VX_SUCCESS}
+    {tivxNegativeTestTargetKernelInstanceGetIndex, "",VX_SUCCESS},
+    {tivxNegativeTestTargetKernelCreate, "",VX_SUCCESS},
+    {tivxNegativeTestTargetKernelControl, "",VX_SUCCESS},
+    {tivxNegativeTestTargetKernelExecute, "",VX_SUCCESS},
+    {tivxNegativeTestTargetKernelDelete, "",VX_SUCCESS},
+    {tivxNegativeTestTargetKernelGet, "",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
