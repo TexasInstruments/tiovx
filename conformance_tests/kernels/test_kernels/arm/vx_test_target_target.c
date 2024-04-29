@@ -71,6 +71,7 @@
 #include <stdio.h>
 #include <tivx_obj_desc_priv.h>
 #include <tivx_obj_desc_queue.h>
+#include <tivx_target_kernel_instance.h>
 
 /* #define FULL_CODE_COVERAGE */
 /* Maximum length of testcase function name */
@@ -486,8 +487,6 @@ static vx_status tivxTestTargetObjDescAllocFree(uint8_t id)
 static vx_status tivxTestTargetObjDescQueueCreateRelease(uint8_t id)
 {
     uint16_t *objdesc_id = (uint16_t *)tivxMemAlloc(sizeof(uint16_t), TIVX_MEM_EXTERNAL);
-    uint32_t *count = (uint32_t *)tivxMemAlloc(sizeof(uint32_t), TIVX_MEM_EXTERNAL);
-
     vx_status status = (vx_status)VX_SUCCESS;
 
     if((vx_status)VX_SUCCESS != ownObjDescQueueCreate(objdesc_id))
@@ -502,7 +501,6 @@ static vx_status tivxTestTargetObjDescQueueCreateRelease(uint8_t id)
     }
 
     tivxMemFree((void *)objdesc_id, sizeof(uint16_t), TIVX_MEM_EXTERNAL);
-    tivxMemFree((void *)count, sizeof(uint32_t), TIVX_MEM_EXTERNAL);
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -555,6 +553,57 @@ static vx_status tivxNegativeTestReferenceGetObjDescId(uint8_t id)
     return status;
 }
 
+static vx_status tivxTestTargetObjDescQueueGetCount(uint8_t id)
+{
+    uint32_t *count = (uint32_t *)tivxMemAlloc(sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint16_t type = test_obj_desc->type;
+
+    test_obj_desc->type = TIVX_OBJ_DESC_QUEUE;
+    if((vx_status)VX_SUCCESS != ownObjDescQueueGetCount(test_obj_desc->obj_desc_id,count))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to get queue count\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    test_obj_desc->type = type;
+    tivxMemFree((void *)count, sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetKernelInstanceFree(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if((vx_status)VX_ERROR_INVALID_PARAMETERS != ownTargetKernelInstanceFree(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' target kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetKernelInstanceGetIndex(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if((uint32_t)TIVX_TARGET_KERNEL_INSTANCE_MAX != ownTargetKernelInstanceGetIndex(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' target kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -568,7 +617,10 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestTargetObjDescAllocFree,"",VX_SUCCESS},
     {tivxTestTargetObjDescQueueCreateRelease, "",VX_SUCCESS},
     {tivxNegativeTestTargetObjDescQueueReleaseGetCount, "",VX_SUCCESS},
-    {tivxNegativeTestReferenceGetObjDescId,"",VX_SUCCESS}
+    {tivxNegativeTestReferenceGetObjDescId,"",VX_SUCCESS},
+    {tivxTestTargetObjDescQueueGetCount, "",VX_SUCCESS},
+    {tivxNegativeTestTargetKernelInstanceFree, "",VX_SUCCESS},
+    {tivxNegativeTestTargetKernelInstanceGetIndex, "",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
