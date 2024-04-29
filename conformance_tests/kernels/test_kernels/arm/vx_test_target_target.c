@@ -78,6 +78,7 @@
 /* #define FULL_CODE_COVERAGE */
 /* Maximum length of testcase function name */
 #define MAX_LENGTH 64
+#define INVALID_ARG -1
 
 static tivx_target_kernel vx_test_target_target_kernel = NULL;
 
@@ -957,6 +958,221 @@ static vx_status tivxBranchTestTargetKernelFunc(uint8_t id)
     return status;
 }
 
+static vx_status tivxNegativeTestObjDescFree(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *obj_desc = NULL;
+    uint16_t temp_obj_desc_id = 0U;
+
+    obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc((vx_enum)test_obj_desc->type, NULL);
+    if(NULL == obj_desc)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to allocate memory\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        if( (vx_status)VX_ERROR_INVALID_PARAMETERS != ownObjDescFree((tivx_obj_desc_t **)NULL))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' obj_desc\n");
+            status = (vx_status)VX_FAILURE;
+        }
+
+        temp_obj_desc_id = obj_desc->obj_desc_id;
+        obj_desc->obj_desc_id = (uint16_t)INVALID_ARG;
+
+        if( (vx_status)VX_ERROR_INVALID_PARAMETERS != ownObjDescFree((tivx_obj_desc_t **)&obj_desc))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'INVALID_ARG' obj_desc\n");
+            status = (vx_status)VX_FAILURE;
+        }
+
+        obj_desc->obj_desc_id = temp_obj_desc_id;
+
+        if((vx_status)VX_SUCCESS != ownObjDescFree((tivx_obj_desc_t**)&obj_desc))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to deallocate memory\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestObjDescIsValidType(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *obj_desc = NULL;
+    uint16_t temp_obj_desc_id = 0U;
+
+    if( (vx_bool)vx_false_e != ownObjDescIsValidType(obj_desc, TIVX_OBJ_DESC_INVALID))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' obj_desc and 'invalid_type' obj_type\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    obj_desc = ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_IMAGE, NULL);
+    if(NULL == obj_desc)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to allocate memory\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        temp_obj_desc_id = obj_desc->obj_desc_id;
+        obj_desc->obj_desc_id = (uint16_t)INVALID_ARG;
+
+        if( (vx_bool)vx_false_e != ownObjDescIsValidType(obj_desc, TIVX_OBJ_DESC_INVALID))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'obj_desc->obj_desc_id' and 'invalid type' obj_type\n");
+            status = (vx_status)VX_FAILURE;
+        }
+
+        obj_desc->obj_desc_id = temp_obj_desc_id;
+
+        if((vx_status)VX_SUCCESS != ownObjDescFree((tivx_obj_desc_t**)&obj_desc))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to deallocate memory\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestGetObjDescList(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint16_t obj_desc_id[1] = {(uint16_t)-1};
+    uint32_t num_desc_id = 1U;
+
+    tivxGetObjDescList(obj_desc_id, (tivx_obj_desc_t **)NULL, num_desc_id);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestDescStrncpy(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_char  dst[5] = "";
+    vx_char  src[5] = "ABCD";
+
+    /* To fail 'i<(size-1U)' "for loop" condition*/
+    tivx_obj_desc_strncpy((void *)dst, (void *)src, 1U);
+    if (dst[0] == src[0])
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ERROR: tivx_obj_desc_strncpy: Condition 'i<(size-1U)' passed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+ 
+static vx_status tivxTestDescStrncmpDelim(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_char  dst[5] = "ABCD";
+    vx_char  src[5] = "ABCD";
+    uint32_t size = 0;
+    int32_t ret_val = 0;
+
+    /* To fail 'i<size' "for loop" condition*/
+    ret_val = tivx_obj_desc_strncmp_delim(dst, src, size, 'A');
+    if(0 != ret_val)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: tivx_obj_desc_strncmp_delim for different ARGS\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    size = 2;
+    /* To fail 'd[i] == (uint8_t)delim' and 's[i] == (uint8_t)delim' condition*/
+    ret_val = tivx_obj_desc_strncmp_delim(dst, src, size, 'E');
+    if(0 != ret_val)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: tivx_obj_desc_strncmp_delim for different ARGS\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    /* To fail 'd[i] != (uint8_t)delim' and 's[i] != (uint8_t)delim' condition*/
+    ret_val = tivx_obj_desc_strncmp_delim(dst, src, size, 'B');
+    if(0 != ret_val)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: tivx_obj_desc_strncmp_delim for different ARGS\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestObjDescSend(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t dst_target_id = (uint16_t)-1;
+    uint16_t obj_desc_id = (uint16_t)-1;
+
+    if ((vx_status)VX_FAILURE != ownObjDescSend(dst_target_id, obj_desc_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for ARG:'invalid argument' dst_target_id, and obj_desc_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestGetObjDescElement(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *obj_desc = NULL;
+    tivx_obj_desc_object_array_t *obj_desc_object_array = NULL;
+
+    obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc((vx_enum)test_obj_desc->type, NULL);
+    if(NULL == obj_desc)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to allocate memory\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        obj_desc_object_array = (tivx_obj_desc_object_array_t *)obj_desc;
+        obj_desc_object_array->num_items = 1;
+        obj_desc->type = (vx_enum)TIVX_OBJ_DESC_OBJARRAY;
+
+        if (NULL == tivxGetObjDescElement(obj_desc, (uint16_t)0))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result for the ARG: 'elem_idx' < obj_desc_object_array->num_items\n");
+            status = (vx_status)VX_FAILURE;
+        }
+
+        obj_desc->type = (uint16_t)INVALID_ARG;
+        obj_desc->scope_obj_desc_id = (uint16_t)TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST;
+        if (NULL != tivxGetObjDescElement(obj_desc, (uint16_t)INVALID_ARG))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result for the ARG: obj_desc->scope_obj_desc_id\n");
+            status = (vx_status)VX_FAILURE;
+        }
+
+        if((vx_status)VX_SUCCESS != ownObjDescFree((tivx_obj_desc_t**)&obj_desc))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to deallocate memory\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -987,9 +1203,17 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestTargetKernelInstanceAllocate,"",VX_SUCCESS},
     {tivxBranchTestTargetKernelInstanceAlloc,"",VX_SUCCESS},
     {tivxBranchTestTargetKernelInstanceAllocate,"",VX_SUCCESS},
-    {tivxBranchTestTargetKernelInstanceGet,"",VX_SUCCESS}
+    {tivxBranchTestTargetKernelInstanceGet,"",VX_SUCCESS},
     {tivxBranchTestTargetKernel, "",VX_SUCCESS},
-    {tivxBranchTestTargetKernelFunc, "",VX_SUCCESS}
+    {tivxBranchTestTargetKernelFunc, "",VX_SUCCESS},
+    {tivxNegativeTestTargetKernelInstanceGetIndex, "",VX_SUCCESS},
+    {tivxNegativeTestObjDescFree,"",VX_SUCCESS},
+    {tivxNegativeTestObjDescIsValidType,"",VX_SUCCESS},
+    {tivxTestGetObjDescList,"",VX_SUCCESS},
+    {tivxTestDescStrncpy,"",VX_SUCCESS},
+    {tivxTestDescStrncmpDelim,"",VX_SUCCESS},
+    {tivxTestObjDescSend,"",VX_SUCCESS},
+    {tivxTestGetObjDescElement,"",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
