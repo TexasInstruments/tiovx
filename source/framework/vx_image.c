@@ -323,7 +323,8 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                     /* Two conditions may fail inside function mem pointer null and size zero
                      * to handle that put a status check here
                      */
-                    if((vx_status)VX_SUCCESS == tivxMemBufferAlloc(&obj_desc->mem_ptr[0], size, (vx_enum)TIVX_MEM_EXTERNAL))
+                    status = tivxMemBufferAlloc(&obj_desc->mem_ptr[0], size, (vx_enum)TIVX_MEM_EXTERNAL);
+                    if((vx_status)VX_SUCCESS == status)
                     {
 
                         if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)0)
@@ -353,6 +354,11 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                             }
                             ref->is_allocated = (vx_bool)vx_true_e;
                         }
+                    }
+                    else
+                    {
+                        /* tivxMemBufferAlloc failed! */
+                        VX_PRINT(VX_ZONE_ERROR, "Memory allocation failed!\n");
                     }
                 }
             }
