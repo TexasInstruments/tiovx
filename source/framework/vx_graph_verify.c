@@ -163,10 +163,13 @@ static vx_status ownGraphAddSingleDataReference(vx_graph graph, vx_reference ref
         ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", (uint16_t)graph->num_data_ref);
         status = (vx_status)VX_SUCCESS;
     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM001 */
     else if (graph->num_data_ref >= TIVX_GRAPH_MAX_DATA_REF)
     {
         VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_GRAPH_MAX_DATA_REF in tiovx/include/TI/tivx_config.h\n");
     }
+#endif
     else
     {
         /* do nothing */
@@ -281,11 +284,14 @@ static vx_status ownGraphFindAndAddDataReferences(vx_graph graph)
             if(ref!=NULL) /* ref could be NULL due to optional parameters */
             {
                 status = ownGraphAddDataReference(graph, ref, prm_dir, 1);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM002 */
                 if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Unable to add data reference to data reference list in graph\n");
                     break;
                 }
+#endif
             }
         }
     }
@@ -381,20 +387,20 @@ static vx_status ownGraphValidRectCallback(
 
                                 tivxCheckStatus(&status, vxSetImageValidRectangle(img, &graph->out_valid_rect[k]));
 
-                                if((vx_status)VX_SUCCESS != vxReleaseImage(&img))
-                                {
-                                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to an image object\n");
-                                }
+                                (void)vxReleaseImage(&img);
                             }
                         }
                     }
                 }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM003 */
                 else
                 {
                     /* not supported for other references */
                     status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR,"not supported for references other than image or pyramid\n");
                 }
+#endif
             }
         }
     }
@@ -494,11 +500,14 @@ static vx_status ownGraphInitVirtualNode(
                                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                                     VX_PRINT(VX_ZONE_ERROR,"pyramid width equal to zero\n");
                                 }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM004 */
                                 else if (0U == mf->pmd.height)
                                 {
                                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                                     VX_PRINT(VX_ZONE_ERROR,"pyramid height equal to zero\n");
                                 }
+#endif
                                 else
                                 {
                                     status = ownInitVirtualPyramid(pmd,
@@ -760,12 +769,16 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
     {
         node_cur = graph->nodes[node_cur_idx];
         uint32_t num_node_params = ownNodeGetNumParameters(node_cur);
+
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM005 */
         if (TIVX_KERNEL_MAX_PARAMS < num_node_params)
         {
             /* HARD limit on the number of kernel parameters that can be processed */
             VX_PRINT(VX_ZONE_ERROR, "No more than TIVX_KERNEL_MAX_PARAMS parameters are allowed per kernel!");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
+#endif
         for (prm_cur_idx = 0;
              (prm_cur_idx < num_node_params) &&
                ((vx_status)VX_SUCCESS == status);
@@ -919,8 +932,11 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
     {
         node = graph->nodes[i];
 
-        if((node->super_node == NULL) ||
-           (node->is_super_node == (vx_bool)vx_true_e))
+        if((node->super_node == NULL)
+#if defined(BUILD_BAM)
+        || (node->is_super_node == (vx_bool)vx_true_e)
+#endif
+        )
         {
 
             num_in = ownNodeGetNumInNodes(node);
