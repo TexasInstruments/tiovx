@@ -106,9 +106,6 @@ vx_status test_utils_max_out_heap_mem(tivx_shared_mem_info_t** shared_mem_info_a
 /**
  * \brief Free the allocated memory
  *
- *  1MB chunks of memory will be allocated first until there is no more 1MB chunk available,
- *  and then 1KB chunks will be allocated until that is also exhausted.
- *
  * \param shared_mem_info_array [in] tivx_shared_mem_info array with the tivx_shared_mem_ptr_t and size data.
  * \param num_chunks [in] number of total allocation / number of elements of shared_mem_info_array.
  *
@@ -118,5 +115,16 @@ vx_status test_utils_max_out_heap_mem(tivx_shared_mem_info_t** shared_mem_info_a
  */
 vx_status test_utils_release_maxed_out_heap_mem(tivx_shared_mem_info_t* shared_mem_info_array, vx_uint32 num_chunks);
 
+/**
+ * \brief Free the allocated memory from a single (tail) link
+ *
+ * \param shared_mem_info_array [in] tivx_shared_mem_info array with the tivx_shared_mem_ptr_t and size data.
+ * \param num_chunks [in/out] number of total allocation / number of elements of shared_mem_info_array will be updated.
+ *
+ * \return VX_SUCCESS if successfully freed the tail chunk in the given shared_mem_info_array.
+ *
+ * \ingroup group_tivx_ext_host_utils
+ */
+vx_status test_utils_single_release_heap_mem(tivx_shared_mem_info_t** shared_mem_info_array, vx_uint32* num_chunks);
 
 #endif /* TEST_UTILS_MEM_OPERATIONS_H */

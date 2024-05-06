@@ -155,7 +155,7 @@ static vx_status create_link(tivx_shared_mem_info_t ** head)
 }
 
 /* Function to delete the first element of the link */
-static vx_status pop_link(tivx_shared_mem_info_t * head)
+static vx_status pop_head(tivx_shared_mem_info_t * head)
 {
     tivx_shared_mem_info_t * current;
     vx_status status = VX_FAILURE;
@@ -170,6 +170,49 @@ static vx_status pop_link(tivx_shared_mem_info_t * head)
 
         /* Free the popped element's memory */
         status = tivxMemFree(current, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL);
+        if (status != VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Cannot free link from the shared mem info linked list!\n");
+        }
+    }
+    return status;
+}
+
+/* Function to delete the last element of the link */
+static vx_status pop_tail(tivx_shared_mem_info_t ** head)
+{
+    tivx_shared_mem_info_t * tail = * head;
+    tivx_shared_mem_info_t * previous = NULL;
+    vx_status status = VX_FAILURE;
+
+
+    if(tail == NULL)
+        VX_PRINT(VX_ZONE_ERROR, "List is empty!\n");
+    else
+    {
+        /* To ensure this is the last link, iterate till last node */
+        while (tail->next != NULL)
+        {
+            previous = tail;
+            tail = tail->next;
+        }
+
+        if (previous == NULL)
+        {
+            /* Only the head remains */
+            VX_PRINT(VX_ZONE_INFO, "Only the head remains!\n");
+            status = tivxMemFree(tail, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL);
+            tail = NULL;
+            *head = NULL;
+        }
+        else
+        {
+            /* Set the previous node as tail */
+            previous->next = NULL;
+            status = tivxMemFree(tail, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL);
+        }
+
+        /* Free the popped element's memory */
         if (status != VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "Cannot free link from the shared mem info linked list!\n");
@@ -288,8 +331,6 @@ vx_status test_utils_max_out_heap_mem(tivx_shared_mem_info_t** shared_mem_info_a
     return ret_status;
 }
 
-
-
 vx_status test_utils_release_maxed_out_heap_mem(tivx_shared_mem_info_t* shared_mem_info_array, vx_uint32 num_chunks)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -310,7 +351,7 @@ vx_status test_utils_release_maxed_out_heap_mem(tivx_shared_mem_info_t* shared_m
                 VX_PRINT(VX_ZONE_ERROR,"Memory freeing failed at %u\n", i);
                 break;
             }
-            status = pop_link(head);
+            status = pop_head(head);
             if (status != VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Link deletion failed at %u\n", i);
@@ -322,7 +363,7 @@ vx_status test_utils_release_maxed_out_heap_mem(tivx_shared_mem_info_t* shared_m
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"The link %u is not used.\n", i);
-            status = pop_link(head);
+            status = pop_head(head);
             break;
         }
     }
@@ -335,11 +376,6 @@ vx_status test_utils_release_maxed_out_heap_mem(tivx_shared_mem_info_t* shared_m
         }
         else
         {
-            /* The number of allocations is not equal to the number of frees. This might happen when the
-               TIVX_MEM_EXTERNAL is depleted or the dmaFd limit has reached before allocating the final link.
-               When the final link allocation is failed, the last memory allocation info couldn't be stored
-               and thus it will not be released. This is a corner case, and need to be addressed if it's causing
-               failures. */
             VX_PRINT(VX_ZONE_ERROR,"Released only %u/%u chunks successfully. Remaining %u chunk(s)\n", i, num_chunks, num_chunks-i);
             status = VX_FAILURE;
         }
@@ -348,3 +384,62 @@ vx_status test_utils_release_maxed_out_heap_mem(tivx_shared_mem_info_t* shared_m
     return status;
 }
 
+vx_status test_utils_single_release_heap_mem(tivx_shared_mem_info_t** shared_mem_info_array, vx_uint32* num_chunks)
+{
+    vx_status status = (vx_status)VX_FAILURE;
+    tivx_shared_mem_info_t * head = * shared_mem_info_array;
+    tivx_shared_mem_info_t * next = NULL;
+
+    tivx_shared_mem_ptr_t temp_tivx_shared_mem_ptr;
+
+    tivx_shared_mem_info_t * tail = head;
+    if (tail != NULL)
+    {
+
+        /* Iterate till last node */
+        while (tail->next != NULL)
+        {
+            tail = tail->next;
+        }
+        /* Create new node if the last node is used, else do not create new link */
+        if (tail->is_used == true)
+        {
+            status = tivxMemBufferFree(&(tail->shared_mem_ptr), tail->size);
+            if (status != VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Memory freeing failed for chunk %u of size %u\n", *num_chunks, tail->size);
+            }
+
+            status = pop_tail(&head);
+            if (status != VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Tail link deletion failed at %u\n", *num_chunks);
+            }
+
+            if (head == NULL)
+            {
+                VX_PRINT(VX_ZONE_INFO,"Last node has been released. Resetting the shared_mem_info_array to NULL!\n");
+                *shared_mem_info_array = NULL;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"The link %u is not used\n", *num_chunks);
+
+            status = pop_tail(&head);
+            if (status != VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Link deletion failed at link: %u\n", *num_chunks);
+            }
+        }
+
+        if (status == VX_SUCCESS)
+        {
+            if (head != NULL)
+            {
+                *num_chunks = *num_chunks - 1;
+            }
+        }
+    }
+    return status;
+}
