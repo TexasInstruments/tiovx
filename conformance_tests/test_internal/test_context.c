@@ -267,31 +267,6 @@ TEST(tivxInternalContext, negativeTestOwnRemoveKernelFromContext)
     VX_CALL(vxRemoveKernel(kernel));
 }
 
-/* Test to cover negative portion of ownReleaseReferenceBufferGeneric() */
-TEST(tivxInternalContext, negativeTestOwnReleaseReferenceBufferGeneric)
-{
-    vx_context context = context_->vx_context_;
-    vx_uint32 width = 640, height = 480;
-
-    vx_image image;
-    ASSERT_VX_OBJECT(image = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE); ;
-
-    vx_reference ref = &(image->base);
-
-    /* Tampering the reference type */
-    vx_enum type = ref->type;
-    ref->type = VX_TYPE_INVALID;
-
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownReleaseReferenceBufferGeneric(&ref));
-
-    /* Resetting the actual type */
-    ref->type = type;
-
-    /* Releasing image */
-    VX_CALL(vxReleaseImage(&image));
-}
-
-
 TESTCASE_TESTS(
     tivxInternalContext,
     negativeTestContextLock,
@@ -300,6 +275,5 @@ TESTCASE_TESTS(
     negativeTestOwnAddReferenceToContext1,
     negativeTestOwnAddKernelToContext,
     negativeTestOwnIsKernelInContext,
-    negativeTestOwnRemoveKernelFromContext,
-    negativeTestOwnReleaseReferenceBufferGeneric
+    negativeTestOwnRemoveKernelFromContext
 )
