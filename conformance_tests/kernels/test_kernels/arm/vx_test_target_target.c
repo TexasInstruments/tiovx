@@ -696,6 +696,122 @@ static vx_status tivxNegativeTestTargetKernelGet(uint8_t id)
     return status;
 }
 
+static vx_status tivxNegativeTestTargetObjDescQueueEnqueue(uint8_t id)
+{
+    tivx_obj_desc_queue_t *obj_desc = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint16_t *objdesc_q_id = (uint16_t *)tivxMemAlloc(sizeof(uint16_t), TIVX_MEM_EXTERNAL);
+
+    if((vx_status)VX_FAILURE != ownObjDescQueueEnqueue(0,0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_q_id'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if((vx_status)VX_SUCCESS != ownObjDescQueueCreate(objdesc_q_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to create object descriptor queue\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        obj_desc = (tivx_obj_desc_queue_t *)ownObjDescGet(*objdesc_q_id);
+        obj_desc->count = TIVX_OBJ_DESC_QUEUE_MAX_DEPTH;
+
+        if((vx_status)VX_FAILURE != ownObjDescQueueEnqueue(*objdesc_q_id,0))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'enqueue count' = TIVX_OBJ_DESC_QUEUE_MAX_DEPTH\n");
+            status = (vx_status)VX_FAILURE;
+        }
+
+        if((vx_status)VX_SUCCESS != ownObjDescQueueRelease(objdesc_q_id))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor queue\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    tivxMemFree((void *)objdesc_q_id, sizeof(uint16_t), TIVX_MEM_EXTERNAL);
+    
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetObjDescQueueExtractBlockedNodes(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if((vx_status)VX_FAILURE != ownObjDescQueueExtractBlockedNodes(0,NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_q_id' \n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetObjDescQueueAddBlockedNode(uint8_t id)
+{
+    tivx_obj_desc_queue_t *obj_desc = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint16_t *objdesc_q_id = (uint16_t *)tivxMemAlloc(sizeof(uint16_t), TIVX_MEM_EXTERNAL);
+
+    if((vx_status)VX_FAILURE != ownObjDescQueueAddBlockedNode(0,0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_q_id'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if((vx_status)VX_SUCCESS != ownObjDescQueueCreate(objdesc_q_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to create object descriptor queue\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        obj_desc = (tivx_obj_desc_queue_t *)ownObjDescGet(*objdesc_q_id);
+        obj_desc->blocked_nodes.num_nodes = TIVX_OBJ_DESC_QUEUE_MAX_BLOCKED_NODES;
+
+        if((vx_status)VX_FAILURE != ownObjDescQueueAddBlockedNode(*objdesc_q_id,0))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'blocked node' count = TIVX_OBJ_DESC_QUEUE_MAX_BLOCKED_NODES\n");
+            status = (vx_status)VX_FAILURE;
+        }
+        if((vx_status)VX_SUCCESS != ownObjDescQueueRelease(objdesc_q_id))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor queue\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    tivxMemFree((void *)objdesc_q_id, sizeof(uint16_t), TIVX_MEM_EXTERNAL);
+    
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetObjDescQueueDequeue(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint16_t *objdesc_id = (uint16_t *)tivxMemAlloc(sizeof(uint16_t), TIVX_MEM_EXTERNAL);
+
+    if((vx_status)VX_FAILURE != ownObjDescQueueDequeue(0,objdesc_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_q_id'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tivxMemFree((void *)objdesc_id, sizeof(uint16_t), TIVX_MEM_EXTERNAL);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -717,7 +833,11 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestTargetKernelControl, "",VX_SUCCESS},
     {tivxNegativeTestTargetKernelExecute, "",VX_SUCCESS},
     {tivxNegativeTestTargetKernelDelete, "",VX_SUCCESS},
-    {tivxNegativeTestTargetKernelGet, "",VX_SUCCESS}
+    {tivxNegativeTestTargetKernelGet, "",VX_SUCCESS},
+    {tivxNegativeTestTargetObjDescQueueEnqueue, "", VX_SUCCESS},
+    {tivxNegativeTestTargetObjDescQueueExtractBlockedNodes, "",VX_SUCCESS},
+    {tivxNegativeTestTargetObjDescQueueAddBlockedNode, "",VX_SUCCESS},
+    {tivxNegativeTestTargetObjDescQueueDequeue, "", VX_SUCCESS},
 };
 #endif /* FULL_CODE_COVERAGE */
 
