@@ -95,4 +95,4 @@ Kernel                            | Target    | PC Emulation Support |
 #tivxDmpacSdeNode                 | DMPAC_SDE | Yes                  |
 #tivxDmpacDofNode                 | DMPAC_DOF | Yes                  |
 #tivxCsitxNode                    | CSITX     | No                   |
-
+#tivxObjArraySplitNode            | MPU       | Yes                  |
