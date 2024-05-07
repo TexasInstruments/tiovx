@@ -58,7 +58,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseObjectArray(vx_object_array *arr)
         vxCastRefFromObjectArrayP(arr), (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-vx_object_array VX_API_CALL vxCreateObjectArray(
+VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(
     vx_context context, vx_reference exemplar, vx_size count)
 {
     vx_object_array objarr = NULL;
@@ -135,7 +135,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
     return (objarr);
 }
 
-vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
+VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
     vx_graph graph, vx_reference exemplar, vx_size count)
 {
     vx_object_array objarr = NULL;
@@ -224,7 +224,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
     return (objarr);
 }
 
-vx_reference VX_API_CALL vxGetObjectArrayItem(
+VX_API_ENTRY vx_reference VX_API_CALL vxGetObjectArrayItem(
     vx_object_array objarr, vx_uint32 index)
 {
     vx_reference ref = NULL;
@@ -277,7 +277,7 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
     return (ref);
 }
 
-vx_status VX_API_CALL vxQueryObjectArray(
+VX_API_ENTRY vx_status VX_API_CALL vxQueryObjectArray(
     vx_object_array objarr, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;

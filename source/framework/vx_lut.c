@@ -24,7 +24,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseLUT(vx_lut *lut)
         vxCastRefFromLUTP(lut), (vx_enum)VX_TYPE_LUT, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-vx_lut VX_API_CALL vxCreateLUT(
+VX_API_ENTRY vx_lut VX_API_CALL vxCreateLUT(
     vx_context context, vx_enum data_type, vx_size count)
 {
     vx_lut lut = NULL;
@@ -114,7 +114,7 @@ vx_lut VX_API_CALL vxCreateLUT(
     return (lut);
 }
 
-vx_status VX_API_CALL vxQueryLUT(
+VX_API_ENTRY vx_status VX_API_CALL vxQueryLUT(
     vx_lut lut, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -208,7 +208,7 @@ vx_status VX_API_CALL vxQueryLUT(
     return status;
 }
 
-vx_status VX_API_CALL vxCopyLUT(
+VX_API_ENTRY vx_status VX_API_CALL vxCopyLUT(
     vx_lut lut, void *user_ptr, vx_enum usage, vx_enum user_mem_type)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -282,7 +282,7 @@ vx_status VX_API_CALL vxCopyLUT(
     return (status);
 }
 
-vx_status VX_API_CALL vxMapLUT(
+VX_API_ENTRY vx_status VX_API_CALL vxMapLUT(
     vx_lut lut, vx_map_id *map_id, void **ptr, vx_enum usage, vx_enum mem_type,
     vx_bitfield flags)
 {
@@ -314,7 +314,7 @@ vx_status VX_API_CALL vxMapLUT(
     return (status);
 }
 
-vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
+VX_API_ENTRY vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;

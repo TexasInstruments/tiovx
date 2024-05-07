@@ -18,7 +18,7 @@
 
 #include <vx_internal.h>
 
-vx_distribution VX_API_CALL vxCreateDistribution(
+VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(
     vx_context context, vx_size num_bins, vx_int32 offset, vx_uint32 range)
 {
     vx_distribution dist = NULL;
@@ -87,7 +87,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseDistribution(vx_distribution *dist)
         vxCastRefFromDistributionP(dist), (vx_enum)VX_TYPE_DISTRIBUTION, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-vx_status VX_API_CALL vxQueryDistribution(
+VX_API_ENTRY vx_status VX_API_CALL vxQueryDistribution(
     vx_distribution dist, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -184,7 +184,7 @@ vx_status VX_API_CALL vxQueryDistribution(
     return status;
 }
 
-vx_status VX_API_CALL vxCopyDistribution(
+VX_API_ENTRY vx_status VX_API_CALL vxCopyDistribution(
     vx_distribution dist, void *user_ptr, vx_enum usage, vx_enum user_mem_type)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -259,7 +259,7 @@ vx_status VX_API_CALL vxCopyDistribution(
     return (status);
 }
 
-vx_status VX_API_CALL vxMapDistribution(
+VX_API_ENTRY vx_status VX_API_CALL vxMapDistribution(
     vx_distribution dist, vx_map_id *map_id, void **ptr, vx_enum usage, vx_enum mem_type,
     vx_bitfield flags)
 {
@@ -291,7 +291,7 @@ vx_status VX_API_CALL vxMapDistribution(
     return (status);
 }
 
-vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id)
+VX_API_ENTRY vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;

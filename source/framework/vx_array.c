@@ -115,7 +115,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseArray(vx_array *arr)
     return (ownReleaseReferenceInt(
         vxCastRefFromArrayP(arr), (vx_enum)VX_TYPE_ARRAY, (vx_enum)VX_EXTERNAL, NULL));
 }
-vx_array VX_API_CALL vxCreateArray(
+
+VX_API_ENTRY vx_array VX_API_CALL vxCreateArray(
     vx_context context, vx_enum item_type, vx_size capacity)
 {
     vx_array arr = NULL;
@@ -167,7 +168,7 @@ vx_array VX_API_CALL vxCreateArray(
     return (arr);
 }
 
-vx_array VX_API_CALL vxCreateVirtualArray(
+VX_API_ENTRY vx_array VX_API_CALL vxCreateVirtualArray(
     vx_graph graph, vx_enum item_type, vx_size capacity)
 {
     vx_array arr = NULL;
@@ -223,7 +224,7 @@ vx_array VX_API_CALL vxCreateVirtualArray(
     return (arr);
 }
 
-vx_status VX_API_CALL vxQueryArray(
+VX_API_ENTRY vx_status VX_API_CALL vxQueryArray(
     vx_array arr, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -295,7 +296,7 @@ vx_status VX_API_CALL vxQueryArray(
     return status;
 }
 
-vx_status VX_API_CALL vxAddArrayItems(
+VX_API_ENTRY vx_status VX_API_CALL vxAddArrayItems(
     vx_array arr, vx_size count, const void *ptr, vx_size stride)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -374,7 +375,7 @@ vx_status VX_API_CALL vxAddArrayItems(
     return (status);
 }
 
-vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
+VX_API_ENTRY vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_array_t *obj_desc = NULL;
@@ -416,7 +417,7 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
     return (status);
 }
 
-vx_status VX_API_CALL vxCopyArrayRange(
+VX_API_ENTRY vx_status VX_API_CALL vxCopyArrayRange(
     vx_array arr, vx_size range_start, vx_size range_end,
     vx_size stride, void *ptr, vx_enum usage, vx_enum user_mem_type)
 {
@@ -536,7 +537,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
     return (status);
 }
 
-vx_status VX_API_CALL vxMapArrayRange(
+VX_API_ENTRY vx_status VX_API_CALL vxMapArrayRange(
     vx_array arr, vx_size range_start, vx_size range_end, vx_map_id *map_id,
     vx_size *stride, void **ptr, vx_enum usage, vx_enum mem_type,
     vx_uint32 flags)
@@ -632,7 +633,7 @@ vx_status VX_API_CALL vxMapArrayRange(
     return (status);
 }
 
-vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
+VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_array_t *obj_desc = NULL;

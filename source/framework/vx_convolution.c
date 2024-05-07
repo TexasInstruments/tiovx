@@ -21,7 +21,7 @@
 static vx_bool vxIsPowerOfTwo(vx_uint32 a);
 static int8_t isodd(size_t a);
 
-vx_convolution VX_API_CALL vxCreateConvolution(
+VX_API_ENTRY vx_convolution VX_API_CALL vxCreateConvolution(
     vx_context context, vx_size columns, vx_size rows)
 {
     vx_convolution cnvl = NULL;
@@ -92,7 +92,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseConvolution(vx_convolution *cnvl)
         vxCastRefFromConvolutionP(cnvl), (vx_enum)VX_TYPE_CONVOLUTION, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-vx_status VX_API_CALL vxQueryConvolution(
+VX_API_ENTRY vx_status VX_API_CALL vxQueryConvolution(
     vx_convolution cnvl, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -233,7 +233,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
     return status;
 }
 
-vx_status VX_API_CALL vxCopyConvolutionCoefficients(
+VX_API_ENTRY vx_status VX_API_CALL vxCopyConvolutionCoefficients(
     vx_convolution cnvl, void *user_ptr, vx_enum usage, vx_enum user_mem_type)
 {
     vx_status status = (vx_status)VX_SUCCESS;

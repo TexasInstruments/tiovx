@@ -51,7 +51,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleasePyramid(vx_pyramid *prmd)
         vxCastRefFromPyramidP(prmd), (vx_enum)VX_TYPE_PYRAMID, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-vx_pyramid VX_API_CALL vxCreatePyramid(
+VX_API_ENTRY vx_pyramid VX_API_CALL vxCreatePyramid(
     vx_context context, vx_size levels, vx_float32 scale, vx_uint32 width,
     vx_uint32 height, vx_df_image format)
 {
@@ -171,7 +171,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
     return (prmd);
 }
 
-vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
+VX_API_ENTRY vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
 {
     vx_image img = NULL;
 
@@ -224,7 +224,7 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
     return (img);
 }
 
-vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
+VX_API_ENTRY vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
     vx_graph graph, vx_size levels, vx_float32 scale, vx_uint32 width,
     vx_uint32 height, vx_df_image format)
 {
@@ -336,7 +336,7 @@ vx_status ownInitVirtualPyramid(
     return (status);
 }
 
-vx_status VX_API_CALL vxQueryPyramid(
+VX_API_ENTRY vx_status VX_API_CALL vxQueryPyramid(
     vx_pyramid prmd, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;

@@ -18,7 +18,7 @@
 
 #include <vx_internal.h>
 
-vx_matrix VX_API_CALL vxCreateMatrix(
+VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrix(
     vx_context context, vx_enum data_type, vx_size columns, vx_size rows)
 {
     vx_matrix matrix = NULL;
@@ -110,7 +110,7 @@ vx_matrix VX_API_CALL vxCreateMatrix(
     return (matrix);
 }
 
-vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
+VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     vx_context context, vx_enum pattern, vx_size columns, vx_size rows)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -334,7 +334,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     return (matrix);
 }
 
-vx_status VX_API_CALL vxQueryMatrix(
+VX_API_ENTRY vx_status VX_API_CALL vxQueryMatrix(
     vx_matrix matrix, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -439,7 +439,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseMatrix(vx_matrix *matrix)
         vxCastRefFromMatrixP(matrix), (vx_enum)VX_TYPE_MATRIX, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-vx_status VX_API_CALL vxCopyMatrix(
+VX_API_ENTRY vx_status VX_API_CALL vxCopyMatrix(
     vx_matrix matrix, void *user_ptr, vx_enum usage, vx_enum user_mem_type)
 {
     vx_status status = (vx_status)VX_SUCCESS;
