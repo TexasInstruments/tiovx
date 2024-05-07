@@ -89,6 +89,8 @@ typedef struct _vx_meta_format
         vx_enum item_type;
         /*!< \brief The capacity of the Array */
         vx_size capacity;
+        /*!< \brief The item size of the Array */
+        vx_size item_size;
     } arr;
 
     /*!< \brief structure containing information about matrix

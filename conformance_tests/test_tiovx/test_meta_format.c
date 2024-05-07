@@ -235,6 +235,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     vx_uint32 actual_dst_width = 256, actual_dst_height = 256;
     vx_enum actual_item_type = VX_TYPE_INVALID;
     vx_size actual_capacity = 0;
+    vx_size actual_item_size = 0;
     vx_size actual_levels = 0;
     vx_float32 actual_scale = 0;
     vx_size actual_bins = 0;
@@ -299,11 +300,13 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     case VX_TYPE_ARRAY:
         VX_CALL_(return VX_FAILURE, vxQueryArray((vx_array)input, VX_ARRAY_ITEMTYPE, &actual_item_type, sizeof(vx_enum)));
         VX_CALL_(return VX_FAILURE, vxQueryArray((vx_array)input, VX_ARRAY_CAPACITY, &actual_capacity, sizeof(vx_size)));
+        VX_CALL_(return VX_FAILURE, vxQueryArray((vx_array)input, VX_ARRAY_ITEMSIZE, &actual_item_size, sizeof(vx_size)));
 
         if (actual_item_type == item_type && actual_capacity == capacity)
         {
             (void)vxSetMetaFormatAttribute(meta, VX_ARRAY_ITEMTYPE, &item_type, sizeofErr);
             (void)vxSetMetaFormatAttribute(meta, VX_ARRAY_CAPACITY, &capacity, sizeofErr);
+            (void)vxSetMetaFormatAttribute(meta, VX_ARRAY_ITEMSIZE, &actual_item_size, sizeofErr);
         }
         else
         {

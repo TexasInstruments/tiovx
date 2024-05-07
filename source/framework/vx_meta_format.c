@@ -112,6 +112,7 @@ vx_meta_format ownCreateMetaFormat(vx_context context)
             /* Initialize array meta */
             meta->arr.item_type = (vx_enum)VX_TYPE_INVALID;
             meta->arr.capacity  = 0U;
+            meta->arr.item_size = 0U;
 
             /* Initialize matrix meta */
             meta->mat.type = (vx_enum)VX_TYPE_INVALID;
@@ -317,6 +318,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 break;
 
+            case (vx_enum)VX_ARRAY_ITEMSIZE:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    meta->arr.item_size = *(const vx_size *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Array item size error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             case (vx_enum)VX_PYRAMID_FORMAT:
                 if (VX_CHECK_PARAM(ptr, size, vx_df_image, 0x3U))
                 {
@@ -1085,6 +1097,8 @@ static vx_status ownInitMetaFormatWithArray(
         sizeof(meta->arr.item_type)));
     tivxCheckStatus(&status, vxQueryArray(exemplar, (vx_enum)VX_ARRAY_CAPACITY, &meta->arr.capacity,
         sizeof(meta->arr.capacity)));
+    tivxCheckStatus(&status, vxQueryArray(exemplar, (vx_enum)VX_ARRAY_ITEMSIZE, &meta->arr.item_size,
+        sizeof(meta->arr.item_size)));
 
     return (status);
 }
@@ -1298,7 +1312,8 @@ static vx_bool ownIsMetaFormatArrayEqual(
          (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->arr.item_type == meta2->arr.item_type) &&
-             (meta1->arr.capacity  == meta2->arr.capacity) )
+             (meta1->arr.capacity  == meta2->arr.capacity) &&
+             (meta1->arr.item_size == meta2->arr.item_size))
         {
             is_equal = (vx_bool)vx_true_e;
         }
