@@ -65,6 +65,72 @@
 #define MB (1024 * 1024)
 #define KB (1024)
 
+uint32_t link_index = 0;
+
+/* Function to create and push data to the end of the list */
+static vx_status pushback_link(tivx_shared_mem_info_t ** head, tivx_shared_mem_ptr_t shared_mem_ptr, vx_uint32 size)
+{
+    vx_status status = VX_FAILURE;
+    tivx_shared_mem_info_t * newLink = tivxMemAlloc(sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL);
+    if (newLink == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Cannot alloc new link for the shared mem info linked list!\n");
+        status = VX_FAILURE;
+    }
+    else
+    {
+        newLink->shared_mem_ptr = shared_mem_ptr;
+        newLink->size = size;
+        newLink->next = NULL;
+
+        /* First Link */
+        if (*head == NULL)
+        {
+            *head = newLink;
+            status = VX_SUCCESS;
+        }
+        else
+        {
+            /* Iterate till last node */
+            tivx_shared_mem_info_t * current = * head;
+            while (current->next != NULL)
+            {
+                current = current->next;
+            }
+            current->next = newLink;
+            status = VX_SUCCESS;
+        }
+    }
+    if (status == VX_SUCCESS)
+    {
+        link_index++;
+    }
+    return status;
+}
+
+/* Function to delete the first element of the link */
+static vx_status pop_link(tivx_shared_mem_info_t * head)
+{
+    tivx_shared_mem_info_t * current;
+    vx_status status = VX_FAILURE;
+    if(head == NULL)
+        VX_PRINT(VX_ZONE_ERROR, "List is empty!\n");
+    else
+    {
+        current = head;
+
+        /* Pointing head to the next node */
+        head = (*current).next;
+
+        /* Free the popped element's memory */
+        status = tivxMemFree(current, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL);
+        if (status != VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Cannot free link from the shared mem info linked list!\n");
+        }
+    }
+    return status;
+}
 
 vx_status test_utils_max_out_heap_mem(tivx_shared_mem_info_t** shared_mem_info_array_ret, vx_uint32* num_chunks, vx_enum mheap_region)
 {
@@ -72,43 +138,40 @@ vx_status test_utils_max_out_heap_mem(tivx_shared_mem_info_t** shared_mem_info_a
     vx_uint32 num_allocations = 0;
     vx_uint32 total_alloc_size = 0;
 
-    tivx_shared_mem_info_t* shared_mem_info_array = NULL;
-    shared_mem_info_array = malloc(sizeof(tivx_shared_mem_info_t));
-
+    tivx_shared_mem_ptr_t temp_tivx_shared_mem_ptr;
     vx_uint32 chunk_size = MB;
 
-    if (shared_mem_info_array == NULL) {
-        VX_PRINT(VX_ZONE_ERROR,"Info array allocation failed\n");
-        status = (vx_status)VX_FAILURE;
-    }
+    tivx_shared_mem_info_t* head = NULL;
 
     if (status == (vx_status)VX_SUCCESS)
     {
         /* Allocate memory in 1 MB chunks (large chunks) until exhausted */
         while (1)
         {
-            status = tivxMemBufferAlloc(&(shared_mem_info_array[num_allocations].shared_mem_ptr),
+            status = tivxMemBufferAlloc(&temp_tivx_shared_mem_ptr,
                                             chunk_size, mheap_region);
 
             if (status == VX_ERROR_NO_MEMORY)
             {
-                VX_PRINT(VX_ZONE_INFO, "Memory exhausted after 1 MB allocation!\n");
+                VX_PRINT(VX_ZONE_ERROR, "Memory exhausted after 1 MB allocation!\n");
                 break;
             }
             else
+            if (status == VX_SUCCESS)
             {
-                shared_mem_info_array[num_allocations].size = chunk_size;
                 total_alloc_size += chunk_size;
                 num_allocations++;
 
-                shared_mem_info_array = realloc(shared_mem_info_array, (num_allocations + 1) * sizeof(tivx_shared_mem_info_t));
-
-                if (shared_mem_info_array == NULL)
+                status = pushback_link(&head, temp_tivx_shared_mem_ptr, chunk_size);
+                if (status != (vx_status)VX_SUCCESS)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Info array reallocation failed\n");
-                    status = (vx_status)VX_FAILURE;
+                    VX_PRINT(VX_ZONE_ERROR, "Memory info couldn't be pushed back to the new link!\n");
                     break;
                 }
+            }
+            else
+            {
+                break;
             }
         }
 
@@ -119,64 +182,100 @@ vx_status test_utils_max_out_heap_mem(tivx_shared_mem_info_t** shared_mem_info_a
             /* Allocating memory in 1 KB chunks till memory is completely exhausted */
             while (1)
             {
-                status = tivxMemBufferAlloc(&(shared_mem_info_array[num_allocations].shared_mem_ptr),
+                status = tivxMemBufferAlloc(&temp_tivx_shared_mem_ptr,
                                                 chunk_size, mheap_region);
                 if (status == VX_ERROR_NO_MEMORY)
                 {
-                    VX_PRINT(VX_ZONE_INFO, "Memory exhausted after 1 KB allocation!\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Memory exhausted after 1 KB allocation!\n");
                     break;
                 }
                 else
+                if (status == VX_SUCCESS)
                 {
-                    shared_mem_info_array[num_allocations].size = chunk_size;
                     total_alloc_size += chunk_size;
                     num_allocations++;
 
-                    shared_mem_info_array = realloc(shared_mem_info_array, (num_allocations + 1) * sizeof(tivx_shared_mem_info_t));
-
-                    if (shared_mem_info_array == NULL)
+                    status = pushback_link(&head, temp_tivx_shared_mem_ptr, chunk_size);
+                    if (status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Info array reallocation failed\n");
-                        status = (vx_status)VX_FAILURE;
+                        VX_PRINT(VX_ZONE_ERROR, "Memory info couldn't be pushed back to the new link!\n");
                         break;
                     }
+                }
+                else
+                {
+                    break;
                 }
             }
         }
     }
 
-    VX_PRINT(VX_ZONE_INFO,"%d alloc's of %d KB size\n", num_allocations,  total_alloc_size/1024);
+    VX_PRINT(VX_ZONE_ERROR,"%d alloc's of %d KB size\n", num_allocations,  total_alloc_size/1024);
 
     /* If all memory is allocated until exhausted, return success */
     if (status == VX_ERROR_NO_MEMORY)
     {
         status = (vx_status)VX_SUCCESS;
     }
+    else
+    {
+        /* do nothing. Return error status */
+    }
 
-    *shared_mem_info_array_ret = shared_mem_info_array;
+
+    *shared_mem_info_array_ret = head;
     *num_chunks = num_allocations;
 
     return status;
 }
 
+
+
 vx_status test_utils_release_maxed_out_heap_mem(tivx_shared_mem_info_t* shared_mem_info_array, vx_uint32 num_chunks)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    tivx_shared_mem_info_t * head = shared_mem_info_array;
+    tivx_shared_mem_info_t * next = NULL;
 
-    for (int i = 0; i < num_chunks ; i++)
+    uint32_t i=0;
+    tivx_shared_mem_ptr_t temp_tivx_shared_mem_ptr;
+
+    while (head != NULL)
     {
-        status = tivxMemBufferFree(&(shared_mem_info_array[i].shared_mem_ptr), shared_mem_info_array[i].size);
+        next = head->next;
+        status = tivxMemBufferFree(&(head->shared_mem_ptr), head->size);
         if (status != VX_SUCCESS)
         {
-            VX_PRINT(VX_ZONE_ERROR,"Memory freeing failed at %d\n", i);
+            VX_PRINT(VX_ZONE_ERROR,"Memory freeing failed at %u\n", i);
             break;
         }
+        status = pop_link(head);
+        if (status != VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Link deletion failed at %u\n", i);
+            break;
+        }
+        head = next;
+        i++;
     }
+
     if (status == VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_INFO,"Released %d chunks\n", num_chunks);
+        if (num_chunks == i)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Released %u/%u chunks successfully.\n", i, num_chunks);
+        }
+        else
+        {
+            /* The number of allocations is not equal to the number of frees. This might happen when the
+               TIVX_MEM_EXTERNAL is depleted or the dmaFd limit has reached before allocating the final link.
+               When the final link allocation is failed, the last memory allocation info couldn't be stored
+               and thus it will not be released. This is a corner case, and need to be addressed if it's causing
+               failures. */
+            VX_PRINT(VX_ZONE_ERROR,"Released only %u/%u chunks successfully. Remaining %u chunk(s)\n", i, num_chunks, num_chunks-i);
+            status = VX_FAILURE;
+        }
     }
-    free(shared_mem_info_array);
 
     return status;
 }

@@ -74,6 +74,7 @@
 typedef struct tivx_shared_mem_info {
     tivx_shared_mem_ptr_t shared_mem_ptr;
     vx_uint32 size;
+    struct tivx_shared_mem_info* next;
 } tivx_shared_mem_info_t;
 
 /**
