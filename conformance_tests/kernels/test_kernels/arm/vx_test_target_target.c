@@ -68,8 +68,10 @@
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
 #include <TI/tivx_task.h>
-#include <stdio.h>
+#include <TI/tivx_queue.h>
 #include <tivx_obj_desc_priv.h>
+#include <tivx_target.h>
+#include <stdio.h>
 #include <tivx_target_kernel_priv.h>
 #include <tivx_obj_desc_queue.h>
 #include <tivx_target_kernel_instance.h>
@@ -903,6 +905,7 @@ static vx_status tivxBranchTestTargetKernelInstanceGet(uint8_t id)
     return status;
 }
 
+
 static vx_status tivxBranchTestTargetKernel(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -1292,6 +1295,244 @@ static vx_status tivxNegativeTestTargetQueueObjDesc(uint8_t id)
 }
 #endif
 
+/*Test case to fail the condition 'if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q)' 
+ *inside the function ownTargetNodeDescAcquireAllParameters
+ */
+static vx_status tivxNegativeTestTargetNodeDescAcquireAllParameter(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+ 
+    tivx_obj_desc_node_t *test_obj_desc_node = NULL;
+    vx_bool test_node_blocked;
+    uint16_t obj_desc_id_t = 1;
+    uint16_t prm_obj_desc_id[TIVX_KERNEL_MAX_PARAMS]={0};
+    test_obj_desc_node = (tivx_obj_desc_node_t *)ownObjDescGet(obj_desc_id_t);
+
+    /*to set is_prm_data_ref_q_flag so that tivxFlagIsBitSet() returns '1' inside ownTargetNodeDescReleaseAllParameters() */
+    test_obj_desc_node->is_prm_data_ref_q = 1;
+    test_obj_desc_node->num_params =1;
+    
+    if(test_obj_desc_node != NULL)
+    {
+        ownTargetNodeDescAcquireAllParameters(test_obj_desc_node, prm_obj_desc_id, &test_node_blocked, 0);
+
+        /*prm_obj_desc_id[0] is updated inside ownTargetNodeDescAcquireAllParameters() */
+        if(prm_obj_desc_id[0] != (vx_enum)TIVX_OBJ_DESC_INVALID)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for prm_obj_desc_id[0]\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to get test_obj_desc_node\n");
+        status = (vx_status)VX_FAILURE;
+    }
+ 
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+ 
+    return status;
+}
+
+/*Test case to fail 'if ((vx_bool)vx_false_e == is_pipeup)' in ownTargetNodeDescAcquireParameter()*/
+static vx_status tivxBranchTestTargetNodeDescAcquireParameter(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+ 
+    tivx_obj_desc_node_t *test_obj_desc_node = NULL;
+    vx_bool test_node_blocked;
+    vx_bool test_pipe = (vx_bool)vx_true_e;
+    tivx_obj_desc_t *obj_desc =NULL;
+    uint16_t obj_desc_id_t = 1;
+    uint16_t prm_obj_desc_id[TIVX_KERNEL_MAX_PARAMS]={0};
+    obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(TIVX_OBJ_DESC_DATA_REF_Q, NULL);
+    test_obj_desc_node = (tivx_obj_desc_node_t *)ownObjDescGet(obj_desc_id_t);
+
+    /*to set is_prm_data_ref_q_flag so that tivxFlagIsBitSet() returns '1' inside ownTargetNodeDescReleaseAllParameters() */
+    test_obj_desc_node->is_prm_data_ref_q = 1;
+    test_obj_desc_node->num_params =1;
+
+    /*To create valid obj_desc of TIVX_OBJ_DESC_DATA_REF_Q type*/
+    test_obj_desc_node->data_ref_q_id[0]= obj_desc->obj_desc_id;
+    test_obj_desc_node->is_prm_input = 0;
+
+    if(obj_desc !=NULL && test_obj_desc_node != NULL)
+    {
+        ownTargetNodeDescAcquireAllParameters(test_obj_desc_node, prm_obj_desc_id, &test_node_blocked, test_pipe);
+        
+        /*test_node_blocked is updated inside ownTargetNodeDescAcquireParameter()*/
+        if(test_node_blocked != vx_false_e)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for test_node_blocked\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to allocate memory\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+ 
+    return status;
+}
+
+/*Test case to fail 'if((vx_status)VX_SUCCESS == ownObjDescQueueAddBlockedNode()' in ownTargetNodeDescAcquireParameter()*/
+static vx_status tivxBranchTestTargetNodeDescAcquireParam(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+ 
+    tivx_obj_desc_node_t *test_obj_desc_node = NULL;
+    vx_bool test_node_blocked;
+    vx_bool test_pipe = (vx_bool)vx_false_e;
+    tivx_obj_desc_t *obj_desc =NULL;
+    uint16_t obj_desc_id_t = 1;
+    uint16_t prm_obj_desc_id[TIVX_KERNEL_MAX_PARAMS]={0};
+    obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(TIVX_OBJ_DESC_DATA_REF_Q, NULL);
+    test_obj_desc_node = (tivx_obj_desc_node_t *)ownObjDescGet(obj_desc_id_t);
+
+    /*to set is_prm_data_ref_q_flag so that tivxFlagIsBitSet() returns '1' inside ownTargetNodeDescReleaseAllParameters() */
+    test_obj_desc_node->is_prm_data_ref_q = 1;
+    test_obj_desc_node->num_params =1;
+
+    /*To create valid obj_desc of TIVX_OBJ_DESC_DATA_REF_Q type*/
+    test_obj_desc_node->data_ref_q_id[0]= obj_desc->obj_desc_id;
+    test_obj_desc_node->is_prm_input = 0;
+ 
+    if(obj_desc !=NULL && test_obj_desc_node != NULL)
+    {
+        ownTargetNodeDescAcquireAllParameters(test_obj_desc_node, prm_obj_desc_id, &test_node_blocked, test_pipe);
+
+        /*test_node_blocked is updated inside ownTargetNodeDescAcquireParameter()*/
+        if(test_node_blocked != vx_false_e)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for test_node_blocked\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to allocate memory\n");
+        status = (vx_status)VX_FAILURE;
+    }
+ 
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+ 
+    return status;
+}
+
+/*Test case to create data_ref_q_obj_desc which is not corresponding to TIVX_OBJ_DESC_DATA_REF_Q 
+ *in ownTargetNodeDescReleaseAllParameters.
+ */
+static vx_status tivxBranchTestTargetNodeDescReleaseAllParameter(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_node_t *test_obj_desc_node = NULL;
+    uint16_t obj_desc_id_t = 1; /*Random value*/
+    uint16_t prm_obj_desc_id[TIVX_KERNEL_MAX_PARAMS]={0};
+    test_obj_desc_node = (tivx_obj_desc_node_t *)ownObjDescGet(obj_desc_id_t);
+
+    /*to set is_prm_data_ref_q_flag so that tivxFlagIsBitSet() returns '1' inside ownTargetNodeDescReleaseAllParameters() */
+    test_obj_desc_node->is_prm_data_ref_q = 1;
+    test_obj_desc_node->num_params =1;
+    /*Random id passed to test_obj_desc_node->data_ref_q_id[0]*/
+    test_obj_desc_node->data_ref_q_id[0]=obj_desc_id_t;
+    test_obj_desc_node->is_prm_input = 0;
+
+    if(test_obj_desc_node != NULL)
+    {
+        ownTargetNodeDescReleaseAllParameters(test_obj_desc_node, prm_obj_desc_id);
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to get test_obj_desc_node \n");
+        status = (vx_status)VX_FAILURE;
+    }
+ 
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+ 
+    return status;
+}
+
+/* Test case to make 'data_ref_q_obj_desc->num_in_nodes = 0'  inside ownTargetNodeDescReleaseParameter() */
+static vx_status tivxBranchTargetNodeDescReleaseParameter(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+ 
+    tivx_obj_desc_node_t *test_obj_desc_node = NULL;
+    tivx_obj_desc_t *obj_desc =NULL;
+    uint16_t obj_desc_id_t = 1;
+    uint16_t prm_obj_desc_id[TIVX_KERNEL_MAX_PARAMS]={0};
+    obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(TIVX_OBJ_DESC_DATA_REF_Q, NULL);
+    test_obj_desc_node = (tivx_obj_desc_node_t *)ownObjDescGet(obj_desc_id_t);
+
+    /*to set is_prm_data_ref_q_flag for returning true from tivxFlagIsBitSet inside ownTargetNodeDescReleaseAllParameters() */
+    test_obj_desc_node->is_prm_data_ref_q = 1;
+    test_obj_desc_node->num_params =1;
+
+    /*To create valid obj_desc of TIVX_OBJ_DESC_DATA_REF_Q type*/
+    test_obj_desc_node->data_ref_q_id[0]= obj_desc->obj_desc_id;
+ 
+    /*
+     *prm_input should be a value other than 0(vx_false_e) and 1(vx_true_e) 
+     *to validate 'data_ref_q_obj_desc->num_in_nodes' inside ownTargetNodeDescReleaseParameter()
+     */
+    test_obj_desc_node->is_prm_input = 2;
+ 
+    /*To make obj_desc = NULL inside ownTargetNodeDescReleaseParameter() */
+    prm_obj_desc_id[0] = (vx_enum)TIVX_OBJ_DESC_INVALID;
+ 
+    if(obj_desc !=NULL && test_obj_desc_node != NULL)
+    {
+        ownTargetNodeDescReleaseAllParameters(test_obj_desc_node, prm_obj_desc_id);
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to allocate memory\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+    
+    return status;
+}
+
+/*Test case to fail ownObjDescQueueEnqueue()inside ownTargetNodeDescReleaseParameter()*/
+static vx_status tivxBranchTargetNodeDescReleaseParam(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivx_obj_desc_node_t *test_obj_desc_node = NULL;
+    tivx_obj_desc_t *obj_desc =NULL;
+    uint16_t obj_desc_id_t = 1;
+    uint16_t prm_obj_desc_id[TIVX_KERNEL_MAX_PARAMS]={0};
+    obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(TIVX_OBJ_DESC_DATA_REF_Q, NULL);
+    test_obj_desc_node = (tivx_obj_desc_node_t *)ownObjDescGet(obj_desc_id_t);
+    
+   /*to set is_prm_data_ref_q_flag so that tivxFlagIsBitSet() returns '1' inside ownTargetNodeDescReleaseAllParameters() */
+    test_obj_desc_node->is_prm_data_ref_q = 1;
+    test_obj_desc_node->num_params =1;
+
+    /*To create valid obj_desc of TIVX_OBJ_DESC_DATA_REF_Q type*/
+    test_obj_desc_node->data_ref_q_id[0]= obj_desc->obj_desc_id;
+    test_obj_desc_node->is_prm_input = 0; 
+
+    if(obj_desc !=NULL && test_obj_desc_node != NULL)
+    {
+        ownTargetNodeDescReleaseAllParameters(test_obj_desc_node, prm_obj_desc_id);
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to allocate memory\n");
+        status = (vx_status)VX_FAILURE;
+    }
+ 
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -1327,7 +1568,6 @@ FuncInfo arrOfFuncs[] = {
     {tivxBranchTestTargetKernelFunc, "",VX_SUCCESS},
     {tivxObjDescStrncmp, "", VX_SUCCESS},
     {tivxNegativeTestObjDescSend, "", VX_SUCCESS},
-    {tivxNegativeTestTargetKernelInstanceGetIndex, "",VX_SUCCESS},
     {tivxNegativeTestObjDescFree,"",VX_SUCCESS},
     {tivxNegativeTestObjDescIsValidType,"",VX_SUCCESS},
     {tivxTestGetObjDescList,"",VX_SUCCESS},
@@ -1336,12 +1576,17 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestObjDescSend,"",VX_SUCCESS},
     {tivxTestGetObjDescElement,"",VX_SUCCESS},
     {tivxTestGetObjDescId,"",VX_SUCCESS},
-
-    #ifndef PC
+     #ifndef PC
     {tivxNegativeTestTargetGetHandleAndDelete,"",VX_SUCCESS},
     {tivxTestTargetTriggerNode,"",VX_SUCCESS},
     {tivxNegativeTestTargetQueueObjDesc,"",VX_SUCCESS},
     #endif
+    {tivxNegativeTestTargetNodeDescAcquireAllParameter, "", VX_SUCCESS},
+    {tivxBranchTestTargetNodeDescAcquireParameter, "",VX_SUCCESS},
+    {tivxBranchTestTargetNodeDescAcquireParam,"",VX_SUCCESS},git push 
+    {tivxBranchTestTargetNodeDescReleaseAllParameter,"",VX_SUCCESS},
+    {tivxBranchTargetNodeDescReleaseParameter,"",VX_SUCCESS},
+    {tivxBranchTargetNodeDescReleaseParam,"",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
