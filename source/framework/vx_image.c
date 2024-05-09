@@ -1710,7 +1710,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
                         {
                             imagepatch_addr = &obj_desc->imagepatch_addr[idx];
 
-                            if ( imagepatch_addr->stride_x != 0U )
+                            if ( imagepatch_addr->stride_x != 0 )
                             {
                                 vx_uint32 temp_if = TIVX_ALIGN(
                                             (imagepatch_addr->dim_x*(vx_uint32)imagepatch_addr->stride_x)/imagepatch_addr->step_x,
