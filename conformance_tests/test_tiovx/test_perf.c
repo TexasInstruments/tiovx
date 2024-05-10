@@ -2821,7 +2821,7 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfLUT, Lut_Arg,
     ASSERT(src_image == 0);
 
     ct_free_mem(lut_data);
-    if (arg_->data_type == VX_DF_IMAGE_S16)
+    if (arg_->data_type == VX_TYPE_INT16)
         PrintPerf(perf_graph, perf_node, src->width, src->height, "LookUpTable", "S16", 0);
     else
         PrintPerf(perf_graph, perf_node, src->width, src->height, "LookUpTable", "U8", 0);
