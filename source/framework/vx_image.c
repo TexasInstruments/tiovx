@@ -22,7 +22,6 @@
 #define TIVX_IMG_ALIGN(size)    (((size + (TIVX_IMG_ALIGN_BYTES-1U)) / TIVX_IMG_ALIGN_BYTES) * TIVX_IMG_ALIGN_BYTES)
 
 static vx_bool ownIsSupportedFourcc(vx_df_image code);
-static vx_bool ownIsValidImage(vx_image image);
 static vx_bool ownIsOdd(vx_uint32 a);
 static vx_bool ownIsValidDimensions(vx_uint32 width, vx_uint32 height, vx_df_image color);
 static vx_uint32 ownComputePatchOffset(vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t* addr);
@@ -91,7 +90,7 @@ static vx_bool ownIsSupportedFourcc(vx_df_image code)
     return is_supported_fourcc;
 }
 
-static vx_bool ownIsValidImage(vx_image image)
+vx_bool ownIsValidImage(vx_image image)
 {
     vx_bool is_valid;
 
@@ -316,7 +315,6 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
              )
             {
                 size = ownImageGetBufferSize(obj_desc);
-
                 /* memory is not allocated, so allocate it */
                 if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)0)
                 {
@@ -1697,34 +1695,44 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
 
                     if ((vx_bool)vx_false_e == ref->is_allocated)
                     {
-                        vx_uint32 idx;
-                        tivx_obj_desc_image_t *obj_desc = NULL;
-                        vx_imagepatch_addressing_t *imagepatch_addr;
+                        vx_uint32 tmp_stride_y_alignment = (vx_uint32)*(const vx_uint32 *)ptr;
 
-                        /* Updating the stride alignment property of the image */
-                        image->stride_y_alignment = (vx_uint32)*(const vx_uint32 *)ptr;
-
-                        obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
-
-                        for (idx = 0U; idx < obj_desc->planes; idx++)
+                        if ( (tmp_stride_y_alignment % TIVX_DEFAULT_STRIDE_Y_MULTIPLE) == 0U)
                         {
-                            imagepatch_addr = &obj_desc->imagepatch_addr[idx];
+                            vx_uint32 idx;
+                            tivx_obj_desc_image_t *obj_desc = NULL;
+                            vx_imagepatch_addressing_t *imagepatch_addr;
 
-                            if ( imagepatch_addr->stride_x != 0 )
-                            {
-                                vx_uint32 temp_if = TIVX_ALIGN(
-                                            (imagepatch_addr->dim_x*(vx_uint32)imagepatch_addr->stride_x)/imagepatch_addr->step_x,
-                                            image->stride_y_alignment);
-                                imagepatch_addr->stride_y = (vx_int32)temp_if;
-                            }
-                            else /* Only for P12 and NV12_P12 */
-                            {
-                                vx_uint32 temp_else = TIVX_ALIGN(
-                                            (((imagepatch_addr->dim_x*(vx_uint32)12)+7U)/8U),
-                                            image->stride_y_alignment);
-                                imagepatch_addr->stride_y = (vx_int32)temp_else;
-                            }
+                            /* Updating the stride alignment property of the image */
+                            image->stride_y_alignment = tmp_stride_y_alignment;
 
+                            obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+
+                            for (idx = 0U; idx < obj_desc->planes; idx++)
+                            {
+                                imagepatch_addr = &obj_desc->imagepatch_addr[idx];
+
+                                if ( imagepatch_addr->stride_x != 0 )
+                                {
+                                    vx_uint32 temp_if = TIVX_ALIGN(
+                                                (imagepatch_addr->dim_x*(vx_uint32)imagepatch_addr->stride_x)/imagepatch_addr->step_x,
+                                                image->stride_y_alignment);
+                                    imagepatch_addr->stride_y = (vx_int32)temp_if;
+                                }
+                                else /* Only for P12 and NV12_P12 */
+                                {
+                                    vx_uint32 temp_else = TIVX_ALIGN(
+                                                (((imagepatch_addr->dim_x*(vx_uint32)12)+7U)/8U),
+                                                image->stride_y_alignment);
+                                    imagepatch_addr->stride_y = (vx_int32)temp_else;
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "image stride y alignment must be a multiple of %d\n", TIVX_DEFAULT_STRIDE_Y_MULTIPLE);
+                            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         }
                     }
                     else

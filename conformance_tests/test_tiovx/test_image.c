@@ -434,6 +434,34 @@ TEST(tivxImage, testSetImageStride)
     VX_CALL(vxReleaseImage(&image));
 }
 
+TEST(tivxImage, testSetObjArrImageStride)
+{
+    #define NUM_OBJ_ARR_IMAGES 4
+
+    vx_context context = context_->vx_context_;
+    vx_image image_exemplar = NULL, img = NULL;
+    vx_object_array obj_arr = NULL;
+    vx_uint32 i, stride_y_alignment, set_stride_y_alignment = 8;
+
+    ASSERT_VX_OBJECT(image_exemplar = vxCreateImage(context, 648, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(image_exemplar, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &set_stride_y_alignment, sizeof(set_stride_y_alignment)));
+    ASSERT_VX_OBJECT(obj_arr = vxCreateObjectArray(context, (vx_reference)(image_exemplar), NUM_OBJ_ARR_IMAGES), VX_TYPE_OBJECT_ARRAY);
+    VX_CALL(vxReleaseImage(&image_exemplar));
+
+    for (i = 0; i < NUM_OBJ_ARR_IMAGES; i++)
+    {
+        ASSERT_VX_OBJECT(img = (vx_image)vxGetObjectArrayItem(obj_arr, i), VX_TYPE_IMAGE);
+
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(img, TIVX_IMAGE_STRIDE_Y_ALIGNMENT,  &stride_y_alignment,  sizeof(stride_y_alignment)));
+
+        ASSERT(stride_y_alignment==set_stride_y_alignment);
+
+        VX_CALL(vxReleaseImage(&img));
+    }
+
+    VX_CALL(vxReleaseObjectArray(&obj_arr));
+}
+
 TEST(tivxImage, negativeTestSetImageStride)
 {
     #define TEST_STRIDE_Y_ALIGNMENT 64
@@ -442,6 +470,7 @@ TEST(tivxImage, negativeTestSetImageStride)
     vx_image image = NULL;
     vx_uint32 stride_y_alignment;
     vx_size set_stride_y_alignment = TEST_STRIDE_Y_ALIGNMENT;
+    vx_uint32 invalid_set_stride_y_alignment = 17;
 
     vx_pixel_value_t val = {{ 0xAB }};
     vx_size memsz;
@@ -457,6 +486,9 @@ TEST(tivxImage, negativeTestSetImageStride)
 
     /* This is expected to fail due to incorrect type parameter for setting the stride */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetImageAttribute(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &set_stride_y_alignment, sizeof(set_stride_y_alignment)));
+
+    /* This is expected to fail since it is not a multiple of 8 */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetImageAttribute(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &invalid_set_stride_y_alignment, sizeof(invalid_set_stride_y_alignment)));
 
     memsz = vxComputeImagePatchSize(image, &rect, 0);
     ASSERT(memsz >= 640*480);
@@ -559,4 +591,5 @@ TESTCASE_TESTS(
     testQueryImage,
     testSetImageStride,
     negativeTestSetImageStride,
-    negativeTestQueryImage1)
+    negativeTestQueryImage1,
+    testSetObjArrImageStride)

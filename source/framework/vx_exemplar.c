@@ -283,19 +283,25 @@ static vx_reference ownCreateImageFromExemplar(
     vx_context context, vx_image exemplar)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_uint32 width, height;
+    vx_uint32 width, height, stride_y_alignment;
     vx_df_image format;
     vx_image img = NULL;
 
     tivxCheckStatus(&status, vxQueryImage(exemplar, (vx_enum)VX_IMAGE_WIDTH, &width, sizeof(width)));
     tivxCheckStatus(&status, vxQueryImage(exemplar, (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(height)));
     tivxCheckStatus(&status, vxQueryImage(exemplar, (vx_enum)VX_IMAGE_FORMAT, &format, sizeof(format)));
+    tivxCheckStatus(&status, vxQueryImage(exemplar, (vx_enum)TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &stride_y_alignment, sizeof(stride_y_alignment)));
 
 #ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {
         img = vxCreateImage(context, width, height, format);
+    }
+
+    if (ownIsValidImage(img) == (vx_bool)vx_true_e)
+    {
+        (void)vxSetImageAttribute(img, (vx_enum)TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &stride_y_alignment, sizeof(stride_y_alignment));
     }
 
     return vxCastRefFromImage(img);

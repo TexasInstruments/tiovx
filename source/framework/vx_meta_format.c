@@ -97,6 +97,7 @@ vx_meta_format ownCreateMetaFormat(vx_context context)
             meta->img.width  = 0U;
             meta->img.height = 0U;
             meta->img.format = (vx_enum)VX_TYPE_INVALID;
+            meta->img.stride_y_alignment = TIVX_DEFAULT_STRIDE_Y_ALIGN;
 
             /* Initialize pyramid meta */
             meta->pmd.width  = 0U;
@@ -276,6 +277,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Image width error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)TIVX_IMAGE_STRIDE_Y_ALIGNMENT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    meta->img.stride_y_alignment = *(const vx_uint32 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Image stride y alignment error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1057,6 +1070,8 @@ static vx_status ownInitMetaFormatWithImage(
         sizeof(meta->img.height)));
     tivxCheckStatus(&status, vxQueryImage(exemplar, (vx_enum)VX_IMAGE_FORMAT, &meta->img.format,
         sizeof(meta->img.format)));
+    tivxCheckStatus(&status, vxQueryImage(exemplar, (vx_enum)TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &meta->img.stride_y_alignment,
+        sizeof(meta->img.stride_y_alignment)));
 
     return (status);
 }

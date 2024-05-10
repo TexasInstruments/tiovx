@@ -88,7 +88,7 @@ vx_status ownInitVirtualImage(
     vx_image img, vx_uint32 width, vx_uint32 height, vx_df_image format);
 
 /*!
- * \brief function to retreive the buffer size of an image
+ * \brief function to retrieve the buffer size of an image
  *
  * \param obj_desc       [in] image object descriptor
  *
@@ -98,6 +98,17 @@ vx_status ownInitVirtualImage(
  */
 uint32_t ownImageGetBufferSize(tivx_obj_desc_image_t *obj_desc);
 
+
+/*!
+ * \brief function determine if a given image is valid or not
+ *
+ * \param image       [in] OpenVX image object
+ *
+ * \return boolean of whether or not the given image is valid
+ *
+ * \ingroup group_vx_image
+ */
+vx_bool ownIsValidImage(vx_image image);
 
 #ifdef __cplusplus
 }

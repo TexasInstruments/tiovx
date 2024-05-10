@@ -163,11 +163,11 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
     if (in_ref_type == out_ref_type)
     {
         vx_enum format = VX_DF_IMAGE_U8;
-        vx_uint32 src_width = 128, src_height = 128;
+        vx_uint32 src_width = 128, src_height = 128, src_stride_y_alignment = 16;
         vx_uint32 dst_width = 256, dst_height = 256;
 
         vx_enum actual_format = VX_TYPE_INVALID;
-        vx_uint32 actual_src_width = 128, actual_src_height = 128;
+        vx_uint32 actual_src_width = 128, actual_src_height = 128, actual_src_stride_y_alignment = 16;
         vx_uint32 actual_dst_width = 256, actual_dst_height = 256;
 
         switch (type)
@@ -177,8 +177,10 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
             VX_CALL_(return VX_FAILURE, vxQueryImage((vx_image)input, VX_IMAGE_FORMAT, &actual_format, sizeof(vx_enum)));
             VX_CALL_(return VX_FAILURE, vxQueryImage((vx_image)input, VX_IMAGE_WIDTH, &actual_src_width, sizeof(vx_uint32)));
             VX_CALL_(return VX_FAILURE, vxQueryImage((vx_image)input, VX_IMAGE_HEIGHT, &actual_src_height, sizeof(vx_uint32)));
+            VX_CALL_(return VX_FAILURE, vxQueryImage((vx_image)input, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &actual_src_stride_y_alignment, sizeof(actual_src_stride_y_alignment)));
 
-            if (format == actual_format && src_width == actual_src_width && src_height == actual_src_height)
+            if ((format == actual_format) && (src_width == actual_src_width) &&
+                (src_height == actual_src_height) && (src_stride_y_alignment == actual_src_stride_y_alignment) )
             {
                 VX_CALL_(return VX_FAILURE, vxSetMetaFormatFromReference(meta, input));
                 vx_kernel_image_valid_rectangle_f callback = &own_set_image_valid_rect;
@@ -215,7 +217,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     vx_meta_format meta = metas[OWN_PARAM_OUTPUT];
 
     vx_enum format = VX_DF_IMAGE_U8;
-    vx_uint32 src_width = 128, src_height = 128;
+    vx_uint32 src_width = 128, src_height = 128, src_stride_y_alignment = 16;
     vx_uint32 dst_width = 256, dst_height = 256;
     vx_enum item_type = (type == VX_TYPE_OBJECT_ARRAY) ? objarray_itemtype : VX_TYPE_UINT8;
     vx_size capacity = 20;
@@ -229,7 +231,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     vx_size m = 5, n = 5;
 
     vx_enum actual_format = VX_TYPE_INVALID;
-    vx_uint32 actual_src_width = 128, actual_src_height = 128;
+    vx_uint32 actual_src_width = 128, actual_src_height = 128, actual_src_stride_y_alignment = 16;
     vx_uint32 actual_dst_width = 256, actual_dst_height = 256;
     vx_enum actual_item_type = VX_TYPE_INVALID;
     vx_size actual_capacity = 0;
@@ -276,12 +278,16 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
         VX_CALL_(return VX_FAILURE, vxQueryImage((vx_image)input, VX_IMAGE_FORMAT, &actual_format, sizeof(vx_enum)));
         VX_CALL_(return VX_FAILURE, vxQueryImage((vx_image)input, VX_IMAGE_WIDTH, &actual_src_width, sizeof(vx_uint32)));
         VX_CALL_(return VX_FAILURE, vxQueryImage((vx_image)input, VX_IMAGE_HEIGHT, &actual_src_height, sizeof(vx_uint32)));
+        VX_CALL_(return VX_FAILURE, vxQueryImage((vx_image)input, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &actual_src_stride_y_alignment, sizeof(vx_uint32)));
 
-        if (format == actual_format && src_width == actual_src_width && src_height == actual_src_height)
+        if ((format == actual_format) && (src_width == actual_src_width) &&
+            (src_height == actual_src_height) && (src_stride_y_alignment == actual_src_stride_y_alignment) )
         {
             (void)vxSetMetaFormatAttribute(meta, VX_IMAGE_FORMAT, &format, sizeofErr);
             (void)vxSetMetaFormatAttribute(meta, VX_IMAGE_WIDTH, &src_width, sizeofErr);
             (void)vxSetMetaFormatAttribute(meta, VX_IMAGE_HEIGHT, &src_height, sizeofErr);
+            (void)vxSetMetaFormatAttribute(meta, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &src_stride_y_alignment, sizeofErr);
+            VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &src_stride_y_alignment, sizeof(src_stride_y_alignment)));
             vx_kernel_image_valid_rectangle_f callback = &own_set_image_valid_rect;
             (void)vxSetMetaFormatAttribute(meta, VX_VALID_RECT_CALLBACK, &callback, sizeof(callback));
         }

@@ -98,11 +98,15 @@ extern "C" {
 
 /*! \brief Macro to specify default alignment to use for stride in Y-direction
  *
- *         HWA nodes require 16 byte alignment
- *
  * \ingroup group_vx_utils
  */
 #define TIVX_DEFAULT_STRIDE_Y_ALIGN   (16U)
+
+/*! \brief Macro to specify multiple of which the stride in Y-direction must be set to
+ *
+ * \ingroup group_vx_utils
+ */
+#define TIVX_DEFAULT_STRIDE_Y_MULTIPLE   (8U)
 
 /*! \brief Used to determine if a type is a scalar.
  * \ingroup group_vx_utils
