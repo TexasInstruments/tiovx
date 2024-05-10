@@ -217,46 +217,14 @@ typedef struct _tivx_resource_stats_t {
 
 } tivx_resource_stats_t;
 
-/*! \brief TI attribute extensions
- *
- *         TI attribute extensions to OpenVX
+/*! \brief TI attribute extensions for the graph object
  *
  * \ingroup group_tivx_ext_host
  */
-typedef enum _tivx_attribute_extensions_e {
-
-    /*! \brief Returns the target string corresponding to the node */
-    TIVX_NODE_TARGET_STRING = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x0,
-
-    /*! \brief Sets the valid data size within the user data object */
-    TIVX_USER_DATA_OBJECT_VALID_SIZE = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x1,
-
-    /*! \brief Returns the timestamp in micro-seconds corresponding to the given reference */
-    TIVX_REFERENCE_TIMESTAMP = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x2,
-
-    /*! \brief Returns a boolean indicating whether or not a reference is invalid */
-    TIVX_REFERENCE_INVALID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x3,
+typedef enum _tivx_graph_attribute_extensions_e {
 
     /*! \brief Returns the graph stream executions. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
-    TIVX_GRAPH_STREAM_EXECUTIONS = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x4,
-
-    /*! \brief Set/Query the kernel level timeout parameter.
-     * Read-Write. Can be written at initialization as well as at runtime.
-     * Use a <tt>\ref vx_uint32</tt> parameter.
-     * Refer to \ref TIVX_DEFAULT_KERNEL_TIMEOUT for details on the default
-     * value used for this attribute.
-     */
-    TIVX_KERNEL_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x5,
-
-    /*! \brief Set/Query the node level timeout parameter.
-     * Read-Write. Can be written at initialization as well as at runtime.
-     * This timeout attribute affects the operation of the node CREATE and
-     * DELETE target kernel functions.
-     * Use a <tt>\ref vx_uint32</tt> parameter.
-     * Refer to \ref TIVX_DEFAULT_KERNEL_TIMEOUT for details on the default
-     * value used for this attribute.
-     */
-    TIVX_NODE_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x6,
+    TIVX_GRAPH_STREAM_EXECUTIONS = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_GRAPH) + 0x0,
 
     /*! \brief Set/Query the graph level timeout parameter.
      * Read-Write. Can be written at initialization as well as at runtime.
@@ -268,40 +236,35 @@ typedef enum _tivx_attribute_extensions_e {
      * Refer to \ref TIVX_DEFAULT_GRAPH_TIMEOUT for details on the default
      * value used for this attribute.
      */
-    TIVX_GRAPH_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x7,
+    TIVX_GRAPH_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_GRAPH) + 0x1,
 
     /*! \brief Query the graph pipeline depth.
      * Read-Only. Can be read at initialization as well as at runtime.
      * Use a <tt>\ref vx_uint32</tt> parameter.
      * By default, this value is set to 1.
      */
-    TIVX_GRAPH_PIPELINE_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x8,
+    TIVX_GRAPH_PIPELINE_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_GRAPH) + 0x2
 
-    /*! \brief Query the context number of user kernel ID's.
-     * Read-Only. Can be read at initialization as well as at runtime.
+} tivx_graph_attribute_extensions_e;
+
+/*! \brief TI attribute extensions for the node object
+ *
+ * \ingroup group_tivx_ext_host
+ */
+typedef enum _tivx_node_attribute_extensions_e {
+
+    /*! \brief Returns the target string corresponding to the node */
+    TIVX_NODE_TARGET_STRING = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_NODE) + 0x0,
+
+    /*! \brief Set/Query the node level timeout parameter.
+     * Read-Write. Can be written at initialization as well as at runtime.
+     * This timeout attribute affects the operation of the node CREATE and
+     * DELETE target kernel functions.
      * Use a <tt>\ref vx_uint32</tt> parameter.
-     * By default, this value is set to 0.
+     * Refer to \ref TIVX_DEFAULT_KERNEL_TIMEOUT for details on the default
+     * value used for this attribute.
      */
-    TIVX_CONTEXT_NUM_USER_KERNEL_ID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x9,
-
-    /*! \brief Query the imagepatch addressing structure from a vx_image.
-     * Read-Only. Can be read at initialization as well as at runtime.
-     * Use a <tt>\ref vx_imagepatch_addressing_t[TIVX_IMAGE_MAX_PLANES]</tt> parameter.
-     */
-    TIVX_IMAGE_IMAGEPATCH_ADDRESSING = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xa,
-
-    /*! \brief Query the strides from a vx_tensor object.
-     * Read-Only. Can be read at initialization as well as at runtime.
-     * Use an array of <tt>\ref vx_size * VX_TENSOR_NUMBER_OF_DIMS</tt> parameter.
-     */
-    TIVX_TENSOR_STRIDES = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xb,
-
-    /*! \brief Query the context number of user library ID's.
-     * Read-Only. Can be read at initialization as well as at runtime.
-     * Use a <tt>\ref vx_uint32</tt> parameter.
-     * By default, this value is set to 0.
-     */
-    TIVX_CONTEXT_NUM_USER_LIBRARY_ID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xc,
+    TIVX_NODE_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_NODE) + 0x1,
 
     /*! \brief Query the node to see if it has timed out.
      * Read-Only. Can be read at initialization as well as at runtime.
@@ -309,7 +272,21 @@ typedef enum _tivx_attribute_extensions_e {
      * Refer to \ref TIVX_DEFAULT_KERNEL_TIMEOUT for more details about node
      * timeouts
      */
-    TIVX_NODE_IS_TIMED_OUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xd,
+    TIVX_NODE_IS_TIMED_OUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_NODE) + 0x2
+
+} tivx_node_attribute_extensions_e;
+
+/*! \brief TI attribute extensions for the reference object
+ *
+ * \ingroup group_tivx_ext_host
+ */
+typedef enum _tivx_reference_attribute_extensions_e {
+
+    /*! \brief Returns the timestamp in micro-seconds corresponding to the given reference */
+    TIVX_REFERENCE_TIMESTAMP = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_REFERENCE) + 0x0,
+
+    /*! \brief Returns a boolean indicating whether or not a reference is invalid */
+    TIVX_REFERENCE_INVALID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_REFERENCE) + 0x1,
 
     /*! \brief Query the reference to see if the associated buffer has been allocated.
      * Note that this is only applicable in the case that the buffer has been allocated
@@ -318,7 +295,70 @@ typedef enum _tivx_attribute_extensions_e {
      * Read-Only. Can be read at initialization as well as at runtime.
      * Use a <tt>\ref vx_bool</tt> parameter.
      */
-    TIVX_REFERENCE_BUFFER_IS_ALLOCATED = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xe,
+    TIVX_REFERENCE_BUFFER_IS_ALLOCATED = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_REFERENCE) + 0x2
+
+} tivx_reference_attribute_extensions_e;
+
+/*! \brief TI attribute extensions for the user data object
+ *
+ * \ingroup group_tivx_ext_host
+ */
+typedef enum _tivx_user_data_object_attribute_extensions_e {
+
+    /*! \brief Sets the valid data size within the user data object */
+    TIVX_USER_DATA_OBJECT_VALID_SIZE = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_USER_DATA_OBJECT) + 0x0
+
+} tivx_user_data_object_attribute_extensions_e;
+
+/*! \brief TI attribute extensions for the kernel object
+ *
+ * \ingroup group_tivx_ext_host
+ */
+typedef enum _tivx_kernel_attribute_extensions_e {
+
+    /*! \brief Set/Query the kernel level timeout parameter.
+     * Read-Write. Can be written at initialization as well as at runtime.
+     * Use a <tt>\ref vx_uint32</tt> parameter.
+     * Refer to \ref TIVX_DEFAULT_KERNEL_TIMEOUT for details on the default
+     * value used for this attribute.
+     */
+    TIVX_KERNEL_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_KERNEL) + 0x0
+
+} tivx_kernel_attribute_extensions_e;
+
+/*! \brief TI attribute extensions for the context object
+ *
+ * \ingroup group_tivx_ext_host
+ */
+typedef enum _tivx_context_attribute_extensions_e {
+
+    /*! \brief Query the context number of user kernel ID's.
+     * Read-Only. Can be read at initialization as well as at runtime.
+     * Use a <tt>\ref vx_uint32</tt> parameter.
+     * By default, this value is set to 0.
+     */
+    TIVX_CONTEXT_NUM_USER_KERNEL_ID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_CONTEXT) + 0x0,
+
+    /*! \brief Query the context number of user library ID's.
+     * Read-Only. Can be read at initialization as well as at runtime.
+     * Use a <tt>\ref vx_uint32</tt> parameter.
+     * By default, this value is set to 0.
+     */
+    TIVX_CONTEXT_NUM_USER_LIBRARY_ID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_CONTEXT) + 0x1
+
+} tivx_context_attribute_extensions_e;
+
+/*! \brief TI attribute extensions for the image object
+ *
+ * \ingroup group_tivx_ext_host
+ */
+typedef enum _tivx_image_attribute_extensions_e {
+
+    /*! \brief Query the imagepatch addressing structure from a vx_image.
+     * Read-Only. Can be read at initialization as well as at runtime.
+     * Use a <tt>\ref vx_imagepatch_addressing_t[TIVX_IMAGE_MAX_PLANES]</tt> parameter.
+     */
+    TIVX_IMAGE_IMAGEPATCH_ADDRESSING = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_IMAGE) + 0x0,
 
     /*! \brief Parameter allowing an application to query or set the stride Y alignment of
      * a vx_image.  By default, this value will be set to \ref TIVX_DEFAULT_STRIDE_Y_ALIGN.
@@ -334,9 +374,23 @@ typedef enum _tivx_attribute_extensions_e {
      * of the buffer.
      * Use a <tt>\ref vx_uint32</tt> parameter.
      */
-    TIVX_IMAGE_STRIDE_Y_ALIGNMENT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xf
+    TIVX_IMAGE_STRIDE_Y_ALIGNMENT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_IMAGE) + 0x1
 
-} tivx_attribute_extensions_e;
+} tivx_image_attribute_extensions_e;
+
+/*! \brief TI attribute extensions for the tensor object
+ *
+ * \ingroup group_tivx_ext_host
+ */
+typedef enum _tivx_tensor_attribute_extensions_e {
+
+    /*! \brief Query the strides from a vx_tensor object.
+     * Read-Only. Can be read at initialization as well as at runtime.
+     * Use an array of <tt>\ref vx_size * VX_TENSOR_NUMBER_OF_DIMS</tt> parameter.
+     */
+    TIVX_TENSOR_STRIDES = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_TENSOR) + 0x0
+
+} tivx_tensor_attribute_extensions_e;
 
 
 /*! \brief Based on the VX_DF_IMAGE definition.
