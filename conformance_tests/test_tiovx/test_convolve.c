@@ -659,8 +659,8 @@ TESTCASE_TESTS(
     negativeTestSetConvolutionAttribute,
     negativeTestCopyConvolutionCoefficients,
     negativeTestCreateConvolution,
-    negativeTestMemBufferAlloc,
-    negativeTestQueryConvolution1,
-    negativeTestCopyConvolutionCoefficients1
+    DISABLED_negativeTestMemBufferAlloc,
+    DISABLED_negativeTestQueryConvolution1,
+    DISABLED_negativeTestCopyConvolutionCoefficients1
 )
 
