@@ -65,10 +65,41 @@
 #define MB (1024 * 1024)
 #define KB (1024)
 
+#define LARGE_CHUNK MB
+#define SMALL_CHUNK KB
+
 uint32_t link_index = 0;
 
 /* Function to create and push data to the end of the list */
 static vx_status pushback_link(tivx_shared_mem_info_t ** head, tivx_shared_mem_ptr_t shared_mem_ptr, vx_uint32 size)
+{
+    vx_status status = VX_FAILURE;
+
+    /* Iterate till last node */
+    tivx_shared_mem_info_t * last = * head;
+    while (last->next != NULL)
+    {
+        last = last->next;
+    }
+
+    /* Populate the link with memory info */
+    if (last->is_used == false)
+    {
+        last->shared_mem_ptr = shared_mem_ptr;
+        last->size = size;
+        last->is_used = true;
+        status = VX_SUCCESS;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Error. Link is already in use!\n");
+    }
+
+    return status;
+}
+
+/* Function to create and push data to the end of the list */
+static vx_status create_link(tivx_shared_mem_info_t ** head)
 {
     vx_status status = VX_FAILURE;
     tivx_shared_mem_info_t * newLink = tivxMemAlloc(sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL);
@@ -79,9 +110,8 @@ static vx_status pushback_link(tivx_shared_mem_info_t ** head, tivx_shared_mem_p
     }
     else
     {
-        newLink->shared_mem_ptr = shared_mem_ptr;
-        newLink->size = size;
         newLink->next = NULL;
+        newLink->is_used = false;
 
         /* First Link */
         if (*head == NULL)
@@ -91,14 +121,30 @@ static vx_status pushback_link(tivx_shared_mem_info_t ** head, tivx_shared_mem_p
         }
         else
         {
-            /* Iterate till last node */
             tivx_shared_mem_info_t * current = * head;
+
+            /* Iterate till last node */
             while (current->next != NULL)
             {
                 current = current->next;
             }
-            current->next = newLink;
-            status = VX_SUCCESS;
+            /* Create new node if the last node is used, else do not create new link */
+            if (current->is_used == true)
+            {
+                current->next = newLink;
+                status = VX_SUCCESS;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Last link is not used. No need to create new link!\n");
+                /* Free the temp link */
+                status = tivxMemFree(newLink, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL);
+                if (status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Temporary link buffer cannot be freed!\n");
+                }
+            }
+
         }
     }
     if (status == VX_SUCCESS)
@@ -134,99 +180,112 @@ static vx_status pop_link(tivx_shared_mem_info_t * head)
 
 vx_status test_utils_max_out_heap_mem(tivx_shared_mem_info_t** shared_mem_info_array_ret, vx_uint32* num_chunks, vx_enum mheap_region)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status, ret_status = (vx_status)VX_SUCCESS;
     vx_uint32 num_allocations = 0;
     vx_uint32 total_alloc_size = 0;
 
     tivx_shared_mem_ptr_t temp_tivx_shared_mem_ptr;
-    vx_uint32 chunk_size = MB;
+    vx_uint32 chunk_size = LARGE_CHUNK;
 
     tivx_shared_mem_info_t* head = NULL;
 
-    if (status == (vx_status)VX_SUCCESS)
+    /* Allocate memory in 1 MB chunks (large chunks) until exhausted, and then allocate small chunks until exhausted */
+    while (1)
     {
-        /* Allocate memory in 1 MB chunks (large chunks) until exhausted */
-        while (1)
+        status = create_link(&head);
+        if (status == VX_FAILURE)
         {
-            status = tivxMemBufferAlloc(&temp_tivx_shared_mem_ptr,
-                                            chunk_size, mheap_region);
-
-            if (status == VX_ERROR_NO_MEMORY)
+            /* Memory might be exhausted if memory region is TIVX_MEM_EXTERNAL */
+            break;
+        }
+        status = tivxMemBufferAlloc(&temp_tivx_shared_mem_ptr,
+                                        chunk_size, mheap_region);
+        /* If memory is exhausted */
+        if (status == VX_ERROR_NO_MEMORY)
+        {
+            if (chunk_size == LARGE_CHUNK)
             {
-                VX_PRINT(VX_ZONE_ERROR, "Memory exhausted after 1 MB allocation!\n");
-                break;
+                VX_PRINT(VX_ZONE_ERROR, "Memory exhausted after Large chunk allocation! Starting Small chunk allocation.\n");
+                /* Try small chunk allocation */
+                chunk_size = SMALL_CHUNK;
             }
             else
-            if (status == VX_SUCCESS)
+            if (chunk_size == SMALL_CHUNK)
             {
-                total_alloc_size += chunk_size;
-                num_allocations++;
-
-                status = pushback_link(&head, temp_tivx_shared_mem_ptr, chunk_size);
-                if (status != (vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Memory info couldn't be pushed back to the new link!\n");
-                    break;
-                }
-            }
-            else
-            {
+                VX_PRINT(VX_ZONE_ERROR, "Memory exhausted after Small chunk allocation!\n");
+                /* Break out of the loop after small chunk exhaustion */
                 break;
             }
         }
-
-        /* If memory exhausted for large chunk allocation, start small chunk (1KB) allocation */
-        if (status == (vx_status)VX_ERROR_NO_MEMORY)
+        /* Memory not exhausted */
+        else
+        if (status == VX_SUCCESS)
         {
-            chunk_size = KB;
-            /* Allocating memory in 1 KB chunks till memory is completely exhausted */
-            while (1)
-            {
-                status = tivxMemBufferAlloc(&temp_tivx_shared_mem_ptr,
-                                                chunk_size, mheap_region);
-                if (status == VX_ERROR_NO_MEMORY)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Memory exhausted after 1 KB allocation!\n");
-                    break;
-                }
-                else
-                if (status == VX_SUCCESS)
-                {
-                    total_alloc_size += chunk_size;
-                    num_allocations++;
+            total_alloc_size += chunk_size;
+            num_allocations++;
 
-                    status = pushback_link(&head, temp_tivx_shared_mem_ptr, chunk_size);
-                    if (status != (vx_status)VX_SUCCESS)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "Memory info couldn't be pushed back to the new link!\n");
-                        break;
-                    }
-                }
-                else
-                {
-                    break;
-                }
+            /* Populate info to the last link */
+            status = pushback_link(&head, temp_tivx_shared_mem_ptr, chunk_size);
+            if (status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Memory info couldn't be pushed back to the last link!\n");
+                break;
             }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc failed with status %d!\n", status);
+            break;
         }
     }
 
     VX_PRINT(VX_ZONE_ERROR,"%d alloc's of %d KB size\n", num_allocations,  total_alloc_size/1024);
 
+
+    /* Ensuring no memory is remaining in the given region */
+    tivx_shared_mem_ptr_t temp_final_tivx_shared_mem_ptr;
+
+    status = tivxMemBufferAlloc(&temp_final_tivx_shared_mem_ptr,
+                                            SMALL_CHUNK, mheap_region);
+
+
     /* If all memory is allocated until exhausted, return success */
     if (status == VX_ERROR_NO_MEMORY)
     {
-        status = (vx_status)VX_SUCCESS;
+        ret_status = (vx_status)VX_SUCCESS;
+    }
+    else
+    if (status == VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Could allocate memory after exhaustion! Memory not exhausted fully! Releasing all allocated memory!\n", status);
+        /* Last small allocation passed. Memory is not exhausted. Free all allocated memory and return failure */
+        status = tivxMemBufferFree(&temp_final_tivx_shared_mem_ptr, SMALL_CHUNK);
+        if (status != VX_SUCCESS)
+        {
+            /* Couldn't free last allocated small buffer */
+            ret_status = VX_FAILURE;
+        }
+        /* Free all allocated buffers */
+        status = test_utils_release_maxed_out_heap_mem(head, num_allocations);
+        if (status != VX_SUCCESS)
+        {
+            /* Couldn't free all allocated buffers */
+            ret_status = VX_FAILURE;
+        }
+    }
+
+    if (ret_status == VX_SUCCESS)
+    {
+        *shared_mem_info_array_ret = head;
+        *num_chunks = num_allocations;
     }
     else
     {
-        /* do nothing. Return error status */
+        *shared_mem_info_array_ret = NULL;
+        *num_chunks = 0;
     }
 
-
-    *shared_mem_info_array_ret = head;
-    *num_chunks = num_allocations;
-
-    return status;
+    return ret_status;
 }
 
 
@@ -242,21 +301,30 @@ vx_status test_utils_release_maxed_out_heap_mem(tivx_shared_mem_info_t* shared_m
 
     while (head != NULL)
     {
-        next = head->next;
-        status = tivxMemBufferFree(&(head->shared_mem_ptr), head->size);
-        if (status != VX_SUCCESS)
+        if (head->is_used == true)
         {
-            VX_PRINT(VX_ZONE_ERROR,"Memory freeing failed at %u\n", i);
+            next = head->next;
+            status = tivxMemBufferFree(&(head->shared_mem_ptr), head->size);
+            if (status != VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Memory freeing failed at %u\n", i);
+                break;
+            }
+            status = pop_link(head);
+            if (status != VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Link deletion failed at %u\n", i);
+                break;
+            }
+            head = next;
+            i++;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"The link %u is not used.\n", i);
+            status = pop_link(head);
             break;
         }
-        status = pop_link(head);
-        if (status != VX_SUCCESS)
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Link deletion failed at %u\n", i);
-            break;
-        }
-        head = next;
-        i++;
     }
 
     if (status == VX_SUCCESS)

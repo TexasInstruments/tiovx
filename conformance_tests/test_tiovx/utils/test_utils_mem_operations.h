@@ -69,11 +69,15 @@
 #define TEST_UTILS_MEM_OPERATIONS_H
 
 #include <VX/vx.h>
-#include "test_tiovx.h"
+#include <TI/tivx.h>
+
+#include "test_engine/test.h"
+#include <inttypes.h>
 
 typedef struct tivx_shared_mem_info {
     tivx_shared_mem_ptr_t shared_mem_ptr;
     vx_uint32 size;
+    bool is_used;
     struct tivx_shared_mem_info* next;
 } tivx_shared_mem_info_t;
 
