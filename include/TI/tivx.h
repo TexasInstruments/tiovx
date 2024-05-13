@@ -442,9 +442,9 @@ void tivxHostDeInit(void);
  *        Call multiple times for each supported target
  *
  *        If given target is not valid on current platform then
- *        error VX_ERROR_NOT_SUPPORTED is returned.
+ *        error \ref VX_ERROR_NOT_SUPPORTED is returned.
  *
- *        Typically VX_ERROR_NOT_SUPPORTED error should be ignored for this API,
+ *        Typically \ref VX_ERROR_NOT_SUPPORTED error should be ignored for this API,
  *        since this code is typically kept same across platforms
  *
  *        During graph verify however if user asks to run the kernel
@@ -558,15 +558,12 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void);
  *        Note that the object descriptor values returned by this API are local only to the
  *        process/core this is being called on.
  *
- * \param [in] outputFile Character pointer to indicate name of file where output is desired
- *
- *        Note: The file name can be set to NULL if console output is desired
- * \param [in] unit Character pointer to indicate the units desired in memory output
- *
- *        Note: The unit options are "B", "KB", "MB", or "all". Any other choice is set to "all"
- * \param [in] displayMode Enum representing the desired mode of display
- *
- *        Note: The mode options are defined in tivx_memory_logging_e
+ * \param [in] outputFile Character pointer to indicate name of file where output is desired.
+ *        The file name can be set to NULL if console output is desired.
+ * \param [in] unit Character pointer to indicate the units desired in memory output.
+ *        The unit options are "B", "KB", "MB", or "all". Any other choice is set to "all".
+ * \param [in] displayMode Enum representing the desired mode of display.
+ *        The mode options are defined in \ref tivx_memory_logging_e
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS Output was output to the console or was successfully written to file
@@ -579,7 +576,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, const char * unit, vx_e
 
 /*! \brief Enumerations of memory consumption tool's display modes
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_host_resource_log
  */
 typedef enum _tivx_memory_logging_e {
 
@@ -904,7 +901,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(vx_user_data_o
 VX_API_ENTRY vx_status VX_API_CALL tivxSetNodeTileSize(vx_node node, vx_uint32 block_width, vx_uint32 block_height);
 
 /*! \brief Sets reference attributes for the below enums:
- *         TIVX_REFERENCE_TIMESTAMP
+ *         \ref TIVX_REFERENCE_TIMESTAMP
  * \param [in] ref       The reference object.
  * \param [in] attribute The attribute of the reference to be set.
  * \param [in] ptr       The value of the reference attribute to be set.
