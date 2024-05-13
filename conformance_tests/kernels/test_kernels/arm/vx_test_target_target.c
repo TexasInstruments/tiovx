@@ -73,6 +73,7 @@
 #include <tivx_target_kernel_priv.h>
 #include <tivx_obj_desc_queue.h>
 #include <tivx_target_kernel_instance.h>
+#include <tivx_target_kernel_priv.h>
 
 /* #define FULL_CODE_COVERAGE */
 /* Maximum length of testcase function name */
@@ -812,6 +813,89 @@ static vx_status tivxNegativeTestTargetObjDescQueueDequeue(uint8_t id)
     return status;
 }
 
+static vx_status tivxNegativeTestTargetKernelInstanceAlloc(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    volatile char kernel[TIVX_KERNEL_MAX_PARAMS] = {1};
+    volatile char *kernel_name = kernel;
+
+    if(NULL != ownTargetKernelInstanceAlloc(0, kernel_name, 0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for kernel_name != 'NULL'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetKernelInstanceAllocate(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    volatile char kernel[TIVX_KERNEL_MAX_PARAMS] = {1};
+    volatile char *kernel_name = kernel;
+
+    /*to hit tmp_kernel_instance->kernel_id == (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID*/
+    if(NULL == ownTargetKernelInstanceAlloc(TIVX_TARGET_KERNEL_ID_INVALID , kernel_name, TIVX_TARGET_KERNEL_ID_INVALID ))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'kernel_id = TIVX_TARGET_KERNEL_ID_INVALID'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxBranchTestTargetKernelInstanceAlloc(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if(NULL != ownTargetKernelInstanceAlloc(test_kernel->kernel_id, NULL, 0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'kernel_name = NULL'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxBranchTestTargetKernelInstanceAllocate(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    volatile char kernel[TIVX_KERNEL_MAX_PARAMS] = {1};
+    volatile char *kernel_name = kernel;
+    
+    /*to hit tmp_kernel_instance->kernel_id != (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID*/
+    if(NULL != ownTargetKernelInstanceAlloc(1, kernel_name, 1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'kernel_id != TIVX_TARGET_KERNEL_ID_INVALID'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxBranchTestTargetKernelInstanceGet(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    
+    /*to hit target_kernel_index > TIVX_TARGET_KERNEL_INSTANCE_MAX*/
+    if(NULL != ownTargetKernelInstanceGet(TIVX_TARGET_KERNEL_INSTANCE_MAX*3, 1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: target_kernel_index > TIVX_TARGET_KERNEL_INSTANCE_MAX \n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -838,6 +922,11 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestTargetObjDescQueueExtractBlockedNodes, "",VX_SUCCESS},
     {tivxNegativeTestTargetObjDescQueueAddBlockedNode, "",VX_SUCCESS},
     {tivxNegativeTestTargetObjDescQueueDequeue, "", VX_SUCCESS},
+    {tivxNegativeTestTargetKernelInstanceAlloc, "",VX_SUCCESS},
+    {tivxNegativeTestTargetKernelInstanceAllocate,"",VX_SUCCESS},
+    {tivxBranchTestTargetKernelInstanceAlloc,"",VX_SUCCESS},
+    {tivxBranchTestTargetKernelInstanceAllocate,"",VX_SUCCESS},
+    {tivxBranchTestTargetKernelInstanceGet,"",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
