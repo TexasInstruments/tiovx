@@ -896,6 +896,67 @@ static vx_status tivxBranchTestTargetKernelInstanceGet(uint8_t id)
     return status;
 }
 
+static vx_status tivxBranchTestTargetKernel(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if((vx_status)VX_FAILURE != ownTargetKernelCreate(test_kernel,NULL,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ERROR: ownTargetKernelCreate: Kernel created with invalid ARG\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownTargetKernelExecute(test_kernel,NULL,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ERROR: ownTargetKernelExecute: Kernel executed with invalid ARG\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownTargetKernelControl(test_kernel,1,NULL,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ERROR: ownTargetKernelControl: Kernel controlled with invalid ARG\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownTargetKernelDelete(test_kernel,NULL,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ERROR: ownTargetKernelDelete: Kernel deleted with invalid ARG\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxBranchTestTargetKernelFunc(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *test_params[TIVX_KERNEL_MAX_PARAMS] = {NULL};
+
+    if((vx_status)VX_FAILURE != ownTargetKernelCreate(NULL,test_params,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ERROR: ownTargetKernelCreate: Kernel created with invalid ARG'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownTargetKernelExecute(NULL,test_params,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ERROR: ownTargetKernelExecute: Kernel executed with invalid ARG\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownTargetKernelControl(NULL,1,test_params,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ERROR: ownTargetKernelControl: Kernel controlled with invalid ARG\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownTargetKernelDelete(NULL,test_params,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ERROR: ownTargetKernelDelete: Kernel deleted with invalid ARG\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -927,6 +988,8 @@ FuncInfo arrOfFuncs[] = {
     {tivxBranchTestTargetKernelInstanceAlloc,"",VX_SUCCESS},
     {tivxBranchTestTargetKernelInstanceAllocate,"",VX_SUCCESS},
     {tivxBranchTestTargetKernelInstanceGet,"",VX_SUCCESS}
+    {tivxBranchTestTargetKernel, "",VX_SUCCESS},
+    {tivxBranchTestTargetKernelFunc, "",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
