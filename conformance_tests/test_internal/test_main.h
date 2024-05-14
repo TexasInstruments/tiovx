@@ -33,5 +33,6 @@ TESTCASE(tivxInternalGraph)
 TESTCASE(tivxInternalGraphStream)
 TESTCASE(tivxInternalGraphVerify)
 TESTCASE(tivxInternalNode)
+TESTCASE(tivxInternalImage)
 
 #endif

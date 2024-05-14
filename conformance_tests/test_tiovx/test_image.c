@@ -41,6 +41,7 @@ TEST(tivxImage, negativeTestCreateImage)
     EXPECT_VX_ERROR(img = vxCreateImage(context, width, height, format), VX_ERROR_INVALID_PARAMETERS);
     EXPECT_VX_ERROR(img = vxCreateImage(context, width + 1, height, format), VX_ERROR_INVALID_PARAMETERS);
     EXPECT_VX_ERROR(img = vxCreateImage(context, width + 1, height + 1, VX_DF_IMAGE_DEFAULT), VX_ERROR_INVALID_PARAMETERS);
+    EXPECT_VX_ERROR(img = vxCreateImage(NULL, width + 1, height + 1, VX_DF_IMAGE_IYUV), VX_ERROR_INVALID_PARAMETERS);
 }
 
 TEST(tivxImage, negativeTestCreateImageFromHandle)
@@ -518,8 +519,21 @@ TEST(tivxImage, negativeTestIsValidDimension)
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_DIMENSION, vxGetStatus((vx_reference)vxCreateImage(context, 641, 480, VX_DF_IMAGE_IYUV)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGetStatus((vx_reference)vxCreateImage(context, 641, 480, VX_REFERENCE_TYPE)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_DIMENSION, vxGetStatus((vx_reference)vxCreateImage(context, 641, 480, VX_DF_IMAGE_YUYV)));
 }
 
+TEST(tivxImage, negativeTestQueryImage1)
+{
+    vx_context context = context_->vx_context_;
+    vx_image img = NULL;
+    vx_enum attribute = TIVX_IMAGE_IMAGEPATCH_ADDRESSING;
+    vx_size size = 0;
+
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, attribute, NULL, size));
+
+    VX_CALL(vxReleaseImage(&img));
+}
 TESTCASE_TESTS(
     tivxImage,
     negativeTestCreateImage,
@@ -544,4 +558,5 @@ TESTCASE_TESTS(
     negativeTestSubmage,
     testQueryImage,
     testSetImageStride,
-    negativeTestSetImageStride)
+    negativeTestSetImageStride,
+    negativeTestQueryImage1)
