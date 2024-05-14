@@ -446,9 +446,11 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
                         case TIVX_TYPE_RAW_IMAGE:
                             (void)snprintf(name, VX_MAX_REFERENCE_NAME, "raw_image_%d", ref_idx);
                             break;
+#if defined(BUILD_BAM)
                         case TIVX_TYPE_SUPER_NODE:
                             (void)snprintf(name, VX_MAX_REFERENCE_NAME, "super_node_%d", ref_idx);
                             break;
+#endif
                         default:
                             (void)snprintf(name, VX_MAX_REFERENCE_NAME, "ref_%d", ref_idx);
                             break;
