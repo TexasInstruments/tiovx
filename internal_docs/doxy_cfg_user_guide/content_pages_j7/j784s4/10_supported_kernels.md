@@ -81,19 +81,19 @@ Kernel | C7X | HWA | PC Emulation Support |
 Note: the below node implementation locations have changed from the 8.6 to 9.0 releases.  The new locations can be
 referenced in \ref TIOVX_PACKAGE_CONTENTS document.
 
-Kernel                            | Target    | PC Emulation Support |
-----------------------------------|-----------|----------------------|
-#tivxCaptureNode                  | CSIRX     | No                   |
-#tivxDisplayNode                  | DSS       | No                   |
-#tivxTIDLNode                     | C7x + MMA | Yes                  |
-#tivxVpacVissNode                 | VPAC_VISS | Yes                  |
-#tivxVpacLdcNode                  | VPAC_LDC  | Yes                  |
-#tivxVpacNfGenericNode            | VPAC_NF   | Yes                  |
-#tivxVpacNfBilateralNode          | VPAC_NF   | Yes                  |
-#tivxVpacMscScaleNode             | VPAC_MSC  | Yes                  |
-#tivxVpacMscPyramidNode           | VPAC_MSC  | Yes                  |
-#tivxDmpacSdeNode                 | DMPAC_SDE | Yes                  |
-#tivxDmpacDofNode                 | DMPAC_DOF | Yes                  |
-#tivxCsitxNode                    | CSITX     | No                   |
-#tivxDisplayM2MNode               | DSS       | No                   |
-#tivxObjArraySplitNode            | MPU       | Yes                  |
+Kernel                            | Target                  | Remote Core(s)                |PC Emulation Support |
+----------------------------------|-------------------------|---------------------------------|----------------------|
+#tivxCaptureNode                  | CSIRX                   | MCU2_0                          | No                   |
+#tivxDisplayNode                  | DSS                     | MCU2_0                          | No                   |
+#tivxTIDLNode                     | C7x + MMA               | C7X_1 / C7X_2 / C7X_3 / C7X_4   | Yes                  |
+#tivxVpacVissNode                 | VPAC1_VISS / VPAC2_VISS | MCU2_0 (VPAC1) / MCU4_0 (VPAC2) | Yes                  |
+#tivxVpacLdcNode                  | VPAC1_LDC / VPAC2_LDC   | MCU2_0 (VPAC1) / MCU4_0 (VPAC2) | Yes                  |
+#tivxVpacNfGenericNode            | VPAC1_NF / VPAC2_NF     | MCU2_0 (VPAC1) / MCU4_0 (VPAC2) | Yes                  |
+#tivxVpacNfBilateralNode          | VPAC1_NF / VPAC2_NF     | MCU2_0 (VPAC1) / MCU4_0 (VPAC2) | Yes                  |
+#tivxVpacMscScaleNode             | VPAC1_MSC / VPAC2_MSC   | MCU2_0 (VPAC1) / MCU4_0 (VPAC2) | Yes                  |
+#tivxVpacMscPyramidNode           | VPAC1_MSC / VPAC2_MSC   | MCU2_0 (VPAC1) / MCU4_0 (VPAC2) | Yes                  |
+#tivxDmpacSdeNode                 | DMPAC_SDE               | MCU2_1                          | Yes                  |
+#tivxDmpacDofNode                 | DMPAC_DOF               | MCU2_1                          | Yes                  |
+#tivxCsitxNode                    | CSITX                   | MCU2_0                          | Yes                  |
+#tivxDisplayM2MNode               | DSS                     | MCU2_0                          | Yes                  |
+#tivxObjArraySplitNode            | MPU                     | A72                             | Yes                  |
