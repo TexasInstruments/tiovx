@@ -20,13 +20,13 @@
 #include <vx_internal.h>
 #include <tivx_objects.h>
 
-#include "test_tiovx.h"
 #include "test_engine/test.h"
 #include "test_tiovx/test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <TI/tivx_test_kernels.h>
 #include <TI/tivx_capture.h>
+#include <test_utils_mem_operations.h>
 
 TESTCASE(tivxInternalGraphVerify,  CT_VXContext, ct_setup_vx_context, 0)
 
@@ -348,7 +348,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphInitVirtualNode6)
     with the virtual pyramid object */
     ASSERT_VX_OBJECT(n = tivxPyramidSourceNode(graph, pyr_in), VX_TYPE_NODE);
 
-    /* Tampering is_virtual parameter of scalar object */
+    /* Tampering is_virtual parameter of pyramid object */
     vx_reference ref = &(pyr_in->base);
     vx_bool is_virtual = ref->is_virtual;
     ref->is_virtual = true;
@@ -356,7 +356,6 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphInitVirtualNode6)
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
     obj_desc = (tivx_obj_desc_pyramid_t *)pyr_in->base.obj_desc;
 
-    printf("Read Level = %d\n", obj_desc->num_levels);
     vx_uint32 num_levels = obj_desc->num_levels;
     obj_desc->num_levels = 0;
 
@@ -411,6 +410,8 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphNodeKernelInit)
         }
     }
 
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
     vx_status status = VX_FAILURE;
 
     /* Releasing Descriptors one by one and trying to Verify the Graph */
@@ -446,6 +447,11 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphAddSingleDataReference)
 
     vx_image input, output;
 
+    tivx_shared_mem_info_t *shared_mem_info_array;
+    uint32_t num_chunks;
+    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
+    vx_status status = VX_SUCCESS;
+
     tivxTestKernelsLoadKernels(context);
 
     /* Creating Graph */
@@ -454,33 +460,18 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphAddSingleDataReference)
     ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(output = vxCreateImage(context, width, height, VX_DF_IMAGE_UYVY), VX_TYPE_IMAGE);
 
-    uint32_t max_tivx_mem_extern_buffer = 100 * 1024;
-    tivx_shared_mem_ptr_t tsmp[max_tivx_mem_extern_buffer];
-    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
-    vx_status status = VX_SUCCESS;
-    uint32_t size = 1024U;
 
 
     /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL */
-    // TODO: Replace with mem-utils-api
-    for (i = 0; i < max_tivx_mem_extern_buffer ; i++) {
-        status = tivxMemBufferAlloc(&tsmp[i], size, mheap_region);
-        if (status == VX_ERROR_NO_MEMORY){
-            break;
-        }
-    }
-
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_MEMORY, status);
+    VX_CALL(test_utils_max_out_heap_mem(&shared_mem_info_array, &num_chunks, mheap_region));
 
     ASSERT_VX_OBJECT(color_convert_node = vxColorConvertNode(graph, input, output), VX_TYPE_NODE);
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_MEMORY, vxVerifyGraph(graph));
 
     /* Freeing all the previously allocated memory */
-    // TODO: Replace with mem-utils-api
-    for (j = 0; j < i ; j++) {
-        VX_CALL(tivxMemBufferFree(&tsmp[j], size));
-    }
+    VX_CALL(test_utils_release_maxed_out_heap_mem(shared_mem_info_array, num_chunks));
+
 
     /* Cleanup */
     VX_CALL(vxReleaseImage(&input));
@@ -502,11 +493,11 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphAllocateDataObject)
     vx_delay delay;
     vx_pyramid pyr;
 
-    uint32_t max_tivx_mem_extern_buffer = 100 * 1024;
-    tivx_shared_mem_ptr_t tsmp[max_tivx_mem_extern_buffer];
+    tivx_shared_mem_info_t *shared_mem_info_array;
+    uint32_t num_chunks;
     vx_enum mheap_region = TIVX_MEM_EXTERNAL;
     vx_status status = VX_SUCCESS;
-    uint32_t size = 1024U;
+
 
     tivxTestKernelsLoadKernels(context);
 
@@ -516,15 +507,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphAllocateDataObject)
     ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)(pyr), 2), VX_TYPE_DELAY);
 
     /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL */
-    // TODO: Replace with mem-utils-api
-    for (i = 0; i < max_tivx_mem_extern_buffer ; i++) {
-        status = tivxMemBufferAlloc(&tsmp[i], size, mheap_region);
-        if (status == VX_ERROR_NO_MEMORY){
-            break;
-        }
-    }
-
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_MEMORY, status);
+    VX_CALL(test_utils_max_out_heap_mem(&shared_mem_info_array, &num_chunks, mheap_region));
 
     ASSERT_VX_OBJECT(n = tivxPyramidIntermediateNode(graph, pyr,
                           (vx_pyramid)vxGetReferenceFromDelay(delay, -1)), VX_TYPE_NODE);
@@ -534,10 +517,8 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphAllocateDataObject)
     status = VX_FAILURE;
 
     /* Freeing all the previously allocated memory */
-    // TODO: Replace with mem-utils-api
-    for (j = 0; j < i ; j++) {
-        VX_CALL(tivxMemBufferFree(&tsmp[j], size));
-
+    while (test_utils_single_release_heap_mem(&shared_mem_info_array, &num_chunks) == VX_SUCCESS && shared_mem_info_array != NULL)
+    {
         if (status != VX_SUCCESS)
         {
             status = vxVerifyGraph(graph);
@@ -553,54 +534,6 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphAllocateDataObject)
     tivxTestKernelsUnLoadKernels(context);
 
 }
-
-// TODO: Write custom kernel to make ownNodeKernelDeinit() fail and thus ownGraphNodeKernelDeinit()
-// NOT WORKING NOW
-#if 0
-TEST(tivxInternalGraphVerify, negativeTestOwnGraphNodeKernelDeinit)
-{
-    vx_context context = context_->vx_context_;
-    vx_graph graph;
-    uint32_t width = 640, height = 480, i = 0, j = 0;
-    vx_node n;
-    vx_delay delay;
-    vx_pyramid pyr;
-
-    uint32_t max_tivx_mem_extern_buffer = 100 * 1024;
-    tivx_shared_mem_ptr_t tsmp[max_tivx_mem_extern_buffer];
-    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
-    vx_status status = VX_SUCCESS;
-    uint32_t size = 1024U;
-
-    tivxTestKernelsLoadKernels(context);
-
-    /* Creating Graph along with  pyramid and delay objects */
-    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-    ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
-    ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)(pyr), 2), VX_TYPE_DELAY);
-
-    // vx_kernel_deinitialize_f deinitialize= &test_kern_deinitialize_f;
-
-    // graph->nodes[0]->kernel->deinitialize = &test_kern_deinitialize_f;
-
-    // ASSERT_EQ_VX_STATUS(VX_ERROR_NO_MEMORY, status);
-
-    ASSERT_VX_OBJECT(n = tivxPyramidIntermediateNode(graph, pyr,
-                          (vx_pyramid)vxGetReferenceFromDelay(delay, -1)), VX_TYPE_NODE);
-
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_MEMORY, vxVerifyGraph(graph));
-
-    status = VX_FAILURE;
-
-    /* Cleanup */
-    VX_CALL(vxReleaseDelay(&delay));
-    VX_CALL(vxReleasePyramid(&pyr));
-    VX_CALL(vxReleaseNode(&n));
-    VX_CALL(vxReleaseGraph(&graph));
-
-    tivxTestKernelsUnLoadKernels(context);
-}
-#endif
 
 /* Test to hit one branch of ownGraphCheckIsRefMatch */
 TEST(tivxInternalGraphVerify, testOwnGraphCheckIsRefMatch)
@@ -648,6 +581,5 @@ TESTCASE_TESTS(tivxInternalGraphVerify,
                negativeTestOwnGraphNodeKernelInit,
                negativeTestOwnGraphAddSingleDataReference,
                negativeTestOwnGraphAllocateDataObject,
-               /* negativeTestOwnGraphNodeKernelDeinit, */
                testOwnGraphCheckIsRefMatch
 )
