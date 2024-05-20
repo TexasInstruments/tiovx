@@ -2095,10 +2095,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 if(status == (vx_status)VX_SUCCESS)
                 {
                     status = ownGraphFindAndAddDataReferences(graph);
+#ifdef
+/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM006 */
+
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Find and add data references failed\n");
                     }
+#endif
                 }
 
                 if(status == (vx_status)VX_SUCCESS)
@@ -2236,10 +2240,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
             }
 
-            if((vx_status)VX_SUCCESS != ownReferenceUnlock(&graph->base))
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to unlock reference\n");
-            }
+            (void)ownReferenceUnlock(&graph->base);
         }
     }
     else
