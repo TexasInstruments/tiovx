@@ -178,11 +178,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
             {
                 if (context->obj_desc_cmd[i] != NULL)
                 {
-                    status = ownObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
-                    if((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to free object descriptor\n");
-                    }
+                    (void)ownObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
                 }
 
                 if (context->cmd_ack_event[i] != NULL)
@@ -1045,19 +1041,8 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"context objection creation failed\n");
-                    status = tivxMutexDelete(&context->lock);
-                    if((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
-                    }
-                    else
-                    {
-                        status = tivxMutexDelete(&context->log_lock);
-                        if((vx_status)VX_SUCCESS != status)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
-                        }
-                    }
+                    (void)tivxMutexDelete(&context->lock);
+                    (void)tivxMutexDelete(&context->log_lock);
                 }
             }
             if(status!=(vx_status)VX_SUCCESS)
@@ -1152,12 +1137,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                  idx ++)
             {
                 /* Unload kernels */
-                status = vxUnloadKernels(context, g_context_default_load_module[idx]);
-                if((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to unload kernel\n");
-                    break;
-                }
+                (void)vxUnloadKernels(context, g_context_default_load_module[idx]);
             }
             if((vx_status)VX_SUCCESS == status)
             {
