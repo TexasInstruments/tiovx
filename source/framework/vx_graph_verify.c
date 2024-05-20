@@ -932,7 +932,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
     {
         node = graph->nodes[i];
 
-        if((node->super_node == NULL)
+        if( node->super_node == NULL
 #if defined(BUILD_BAM)
         || (node->is_super_node == (vx_bool)vx_true_e)
 #endif
@@ -2095,7 +2095,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 if(status == (vx_status)VX_SUCCESS)
                 {
                     status = ownGraphFindAndAddDataReferences(graph);
-#ifdef
+#ifdef LDRA_UNTESTABLE_CODE
 /* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM006 */
 
                     if(status != (vx_status)VX_SUCCESS)
