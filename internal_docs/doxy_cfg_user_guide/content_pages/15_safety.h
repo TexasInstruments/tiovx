@@ -34,10 +34,17 @@
     - OpenVX standard kernels
     - Supernode extension (Note: this is not yet enabled on J7 platforms, but there are still references to it in the framework.
       These are thus commented out and disabled.)
+        - tiovx/source/framework/vx_graph_supernode.c
+        - tiovx/source/framework/vx_super_node.c
     - VXU functions
+        - tiovx/source/vxu
     - Debug logging functionality
+        - tiovx/source/framework/vx_log_resource.c
     - RT logging functionality
+        - tiovx/source/framework/vx_log_rt_trace.c
+        - tiovx/source/framework/vx_log_rt_trace_host.c
     - Export to dot file functionality
+        - tiovx/source/framework/vx_graph_export_dot.c
 
     Important note to how application shall be written using TIOVX that are used for safety: the "vx-" or "tivx-" functions shall only be used
     within a safety application, not the "own-" prefixed functions.  These functions shall only be called within the context of the framework itself,
