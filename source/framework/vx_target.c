@@ -1296,6 +1296,8 @@ vx_status ownTargetDelete(vx_enum target_id)
              * handled in ownTargetQueueObjDesc status check
              */
             (void)tivxQueueDelete(&target->job_queue_handle);
+
+            ownTargetFreeHandle(&target);
         }
     }
 
