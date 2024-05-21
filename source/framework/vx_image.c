@@ -216,12 +216,13 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
             break;
         }
     }
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM001 */
     if (p == TIVX_IMAGE_MAX_SUBIMAGES)
     {
         VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_IMAGE_MAX_SUBIMAGES in tiovx/include/TI/tivx_config.h\n");
     }
-
+#endif
     (void)ownIncrementReference(&parent->base, (vx_enum)VX_INTERNAL);
 }
 
@@ -266,31 +267,19 @@ static vx_status ownDestructImage(vx_reference ref)
                 {
                     size = ownImageGetBufferSize(obj_desc);
 
-                    status = tivxMemBufferFree(&obj_desc->mem_ptr[0], size);
-                    if ((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "Image buffer free failed!\n");
-                    }
+                    (void)tivxMemBufferFree(&obj_desc->mem_ptr[0], size);
+
                 }
             }
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Image object descriptor free failed!\n");
-                }
-            }
+            (void)ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
-        if ((vx_status)VX_SUCCESS == status)
+
+        if (NULL != image->parent)
         {
-            if (NULL != image->parent)
+            status = ownReleaseReferenceInt(vxCastRefFromImageP(&image->parent), (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_INTERNAL, NULL);
+            if ((vx_status)VX_SUCCESS != status)
             {
-                status = ownReleaseReferenceInt(vxCastRefFromImageP(&image->parent), (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_INTERNAL, NULL);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Image parent object release failed!\n");
-                }
+                VX_PRINT(VX_ZONE_ERROR, "Image parent object release failed!\n");
             }
         }
     }
@@ -303,13 +292,17 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     uint16_t plane_idx;
     uint32_t size = 0;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM002 */
     if(ref->type == (vx_enum)VX_TYPE_IMAGE)
     {
+#endif
         obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM003 */
         if(obj_desc != NULL)
         {
+#endif
             if( ((vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_NORMAL)
             || ((vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_UNIFORM)
              )
@@ -358,18 +351,24 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
             {
                 /* NOT an error since memory allocation not needed for other create types */
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM003 */
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "object descriptor is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
+#endif
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM002 */
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "reference type is not an image\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
+#endif
 
     return status;
 }
@@ -534,12 +533,15 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
             ownInitPlane(image, 0, 0, 1, obj_desc->width, obj_desc->height, 1, 1, 12);
             ownInitPlane(image, 1, 0, 2, obj_desc->width, obj_desc->height, 2, 2, 12);
             break;
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM004 */
         default:
             /*! should not get here unless there's a bug in the
              * ownIsSupportedFourcc call.
              */
             vxAddLogEntry(vxCastRefFromImage(image), (vx_status)VX_ERROR_INVALID_PARAMETERS, "FourCC format is invalid!\n");
             break;
+#endif
     }
 }
 
@@ -595,10 +597,8 @@ static vx_image ownCreateImageInt(vx_context context,
 
                     if(obj_desc == NULL)
                     {
-                        if((vx_status)VX_SUCCESS != vxReleaseImage(&image))
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to image object\n");
-                        }
+                        (void)vxReleaseImage(&image);
+
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate image object descriptor\n");
                         image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
                         VX_PRINT(VX_ZONE_ERROR, "Could not allocate image object descriptor\n");
@@ -770,10 +770,8 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                 {
                     if((addrs[plane_idx].stride_x != 0) || (addrs[plane_idx].stride_y < ((((vx_int32)addrs[plane_idx].dim_x * 12)+7)/8)) )
                     {
-                        if((vx_status)VX_SUCCESS != vxReleaseImage(&image))
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to image object\n");
-                        }
+                        (void)vxReleaseImage(&image);
+
                         image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
                         status = (vx_status)VX_FAILURE;
                     }
@@ -783,10 +781,8 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                 {
                     if((addrs[plane_idx].stride_x <= 0) || (addrs[plane_idx].stride_y < (addrs[plane_idx].stride_x * (vx_int32)addrs[plane_idx].dim_x) ) )
                     {
-                        if((vx_status)VX_SUCCESS != vxReleaseImage(&image))
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to image object\n");
-                        }
+                        (void)vxReleaseImage(&image);
+
                         image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
                         status = (vx_status)VX_FAILURE;
                     }
@@ -1273,10 +1269,13 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                                         ptr[1] = pixel[2];
                                     }
                                 }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM005 */
                                 else
                                 {
                                     /* Do Nothing */
                                 }
+#endif
                             }
                         }
                     }
