@@ -104,9 +104,32 @@ TEST(tivxInternalImage, negativeTestOwnInitVirtualImage)
 
 }
 
+/* Testcase to hit fail ownCopyAndMapCheckParams() by passing virtual image by forcefully setting obj_desc->create_type*/
+TEST(tivxInternalImage, negativeTestCopyAndMapCheckParam)
+{
+    vx_context context = context_->vx_context_;
+    vx_image img = NULL;
+    tivx_obj_desc_image_t *obj_desc = NULL;
+    vx_size  map_size;
+    vx_map_id map_id = 0;
+    vx_rectangle_t rect = {0, 0, 1, 1};
+    vx_imagepatch_addressing_t addr = { 0 };
+    vx_uint8* base_ptr = NULL;
+
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    obj_desc = (tivx_obj_desc_image_t *)img->base.obj_desc;
+    obj_desc->create_type = TIVX_IMAGE_VIRTUAL;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxMapImagePatch(img, &rect, 0, &map_id, &addr, (void**)&base_ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+    obj_desc->create_type = TIVX_IMAGE_NORMAL;
+
+    VX_CALL(vxReleaseImage(&img));
+}
+
 TESTCASE_TESTS(
     tivxInternalImage,
     negativeTestGetValidRegionImage,
     negativeTestUnmapImagePatch,
-    negativeTestOwnInitVirtualImage
+    negativeTestOwnInitVirtualImage,
+    negativeTestCopyAndMapCheckParam
 )

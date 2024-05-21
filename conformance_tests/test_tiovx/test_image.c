@@ -23,6 +23,7 @@
 #include <VX/vxu.h>
 #include <TI/tivx.h>
 #include <TI/tivx_config.h>
+#include "test_utils_mem_operations.h"
 
 #include "test_engine/test.h"
 
@@ -566,6 +567,89 @@ TEST(tivxImage, negativeTestQueryImage1)
 
     VX_CALL(vxReleaseImage(&img));
 }
+
+/* Testcase to create image of TIVX_DF_IMAGE_BGRX format*/
+TEST(tivxImage, testCreateImage)
+{
+    vx_context context = context_->vx_context_;
+    vx_image img = NULL;
+    vx_uint32 width = 640, height = 480;
+
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, width, height, TIVX_DF_IMAGE_BGRX), VX_TYPE_IMAGE);
+
+    VX_CALL(vxReleaseImage(&img));
+}
+
+/* Testcase to fail ownIsSupportedFourcc() inside ownCreateImageInt API */
+TEST(tivxImage, negativeTestCreateImage1)
+{
+    #define VX_DF_IMAGE_DEFAULT VX_DF_IMAGE('D','E','F','A')
+
+    vx_context context = context_->vx_context_;
+    vx_image img = NULL;
+    vx_graph graph = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    EXPECT_VX_ERROR(img = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_DEFAULT), VX_ERROR_INVALID_FORMAT);
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+/* Testcase to fail imagepatch_addr->stride_x != 0 condition for the attribute TIVX_IMAGE_STRIDE_Y_ALIGNMENT inside vxSetImageAttribute API */
+TEST(tivxImage, testSetImageAttribute)
+{
+    vx_context context = context_->vx_context_;
+    vx_image img = NULL;
+    vx_uint32 width = 640, height = 480;
+    vx_uint32 set_stride_y_alignment = TEST1_STRIDE_Y_ALIGNMENT;
+
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, width, height, TIVX_DF_IMAGE_NV12_P12 ), VX_TYPE_IMAGE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(img, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &set_stride_y_alignment, sizeof(set_stride_y_alignment)));
+    VX_CALL(vxReleaseImage(&img));
+}
+
+/* Testcase to hit error condition inside ownCopyAndMapCheckParams() for invalid access mode(other than VX_READ_ONLY) for uniform image */
+TEST(tivxImage, negativeTestCopyAndMapCheckParam1)
+{
+    vx_context context = context_->vx_context_;
+    vx_image img = NULL;
+    vx_size  map_size;
+    vx_map_id map_id = 0;
+    vx_rectangle_t rect = {0, 0, 1, 1};
+    vx_imagepatch_addressing_t addr = { 0 };
+    vx_uint8* base_ptr = NULL;
+    vx_pixel_value_t pvalue;
+
+    ASSERT_VX_OBJECT(img = vxCreateUniformImage(context,640 , 480, VX_DF_IMAGE_YUYV, &pvalue), VX_TYPE_IMAGE);
+
+    ASSERT_EQ_VX_STATUS( VX_ERROR_NOT_SUPPORTED, vxMapImagePatch(img, &rect, 0, &map_id, &addr, (void**)&base_ptr, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0));
+
+    VX_CALL(vxReleaseImage(&img));
+}
+
+/* Testcase To fail vxMapImagePatch() inside vxCreateUniformImage API by failing tivxMemBufferAlloc() by maxing out heap memory */
+TEST(tivxImage, negativeTestCreateUniformImage1)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image = NULL;
+    vx_pixel_value_t pvalue;
+
+    tivx_shared_mem_info_t *tivx_shared_mem_info_array;
+    uint32_t num_chunks;
+    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
+
+    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL using test-utils mem api*/
+    VX_CALL(test_utils_max_out_heap_mem(&tivx_shared_mem_info_array, &num_chunks, mheap_region));
+
+    /* vxCreateUniformImage should fail due to tivxMemBufferAlloc failure */
+    EXPECT_VX_ERROR(image = vxCreateUniformImage(context,640 , 480, VX_DF_IMAGE_YUYV, &pvalue), VX_FAILURE);
+
+    /* Freeing all the previously allocated memory */
+    VX_CALL(test_utils_release_maxed_out_heap_mem(tivx_shared_mem_info_array, num_chunks));
+}
+
 TESTCASE_TESTS(
     tivxImage,
     negativeTestCreateImage,
@@ -588,8 +672,13 @@ TESTCASE_TESTS(
     negativeTestSwapImageHandle,
     negativeTestIsValidDimension,
     negativeTestSubmage,
-    testQueryImage,
-    testSetImageStride,
     negativeTestSetImageStride,
     negativeTestQueryImage1,
-    testSetObjArrImageStride)
+    negativeTestCreateImage1,
+    negativeTestCopyAndMapCheckParam1,
+    negativeTestCreateUniformImage1,
+    testQueryImage,
+    testSetImageStride,
+    testSetObjArrImageStride,
+    testCreateImage,
+    testSetImageAttribute)
