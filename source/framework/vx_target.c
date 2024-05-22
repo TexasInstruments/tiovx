@@ -1300,6 +1300,11 @@ vx_status ownTargetDelete(vx_enum target_id)
             ownTargetFreeHandle(&target);
         }
     }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Target delete failed due to invalid target ID\n");
+        status = (vx_status)VX_ERROR_INVALID_VALUE;
+    }
 
     return status;
 }
