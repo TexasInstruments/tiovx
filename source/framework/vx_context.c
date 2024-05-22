@@ -179,10 +179,13 @@ static vx_status ownContextCreateCmdObj(vx_context context)
                 if (context->obj_desc_cmd[i] != NULL)
                 {
                     status = ownObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM001 */
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to free object descriptor\n");
                     }
+#endif
                 }
 
                 if (context->cmd_ack_event[i] != NULL)
@@ -1046,17 +1049,23 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"context objection creation failed\n");
                     status = tivxMutexDelete(&context->lock);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM002 */
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
                     }
                     else
+#endif
                     {
                         status = tivxMutexDelete(&context->log_lock);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM003 */
                         if((vx_status)VX_SUCCESS != status)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
                         }
+#endif
                     }
                 }
             }
@@ -1153,11 +1162,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             {
                 /* Unload kernels */
                 status = vxUnloadKernels(context, g_context_default_load_module[idx]);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM004 */
                 if((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to unload kernel\n");
                     break;
                 }
+#endif
             }
             if((vx_status)VX_SUCCESS == status)
             {
