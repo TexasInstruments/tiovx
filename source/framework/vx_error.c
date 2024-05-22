@@ -17,7 +17,6 @@
 
 #include <vx_internal.h>
 
-static vx_status VX_API_CALL ownReleaseErrorInt(vx_reference *ref);
 static tivx_error_t *ownAllocateError(vx_context context, vx_status status);
 
 static tivx_error_t *ownAllocateError(vx_context context, vx_status status)
