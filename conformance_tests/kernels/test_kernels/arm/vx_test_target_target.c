@@ -74,6 +74,11 @@
 #include <tivx_obj_desc_queue.h>
 #include <tivx_target_kernel_instance.h>
 #include <tivx_target_kernel_priv.h>
+#include <tivx_target.h>
+
+#ifndef PC
+#include <tivx_platform_psdk.h>
+#endif
 
 /* #define FULL_CODE_COVERAGE */
 /* Maximum length of testcase function name */
@@ -1173,6 +1178,67 @@ static vx_status tivxTestGetObjDescElement(uint8_t id)
     return status;
 }
 
+#ifndef PC
+static vx_status tivxNegativeTestTargetGetHandleAndDelete(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if ((vx_status)VX_ERROR_INVALID_VALUE != ownTargetDelete((vx_enum)INVALID_ARG))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid result returned for ARG: 'INVALID_ARG' target id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestTargetTriggerNode(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *obj_desc=NULL;
+    uint16_t obj_desc_id_temp;
+
+    obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_NODE, NULL);
+    if(NULL == obj_desc)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to allocate memory\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        obj_desc_id_temp = obj_desc->obj_desc_id;
+        obj_desc->obj_desc_id = (uint16_t)INVALID_ARG;
+        ownTargetTriggerNode(obj_desc->obj_desc_id);
+        obj_desc->obj_desc_id = obj_desc_id_temp;
+        if((vx_status)VX_SUCCESS != ownObjDescFree((tivx_obj_desc_t**)&obj_desc))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to deallocate memory\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetQueueObjDesc(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if ((vx_status)VX_ERROR_INVALID_PARAMETERS != ownTargetQueueObjDesc((vx_enum)INVALID_ARG, 0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+#endif
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -1213,7 +1279,13 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestDescStrncpy,"",VX_SUCCESS},
     {tivxTestDescStrncmpDelim,"",VX_SUCCESS},
     {tivxTestObjDescSend,"",VX_SUCCESS},
-    {tivxTestGetObjDescElement,"",VX_SUCCESS}
+    {tivxTestGetObjDescElement,"",VX_SUCCESS},
+
+    #ifndef PC
+    {tivxNegativeTestTargetGetHandleAndDelete,"",VX_SUCCESS},
+    {tivxTestTargetTriggerNode,"",VX_SUCCESS},
+    {tivxNegativeTestTargetQueueObjDesc,"",VX_SUCCESS},
+    #endif
 };
 #endif /* FULL_CODE_COVERAGE */
 
