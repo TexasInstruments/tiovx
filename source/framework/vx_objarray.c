@@ -467,11 +467,13 @@ static vx_status ownDestructObjArray(vx_reference ref)
             if ((vx_status)VX_SUCCESS == status)
             {
                 status = ownObjDescFree(&objarr->base.obj_desc);
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1692- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJ_DESC_FREE_UM004 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Object array object descriptor release failed!\n");
                 }
+#endif
             }
         }
         else

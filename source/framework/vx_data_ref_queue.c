@@ -304,22 +304,28 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
             if(data_ref_q->obj_desc[i] != NULL)
             {
                 status = ownObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc[i]);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1692- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJ_DESC_FREE_UM001 */
                 if((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor\n");
                     do_break = (vx_bool)vx_true_e;
                 }
+#endif
             }
             if((vx_status)VX_SUCCESS == status)
             {
                 if(data_ref_q->obj_desc_cmd[i] != NULL)
                 {
                     status = ownObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc_cmd[i]);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1692- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJ_DESC_FREE_UM002 */
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor\n");
                         do_break = (vx_bool)vx_true_e;
                     }
+#endif
                 }
             }
             if((vx_bool)vx_true_e == do_break)
