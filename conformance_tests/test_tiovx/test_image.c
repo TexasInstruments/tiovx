@@ -561,9 +561,13 @@ TEST(tivxImage, negativeTestQueryImage1)
     vx_image img = NULL;
     vx_enum attribute = TIVX_IMAGE_IMAGEPATCH_ADDRESSING;
     vx_size size = 0;
+    vx_imagepatch_addressing_t patch[5];
 
     ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, attribute, NULL, size));
+
+    /* to hit num_dims > (vx_size)TIVX_IMAGE_MAX_PLANE for the attribute TIVX_IMAGE_IMAGEPATCH_ADDRESSING */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(img, attribute, &patch, sizeof(patch)));
 
     VX_CALL(vxReleaseImage(&img));
 }
