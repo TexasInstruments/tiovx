@@ -933,15 +933,21 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                             width = imagepatch_addr->dim_x;
                             height = imagepatch_addr->dim_y;
                         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM006 */
                         else
                         {
                             width = imagepatch_addr->dim_x;
                             height = imagepatch_addr->dim_y/2U;
                         }
+#endif
                         break;
                     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM007 */
                     default:
                         break;
+#endif
                 }
 
                 subimage = (vx_image)ownCreateImageInt(context, width, height, (uint32_t)subimage_format, TIVX_IMAGE_FROM_CHANNEL);
@@ -960,12 +966,15 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                        (format==(vx_enum)VX_DF_IMAGE_NV21)
                     )
                     {
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM008 */
                         /* if UV plane in YUV420SP format, then stride_x should stride_x/2 */
                         if(channel_plane==1U)
                         {
                             si_obj_desc->imagepatch_addr[0].stride_x
                                 = imagepatch_addr->stride_x/2;
                         }
+#endif
                     }
                     subimage->channel_plane = channel_plane;
                     si_obj_desc->mem_ptr[0] = *mem_ptr;
