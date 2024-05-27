@@ -72,7 +72,7 @@
 #define ASSERT_CONCAT_(a, b) a##b
 #define ASSERT_CONCAT(a, b) ASSERT_CONCAT_(a, b)
 #define BUILD_ASSERT(e) \
-     enum { ASSERT_CONCAT(assert_line_, __LINE__) = (1/(e)) }
+     enum { ASSERT_CONCAT(assert_line_, __LINE__) = (1U/(e)) }
 
 /*!
  * \file
