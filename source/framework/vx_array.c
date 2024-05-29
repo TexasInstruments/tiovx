@@ -72,7 +72,6 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
 
             status = (vx_status)VX_SUCCESS;
         }
-#ifdef LDRA_UNTESTABLE_CODE
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"Own init virtual array failed\n");
@@ -97,15 +96,12 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
                 VX_PRINT(VX_ZONE_ERROR,"array is not virtual\n");
             }
         }
-#endif
     }
-#ifdef LDRA_UNTESTABLE_CODE
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"Own init virtual array failed\n");
         VX_PRINT(VX_ZONE_ERROR,"Reference is invalid or object descriptor is NULL\n");
     }
-#endif
 
     return (status);
 }
