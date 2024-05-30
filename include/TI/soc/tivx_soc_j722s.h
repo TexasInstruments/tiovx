@@ -242,6 +242,14 @@ extern "C" {
  */
 #define TIVX_TARGET_DSP2        TIVX_TARGET_DSP_C7_2
 
+/*! \brief Name for MCU1 target class, core 0
+ *
+ *   Assigned to MCU1_0 core
+ *
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_MCU1_0      "MCU1-0"
+
 /*! \brief Name for MCU2 target class, core 0
  *
  *   Assigned to MCU2_0 core
@@ -356,17 +364,20 @@ typedef enum _tivx_cpu_id_e {
     /*! \brief CPU ID for DSP1 */
     TIVX_CPU_ID_DSP2 = TIVX_CPU_ID_DSP_C7_2,
 
+    /*! \brief CPU ID for MCU1_0 */
+    TIVX_CPU_ID_MCU1_0 = 2,
+
     /*! \brief CPU ID for MCU2_0 */
-    TIVX_CPU_ID_MCU2_0 = 2,
+    TIVX_CPU_ID_MCU2_0 = 3,
 
     /*! \brief CPU ID for IPU1_0 */
     TIVX_CPU_ID_IPU1_0 = TIVX_CPU_ID_MCU2_0,
 
     /*! \brief CPU ID for MPU-0 */
-    TIVX_CPU_ID_MPU_0 = 3,
+    TIVX_CPU_ID_MPU_0 = 4,
 
     /*! \brief Max value of CPU ID  */
-    TIVX_CPU_ID_MAX = 4,
+    TIVX_CPU_ID_MAX = 5,
 
     /*! \brief Invalid CPU ID */
     TIVX_CPU_ID_INVALID = 0xFF

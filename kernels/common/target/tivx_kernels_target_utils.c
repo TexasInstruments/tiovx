@@ -67,7 +67,6 @@
 #include <TI/tivx_obj_desc.h>
 #include <tivx_kernels_target_utils.h>
 
-
 void tivxRegisterTargetKernels(const Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels)
 {
     vx_uint32 i;
@@ -453,26 +452,31 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
 
     self_cpu = tivxGetSelfCpuId();
 
-    #if defined(SOC_AM62A)
+    #if defined(SOC_AM62A) || defined(SOC_J722S)
     if (self_cpu == TIVX_CPU_ID_MCU1_0)
     {
         (void)strncpy(target_name, TIVX_TARGET_MCU1_0, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
+    #if defined(SOC_J722S)
+    else if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0 )
+    {
+        (void)strncpy(target_name, TIVX_TARGET_MCU2_0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #endif
     #else
     if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0 )
     {
         (void)strncpy(target_name, TIVX_TARGET_MCU2_0, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
-    #ifndef SOC_J722S
     else
     if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1 )
     {
         (void)strncpy(target_name, TIVX_TARGET_MCU2_1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
-    #endif
     #endif
     else
     {

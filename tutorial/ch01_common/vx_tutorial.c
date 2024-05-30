@@ -72,11 +72,9 @@ static char menu[] = {
     "\n 1: Image"
     "\n 2: Graph"
     "\n 3: Graph Pipeline"
-#ifndef SOC_J722S
     "\n 4: MCU3_0/MCU3_1 demo"
 #if defined(SOC_J784S4)
     "\n 5: MCU4_0/MCU4_1 demo"
-#endif
 #endif
     "\n a: Run All"
     "\n"
@@ -95,8 +93,7 @@ void vx_tutorial_run_all()
     vx_tutorial_image_run_all();
     vx_tutorial_graph_run_all();
     vx_tutorial_graph_pipeline_run_all();
-#ifndef SOC_J722S
-#if defined(SOC_AM62A)
+#if defined(SOC_AM62A) || defined(SOC_J722S)
     if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU1_0)))
     {
         vx_tutorial_mcu_demo(vx_true_e);
@@ -112,7 +109,6 @@ void vx_tutorial_run_all()
     {
         vx_tutorial_mcu_demo(vx_false_e);
     }
-#endif
 #endif
 }
 
@@ -138,9 +134,8 @@ void vx_tutorial_run_interactive()
             case '3':
                 vx_tutorial_graph_pipeline_run_interactive();
                 break;
-#ifndef SOC_J722S
             case '4':
-#if defined(SOC_AM62A)
+#if defined(SOC_AM62A) || defined(SOC_J722S)
                 if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU1_0)))
                 {
                     vx_tutorial_mcu_demo(vx_true_e);
@@ -172,7 +167,6 @@ void vx_tutorial_run_interactive()
                 }
                 break;
 #endif
-#endif /* SOC_J722S */
             case 'a':
                 vx_tutorial_run_all();
                 break;

@@ -224,7 +224,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name);
  *            J721E:  \ref TIVX_TARGET_MCU2_0 and \ref TIVX_TARGET_MCU2_1
  *            J721S2: \ref TIVX_TARGET_MCU2_0 and \ref TIVX_TARGET_MCU2_1
  *            J784S4: \ref TIVX_TARGET_MCU2_0 and \ref TIVX_TARGET_MCU2_1
- *            J722S:  \ref TIVX_TARGET_MCU2_0
+ *            J722S:  \ref TIVX_TARGET_MCU2_0 and \ref TIVX_TARGET_MCU1_0
  *            AM62A:  \ref TIVX_TARGET_MCU1_0
  *
  * \ingroup group_tivx_target_utils

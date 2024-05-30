@@ -378,9 +378,10 @@ vx_status tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel)
 vx_status tivxKernelsHostUtilsAddKernelTargetMcu(vx_kernel kernel)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    #if defined(SOC_AM62A)
+    #if defined(SOC_AM62A) || defined(SOC_J722S)
     status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU1_0);
-    #else
+    #endif
+    #ifndef SOC_AM62A
     status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_0);
     #ifndef SOC_J722S
     if ((vx_status)VX_SUCCESS == status)

@@ -69,7 +69,7 @@
 #include <TI/tivx_capture.h>
 #include "vx_tutorial_mcu_demo.h"
 
-#if defined(SOC_AM62A)
+#if defined(SOC_AM62A) || defined(SOC_J722S)
 void vx_tutorial_mcu_demo(vx_bool use_mcu1_core)
 #else
 void vx_tutorial_mcu_demo(vx_bool use_mcu3_core)
@@ -115,19 +115,10 @@ void vx_tutorial_mcu_demo(vx_bool use_mcu3_core)
      */
     node0 = tivxScalarSourceNode(graph, scalar);
     vxSetReferenceName((vx_reference)node0, "Scalar_Source 1");
-    #if defined(SOC_AM62A)
+    #if defined(SOC_AM62A) || defined(SOC_J722S)
     if (vx_true_e == use_mcu1_core)
     {
         vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0);
-    }
-    #elif defined(SOC_J722S)
-    /* Note: defining this for compatibility sake */
-    if (vx_true_e == use_mcu3_core)
-    {
-        if(tivxIsTargetEnabled(TIVX_TARGET_MCU2_0))
-        {
-            vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_MCU2_0);
-        }
     }
     #else
     if (vx_true_e == use_mcu3_core)
@@ -158,19 +149,10 @@ void vx_tutorial_mcu_demo(vx_bool use_mcu3_core)
 
     node1 = tivxScalarIntermediateNode(graph, scalar, scalar_out);
     vxSetReferenceName((vx_reference)node1, "Scalar_Source 2");
-    #if defined(SOC_AM62A)
+    #if defined(SOC_AM62A) || defined(SOC_J722S)
     if (vx_true_e == use_mcu1_core)
     {
         vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0);
-    }
-    #elif defined(SOC_J722S)
-    /* Note: defining this for compatibility sake */
-    if (vx_true_e == use_mcu3_core)
-    {
-        if(tivxIsTargetEnabled(TIVX_TARGET_MCU2_0))
-        {
-            vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0);
-        }
     }
     #else
     if (vx_true_e == use_mcu3_core)
