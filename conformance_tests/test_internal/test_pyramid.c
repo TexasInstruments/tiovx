@@ -98,8 +98,35 @@ TEST(tivxInternalPyramid, negativeTestOwnInitVirtualPyramidDesc)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+/* Testcase to fail ownIsValidContext() API for invalid pyramid reference passed */
+TEST(tivxInternalPyramid, negativeTestGetPyramidLevel)
+{
+    vx_context context = context_->vx_context_;
+    vx_pyramid pymd = NULL;
+    vx_image img = NULL;
+    vx_size levels = 3;
+    vx_float32 scale = 0.9f;
+    vx_uint32 index = 3, width = 3, height = 3;
+    vx_df_image format = VX_DF_IMAGE_U8;
+
+    ASSERT_VX_OBJECT(pymd = vxCreatePyramid(context, levels, scale, width, height, format), VX_TYPE_PYRAMID);
+
+    vx_reference ref = (vx_reference)pymd;
+    /* To fail initial condition for valid pyramid reference check, ref->type is forcefully set to a type other than PYRAMID */
+    ref->type = VX_TYPE_ARRAY;
+    /* To fail ownIsValidContext() API */
+    context->base.magic = TIVX_BAD_MAGIC;
+
+    ASSERT(NULL == vxGetPyramidLevel(pymd, index));
+    ref->type = VX_TYPE_PYRAMID;
+    context->base.magic = TIVX_MAGIC;
+
+    VX_CALL(vxReleasePyramid(&pymd));
+}
+
 TESTCASE_TESTS(tivxInternalPyramid,
     negativeTestOwnInitVirtualPyramid,
     negativeTestOwnInitVirtualPyramidType,
-    negativeTestOwnInitVirtualPyramidDesc
+    negativeTestOwnInitVirtualPyramidDesc,
+    negativeTestGetPyramidLevel
     )
