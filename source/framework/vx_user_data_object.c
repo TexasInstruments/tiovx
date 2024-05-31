@@ -168,6 +168,8 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
 
                     if(status != (vx_status)VX_SUCCESS)
                     {
+                        (void)vxReleaseUserDataObject(&user_data_object);
+
                         user_data_object = (vx_user_data_object)ownGetErrorObject(
                             context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
                     }
