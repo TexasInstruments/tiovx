@@ -91,6 +91,10 @@ TEST(tivxMemBoundary, negativeTestMemBufferAllocBoundary)
     addr.step_y = 1;
     uint8_t ptr[16 * 21];
 
+    vx_user_data_object user_data_object = NULL;
+    vx_char tname[] = {'t', 'i', 'o', 'v', 'x'};
+    vx_uint32 userdata = 0;
+
     ASSERT_VX_OBJECT(dist = vxCreateDistribution(context, num_bins, offset, range), VX_TYPE_DISTRIBUTION);
     ASSERT_VX_OBJECT(lut = vxCreateLUT(context, VX_TYPE_UINT8, 256), VX_TYPE_LUT);
     ASSERT_VX_OBJECT(matrix = vxCreateMatrix(context, data_type, columns, rows), VX_TYPE_MATRIX);
@@ -111,6 +115,7 @@ TEST(tivxMemBoundary, negativeTestMemBufferAllocBoundary)
     EXPECT_VX_ERROR(image = vxCreateImageFromROI(img,&rect), VX_ERROR_NO_RESOURCES);
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_MEMORY, tivxCopyRawImagePatch(raw_image, &rect1, 1, &addr, (void *)&ptr,
                                   VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+    EXPECT_VX_ERROR(user_data_object = vxCreateUserDataObject(context, tname, sizeof(vx_uint32), &userdata),VX_ERROR_INVALID_PARAMETERS);
 
     /* Freeing all the previously allocated memory */
     VX_CALL(test_utils_release_maxed_out_heap_mem(tivx_shared_mem_info_array, num_chunks));
@@ -127,6 +132,5 @@ TEST(tivxMemBoundary, negativeTestMemBufferAllocBoundary)
 
 TESTCASE_TESTS(
     tivxMemBoundary,
-    negativeTestMemBufferAllocBoundary
-)
+    negativeTestMemBufferAllocBoundary)
 
