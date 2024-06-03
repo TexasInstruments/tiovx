@@ -963,6 +963,43 @@ static vx_status tivxBranchTestTargetKernelFunc(uint8_t id)
     return status;
 }
 
+static vx_status tivxObjDescStrncmp(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    int32_t ret = 0;
+    vx_char  dst[5] = "ABCD";
+    vx_char  src[5] = "ABCD";
+
+    /* To fail 'd[i] == 0U' condition*/
+    ret = tivx_obj_desc_strncmp((void *)dst, (void *)src, 1U);
+    if (0 != ret)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ERROR: tivxObjDescStrncmp: Condition 'd[i] == 0U' passed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestObjDescSend(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t dst_target_id = (uint16_t)INVALID_ARG;
+    uint16_t obj_desc_id = (uint16_t)1;
+
+    if ((vx_status)VX_ERROR_INVALID_PARAMETERS != ownObjDescSend(dst_target_id, obj_desc_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for ARG:'invalid argument' dst_target_id, and obj_desc_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 static vx_status tivxNegativeTestObjDescFree(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -1272,6 +1309,8 @@ FuncInfo arrOfFuncs[] = {
     {tivxBranchTestTargetKernelInstanceGet,"",VX_SUCCESS},
     {tivxBranchTestTargetKernel, "",VX_SUCCESS},
     {tivxBranchTestTargetKernelFunc, "",VX_SUCCESS},
+    {tivxObjDescStrncmp, "", VX_SUCCESS},
+    {tivxNegativeTestObjDescSend, "", VX_SUCCESS},
     {tivxNegativeTestTargetKernelInstanceGetIndex, "",VX_SUCCESS},
     {tivxNegativeTestObjDescFree,"",VX_SUCCESS},
     {tivxNegativeTestObjDescIsValidType,"",VX_SUCCESS},
