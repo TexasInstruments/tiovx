@@ -46,7 +46,7 @@ TEST(tivxInternalGraphVerify, negativeBoundaryTestOwnGraphCreateNodeCallbackComm
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(output = vxCreateImage(context, width, height, VX_DF_IMAGE_UYVY), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output = vxCreateImage(context, width, height, VX_DF_IMAGE_YUV4), VX_TYPE_IMAGE);
 
     ASSERT_VX_OBJECT(color_convert_node = vxColorConvertNode(graph, input, output), VX_TYPE_NODE);
 
@@ -106,7 +106,7 @@ TEST(tivxInternalGraphVerify, negativeBoundaryTestVerifyGraph)
 
     /* Creating input and output images */
     ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(output = vxCreateImage(context, width, height, VX_DF_IMAGE_UYVY), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output = vxCreateImage(context, width, height, VX_DF_IMAGE_YUV4), VX_TYPE_IMAGE);
 
     /* Creating a color convert node */
     ASSERT_VX_OBJECT(color_convert_node = vxColorConvertNode(graph, input, output), VX_TYPE_NODE);
@@ -161,10 +161,10 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphInitVirtualNode1)
 
     /* Creating input and output images */
     ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(output = vxCreateImage(context, width, height, VX_DF_IMAGE_UYVY), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output = vxCreateImage(context, width, height, VX_DF_IMAGE_YUV4), VX_TYPE_IMAGE);
 
     /* Creating virtual image with the graph2 scope */
-    intermediate = vxCreateVirtualImage (graph2, width, height, VX_DF_IMAGE_YUYV);
+    intermediate = vxCreateVirtualImage (graph2, width, height, VX_DF_IMAGE_YUV4);
 
     /* Creating 2 color convert nodes, with intermediate image of scope graph2, given to graph1 */
     ASSERT_VX_OBJECT(color_convert_node1 = vxColorConvertNode(graph1, input, intermediate), VX_TYPE_NODE);
@@ -201,7 +201,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphInitVirtualNode2)
     ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
 
     /* Creating a virtual image */
-    virt_image = vxCreateVirtualImage (graph, width, height, VX_DF_IMAGE_YUYV);
+    virt_image = vxCreateVirtualImage (graph, width, height, VX_DF_IMAGE_YUV4);
 
     /* Forcefully setting the input image width to 0 */
     ((tivx_obj_desc_image_t *)input->base.obj_desc)-> width = 0;
@@ -237,7 +237,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphInitVirtualNode3)
     ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
 
     /* Creating a virtual image */
-    virt_image = vxCreateVirtualImage (graph, width, height, VX_DF_IMAGE_YUYV);
+    virt_image = vxCreateVirtualImage (graph, width, height, VX_DF_IMAGE_YUV4);
 
     /* Forcefully setting the input image height to 0 */
     ((tivx_obj_desc_image_t *)input->base.obj_desc)-> height = 0;
@@ -458,7 +458,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphAddSingleDataReference)
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(output = vxCreateImage(context, width, height, VX_DF_IMAGE_UYVY), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output = vxCreateImage(context, width, height, VX_DF_IMAGE_YUV4), VX_TYPE_IMAGE);
 
 
 
