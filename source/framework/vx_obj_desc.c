@@ -116,10 +116,13 @@ static void ownObjDescIpcHandler(uint32_t payload)
     /* now this is local target hence call target API directly */
     status = ownTargetQueueObjDesc(dst_target_id, obj_desc_id);
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1703- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJDESC_UM001 */
     if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR,"ownTargetQueueObjDesc failed\n");
     }
+#endif
 }
 
 void ownObjDescInit(void)
@@ -279,10 +282,13 @@ vx_status ownObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
         /* target is on same CPU queue obj_desc using target APIs */
         status = ownTargetQueueObjDesc((int32_t)dst_target_id, obj_desc_id);
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1703- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJDESC_UM002 */
         if(status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"ownTargetQueueObjDesc failed\n");
         }
+#endif
     }
     else
     {
@@ -297,11 +303,13 @@ vx_status ownObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
                 /* target is on remote CPU, send using IPC */
                 status = ownIpcSendMsg(cpu_id, ipc_payload, obj_desc->host_cpu_id, obj_desc->host_port_id[self_cpu_id]);
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1703- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJDESC_UM003 */
             else
             {
                 status = (vx_status)VX_FAILURE;
             }
-
+#endif
             if(status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,"ownIpcSendMsg failed\n");
