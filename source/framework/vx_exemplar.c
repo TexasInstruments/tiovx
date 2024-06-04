@@ -299,7 +299,7 @@ static vx_reference ownCreateImageFromExemplar(
         img = vxCreateImage(context, width, height, format);
     }
 
-    if (ownIsValidImage(img) == (vx_bool)vx_true_e)
+    if ((vx_status)VX_SUCCESS == vxGetStatus(vxCastRefFromImage(img)))
     {
         (void)vxSetImageAttribute(img, (vx_enum)TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &stride_y_alignment, sizeof(stride_y_alignment));
     }
