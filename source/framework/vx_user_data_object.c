@@ -129,7 +129,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
             ref = ownCreateReference(context, VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
-                (ref->type == VX_TYPE_USER_DATA_OBJECT))                
+                (ref->type == VX_TYPE_USER_DATA_OBJECT))
             {
                 /* status set to NULL due to preceding type check */
                 user_data_object = vxCastRefAsUserDataObject(ref, NULL);
@@ -138,7 +138,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                 user_data_object->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 user_data_object->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+                user_data_object->base.kernel_callback = &ownKernelCallbackGeneric;
                 user_data_object->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_USER_DATA_OBJECT, vxCastRefFromUserDataObject(user_data_object));
                 if(user_data_object->base.obj_desc==NULL)

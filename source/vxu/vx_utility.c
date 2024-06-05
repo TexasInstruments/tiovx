@@ -1306,3 +1306,44 @@ VX_API_ENTRY vx_status VX_API_CALL vxuRemap(vx_context context, vx_image input, 
     }
     return status;
 }
+
+static vx_status ownCallKernelFunc(vx_reference input, vx_reference output, vx_enum kernel)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_reference params[] = {input, output};
+    if ((vx_bool)vx_true_e == ownIsValidReference(input))
+    {
+        if (NULL != input->kernel_callback)
+        {
+            status = input->kernel_callback(kernel, (vx_bool)vx_true_e, params, 2);
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                status = input->kernel_callback(kernel, (vx_bool)vx_false_e, params, 2);
+            }
+        }
+        else
+        {
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        }
+    }
+    else
+    {
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    }
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxuCopy(vx_context context, vx_reference input, vx_reference output)
+{
+    return ownCallKernelFunc(input, output, (vx_enum)VX_KERNEL_COPY);
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxuSwap(vx_context context, vx_reference first, vx_reference second)
+{
+    return ownCallKernelFunc(first, second, (vx_enum)VX_KERNEL_SWAP);
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxuMove(vx_context context, vx_reference first, vx_reference second)
+{
+    return ownCallKernelFunc(first, second, (vx_enum)VX_KERNEL_MOVE);
+}

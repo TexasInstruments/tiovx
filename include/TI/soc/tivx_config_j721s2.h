@@ -505,6 +505,10 @@ extern "C" {
                                             TIVX_META_FORMAT_MAX_OBJECTS+ \
                                             TIVX_PARAMETER_MAX_OBJECTS)
 
+/*! \brief Max number of associated references for a graph parameter
+ * \ingroup group_vx_graph_cfg
+*/
+#define TIVX_GRAPH_MAX_PARAM_REFS          (8u)
 
 #ifdef __cplusplus
 }

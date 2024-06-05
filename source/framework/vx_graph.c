@@ -652,6 +652,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].data_ref_queue = NULL;
             graph->parameters[graph->num_params].num_buf = 0;
             graph->parameters[graph->num_params].type = (vx_enum)VX_TYPE_PARAMETER;
+            graph->parameters[graph->num_params].num_other = 0;
             graph->num_params++;
             ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", (uint16_t)graph->num_params);
             status = (vx_status)VX_SUCCESS;
@@ -700,6 +701,22 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
             status = vxSetParameterByIndex(graph->parameters[index].node,
                                            graph->parameters[index].index,
                                            value);
+            vx_uint32 ref_index;
+            for (ref_index = 0; ref_index < graph->parameters[index].num_other; ++ref_index)
+            {
+                /* all checks have been done, we can just assign any other parameters */
+                status = ownNodeSetParameter(graph->parameters[index].params_list[ref_index].node, graph->parameters[index].params_list[ref_index].index, value);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "could not set graph parameter\n");
+                    break;
+                }
+            }
+            if ((vx_status)VX_SUCCESS == status) {
+                status = ownGraphAllocateDataObject(graph->parameters[index].node,
+                                                    graph->parameters[index].index,
+                                                    value);
+            }
         }
         else
         {
