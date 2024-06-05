@@ -894,6 +894,7 @@ TEST (copySwap, testSubObjectsMaxOfSubImages )
     vx_image sub_sub_images_1 [TIVX_IMAGE_MAX_SUBIMAGES][TIVX_IMAGE_MAX_SUBIMAGES];
     vx_image sub_sub_images_2 [TIVX_IMAGE_MAX_SUBIMAGES][TIVX_IMAGE_MAX_SUBIMAGES];
     vx_image sub_sub_sub_image_1;
+    vx_image yuv_image[TIVX_MAX_SUBIMAGE_DEPTH+1U];
 
     vx_rectangle_t rect0 = {.start_x = 0, .start_y = 0, .end_x = 10, .end_y = 10};
     vx_rectangle_t rect1 = {.start_x = 0, .start_y = 0, .end_x = 8, .end_y = 8};    
