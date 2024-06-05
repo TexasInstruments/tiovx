@@ -510,6 +510,11 @@ extern "C" {
 */
 #define TIVX_GRAPH_MAX_PARAM_REFS          (8u)
 
+/*! \brief Max depth for subimages of vx_image
+ * \ingroup group_vx_graph_cfg
+*/
+#define TIVX_MAX_SUBIMAGE_DEPTH            (2U)
+
 #ifdef __cplusplus
 }
 #endif

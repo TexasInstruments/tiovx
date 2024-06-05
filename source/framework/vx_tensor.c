@@ -72,7 +72,10 @@ static vx_status moveOrSwapTensor(vx_reference input, vx_reference output)
     vx_status status =  ownReferenceLock(output);
     if ((vx_status)VX_SUCCESS == status)
     {
-        /* swap destructors */
+        /* swap destructors even if they are generic (identical) for the tensor objects.
+           we do it for completeness and to ensure that in case 
+           there is later a need of unique destructors
+        */
         tivx_reference_callback_f destructor = output->destructor_callback;
         output->destructor_callback = input->destructor_callback;
         input->destructor_callback = (tivx_reference_callback_f)destructor;

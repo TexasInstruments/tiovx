@@ -701,6 +701,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
             status = vxSetParameterByIndex(graph->parameters[index].node,
                                            graph->parameters[index].index,
                                            value);
+            /* go through the list of nodes connected to a graph parameter and assign a new reference correctly */
             vx_uint32 ref_index;
             for (ref_index = 0; ref_index < graph->parameters[index].num_other; ++ref_index)
             {
