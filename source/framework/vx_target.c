@@ -84,7 +84,10 @@ static vx_status ownTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_ob
 static vx_status ownTargetNodeDescNodeControl(
     const tivx_obj_desc_cmd_t *cmd_obj_desc,
     const tivx_obj_desc_node_t *node_obj_desc);
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM001 */
 static void ownTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc);
+#endif
 static void ownTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status);
 static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc);
 static void VX_CALLBACK ownTargetTaskMain(void *app_var);
@@ -164,16 +167,11 @@ static tivx_target ownTargetGetHandle(vx_enum target_id)
     {
         tmp_target = &g_target_table[target_inst];
 
+        /* Target initialized with NULL, no need to reassign Target to NULL */
         if(tmp_target->target_id == target_id)
         {
             /* target id matches so return it */
-
             target = tmp_target;
-        }
-        else
-        {
-            /* target ID does not match so return NULL */
-            target = NULL;
         }
     }
 
@@ -283,6 +281,8 @@ static void ownTargetNodeDescNodeExecuteKernel(
     {
         ownTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
     }
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM002 */
     else
     {
         if(NULL != g_executeUserKernel_f)
@@ -290,6 +290,7 @@ static void ownTargetNodeDescNodeExecuteKernel(
             g_executeUserKernel_f(node_obj_desc, prm_obj_desc_id);
         }
     }
+#endif
 }
 
 static void ownTargetNodeDescNodeExecuteTargetKernel(
@@ -962,12 +963,15 @@ static vx_status ownTargetNodeSendCommand(const tivx_obj_desc_cmd_t *cmd_obj_des
     target_kernel_instance = ownTargetKernelInstanceGet(
         (uint16_t)node_obj_desc->target_kernel_index[node_id], (vx_enum)node_obj_desc->kernel_id);
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM001 */
     if(target_kernel_instance == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance is NULL\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
+#endif
     {
         for(i=0; i<(int32_t)cmd_obj_desc->num_cmd_params; i++)
         {
@@ -1041,6 +1045,8 @@ static vx_status ownTargetNodeDescNodeControl(
     return status;
 }
 
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM001 */
 static void ownTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
 {
     if( tivxFlagIsBitSet( cmd_obj_desc->flags, TIVX_CMD_FLAG_IS_ACK) != 0)
@@ -1054,6 +1060,7 @@ static void ownTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
        (void)tivxEventPost((tivx_event)(uintptr_t)cmd_obj_desc->ack_event_handle);
     }
 }
+#endif
 
 static void ownTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status)
 {
@@ -1118,11 +1125,14 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                 }
                 ownTargetCmdDescSendAck(cmd_obj_desc, status);
             }
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM001 */
             else
             {
                 /* this is ACK for a previously sent command */
                 ownTargetCmdDescHandleAck(cmd_obj_desc);
             }
+#endif
             break;
         /* TIVX_CMD_NODE_USER_CALLBACK command is initated by the command sent from target via: \ref ownTargetNodeDescSendComplete()
            It is always executed on HOST target to check if there is any user callback, and if so executes it, otherwise, does nothing */
@@ -1245,6 +1255,8 @@ vx_status ownTargetCreate(vx_enum target_id, const tivx_target_create_params_t *
         {
             /* create and start target task */
             status = tivxTaskCreate(&target->task_handle, &target->task_params);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM002 */
             if(status != (vx_status)VX_SUCCESS)
             {
                 /* error status check is not done
@@ -1253,12 +1265,16 @@ vx_status ownTargetCreate(vx_enum target_id, const tivx_target_create_params_t *
                  */
                 (void)tivxQueueDelete(&target->job_queue_handle);
             }
+#endif
         }
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM003 */
         if (status != (vx_status)VX_SUCCESS)
         {
             ownTargetFreeHandle(&target);
         }
+#endif
     }
     return status;
 }
@@ -1281,11 +1297,14 @@ vx_status ownTargetDelete(vx_enum target_id)
         status = ownTargetQueueObjDesc(target_id, (vx_enum)TIVX_OBJ_DESC_INVALID);
         if((vx_status)VX_SUCCESS == status)
         {
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM003 */
             /* wait until target exit is done */
             while(target->targetExitDone==(vx_bool)vx_false_e)
             {
                     tivxTaskWaitMsecs(1);
             }
+#endif
             /* error status is not required
              * as it found to return always true
              */
@@ -1334,6 +1353,8 @@ vx_status ownTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id)
         status = tivxQueuePut(&target->job_queue_handle,
                 (uintptr_t)obj_desc_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM004 */
         if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"***************************************************************************************************\n");
@@ -1341,6 +1362,7 @@ vx_status ownTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id)
             VX_PRINT(VX_ZONE_ERROR,"May need to increase the value of TIVX_TARGET_MAX_JOB_QUEUE_DEPTH in tiovx/include/TI/tivx_config.h\n");
             VX_PRINT(VX_ZONE_ERROR,"***************************************************************************************************\n");
         }
+#endif
     }
     else
     {
@@ -1386,12 +1408,15 @@ void ownTargetInit(void)
     (void)ownTargetKernelInstanceInit();
 }
 
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM004 */
 void ownTargetDeInit(void)
 {
     ownTargetKernelInstanceDeInit();
     ownTargetKernelDeInit();
 
 }
+#endif
 
 void ownTargetSetTimestamp(
     const tivx_obj_desc_node_t *node_obj_desc, tivx_obj_desc_t *obj_desc[])

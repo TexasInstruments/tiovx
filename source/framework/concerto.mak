@@ -21,6 +21,11 @@ TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/source/include
 DEFS        += LDRA_UNTESTABLE_CODE
+# This is used to signify which sections of code is only applicable
+# for the host for code coverage purposes. It has been left defined
+# for all cores, but can be wrapped in the appropriate CPU when generating
+# code coverage reports.
+DEFS        += HOST_ONLY
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number
