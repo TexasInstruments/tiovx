@@ -6685,6 +6685,7 @@ TEST(tivxGraphPipeline, testDoubleInputEnqueue)
 {
     /* We should be able to enqueue the same reference on two separate inputs on the same graph 
       and also on another graph at the same time */
+    vx_status status;    
     vx_context context = context_->vx_context_;
 
     printf("\nTest legal multiple enqueuing\n");
@@ -6714,34 +6715,30 @@ TEST(tivxGraphPipeline, testDoubleInputEnqueue)
     tivxSetGraphPipelineDepth(graph2, 2);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph1, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph2, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
-    if (vxVerifyGraph(graph1) || vxVerifyGraph(graph2))
+
+    VX_CALL(vxVerifyGraph(graph1)); 
+    VX_CALL(vxVerifyGraph(graph2)); 
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 0, (vx_reference *)&images[0], 1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, status = vxGraphParameterEnqueueReadyRef(graph1, 1, (vx_reference *)&images[0], 1));
+    if (VX_SUCCESS == status)
     {
-        printf("A graph did not verify \n");
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, status = vxGraphParameterEnqueueReadyRef(graph2, 0, (vx_reference *)&images[0], 1));
+        if (VX_SUCCESS == status)
+        {
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph2, 1, (vx_reference *)&images[0], 1));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph2, 2, (vx_reference *)&images[2], 1));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph2));
+        }
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 2, (vx_reference *)&images[1], 1));
     }
     else
     {
-        vx_status status;
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 0, (vx_reference *)&images[0], 1));
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, status = vxGraphParameterEnqueueReadyRef(graph1, 1, (vx_reference *)&images[0], 1));
-        if (VX_SUCCESS == status)
-        {
-            ASSERT_EQ_VX_STATUS(VX_SUCCESS, status = vxGraphParameterEnqueueReadyRef(graph2, 0, (vx_reference *)&images[0], 1));
-            if (VX_SUCCESS == status)
-            {
-                ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph2, 1, (vx_reference *)&images[0], 1));
-                ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph2, 2, (vx_reference *)&images[2], 1));
-                ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph2));
-            }
-            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 2, (vx_reference *)&images[1], 1));
-        }
-        else
-        {
-            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 1, (vx_reference *)&images[1], 1));
-            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 2, (vx_reference *)&images[2], 1));
-        }
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, status);
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph1));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 1, (vx_reference *)&images[1], 1));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 2, (vx_reference *)&images[2], 1));
     }
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, status);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph1));
 
     for (int i = 0; i < 3; ++i)
     {
