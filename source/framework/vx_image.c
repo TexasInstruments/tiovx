@@ -443,7 +443,8 @@ static vx_status isImageCopyable(vx_image input, vx_image output)
         /* All OK, so we propagate metadata and valid region */
         out_objd->color_range = in_objd->color_range;
         out_objd->color_space = in_objd->color_space;
-        out_objd->valid_roi = in_objd->valid_roi;
+        /* struct assigment, use the special copy function */
+        tivx_obj_desc_memcpy(&out_objd->valid_roi, &in_objd->valid_roi, (uint32_t)sizeof(out_objd->valid_roi));
         out_objd->width = in_objd->width;
         out_objd->height = in_objd->height;
         out_objd->format = in_objd->format;
@@ -634,9 +635,9 @@ static vx_status swapImage(const vx_image input, const vx_image output)
         for (i = 0; i < TIVX_IMAGE_MAX_PLANES; ++i)
         {
             offsets[i] = op_obj_desc->mem_ptr[i].host_ptr - ip_obj_desc->mem_ptr[i].host_ptr;
-            addrs = op_obj_desc->imagepatch_addr[i];
-            op_obj_desc->imagepatch_addr[i] = ip_obj_desc->imagepatch_addr[i];
-            ip_obj_desc->imagepatch_addr[i] = addrs;
+            tivx_obj_desc_memcpy(&addrs, &op_obj_desc->imagepatch_addr[i], (uint32_t)sizeof(addrs));
+            tivx_obj_desc_memcpy(&op_obj_desc->imagepatch_addr[i], &ip_obj_desc->imagepatch_addr[i], (uint32_t)sizeof(op_obj_desc->imagepatch_addr[i]));
+            tivx_obj_desc_memcpy(&ip_obj_desc->imagepatch_addr[i], &addrs, (uint32_t)sizeof(ip_obj_desc->imagepatch_addr[i]));
             destructor = output->base.destructor_callback;
             output->base.destructor_callback = input->base.destructor_callback;
             input->base.destructor_callback = destructor;
