@@ -693,11 +693,14 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1702- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TENSOR_UM001 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
+#endif
     }
 
     return status;

@@ -56,10 +56,13 @@ static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
             case (vx_enum)VX_TYPE_SIZE:     *(vx_size*)user_ptr = obj_desc->data.size; break;
             case (vx_enum)VX_TYPE_BOOL:     *(vx_bool*)user_ptr = obj_desc->data.boolean; break;
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1701- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_SCALAR_UM001 */
             default:
                 VX_PRINT(VX_ZONE_ERROR, "data type is not supported\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
+#endif
         }
         (void)ownReferenceUnlock(&scalar->base);
     }
@@ -101,10 +104,13 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
             case (vx_enum)VX_TYPE_SIZE:     obj_desc->data.size = *(const vx_size*)user_ptr; break;
             case (vx_enum)VX_TYPE_BOOL:     obj_desc->data.boolean = *(const vx_bool*)user_ptr; break;
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1701- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_SCALAR_UM002 */
             default:
                 VX_PRINT(VX_ZONE_ERROR, "data type is not supported\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
+#endif
         }
         (void)ownReferenceUnlock(&scalar->base);
     }
