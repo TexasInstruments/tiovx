@@ -36,5 +36,6 @@ TESTCASE(tivxInternalNode)
 TESTCASE(tivxInternalImage)
 TESTCASE(tivxInternalArray)
 TESTCASE(tivxInternalLUT)
+TESTCASE(tivxInternalMatrix)
 
 #endif
