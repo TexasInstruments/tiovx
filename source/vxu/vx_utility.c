@@ -1321,15 +1321,15 @@ static vx_status ownCallKernelFunc(vx_reference input, vx_reference output, vx_e
             {
                 status = input->kernel_callback(kernel, (vx_bool)vx_false_e, params, 2);
             }
-            if ((vx_status)VX_SUCCESS == status &&
-                input->supplementary_data &&
-                output->supplementary_data &&
-                input->supplementary_data->base.kernel_callback)
+            if (((vx_status)VX_SUCCESS == status) &&
+                (NULL != input->supplementary_data) &&
+                (NULL != output->supplementary_data) &&
+                (NULL != input->supplementary_data->base.kernel_callback))
             {
                 vx_reference supp_params[2] = {&input->supplementary_data->base, &output->supplementary_data->base};
-                if ((vx_status)VX_SUCCESS == input->supplementary_data->base.kernel_callback(kernel, vx_true_e, 0, supp_params, 2))
+                if ((vx_status)VX_SUCCESS == input->supplementary_data->base.kernel_callback(kernel, (vx_bool)vx_true_e, supp_params, 2))
                 {
-                    status = input->supplementary_data->base.kernel_callback(kernel, vx_false_e, 0, supp_params, 2);
+                    status = input->supplementary_data->base.kernel_callback(kernel, (vx_bool)vx_false_e, supp_params, 2);
                 }
             }
         }

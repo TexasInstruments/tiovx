@@ -18,13 +18,8 @@
 
 #include <vx_internal.h>
 
-static vx_convolution VX_API_CALL ownCreateConvolution(vx_reference scope, vx_size columns, vx_size rows, vx_bool is_virtual);
 static vx_bool vxIsPowerOfTwo(vx_uint32 a);
 static int8_t isodd(size_t a);
-static vx_status isConvolutionCopyable(vx_convolution input, vx_convolution output);
-static vx_status copyConvolution(vx_convolution input, vx_convolution output);
-static vx_status swapConvolution(vx_convolution input, vx_convolution output);
-static vx_status VX_CALLBACK convolutionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
 
 VX_API_ENTRY vx_convolution VX_API_CALL vxCreateConvolution(
     vx_context context, vx_size columns, vx_size rows)
@@ -32,17 +27,7 @@ VX_API_ENTRY vx_convolution VX_API_CALL vxCreateConvolution(
     vx_convolution cnvl = NULL;
     vx_reference ref = NULL;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
-    vx_context context;
 	vx_status status = (vx_status)VX_SUCCESS;
-
-    if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
-    {
-        context = vxGetContext(scope);
-    }
-    else
-    {
-        context = (vx_context)scope;
-    }
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -100,12 +85,6 @@ VX_API_ENTRY vx_convolution VX_API_CALL vxCreateConvolution(
 
     return (cnvl);
 }
-
-vx_convolution VX_API_CALL vxCreateConvolution(vx_context context, vx_size columns, vx_size rows)
-{
-    return ownCreateConvolution((vx_reference)context, columns, rows, vx_false_e);
-}
-
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseConvolution(vx_convolution *cnvl)
 {

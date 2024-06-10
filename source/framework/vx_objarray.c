@@ -60,9 +60,9 @@ static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_b
                         (NULL != p2[0]->supplementary_data->base.kernel_callback))
                     {
                         vx_reference supp_params[2] = {&p2[0]->supplementary_data->base, &p2[1]->supplementary_data->base};
-                        if ((vx_status)VX_SUCCESS == p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_true_e, 0, supp_params, 2))
+                        if ((vx_status)VX_SUCCESS == p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_true_e, supp_params, 2))
                         {
-                            status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, vx_false_e, 0, supp_params, 2);
+                            status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_false_e, supp_params, 2);
                         }
                     }                     
                 }

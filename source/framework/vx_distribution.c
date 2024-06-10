@@ -22,17 +22,8 @@ VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(vx_context context
 {
     vx_distribution dist = NULL;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
-    vx_context context;
 	vx_status status = (vx_status)VX_SUCCESS;
 	
-    if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
-    {
-        context = vxGetContext(scope);
-    }
-    else
-    {
-        context = (vx_context)scope;
-    }
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         vx_reference ref;
@@ -87,16 +78,6 @@ VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(vx_context context
     }
 
     return (dist);
-}
-
-VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(vx_context context, vx_size numBins, vx_int32 offset, vx_uint32 range)
-{
-    return ownCreateDistribution((vx_reference)context, numBins, offset, range, vx_false_e);
-}
-
-VX_API_ENTRY vx_distribution VX_API_CALL vxCreateVirtualDistribution(vx_graph graph, vx_size numBins, vx_int32 offset, vx_uint32 range)
-{
-    return ownCreateDistribution((vx_reference)graph, numBins, offset, range, vx_true_e);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseDistribution(vx_distribution *dist)

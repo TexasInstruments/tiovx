@@ -607,22 +607,6 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
                 }
             }
         }
-        for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; ++i)
-        {
-            if (NULL != subimages[i])
-            {
-                if (TIVX_IMAGE_MAX_SUBIMAGES < stack_pointer)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Too many sub-images, may need to increase the value of TIVX_SUBOBJECT_STACK_SIZE in include/TI/tivx_config.h\n");
-                    status = VX_ERROR_NO_RESOURCES;
-                    break;
-                }
-                else
-                {
-                    stack[stack_pointer++] = &subimages[i]->base;
-                }
-            }
-        }
     }
     return status;
 }
