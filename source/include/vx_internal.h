@@ -29,7 +29,7 @@
 #include <VX/vx_khr_supplementary_data.h>
 #include <TI/tivx.h>
 #include <VX/vx_khr_safe_casts.h>
-#include <TI/vx_supp_ref_data.h>
+#include <TI/tivx_supp_ref_data.h>
 #include <TI/tivx_mem.h>
 #include <TI/tivx_obj_desc.h>
 #include <TI/tivx_target_kernel.h>

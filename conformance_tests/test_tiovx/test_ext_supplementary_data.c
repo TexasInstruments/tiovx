@@ -63,7 +63,7 @@
 #include <TI/tivx_obj_desc.h>
 #include <VX/vx_khr_supplementary_data.h>
 #include <VX/vx_khr_swap_move.h>
-#include <TI/vx_supp_ref_data.h>
+#include <TI/tivx_supp_ref_data.h>
 #include <VX/vxu.h>
 #include <stdio.h>
 #include <stdlib.h>
