@@ -28,6 +28,64 @@ static vx_status ownAddRefToObjArray(vx_context context,
 static vx_status ownReleaseRefFromObjArray(
             vx_object_array objarr, uint32_t num_items);
 
+
+/*! \brief check to see if input object array can be copied to output.
+ * Number of items and item types must always be equal.
+ * Same function is used to validate for swapping.
+*/
+static vx_status isObjectArrayCopyable(vx_object_array input, vx_object_array output)
+{
+    /* Q: do we have to do anything for any images in the container?
+            elsewhere in the framework this is not done, but what about the valid region?
+            it seems like an omission, but probably beyond the scope at present...*/    
+    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
+    {
+         return VX_SUCCESS;
+    }
+    else
+    {
+        return VX_ERROR_NOT_COMPATIBLE;
+    }
+}
+
+static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    if (validate_only)
+    {
+        return isObjectArrayCopyable((vx_object_array)params[0], (vx_object_array)params[1]);
+    }
+    else    /* dispatch to each sub-object in turn */
+    {
+        vx_uint32 item;
+        for (item = 0; item < ((tivx_obj_desc_object_array_t *)params[0]->obj_desc)->num_items && VX_SUCCESS == status; ++item)
+        {
+            vx_reference p2[2] = {((vx_object_array)params[0])->ref[item], ((vx_object_array)params[1])->ref[item]};
+            vx_kernel_callback_f kf = p2[0]->kernel_callback;
+            if (kf)
+            {
+                status = (*kf)(kernel_enum, vx_false_e, optimization, p2, 2);
+                if ((vx_status)VX_SUCCESS == status &&
+                    p2[0]->supplementary_data &&
+                    p2[1]->supplementary_data &&
+                    p2[0]->supplementary_data->base.kernel_callback)
+                {
+                    vx_reference supp_params[2] = {&p2[0]->supplementary_data->base, &p2[1]->supplementary_data->base};
+                    if ((vx_status)VX_SUCCESS == p2[0]->supplementary_data->base.kernel_callback(kernel_enum, vx_true_e, 0, supp_params, 2))
+                    {
+                        status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, vx_false_e, 0, supp_params, 2);
+                    }
+                }
+            }
+            else
+            {
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+            }
+        }
+    }
+    return status;
+}
+
 static vx_bool ownIsValidObject(vx_enum type)
 {
     vx_bool status = (vx_bool)vx_false_e;
@@ -80,6 +138,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
+				objarr->base.kernel_callback = &objectArrayKernelCallback;
 
                 objarr->base.obj_desc = ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, vxCastRefFromObjectArray(objarr));
@@ -164,7 +223,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
-
+				objarr->base.kernel_callback = &objectArrayKernelCallback;
                 objarr->base.obj_desc = ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, vxCastRefFromObjectArray(objarr));
                 if(objarr->base.obj_desc==NULL)

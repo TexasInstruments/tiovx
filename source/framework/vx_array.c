@@ -20,8 +20,137 @@
 
 static void ownInitArrayObject(
     vx_array arr, vx_enum item_type, vx_size capacity, vx_bool is_virtual);
+static vx_array  ownCreateArray(vx_reference scope, vx_enum item_type, vx_size capacity, vx_bool is_virtual);    
 static vx_size ownGetArrayItemSize(vx_context context, vx_enum item_type);
 static vx_bool ownIsValidArrayItemType(vx_context context, vx_enum item_type);
+static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output);
+static vx_status isArrayCopyable(vx_array input, vx_array output);
+static vx_status isArraySwapable(vx_array input, vx_array output);
+static vx_status copyArray(vx_array input, vx_array output);
+static vx_status swapArray(vx_array input, vx_array output);
+static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
+
+/*! \brief checks that the input and output references are not the same, and that both are valid arrays
+*/
+static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output)
+{
+    if ((input != output) &&
+        (ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e) &&
+        (input->base.obj_desc != NULL) &&
+        (ownIsValidSpecificReference(&output->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e) &&
+        (output->base.obj_desc != NULL)
+        )
+    {
+        return vx_true_e;
+    }
+    else
+    {
+        return vx_false_e;
+    }
+}
+
+/*! \brief This function is called to find out if it is OK to copy the input to the output.
+ * If the output is virtual, a zero capacity or invalid item type is OK
+ * Will also copy metadata from input to output.
+ * \returns VX_SUCCESS if it is, otherwise another error code.
+ *
+ */
+static vx_status isArrayCopyable(vx_array input, vx_array output)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->base.obj_desc;
+    tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->base.obj_desc;
+    if (vx_false_e == ownIsValidInputAndOutputArrays(input, output))
+    {
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if (vx_true_e == output->base.is_virtual)
+    {
+        /* Either output type must be invalid or types must match*/
+        if ((VX_TYPE_INVALID != op_obj_desc->item_type) &&
+            (ip_obj_desc->item_type != op_obj_desc->item_type))
+        {
+            status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+        /* Either output capacity must be zero or at least as large as input capacity */
+        if ((0 != op_obj_desc->capacity) &&
+             (ip_obj_desc->capacity != op_obj_desc->capacity))
+        {
+            status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+    }
+    else if (op_obj_desc->item_type != ip_obj_desc->item_type)
+    {
+        /* Types must match */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if (op_obj_desc->capacity < ip_obj_desc->capacity)
+    {
+        /* Output must have sufficient capacity to hold input */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else
+    {
+        op_obj_desc->item_type = ip_obj_desc->item_type;
+        op_obj_desc->item_size = ip_obj_desc->item_size;
+        op_obj_desc->capacity = ip_obj_desc->capacity;
+    }
+    return status;
+}
+
+/*! \brief This function is called to find out if it is OK to swap the input with the output.
+ * Both item type and capacity must be the same.
+ * \returns VX_SUCCESS if it is, otherwise another error code.
+ *
+ */
+static vx_status isArraySwapable(vx_array input, vx_array output)
+{
+    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
+    {
+         return VX_SUCCESS;
+    }
+    else
+    {
+        return VX_ERROR_NOT_COMPATIBLE;
+    }
+}
+
+/*! \brief Copy input to output
+ * The input must be copyable to the output; checks done already.
+ * Note that locking a reference actually locks the context, so we only lock
+ * one reference!
+ */
+static vx_status copyArray(vx_array input, vx_array output)
+{
+    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
+}
+
+/*! \brief swap input and output pointers
+ * Input and output must be swappable; checks done already.
+ * Note that locking a reference actually locks the context, so we only lock
+ * one reference!
+ */
+static vx_status swapArray(vx_array input, vx_array output)
+{
+    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
+}
+
+/* Call back function that handles the copy, swap and move kernels */
+static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
+{
+    /*
+        Decode the kernel operation - simple version!
+    */
+    vx_array input = (vx_array)params[0];
+    vx_array output = (vx_array)params[1];
+    switch (kernel_enum)
+    {
+        case VX_KERNEL_COPY:    return validate_only ? isArrayCopyable(input, output) : copyArray(input, output);
+        case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+        case VX_KERNEL_MOVE:    return validate_only ? isArraySwapable(input, output) : swapArray(input, output);
+        default:                return VX_ERROR_NOT_SUPPORTED;
+    }
+}
 
 /* Function to get the size of user defined structure */
 static vx_size ownGetArrayItemSize(vx_context context, vx_enum item_type)
@@ -115,17 +244,32 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseArray(vx_array *arr)
     return (ownReleaseReferenceInt(
         vxCastRefFromArrayP(arr), (vx_enum)VX_TYPE_ARRAY, (vx_enum)VX_EXTERNAL, NULL));
 }
-vx_array VX_API_CALL vxCreateArray(
-    vx_context context, vx_enum item_type, vx_size capacity)
+  
+vx_array VX_API_CALL vxCreateArray(vx_context context, vx_enum item_type, vx_size capacity)
+{
+    return ownCreateArray(&context->base, item_type, capacity, vx_false_e);
+}
+  
+static vx_array  ownCreateArray(vx_reference scope, vx_enum item_type, vx_size capacity, vx_bool is_virtual)
 {
     vx_array arr = NULL;
     vx_reference ref =NULL;
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_context context;
 
+    if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    {
+        context = vxGetContext(scope);
+    }
+    else
+    {
+        context = (vx_context)scope;
+    }
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if ((capacity > 0U) &&
-            ((vx_bool)vx_true_e == ownIsValidArrayItemType(context, item_type)))
+        if (is_virtual ||
+            ((capacity > 0U) &&
+            ((vx_bool)vx_true_e == ownIsValidArrayItemType(context, item_type))))
         {
             ref = ownCreateReference(context, (vx_enum)VX_TYPE_ARRAY,
                 (vx_enum)VX_EXTERNAL, &context->base);
@@ -140,7 +284,7 @@ vx_array VX_API_CALL vxCreateArray(
                 arr->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 arr->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+                arr->base.kernel_callback = &arrayKernelCallback;
                 arr->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_ARRAY, vxCastRefFromArray(arr));
                 if(arr->base.obj_desc==NULL)
@@ -149,7 +293,7 @@ vx_array VX_API_CALL vxCreateArray(
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
-                    }    
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate arr object descriptor\n");
@@ -158,7 +302,11 @@ vx_array VX_API_CALL vxCreateArray(
                 }
                 else
                 {
-                    ownInitArrayObject(arr, item_type, capacity, (vx_bool)vx_false_e);
+                    ownInitArrayObject(arr, item_type, capacity, is_virtual);
+                    if (is_virtual)
+                    {                                        
+                        ownReferenceSetScope(&arr->base, scope);
+                    }
                 }
             }
         }
@@ -195,7 +343,7 @@ vx_array VX_API_CALL vxCreateVirtualArray(
             arr->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
             arr->base.release_callback =
                 &ownReleaseReferenceBufferGeneric;
-
+            arr->base.kernel_callback = &arrayKernelCallback;
             arr->base.obj_desc = (tivx_obj_desc_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_ARRAY, vxCastRefFromArray(arr));
             if(arr->base.obj_desc==NULL)
@@ -204,7 +352,7 @@ vx_array VX_API_CALL vxCreateVirtualArray(
                 if((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
-                } 
+                }
 
                 vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                     "Could not allocate arr object descriptor\n");
@@ -219,7 +367,6 @@ vx_array VX_API_CALL vxCreateVirtualArray(
             }
         }
     }
-
     return (arr);
 }
 
@@ -710,5 +857,3 @@ static void ownInitArrayObject(
         arr->maps[i].map_size = 0;
     }
 }
-
-

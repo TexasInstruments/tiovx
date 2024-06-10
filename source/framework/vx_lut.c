@@ -18,21 +18,90 @@
 
 #include <vx_internal.h>
 
+static vx_lut ownCreateLUT(vx_reference scope, vx_enum data_type, vx_size count, vx_bool is_virtual);
+static vx_status isLutCopyable(vx_lut input, vx_lut output);
+static vx_status copyLut(vx_lut input, vx_lut output);
+static vx_status swapLut(vx_lut input, vx_lut output);
+static vx_status VX_CALLBACK lutKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
+
+
+//test push
+/*! \brief This function is called to find out if it is OK to copy the input to the output.
+ * Item type and number must be equal
+ * \returns VX_SUCCESS if it is, otherwise another error code.
+ *
+ */
+static vx_status isLutCopyable(vx_lut input, vx_lut output)
+{
+    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
+    {
+         return VX_SUCCESS;
+    }
+    else
+    {
+        return VX_ERROR_NOT_COMPATIBLE;
+    }
+}
+
+/*! \brief Copy input to output
+ * The input must be copyable to the output; checks done already.
+ * Note that locking a reference actually locks the context, so we only lock
+ * one reference!
+
+ */
+static vx_status copyLut(vx_lut input, vx_lut output)
+{
+    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
+}
+
+/*! \brief swap input and output pointers
+ * Input and output must be swappable; checks done already.
+ */
+static vx_status swapLut(vx_lut input, vx_lut output)
+{
+    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
+}
+
+/* Call back function that handles the copy, swap and move kernels */
+static vx_status VX_CALLBACK lutKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
+{
+    /*
+        Decode the kernel operation - simple version!
+    */
+    vx_lut input = (vx_lut)params[0];
+    vx_lut output = (vx_lut)params[1];
+    switch (kernel_enum)
+    {
+        case VX_KERNEL_COPY:    return validate_only ? isLutCopyable(input, output) : copyLut(input, output);
+        case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+        case VX_KERNEL_MOVE:    return validate_only ? isLutCopyable(input, output) : swapLut(input, output);
+        default:                return VX_ERROR_NOT_SUPPORTED;
+    }
+}
+
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseLUT(vx_lut *lut)
 {
     return (ownReleaseReferenceInt(
         vxCastRefFromLUTP(lut), (vx_enum)VX_TYPE_LUT, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-vx_lut VX_API_CALL vxCreateLUT(
-    vx_context context, vx_enum data_type, vx_size count)
+static vx_lut ownCreateLUT(vx_reference scope, vx_enum data_type, vx_size count, vx_bool is_virtual)
 {
     vx_lut lut = NULL;
     vx_reference ref = NULL;
     vx_size dim = 0;
     tivx_obj_desc_lut_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
+    vx_context context;
+	vx_status status = (vx_status)VX_SUCCESS;
 
+    if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    {
+        context = vxGetContext(scope);
+    }
+    else
+    {
+        context = (vx_context)scope;
+    }
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if ((data_type == (vx_enum)VX_TYPE_INT8) || (data_type == (vx_enum)VX_TYPE_UINT8) || (data_type == (vx_enum)VX_TYPE_CHAR))
@@ -77,7 +146,7 @@ vx_lut VX_API_CALL vxCreateLUT(
                 lut->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 lut->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+                lut->base.kernel_callback = &lutKernelCallback;
                 obj_desc = (tivx_obj_desc_lut_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_LUT, vxCastRefFromLUT(lut));
                 if(obj_desc==NULL)
@@ -112,6 +181,16 @@ vx_lut VX_API_CALL vxCreateLUT(
     }
 
     return (lut);
+}
+
+vx_lut VX_API_CALL vxCreateLUT(vx_context context, vx_enum data_type, vx_size count)
+{
+    return ownCreateLUT((vx_reference)context, data_type, count, vx_false_e);
+}
+
+vx_lut VX_API_CALL vxCreateVirtualLUT(vx_graph graph, vx_enum data_type, vx_size count)
+{
+    return ownCreateLUT((vx_reference)graph, data_type, count, vx_true_e);
 }
 
 vx_status VX_API_CALL vxQueryLUT(

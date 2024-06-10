@@ -25,6 +25,8 @@
 
 #include <VX/vx.h>
 #include <VX/vx_khr_pipelining.h>
+#include <VX/vx_khr_swap_move.h>
+#include <VX/vx_khr_supplementary_data.h>
 #include <TI/tivx.h>
 #include <VX/vx_khr_safe_casts.h>
 #include <TI/tivx_mem.h>
@@ -75,6 +77,9 @@
 #include <tivx_log_rt_trace.h>
 #include <tivx_log_resource.h>
 #include <tivx_kernels_host_utils.h>
+#include <vx_copy_swap.h>
+#include <RB/vx_rb_ref_data.h>
+#include <VX/vxu.h>
 
 
 #ifdef __cplusplus

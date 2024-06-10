@@ -21,6 +21,84 @@
 
 static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr);
 static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr);
+static vx_scalar ownCreateScalar(vx_reference scope, vx_enum data_type, const void *ptr, vx_bool is_virtual);
+static vx_status isScalarCopyable(vx_scalar input, vx_scalar output);
+static vx_status copyScalar(vx_scalar input, vx_scalar output);
+static vx_status swapScalar(vx_scalar input, vx_scalar output);
+static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
+
+/*! \brief This function is called to find out if it is OK to copy the input to the output.
+ * Data type must be the same
+ * \returns VX_SUCCESS if it is, otherwise another error code.
+ *
+ */
+static vx_status isScalarCopyable(vx_scalar input, vx_scalar output)
+{
+    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
+    {
+         return VX_SUCCESS;
+    }
+    else
+    {
+        return VX_ERROR_NOT_COMPATIBLE;
+    }
+}
+
+/*! \brief Copy input to output
+ * The input must be copyable to the output; checks done already.
+ * Note that locking a reference actually locks the context, so we only lock
+ * one reference!
+
+ */
+static vx_status copyScalar(vx_scalar input, vx_scalar output)
+{
+    tivx_obj_desc_scalar_t *ip_obj_desc = (tivx_obj_desc_scalar_t *)input->base.obj_desc;
+    tivx_obj_desc_scalar_t *op_obj_desc = (tivx_obj_desc_scalar_t *)output->base.obj_desc;
+    vx_status status = ownReferenceLock((vx_reference)output);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        /* Just copy the entire union from input to output */
+        op_obj_desc->data = ip_obj_desc->data;
+    }
+    ownReferenceUnlock((vx_reference)output);
+    return status;
+}
+
+/*! \brief swap input and output data
+ * Input and output must be swappable; checks done already.
+ */
+static vx_status swapScalar(vx_scalar input, vx_scalar output)
+{
+    vx_status status =  ownReferenceLock((vx_reference)output);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        tivx_obj_desc_scalar_t *ip_obj_desc = (tivx_obj_desc_scalar_t *)input->base.obj_desc;
+        tivx_obj_desc_scalar_t *op_obj_desc = (tivx_obj_desc_scalar_t *)output->base.obj_desc;
+        tivx_obj_desc_scalar_t data_obj;
+        data_obj.data = op_obj_desc->data;
+        op_obj_desc->data = ip_obj_desc->data;
+        ip_obj_desc->data = data_obj.data;
+    }
+    ownReferenceUnlock((vx_reference)output);
+    return status;
+}
+
+/* Call back function that handles the copy, swap and move kernels */
+static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
+{
+    /*
+        Decode the kernel operation - simple version!
+    */
+    vx_scalar input = (vx_scalar)params[0];
+    vx_scalar output = (vx_scalar)params[1];
+    switch (kernel_enum)
+    {
+        case VX_KERNEL_COPY:    return validate_only ? isScalarCopyable(input, output) : copyScalar(input, output);
+        case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+        case VX_KERNEL_MOVE:    return validate_only ? isScalarCopyable(input, output) : swapScalar(input, output);
+        default:                return VX_ERROR_NOT_SUPPORTED;
+    }
+}
 
 static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
 {
@@ -112,13 +190,22 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
     return status;
 } /* own_host_mem_to_scalar() */
 
-VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum data_type, const void* ptr)
+static vx_scalar ownCreateScalar(vx_reference scope, vx_enum data_type, const void *ptr, vx_bool is_virtual)
 {
     vx_scalar scalar = NULL;
     vx_reference ref = NULL;
     tivx_obj_desc_scalar_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
+    vx_context context;
+	vx_status status = (vx_status)VX_SUCCESS;
 
+    if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    {
+        context = vxGetContext(scope);
+    }
+    else
+    {
+        context = (vx_context)scope;
+    }
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if (!TIVX_TYPE_IS_SCALAR(data_type))
@@ -136,7 +223,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
                 /* assign refernce type specific callback's */
                 scalar->base.destructor_callback = &ownDestructReferenceGeneric;
                 scalar->base.release_callback = &ownReleaseReferenceBufferGeneric;
-
+				scalar->base.kernel_callback = &scalarKernelCallback;
                 obj_desc = (tivx_obj_desc_scalar_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SCALAR, vxCastRefFromScalar(scalar));
                 if(obj_desc==NULL)
                 {
@@ -171,6 +258,11 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
         }
     }
     return (vx_scalar)scalar;
+}
+
+VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum data_type, const void* ptr)
+{
+    return ownCreateScalar((vx_reference)context, data_type, ptr, vx_false_e);
 } /* vxCreateScalar() */
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseScalar(vx_scalar *s)

@@ -17,8 +17,6 @@
 
 #include <vx_internal.h>
 
-static vx_status ownDestructParameter(vx_reference ref);
-
 static vx_status ownDestructParameter(vx_reference ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -148,6 +146,11 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uin
             vxAddLogEntry(&node->base, (vx_status)VX_ERROR_INVALID_NODE, "Node was created without a kernel! Fatal Error!\n");
             param = (vx_parameter)ownGetErrorObject(node->base.context, (vx_status)VX_ERROR_INVALID_NODE);
         }
+        else if (NULL == node->graph)
+        {
+            /* Node has been removed from a graph */
+            param = (vx_parameter)ownGetErrorObject(node->base.context, (vx_status)VX_ERROR_OPTIMIZED_AWAY);
+        }
         else
         {
             if ((index < TIVX_KERNEL_MAX_PARAMS) && (index < node->kernel->signature.num_parameters))
@@ -243,13 +246,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                 if (node->kernel->signature.types[index] != type)
                 {
                     /* Check special case where signature is a specific scalar type.
-                       This can happen if the vxAddParameterToKernel() passes one of the scalar
-                       vx_type_e types instead of the more generic (vx_enum)VX_TYPE_SCALAR since the spec
-                       doesn't specify that only (vx_enum)VX_TYPE_SCALAR should be used for scalar types in
-                       this function. */
-                    /* status set to NULL due to type check */
-                    if((type == (vx_enum)VX_TYPE_SCALAR) && 
-                       (vxQueryScalar(vxCastRefAsScalar(value,NULL), (vx_enum)VX_SCALAR_TYPE, &data_type, sizeof(data_type)) == (vx_status)VX_SUCCESS))
+                    This can happen if the vxAddParameterToKernel() passes one of the scalar
+                    vx_type_e types instead of the more generic (vx_enum)VX_TYPE_SCALAR since the spec
+                    doesn't specify that only (vx_enum)VX_TYPE_SCALAR should be used for scalar types in
+                    this function. */
+                    if((type == (vx_enum)VX_TYPE_SCALAR) &&
+                    (vxQueryScalar((vx_scalar)value, (vx_enum)VX_SCALAR_TYPE, &data_type, sizeof(data_type)) == (vx_status)VX_SUCCESS))
                     {
                         if(data_type != node->kernel->signature.types[index])
                         {
@@ -288,6 +290,32 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                     if (res == (vx_bool)vx_false_e) {
                         VX_PRINT(VX_ZONE_ERROR, "Internal error adding delay association\n");
                         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+                    }
+                }
+            }
+
+            /* Check for node replication; ref should be first element of an object array or pyramid */
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                if (vx_true_e == node->replicated_flags[index])
+                {
+                    if ((vx_enum)VX_TYPE_OBJECT_ARRAY == value->scope->type)
+                    {
+                        if (((vx_object_array)value->scope)->ref[0] != value)
+                        {
+                            status = (vx_status)VX_ERROR_INVALID_SCOPE;
+                        }
+                    }
+                    else if ((vx_enum)VX_TYPE_PYRAMID == value->scope->type)
+                    {
+                        if (((vx_pyramid)value->scope)->img[0] != (vx_image)value)
+                        {
+                            status = (vx_status)VX_ERROR_INVALID_SCOPE;
+                        }
+                    }
+                    else
+                    {
+                        status = (vx_status)VX_ERROR_INVALID_SCOPE;
                     }
                 }
             }
@@ -429,5 +457,3 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
     }
     return status;
 }
-
-

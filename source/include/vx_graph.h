@@ -62,6 +62,13 @@ typedef struct {
     tivx_data_ref_queue data_ref_queue;
     /*! \brief references that can be queued into data ref queue */
     vx_reference refs_list[TIVX_OBJ_DESC_QUEUE_MAX_DEPTH];
+    /*! \brief the number of other node parameters affected by this graph parameter */
+    uint32_t num_other;
+    /*! \brief pointers to other node parameters affected by this graph parameter */
+    struct {
+        vx_node node;
+        uint32_t index;
+    } params_list[TIVX_GRAPH_MAX_PARAM_REFS];
     /*! \brief flag to control event send enable/disable */
     vx_bool is_enable_send_ref_consumed_event;
     /*! Value returned with graph parameter consumed event */
@@ -605,6 +612,15 @@ vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
                 vx_reference *refs,
                 vx_uint32 num_refs,
                 vx_uint32 flags);
+
+/*! \brief Allocates data for an object during verification or graph parameter substitution
+ *
+ * \ingroup group_vx_graph
+ */
+vx_status ownGraphAllocateDataObject(vx_graph graph,
+                                     vx_node node_cur,
+                                     uint32_t prm_cur_idx,
+                                     vx_reference ref);                
 
 #ifdef __cplusplus
 }

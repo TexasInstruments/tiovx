@@ -49,6 +49,8 @@ enum vx_user_data_object_attribute_e {
     VX_USER_DATA_OBJECT_NAME = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_USER_DATA_OBJECT) + 0x0,
     /*! \brief The number of bytes in the user data object. Read-only. Use a <tt>\ref vx_size</tt> parameter. */
     VX_USER_DATA_OBJECT_SIZE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_USER_DATA_OBJECT) + 0x1,
+    /*! \brief The number of valid bytes in the user data object. Read-write. Use a <tt>\ref vx_size</tt> parameter. */
+    VX_USER_DATA_OBJECT_VALID_SIZE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_USER_DATA_OBJECT) + 0x2,
 };
 
 
@@ -130,6 +132,24 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseUserDataObject(vx_user_data_object *
  * \ingroup group_user_data_object
  */
 VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject(vx_user_data_object user_data_object, vx_enum attribute, void *ptr, vx_size size);
+
+/*! \brief Sets an attribute in the User data object.
+ * \param [in] user_data_object The reference to the user data object on which to set the attribute.
+ * \param [in] attribute The attribute to set. Use a <tt>\ref vx_user_data_object_attribute_e</tt> enumeration.
+ * \param [in] ptr The pointer to the location from which to read the value.
+ * \param [in] size The size in bytes of the object pointed to by \a ptr.
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors.
+ * \retval VX_ERROR_INVALID_REFERENCE If the user data object is not a <tt>\ref vx_user_data_object</tt>.
+ * \retval VX_ERROR_NOT_SUPPORTED  If the attribute is not a value supported on this implementation.
+ * \retval VX_ERROR_INVALID_PARAMETERS If any of the other parameters are incorrect.
+ * \ingroup group_image
+ */
+VX_API_ENTRY vx_status vxSetUserDataObjectAttribute(
+    vx_user_data_object                         user_data_object,
+    vx_enum                                     attribute,
+    const void*                                 ptr,
+    vx_size                                     size);
 
 /*! \brief Allows the application to copy a subset from/into a user data object.
  * \param [in] user_data_object   The reference to the user data object that is the source or the
