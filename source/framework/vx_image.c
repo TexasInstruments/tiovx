@@ -229,7 +229,6 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
     }
 
     (void)ownIncrementReference(&parent->base, (vx_enum)VX_INTERNAL);
-
 }
 
 static uint16_t ownGetNumParentSubimages(const vx_image image)

@@ -722,6 +722,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
                 {
                     destructor = ref->destructor_callback;
                 }
+
                 /* if there is a destructor, call it. */
                 if (destructor != NULL)
                 {
@@ -796,6 +797,8 @@ vx_reference ownCreateReference(vx_context context, vx_enum ref_type, vx_enum re
     }
     return ref;
 }
+
+
 
 vx_bool ownIsValidSpecificReference(vx_reference ref, vx_enum ref_type)
 {

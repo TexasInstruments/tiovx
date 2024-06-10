@@ -69,7 +69,7 @@ static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_b
                 else
                 {
                     status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                }             
+                }
             }
         }
     }

@@ -153,7 +153,6 @@ typedef struct _vx_context {
 
     /*! Event queue */
     tivx_event_queue_t event_queue;
-
 } tivx_context_t;
 
 /**

@@ -27,7 +27,7 @@ VX_API_ENTRY vx_convolution VX_API_CALL vxCreateConvolution(
     vx_convolution cnvl = NULL;
     vx_reference ref = NULL;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
-	vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
