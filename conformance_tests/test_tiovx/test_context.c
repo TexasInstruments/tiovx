@@ -23,8 +23,6 @@
 #include <VX/vxu.h>
 #include <TI/tivx.h>
 #include <TI/tivx_config.h>
-#include <TI/tivx_tensor.h>
-
 #include "test_engine/test.h"
 
 TESTCASE(tivxContext, CT_VXContext, ct_setup_vx_context, 0)
@@ -211,4 +209,3 @@ TESTCASE_TESTS(
     negativeTestAllocateUserKernelId,
     negativeTestAllocateUserKernelLibraryId
 )
-

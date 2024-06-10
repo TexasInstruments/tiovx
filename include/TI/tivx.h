@@ -72,7 +72,6 @@
 #include <TI/tivx_kernels.h>
 #include <TI/tivx_nodes.h>
 #include <TI/tivx_mem.h>
-#include <TI/tivx_tensor.h>
 #include <TI/tivx_ext_raw_image.h>
 #include <TI/tivx_ext_super_node.h>
 #include <TI/tivx_soc.h>
@@ -1094,4 +1093,3 @@ VX_API_ENTRY vx_reference VX_API_CALL tivxCreateReferenceFromExemplar(vx_context
 #endif
 
 #endif
-

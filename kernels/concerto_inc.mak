@@ -18,7 +18,7 @@ endif
 
 SYS_SHARED_LIBS += rt dl png z
 
-LDIRS+=$(CGT7X_ROOT)/host_emulation
+LDIRS+=$(RECOMPUTE_PATH)/host_emulation
 
 LDIRS       += $(APP_UTILS_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 STATIC_LIBS += app_utils_mem
