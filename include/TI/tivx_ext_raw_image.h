@@ -130,6 +130,10 @@ typedef struct _tivx_raw_image_create_params_t {
                                                  (uses the same width as original sensor readout width) */
     volatile vx_uint32 meta_height_after;     /*!< \brief Number of lines of meta data at bottom of sensor readout  (after pixel data)
                                                  (uses the same width as original sensor readout width) */
+    volatile vx_bool meta_on_separate_channel;/*!< \brief If meta data comes on same CSI channel as the image data, this setting should be vx_false_e; however
+                                                 if it comes on a separate CSI channel (0x12), then this setting should be vx_true_e.  User must ensure that the
+                                                 either meta_height_before or meta_height_before is > 0 and is allocated enough lines to contain the full meta
+                                                 data readout */ 
 } tivx_raw_image_create_params_t;
 
 /*! \brief The raw image attributes.
@@ -151,7 +155,9 @@ enum tivx_raw_image_attribute_e {
     /*! \brief Queries an image for its meta height at bottom of readout. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
     TIVX_RAW_IMAGE_META_HEIGHT_AFTER = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x6,
     /*! \brief Queries an image for its addressing structure. Read-only. Use a <tt>\ref vx_imagepatch_addressing_t[TIVX_RAW_IMAGE_MAX_EXPOSURES]</tt> parameter. */
-    TIVX_RAW_IMAGE_IMAGEPATCH_ADDRESSING = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x7
+    TIVX_RAW_IMAGE_IMAGEPATCH_ADDRESSING = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x7,
+    /*! \brief Queries an image for meta data channel. Read-only. Use a <tt>\ref vx_bool</tt> parameter. */
+    TIVX_RAW_IMAGE_META_ON_SEPARATE_CHANNEL = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x8
 };
 
 /*! \brief The raw image buffer access enum.

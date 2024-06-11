@@ -510,7 +510,7 @@ static vx_reference ownCreateRawImageFromExemplar(
     tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_FORMAT, &params.format, sizeof(params.format)));
     tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &params.meta_height_before, sizeof(params.meta_height_before)));
     tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &params.meta_height_after, sizeof(params.meta_height_after)));
-
+    tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_ON_SEPARATE_CHANNEL, &params.meta_on_separate_channel, sizeof(params.meta_on_separate_channel)));
 #ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
 #endif

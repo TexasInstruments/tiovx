@@ -796,6 +796,22 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case (vx_enum)TIVX_RAW_IMAGE_META_ON_SEPARATE_CHANNEL :
+
+                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
+
+                {
+
+                    VX_PRINT(VX_ZONE_INFO, "TIVX_RAW_IMAGE_META_ON_SEPARATE_CHANNEL feature enabled\n");
+
+                    *(volatile vx_bool *)ptr = obj_desc->params.meta_on_separate_channel;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "query meta on separate channel failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
