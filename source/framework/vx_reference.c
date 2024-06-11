@@ -95,7 +95,7 @@ static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
 
 static vx_bool ownIsGenericAllocReferenceType(vx_enum ref_type);
 static vx_bool ownIsGenericReferenceType(vx_enum ref_type);
-static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_shared_mem_ptr_t **mem_ptr, volatile uint32_t *mem_size);
+static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_shared_mem_ptr_t **mem_ptr, uint32_t *mem_size);
 
 vx_size ownSizeOfEnumType(vx_enum item_type)
 {
@@ -189,7 +189,7 @@ static vx_bool ownIsGenericReferenceType(vx_enum ref_type)
     return ret;
 }
 
-static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_shared_mem_ptr_t **mem_ptr, volatile uint32_t *mem_size)
+static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_shared_mem_ptr_t **mem_ptr, uint32_t *mem_size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -311,7 +311,7 @@ vx_status ownAllocReferenceBufferGeneric(vx_reference ref)
         if((vx_bool)vx_true_e == ownIsGenericAllocReferenceType(ref->type))
         {
             tivx_shared_mem_ptr_t  *mem_ptr = NULL;
-            volatile uint32_t       mem_size = 0;
+            uint32_t       mem_size = 0;
             /* added void here as this status check of
              * ownReferenceGetMemAttrsFromObjDesc will always be true if
              * the previous condition is true
@@ -381,7 +381,7 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
         if((vx_bool)vx_true_e == ownIsGenericAllocReferenceType(ref->type))
         {
             tivx_shared_mem_ptr_t  *mem_ptr = NULL;
-            volatile uint32_t       mem_size = 0;
+            uint32_t       mem_size = 0;
             /* void is added as the status check for the ownReferenceGetMemAttrsFromObjDesc
             * will be always true as the previous condition is true
             */
