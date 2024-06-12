@@ -100,6 +100,8 @@ vx_status ownTargetKernelInit(void)
     return status;
 }
 
+#ifdef HOST_ONLY
+/* TIOVX-1707- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_UM001 */
 void ownTargetKernelDeInit(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -110,6 +112,7 @@ void ownTargetKernelDeInit(void)
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
     }
 }
+#endif
 
 static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
                              vx_enum kernel_id,

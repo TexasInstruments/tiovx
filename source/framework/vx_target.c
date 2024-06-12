@@ -232,12 +232,15 @@ static vx_bool ownTargetNodeDescCanNodeExecute(
 
         if( ownObjDescIsValidType( (tivx_obj_desc_t*)prev_node_obj_desc, TIVX_OBJ_DESC_NODE) != 0)
         {
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM05 */
             if( tivxFlagIsBitSet(prev_node_obj_desc->flags,
                         TIVX_NODE_FLAG_IS_EXECUTED) == (vx_bool)vx_false_e)
             {
                 can_execute = (vx_bool)vx_false_e;
                 break;
             }
+#endif
         }
     }
 
@@ -569,10 +572,13 @@ static vx_bool ownTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node
             /* this is trigger from prev node or due to resource being released so proceed with execution */
             node_obj_desc->state = TIVX_NODE_OBJ_DESC_STATE_IDLE;
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM006 */
         else
         {
             /* do nothing */
         }
+#endif
     }
     return is_prev_node_blocked;
 }
@@ -1038,11 +1044,14 @@ static vx_status ownTargetNodeDescNodeControl(
                     VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
                 }
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM007 */
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "Incorrect node id\n");
                 status = (vx_status)VX_FAILURE;
             }
+#endif
         }
     }
     else
@@ -1125,17 +1134,23 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                         {
                             status = ownTargetNodeDescNodeControl(cmd_obj_desc, node_obj_desc);
                         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM008 */
                         else
                         {
                             /* do nothing */
                         }
+#endif
                     }
                 }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM009 */
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "object descriptor type is invalid\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
+#endif
                 ownTargetCmdDescSendAck(cmd_obj_desc, status);
             }
 #ifdef HOST_ONLY
@@ -1194,11 +1209,14 @@ static void VX_CALLBACK ownTargetTaskMain(void *app_var)
         else
         {
             obj_desc = ownObjDescGet(obj_desc_id);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM010 */
             if(obj_desc == NULL)
             {
                 /* in valid obj_desc_id received */
             }
             else
+#endif
             {
                 ownLogRtTraceTargetExeStart(target, obj_desc);
 
@@ -1216,9 +1234,12 @@ static void VX_CALLBACK ownTargetTaskMain(void *app_var)
                             ownTargetNodeDescNodeExecute(target, (tivx_obj_desc_node_t*)obj_desc);
                         }
                         break;
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM005 */
                     default:
                         /* unsupported obj_desc received at target */
                         break;
+#endif
                 }
 
                 ownLogRtTraceTargetExeEnd(target, obj_desc);
