@@ -168,6 +168,7 @@ vx_user_data_object ownCreateUserDataObject(
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_user_data_object user_data_object = NULL;
+    vx_reference ref = NULL;
     vx_context context;
     if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
@@ -189,15 +190,16 @@ vx_user_data_object ownCreateUserDataObject(
         {
             user_data_object = ownCreateReference(context, VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus(user_data_object) == (vx_status)VX_SUCCESS) &&
-                (user_data_object->base.type == VX_TYPE_USER_DATA_OBJECT))                
+            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
+                (ref->type == VX_TYPE_USER_DATA_OBJECT))
             {
                 /* status set to NULL due to preceding type check */
                 /* assign reference type specific callback's */
-                user_data_object->base.destructor_callback = &ownDestructUserDataObject;
-                user_data_object->base.mem_alloc_callback  = &ownAllocReferenceBufferGeneric;
-                user_data_object->base.release_callback    = &ownReleaseReferenceBufferGeneric;
-                user_data_object->base.kernel_callback     = &userDataKernelCallback;
+                user_data_object->base.destructor_callback = &ownDestructReferenceGeneric;
+                user_data_object->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
+                user_data_object->base.release_callback =
+                    &ownReleaseReferenceBufferGeneric;
+                user_data_object->base.kernel_callback = &ownKernelCallbackGeneric;
                 user_data_object->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_USER_DATA_OBJECT, vxCastRefFromUserDataObject(user_data_object));
                 if(user_data_object->base.obj_desc==NULL)
@@ -245,10 +247,10 @@ vx_user_data_object ownCreateUserDataObject(
 vx_user_data_object ownCreateReadOnlyUserDataObject(vx_user_data_object parent)
 {
     vx_user_data_object user_data_object = NULL;
-    user_data_object = (vx_user_data_object)ownCreateReference(parent->base.context, VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, &parent->base.context->base);
+    user_data_object = (vx_user_data_object)ownCreateReference(parent->base.context, (vx_enum)VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, &parent->base.context->base);
 
     if ((vxGetStatus((vx_reference)user_data_object) == (vx_status)VX_SUCCESS) &&
-        (user_data_object->base.type == VX_TYPE_USER_DATA_OBJECT))
+        (user_data_object->base.type == (vx_enum)VX_TYPE_USER_DATA_OBJECT))
     {
         /* assign reference type specific callback's */
         user_data_object->base.destructor_callback =
@@ -256,8 +258,7 @@ vx_user_data_object ownCreateReadOnlyUserDataObject(vx_user_data_object parent)
         user_data_object->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
         user_data_object->base.release_callback =
             (tivx_reference_release_callback_f)&ownReleaseReferenceBufferGeneric;
-        user_data_object->base.kernel_callback = &userDataKernelCallback;
-
+        user_data_object->base.kernel_callback = &ownKernelCallbackGeneric;
         user_data_object->base.obj_desc = parent->base.obj_desc;
         user_data_object->parent = parent;
         vxRetainReference(&parent->base);

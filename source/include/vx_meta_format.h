@@ -98,6 +98,12 @@ typedef struct _vx_meta_format
         vx_size rows;
         /*! The N dimension of the matrix */
         vx_size cols;
+        /*! The size of the matrix */
+        vx_size size;
+        /*! The pattern of the matrix */
+        vx_enum pattern;
+        /*! The origin of the matrix */
+        vx_coordinates2d_t origin;
     } mat;
 
     /*!< \brief structure containing information about distribution
@@ -110,6 +116,19 @@ typedef struct _vx_meta_format
         /*! Indicates the total number of the consecutive values of the distribution interval. */
         vx_uint32 range;
     } dist;
+
+    /*!< \brief structure containing information about convolution
+                used when type is set to VX_TYPE_CONVOLUTION */
+    struct {
+        /*! Indicates the number of rows in the convolution. */
+        vx_size rows;
+        /*! Indicates the number of columns in the convolution. */
+        vx_size cols;
+        /*! Indicates the scale of the convolution matrix. */
+        vx_uint32 scale;
+        /*! Indicates the total size of the convolution matrix in bytes. */
+        vx_size size;
+    } conv;
 
     /*!< \brief structure containing information about remap
                 used when type is set to VX_TYPE_REMAP */
@@ -160,6 +179,12 @@ typedef struct _vx_meta_format
         vx_enum data_type;
         /*! \brief The fixed point precision of the tensor */
         vx_int8 fixed_point_position;
+        /*! \brief The scaling divisor of the tensor */
+        vx_uint8 scaling_divisor;
+        /*! \brief The fixed point position of the scaling divisor */
+        vx_uint8 scaling_divisor_fixed_point_position;
+        /*! \brief The strides of the tensor */
+        vx_size strides[TIVX_CONTEXT_MAX_TENSOR_DIMS];
     } tensor;
 
     /*!< \brief structure containing information about user data object

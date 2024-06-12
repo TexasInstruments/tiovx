@@ -18,66 +18,7 @@
 
 #include <vx_internal.h>
 
-static vx_distribution ownCreateDistribution(vx_reference scope, vx_size num_bins, vx_int32 offset, vx_uint32 range, vx_bool is_virtual);
-static vx_status isDistributionCopyable(vx_distribution input, vx_distribution output);
-static vx_status copyDistribution(vx_distribution input, vx_distribution output);
-static vx_status swapDistribution(vx_distribution input, vx_distribution output);
-static vx_status VX_CALLBACK distributionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
-
-/*! \brief This function is called to find out if it is OK to copy the input to the output.
- * Bins, offset & range must be the same
- * \returns VX_SUCCESS if it is, otherwise another error code.
- * 
- */
-static vx_status isDistributionCopyable(vx_distribution input, vx_distribution output)
-{
-    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
-    {
-         return VX_SUCCESS;
-    }
-    else
-    {
-        return VX_ERROR_NOT_COMPATIBLE;
-    }
-}
-
-/*! \brief Copy input to output
- * The input must be copyable to the output; checks done already.
- * Note that locking a reference actually locks the context, so we only lock
- * one reference!
-
- */
-static vx_status copyDistribution(vx_distribution input, vx_distribution output)
-{
-    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
-}
-
-/*! \brief swap input and output pointers
- * Input and output must be swappable; checks done already.
- */
-static vx_status swapDistribution(vx_distribution input, vx_distribution output)
-{
-    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
-}
-
-/* Call back function that handles the copy, swap and move kernels */
-static vx_status VX_CALLBACK distributionKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
-{
-    /*
-        Decode the kernel operation - simple version!
-    */
-    vx_distribution input = (vx_distribution)params[0];
-    vx_distribution output = (vx_distribution)params[1];
-    switch (kernel_enum)
-    {
-        case VX_KERNEL_COPY:    return validate_only ? isDistributionCopyable(input, output) : copyDistribution(input, output);
-        case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:    return validate_only ? isDistributionCopyable(input, output) : swapDistribution(input, output);
-        default:                return VX_ERROR_NOT_SUPPORTED;
-    }
-}
-
-static vx_distribution ownCreateDistribution(vx_reference scope, vx_size num_bins, vx_int32 offset, vx_uint32 range, vx_bool is_virtual)
+VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(vx_context context, vx_size num_bins, vx_int32 offset, vx_uint32 range)
 {
     vx_distribution dist = NULL;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
@@ -110,7 +51,7 @@ static vx_distribution ownCreateDistribution(vx_reference scope, vx_size num_bin
                 dist->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 dist->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-                dist->base.kernel_callback = &distributionKernelCallback;
+                dist->base.kernel_callback = &ownKernelCallbackGeneric;
                 obj_desc = (tivx_obj_desc_distribution_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_DISTRIBUTION, vxCastRefFromDistribution(dist));
                 if(obj_desc==NULL)
@@ -164,7 +105,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseDistribution(vx_distribution *dist)
         vxCastRefFromDistributionP(dist), (vx_enum)VX_TYPE_DISTRIBUTION, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-vx_status VX_API_CALL vxQueryDistribution(
+VX_API_ENTRY vx_status VX_API_CALL vxQueryDistribution(
     vx_distribution dist, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -261,7 +202,7 @@ vx_status VX_API_CALL vxQueryDistribution(
     return status;
 }
 
-vx_status VX_API_CALL vxCopyDistribution(
+VX_API_ENTRY vx_status VX_API_CALL vxCopyDistribution(
     vx_distribution dist, void *user_ptr, vx_enum usage, vx_enum user_mem_type)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -336,7 +277,7 @@ vx_status VX_API_CALL vxCopyDistribution(
     return (status);
 }
 
-vx_status VX_API_CALL vxMapDistribution(
+VX_API_ENTRY vx_status VX_API_CALL vxMapDistribution(
     vx_distribution dist, vx_map_id *map_id, void **ptr, vx_enum usage, vx_enum mem_type,
     vx_bitfield flags)
 {
@@ -368,7 +309,7 @@ vx_status VX_API_CALL vxMapDistribution(
     return (status);
 }
 
-vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id)
+VX_API_ENTRY vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;

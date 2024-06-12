@@ -109,6 +109,8 @@
      A critical component of safety SW systems is the memory management scheme.  Please reference the section \ref TIOVX_MEMORY_MANAGEMENT
      for details on how memory management is handled in TIOVX and how it facilitates safety.
 
+     \subsection TIOVX_SAFETY_MEMORY_MANAGEMENT_APPLICATION Requirements for Application Usage of OpenVX data objects
+
      OpenVX has a clear “initialization” phase, “run-time” phase, and “deinit” phase for each graph.  The initialization phase for a graph
      ends when the call to \ref vxVerifyGraph returns.  With one specific case exception listed below, all of the resources are initialized, and
      at no point in the run-time phase the framework or kernels allocate memory. (Note that it is possible that the application itself may still
@@ -139,6 +141,49 @@
      When designing applications, the application shall not selectively delete graphs or memory associated with OpenVX objects.  Rather, it should persist throughout
      the duration of the application.  The reason for this is that selective deletion and re-creation of various OpenVX objects can lead to memory fragmentation.
 
+     \subsection TIOVX_SAFETY_MEMORY_MANAGEMENT_OBJ_DESCRIPTOR_TABLE Requirement for object descriptor table
+
+     As mentioned above and in the \ref TIOVX_MEMORY_MANAGEMENT documentation, TIOVX uses a table of object descriptors in non-cached memory which are exchanged
+     across nodes in order to access data buffers.  Upon firmware boot, this table is reset by the remote core firmware and not on the host side.  Furthermore,
+     this table is modified by the framework when new object descriptors are populated or removed from the table.
+
+     From the application side, it is necessary to avoid applications writing into this memory, as this will corrupt the object descriptors and therefore could
+     result in invalid reads or writes from remote cores.
+
+     \subsection TIOVX_SAFETY_MEMORY_MANAGEMENT_PHYS_ADDR Note about Physical Addresses
+
+     As a note to application developers, physical addresses are used in multiple places within user space (for instance, with the API \ref tivxMemTranslateVirtAddr).
+     This is important to note, as a misbehaving application could corrupt this value and cause crashes on remote cores.  Care should be taken to avoid corrupting
+     these values within the application.
+
+     \subsection TIOVX_SAFETY_EXTERNALLY_ALLOCATED_MEMORY Requirements for Memory Allocated Outside of TIOVX Framework
+
+     Certain API's allow an OpenVX data object to be associated with memory allocated from outside of the framework.  There are several important constraints
+     for such memory.  There are a few API's in question which are explained further below.
+
+     \subsubsection TIOVX_SAFETY_EXTERNALLY_ALLOCATED_MEMORY_IMAGE Requirements of vxCreateImageFromHandle and vxSwapImageHandle
+
+     Both the \ref vxCreateImageFromHandle and \ref vxSwapImageHandle API allow for the importing of memory which may or may not have been allocated using the TIOVX
+     framework to a \ref vx_image object.  In order to avoid errors, the memory which is being imported to these objects are required to be allocated using the
+     \ref tivxMemAlloc API even though there are no explicit error checks in the framework for this requirement.
+
+     \subsubsection TIOVX_SAFETY_EXTERNALLY_ALLOCATED_MEMORY_IMPORT Requirements of tivxReferenceImportHandle
+
+     The \ref tivxReferenceImportHandle API has several important restrictions in how it is to be used within TIOVX.  The API guide gives details as to
+     the requirements of the imported handle, which must be adhered to.  In particular, there are a few important aspects of the imported handles that need
+     to be reviewed below:
+
+     - OpenVX data type requirements.  The only provided list of data types are valid.
+     - Memory region requirements.  An error is thrown if the memory is not created from the region specified
+     - Memory alignment requirements.  While there is not a check for this given that it is simply a memory address, the API is required to be used for memory
+       allocation will automatically align the memory to the required alignment
+     - There is an error thrown if the corresponding number of entries doesn't match a set of number of valid addresses.  If the total number of memory pointers
+       are not equal to the number of pointers required for the reference, then an error will be thrown.
+     - Subimages of a given image object will not be imported to the subsequent imported image object.
+
+     For more information about how to use this API, please refer to the Producer/Consumer application within vision_apps as well as the test cases
+     found at tiovx/conformance_tests/test_tiovx/test_tivxMem.c
+
      \section TIOVX_SAFETY_RESOURCE_TEARDOWN TIOVX Resource Teardown
 
      For applications created using TIOVX as the middleware, the resource teardown shall be considered in the development of the applications.
@@ -159,23 +204,24 @@
 
      For information about ensuring that all resources have been freed appropriately, please reference \ref TIOVX_SAFETY_TOOLING.
 
-     \section TIOVX_SAFETY_IMPORT_REFERENCE TIOVX Import Reference
+     \section TIOVX_SAFETY_SPINLOCK_USAGE TIOVX Spinlock Usage and Recommendations
 
-     The \ref tivxReferenceImportHandle API has several important restrictions in how it is to be used within TIOVX.  The API guide gives details as to
-     the requirements of the imported handle, which must be adhered to.  In particular, there are a few important aspects of the imported handles that need
-     to be reviewed below:
+     There are a few different scenarios in which a spinlock is required to be used by TIOVX in order to provide exclusive access amongst the multiple cores
+     which may require access to a given piece of information.  The 3 scenarios are listed below along with the spinlock ID which is used for that scenario:
 
-     - OpenVX data type requirements.  The only provided list of data types are valid.
-     - Memory region requirements.  An error is thrown if the memory is not created from the region specified
-     - Memory alignment requirements.  While there is not a check for this given that it is simply a memory address, the API is required to be used for memory
-       allocation will automatically align the memory to the required alignment
-     - There is an error thrown if the corresponding number of entries doesn't match a set of number of valid addresses.  If the total number of memory pointers
-       are not equal to the number of poitners required for the reference, then an error will be thrown.
-     - Subimages of a given image object will not be imported to the subsequent imported image object.
+     - Run time event logger: \ref TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID
+     - Object descriptor table: \ref TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID
+     - Data reference queue: \ref TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID
 
-     For more information about how to use this API, please refer to the Producer/Consumer application within vision_apps as well as the test cases
-     found at tiovx/conformance_tests/test_tiovx/test_tivxMem.c
+     There is no resource manager for spinlocks within the SDK.  Therefore, it is important for an application developer to guarantee that no other piece of
+     software assumes access to these locks.  If other software components are using these locks, it will cause significant delays in execution of TIOVX.
 
+     \section TIOVX_SAFETY_IPC TIOVX IPC Implementation
+
+     The remote core IPC utils uses a locally set endpoint number which it uses to communicate amongst HLOS and other RTOS cores.  Therefore, the RTOS
+     remote cores are trusting the HLOS to use the proper endpoint; otherwise, the communication may be sent to the wrong endpoint.  If an application uses
+     the default IPC utils, this is already taken care of, but if an application uses some other means of establishing IPC across cores, issues could arise
+     if this fact is not considered.
  */
 
 /*!
@@ -229,6 +275,19 @@
      timeout values to the custom node.  The \ref tivxTaskWaitMsecs can then be used when setting the timeout.
      Please reference the target kernel implementation of the tivxCmdTimeoutTestNode for an example of how this can
      be achieved.
+
+     \section TIOVX_SAFETY_FEATURES_EVENT TIOVX Event API
+
+     TIOVX supports the event handling API which is included in the OpenVX Pipelining and Streaming Extension (link found in \ref RESOURCES).
+
+     This event handling API can be useful for detecting node level errors by using VX_EVENT_NODE_ERROR within the \ref vx_event_type_e
+     enumeration.  This allows an application to use the \ref vxRegisterEvent API to know when an error has occurred within the process
+     callback of a node.
+
+     One limitation of this approach is that the exact error code is not provided, only an event which signals that an error has occurred.
+     At present, the suggested approach for determining any further information is to additionally register a control callback within the
+     node which can be queried by the application if an error has occurred.
+
  */
 
 /*!

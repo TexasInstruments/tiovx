@@ -1312,24 +1312,24 @@ static vx_status ownCallKernelFunc(vx_reference input, vx_reference output, vx_e
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_reference params[] = {input, output};
-    if (ownIsValidReference(input))
+    if ((vx_bool)vx_true_e == ownIsValidReference(input))
     {
-        if (input->kernel_callback)
+        if (NULL != input->kernel_callback)
         {
-            status = input->kernel_callback(kernel, vx_true_e, 0, params, 2);
+            status = input->kernel_callback(kernel, (vx_bool)vx_true_e, params, 2);
             if ((vx_status)VX_SUCCESS == status)
             {
-                status = input->kernel_callback(kernel, vx_false_e, 0, params, 2);
+                status = input->kernel_callback(kernel, (vx_bool)vx_false_e, params, 2);
             }
-            if ((vx_status)VX_SUCCESS == status &&
-                input->supplementary_data &&
-                output->supplementary_data &&
-                input->supplementary_data->base.kernel_callback)
+            if (((vx_status)VX_SUCCESS == status) &&
+                (NULL != input->supplementary_data) &&
+                (NULL != output->supplementary_data) &&
+                (NULL != input->supplementary_data->base.kernel_callback))
             {
                 vx_reference supp_params[2] = {&input->supplementary_data->base, &output->supplementary_data->base};
-                if ((vx_status)VX_SUCCESS == input->supplementary_data->base.kernel_callback(kernel, vx_true_e, 0, supp_params, 2))
+                if ((vx_status)VX_SUCCESS == input->supplementary_data->base.kernel_callback(kernel, (vx_bool)vx_true_e, supp_params, 2))
                 {
-                    status = input->supplementary_data->base.kernel_callback(kernel, vx_false_e, 0, supp_params, 2);
+                    status = input->supplementary_data->base.kernel_callback(kernel, (vx_bool)vx_false_e, supp_params, 2);
                 }
             }
         }
@@ -1347,15 +1347,15 @@ static vx_status ownCallKernelFunc(vx_reference input, vx_reference output, vx_e
 
 VX_API_ENTRY vx_status VX_API_CALL vxuCopy(vx_context context, vx_reference input, vx_reference output)
 {
-    return ownCallKernelFunc(input, output, VX_KERNEL_COPY);
+    return ownCallKernelFunc(input, output, (vx_enum)VX_KERNEL_COPY);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxuSwap(vx_context context, vx_reference first, vx_reference second)
 {
-    return ownCallKernelFunc(first, second, VX_KERNEL_SWAP);
+    return ownCallKernelFunc(first, second, (vx_enum)VX_KERNEL_SWAP);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxuMove(vx_context context, vx_reference first, vx_reference second)
 {
-    return ownCallKernelFunc(first, second, VX_KERNEL_MOVE);
+    return ownCallKernelFunc(first, second, (vx_enum)VX_KERNEL_MOVE);
 }

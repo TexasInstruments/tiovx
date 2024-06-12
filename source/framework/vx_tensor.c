@@ -28,13 +28,10 @@
 Tensor HELPER FUNCTIONS
 =============================================================================*/
 
-static vx_status isTensorCopyable(vx_tensor input, vx_tensor output);
-static vx_status isTensorSwappable(vx_tensor input, vx_tensor output);
-static vx_status copyTensor(vx_tensor input, vx_tensor output);
-static vx_status moveOrSwapTensor(vx_tensor input, vx_tensor output);
-static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
-static vx_bool ownIsValidTensor(vx_tensor tensor);
-static vx_bool ownIsValidTensorFormat(vx_enum data_type, vx_uint8 fixed_point_pos);
+static vx_status isTensorSwappable(vx_reference input, vx_reference output);
+static vx_status moveOrSwapTensor(vx_reference input, vx_reference output);
+static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params);
+static vx_bool ownIsValidTensorFormat(vx_enum data_type);
 static void ownInitTensorObject(
     vx_tensor tensor, const vx_size* dimensions, vx_size number_of_dimensions, vx_enum data_type, vx_int8 fixed_point_position);
 static vx_status ownTensorCheckSizes(const volatile uint32_t *dimensions, const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions);
@@ -45,152 +42,115 @@ static void ownComputePositionsFromIndex(vx_size idx, const vx_size * start, con
 static vx_uint32 ownComputePatchOffset(vx_size num_dims, const vx_size *dim_coordinate, const volatile uint32_t *strides);
 
 
-
-/*! \brief Check to see if the input tensor may be copied to the output
- * Data type and all dimensions must agree
- */
-static vx_status isTensorCopyable(vx_tensor input, vx_tensor output)
-{
-    vx_status status =  (vx_status)VX_SUCCESS;
-    if ((input == output) ||
-        (vx_false_e == ownIsValidTensor(input)) ||
-        (vx_false_e == ownIsValidTensor(output)))
-    {
-        status = VX_ERROR_NOT_COMPATIBLE;
-    }
-    else
-    {
-        tivx_obj_desc_tensor_t * ip_obj_desc = (tivx_obj_desc_tensor_t *)input->base.obj_desc;
-        tivx_obj_desc_tensor_t * op_obj_desc = (tivx_obj_desc_tensor_t *)output->base.obj_desc;
-        if ((ip_obj_desc->data_type != op_obj_desc->data_type) ||
-            (ip_obj_desc->number_of_dimensions != op_obj_desc->number_of_dimensions) ||
-            (ip_obj_desc->scaling_divisor != op_obj_desc->scaling_divisor) ||
-            (ip_obj_desc->fixed_point_position != op_obj_desc->fixed_point_position) ||
-            (ip_obj_desc->scaling_divisor_fixed_point_position != op_obj_desc->scaling_divisor_fixed_point_position) ||
-            (ip_obj_desc->mem_size != op_obj_desc->mem_size))
-        {
-            status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-        }
-        else
-        {
-            vx_uint32 i;
-            for (i = 0; i < dimof(ip_obj_desc->dimensions); ++i)
-            {
-                if (ip_obj_desc->dimensions[i] != op_obj_desc->dimensions[i])
-                {
-                    status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-                    break;
-                }
-            }
-        }
-    }
-    return status;
-}
-
 /*! \brief check to see if the tensors may be swapped.
  * They must be copyable, and not sub-tensors
 */
-static vx_status isTensorSwappable(vx_tensor input, vx_tensor output)
+static vx_status isTensorSwappable(vx_reference input, vx_reference output)
 {
-    vx_status status = isTensorCopyable(input, output);
-
-	tivx_obj_desc_tensor_t * ip_obj_desc = (tivx_obj_desc_tensor_t *)input->base.obj_desc;
-    tivx_obj_desc_tensor_t * op_obj_desc = (tivx_obj_desc_tensor_t *)output->base.obj_desc;
-
-	if (ip_obj_desc->mem_size != op_obj_desc->mem_size)
-	{
-		status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-	}
-
-	return status;
-
-
+    vx_status status = (vx_status)VX_SUCCESS;
+    if ((vx_bool) vx_true_e ==  tivxIsReferenceMetaFormatEqual(input, output))
+    {
+        tivx_obj_desc_tensor_t * ip_obj_desc = (tivx_obj_desc_tensor_t *)input->obj_desc;
+        tivx_obj_desc_tensor_t * op_obj_desc = (tivx_obj_desc_tensor_t *)output->obj_desc;
+        if (ip_obj_desc->mem_size != op_obj_desc->mem_size)
+        {
+           status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+       }
+    }
+    else
+    {
+        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+    }
     return status;
-
 }
-
-
-/*! \brief Copy the input tensor to the output
- * If memory sizes are equal, do a memcpy, otherwise
- * use the high-level routines.
- */
-static vx_status copyTensor(vx_tensor input, vx_tensor output)
-{
-    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
-}
-
 
 /*! \brief Swap orMove the input tensor to the output
  * Note this is the same as swap if the input is not virtual
  */
-static vx_status moveOrSwapTensor(vx_tensor input, vx_tensor output)
+static vx_status moveOrSwapTensor(vx_reference input, vx_reference output)
 {
-    vx_status status =  ownReferenceLock(&output->base);
+    vx_status status =  ownReferenceLock(output);
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivx_obj_desc_tensor_t *ip_obj_desc = (tivx_obj_desc_tensor_t *)input->base.obj_desc;
-        tivx_obj_desc_tensor_t *op_obj_desc = (tivx_obj_desc_tensor_t *)output->base.obj_desc;
-        vx_uint64 offset[TIVX_IMAGE_MAX_PLANES] = {0};
-
-        //swap objects
-        input->base.obj_desc  = op_obj_desc;
-        output->base.obj_desc = ip_obj_desc;
-        //swap destructors
-        tivx_reference_destructor_callback_f destructor = (tivx_reference_destructor_callback_f)output->base.destructor_callback;
-        output->base.destructor_callback = input->base.destructor_callback;
-        input->base.destructor_callback = (tivx_reference_callback_f)destructor;
+        /* swap destructors even if they are generic (identical) for the tensor objects.
+           we do it for completeness and to ensure that in case 
+           there is later a need of unique destructors
+        */
+        tivx_reference_callback_f destructor = output->destructor_callback;
+        output->destructor_callback = input->destructor_callback;
+        input->destructor_callback = (tivx_reference_callback_f)destructor;
+        /* swap objects */
+        tivx_obj_desc_t *op_obj_desc = output->obj_desc;
+        output->obj_desc = input->obj_desc;
+        input->obj_desc  = op_obj_desc;
     }
-    ownReferenceUnlock(&output->base);
+    status = ownReferenceUnlock(output);
     return status;
 }
 
 /*! \brief The kernel operations function for vx_tensor
  * Handles both validation and kernel function
  */
-static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
+static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params)
 {
-    /*
-        Decode the kernel operation - simple version!
-    */
-    vx_tensor input = (vx_tensor)params[0];
-    vx_tensor output = (vx_tensor)params[1];
-    switch (kernel_enum)
+    vx_status res;
+    vx_reference input  = NULL;
+    vx_reference output = NULL;    
+
+    if (2U != num_params)
     {
-        case VX_KERNEL_COPY:    return validate_only ? isTensorCopyable(input, output)  : copyTensor(input, output);
-        case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE: 	return validate_only ? isTensorSwappable(input, output) : moveOrSwapTensor(input, output);
-        default:                return VX_ERROR_NOT_SUPPORTED;
-    }
-}
-
-
-
-/**
- * \brief Check that an object is a valid tensor type (T / F)
- *
- * \param [in] tensor  An object of type tensor
- * \return A <tt>\ref vx_bool_e</tt> enumeration.
- */
-static vx_bool ownIsValidTensor(vx_tensor tensor)
-{
-    if ((ownIsValidSpecificReference(&tensor->base, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_true_e))
-    {
-        return vx_true_e;
+        res = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
     else
     {
-        return vx_false_e;
+        input  = params[0];
+        output = params[1];        
+        switch (kernel_enum)
+        {
+            case (vx_enum)VX_KERNEL_COPY:
+                if ((vx_bool)vx_true_e == validate_only)
+                {
+                    if ((vx_bool) vx_true_e ==  tivxIsReferenceMetaFormatEqual(input, output))
+                    {
+                        res = (vx_status)VX_SUCCESS;
+                    }
+                    else
+                    {
+                        res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+                    }
+                }
+                else
+                {
+                    res = ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output);
+                }
+                break;
+            case (vx_enum)VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+            case (vx_enum)VX_KERNEL_MOVE:
+                if ((vx_bool)vx_true_e == validate_only)
+                {
+                    res =  isTensorSwappable(input, output);
+                }
+                else
+                {
+                    res = moveOrSwapTensor(input, output);
+                }
+                break;
+            default:
+                res =  (vx_status)VX_ERROR_NOT_SUPPORTED;
+                break;
+        }
     }
+    return (res);
 }
 
 /**
  * \brief Check the format of a tensor's contents  (T / F)
  * \param [in] data_type        data_type of tensor elements
- * \param [in] fixed_point_pos  fixed point position of an integer (arbitary choice)
  * \return A <tt>\ref vx_bool_e</tt> enumeration.
  */
-static vx_bool ownIsValidTensorFormat(vx_enum data_type, vx_uint8 fixed_point_pos)
+static vx_bool ownIsValidTensorFormat(vx_enum data_type)
 {
+    vx_bool res;
     if (
         (data_type == (vx_enum)VX_TYPE_FLOAT32) ||
         (data_type == (vx_enum)VX_TYPE_INT64)   ||
@@ -208,6 +168,11 @@ static vx_bool ownIsValidTensorFormat(vx_enum data_type, vx_uint8 fixed_point_po
     {
         return vx_false_e;
     }
+    else
+    {
+        res = (vx_bool)vx_false_e;
+    }
+    return(res);
 }
 
 static void ownInitTensorObject(
@@ -341,7 +306,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
             VX_PRINT(VX_ZONE_ERROR, "Invalid dims for the tensor.\n");
             status = (vx_status)VX_ERROR_INVALID_DIMENSION;
         }
-        if ((vx_bool)vx_false_e == ownIsValidTensorFormat(data_type, (vx_uint8)fixed_point_position))
+        if ((vx_bool)vx_false_e == ownIsValidTensorFormat(data_type))
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid data_type for the tensor.\n");
             status = (vx_status)VX_ERROR_INVALID_TYPE;
@@ -359,9 +324,9 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
                 /* assign reference type specific callback's */
                 tensor->base.destructor_callback = &ownDestructReferenceGeneric;
                 tensor->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
-                tensor->base.release_callback = &ownReleaseReferenceBufferGeneric;
-                tensor->base.kernel_callback = *tensorKernelCallback;
-
+                tensor->base.release_callback =
+                   &ownReleaseReferenceBufferGeneric;
+                tensor->base.kernel_callback = &tensorKernelCallback;
                 tensor->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_TENSOR, vxCastRefFromTensor(tensor));
                 if(tensor->base.obj_desc==NULL)

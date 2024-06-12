@@ -63,10 +63,45 @@ TEST(tivxInternalGraphStream, negativeTestGraphAllocForStreaming)
     ASSERT(VX_ERROR_INVALID_REFERENCE == ownGraphAllocForStreaming(graph));
 }
 
+/* Testcase to fail tivxEventClear(), tivxSendUserGraphEvent(), tivxEventWait() called within vxStopGraphStreaming() */
+TEST(tivxInternalGraphStream, negativeTestStopGraphStreaming)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    graph -> is_streaming = vx_true_e;
+    ASSERT(VX_ERROR_INVALID_PARAMETERS == vxStopGraphStreaming(graph));
+    graph -> is_streaming = vx_false_e;
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+/* Testcase to fail tivxSendUserGraphEvent() called within vxStartGraphStreaming() */
+TEST(tivxInternalGraphStream, negativeTestStartGraphStreaming)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    graph -> is_streaming_enabled = vx_true_e;
+    graph -> is_streaming_alloc = vx_true_e;
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxStartGraphStreaming(graph));
+    graph -> is_streaming_enabled = vx_false_e;
+    graph -> is_streaming_alloc = vx_false_e;
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(
     tivxInternalGraphStream,
     negativeTestGraphEvent,
     negativeTestGraphVerfiyStreamingNode,
-    negativeTestGraphAllocForStreaming
+    negativeTestGraphAllocForStreaming,
+    negativeTestStopGraphStreaming,
+    negativeTestStartGraphStreaming
+
 )
 

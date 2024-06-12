@@ -270,8 +270,6 @@ enum vx_kernel_e {
      */
     VX_KERNEL_HALFSCALE_GAUSSIAN = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x29,
 
-    /* kernel added in OpenVX 1.1 */
-
     /*! \brief The Laplacian Image Pyramid Kernel.
     * \see group_vision_function_laplacian_pyramid
     */
@@ -287,8 +285,8 @@ enum vx_kernel_e {
     */
     VX_KERNEL_NON_LINEAR_FILTER = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x2C,
 
-    /* insert new kernels here */
-    VX_KERNEL_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
+    /* kernel added in OpenVX 1.1 */
+    VX_KERNEL_MAX_1_1, /*!< \internal Used for bounds checking in the conformance test. */
 
     /*! \brief The data object copy kernel.
     * \see group vision_function_copy
@@ -304,6 +302,8 @@ enum vx_kernel_e {
     * \see group_vision_function_move
     */
     VX_KERNEL_MOVE = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x42,
+
+    /* insert new kernels here */
 };
 
 #ifdef  __cplusplus

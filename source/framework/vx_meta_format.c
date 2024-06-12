@@ -30,6 +30,8 @@ static vx_status ownInitMetaFormatWithMatrix(
     vx_meta_format meta, vx_matrix exemplar);
 static vx_status ownInitMetaFormatWithDistribution(
     vx_meta_format meta, vx_distribution exemplar);
+static vx_status ownInitMetaFormatWithConvolution(
+    vx_meta_format meta, vx_convolution exemplar);
 static vx_status ownInitMetaFormatWithRemap(
     vx_meta_format meta, vx_remap exemplar);
 static vx_status ownInitMetaFormatWithLut(
@@ -48,6 +50,8 @@ static vx_bool ownIsMetaFormatArrayEqual(
     vx_meta_format meta1, vx_meta_format meta2);
 static vx_bool ownIsMetaFormatDistributionEqual(
     vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatConvolutionEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
 static vx_bool ownIsMetaFormatImageEqual(
     vx_meta_format meta1, vx_meta_format meta2);
 static vx_bool ownIsMetaFormatLutEqual(
@@ -63,8 +67,6 @@ static vx_bool ownIsMetaFormatRawImageEqual(
 static vx_bool ownIsMetaFormatTensorEqual(
     vx_meta_format meta1, vx_meta_format meta2);
 static vx_bool ownIsMetaFormatScalarEqual(
-    vx_meta_format meta1, vx_meta_format meta2);
-static vx_bool ownIsMetaFormatTensorEqual(
     vx_meta_format meta1, vx_meta_format meta2);
 static vx_bool ownIsMetaFormatRemapEqual(
     vx_meta_format meta1, vx_meta_format meta2);
@@ -85,9 +87,93 @@ vx_meta_format ownCreateMetaFormat(vx_context context)
         if ((vxGetStatus(vxCastRefFromMetaFormat(meta)) == (vx_status)VX_SUCCESS) &&
             (meta->base.type == (vx_enum)VX_TYPE_META_FORMAT))
         {
+            vx_int32 i;
+
             meta->size = sizeof(tivx_meta_format_t);
             meta->type = (vx_enum)VX_TYPE_INVALID;
             meta->valid_rect_callback = NULL;
+
+            /* Initialize image meta */
+            meta->img.width  = 0U;
+            meta->img.height = 0U;
+            meta->img.format = (vx_enum)VX_TYPE_INVALID;
+
+            /* Initialize pyramid meta */
+            meta->pmd.width  = 0U;
+            meta->pmd.height = 0U;
+            meta->pmd.format = (vx_enum)VX_TYPE_INVALID;
+            meta->pmd.levels = 0U;
+            meta->pmd.scale  = 0.0f;
+
+            /* Initialize scalar meta*/
+            meta->sc.type    = (vx_enum)VX_TYPE_INVALID;
+
+            /* Initialize array meta */
+            meta->arr.item_type = (vx_enum)VX_TYPE_INVALID;
+            meta->arr.capacity  = 0U;
+
+            /* Initialize matrix meta */
+            meta->mat.type = (vx_enum)VX_TYPE_INVALID;
+            meta->mat.rows = 0U;
+            meta->mat.cols = 0U;
+
+            /* Initialize distribution meta */
+            meta->dist.bins = 0U;
+            meta->dist.offset = 0;
+            meta->dist.range = 0U;
+
+            /* Initialize convolution meta */
+            meta->conv.rows = 0U;
+            meta->conv.cols = 0U;
+            meta->conv.scale = 0U;
+            meta->conv.size = 0U;
+
+            /* Initialize remap meta */
+            meta->remap.src_width = 0U;
+            meta->remap.src_height = 0U;
+            meta->remap.dst_width = 0U;
+            meta->remap.dst_height = 0U;
+
+            /* Initialize LUT meta */
+            meta->lut.type = (vx_enum)VX_TYPE_INVALID;
+            meta->lut.count = 0U;
+
+            /* Initialize threshold meta */
+            meta->thres.type = (vx_enum)VX_TYPE_INVALID;
+
+            /* Initialize object array meta */
+            meta->objarr.item_type = (vx_enum)VX_TYPE_INVALID;
+            meta->objarr.num_items = 0U;
+
+            /* Initialize tensor meta */
+            meta->tensor.number_of_dimensions = 0U;
+            meta->tensor.data_type = (vx_enum)VX_TYPE_INVALID;
+            meta->tensor.fixed_point_position = 0;
+            meta->tensor.scaling_divisor = 0U;
+            meta->tensor.scaling_divisor_fixed_point_position = 0U;
+
+            for (i = 0; i < TIVX_CONTEXT_MAX_TENSOR_DIMS; i++)
+            {
+                meta->tensor.dimensions[i] = 0U;
+                meta->tensor.strides[i] = 0U;
+            }
+            /* Initialize user data object meta */
+            meta->user_data_object.type_name[0] = (char)0;
+            meta->user_data_object.size = 0U;
+
+            /* Initialize raw image meta */
+            meta->raw_image.width = 0U;
+            meta->raw_image.height = 0U;
+            meta->raw_image.num_exposures = 0U;
+            meta->raw_image.line_interleaved = (vx_bool)vx_false_e;
+            meta->raw_image.meta_height_before = 0U;
+            meta->raw_image.meta_height_after = 0U;
+
+            for (i = 0; i < TIVX_RAW_IMAGE_MAX_EXPOSURES; i++)
+            {
+                meta->raw_image.format[i].pixel_container = 0U;
+                meta->raw_image.format[i].msb = 0U;
+            }
         }
     }
 
@@ -326,6 +412,45 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 break;
 
+            case (vx_enum)VX_MATRIX_SIZE:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    meta->mat.size = *(const vx_size *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Matrix size error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)VX_MATRIX_PATTERN:
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
+                {
+                    meta->mat.pattern = *(vx_enum *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Matrix pattern error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)VX_MATRIX_ORIGIN:
+                if (VX_CHECK_PARAM(ptr, size, vx_coordinates2d_t, 0x3U))
+                {
+                    vx_coordinates2d_t *rect = (vx_coordinates2d_t *)ptr;
+
+                    meta->mat.origin.x = rect->x;
+                    meta->mat.origin.y = rect->y;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Matrix origin error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
             case (vx_enum)VX_DISTRIBUTION_BINS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
@@ -358,6 +483,54 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Distribution range error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)VX_CONVOLUTION_SCALE:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    meta->conv.scale = *(const vx_uint32 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Convolution scale error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)VX_CONVOLUTION_COLUMNS:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    meta->conv.cols = *(const vx_size *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Convolution columns error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)VX_CONVOLUTION_ROWS:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    meta->conv.rows = *(const vx_size *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Convolution rows error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)VX_CONVOLUTION_SIZE:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    meta->conv.size = *(const vx_size *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Convolution size error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -489,7 +662,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                     const vx_size *p = ptr;
                     vx_size num_dims = size / sizeof(vx_size);
 
-                    /* Use 'for' loop instead of memcpy since interface type size is different from obj_desc size */
                     for(i=0; i<(int32_t)num_dims; i++)
                     {
                         meta->tensor.dimensions[i] = p[i];
@@ -526,6 +698,53 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "VX_TENSOR_FIXED_POINT_POSITION error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)TIVX_TENSOR_SCALING_DIVISOR:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
+                {
+                    meta->tensor.scaling_divisor = *(const vx_uint8 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_TENSOR_SCALING_DIVISOR error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
+                {
+                    meta->tensor.scaling_divisor_fixed_point_position = *(const vx_uint8 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)TIVX_TENSOR_STRIDES:
+                if ((size <= (sizeof(vx_size)*(vx_size)TIVX_CONTEXT_MAX_TENSOR_DIMS)) && (((vx_size)ptr & 0x3U) == 0U))
+                {
+                    int32_t i;
+                    const vx_size *p = ptr;
+                    vx_size num_dims = size / sizeof(vx_size);
+
+                    for(i=0; i<(int32_t)num_dims; i++)
+                    {
+                        meta->tensor.strides[i] = p[i];
+                    }
+                    for(;i<TIVX_CONTEXT_MAX_TENSOR_DIMS; i++)
+                    {
+                        meta->tensor.strides[i] = 0;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_TENSOR_STRIDES error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -722,6 +941,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                     VX_PRINT(VX_ZONE_ERROR, "Distribution init meta format failure\n");
                 }
                 break;
+            case (vx_enum)VX_TYPE_CONVOLUTION:
+                /* status set to NULL due to preceding type check */
+                status = ownInitMetaFormatWithConvolution(
+                    meta, vxCastRefAsConvolution(exemplar, NULL));
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Convolution init meta format failure\n");
+                }
+                break;
             case (vx_enum)VX_TYPE_THRESHOLD:
                 /* status set to NULL due to preceding type check */
                 status = ownInitMetaFormatWithThreshold(
@@ -864,10 +1092,16 @@ static vx_status ownInitMetaFormatWithMatrix(
 
     tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_TYPE, &meta->mat.type,
         sizeof(meta->mat.type)));
-    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)(vx_enum)VX_MATRIX_ROWS, &meta->mat.rows,
+    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_ROWS, &meta->mat.rows,
         sizeof(meta->mat.rows)));
     tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_COLUMNS, &meta->mat.cols,
         sizeof(meta->mat.cols)));
+    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_SIZE, &meta->mat.size,
+        sizeof(meta->mat.size)));
+    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_PATTERN, &meta->mat.pattern,
+        sizeof(meta->mat.pattern)));
+    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_ORIGIN, &meta->mat.origin,
+        sizeof(meta->mat.origin)));
 
     return status;
 }
@@ -883,6 +1117,23 @@ static vx_status ownInitMetaFormatWithDistribution(
         sizeof(meta->dist.offset)));
     tivxCheckStatus(&status, vxQueryDistribution(exemplar, (vx_enum)VX_DISTRIBUTION_RANGE, &meta->dist.range,
         sizeof(meta->dist.range)));
+
+    return status;
+}
+
+static vx_status ownInitMetaFormatWithConvolution(
+    vx_meta_format meta, vx_convolution exemplar)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivxCheckStatus(&status, vxQueryConvolution(exemplar, (vx_enum)VX_CONVOLUTION_ROWS, &meta->conv.rows,
+        sizeof(meta->conv.rows)));
+    tivxCheckStatus(&status, vxQueryConvolution(exemplar, (vx_enum)VX_CONVOLUTION_COLUMNS, &meta->conv.cols,
+        sizeof(meta->conv.cols)));
+    tivxCheckStatus(&status, vxQueryConvolution(exemplar, (vx_enum)VX_CONVOLUTION_SCALE, &meta->conv.scale,
+        sizeof(meta->conv.scale)));
+    tivxCheckStatus(&status, vxQueryConvolution(exemplar, (vx_enum)VX_CONVOLUTION_SIZE, &meta->conv.size,
+        sizeof(meta->conv.size)));
 
     return status;
 }
@@ -954,6 +1205,12 @@ static vx_status ownInitMetaFormatWithTensor(
         sizeof(meta->tensor.data_type)));
     tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)VX_TENSOR_FIXED_POINT_POSITION, &meta->tensor.fixed_point_position,
         sizeof(meta->tensor.fixed_point_position)));
+    tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)TIVX_TENSOR_SCALING_DIVISOR, &meta->tensor.scaling_divisor,
+        sizeof(meta->tensor.scaling_divisor)));
+    tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION, &meta->tensor.scaling_divisor_fixed_point_position,
+        sizeof(meta->tensor.scaling_divisor_fixed_point_position)));
+    tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)TIVX_TENSOR_STRIDES, &meta->tensor.strides,
+        sizeof(meta->tensor.strides)));
 
     return (status);
 }
@@ -1093,9 +1350,13 @@ static vx_bool ownIsMetaFormatMatrixEqual(
     if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
          (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
-        if ( (meta1->mat.type  == meta2->mat.type) &&
-             (meta1->mat.rows  == meta2->mat.rows) &&
-             (meta1->mat.cols  == meta2->mat.cols) )
+        if ( (meta1->mat.type     == meta2->mat.type) &&
+             (meta1->mat.rows     == meta2->mat.rows) &&
+             (meta1->mat.cols     == meta2->mat.cols) &&
+             (meta1->mat.size     == meta2->mat.size) &&
+             (meta1->mat.pattern  == meta2->mat.pattern) &&
+             (meta1->mat.origin.x == meta2->mat.origin.x) &&
+             (meta1->mat.origin.y == meta2->mat.origin.y))
         {
             is_equal = (vx_bool)vx_true_e;
         }
@@ -1125,6 +1386,30 @@ static vx_bool ownIsMetaFormatDistributionEqual(
         else
         {
             VX_PRINT(VX_ZONE_INFO, "Distribution object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatConvolutionEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = (vx_bool)vx_false_e;
+
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    {
+        if ( (meta1->conv.rows  == meta2->conv.rows) &&
+             (meta1->conv.cols  == meta2->conv.cols) &&
+             (meta1->conv.scale == meta2->conv.scale) &&
+             (meta1->conv.size  == meta2->conv.size) )
+        {
+            is_equal = (vx_bool)vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "Convolution object meta data are not equivalent!\n");
         }
     }
 
@@ -1229,13 +1514,16 @@ static vx_bool ownIsMetaFormatTensorEqual(
     if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
          (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
-        if ( (meta1->tensor.number_of_dimensions == meta2->tensor.number_of_dimensions) &&
-             (meta1->tensor.data_type == meta2->tensor.data_type) &&
-             (meta1->tensor.fixed_point_position == meta2->tensor.fixed_point_position) )
+        if ( (meta1->tensor.number_of_dimensions                 == meta2->tensor.number_of_dimensions) &&
+             (meta1->tensor.data_type                            == meta2->tensor.data_type) &&
+             (meta1->tensor.fixed_point_position                 == meta2->tensor.fixed_point_position) &&
+             (meta1->tensor.scaling_divisor                      == meta2->tensor.scaling_divisor) &&
+             (meta1->tensor.scaling_divisor_fixed_point_position == meta2->tensor.scaling_divisor_fixed_point_position) )
         {
             for (i = 0; i < meta1->tensor.number_of_dimensions; i++)
             {
-                if (meta1->tensor.dimensions[i] != meta2->tensor.dimensions[i])
+                if ((meta1->tensor.dimensions[i] != meta2->tensor.dimensions[i]) ||
+                    (meta1->tensor.strides[i]    != meta2->tensor.strides[i]))
                 {
                     break;
                 }
@@ -1341,6 +1629,9 @@ vx_bool ownIsMetaFormatEqual(
                 break;
             case (vx_enum)VX_TYPE_DISTRIBUTION:
                 is_equal = ownIsMetaFormatDistributionEqual(meta1, meta2);
+                break;
+            case (vx_enum)VX_TYPE_CONVOLUTION:
+                is_equal = ownIsMetaFormatConvolutionEqual(meta1, meta2);
                 break;
             case (vx_enum)VX_TYPE_THRESHOLD:
                 is_equal = ownIsMetaFormatThresholdEqual(meta1, meta2);

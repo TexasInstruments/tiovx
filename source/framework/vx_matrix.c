@@ -18,79 +18,7 @@
 
 #include <vx_internal.h>
 
-static vx_matrix ownCreateMatrix(vx_reference scope, vx_enum data_type, vx_size columns, vx_size rows, vx_bool is_virtual);
-static vx_status isMatrixCopyable(vx_matrix input, vx_matrix output);
-static vx_status copyMatrix(vx_matrix input, vx_matrix output);
-static vx_status swapMatrix(vx_matrix input, vx_matrix output);
-static vx_status VX_CALLBACK matrixKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
-
-/*! \brief This function is called to find out if it is OK to copy the input to the output.
- * Columns, rows, data type, pattern, origin_x and origin_y must be the same
- * \returns VX_SUCCESS if it is, otherwise another error code.
- *
- */
-static vx_status isMatrixCopyable(vx_matrix input, vx_matrix output)
-{
-    tivx_obj_desc_matrix_t *ip_obj_desc = (tivx_obj_desc_matrix_t *)input->base.obj_desc;
-    tivx_obj_desc_matrix_t *op_obj_desc = (tivx_obj_desc_matrix_t *)output->base.obj_desc;
-    if ((input != output) &&
-        (ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_MATRIX) == (vx_bool)vx_true_e) &&
-        (op_obj_desc != NULL) &&
-        (ownIsValidSpecificReference(&output->base, (vx_enum)VX_TYPE_MATRIX) == (vx_bool)vx_true_e) &&
-        (op_obj_desc != NULL) &&
-        (ip_obj_desc->columns == op_obj_desc->columns) &&
-        (ip_obj_desc->rows == op_obj_desc->rows) &&
-        (ip_obj_desc->data_type == op_obj_desc->data_type) &&
-        (ip_obj_desc->pattern == op_obj_desc->pattern) &&
-        (ip_obj_desc->origin_x == op_obj_desc->origin_x) &&
-        (ip_obj_desc->origin_y == op_obj_desc->origin_y)
-        )
-    {
-        return VX_SUCCESS;
-    }
-    else
-    {
-        return VX_ERROR_NOT_COMPATIBLE;
-    }
-}
-
-/*! \brief Copy input to output
- * The input must be copyable to the output; checks done already.
- * Note that locking a reference actually locks the context, so we only lock
- * one reference!
-
- */
-static vx_status copyMatrix(vx_matrix input, vx_matrix output)
-{
-    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
-}
-
-/*! \brief swap input and output pointers
- * Input and output must be swappable; checks done already.
- */
-static vx_status swapMatrix(vx_matrix input, vx_matrix output)
-{
-    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
-}
-
-/* Call back function that handles the copy, swap and move kernels */
-static vx_status VX_CALLBACK matrixKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
-{
-    /*
-        Decode the kernel operation - simple version!
-    */
-    vx_matrix input = (vx_matrix)params[0];
-    vx_matrix output = (vx_matrix)params[1];
-    switch (kernel_enum)
-    {
-        case VX_KERNEL_COPY:    return validate_only ? isMatrixCopyable(input, output) : copyMatrix(input, output);
-        case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:     return validate_only ? isMatrixCopyable(input, output) : swapMatrix(input, output);
-        default:                return VX_ERROR_NOT_SUPPORTED;
-    }
-}
-
-static vx_matrix ownCreateMatrix(vx_reference scope, vx_enum data_type, vx_size columns, vx_size rows, vx_bool is_virtual)
+VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrix(vx_context context, vx_enum data_type, vx_size columns, vx_size rows)
 {
     vx_matrix matrix = NULL;
     vx_reference ref = NULL;
@@ -150,7 +78,7 @@ static vx_matrix ownCreateMatrix(vx_reference scope, vx_enum data_type, vx_size 
                 matrix->base.destructor_callback = &ownDestructReferenceGeneric;
                 matrix->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 matrix->base.release_callback = &ownReleaseReferenceBufferGeneric;
-                matrix->base.kernel_callback = &matrixKernelCallback;
+                matrix->base.kernel_callback = &ownKernelCallbackGeneric;
                 obj_desc = (tivx_obj_desc_matrix_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_MATRIX, vxCastRefFromMatrix(matrix));
                 if(obj_desc==NULL)
@@ -190,18 +118,7 @@ static vx_matrix ownCreateMatrix(vx_reference scope, vx_enum data_type, vx_size 
     return (matrix);
 }
 
-vx_matrix VX_API_CALL vxCreateMatrix(vx_context context, vx_enum data_type, vx_size columns, vx_size rows)
-{
-    return ownCreateMatrix((vx_reference)context, data_type, columns, rows, vx_false_e);
-}
-
-vx_matrix VX_API_CALL vxCreateVirtualMatrix(vx_graph graph, vx_enum data_type, vx_size columns, vx_size rows)
-{
-    return ownCreateMatrix((vx_reference)graph, data_type, columns, rows, vx_true_e);
-}
-
-
-vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
+VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     vx_context context, vx_enum pattern, vx_size columns, vx_size rows)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -265,8 +182,9 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             /* assign refernce type specific callback's */
             matrix->base.destructor_callback = &ownDestructReferenceGeneric;
             matrix->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
-            matrix->base.release_callback = &ownReleaseReferenceBufferGeneric;
-            matrix->base.kernel_callback = &matrixKernelCallback;
+            matrix->base.release_callback =
+                &ownReleaseReferenceBufferGeneric;
+            matrix->base.kernel_callback = &ownKernelCallbackGeneric;
             obj_desc = (tivx_obj_desc_matrix_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_MATRIX, vxCastRefFromMatrix(matrix));
             if(obj_desc==NULL)
@@ -424,7 +342,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     return (matrix);
 }
 
-vx_status VX_API_CALL vxQueryMatrix(
+VX_API_ENTRY vx_status VX_API_CALL vxQueryMatrix(
     vx_matrix matrix, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -529,7 +447,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseMatrix(vx_matrix *matrix)
         vxCastRefFromMatrixP(matrix), (vx_enum)VX_TYPE_MATRIX, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-vx_status VX_API_CALL vxCopyMatrix(
+VX_API_ENTRY vx_status VX_API_CALL vxCopyMatrix(
     vx_matrix matrix, void *user_ptr, vx_enum usage, vx_enum user_mem_type)
 {
     vx_status status = (vx_status)VX_SUCCESS;

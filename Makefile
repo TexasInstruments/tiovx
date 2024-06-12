@@ -86,12 +86,13 @@ BUILD_MULTI_PROJECT := 1
 BUILD_TARGET := target.mak
 BUILD_PLATFORM :=
 
-include $(CONCERTO_ROOT)/rules.mak
-
 # Project specific rules
 
 .PHONY: all vision_apps_utils doxy_docs doxy_docs_design
 all: vision_apps_utils
+
+# Note: this has to be moved after "all" in order to ensure vision_apps_utils is processed first
+include $(CONCERTO_ROOT)/rules.mak
 
 ifeq ($(BUILD_EMULATION_MODE),yes)
 vision_apps_utils:

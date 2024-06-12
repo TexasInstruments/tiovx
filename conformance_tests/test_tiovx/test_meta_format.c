@@ -633,7 +633,7 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatRefrenceType, type_arg, USERKERNE
     vx_enum thresh_type = VX_THRESHOLD_TYPE_BINARY;
     vx_int32 thresh_val = 128;
     vx_size num_items = 100;
-    vx_size m = 5, n = 5;
+    vx_size m = 5, n = 3;
     vx_size i, j;
 
     vx_bool expectedFailure = 0;
@@ -1120,7 +1120,7 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
     vx_enum thresh_type = VX_THRESHOLD_TYPE_BINARY;
     vx_int32 thresh_val = 128;
     vx_size num_items = 100;
-    vx_size m = 5, n = 5;
+    vx_size m = 5, n = 3;
     vx_size i, j;
 
     // For Tensor
@@ -1146,7 +1146,6 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
 
     int phase = 0;
     type = (enum vx_type_e)arg_->type;
-    vx_bool is_equal;
     vx_bool status = 0;
     vx_uint8 scalar_val = 0;
     vx_scalar scalar;
@@ -1268,8 +1267,8 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
         VX_CALL(vxReleaseImage(&image2));
         break;
     case VX_TYPE_CONVOLUTION:
-        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateConvolution(context, 5, 5), VX_TYPE_CONVOLUTION);
-        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateConvolution(context, 5, 5), VX_TYPE_CONVOLUTION);
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateConvolution(context, 5, 3), VX_TYPE_CONVOLUTION);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateConvolution(context, 3, 5), VX_TYPE_CONVOLUTION);
         break;
     default:
         status = 1;
@@ -1279,14 +1278,14 @@ TEST_WITH_ARG(tivxMetaFormat, testIsMetaFormatEqual, Arg,
     if (!status)
     {
         // Validates the -Ve Test Scenario
-        is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)src, (vx_reference)dst);
+        ASSERT(tivxIsReferenceMetaFormatEqual((vx_reference)src, (vx_reference)dst) == vx_false_e);
         if (cornerCaseCnt)
         {
-            is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)src, (vx_reference)dst1);
+            ASSERT(tivxIsReferenceMetaFormatEqual((vx_reference)src, (vx_reference)dst1) == vx_false_e);
         }
 
         // Validates the positive testscenario
-        is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)src, (vx_reference)src);
+        ASSERT(tivxIsReferenceMetaFormatEqual((vx_reference)src, (vx_reference)src) == vx_true_e);
     }
 
     // finalization

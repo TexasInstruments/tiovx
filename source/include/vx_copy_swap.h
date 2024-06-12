@@ -1,6 +1,6 @@
 /*
 
- * Copyright (c) 2012-2017 The Khronos Group Inc.
+ * Copyright (c) 2023 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,15 +30,6 @@ extern "C" {
  * \returns VX_SUCCESS if all OK
  */
 vx_status ownGraphProcessCopyMoveNodes(vx_graph graph);
-
-/*! \brief kernel callback for user data objects. (Placed here for licence reasons)
- * \param [in] kernel_enum - The kernel that is requested (VX_KERNEL_COPY etc)
- * \param [in] validate_only - vx_true_e if the operation is to validate the parameters
- * \param [in] optimization - non-zero if some form of optimisation is possible or requested
- * \param [in] params - the list of parameters provided for the kernel
- * \param [in] num_params - the number of parameters provided in the list
-*/
-vx_status VX_CALLBACK userDataKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
 
 #ifdef  __cplusplus
 }

@@ -404,12 +404,12 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
     {
         if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
-            strncpy(target_name, TIVX_TARGET_DSP1,
+            (void)strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
         }
         else
         {
-            strncpy(target_name, TIVX_TARGET_DSP2,
+            (void)strncpy(target_name, TIVX_TARGET_DSP2,
                 TIVX_TARGET_MAX_NAME);
         }
     }
@@ -422,7 +422,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
     #if defined(SOC_J721S2) || defined(SOC_AM62A)
     if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
     {
-        strncpy(target_name, TIVX_TARGET_DSP1,
+        (void)strncpy(target_name, TIVX_TARGET_DSP1,
             TIVX_TARGET_MAX_NAME);
     }
     else
@@ -434,7 +434,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
     #if defined(SOC_J784S4)
     if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP_C7_2)
     {
-        strncpy(target_name, TIVX_TARGET_DSP1,
+        (void)strncpy(target_name, TIVX_TARGET_DSP1,
             TIVX_TARGET_MAX_NAME);
     }
     else
@@ -456,20 +456,20 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
     #if defined(SOC_AM62A)
     if (self_cpu == TIVX_CPU_ID_MCU1_0)
     {
-        strncpy(target_name, TIVX_TARGET_MCU1_0, TIVX_TARGET_MAX_NAME);
+        (void)strncpy(target_name, TIVX_TARGET_MCU1_0, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
     #else
     if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0 )
     {
-        strncpy(target_name, TIVX_TARGET_MCU2_0, TIVX_TARGET_MAX_NAME);
+        (void)strncpy(target_name, TIVX_TARGET_MCU2_0, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
     #ifndef SOC_J722S
     else
     if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1 )
     {
-        strncpy(target_name, TIVX_TARGET_MCU2_1, TIVX_TARGET_MAX_NAME);
+        (void)strncpy(target_name, TIVX_TARGET_MCU2_1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
     #endif

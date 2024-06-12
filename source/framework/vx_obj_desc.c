@@ -522,39 +522,45 @@ VX_API_ENTRY tivx_obj_desc_user_data_object_t * tivxGetSupplementaryDataObjDesc(
 
 VX_API_ENTRY vx_status tivxSetSupplementaryDataObjDesc(tivx_obj_desc_t * destination, const tivx_obj_desc_user_data_object_t * source)
 {
-    if (source)
-        return tivxExtendSupplementaryDataObjDesc(destination, source, NULL, source->valid_mem_size);
+    vx_status ret;
+    if (NULL != source)
+    {
+        ret = tivxExtendSupplementaryDataObjDesc(destination, source, NULL, source->valid_mem_size);
+    }
     else
-        return VX_ERROR_INVALID_REFERENCE;
+    {
+        ret =  (vx_status)VX_ERROR_INVALID_REFERENCE;
+    }
+    return ret;
 }
 
 VX_API_ENTRY vx_status tivxExtendSupplementaryDataObjDesc(tivx_obj_desc_t * destination, const tivx_obj_desc_user_data_object_t * source, const void *user_data, vx_uint32 num_bytes)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if (NULL == destination)
     {
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else if (TIVX_OBJ_DESC_INVALID == destination->supp_data_ID)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else if (source == user_data)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else 
     {
         tivx_obj_desc_user_data_object_t * supp = (tivx_obj_desc_user_data_object_t *)ownObjDescGet(destination->supp_data_ID);
         if (num_bytes > supp->mem_size)
         {
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
         else if ((NULL != source) &&
                 ((supp->mem_size != source->mem_size) ||
                 (0 != tivx_obj_desc_strncmp((void *)&supp->type_name[0], (void *)&source->type_name[0], sizeof(source->type_name)))))
         {
-            status = VX_ERROR_INVALID_TYPE;
+            status = (vx_status)VX_ERROR_INVALID_TYPE;
         }
         else
         {
@@ -572,21 +578,21 @@ VX_API_ENTRY vx_status tivxExtendSupplementaryDataObjDesc(tivx_obj_desc_t * dest
             {
                 extra_bytes = num_bytes - source_bytes;
             }
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 status = tivxMemBufferMap((void *)(uintptr_t)supp->mem_ptr.host_ptr, source_bytes + extra_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-                if (VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status)
                 {
                     if (source)
                     {
                         status = tivxMemBufferMap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-                        if (VX_SUCCESS == status)
+                        if ((vx_status)VX_SUCCESS == status)
                         {
                             tivx_obj_desc_memcpy((void *)(uintptr_t)supp->mem_ptr.host_ptr, (void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes);
                             tivxMemBufferUnmap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
                         }
                     }
-                    if (VX_SUCCESS == status)
+                    if ((vx_status)VX_SUCCESS == status)
                     {
                         if (extra_bytes)
                         {

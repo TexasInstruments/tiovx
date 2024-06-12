@@ -47,18 +47,6 @@
  */
 
 /*!
- * \defgroup group_vision_function_video_decoder TI Video Decoder Kernel APIs
- * \brief Video Decoder Kernels
- * \ingroup group_vision_function_hwa
- */
-
- /*!
- * \defgroup group_vision_function_video_encoder TI Video Encoder Kernel APIs
- * \brief Video Encoder Kernels
- * \ingroup group_vision_function_hwa
- */
-
-/*!
  * \defgroup group_vision_function_csitx TI CSITX Kernel APIs
  * \brief CSITX (Sink Node) Kernels
  * \ingroup group_vision_function_hwa

@@ -1,6 +1,6 @@
 /*
 
- * Copyright (c) 2012-2017 The Khronos Group Inc.
+ * Copyright (c) 2023 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@
 #include "VX/vx.h"
 #include "VX/vxu.h"
 #include "TI/tivx.h"
+#include <TI/tivx_config.h>
+#include <VX/vx_khr_safe_casts.h>
 #include <VX/vx_khr_swap_move.h>
 
 
@@ -123,7 +125,7 @@ vx_reference createReference(vx_context context, vx_enum type)
         {
             vx_image image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
             ref = (vx_reference)vxCreateObjectArray(context, (vx_reference)image, 4);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             break;
         }
         case VX_TYPE_PYRAMID:
@@ -155,7 +157,7 @@ vx_reference createReference(vx_context context, vx_enum type)
             break;
         default:
             /* Should not reach here. ERROR in TEST! Found unknown type */
-			break;
+            break;
     }
     return ref;
 }
@@ -203,26 +205,26 @@ static vx_status writeValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
         {
             vx_image image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 0);
             writeImage(image, a, b);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 1);
             writeImage(image, b, a);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 2);
             writeImage(image, b, a);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 3);
             writeImage(image, b, a);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             break;
         }
         case VX_TYPE_PYRAMID:
         {
             vx_image image = vxGetPyramidLevel((vx_pyramid)ref, 0);
             writeImage(image, a, b);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             image = (vx_image)vxGetPyramidLevel((vx_pyramid)ref, 1);
             writeImage(image, b, a);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             break;
         }
         case VX_TYPE_REMAP:
@@ -240,7 +242,7 @@ static vx_status writeValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
         {
             vx_size num_dims;
             vx_enum data_type;
-            vx_uint16 size; 	/* dimension vx_size triggers warning with flag -Wvla-larger-than= */
+            vx_uint16 size;     /* dimension vx_size triggers warning with flag -Wvla-larger-than= */
 
             EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxQueryTensor((vx_tensor)ref, VX_TENSOR_NUMBER_OF_DIMS, &num_dims, sizeof(num_dims)));
             vx_size end[num_dims];
@@ -317,7 +319,7 @@ static vx_status writeValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
             break;
         }
         default:
-		/* Should not reach here. ERROR in TEST! Found unspecified type */
+        /* Should not reach here. ERROR in TEST! Found unspecified type */
            break;
     }
     return status;
@@ -414,20 +416,20 @@ static vx_status checkValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
         {
             vx_image image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 0);
             status = checkImage(image, a, b);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 1);
             status |= checkImage(image, b, a);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             break;
         }
         case VX_TYPE_PYRAMID:
         {
             vx_image image = vxGetPyramidLevel((vx_pyramid)ref, 0);
             status = checkImage(image, a, b);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             image = (vx_image)vxGetPyramidLevel((vx_pyramid)ref, 1);
             status |= checkImage(image, b, a);
-            VX_CALL(vxReleaseImage(&image));
+            vxReleaseImage(&image);
             break;
         }
         case VX_TYPE_REMAP:
@@ -506,7 +508,6 @@ static vx_status checkValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
                     {
                         status = VX_FAILURE;
                          printf("Check tensor failure at index %d, got 0x%x expected 0x%x\n", i, (int)data[i], (int)(((i / strides[0]) & 1)? b: a));
-						/* Check tensor failure */
                         break;
                     }
                 }
@@ -586,17 +587,17 @@ TEST (copySwap, testCopy)
             EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example1, type, 4, 3));
             EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example2, type, 2, 5));
 
-		    node = vxCopyNode(graph, example1, example2);
-        	/* Add copy node to graph */
-			EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
-			/* Copy node verified in graph */
-			EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-			/* Copy node graph executed */
-			EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
-			/* Copy executed correctly */
-			EXPECT_EQ_VX_STATUS(VX_SUCCESS,checkValues(example1, type, 4, 3) | checkValues(example2, type, 4, 3));
+            node = vxCopyNode(graph, example1, example2);
+            /* Add copy node to graph */
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
+            /* Copy node verified in graph */
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+            /* Copy node graph executed */
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+            /* Copy executed correctly */
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS,checkValues(example1, type, 4, 3) | checkValues(example2, type, 4, 3));
 
-	        VX_CALL(vxReleaseReference(&example1));
+            VX_CALL(vxReleaseReference(&example1));
             VX_CALL(vxReleaseReference(&example2));
             VX_CALL(vxReleaseNode(&node));
             VX_CALL(vxReleaseGraph(&graph));
@@ -629,11 +630,11 @@ TEST (copySwap, testSwap)
 
             /* Add swap node to graph */
             EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node) );
-			/* Swap node verified in graph */
+            /* Swap node verified in graph */
             EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-			/* Swap node graph executed */
+            /* Swap node graph executed */
             EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
-			/* Swap executed correctly */
+            /* Swap executed correctly */
             vx_status status = checkValues(example2, type, 4, 3);
             EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
             status = checkValues(example1, type, 2, 5);
@@ -731,7 +732,7 @@ TEST(copySwap, testVxu)
 
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example1, type, 4, 3));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example2, type, 2, 5));
-	/* vxuCopy returned VX_SUCCESS */
+    /* vxuCopy returned VX_SUCCESS */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxuCopy(context, example1, example2));
     /* vxuCopy executed correctly */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, (checkValues(example2, type, 4, 3) || checkValues(example1, type, 4, 3)));
@@ -758,7 +759,7 @@ TEST(copySwap, testVxu)
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxuCopy(context, (vx_reference)roi, example2));
     /* vxuCopy to ROI returned VX_SUCCESS */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxuCopy(context, example1, (vx_reference)roi));
-	/* Expected test fails*/
+    /* Expected test fails*/
     /* vxuCopy to unmatched ROI did not return VX_SUCCESS */
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxuCopy(context, example1, (vx_reference)wrongsizeroi));
     /* Swap from ROI did not return VX_SUCCESS */
@@ -766,7 +767,7 @@ TEST(copySwap, testVxu)
     /* Move from ROI did not return VX_SUCCESS */
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxuMove(context, (vx_reference)roi, example2));
 
-	VX_CALL(vxReleaseImage(&roi));
+    VX_CALL(vxReleaseImage(&roi));
     VX_CALL(vxReleaseImage(&wrongsizeroi));
 
     /* Uniform images */
@@ -780,7 +781,7 @@ TEST(copySwap, testVxu)
     /* Copied from a uniform to a normal image */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage((vx_image)example2, 119, 119));
     /* Expected Fails */
-	/* Cannot copy from a normal to a uniform image */
+    /* Cannot copy from a normal to a uniform image */
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxuCopy(context, example1, (vx_reference)uni2));
     /* Cannot copy from a uniform to a uniform image */
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxuCopy(context, (vx_reference)uni1, (vx_reference)uni2));
@@ -796,9 +797,8 @@ TEST(copySwap, testVxu)
 
 }
 
-/* Check sub-image and sub-tensor functionality. This must cover sub-images
-   of sub-images and sub-tensors of sub-tensors of sub-images as well as covering
-   both from channel and from roi
+/* Check sub-image. This must cover sub-images
+   of sub-images as well as covering both from channel and from roi
 */
 TEST (copySwap, testSubObjectsOfImages )
 {
@@ -883,7 +883,112 @@ TEST (copySwap, testSubObjectsOfImages )
     }
 }
 
+/* Check max of sub-image of sub image */
+TEST (copySwap, testSubObjectsMaxOfSubImages )
+{
+    vx_status status = VX_SUCCESS;
+    vx_context context = context_->vx_context_;
+    vx_image parent_image_1, parent_image_2;
+    vx_image sub_images_1[TIVX_IMAGE_MAX_SUBIMAGES];
+    vx_image sub_images_2[TIVX_IMAGE_MAX_SUBIMAGES];
+    vx_image sub_sub_images_1 [TIVX_IMAGE_MAX_SUBIMAGES][TIVX_IMAGE_MAX_SUBIMAGES];
+    vx_image sub_sub_images_2 [TIVX_IMAGE_MAX_SUBIMAGES][TIVX_IMAGE_MAX_SUBIMAGES];
+    vx_image sub_sub_sub_image_1;
+    vx_image yuv_image[TIVX_MAX_SUBIMAGE_DEPTH+1U];
 
+    vx_rectangle_t rect0 = {.start_x = 0, .start_y = 0, .end_x = 10, .end_y = 10};
+    vx_rectangle_t rect1 = {.start_x = 0, .start_y = 0, .end_x = 8, .end_y = 8};    
+
+    ASSERT_VX_OBJECT(parent_image_1 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(parent_image_2 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    writeImage(parent_image_1, 0x33, 0x9c);
+    writeImage(parent_image_2, 0x42, 0xab);  
+
+    vx_uint32 i;
+    for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; ++i)
+    {
+        sub_images_1[i] = vxCreateImageFromROI(parent_image_1, &rect0);
+        sub_images_2[i] = vxCreateImageFromROI(parent_image_2, &rect0);
+    }
+    
+    /* max out the number of possible subimages */
+    vx_uint32 j;
+    for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; i++)
+    {
+        for (j = 0; j < TIVX_IMAGE_MAX_SUBIMAGES; j++)
+        {
+            sub_sub_images_1[i][j] = vxCreateImageFromROI(sub_images_1[i], &rect1);
+            sub_sub_images_2[i][j] = vxCreateImageFromROI(sub_images_2[i], &rect1);
+        }
+    }
+
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS,vxuSwap(context, vxCastRefFromImage(parent_image_1), vxCastRefFromImage(parent_image_2)));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(parent_image_1, 0x42, 0xab) | checkImage(parent_image_2, 0x33, 0x9c));
+
+    for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; i++)
+    {
+        for (j = 0; j < TIVX_IMAGE_MAX_SUBIMAGES; j++)
+        {
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(sub_sub_images_1[i][j], 0x42, 0xab) | checkImage(sub_sub_images_2[i][j], 0x33, 0x9c));
+        }
+    }
+
+    /* test with a graph and a copy node*/
+    vx_graph graph;
+    vx_node node;    
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    node = vxCopyNode(graph, vxCastRefFromImage(parent_image_1), vxCastRefFromImage(parent_image_2));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus(vxCastRefFromNode(node)));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(parent_image_2, 0x42, 0xab));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(sub_images_2[15], 0x42, 0xab));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(sub_sub_images_2[10][10], 0x42, 0xab));
+
+    /* add a negative test by adding a last element as a child of the last element
+     in fact bigger than TIVX_MAX_SUBIMAGE_DEPTH */
+    sub_sub_sub_image_1 = vxCreateImageFromROI(sub_sub_images_1[TIVX_IMAGE_MAX_SUBIMAGES-1][TIVX_IMAGE_MAX_SUBIMAGES-1], &rect1);
+    /* get if this is a valid object */
+    EXPECT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxGetStatus(vxCastRefFromImage(sub_sub_sub_image_1)));
+
+    /* release the graph's stuff*/
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; i++)
+    {
+        for (j = 0; j < TIVX_IMAGE_MAX_SUBIMAGES; j++)
+        {
+            VX_CALL(vxReleaseImage(&sub_sub_images_1[i][j]));
+            VX_CALL(vxReleaseImage(&sub_sub_images_2[i][j]));
+        }
+    }
+    for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; ++i)
+    {
+        VX_CALL(vxReleaseImage(&sub_images_1[i]));
+        VX_CALL(vxReleaseImage(&sub_images_2[i]));
+    }
+    VX_CALL(vxReleaseImage(&parent_image_1));
+    VX_CALL(vxReleaseImage(&parent_image_2));
+
+    /* add a negative test for creating image from channel*/
+    parent_image_1 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_IYUV);
+    yuv_image[0U] = vxCreateImageFromChannel(parent_image_1, VX_CHANNEL_Y);
+    for (i = 1; i < TIVX_MAX_SUBIMAGE_DEPTH; ++i)
+    {
+        yuv_image[i] = vxCreateImageFromROI(yuv_image[i-1], &rect0);
+    }
+    /* last level cannot be created */
+    yuv_image[TIVX_MAX_SUBIMAGE_DEPTH] = vxCreateImageFromROI(yuv_image[TIVX_MAX_SUBIMAGE_DEPTH-1], &rect0);
+    EXPECT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxGetStatus(vxCastRefFromImage(yuv_image[TIVX_MAX_SUBIMAGE_DEPTH])));
+
+    /* release the images */
+    VX_CALL(vxReleaseImage(&parent_image_1));
+    for (i = 0; i < TIVX_MAX_SUBIMAGE_DEPTH; ++i)
+    {
+        VX_CALL(vxReleaseImage(&yuv_image[i]));
+    }      
+}
 /* check node removal on verification
     When the node has been disconnected, vxGetParameterByIndex should return an error object,
     and the number of nodes in the graph will have decreased by one.
@@ -900,28 +1005,28 @@ vx_status nodeIsOptimised(vx_graph graph, vx_node node)
 
     vx_parameter parameter = vxGetParameterByIndex(node, 0);
 
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status = vxGetStatus((vx_reference)parameter));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)parameter));
     vxReleaseParameter(&parameter);
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status |= vxQueryGraph(graph, VX_GRAPH_NUMNODES, &original_num_nodes, sizeof(original_num_nodes)));
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status |= vxVerifyGraph(graph));
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status |= vxQueryGraph(graph, VX_GRAPH_NUMNODES, &new_num_nodes, sizeof(new_num_nodes)));
-
-    EXPECT_NE_VX_STATUS(VX_FAILURE, (original_num_nodes - new_num_nodes));
-
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxQueryGraph(graph, VX_GRAPH_NUMNODES, &original_num_nodes, sizeof(original_num_nodes)));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxQueryGraph(graph, VX_GRAPH_NUMNODES, &new_num_nodes, sizeof(new_num_nodes)));
 
     if (VX_SUCCESS == status)
     {
         parameter = vxGetParameterByIndex(node, 0);
-        EXPECT_NE_VX_STATUS(VX_FAILURE, status = vxGetStatus((vx_reference)parameter));
-
-		if (VX_SUCCESS == status)
+        status = vxGetStatus((vx_reference)parameter);
+        if (VX_SUCCESS == status)
         {
             vxReleaseParameter(&parameter);
             status = VX_FAILURE;
         }
-        else if (new_num_nodes < original_num_nodes)
+        if (new_num_nodes < original_num_nodes)
         {
             status = VX_SUCCESS;
+        }
+        else
+        {
+            status = VX_FAILURE;
         }
     }
     return status;
@@ -976,15 +1081,15 @@ TEST(copySwap, testCopyRemoval)
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphParameterByIndex(graph, 0, (vx_reference)images[6]));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
     /* Graph executes correctly after vxSetGraphParameterByIndex to set input parameter */
-    status = checkImage(images[2], 255-12, 255-34); //-->issue here!
+    status = checkImage(images[2], 255-12, 255-34);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     status = checkImage(images[3], 255-12, 255-34);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
 
-	vxReleaseNode(&nodes[0]);
-    vxReleaseNode(&nodes[1]);
-    vxReleaseNode(&nodes[2]);
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseNode(&nodes[0]));
+    VX_CALL(vxReleaseNode(&nodes[1]));
+    VX_CALL(vxReleaseNode(&nodes[2]));
+    VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     nodes[0] = vxCopyNode(graph, (vx_reference)images[0], (vx_reference)images[1]);
@@ -994,10 +1099,10 @@ TEST(copySwap, testCopyRemoval)
     /* Input copy node will not be removed if its output may be modified */
     EXPECT_NE_VX_STATUS(VX_SUCCESS, nodeIsOptimised(graph, nodes[0]));
 
-	vxReleaseNode(&nodes[0]);
-    vxReleaseNode(&nodes[1]);
-    vxReleaseNode(&nodes[2]);
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseNode(&nodes[0]));
+    VX_CALL(vxReleaseNode(&nodes[1]));
+    VX_CALL(vxReleaseNode(&nodes[2]));
+    VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     nodes[0] = vxNotNode(graph, images[0], images[1]);
@@ -1011,14 +1116,14 @@ TEST(copySwap, testCopyRemoval)
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(images[2], 255-23, 255-45));
 
     writeImage(images[6], 0, 0);
-    vxSetGraphParameterByIndex(graph, 0, (vx_reference)images[6]);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphParameterByIndex(graph, 0, (vx_reference)images[6]));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
     /* Graph executes correctly after vxSetGraphParameterByIndex to set output parameter */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(images[6], 255-23, 255-45));
 
-    vxReleaseNode(&nodes[0]);
-    vxReleaseNode(&nodes[1]);
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseNode(&nodes[0]));
+    VX_CALL(vxReleaseNode(&nodes[1]));
+    VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     nodes[0] = vxNotNode(graph,images[0], images[1]);
@@ -1027,10 +1132,10 @@ TEST(copySwap, testCopyRemoval)
 
     /* Output copy node will not be removed if its input is connected to another copy node input */
     EXPECT_NE_VX_STATUS(VX_SUCCESS, nodeIsOptimised(graph, nodes[2]));
-	vxReleaseNode(&nodes[0]);
-    vxReleaseNode(&nodes[1]);
-    vxReleaseNode(&nodes[2]);
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseNode(&nodes[0]));
+    VX_CALL(vxReleaseNode(&nodes[1]));
+    VX_CALL(vxReleaseNode(&nodes[2]));
+    VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     nodes[0] = vxNotNode(graph, images[0], images[1]);
@@ -1044,10 +1149,10 @@ TEST(copySwap, testCopyRemoval)
     /* Graph executes correctly after embedded copy node removal */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(images[2], 23, 45));
 
-    vxReleaseNode(&nodes[0]);
-    vxReleaseNode(&nodes[1]);
-    vxReleaseNode(&nodes[2]);
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseNode(&nodes[0]));
+    VX_CALL(vxReleaseNode(&nodes[1]));
+    VX_CALL(vxReleaseNode(&nodes[2]));
+    VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     nodes[0] = vxNotNode(graph, images[0], images[1]);
@@ -1068,7 +1173,7 @@ TEST(copySwap, testCopyRemoval)
     {
         VX_CALL(vxReleaseNode(&nodes[i]));
     }
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseGraph(&graph));
 
     for (i = 0; i < dimof(images); ++i)
     {
@@ -1121,10 +1226,10 @@ TEST(copySwap, testMoveRemoval)
     /* Graph executes correctly after input move node removal */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(images[2], 255-23, 255-45) | checkImage(images[3], 255-23, 255-45));
 
-    vxReleaseNode(&nodes[0]);
-    vxReleaseNode(&nodes[1]);
-    vxReleaseNode(&nodes[2]);
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseNode(&nodes[0]));
+    VX_CALL(vxReleaseNode(&nodes[1]));
+    VX_CALL(vxReleaseNode(&nodes[2]));
+    VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     nodes[0] = vxMoveNode(graph, (vx_reference)images[0], (vx_reference)images[1]);
@@ -1135,10 +1240,10 @@ TEST(copySwap, testMoveRemoval)
     /* Input move node will be removed even if its output may be modified */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, nodeIsOptimised(graph, nodes[0]));
 
-    vxReleaseNode(&nodes[0]);
-    vxReleaseNode(&nodes[1]);
-    vxReleaseNode(&nodes[2]);
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseNode(&nodes[0]));
+    VX_CALL(vxReleaseNode(&nodes[1]));
+    VX_CALL(vxReleaseNode(&nodes[2]));
+    VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     nodes[0] = vxMoveNode(graph, (vx_reference)images[0], (vx_reference)images[1]);
@@ -1150,10 +1255,10 @@ TEST(copySwap, testMoveRemoval)
     status = vxVerifyGraph(graph);
     EXPECT_NE_VX_STATUS(VX_SUCCESS, status);
 
-	vxReleaseNode(&nodes[0]);
-    vxReleaseNode(&nodes[1]);
-    vxReleaseNode(&nodes[2]);
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseNode(&nodes[0]));
+    VX_CALL(vxReleaseNode(&nodes[1]));
+    VX_CALL(vxReleaseNode(&nodes[2]));
+    VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     nodes[0] = vxNotNode(graph, images[0], images[1]);
@@ -1166,9 +1271,9 @@ TEST(copySwap, testMoveRemoval)
     /* Graph executes correctly after output move node removal */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(images[2], 255-23, 255-45));
 
-    vxReleaseNode(&nodes[0]);
-    vxReleaseNode(&nodes[1]);
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseNode(&nodes[0]));
+    VX_CALL(vxReleaseNode(&nodes[1]));
+    VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     nodes[0] = vxNotNode(graph, images[0], images[1]);
@@ -1178,10 +1283,10 @@ TEST(copySwap, testMoveRemoval)
     /* Output move node must not share its bidirectional parameter with the input of another node */
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-	vxReleaseNode(&nodes[0]);
-    vxReleaseNode(&nodes[1]);
-    vxReleaseNode(&nodes[2]);
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseNode(&nodes[0]));
+    VX_CALL(vxReleaseNode(&nodes[1]));
+    VX_CALL(vxReleaseNode(&nodes[2]));
+    VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     nodes[0] = vxNotNode(graph, images[0], images[1]);
@@ -1195,10 +1300,10 @@ TEST(copySwap, testMoveRemoval)
     /* Graph executes correctly after embedded move node removal */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(images[2], 23, 45));
 
-    vxReleaseNode(&nodes[0]);
-    vxReleaseNode(&nodes[1]);
-    vxReleaseNode(&nodes[2]);
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseNode(&nodes[0]));
+    VX_CALL(vxReleaseNode(&nodes[1]));
+    VX_CALL(vxReleaseNode(&nodes[2]));
+    VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     nodes[0] = vxNotNode(graph, images[0], images[1]);
@@ -1212,11 +1317,11 @@ TEST(copySwap, testMoveRemoval)
     /* Embedded move node must not share its bidirectional parameter with the input of another node */
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-	for (i = 0; i < dimof(nodes); ++i)
+    for (i = 0; i < dimof(nodes); ++i)
     {
         VX_CALL(vxReleaseNode(&nodes[i]));
     }
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseGraph(&graph));
 
     for (i = 0; i < dimof(images); ++i)
     {
@@ -1271,7 +1376,7 @@ TEST(copySwap, testCopySequence)
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxQueryGraph(graph, VX_GRAPH_NUMNODES, &new_num_nodes, sizeof(new_num_nodes)));
     /* Expected 5 copy or move nodes to be removed from the accumulate chain */
-	EXPECT_NE_VX_STATUS(VX_SUCCESS, (new_num_nodes == old_num_nodes - 5));
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, (new_num_nodes == old_num_nodes - 5));
     EXPECT_EQ_VX_STATUS (VX_SUCCESS, vxProcessGraph(graph));
     /* Graph overall output was correct */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(images[2], 99, 163));
@@ -1304,15 +1409,19 @@ TEST(copySwap, testDelays)
     vx_status status = VX_SUCCESS;
     vx_context context = context_->vx_context_;
     vx_graph graph = NULL;
+    vx_image image_in;
+    vx_image image_out;
+    vx_delay delay;
+    vx_image image_0;
+    vx_image image_1;
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(image_in = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image_out = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)image_in, 2), VX_TYPE_DELAY);
+    ASSERT_VX_OBJECT(image_0 = (vx_image)vxGetReferenceFromDelay(delay, 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image_1 = (vx_image)vxGetReferenceFromDelay(delay, -1), VX_TYPE_IMAGE);
 
-    vx_image image_in = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
-    vx_image image_out = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
-    vx_delay delay = vxCreateDelay(context, (vx_reference)image_in, 2);
-
-    vx_image image_0 = (vx_image)vxGetReferenceFromDelay(delay, 0);
-    vx_image image_1 = (vx_image)vxGetReferenceFromDelay(delay, -1);
     vx_node nodes[] = {
         vxMoveNode(graph, (vx_reference)image_in, (vx_reference)image_0),
         vxAccumulateWeightedImageNodeX(graph, image_1, 0.5f, image_0),
@@ -1320,16 +1429,16 @@ TEST(copySwap, testDelays)
     };
     writeImage(image_in, 0x24, 0x48);
     writeImage(image_1, 0, 0);
-	writeImage(image_0, 0xff, 0xff);
+    writeImage(image_0, 0xff, 0xff);
 
-	EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
-	/* Simple graph with delay executed correctly (pass one) */
+    /* Simple graph with delay executed correctly (pass one) */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(image_out, 0x12, 0x24));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxAgeDelay(delay));
     writeImage(image_in, 0x12, 0x44);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
-	/* Simple graph with delay executed correctly (pass two) */
+    /* Simple graph with delay executed correctly (pass two) */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkImage(image_out, 0x12, 0x34));
 
     VX_CALL(vxReleaseImage(&image_in));
@@ -1339,9 +1448,9 @@ TEST(copySwap, testDelays)
 
     /* Now do similar with replicated nodes */
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-   	vx_object_array array_in = (vx_object_array)createReference(context, VX_TYPE_OBJECT_ARRAY);
+       vx_object_array array_in = (vx_object_array)createReference(context, VX_TYPE_OBJECT_ARRAY);
     vx_object_array array_out = (vx_object_array)createReference(context, VX_TYPE_OBJECT_ARRAY);
-	image_in = (vx_image)vxGetObjectArrayItem(array_in, 0);
+    image_in = (vx_image)vxGetObjectArrayItem(array_in, 0);
     image_out = (vx_image)vxGetObjectArrayItem(array_out, 0);
     delay = vxCreateDelay(context, (vx_reference)array_in, 2);
     image_0 = (vx_image)vxGetObjectArrayItem((vx_object_array)vxGetReferenceFromDelay(delay, 0), 0);
@@ -1355,18 +1464,18 @@ TEST(copySwap, testDelays)
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReplicateNode(graph, nodes[1], replicate + 1, 3));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReplicateNode(graph, nodes[2], replicate, 2));
 
-    writeValues((vx_reference)array_in, VX_TYPE_OBJECT_ARRAY, 0x24, 0x48);
-    writeValues(vxGetReferenceFromDelay(delay, -1), VX_TYPE_OBJECT_ARRAY, 0, 0);
-    writeValues(vxGetReferenceFromDelay(delay, 0), VX_TYPE_OBJECT_ARRAY, 0xff, 0xff);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues((vx_reference)array_in, VX_TYPE_OBJECT_ARRAY, 0x24, 0x48));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(vxGetReferenceFromDelay(delay, -1), VX_TYPE_OBJECT_ARRAY, 0, 0));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(vxGetReferenceFromDelay(delay, 0), VX_TYPE_OBJECT_ARRAY, 0xff, 0xff));
 
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
-	/* Replicated graph with image delay executed correctly (pass one) */
+    /* Replicated graph with image delay executed correctly (pass one) */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues((vx_reference)array_out, VX_TYPE_OBJECT_ARRAY, 0x12, 0x24));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxAgeDelay(delay));
-    writeValues((vx_reference)array_in, VX_TYPE_OBJECT_ARRAY, 0x12, 0x44);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues((vx_reference)array_in, VX_TYPE_OBJECT_ARRAY, 0x12, 0x44));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
-	/* Replicated graph with image delay executed correctly (pass two) */
+    /* Replicated graph with image delay executed correctly (pass two) */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues((vx_reference)array_out, VX_TYPE_OBJECT_ARRAY, 0x12, 0x34));
 
     VX_CALL(vxReleaseImage(&image_in));
@@ -1398,31 +1507,31 @@ TEST(copySwap, testDelays)
         {.graph_parameter_index = 1, .refs_list = (vx_reference*)&image_out, .refs_list_size = 1}
     };
 
-	EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 2, params));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 2, params));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReplicateNode(graph, nodes[0], replicate, 2));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReplicateNode(graph, nodes[1], replicate + 1, 3));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReplicateNode(graph, nodes[2], replicate, 2));
 
-    writeValues((vx_reference)array_in, VX_TYPE_OBJECT_ARRAY, 0x24, 0x48);
-    writeValues(vxGetReferenceFromDelay(delay, -1), VX_TYPE_OBJECT_ARRAY, 0, 0);
-    writeValues(vxGetReferenceFromDelay(delay, 0), VX_TYPE_OBJECT_ARRAY, 0xff, 0xff);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues((vx_reference)array_in, VX_TYPE_OBJECT_ARRAY, 0x24, 0x48));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(vxGetReferenceFromDelay(delay, -1), VX_TYPE_OBJECT_ARRAY, 0, 0));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(vxGetReferenceFromDelay(delay, 0), VX_TYPE_OBJECT_ARRAY, 0xff, 0xff));
 
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
     vx_uint32 num_refs;
 
-	EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&image_in, 1));
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&image_out, 1));
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&image_in, 1, &num_refs));
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&image_out, 1, &num_refs));
-	/* Pipelined replicated graph with image delay executed correctly (pass one) */
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues((vx_reference)array_out, VX_TYPE_OBJECT_ARRAY, 0x12, 0x24));
-    writeValues((vx_reference)array_in, VX_TYPE_OBJECT_ARRAY, 0x12, 0x44);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&image_in, 1));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&image_out, 1));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&image_in, 1, &num_refs));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&image_out, 1, &num_refs));
-	/* Pipelined replicated graph with image delay executed correctly (pass two) */
+    /* Pipelined replicated graph with image delay executed correctly (pass one) */
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues((vx_reference)array_out, VX_TYPE_OBJECT_ARRAY, 0x12, 0x24));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues((vx_reference)array_in, VX_TYPE_OBJECT_ARRAY, 0x12, 0x44));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&image_in, 1));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&image_out, 1));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&image_in, 1, &num_refs));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&image_out, 1, &num_refs));
+    /* Pipelined replicated graph with image delay executed correctly (pass two) */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues((vx_reference)array_out, VX_TYPE_OBJECT_ARRAY, 0x12, 0x34));
 
     VX_CALL(vxReleaseImage(&image_in));
@@ -1439,7 +1548,7 @@ TEST(copySwap, testDelays)
 TEST(copySwap, testContainers)
 {
 
-	vx_status status = VX_SUCCESS;
+    vx_status status = VX_SUCCESS;
     vx_context context = context_->vx_context_;
     vx_object_array array1 = NULL;
     vx_object_array array2 = NULL;
@@ -1448,50 +1557,50 @@ TEST(copySwap, testContainers)
     ASSERT_VX_OBJECT(array1 = vxCreateObjectArray(context, ref, 4), VX_TYPE_OBJECT_ARRAY);
     ASSERT_VX_OBJECT(array2 = vxCreateObjectArray(context, ref, 4), VX_TYPE_OBJECT_ARRAY);
 
-    vxReleaseReference(&ref);
+    VX_CALL(vxReleaseReference(&ref));
     vx_uint32 i;
     for (i = 0; i < 4; ++i)
     {
         ref = vxGetObjectArrayItem(array1, i);
-        writeValues(ref, VX_TYPE_PYRAMID, 0x10 + i, 0x20 + i);
-        vxReleaseReference(&ref);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(ref, VX_TYPE_PYRAMID, 0x10 + i, 0x20 + i));
+        VX_CALL(vxReleaseReference(&ref));
         ref = vxGetObjectArrayItem(array2, i);
-        writeValues(ref, VX_TYPE_PYRAMID, 0x30 + i, 0x40 + i);
-        vxReleaseReference(&ref);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(ref, VX_TYPE_PYRAMID, 0x30 + i, 0x40 + i));
+        VX_CALL(vxReleaseReference(&ref));
     }
-    vxuSwap(context, (vx_reference)array1, (vx_reference)array2);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxuSwap(context, (vx_reference)array1, (vx_reference)array2));
     for (i = 0; i < 4; ++i)
     {
         ref = vxGetObjectArrayItem(array2, i);
         vx_status status = checkValues(ref, VX_TYPE_PYRAMID, 0x10 + i, 0x20 + i);
-        vxReleaseReference(&ref);
+        VX_CALL(vxReleaseReference(&ref));
         ref = vxGetObjectArrayItem(array1, i);
         status |= checkValues(ref, VX_TYPE_PYRAMID, 0x30 + i, 0x40 + i);
-        vxReleaseReference(&ref);
+        VX_CALL(vxReleaseReference(&ref));
     }
     /* Swap array of pyramids successful */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-    vxuMove(context, (vx_reference)array1, (vx_reference)array2);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxuMove(context, (vx_reference)array1, (vx_reference)array2));
     for (i = 0; i < 4; ++i)
     {
         ref = vxGetObjectArrayItem(array2, i);
         status = checkValues(ref, VX_TYPE_PYRAMID, 0x30 + i, 0x40 + i);
-        vxReleaseReference(&ref);
+        VX_CALL(vxReleaseReference(&ref));
     }
     /* "Move array of pyramids successful */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS,status);
     for (i = 0; i < 4; ++i)
     {
         ref = vxGetObjectArrayItem(array1, i);
-        writeValues(ref, VX_TYPE_PYRAMID, i, i);
-        vxReleaseReference(&ref);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(ref, VX_TYPE_PYRAMID, i, i));
+        VX_CALL(vxReleaseReference(&ref));
     }
-    vxuCopy(context, (vx_reference)array2, (vx_reference)array1);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxuCopy(context, (vx_reference)array2, (vx_reference)array1));
     for (i = 0; i < 4; ++i)
     {
         ref = vxGetObjectArrayItem(array1, i);
         status = checkValues(ref, VX_TYPE_PYRAMID, 0x30 + i, 0x40 + i);
-        vxReleaseReference(&ref);
+        VX_CALL(vxReleaseReference(&ref));
     }
     /* Copy array of pyramids successful */
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
@@ -1508,6 +1617,7 @@ TESTCASE_TESTS(copySwap,
                testCopyRemoval,
                testMoveRemoval,
                testCopySequence,
-			   testSubObjectsOfImages,
-    		   testDelays,
-			   testContainers)
+               testSubObjectsOfImages,
+               testSubObjectsMaxOfSubImages,
+               testDelays,
+               testContainers)

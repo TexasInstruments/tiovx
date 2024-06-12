@@ -108,18 +108,18 @@ static vx_status ownGraphAddSingleDataReference(vx_graph graph, vx_reference ref
 static vx_status ownGraphValidateParameters(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_uint32 param_idx = 0U;
-    for (param_idx = 1U; param_idx < graph->num_params; ++param_idx)
+    vx_uint32  param_idx;
+    for (param_idx = 1; param_idx < graph->num_params; ++param_idx)
     {
         vx_uint32 nxt_idx = 0U;
-        vx_reference param_ref = graph->parameters[param_idx-1].node->parameters[graph->parameters[param_idx-1].index];
+        vx_reference param_ref = graph->parameters[param_idx-1U].node->parameters[graph->parameters[param_idx-1U].index];
 
         for (nxt_idx = param_idx; nxt_idx < graph->num_params; ++nxt_idx)
         {
             if (param_ref == graph->parameters[nxt_idx].node->parameters[graph->parameters[nxt_idx].index])
             {
                 status =(vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Invalid graph parameters: #%d and #%d both attached to reference \"%s\"\n", param_idx - 1, nxt_idx, param_ref->name);
+                VX_PRINT(VX_ZONE_ERROR, "Invalid graph parameters: #%u and #%u both attached to reference \"%s\"\n", param_idx - 1U, nxt_idx, param_ref->name);
             }
         }
     }
@@ -142,20 +142,24 @@ static vx_status ownGraphLinkParameters(vx_graph graph)
         {
             vx_node this_node = graph->nodes[node_idx];
             vx_uint32 this_index;
-            for (this_index = 0; this_index < this_node->kernel->signature.num_parameters; ++this_index)
+            for (this_index = 0; this_index < this_node->kernel->signature.num_parameters; this_index++)
             {
-                if (this_node != node || this_index != index)
+                if ((this_node != node) || (this_index != index))
                 {
                     if (this_node->parameters[this_index] == ref)
                     {
-                        /* we have another occurrence of the reference in the graph, record it */
-                        graph->parameters[p_index].params_list[graph->parameters[p_index].num_other].node = this_node;
-                        graph->parameters[p_index].params_list[graph->parameters[p_index].num_other].index = this_index;
-                        graph->parameters[p_index].num_other++;
                         if (graph->parameters[p_index].num_other >= TIVX_GRAPH_MAX_PARAM_REFS)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "Too many linked references for graph parameter %d, increase TIVX_GRAPH_MAX_PARAM_REFS\n", p_index);
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
+                            break;
+                        }
+                        else
+                        {               
+                            /* we have another occurrence of the reference in the graph, record it */
+                            graph->parameters[p_index].params_list[graph->parameters[p_index].num_other].node = this_node;
+                            graph->parameters[p_index].params_list[graph->parameters[p_index].num_other].index = this_index;
+                            graph->parameters[p_index].num_other++;
                         }
                     }
                 }
@@ -961,11 +965,15 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                         status = (vx_status)VX_FAILURE;
                         VX_PRINT(VX_ZONE_ERROR,"Virtual bidirectional parameter must be connected to one output at index %d failed\n", node_cur_idx);
                     }
-                    else if ((vx_enum)VX_KERNEL_MOVE != node_cur->kernel->enumeration &&
-                             inputs_attached == 0U)
+                    else if (((vx_enum)VX_KERNEL_MOVE != node_cur->kernel->enumeration) &&
+                             (inputs_attached == 0U))
                     {
                         status = (vx_status)VX_FAILURE;
                         VX_PRINT(VX_ZONE_ERROR,"Virtual bidirectional parameter must be connected to at least one input at index %d failed\n", node_cur_idx);
+                    }
+                    else
+                    {
+                        /* Do nothing, required by MISRA-C */
                     }
                 }
             }
@@ -1033,7 +1041,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
     return status;
 }
 
-vx_status ownGraphAllocateDataObject(vx_graph graph, vx_node node_cur, uint32_t prm_cur_idx, vx_reference ref)
+vx_status ownGraphAllocateDataObject(vx_node node_cur, uint32_t prm_cur_idx, vx_reference ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -2125,7 +2133,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 /* Collect multiple references into each graph parameter */
                 if ((vx_status)VX_SUCCESS == status)
                 {
-                    ownGraphLinkParameters(graph);
+                    status = ownGraphLinkParameters(graph);
                 }
 
                 /* Detects errors in pipelining parameters being set as graph parameter and multiple buffers at node */

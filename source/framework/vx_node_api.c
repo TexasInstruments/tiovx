@@ -983,7 +983,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCopyNode(vx_graph graph, vx_reference input, 
 {
     vx_reference params[] = {input, output};
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_COPY,
+                                           (vx_enum)VX_KERNEL_COPY,
                                            params,
                                            dimof(params));
     return node;
@@ -993,7 +993,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxSwapNode(vx_graph graph, vx_reference first, 
 {
     vx_reference params[] = {first, second};
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_SWAP,
+                                           (vx_enum)VX_KERNEL_SWAP,
                                            params,
                                            dimof(params));
     return node;
@@ -1003,7 +1003,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxMoveNode(vx_graph graph, vx_reference first, 
 {
     vx_reference params[] = {first, second};
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_MOVE,
+                                           (vx_enum)VX_KERNEL_MOVE,
                                            params,
                                            dimof(params));
     return node;

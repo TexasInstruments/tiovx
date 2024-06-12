@@ -701,15 +701,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
             status = vxSetParameterByIndex(graph->parameters[index].node,
                                            graph->parameters[index].index,
                                            value);
+            /* go through the list of nodes connected to a graph parameter and assign a new reference correctly */
             vx_uint32 ref_index;
             for (ref_index = 0; ref_index < graph->parameters[index].num_other; ++ref_index)
             {
                 /* all checks have been done, we can just assign any other parameters */
-                ownNodeSetParameter(graph->parameters[index].params_list[ref_index].node, graph->parameters[index].params_list[ref_index].index, value);
+                status = ownNodeSetParameter(graph->parameters[index].params_list[ref_index].node, graph->parameters[index].params_list[ref_index].index, value);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "could not set graph parameter\n");
+                    break;
+                }
             }
             if ((vx_status)VX_SUCCESS == status) {
-                status = ownGraphAllocateDataObject(graph,
-                                                    graph->parameters[index].node,
+                status = ownGraphAllocateDataObject(graph->parameters[index].node,
                                                     graph->parameters[index].index,
                                                     value);
             }

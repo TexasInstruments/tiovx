@@ -322,15 +322,7 @@ void ownTargetTriggerNode(uint16_t node_obj_desc_id);
  * \ingroup group_tivx_target
  */
 void ownTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
-            uint16_t prm_obj_desc_id[], vx_bool *is_node_blocked);
-
-
-/*! \brief Acquire parameters for node execution during pipeup phase
- *
- * \ingroup group_tivx_target
- */
-void ownTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_obj_desc,
-            uint16_t prm_obj_desc_id[]);
+            uint16_t prm_obj_desc_id[], vx_bool *is_node_blocked, vx_bool is_pipeup);
 
 /*! \brief Release parameters that were previously acquired
  *

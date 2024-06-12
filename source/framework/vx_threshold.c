@@ -26,7 +26,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseThreshold(vx_threshold *thresh)
         vxCastRefFromThresholdP(thresh), (vx_enum)VX_TYPE_THRESHOLD, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-vx_threshold VX_API_CALL vxCreateThreshold(
+VX_API_ENTRY vx_threshold VX_API_CALL vxCreateThreshold(
     vx_context context, vx_enum thr_type, vx_enum data_type)
 {
     vx_threshold thresh = NULL;
@@ -86,7 +86,7 @@ vx_threshold VX_API_CALL vxCreateThreshold(
     return (thresh);
 }
 
-vx_status VX_API_CALL vxQueryThreshold(
+VX_API_ENTRY vx_status VX_API_CALL vxQueryThreshold(
     vx_threshold thresh, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;

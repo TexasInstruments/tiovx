@@ -617,8 +617,7 @@ vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
  *
  * \ingroup group_vx_graph
  */
-vx_status ownGraphAllocateDataObject(vx_graph graph,
-                                     vx_node node_cur,
+vx_status ownGraphAllocateDataObject(vx_node node_cur,
                                      uint32_t prm_cur_idx,
                                      vx_reference ref);                
 

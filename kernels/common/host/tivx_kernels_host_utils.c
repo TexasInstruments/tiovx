@@ -362,22 +362,32 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
     return (status);
 }
 
-void tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel)
+vx_status tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel)
 {
-    tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
+    vx_status status = (vx_status)VX_SUCCESS;
+    status = tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
     #if defined(SOC_J721E) || defined(SOC_J722S)
-    tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        status = tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+    }
     #endif
+    return status;
 }
 
-void tivxKernelsHostUtilsAddKernelTargetMcu(vx_kernel kernel)
+vx_status tivxKernelsHostUtilsAddKernelTargetMcu(vx_kernel kernel)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     #if defined(SOC_AM62A)
-    tivxAddKernelTarget(kernel, TIVX_TARGET_MCU1_0);
+    status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU1_0);
     #else
-    tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_0);
+    status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_0);
     #ifndef SOC_J722S
-    tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_1);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_1);
+    }
     #endif
     #endif
+    return status;
 }

@@ -19,21 +19,18 @@
 #include <vx_internal.h>
 
 static void ownInitArrayObject(
-    vx_array arr, vx_enum item_type, vx_size capacity, vx_bool is_virtual);
-static vx_array  ownCreateArray(vx_reference scope, vx_enum item_type, vx_size capacity, vx_bool is_virtual);    
+    vx_array arr, vx_enum item_type, vx_size capacity, vx_bool is_virtual); 
 static vx_size ownGetArrayItemSize(vx_context context, vx_enum item_type);
 static vx_bool ownIsValidArrayItemType(vx_context context, vx_enum item_type);
 static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output);
 static vx_status isArrayCopyable(vx_array input, vx_array output);
-static vx_status isArraySwapable(vx_array input, vx_array output);
-static vx_status copyArray(vx_array input, vx_array output);
-static vx_status swapArray(vx_array input, vx_array output);
-static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
+static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params);
 
 /*! \brief checks that the input and output references are not the same, and that both are valid arrays
 */
 static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output)
 {
+    vx_bool res = (vx_bool)vx_false_e;
     if ((input != output) &&
         (ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e) &&
         (input->base.obj_desc != NULL) &&
@@ -41,12 +38,9 @@ static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output)
         (output->base.obj_desc != NULL)
         )
     {
-        return vx_true_e;
+        res = (vx_bool)vx_true_e;
     }
-    else
-    {
-        return vx_false_e;
-    }
+    return res;
 }
 
 /*! \brief This function is called to find out if it is OK to copy the input to the output.
@@ -60,20 +54,20 @@ static vx_status isArrayCopyable(vx_array input, vx_array output)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->base.obj_desc;
     tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->base.obj_desc;
-    if (vx_false_e == ownIsValidInputAndOutputArrays(input, output))
+    if ((vx_bool)vx_false_e == ownIsValidInputAndOutputArrays(input, output))
     {
         status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
     }
-    else if (vx_true_e == output->base.is_virtual)
+    else if ((vx_bool)vx_true_e == output->base.is_virtual)
     {
         /* Either output type must be invalid or types must match*/
-        if ((VX_TYPE_INVALID != op_obj_desc->item_type) &&
+        if (((vx_enum)VX_TYPE_INVALID != op_obj_desc->item_type) &&
             (ip_obj_desc->item_type != op_obj_desc->item_type))
         {
             status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
         }
         /* Either output capacity must be zero or at least as large as input capacity */
-        if ((0 != op_obj_desc->capacity) &&
+        if ((0U != op_obj_desc->capacity) &&
              (ip_obj_desc->capacity != op_obj_desc->capacity))
         {
             status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
@@ -98,58 +92,58 @@ static vx_status isArrayCopyable(vx_array input, vx_array output)
     return status;
 }
 
-/*! \brief This function is called to find out if it is OK to swap the input with the output.
- * Both item type and capacity must be the same.
- * \returns VX_SUCCESS if it is, otherwise another error code.
- *
- */
-static vx_status isArraySwapable(vx_array input, vx_array output)
+/* Call back function that handles the copy, swap and move kernels */
+static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params)
 {
-    if ((vx_enum)vx_true_e == tivxIsReferenceMetaFormatEqual((vx_reference)input, (vx_reference)output))
+    vx_status res;
+    vx_array input  = NULL;
+    vx_array output = NULL;
+
+    if (2U != num_params)
     {
-         return VX_SUCCESS;
+        res = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
     else
     {
-        return VX_ERROR_NOT_COMPATIBLE;
+        input  = vxCastRefAsArray(params[0], &res);
+        output = vxCastRefAsArray(params[1], &res);
+        /* do not check the res, as we know they are arrays at that point*/
+        switch (kernel_enum)
+        {
+            case (vx_enum)VX_KERNEL_COPY:
+                if ((vx_bool)vx_true_e == validate_only)
+                {
+                    res =  isArrayCopyable(input, output);
+                }
+                else
+                {
+                    res = ownCopyReferenceGeneric(params[0], params[1]);
+                }
+                break;
+            case (vx_enum)VX_KERNEL_SWAP:
+            case (vx_enum)VX_KERNEL_MOVE:
+                if ((vx_bool)vx_true_e == validate_only)
+                {
+                    if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(params[0], params[1]))
+                    {
+                        res = (vx_status)VX_SUCCESS;
+                    }
+                    else
+                    {
+                        res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+                    }
+                }
+                else
+                {
+                    res = ownSwapReferenceGeneric(params[0], params[1]);
+                }
+                break;
+            default:
+                res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                break;
+        }
     }
-}
-
-/*! \brief Copy input to output
- * The input must be copyable to the output; checks done already.
- * Note that locking a reference actually locks the context, so we only lock
- * one reference!
- */
-static vx_status copyArray(vx_array input, vx_array output)
-{
-    return (ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output));
-}
-
-/*! \brief swap input and output pointers
- * Input and output must be swappable; checks done already.
- * Note that locking a reference actually locks the context, so we only lock
- * one reference!
- */
-static vx_status swapArray(vx_array input, vx_array output)
-{
-    return ownSwapReferenceGeneric((vx_reference)input, (vx_reference)output);
-}
-
-/* Call back function that handles the copy, swap and move kernels */
-static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
-{
-    /*
-        Decode the kernel operation - simple version!
-    */
-    vx_array input = (vx_array)params[0];
-    vx_array output = (vx_array)params[1];
-    switch (kernel_enum)
-    {
-        case VX_KERNEL_COPY:    return validate_only ? isArrayCopyable(input, output) : copyArray(input, output);
-        case VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-        case VX_KERNEL_MOVE:    return validate_only ? isArraySwapable(input, output) : swapArray(input, output);
-        default:                return VX_ERROR_NOT_SUPPORTED;
-    }
+    return(res);
 }
 
 /* Function to get the size of user defined structure */
@@ -244,13 +238,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseArray(vx_array *arr)
     return (ownReleaseReferenceInt(
         vxCastRefFromArrayP(arr), (vx_enum)VX_TYPE_ARRAY, (vx_enum)VX_EXTERNAL, NULL));
 }
-  
-vx_array VX_API_CALL vxCreateArray(vx_context context, vx_enum item_type, vx_size capacity)
-{
-    return ownCreateArray(&context->base, item_type, capacity, vx_false_e);
-}
-  
-static vx_array  ownCreateArray(vx_reference scope, vx_enum item_type, vx_size capacity, vx_bool is_virtual)
+
+VX_API_ENTRY vx_array VX_API_CALL vxCreateArray(
+    vx_context context, vx_enum item_type, vx_size capacity)
 {
     vx_array arr = NULL;
     vx_reference ref =NULL;
@@ -315,7 +305,7 @@ static vx_array  ownCreateArray(vx_reference scope, vx_enum item_type, vx_size c
     return (arr);
 }
 
-vx_array VX_API_CALL vxCreateVirtualArray(
+VX_API_ENTRY vx_array VX_API_CALL vxCreateVirtualArray(
     vx_graph graph, vx_enum item_type, vx_size capacity)
 {
     vx_array arr = NULL;
@@ -370,7 +360,7 @@ vx_array VX_API_CALL vxCreateVirtualArray(
     return (arr);
 }
 
-vx_status VX_API_CALL vxQueryArray(
+VX_API_ENTRY vx_status VX_API_CALL vxQueryArray(
     vx_array arr, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -442,7 +432,7 @@ vx_status VX_API_CALL vxQueryArray(
     return status;
 }
 
-vx_status VX_API_CALL vxAddArrayItems(
+VX_API_ENTRY vx_status VX_API_CALL vxAddArrayItems(
     vx_array arr, vx_size count, const void *ptr, vx_size stride)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -521,7 +511,7 @@ vx_status VX_API_CALL vxAddArrayItems(
     return (status);
 }
 
-vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
+VX_API_ENTRY vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_array_t *obj_desc = NULL;
@@ -563,7 +553,7 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
     return (status);
 }
 
-vx_status VX_API_CALL vxCopyArrayRange(
+VX_API_ENTRY vx_status VX_API_CALL vxCopyArrayRange(
     vx_array arr, vx_size range_start, vx_size range_end,
     vx_size stride, void *ptr, vx_enum usage, vx_enum user_mem_type)
 {
@@ -683,7 +673,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
     return (status);
 }
 
-vx_status VX_API_CALL vxMapArrayRange(
+VX_API_ENTRY vx_status VX_API_CALL vxMapArrayRange(
     vx_array arr, vx_size range_start, vx_size range_end, vx_map_id *map_id,
     vx_size *stride, void **ptr, vx_enum usage, vx_enum mem_type,
     vx_uint32 flags)
@@ -779,7 +769,7 @@ vx_status VX_API_CALL vxMapArrayRange(
     return (status);
 }
 
-vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
+VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_array_t *obj_desc = NULL;

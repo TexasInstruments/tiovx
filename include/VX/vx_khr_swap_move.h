@@ -39,7 +39,6 @@ extern "C" {
 /*!
  * \brief The name of the move kernel
  */
-
 #define VX_KERNEL_MOVE_NAME "org.khronos.openvx.move"
 
 /*! \brief Swap data from one object to another.

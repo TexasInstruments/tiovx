@@ -198,7 +198,7 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms);
  *
  * \ingroup group_tivx_ext_host_kernel
  */
-void tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel);
+vx_status tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel);
 
 /*!
  * \brief Function to add platform-specific R5F kernel target
@@ -212,7 +212,7 @@ void tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel);
  *
  * \ingroup group_tivx_ext_host_kernel
  */
-void tivxKernelsHostUtilsAddKernelTargetMcu(vx_kernel kernel);
+vx_status tivxKernelsHostUtilsAddKernelTargetMcu(vx_kernel kernel);
 
 /*!
  *  STATIC INLINE FUNCTION DEFINITIONS

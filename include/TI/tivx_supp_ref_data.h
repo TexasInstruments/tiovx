@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#ifndef _TIVX_EXT_SUPPL_DATA_H_
-#define _TIVX_EXT_SUPPL_DATA_H_
+#ifndef TIVX_SUPP_REF_DATA_H_
+#define TIVX_SUPP_REF_DATA_H_
 
 #include <VX/vx_khr_user_data_object.h>
 #include <VX/vx_khr_supplementary_data.h>

@@ -22,8 +22,8 @@
 static vx_status ownDestructPyramid(vx_reference ref);
 static vx_status ownAllocPyramidBuffer(vx_reference ref);
 static vx_status ownInitPyramid(vx_pyramid prmd);
-static vx_status isPyramidCopyable(vx_pyramid input, vx_pyramid output);
-static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params);
+static vx_status isPyramidCopyable(vx_reference input, vx_reference output);
+static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params);
 
 static const vx_float32 gOrbScaleFactor
     [TIVX_PYRAMID_MAX_LEVELS_ORB] =
@@ -52,13 +52,13 @@ static const vx_float32 gOrbScaleFactor
  * output the width, height and format must also agree.
  * Same function is used to validate for swapping.
 */
-static vx_status isPyramidCopyable(vx_pyramid input, vx_pyramid output)
+static vx_status isPyramidCopyable(vx_reference input, vx_reference output)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_pyramid_t *in_objd = (tivx_obj_desc_pyramid_t *)input->base.obj_desc;
-    tivx_obj_desc_pyramid_t *out_objd = (tivx_obj_desc_pyramid_t *)output->base.obj_desc;
-    if ((vx_false_e == ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_PYRAMID)) ||
-        (vx_false_e == ownIsValidSpecificReference(&output->base, (vx_enum)VX_TYPE_PYRAMID)) ||
+    tivx_obj_desc_pyramid_t *in_objd = (tivx_obj_desc_pyramid_t *)input->obj_desc;
+    tivx_obj_desc_pyramid_t *out_objd = (tivx_obj_desc_pyramid_t *)output->obj_desc;
+    if (((vx_bool)vx_false_e == ownIsValidSpecificReference(input, (vx_enum)VX_TYPE_PYRAMID)) ||
+        ((vx_bool)vx_false_e == ownIsValidSpecificReference(output, (vx_enum)VX_TYPE_PYRAMID)) ||
         (input == output))
     {
         status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
@@ -69,22 +69,22 @@ static vx_status isPyramidCopyable(vx_pyramid input, vx_pyramid output)
         status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
     }
     else if ((in_objd->width != out_objd->width) &&
-        ((0 != out_objd->width) ||
-         (vx_false_e == output->base.is_virtual)))
+        ((0U != out_objd->width) ||
+         ((vx_bool)vx_false_e == output->is_virtual)))
     {
         /* output width must be the same as input width unless output is virtual with width zero */
         status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
     }
     else if ((in_objd->height != out_objd->height) &&
-             ((0 != out_objd->height) ||
-              (vx_false_e == output->base.is_virtual)))
+             ((0U != out_objd->height) ||
+              ((vx_bool)vx_false_e == output->is_virtual)))
     {
         /* output height must be the same as input height unless output is virtual with height zero */
         status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
     }
     else if ((in_objd->format != out_objd->format) &&
-             ((VX_DF_IMAGE_VIRT != out_objd->format) ||
-              (vx_false_e == output->base.is_virtual)))
+             (((vx_df_image)VX_DF_IMAGE_VIRT != out_objd->format) ||
+              ((vx_bool)vx_false_e == output->is_virtual)))
     {
         /* Output format must be the same as input format unless output is virtual with virtual format */
         status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
@@ -104,38 +104,45 @@ static vx_status isPyramidCopyable(vx_pyramid input, vx_pyramid output)
     return status;
 }
 
-static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_enum optimization, const vx_reference params[], vx_uint32 num_params)
+static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if (validate_only)
+    if (2U != num_params)
     {
-        return isPyramidCopyable((vx_pyramid)params[0], (vx_pyramid)params[1]);
+        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
-    else    /* dispatch to each sub-image in turn */
+    else
     {
-        vx_uint32 lvl;
-        for (lvl = 0; lvl < ((tivx_obj_desc_pyramid_t *)params[0]->obj_desc)->num_levels && VX_SUCCESS == status; ++lvl)
+        if ((vx_bool)vx_true_e == validate_only)
         {
-            vx_reference p2[2] = {&((vx_pyramid)params[0])->img[lvl]->base, &((vx_pyramid)params[1])->img[lvl]->base};
-            vx_kernel_callback_f kf = p2[0]->kernel_callback;
-            if (kf)
+            status = isPyramidCopyable(params[0], params[1]);
+        }
+        else    /* dispatch to each sub-image in turn */
+        {
+            vx_uint32 lvl;
+            for (lvl = 0U; (lvl < ((tivx_obj_desc_pyramid_t *)params[0U]->obj_desc)->num_levels) && ((vx_status)VX_SUCCESS == status); ++lvl)
             {
-                status = (*kf)(kernel_enum, vx_false_e, optimization, p2, 2);
-                if (VX_SUCCESS == status &&
-                    p2[0]->supplementary_data &&
-                    p2[1]->supplementary_data &&
-                    p2[0]->supplementary_data->base.kernel_callback)
+                vx_reference p2[2] = {&(vxCastRefAsPyramid(params[0], &status)->img[lvl]->base), &(vxCastRefAsPyramid(params[1], &status)->img[lvl]->base)};
+                vx_kernel_callback_f kf = p2[0]->kernel_callback;
+                if (NULL != kf)
                 {
-                    vx_reference supp_params[2] = {&p2[0]->supplementary_data->base, &p2[1]->supplementary_data->base};
-                    if (VX_SUCCESS == p2[0]->supplementary_data->base.kernel_callback(kernel_enum, vx_true_e, 0, supp_params, 2))
+                    status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2, 2);
+                    if (((vx_status)VX_SUCCESS == status) &&
+                        (NULL != p2[0]->supplementary_data) &&
+                        (NULL != p2[1]->supplementary_data) &&
+                        (NULL != p2[0]->supplementary_data->base.kernel_callback))
                     {
-                        status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, vx_false_e, 0, supp_params, 2);
-                    }
+                        vx_reference supp_params[2] = {&p2[0]->supplementary_data->base, &p2[1]->supplementary_data->base};
+                        if (VX_SUCCESS == p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_true_e, supp_params, 2))
+                        {
+                            status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_false_e, supp_params, 2);
+                        }
+                    }                    
                 }
-            }
-            else
-            {
-                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                else
+                {
+                    status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                }
             }
         }
     }
@@ -149,7 +156,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleasePyramid(vx_pyramid *prmd)
         vxCastRefFromPyramidP(prmd), (vx_enum)VX_TYPE_PYRAMID, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-vx_pyramid VX_API_CALL vxCreatePyramid(
+VX_API_ENTRY vx_pyramid VX_API_CALL vxCreatePyramid(
     vx_context context, vx_size levels, vx_float32 scale, vx_uint32 width,
     vx_uint32 height, vx_df_image format)
 {
@@ -221,7 +228,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                 prmd->base.mem_alloc_callback = &ownAllocPyramidBuffer;
                 prmd->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-				prmd->base.kernel_callback = &pyramidKernelCallback;
+                prmd->base.kernel_callback = &pyramidKernelCallback;
                 obj_desc = (tivx_obj_desc_pyramid_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_PYRAMID, vxCastRefFromPyramid(prmd));
                 if(obj_desc==NULL)
@@ -251,7 +258,6 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                     {
                         prmd->img[i] = NULL;
                     }
-
                     status = ownInitPyramid(prmd);
                     if ((vx_status)VX_SUCCESS != status)
                     {
@@ -266,7 +272,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
     return (prmd);
 }
 
-vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
+VX_API_ENTRY vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
 {
     vx_image img = NULL;
 
@@ -319,7 +325,7 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
     return (img);
 }
 
-vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
+VX_API_ENTRY vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
     vx_graph graph, vx_size levels, vx_float32 scale, vx_uint32 width,
     vx_uint32 height, vx_df_image format)
 {
@@ -351,7 +357,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
             prmd->base.mem_alloc_callback = &ownAllocPyramidBuffer;
             prmd->base.release_callback =
                 &ownReleaseReferenceBufferGeneric;
-			prmd->base.kernel_callback = &pyramidKernelCallback;
+            prmd->base.kernel_callback = &pyramidKernelCallback;
             obj_desc = (tivx_obj_desc_pyramid_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_PYRAMID, vxCastRefFromPyramid(prmd));
             if(obj_desc==NULL)
@@ -431,7 +437,7 @@ vx_status ownInitVirtualPyramid(
     return (status);
 }
 
-vx_status VX_API_CALL vxQueryPyramid(
+VX_API_ENTRY vx_status VX_API_CALL vxQueryPyramid(
     vx_pyramid prmd, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;

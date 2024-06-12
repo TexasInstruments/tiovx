@@ -29,6 +29,7 @@ IDIRS       += $(HOST_ROOT)/conformance_tests/test_tiovx/utils
 IDIRS       += $(HOST_ROOT)/utils/include
 
 CSOURCES    += utils/test_utils_file_bmp_rd_wr.c
+CSOURCES    += utils/test_utils_mem_operations.c
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number

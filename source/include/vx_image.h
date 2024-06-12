@@ -67,6 +67,9 @@ typedef struct _vx_image
     uint32_t mem_offset[TIVX_IMAGE_MAX_PLANES];
     /*! \brief channel_plane index of parent in case image is created from channel */
     uint32_t channel_plane;
+    /*! \brief Alignment of the stride in the "y" direction.  This defaults to the value \ref TIVX_DEFAULT_STRIDE_Y_ALIGN,
+     *   but can be overwitten using the attribute \ref TIVX_IMAGE_STRIDE_Y_ALIGNMENT */
+    uint32_t stride_y_alignment;
 } tivx_image_t;
 
 /*!

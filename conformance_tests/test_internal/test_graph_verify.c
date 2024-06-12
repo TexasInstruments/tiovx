@@ -25,6 +25,7 @@
 #include "test_tiovx/test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <TI/tivx_test_kernels.h>
 
 TESTCASE(tivxInternalGraphVerify,  CT_VXContext, ct_setup_vx_context, 0)
 
@@ -183,8 +184,115 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphInitVirtualNode1)
     VX_CALL(vxReleaseGraph(&graph2));
 }
 
+/* Test to hit negative portion of ownGraphInitVirtualNode */
+TEST(tivxInternalGraphVerify, negativeTestOwnGraphInitVirtualNode2)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    uint32_t width = 640, height = 480;
+    vx_image input, virt_image;
+    vx_node n1;
+
+    /* Creating Graph */
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* Creating input image */
+    ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+
+    /* Creating a virtual image */
+    virt_image = vxCreateVirtualImage (graph, width, height, VX_DF_IMAGE_YUYV);
+
+    /* Forcefully setting the input image width to 0 */
+    ((tivx_obj_desc_image_t *)input->base.obj_desc)-> width = 0;
+
+    /* Creating a color convert nodes (the actual node is irrelevant) */
+    ASSERT_VX_OBJECT(n1 = vxColorConvertNode(graph, input, virt_image), VX_TYPE_NODE);
+
+    /* Asserting for INVALID SCOPE */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxVerifyGraph(graph));
+
+    /* Cleanup */
+    VX_CALL(vxReleaseImage(&input));
+    VX_CALL(vxReleaseImage(&virt_image));
+
+    VX_CALL(vxReleaseNode(&n1));
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+/* Test to hit negative portion of ownGraphInitVirtualNode */
+TEST(tivxInternalGraphVerify, negativeTestOwnGraphInitVirtualNode3)
+{
+     vx_context context = context_->vx_context_;
+    vx_graph graph;
+    uint32_t width = 640, height = 480;
+    vx_image input, virt_image;
+    vx_node n1;
+
+    /* Creating Graph */
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* Creating input image */
+    ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+
+    /* Creating a virtual image */
+    virt_image = vxCreateVirtualImage (graph, width, height, VX_DF_IMAGE_YUYV);
+
+    /* Forcefully setting the input image height to 0 */
+    ((tivx_obj_desc_image_t *)input->base.obj_desc)-> height = 0;
+
+    /* Creating a color convert nodes (the actual node is irrelevant) */
+    ASSERT_VX_OBJECT(n1 = vxColorConvertNode(graph, input, virt_image), VX_TYPE_NODE);
+
+    /* Asserting for INVALID SCOPE */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxVerifyGraph(graph));
+
+    /* Cleanup */
+    VX_CALL(vxReleaseImage(&input));
+    VX_CALL(vxReleaseImage(&virt_image));
+
+    VX_CALL(vxReleaseNode(&n1));
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+/* Test to hit negative portion of ownGraphInitVirtualNode */
+TEST(tivxInternalGraphVerify, negativeTestOwnGraphInitVirtualNode4)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    uint32_t width = 16, height = 16;
+    vx_node n;
+    vx_pyramid pyr_virt;
+
+    tivxTestKernelsLoadKernels(context);
+
+    /* Creating Graph */
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* Creating a virtual pyramid */
+    ASSERT_VX_OBJECT(pyr_virt = vxCreateVirtualPyramid(graph, 4, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    /* Creating a tivxPyramidSourceNode(the actual node is irrelevant)
+    with the virtual pyramid object */
+    ASSERT_VX_OBJECT(n = tivxPyramidSourceNode(graph, pyr_virt), VX_TYPE_NODE);
+
+    /* Calling vxVerifyGraph to call the ownGraphInitVirtualNode */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxVerifyGraph(graph));
+
+    /* Cleanup */
+    VX_CALL(vxReleasePyramid(&pyr_virt));
+    VX_CALL(vxReleaseNode(&n));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    tivxTestKernelsUnLoadKernels(context);
+}
+
 TESTCASE_TESTS(tivxInternalGraphVerify,
                negativeBoundaryTestVerifyGraph,
                negativeBoundaryTestOwnGraphCreateNodeCallbackCommands,
-               negativeTestOwnGraphInitVirtualNode1
+               negativeTestOwnGraphInitVirtualNode1,
+               negativeTestOwnGraphInitVirtualNode2,
+               negativeTestOwnGraphInitVirtualNode3,
+               negativeTestOwnGraphInitVirtualNode4
 )
