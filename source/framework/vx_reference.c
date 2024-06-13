@@ -2285,7 +2285,7 @@ VX_API_ENTRY vx_status vxSetSupplementaryUserDataObject(vx_reference destination
     {
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
-    return result;
+    return status;
 }
 
 VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destination, const vx_user_data_object source, const void *user_data, vx_uint32 source_bytes, vx_uint32 user_bytes)
