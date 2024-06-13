@@ -139,6 +139,7 @@ __attribute__ ((aligned(TARGET_TEST_TASK_STACK_ALIGNMENT)))
 #endif
 static tivx_target_kernel_instance test_kernel = NULL;
 static tivx_obj_desc_t *test_obj_desc = NULL;
+static tivx_obj_desc_scalar_t *test_out_desc = NULL;
 
 typedef struct {
     vx_status (*funcPtr)(uint8_t);
@@ -1215,6 +1216,21 @@ static vx_status tivxTestGetObjDescElement(uint8_t id)
     return status;
 }
 
+static vx_status tivxTestGetObjDescId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if(TIVX_OBJ_DESC_INVALID == ownReferenceGetObjDescId((vx_reference)test_out_desc->base.host_ref))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid descriptor object from the given reference\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 #ifndef PC
 static vx_status tivxNegativeTestTargetGetHandleAndDelete(uint8_t id)
 {
@@ -1319,6 +1335,7 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestDescStrncmpDelim,"",VX_SUCCESS},
     {tivxTestObjDescSend,"",VX_SUCCESS},
     {tivxTestGetObjDescElement,"",VX_SUCCESS},
+    {tivxTestGetObjDescId,"",VX_SUCCESS},
 
     #ifndef PC
     {tivxNegativeTestTargetGetHandleAndDelete,"",VX_SUCCESS},
@@ -1369,6 +1386,7 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
     uint32_t size= sizeof(arrOfFuncs)/sizeof(arrOfFuncs[0]);
     test_kernel = kernel;
     test_obj_desc=obj_desc[0];
+    test_out_desc = out_desc;
     tivx_set_debug_zone(VX_ZONE_INFO);
 
     if((vx_status)VX_SUCCESS == status)
