@@ -33,7 +33,7 @@
     Please note the following which are out of scope for safety of TIOVX:
     - OpenVX standard kernels
     - Supernode extension (Note: this is not yet enabled on J7 platforms, but there are still references to it in the framework.
-      These are thus commented out and disabled.)
+      These are wrapped under the BUILD_BAM macro.)
         - tiovx/source/framework/vx_graph_supernode.c
         - tiovx/source/framework/vx_super_node.c
     - VXU functions
