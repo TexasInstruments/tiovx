@@ -583,23 +583,23 @@ VX_API_ENTRY vx_status tivxExtendSupplementaryDataObjDesc(tivx_obj_desc_t * dest
                 status = tivxMemBufferMap((void *)(uintptr_t)supp->mem_ptr.host_ptr, source_bytes + extra_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
                 if ((vx_status)VX_SUCCESS == status)
                 {
-                    if (source)
+                    if (NULL != source)
                     {
                         status = tivxMemBufferMap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
                         if ((vx_status)VX_SUCCESS == status)
                         {
                             tivx_obj_desc_memcpy((void *)(uintptr_t)supp->mem_ptr.host_ptr, (void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes);
-                            tivxMemBufferUnmap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                            tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
                         }
                     }
                     if ((vx_status)VX_SUCCESS == status)
                     {
-                        if (extra_bytes)
+                        if (extra_bytes > 0)
                         {
                             tivx_obj_desc_memcpy((void *)(uintptr_t)(supp->mem_ptr.host_ptr + source_bytes), (void *)((uintptr_t)user_data + source_bytes), extra_bytes);
                         }
                         supp->valid_mem_size = source_bytes + extra_bytes;
-                        tivxMemBufferUnmap((void *)(uintptr_t)supp->mem_ptr.host_ptr, supp->valid_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                        tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)supp->mem_ptr.host_ptr, supp->valid_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
                     }
                 }
             }
