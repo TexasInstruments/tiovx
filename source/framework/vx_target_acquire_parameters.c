@@ -239,6 +239,8 @@ static void ownTargetNodeDescReleaseParameterInDelay(
 
         if(next_data_ref_q!=NULL)
         {
+#ifdef HOST_ONLY
+/* TIOVX-1709-Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_ACQUIRE_PARAMS_UM001 */
             if(0 != tivxFlagIsBitSet(next_data_ref_q->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE))
             {
                 /* acquire a ref and release it immediately to rotate the ref at this slot */
@@ -271,6 +273,7 @@ static void ownTargetNodeDescReleaseParameterInDelay(
                         }
                 }
             }
+#endif
             cur_data_ref_q = next_data_ref_q;
         }
         else

@@ -82,14 +82,20 @@ vx_status ownTargetKernelInstanceInit(void)
     }
 
     status = tivxMutexCreate(&g_target_kernel_instance_lock);
+
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1708- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_INSTANCE_UM001 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to create mutex\n");
     }
+#endif
 
     return status;
 }
 
+#ifdef HOST_ONLY
+/* TIOVX-1708-Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_INSTANCE_UM001 */
 void ownTargetKernelInstanceDeInit(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -100,6 +106,7 @@ void ownTargetKernelInstanceDeInit(void)
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
     }
 }
+#endif
 
 tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id)
 {

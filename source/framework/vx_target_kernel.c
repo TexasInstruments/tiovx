@@ -92,10 +92,14 @@ vx_status ownTargetKernelInit(void)
     g_num_target_kernel = 0U;
 
     status = tivxMutexCreate(&g_target_kernel_lock);
+
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1707-LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM001 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to create mutex\n");
     }
+#endif
 
     return status;
 }
