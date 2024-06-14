@@ -2187,30 +2187,30 @@ VX_API_ENTRY vx_user_data_object vxGetSupplementaryUserDataObject(vx_reference r
         status = &local_status;
     }
     *status = VX_SUCCESS;
-    if (!ownIsValidReference(ref))
+    if ( (vx_bool)vx_false_e == ownIsValidReference(ref))
     {
-        *status = VX_ERROR_INVALID_REFERENCE;
+        *status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         retref = (vx_user_data_object)ownGetErrorObject(ownGetContext(), VX_ERROR_INVALID_REFERENCE);
     }
-    else if (ref->is_virtual &&
-            !ref->is_accessible)
+    else if (((vx_bool)vx_true_e == ref->is_virtual) &&
+            ((vx_bool)vx_false_e == ref->is_accessible))
     {
         /* Can't get supplementary data from an inaccessible object*/
         VX_PRINT(VX_ZONE_WARNING, "Attempt to get supplementary data from virtual object\n");
-        *status = VX_ERROR_OPTIMIZED_AWAY;
-        retref = (vx_user_data_object)ownGetErrorObject(ref->context, VX_ERROR_OPTIMIZED_AWAY);
+        *status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
+        retref = (vx_user_data_object)ownGetErrorObject(ref->context, (vx_status)VX_ERROR_OPTIMIZED_AWAY);
     }
-    else if (VX_TYPE_CONTEXT == ref->type)
+    else if ((vx_enum)VX_TYPE_CONTEXT == ref->type)
     {
         /* Specifically avoid issues later */
-        *status = VX_ERROR_NOT_SUPPORTED;
-        retref = (vx_user_data_object)ownGetErrorObject((vx_context)ref, VX_ERROR_NOT_SUPPORTED);
+        *status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        retref = (vx_user_data_object)ownGetErrorObject((vx_context)ref, (vx_status)VX_ERROR_NOT_SUPPORTED);
     }
     else if (NULL == ref->obj_desc)
     {
         /* objects without an object descriptor are not supported */
-        *status = VX_ERROR_NOT_SUPPORTED;
-        retref = (vx_user_data_object)ownGetErrorObject(ref->context, VX_ERROR_NOT_SUPPORTED);
+        *status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        retref = (vx_user_data_object)ownGetErrorObject(ref->context, (vx_status)VX_ERROR_NOT_SUPPORTED);
     }
     else
     {
@@ -2221,11 +2221,11 @@ VX_API_ENTRY vx_user_data_object vxGetSupplementaryUserDataObject(vx_reference r
             while (NULL == new_ref->supplementary_data)
             {
                 vx_reference parent = NULL;
-                if (VX_TYPE_IMAGE == new_ref->type)
+                if ((vx_enum)VX_TYPE_IMAGE == new_ref->type)
                 {
                     parent = (vx_reference)((vx_image)new_ref)->parent;
                 }
-                if (parent)
+                if (NULL != parent)
                 {
                     new_ref = parent;
                 }
@@ -2236,30 +2236,30 @@ VX_API_ENTRY vx_user_data_object vxGetSupplementaryUserDataObject(vx_reference r
             };
         if (NULL == new_ref->supplementary_data)
         {
-            *status = VX_FAILURE;
-            if (VX_TYPE_CONTEXT == ref->type)
+            *status = (vx_status)VX_FAILURE;
+            if ((vx_enum)VX_TYPE_CONTEXT == ref->type)
             {
-                retref = (vx_user_data_object)ownGetErrorObject((vx_context)ref, VX_FAILURE);
+                retref = (vx_user_data_object)ownGetErrorObject((vx_context)ref, (vx_status)VX_FAILURE);
             }
             else
             {
-                retref = (vx_user_data_object)ownGetErrorObject(ref->context, VX_FAILURE);
+                retref = (vx_user_data_object)ownGetErrorObject(ref->context, (vx_status)VX_FAILURE);
             }
         }
-        else if (type_name &&
+        else if ((NULL != type_name) &&
                  tivx_obj_desc_strncmp(((tivx_obj_desc_user_data_object_t *)new_ref->supplementary_data->base.obj_desc)->type_name, (volatile void *)type_name, VX_MAX_REFERENCE_NAME)
                 )
         {
             VX_PRINT(VX_ZONE_INFO, "Type mismatch for supplementary data. Expected user type \"%s\"; got \"%s\"\n", type_name,
                             ((tivx_obj_desc_user_data_object_t *)new_ref->supplementary_data->base.obj_desc)->type_name);
-            *status = VX_ERROR_INVALID_TYPE;
-            retref = (vx_user_data_object)ownGetErrorObject(ref->context, VX_ERROR_INVALID_TYPE);
+            *status = (vx_status)VX_ERROR_INVALID_TYPE;
+            retref = (vx_user_data_object)ownGetErrorObject(ref->context, (vx_status)VX_ERROR_INVALID_TYPE);
         }
         else if (ref == new_ref ||
                 tivxFlagIsBitSet(ref->obj_desc->flags, TIVX_REF_FLAG_IS_IN_KERNEL))
         {
             retref = new_ref->supplementary_data;
-            vxRetainReference(&retref->base);
+            *status = vxRetainReference(&retref->base);
         }
         else
         {
@@ -2272,27 +2272,31 @@ VX_API_ENTRY vx_user_data_object vxGetSupplementaryUserDataObject(vx_reference r
 
 VX_API_ENTRY vx_status vxSetSupplementaryUserDataObject(vx_reference destination, const vx_user_data_object source)
 {
-    if (ownIsValidSpecificReference(&source->base, VX_TYPE_USER_DATA_OBJECT))
+    vx_status status;
+    if ((vx_bool)vx_true_e == ownIsValidSpecificReference(&source->base, (vx_enum)VX_TYPE_USER_DATA_OBJECT))
     {
         vx_uint32 size = ((tivx_obj_desc_user_data_object_t *)source->base.obj_desc)->valid_mem_size;
-        return vxExtendSupplementaryUserDataObject(destination, source, NULL, size, size);
+        status = vxExtendSupplementaryUserDataObject(destination, source, NULL, size, size);
     }
     else
-        return VX_ERROR_INVALID_REFERENCE;
+    {
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    }
+    return status;
 }
 
 VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destination, const vx_user_data_object source, const void *user_data, vx_uint32 source_bytes, vx_uint32 user_bytes)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if (!ownIsValidReference(destination) ||
+    if (((vx_bool)vx_false_e == ownIsValidReference(destination)) ||
         ((NULL == destination->supplementary_data) &&
-        !ownIsValidSpecificReference(&source->base, VX_TYPE_USER_DATA_OBJECT)))
+        ((vx_bool)vx_false_e == ownIsValidSpecificReference(&source->base, (vx_enum)VX_TYPE_USER_DATA_OBJECT))))
     {
         /* Both source and destination must be valid */
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
-    else if (source &&
-             source->base.supplementary_data)
+    else if ((NULL != source) &&
+             (NULL != source->base.supplementary_data))
     {
         /* Supplementary data cannot have supplementary data */
         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
@@ -2307,17 +2311,18 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
         /* Objects without object descriptors are not supported */
         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
-    else if ((VX_TYPE_USER_DATA_OBJECT == destination->type) &&
-            ((vx_user_data_object)destination)->owner)
+    else if (((vx_enum)VX_TYPE_USER_DATA_OBJECT == destination->type) &&
+            (NULL != vxCastRefAsUserDataObject(destination, &status)->owner))
+            //((vx_user_data_object)destination)->owner)
     {
         /* Destination cannot be supplementary data of another object */
         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
-    else if ((destination->is_virtual &&
-             !destination->is_accessible) ||
-             (source &&
-              source->base.is_virtual &&
-              !source->base.is_accessible))
+    else if ((((vx_bool)vx_true_e == destination->is_virtual) &&
+             ((vx_bool)vx_false_e == destination->is_accessible)) ||
+             ((NULL != source) &&
+             ((vx_bool)vx_true_e == source->base.is_virtual) &&
+             ((vx_bool)vx_false_e == source->base.is_accessible)))
     {
         /* Cannot access virtual objects outside of kernel functions */
         status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
@@ -2335,7 +2340,7 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
                any object connected to a node in a verified graph, or a possible parameter to a verified graph.
                We assume that this is set by the verify function somehow.
             */
-            if (tivxFlagIsBitSet(destination->obj_desc->flags, TIVX_REF_FLAG_IS_IN_GRAPH))
+            if ((vx_bool)vx_true_e == tivxFlagIsBitSet(destination->obj_desc->flags, TIVX_REF_FLAG_IS_IN_GRAPH))
             {
                 status = (vx_status)VX_FAILURE;
             }
@@ -2368,14 +2373,14 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
                         char type_name[VX_MAX_REFERENCE_NAME] = {0};
                         tivx_obj_desc_strncpy(type_name, ((tivx_obj_desc_user_data_object_t *)source->base.obj_desc)->type_name, VX_MAX_REFERENCE_NAME);
                         vx_size size = ((tivx_obj_desc_user_data_object_t *)source->base.obj_desc)->mem_size;
-                        if (source_bytes > size ||
-                            user_bytes > size)
+                        if ((source_bytes > size) ||
+                            (user_bytes > size))
                         {
                             status = (vx_status)VX_ERROR_INVALID_VALUE;
                         }
                         else
                         {
-                            vx_user_data_object supp = ownCreateUserDataObject(&destination->context->base, type_name, size, NULL, vx_false_e);
+                            vx_user_data_object supp = ownCreateUserDataObject(&destination->context->base, type_name, size, NULL, (vx_bool)vx_false_e);
                             status = vxGetStatus(&supp->base);
                             if ((vx_status)VX_SUCCESS == status)
                             {
@@ -2405,13 +2410,13 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
         {
             /* Copy data from source & user data if we can */
             tivx_obj_desc_user_data_object_t * src_obj_desc = NULL;
-            if (source)
+            if (NULL != source)
             {
                 src_obj_desc = (tivx_obj_desc_user_data_object_t *)source->base.obj_desc;
             }
             tivx_obj_desc_user_data_object_t * dst_obj_desc = (tivx_obj_desc_user_data_object_t *)destination->supplementary_data->base.obj_desc;
-            if (source_bytes > dst_obj_desc->mem_size ||
-                user_bytes > dst_obj_desc->mem_size)
+            if ((source_bytes > dst_obj_desc->mem_size) ||
+                (user_bytes > dst_obj_desc->mem_size))
             {
                 status = (vx_status)VX_ERROR_INVALID_VALUE;
             }
@@ -2450,18 +2455,18 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
                     status = tivxMemBufferMap((void *)(uintptr_t)dst_obj_desc->mem_ptr.host_ptr, dest_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
                     if ((vx_status)VX_SUCCESS == status)
                     {
-                        if (src_obj_desc && source_bytes)
+                        if ((NULL != src_obj_desc) && (0 != source_bytes))
                         {
                             status = tivxMemBufferMap((void *)(uintptr_t)(src_obj_desc->mem_ptr.host_ptr + source_offset), source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
                             if ((vx_status)VX_SUCCESS == status)
                             {
                                 tivx_obj_desc_memcpy((void *)(uintptr_t)(dst_obj_desc->mem_ptr.host_ptr + source_offset), (void *)(uintptr_t)(src_obj_desc->mem_ptr.host_ptr + source_offset), source_bytes);
-                                tivxMemBufferUnmap((void *)(uintptr_t)(src_obj_desc->mem_ptr.host_ptr + source_offset), source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                                tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)(src_obj_desc->mem_ptr.host_ptr + source_offset), source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
                             }
                         }
                         if ((vx_status)VX_SUCCESS == status)
                         {
-                            if (user_data && user_bytes)
+                            if ((0 != user_data) && (0 != user_bytes))
                             {
                                 tivx_obj_desc_memcpy((void *)(uintptr_t)(dst_obj_desc->mem_ptr.host_ptr + user_offset), (void *)((uintptr_t)user_data + user_offset), user_bytes);
                             }
@@ -2470,10 +2475,10 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
                                 dst_obj_desc->valid_mem_size = dest_bytes;
                             }
                         }
-                        tivxMemBufferUnmap((void *)(uintptr_t)dst_obj_desc->mem_ptr.host_ptr, dest_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                        tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)dst_obj_desc->mem_ptr.host_ptr, dest_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
                     }
                 }
-                ownReferenceUnlock(destination);
+                status = ownReferenceUnlock(destination);
             }
         }
     }

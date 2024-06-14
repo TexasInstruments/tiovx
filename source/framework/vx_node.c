@@ -218,9 +218,9 @@ static void ownNodeUserKernelSetParamsAccesible(vx_kernel kernel, vx_reference p
     vx_uint32 i;
     for(i=0; i<num_params ; i++)
     {
-        if (params[i])
+        if (NULL != params[i])
         {
-            if (is_accessible)
+            if ((vx_bool)vx_true_e == is_accessible)
             {
                 /* Set flag to say we are in the kernel function */
                 tivxFlagBitSet(&params[i]->obj_desc->flags, TIVX_REF_FLAG_IS_IN_KERNEL);
@@ -232,9 +232,9 @@ static void ownNodeUserKernelSetParamsAccesible(vx_kernel kernel, vx_reference p
                 /* Clear flag that says we are in the kernel function */
                 tivxFlagBitClear(&params[i]->obj_desc->flags, TIVX_REF_FLAG_IS_IN_KERNEL);
             }
-            if (VX_INPUT ==  kernel->signature.directions[i])
+            if ((vx_enum)VX_INPUT ==  kernel->signature.directions[i])
             {
-                if (is_accessible)
+                if ((vx_bool)vx_true_e == is_accessible)
                 {
                     tivxFlagBitSet(&params[i]->obj_desc->flags, TIVX_REF_FLAG_IS_INPUT);
                 }
@@ -267,10 +267,10 @@ vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[])
             for (i = 0; i < num_params; i ++)
             {
                 meta[i]->type = node->kernel->signature.types[i];
-                if (node->parameters[i] &&
-                    node->parameters[i]->is_virtual)
+                if ((NULL != node->parameters[i]) &&
+                    ((vx_bool)vx_true_e == node->parameters[i]->is_virtual))
                 {
-                    node->parameters[i]->is_accessible = vx_true_e;
+                    node->parameters[i]->is_accessible = (vx_bool)vx_true_e;
                 }
             }
 
@@ -280,10 +280,10 @@ vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[])
                 num_params, meta);
             for (i = 0; i < num_params; i ++)
             {
-                if (node->parameters[i] &&
-                    node->parameters[i]->is_virtual)
+                if ((NULL != node->parameters[i]) &&
+                    ((vx_bool)vx_true_e == node->parameters[i]->is_virtual))
                 {
-                    node->parameters[i]->is_accessible = vx_false_e;
+                    node->parameters[i]->is_accessible = (vx_bool)vx_false_e;
                 }
             }
         }
