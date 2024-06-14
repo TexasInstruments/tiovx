@@ -107,7 +107,7 @@ TEST(tivxPymd, negativeTestOwnInitPyramid)
     vx_uint32 index = 3, width = 3, height = 3;
     vx_df_image format = VX_FORMAT_DEFAULT;
     pymd = vxCreatePyramid(context, levels, scale, width, height, format);
-    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus(pymd));
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)pymd));
 }
 
 TESTCASE_TESTS(
@@ -118,4 +118,3 @@ TESTCASE_TESTS(
     negativeTestQueryPyramid,
     negativeTestOwnInitPyramid
 )
-

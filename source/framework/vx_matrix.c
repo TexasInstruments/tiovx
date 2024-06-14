@@ -25,16 +25,6 @@ VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrix(vx_context context, vx_enum da
     vx_size dim = 0U;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 	vx_status status = (vx_status)VX_SUCCESS;
-    vx_context context;
-
-    if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
-    {
-        context = vxGetContext(scope);
-    }
-    else
-    {
-        context = (vx_context)scope;
-    }
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {

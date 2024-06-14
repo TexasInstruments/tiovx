@@ -245,21 +245,11 @@ VX_API_ENTRY vx_array VX_API_CALL vxCreateArray(
     vx_array arr = NULL;
     vx_reference ref =NULL;
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_context context;
 
-    if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
-    {
-        context = vxGetContext(scope);
-    }
-    else
-    {
-        context = (vx_context)scope;
-    }
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if (is_virtual ||
-            ((capacity > 0U) &&
-            ((vx_bool)vx_true_e == ownIsValidArrayItemType(context, item_type))))
+        if ((capacity > 0U) &&
+            ((vx_bool)vx_true_e == ownIsValidArrayItemType(context, item_type)))
         {
             ref = ownCreateReference(context, (vx_enum)VX_TYPE_ARRAY,
                 (vx_enum)VX_EXTERNAL, &context->base);
@@ -292,11 +282,7 @@ VX_API_ENTRY vx_array VX_API_CALL vxCreateArray(
                 }
                 else
                 {
-                    ownInitArrayObject(arr, item_type, capacity, is_virtual);
-                    if (is_virtual)
-                    {                                        
-                        ownReferenceSetScope(&arr->base, scope);
-                    }
+                    ownInitArrayObject(arr, item_type, capacity, (vx_bool)vx_false_e);
                 }
             }
         }

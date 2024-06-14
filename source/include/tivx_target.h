@@ -72,6 +72,8 @@ extern "C" {
 #endif
 
 #include <TI/tivx_config.h>
+#include <tivx_obj_desc_priv.h> // mfl7si TODO clarify why we need it
+
 
 /*!
  * \file

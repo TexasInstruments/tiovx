@@ -1102,7 +1102,7 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph)
             /* reference could be null for optional parameters */
             if (NULL != ref)
             {
-                status = ownGraphAllocateDataObject(graph, node_cur, prm_cur_idx, ref);
+                status = ownGraphAllocateDataObject(node_cur, prm_cur_idx, ref);
                 if(status != (vx_status)VX_SUCCESS)
                 {
                     break;
@@ -1482,7 +1482,7 @@ static vx_status ownGraphCreateIntermediateDataReferenceQueues(vx_graph graph)
                 if(graph->data_ref_q_list[i].refs_list[buf_id]!=NULL)
                 {
                     /* alloc memory for references that can be enqueued in data ref queues */
-                    status = ownGraphAllocateDataObject(graph, graph->data_ref_q_list[i].node, graph->data_ref_q_list[i].index,
+                    status = ownGraphAllocateDataObject(graph->data_ref_q_list[i].node, graph->data_ref_q_list[i].index,
                             graph->data_ref_q_list[i].refs_list[buf_id]);
                 }
                 else
@@ -1550,7 +1550,7 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
                     if(graph->parameters[i].refs_list[buf_id]!=NULL)
                     {
                         /* alloc memory for references that can be enqueued in data ref queues */
-                        status = ownGraphAllocateDataObject(graph, graph->parameters[i].node, graph->parameters[i].index,
+                        status = ownGraphAllocateDataObject(graph->parameters[i].node, graph->parameters[i].index,
                                 graph->parameters[i].refs_list[buf_id]);
                     }
                     else

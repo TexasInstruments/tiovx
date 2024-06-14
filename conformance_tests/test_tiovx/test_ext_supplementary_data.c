@@ -67,7 +67,7 @@
 #include <VX/vxu.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include <TI/tivx_target_kernel.h>
 
 

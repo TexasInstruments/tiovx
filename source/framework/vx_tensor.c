@@ -162,11 +162,7 @@ static vx_bool ownIsValidTensorFormat(vx_enum data_type)
         (data_type == (vx_enum)VX_TYPE_INT8)    ||
         (data_type == (vx_enum)VX_TYPE_UINT8) )
     {
-        return vx_true_e;
-    }
-    else
-    {
-        return vx_false_e;
+        res = (vx_bool)vx_true_e;
     }
     else
     {
