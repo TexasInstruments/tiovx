@@ -630,12 +630,16 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
                     kernel_instance_state = target_kernel_instance->state;
                 }
             }
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM005 */
             else
             {
+                /* This is applicable for the USER KERNEL*/
                 kernel_instance_state = (vx_enum)node_obj_desc->source_state;
 
                 num_bufs = node_obj_desc->num_pipeup_bufs;
             }
+#endif
 
             if ( ((vx_enum)VX_NODE_STATE_PIPEUP == kernel_instance_state) &&
                  (num_bufs > 1U) )
@@ -757,12 +761,15 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
         target_kernel_instance = ownTargetKernelInstanceAlloc(
             (vx_enum)node_obj_desc->kernel_id, kernel_name, (vx_enum)node_obj_desc->target_id);
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM011 */
         if(target_kernel_instance == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance is NULL\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
         else
+#endif
         {
             /* This target_kernel_instance is newly allocated in this create function.  The "kernel"
              * in this case is a target_kernel which has not had num_pipeup_bufs set either
@@ -828,10 +835,13 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
                                 ((tivx_obj_desc_pyramid_t*)parent_obj_desc[i])->
                                     obj_desc_id[cnt]);
                         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM012 */
                         else
                         {
                             params[i] = NULL;
                         }
+#endif
                     }
                 }
                 else
@@ -912,12 +922,15 @@ static vx_status ownTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_ob
         target_kernel_instance = ownTargetKernelInstanceGet(
             (uint16_t)node_obj_desc->target_kernel_index[cnt], (vx_enum)node_obj_desc->kernel_id);
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM013 */
         if(target_kernel_instance == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         else
+#endif
         {
             {
                 /* NOTE: nothing special for replicated node during
