@@ -474,6 +474,11 @@ static vx_status ownDestructObjArray(vx_reference ref)
                 }
             }
         }
+        else
+        {
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+            VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
+        }
     }
     return status;
 }
