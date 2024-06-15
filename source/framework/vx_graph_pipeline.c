@@ -721,7 +721,6 @@ vx_status ownGraphCreateQueues(vx_graph graph)
 
 vx_status ownGraphDeleteQueues(vx_graph graph)
 {
-<<<<<<< HEAD
     vx_status status;
     status = tivxQueueDelete(&graph->free_q);
     if((vx_status)VX_SUCCESS != status)
