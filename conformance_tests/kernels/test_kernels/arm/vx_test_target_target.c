@@ -1208,6 +1208,26 @@ static vx_status tivxTestGetObjDescElement(uint8_t id)
 static vx_status tivxNegativeTestTargetGetHandleAndDelete(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_enum cpu_id = tivxGetSelfCpuId();
+    vx_enum target_id = 0;
+
+    switch (cpu_id)
+    {
+        case 0:
+            target_id = (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4;
+            break;
+        case 2:
+            target_id = (vx_enum)TIVX_TARGET_ID_MPU_2;
+            break;
+        case 4:
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_3;
+            break;
+    }
+    if ((vx_status)VX_ERROR_INVALID_VALUE != ownTargetDelete((vx_enum)target_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid result returned for ARG: 'INVALID_ARG' target id\n");
+        status = (vx_status)VX_FAILURE;
+    }
 
     if ((vx_status)VX_ERROR_INVALID_VALUE != ownTargetDelete((vx_enum)INVALID_ARG))
     {
@@ -1258,6 +1278,32 @@ static vx_status tivxNegativeTestTargetQueueObjDesc(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL'\n");
         status = (vx_status)VX_FAILURE;
     }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestObjDescAlloc(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_enum cpu_id = tivxGetSelfCpuId();
+    vx_enum target_id = 0;
+
+    switch (cpu_id)
+    {
+        case 0:
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_3;
+            break;
+        case 2:
+            target_id = (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4;
+            break;
+        case 4:
+            target_id = (vx_enum)TIVX_TARGET_ID_MPU_2;
+            break;
+    }
+
+    ownTargetCreate(target_id, NULL);
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -1586,6 +1632,7 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestTargetGetHandleAndDelete,"",VX_SUCCESS},
     {tivxTestTargetTriggerNode,"",VX_SUCCESS},
     {tivxNegativeTestTargetQueueObjDesc,"",VX_SUCCESS},
+    {tivxNegativeTestObjDescAlloc,"",VX_SUCCESS},
     #endif
     {tivxNegativeTestTargetNodeDescAcquireAllParameter, "", VX_SUCCESS},
     {tivxBranchTestTargetNodeDescAcquireParameter, "",VX_SUCCESS},
