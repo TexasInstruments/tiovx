@@ -582,6 +582,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].index = param->index;
             graph->parameters[graph->num_params].queue_enable = (vx_bool)vx_false_e;
             graph->parameters[graph->num_params].is_enable_send_ref_consumed_event = (vx_bool)vx_false_e;
+            graph->parameters[graph->num_params].is_enable_send_ref_consumed_graph_event = (vx_bool)vx_false_e;
             graph->parameters[graph->num_params].graph_consumed_app_value = 0U;
             graph->parameters[graph->num_params].data_ref_queue = NULL;
             graph->parameters[graph->num_params].num_buf = 0;

@@ -700,7 +700,10 @@ vx_status ownGraphCreateQueues(vx_graph graph)
     vx_status status;
 
     status = tivxQueueCreate(&graph->free_q, TIVX_GRAPH_MAX_PIPELINE_DEPTH, graph->free_q_mem, 0);
-
+    if (VX_SUCCESS == status)
+    {
+        status = ownEventQueueCreate(&graph->graph_event_queue);
+    }
     return status;
 }
 
@@ -708,6 +711,8 @@ vx_status ownGraphCreateQueues(vx_graph graph)
 void ownGraphDeleteQueues(vx_graph graph)
 {
     tivxQueueDelete(&graph->free_q);
+    tivxQueueDelete(&graph->graph_event_queue.free_queue);
+    tivxQueueDelete(&graph->graph_event_queue.ready_queue);
 }
 
 /* called during graph verify after pipeline_depth is calculated and set */

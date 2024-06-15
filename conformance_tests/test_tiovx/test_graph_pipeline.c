@@ -6799,6 +6799,115 @@ TEST(tivxGraphPipeline, testIllegelDoubleEnqueuing)
     vxReleaseGraph(&graph);
 }
 
+/* Test the graph event extensions
+ *
+ * Test vxRegisterGraphEvent:
+ *  Call with unsupported type
+ *  Call with parameter out of range
+ *  Call with NULL for graph
+ *  Call with a reference that isn't a graph
+ *  Call for a verified graph
+ *  Call twice to change the app_value (checked later)
+ *  Call for an event registered on the context
+ * Test vxWaitGraphEvent:
+ *  Non-blocking and Blocking - check app_value on one parameter and changed app_value on another.
+ * Test vxSendUserGraphEvent:
+ *  Just check that it comes out the other side
+ * 
+ */
+TEST(tivxGraphPipeline, testGraphEvent)
+{
+    vx_context context = context_->vx_context_;
+    printf("\nTesting vxRegisterGraphEvent and vxWaitGraphEvent\n");
+    /* Check some basic error returns */
+    vx_graph graph = vxCreateGraph(context);
+    vx_image images[3] = 
+    {
+        vxCreateImage(context, 32, 32, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 32, 32, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 32, 32, VX_DF_IMAGE_U8)
+    };
+    vx_node node = vxNotNode(graph, images[0], images[1]);
+    addParameterToGraph(graph, node, 0);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxRegisterGraphEvent(NULL, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, 0));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxRegisterGraphEvent((vx_graph)context, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, 0));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxRegisterGraphEvent(graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 1, 0));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxRegisterGraphEvent(graph, VX_EVENT_GRAPH_COMPLETED, 0, 0));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxRegisterGraphEvent(graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, 0));
+    vxReleaseNode(&node);
+    vxReleaseGraph(&graph);
+    graph = vxCreateGraph(context);
+    node = vxAndNode(graph, images[0], images[1], images[2]);
+    writeImage(images[0], 0x45, 0xD1);
+    writeImage(images[1], 0x70, 0x81);
+    addParameterToGraph(graph, node, 0);
+    addParameterToGraph(graph, node, 1);
+    addParameterToGraph(graph, node, 2);
+    vx_graph_parameter_queue_params_t graph_params[3] = 
+    {
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)&images[0], .refs_list_size = 1},
+        {.graph_parameter_index = 1, .refs_list = (vx_reference *)&images[1], .refs_list_size = 1},
+        {.graph_parameter_index = 2, .refs_list = (vx_reference *)&images[2], .refs_list_size = 1}
+    };
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, 100));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent(graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 1, 111));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent(graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 2, 111));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent(graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, 222));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent(graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 2, 123));
+    vx_event_t events[3];
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphEvents(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableEvents(context));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitGraphEvent(graph, &events[0], vx_true_e));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitGraphEvent(graph, &events[0], vx_true_e));
+    int i;
+    for (i = 0; i < 3; ++i)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, i, (vx_reference *)&images[i], 1));
+    }
+    for (i = 0; i < 3; ++i)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, &events[i], vx_false_e));
+        ASSERT_EQ_INT(events[i].type, VX_EVENT_GRAPH_PARAMETER_CONSUMED);
+        switch (events[i].event_info.graph_parameter_consumed.graph_parameter_index)
+        {
+            case 0:
+                ASSERT_EQ_INT(events[i].app_value, 222);
+                break;
+            case 1:
+                ASSERT_EQ_INT(events[i].app_value, 111);
+                break;
+            case 2:
+                ASSERT_EQ_INT(events[i].app_value, 123);
+                break;
+            default:
+            {
+                FAIL("vxWaitGraphEvent did not return a correct graph parameter event");
+            }
+            break;
+        }
+    }
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitGraphEvent(graph, events, vx_true_e));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSendUserGraphEvent(NULL, 0, NULL));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSendUserGraphEvent((vx_graph)node, 0, NULL));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSendUserGraphEvent(graph, 550, (void *)987UL));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, events, vx_true_e));
+    ASSERT_EQ_INT(events->type, VX_EVENT_GRAPH_PARAMETER_CONSUMED);
+    ASSERT_EQ_INT(events->app_value, 222);
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitEvent(context, events, vx_true_e));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, events, vx_true_e));
+    ASSERT_EQ_INT(events->type, VX_EVENT_USER);
+    ASSERT_EQ_INT(events->app_value, 550);
+    ASSERT_EQ_INT((int)(uintptr_t)events->event_info.user_event.user_event_parameter, 987);
+    vxReleaseNode(&node);
+    vxReleaseGraph(&graph);
+    vxReleaseImage(&images[0]);
+    vxReleaseImage(&images[2]);
+    vxReleaseImage(&images[1]);
+}
+
 TEST(tivxGraphPipelineLdra, negativeTestSetGraphScheduleConfig)
 {
     #define VX_GRAPH_SCHEDULE_MODE_DEFAULT 0
@@ -6934,7 +7043,8 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testBufferDepthDetection1,
     testBufferDepthDetection2,
     testDoubleInputEnqueue,
-    testIllegelDoubleEnqueuing
+    testIllegelDoubleEnqueuing,
+    testGraphEvent
 )
 
 TESTCASE_TESTS(
