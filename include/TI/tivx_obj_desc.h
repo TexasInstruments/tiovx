@@ -333,6 +333,9 @@ typedef struct _tivx_obj_desc_t {
     /*! \brief ID of supplementary data object descriptor in shared memory */
     volatile uint16_t supp_data_ID;
   
+    /*! \brief holds the count of the number of times this reference has been enqueued and not dequeued */
+    volatile uint16_t num_enqueues;
+
     /*! \brief reserved to make 64b aligned */
     volatile uint16_t rsv0;
 

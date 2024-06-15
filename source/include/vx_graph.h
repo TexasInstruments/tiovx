@@ -69,8 +69,9 @@ typedef struct {
         vx_node node;
         uint32_t index;
     } params_list[TIVX_GRAPH_MAX_PARAM_REFS];
-    /*! \brief flag to control event send enable/disable */
+    /*! \brief flags to control context & graph event send enable/disable */
     vx_bool is_enable_send_ref_consumed_event;
+    vx_bool is_enable_send_ref_consumed_graph_event;
     /*! Value returned with graph parameter consumed event */
     uint32_t graph_consumed_app_value;
     /*! \brief Set to an enum value in \ref vx_type_e. */
@@ -247,9 +248,12 @@ typedef struct _vx_graph {
     /*! \brief number nodes that take this data reference as output */
     uint8_t data_ref_num_out_nodes[TIVX_GRAPH_MAX_DATA_REF];
 
-    /*! Event queue */
+    /*! Event queue use for streaming*/
     tivx_event_queue_t event_queue;
 
+    /*! Graph event queue used for graph parameters and user events */
+    tivx_event_queue_t graph_event_queue;
+    
     /*! Streaming task handle */
     tivx_task streaming_task_handle;
 
@@ -525,16 +529,6 @@ vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_
  * \ingroup group_vx_graph
  */
 void ownSendGraphCompletedEvent(vx_graph graph);
-
-/*!
- * \brief Checks if 'ref' is valid ref that can be enqueued
- *
- *  'ref' is compared against pre-registered ref's that can be enqueued
- *  to confirm that ref can be enqueued.
- *
- * \ingroup group_vx_graph
- */
-vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_parameter_index, vx_reference ref);
 
 /*!
  * \brief Counts number of enqueued 'refs' and returns number of times graph can be scheduled successfully

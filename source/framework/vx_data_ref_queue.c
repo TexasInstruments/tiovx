@@ -271,6 +271,16 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
                 VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
             }
         }
+        if (ref->is_enable_send_ref_consumed_graph_event)
+        {
+            status = ownEventQueueAddEvent(&ref->graph->graph_event_queue,
+                        (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
+                        (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to add event to graph event queue\n");
+            }
+        }
     }
 #ifdef LDRA_UNTESTABLE_CODE
     else
@@ -378,6 +388,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
             ref->release_q_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
             ref->is_enable_send_ref_consumed_event = prms->is_enable_send_ref_consumed_event;
+            ref->is_enable_send_ref_consumed_graph_event = prms->is_enable_send_ref_consumed_graph_event;
             ref->enable_user_queueing = prms->enable_user_queueing;
             ref->graph = graph;
             ref->graph_parameter_index = prms->graph_parameter_index;
