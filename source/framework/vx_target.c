@@ -896,6 +896,8 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
             target_kernel_instance = ownTargetKernelInstanceGet(
                 (uint16_t)node_obj_desc->target_kernel_index[i], (vx_enum)node_obj_desc->kernel_id);
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM013 */
             if (NULL != target_kernel_instance)
             {
                 /* status check is not required
@@ -904,6 +906,7 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
                  */
                 (void)ownTargetKernelInstanceFree(&target_kernel_instance);
             }
+#endif
         }
     }
 

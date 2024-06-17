@@ -1214,13 +1214,13 @@ static vx_status tivxNegativeTestTargetGetHandleAndDelete(uint8_t id)
     switch (cpu_id)
     {
         case 0:
-            target_id = (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4;
+            target_id = (vx_enum)TIVX_TARGET_ID_MCU2_0;
             break;
         case 2:
             target_id = (vx_enum)TIVX_TARGET_ID_MPU_2;
             break;
         case 4:
-            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_3;
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2;
             break;
     }
     if ((vx_status)VX_ERROR_INVALID_VALUE != ownTargetDelete((vx_enum)target_id))
@@ -1293,17 +1293,21 @@ static vx_status tivxNegativeTestObjDescAlloc(uint8_t id)
     switch (cpu_id)
     {
         case 0:
-            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_3;
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2;
             break;
         case 2:
-            target_id = (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4;
+            target_id = (vx_enum)TIVX_TARGET_ID_MCU2_0;
             break;
         case 4:
             target_id = (vx_enum)TIVX_TARGET_ID_MPU_2;
             break;
     }
 
-    ownTargetCreate(target_id, NULL);
+    if (VX_ERROR_NO_RESOURCES != ownTargetCreate(target_id, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for ARG:'target_id' Target ID \n");
+        status = (vx_status)VX_FAILURE;
+    }
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 

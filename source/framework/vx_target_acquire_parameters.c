@@ -276,11 +276,14 @@ static void ownTargetNodeDescReleaseParameterInDelay(
 #endif
             cur_data_ref_q = next_data_ref_q;
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1709- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_ACQUIRE_PARAMS_UM001 */
         else
         {
             /* invalid descriptor found */
             break;
         }
+#endif
     }
 }
 
