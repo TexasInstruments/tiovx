@@ -107,6 +107,12 @@
      possible that the available memory of the system can be reached prior to the call to \ref vxVerifyGraph and thus should be taken into account
      when designing the system.
 
+     \subsection TIOVX_SAFETY_USAGE_NESTED_NODE Nested Node Safety Usage Information
+
+     Nested nodes provide the ability to use the functionality of a \ref vx_graph within a \ref vx_node.  However, graph event handling within
+     a nested node is not yet handled.  Therefore, in the meantime, it is recommended that from the application point of view, a nested node
+     should be registered with a given timeout and that if that timeout is exceeded, the cores which are used within the nested node need to be rebooted.
+
      \subsection TIOVX_SAFETY_USAGE_FURTHER_INFO Further information
 
      For full details, please reference the TIOVX usage sections at the location \ref TIOVX_USAGE
