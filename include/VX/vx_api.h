@@ -2362,6 +2362,23 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array array, vx_map_id m
 VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(vx_context context, vx_reference exemplar, vx_size count);
 
 /*!
+ * \brief Creates a reference to an ObjectArray of count objects.
+ *
+ * Create an object array of images using the provided references. Should serve as a proper duplicate
+ * of the object array in the exporting process.
+ * 
+ * \param [in] context      The reference to the overall Context.
+ * \param [in] exemplar     Array of image object references imported from difference process.
+ * \param [in] count        Number of Objects to create in the ObjectArray.
+ *
+ * \returns An ObjectArray reference <tt>\ref vx_object_array</tt>. Any possible errors preventing a 
+ * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
+ *
+ * \ingroup group_object_array
+ */
+VX_API_ENTRY vx_object_array VX_API_CALL rbvx_createObjectArrayImportedRefs(vx_context context, vx_reference references[], vx_size count);
+
+/*!
  * \brief Creates an opaque reference to a virtual ObjectArray with no direct user access.
  *
  * This function creates an ObjectArray of count objects with similar behavior as 

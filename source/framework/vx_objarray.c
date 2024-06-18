@@ -187,6 +187,88 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(
     return (objarr);
 }
 
+VX_API_ENTRY vx_object_array VX_API_CALL rbvx_createObjectArrayImportedRefs( vx_context     context,
+                                                                             vx_reference   references[], 
+                                                                             vx_size        count)
+{
+    vx_object_array objarr = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if ((ownIsValidContext(context) == (vx_bool)vx_true_e) && (NULL != references))
+    {
+        if (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS)
+        {
+            objarr = (vx_object_array)ownCreateReference(context, (vx_enum)VX_TYPE_OBJECT_ARRAY, 
+                                                        (vx_enum)VX_EXTERNAL, &context->base);
+
+            if ((vxGetStatus((vx_reference)objarr) == (vx_status)VX_SUCCESS) &&
+                									(objarr->base.type == (vx_enum)VX_TYPE_OBJECT_ARRAY))
+            {
+                /* assign reference type specific callbacks */
+                objarr->base.destructor_callback = (tivx_reference_destructor_callback_f)&ownDestructObjArray;
+                objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
+                objarr->base.release_callback =
+                    (tivx_reference_release_callback_f)&ownReleaseObjectArray;
+                objarr->base.kernel_callback = &objectArrayKernelCallback;
+                objarr->base.obj_desc = ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
+                
+                if (objarr->base.obj_desc == NULL)
+                {
+                    status = vxReleaseObjectArray(&objarr);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of ObjectArray object\n");
+                    }
+
+                    vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,"Could not allocate objarr object descriptor\n");
+                    
+                    VX_PRINT(VX_ZONE_WARNING, "Value of TIVX_OBJECT_ARRAY_MAX_ITEMS may be exceeded\n");
+                    
+                    objarr = (vx_object_array)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
+                }
+                else
+                {
+                    tivx_obj_desc_object_array_t *obj_desc = (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
+
+                    obj_desc->item_type = VX_TYPE_IMAGE;
+                    obj_desc->num_items = (uint32_t)count;
+
+                    ownLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
+
+                    uint32_t i;
+                    for (i = 0; i < count; i++)
+                    {
+                        status = vxGetStatus(references[i]);
+
+                        if (status == (vx_status)VX_SUCCESS)
+                        {
+                            status = ownAddRefToObjArray(context, objarr, references[i], i);
+                        }
+                        else
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "cannot add imported reference to array\n");
+                            break;
+                        }
+                    }
+
+                    if (status != (vx_status)VX_SUCCESS)
+                    {
+                        vxReleaseObjectArray(&objarr);
+
+                        vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,"Could not allocate objarr object descriptor\n");
+
+                        VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
+
+                        objarr = (vx_object_array)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
+                    }
+                }
+            }
+        }
+    }
+
+    return (objarr);
+}
+
 VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
     vx_graph graph, vx_reference exemplar, vx_size count)
 {
