@@ -1223,7 +1223,7 @@ static vx_status tivxTestGetObjDescId(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if(TIVX_OBJ_DESC_INVALID == ownReferenceGetObjDescId((vx_reference)test_out_desc->base.host_ref))
+    if(TIVX_OBJ_DESC_INVALID == ownReferenceGetObjDescId((vx_reference)(uintptr_t)test_out_desc->base.host_ref))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid descriptor object from the given reference\n");
         status = (vx_status)VX_FAILURE;
@@ -1624,57 +1624,60 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
     }
 
 #if defined(FULL_CODE_COVERAGE)
-    uint8_t i = 0;
-    uint8_t pcount = 0;
-    uint8_t fcount = 0;
-    vx_status status1 = (vx_status)VX_SUCCESS;
-    uint32_t size= sizeof(arrOfFuncs)/sizeof(arrOfFuncs[0]);
-    test_kernel = kernel;
-    test_obj_desc=obj_desc[0];
-    test_out_desc = out_desc;
-    tivx_set_debug_zone(VX_ZONE_INFO);
-
     if((vx_status)VX_SUCCESS == status)
     {
-        for(i=0;i<size;i++)
+        uint8_t i = 0;
+        uint8_t pcount = 0;
+        uint8_t fcount = 0;
+        vx_status status1 = (vx_status)VX_SUCCESS;
+        uint32_t size= sizeof(arrOfFuncs)/sizeof(arrOfFuncs[0]);
+        test_kernel = kernel;
+        test_obj_desc=obj_desc[0];
+        test_out_desc = out_desc;
+        tivx_set_debug_zone(VX_ZONE_INFO);
+
+        if((vx_status)VX_SUCCESS == status)
         {
-            status1 = arrOfFuncs[i].funcPtr(i);
-            if((vx_status)VX_SUCCESS != status1)
+            for(i=0;i<size;i++)
             {
-                VX_PRINT(VX_ZONE_ERROR,"[ !FAILED! ] TARGET TESTCASE: %s\n",arrOfFuncs[i].funcName);
-                arrOfFuncs[i].status=status1;
-                status = status1;
-                fcount++;
-            }
-            else
-            {
-                VX_PRINT(VX_ZONE_INFO,"[ PASSED ] TARGET TESTCASE: %s\n",arrOfFuncs[i].funcName);
-                pcount++;
+                status1 = arrOfFuncs[i].funcPtr(i);
+                if((vx_status)VX_SUCCESS != status1)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"[ !FAILED! ] TARGET TESTCASE: %s\n",arrOfFuncs[i].funcName);
+                    arrOfFuncs[i].status=status1;
+                    status = status1;
+                    fcount++;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_INFO,"[ PASSED ] TARGET TESTCASE: %s\n",arrOfFuncs[i].funcName);
+                    pcount++;
+                }
             }
         }
-    }
-    VX_PRINT(VX_ZONE_INFO,"------------------REMOTE-CORE TESTCASES SUMMARY-------------------------\n");
-    VX_PRINT(VX_ZONE_INFO,"[ ALL DONE ] %d test(s) from 1 test case(s) ran\n",i);
-    VX_PRINT(VX_ZONE_INFO,"[ PASSED   ] %d test(s)\n",pcount);
-    if(fcount>0)
-    {
-        i=0;
-        VX_PRINT(VX_ZONE_INFO,"[ FAILED   ] %d test(s), listed below:\n",fcount);
-        while(i<size)
+        VX_PRINT(VX_ZONE_INFO,"------------------REMOTE-CORE TESTCASES SUMMARY-------------------------\n");
+        VX_PRINT(VX_ZONE_INFO,"[ ALL DONE ] %d test(s) from 1 test case(s) ran\n",i);
+        VX_PRINT(VX_ZONE_INFO,"[ PASSED   ] %d test(s)\n",pcount);
+        if(fcount>0)
         {
-            if(arrOfFuncs[i].status!= VX_SUCCESS)
+            i=0;
+            VX_PRINT(VX_ZONE_INFO,"[ FAILED   ] %d test(s), listed below:\n",fcount);
+            while(i<size)
             {
-                VX_PRINT(VX_ZONE_INFO,"[ FAILED   ] %s\n",arrOfFuncs[i].funcName);
+                if(arrOfFuncs[i].status!= VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_INFO,"[ FAILED   ] %s\n",arrOfFuncs[i].funcName);
+                }
+                i++;
             }
-            i++;
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO,"[ FAILED   ] %d test(s)\n",fcount);
+        }
+        VX_PRINT(VX_ZONE_INFO,"------------------------------------------------------------------------\n");
+        tivx_clr_debug_zone(VX_ZONE_INFO);
     }
-    else
-    {
-        VX_PRINT(VX_ZONE_INFO,"[ FAILED   ] %d test(s)\n",fcount);
-    }
-    VX_PRINT(VX_ZONE_INFO,"------------------------------------------------------------------------\n");
-    tivx_clr_debug_zone(VX_ZONE_INFO);
 
 #endif /* FULL_CODE_COVERAGE */
 
