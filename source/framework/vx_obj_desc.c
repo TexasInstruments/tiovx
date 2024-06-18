@@ -325,18 +325,6 @@ vx_status ownObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
     return status;
 }
 
-uint16_t ownReferenceGetObjDescId(vx_reference ref)
-{
-    uint16_t obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
-
-    if (NULL != ref)
-    {
-        obj_desc_id = ref->obj_desc->obj_desc_id;
-    }
-
-    return (obj_desc_id);
-}
-
 void tivxGetObjDescList(volatile uint16_t obj_desc_id[],
     tivx_obj_desc_t *obj_desc[], uint32_t num_desc_id)
 {

@@ -518,13 +518,6 @@ vx_bool ownObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_typ
  */
 void ownObjDescInit(void);
 
-/*!
- * \brief Function to get the descriptor object from the given reference
- *
- * \ingroup group_tivx_obj_desc_priv
- */
-uint16_t ownReferenceGetObjDescId(vx_reference ref);
-
 #ifdef __cplusplus
 }
 #endif

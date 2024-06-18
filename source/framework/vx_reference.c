@@ -782,6 +782,18 @@ void ownReferenceSetScope(vx_reference ref, vx_reference scope)
     }
 }
 
+uint16_t ownReferenceGetObjDescId(vx_reference ref)
+{
+    uint16_t obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
+
+    if (NULL != ref)
+    {
+        obj_desc_id = ref->obj_desc->obj_desc_id;
+    }
+
+    return (obj_desc_id);
+}
+
 vx_reference ownReferenceGetHandleFromObjDescId(uint16_t obj_desc_id)
 {
     tivx_obj_desc_t *obj_desc = ownObjDescGet(obj_desc_id);
