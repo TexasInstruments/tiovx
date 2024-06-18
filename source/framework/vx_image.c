@@ -2780,3 +2780,207 @@ vx_status ownInitVirtualImage(
 
     return (status);
 }
+
+
+#define NO_ALIGN 1
+#define BYTE_ALIGN 8
+
+#define DEFAULT_MULTIPLIER 1
+#define U1_MULTIPLIER 8
+
+VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const vx_rectangle_t *rect, vx_int8 fixed_point_position)
+{
+    tivx_obj_desc_image_t *p_obj_desc;
+    tivx_obj_desc_tensor_t *c_obj_desc;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_tensor tensor = NULL;
+    vx_uint32 i;
+
+    /* parent image must be a valid image */
+    if (((vx_bool)vx_false_e == ownIsValidSpecificReference(&image->base, (vx_enum)VX_TYPE_IMAGE)) || (NULL == image->base.obj_desc))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        return tensor;
+    }
+    else
+    {
+        /* image's width and height must be defined */
+        p_obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+        if (0 == p_obj_desc->width || 0 == p_obj_desc->height)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Invalid image dimension\n");
+            status = (vx_status)VX_ERROR_INVALID_DIMENSION;
+        }
+        else
+        {
+            /* check image format and prepare format-appropriate modifiers */
+            uint32_t tensor_type = VX_TYPE_UINT8;
+            uint16_t rect_align = NO_ALIGN;
+            uint16_t x_multiplier = DEFAULT_MULTIPLIER;
+            uint16_t y_multiplier = DEFAULT_MULTIPLIER;
+
+            switch (p_obj_desc->format)
+            {
+            case VX_DF_IMAGE_U8:
+                tensor_type = VX_TYPE_UINT8;
+                break;
+            case VX_DF_IMAGE_U16:
+                tensor_type = VX_TYPE_UINT16;
+                break;
+            case VX_DF_IMAGE_S16:
+                tensor_type = VX_TYPE_INT16;
+                break;
+            case VX_DF_IMAGE_U32:
+                tensor_type = VX_TYPE_UINT32;
+                break;
+            case VX_DF_IMAGE_S32:
+                tensor_type = VX_TYPE_INT32;
+                break;
+            case VX_DF_IMAGE_RGB:
+                tensor_type = VX_TYPE_UINT32;
+                break;
+            case VX_DF_IMAGE_RGBX:
+                tensor_type = VX_TYPE_UINT32;
+                break;
+            case VX_DF_IMAGE_UYVY:
+                tensor_type = VX_TYPE_UINT16;
+                break;
+            case VX_DF_IMAGE_YUYV:
+                tensor_type = VX_TYPE_UINT16;
+                break;
+            case TIVX_DF_IMAGE_RGB565:
+                tensor_type = VX_TYPE_UINT16;
+                break;
+            case TIVX_DF_IMAGE_BGRX:
+                tensor_type = VX_TYPE_UINT32;
+                break;
+            case TIVX_DF_IMAGE_P12:
+                tensor_type = VX_TYPE_UINT16;
+                break;
+            case VX_DF_IMAGE_VIRT:
+            case VX_DF_IMAGE_NV12:
+            case VX_DF_IMAGE_NV21:
+            case VX_DF_IMAGE_IYUV:
+            case VX_DF_IMAGE_YUV4:
+            case TIVX_DF_IMAGE_NV12_P12:
+                /* Investigate whether these 5 are valid and if so, what tensor data format they need */
+            default:
+                VX_PRINT(VX_ZONE_ERROR, "Invalid image format\n");
+                status = VX_ERROR_INVALID_FORMAT;
+                break;
+            }
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                vx_rectangle_t roi;
+
+                /* a NULL rect pointer indicates that the ROI is the whole image */
+                if (NULL == rect)
+                {
+                    roi.start_x = 0;
+                    roi.start_y = 0;
+                    roi.end_x = p_obj_desc->width;
+                    roi.end_y = p_obj_desc->height;
+                }
+                else
+                {
+                    roi.start_x = rect->start_x;
+                    roi.start_y = rect->start_y;
+                    roi.end_x = rect->end_x;
+                    roi.end_y = rect->end_y;
+                }
+                /* check alignment */
+                if (0 != roi.start_x % rect_align)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid rectangle alignment\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                /* rectangle sanity check */
+                else if (roi.start_x > roi.end_x || roi.start_y > roi.end_y)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid rectangle\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                /* check ROI fits in the image */
+                else if (roi.end_x > p_obj_desc->width || roi.end_y > p_obj_desc->height)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid rectangle\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                else
+                {
+                    /* In case the parent image hasn't been allocated yet */
+                    status = ownAllocImageBuffer(&image->base);
+                    if ((vx_status)VX_SUCCESS == status)
+                    {
+                        /* create tensor with the context of the parent image and correct dimensions and data type */
+                        vx_size dimensions[2];
+                        dimensions[0] = (roi.end_x - roi.start_x + x_multiplier - 1) / x_multiplier;
+                        dimensions[1] = (roi.end_y - roi.start_y + y_multiplier - 1) / y_multiplier;
+                        tensor = vxCreateTensor(image->base.context, 2, dimensions, tensor_type, fixed_point_position);
+
+                        /* register the image as the tensor's parent */
+                        tensor->base.scope = &image->base;
+                        tensor->parent = (vx_tensor)image;
+                        ((tivx_obj_desc_tensor_t *)tensor->base.obj_desc)->parent_ID = image->base.obj_desc->obj_desc_id;
+                        tensor->base.is_virtual = image->base.is_virtual;
+                        tensor->channel_plane = image->channel_plane;
+                        /* add the child as a subtensor of the parent */
+                        for (i = 0; TIVX_IMAGE_MAX_SUBTENSORS > i; i++)
+                        {
+                            if (NULL == image->subtensors[i])
+                            {
+                                image->subtensors[i] = tensor;
+                                ownLogSetResourceUsedValue("TIVX_IMAGE_MAX_SUBTENSORS", (uint16_t)i + 1U);
+                                break;
+                            }
+                        }
+                        if (TIVX_IMAGE_MAX_SUBTENSORS == i)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "No available subtensor slots\n");
+                            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_IMAGE_MAX_SUBTENSORS in include/TI/tivx_config.h\n");
+                            status = (vx_status)VX_ERROR_NO_RESOURCES;
+                        }
+
+                        /* child is useless without the parent's data, so add an internal reference */
+                        //ownIncrementReference(&tensor->parent->base, VX_INTERNAL);
+
+                        /* stride[1] must match that of the image, not be calculated from the dimensions of the ROI */
+                        c_obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
+                        //c_obj_desc->create_type = //(vx_uint32)TIVX_TENSOR_FROM_ROI; //TODO import create type
+                        c_obj_desc->stride[1] = p_obj_desc->imagepatch_addr[0].stride_y;
+
+                        /* calculate tensor host_ptr */
+                        c_obj_desc->mem_ptr.host_ptr = (uint64_t)((uintptr_t)p_obj_desc->mem_ptr[0].host_ptr + (roi.start_x * c_obj_desc->stride[0]) + (roi.start_y * c_obj_desc->stride[1]));
+
+                        /* calculate shared_ptr */
+                        c_obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(c_obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+
+                        /* use parent supplementary data ID */
+                        if (TIVX_OBJ_DESC_INVALID != image->base.obj_desc->supp_data_ID)
+                        {
+                            tensor->base.obj_desc->supp_data_ID = image->base.obj_desc->supp_data_ID; 
+                            tensor->base.supplementary_data = image->base.supplementary_data;
+                            VX_PRINT(VX_ZONE_INFO, "Found parent supplementary data ID %u, setting to child%s", tensor->base.obj_desc->supp_data_ID, "\n");
+                        }
+                        else
+                        {
+                            VX_PRINT(VX_ZONE_INFO, "Parent has no supplementary data ID%s", "\n");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if ((vx_status)VX_SUCCESS != status)
+    {
+        if (tensor)
+        {
+            vxReleaseTensor(&tensor);
+        }
+        tensor = (vx_tensor)ownGetErrorObject((vx_context)image->base.context, status);
+    }
+    return tensor;
+}
+
