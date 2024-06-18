@@ -208,7 +208,7 @@ VX_API_ENTRY vx_object_array VX_API_CALL rbvx_createObjectArrayImportedRefs( vx_
                 objarr->base.destructor_callback = (tivx_reference_destructor_callback_f)&ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback =
-                    (tivx_reference_release_callback_f)&ownReleaseObjectArray;
+                    (tivx_reference_release_callback_f)&ownReleaseReferenceBufferGeneric;
                 objarr->base.kernel_callback = &objectArrayKernelCallback;
                 objarr->base.obj_desc = ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
                 
