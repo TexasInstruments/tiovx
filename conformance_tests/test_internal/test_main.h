@@ -37,5 +37,8 @@ TESTCASE(tivxInternalImage)
 TESTCASE(tivxInternalArray)
 TESTCASE(tivxInternalLUT)
 TESTCASE(tivxInternalMatrix)
+#if defined(A72) || defined(A53) || defined(PC)
+TESTCASE(tivxPosixObjects)
+#endif
 
 #endif
