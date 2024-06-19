@@ -638,6 +638,9 @@ static vx_status swapImage(const vx_image input, const vx_image output)
             tivx_obj_desc_memcpy(&addrs, &op_obj_desc->imagepatch_addr[i], (uint32_t)sizeof(addrs));
             tivx_obj_desc_memcpy(&op_obj_desc->imagepatch_addr[i], &ip_obj_desc->imagepatch_addr[i], (uint32_t)sizeof(op_obj_desc->imagepatch_addr[i]));
             tivx_obj_desc_memcpy(&ip_obj_desc->imagepatch_addr[i], &addrs, (uint32_t)sizeof(ip_obj_desc->imagepatch_addr[i]));
+            /* swap destructors even if they are generic (identical).
+               we do it for completeness and to ensure that in case 
+               there is later a need of unique destructors */
             destructor = output->base.destructor_callback;
             output->base.destructor_callback = input->base.destructor_callback;
             input->base.destructor_callback = destructor;
