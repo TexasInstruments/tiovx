@@ -95,11 +95,6 @@ static vx_status isPyramidCopyable(vx_reference input, vx_reference output)
         out_objd->format = in_objd->format;
         out_objd->height = in_objd->height;
         out_objd->width = in_objd->width;
-        /* Q: do we have to do anything for the sub-images?
-              elsewhere in the framework this is not done for pyramid
-              metadata, but what about the valid region?
-              it seems like an omission, but probably
-              beyond the scope at present...*/
     }
     return status;
 }
