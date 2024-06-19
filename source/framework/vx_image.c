@@ -649,7 +649,7 @@ static vx_status swapImage(const vx_image input, const vx_image output)
             ip_obj_desc->mem_size[i] = mem_size;
         }
         status = adjustMemoryPointer(input, offsets);
-        /* One's complement to swap the adresses offsets between input and output images */
+        /* One's complement to swap the addresses offsets between input and output images */
         for (i = 0; i < TIVX_IMAGE_MAX_PLANES; ++i)
         {
             offsets[i] = ~(offsets[i] - 1UL);
