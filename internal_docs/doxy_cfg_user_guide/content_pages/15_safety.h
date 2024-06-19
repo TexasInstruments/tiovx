@@ -291,9 +291,8 @@
      enumeration.  This allows an application to use the \ref vxRegisterEvent API to know when an error has occurred within the process
      callback of a node.
 
-     One limitation of this approach is that the exact error code is not provided, only an event which signals that an error has occurred.
-     At present, the suggested approach for determining any further information is to additionally register a control callback within the
-     node which can be queried by the application if an error has occurred.
+     If more diagnostic information from the node is needed, the suggested approach for determining any further information is to
+     additionally register a control callback within the node which can be queried by the application if an error has occurred.
 
  */
 
