@@ -51,6 +51,10 @@ static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output)
  */
 static vx_status isArrayCopyable(vx_array input, vx_array output)
 {
+    /* generic functions cannot be used here as the conditions are a bit different 
+       to the checks done in the tivxIsReferenceMetaFormatEqual function:
+     - capacity of the output has to be >= than the input
+     - in case of virtual object the input and output have to have the same size and different than 0 */    
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->base.obj_desc;
     tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->base.obj_desc;
