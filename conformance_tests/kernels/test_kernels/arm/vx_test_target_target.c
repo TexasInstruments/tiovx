@@ -141,6 +141,7 @@ __attribute__ ((aligned(TARGET_TEST_TASK_STACK_ALIGNMENT)))
 #endif
 static tivx_target_kernel_instance test_kernel = NULL;
 static tivx_obj_desc_t *test_obj_desc = NULL;
+tivx_obj_desc_t *g_obj_desc[TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST] = {NULL};
 
 typedef struct {
     vx_status (*funcPtr)(uint8_t);
@@ -1502,6 +1503,43 @@ static vx_status tivxBranchTargetNodeDescReleaseParam(uint8_t id)
     return status;
 }
 
+static vx_status tivxNegativeTestObjDescAllocAndDescQueueCreate(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint16_t *obj_desc_id = (uint16_t *)tivxMemAlloc(sizeof(uint16_t), TIVX_MEM_EXTERNAL);
+    int i, j;
+
+   /* Maxing out the OBJECT DESCRIPTORS */
+    for (i = 0; i < TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST; i++)
+    {
+        g_obj_desc[i] = (tivx_obj_desc_t *)ownObjDescAlloc((vx_enum)test_obj_desc->type, NULL);
+        if (NULL == g_obj_desc[i])
+        {
+            if ((vx_status)VX_FAILURE != ownObjDescQueueCreate(obj_desc_id))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Create a object descriptor queue\n");
+                status = (vx_status)VX_FAILURE;
+            }
+            break;
+        }
+    }
+ 
+    for (j = 0; j < i; j++)
+    {
+        if (NULL == g_obj_desc[j])
+        {
+            break;
+        }
+        ownObjDescFree((tivx_obj_desc_t**)&g_obj_desc[j]);
+    }
+
+    tivxMemFree((void *)obj_desc_id, sizeof(uint16_t), TIVX_MEM_EXTERNAL);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -1551,10 +1589,11 @@ FuncInfo arrOfFuncs[] = {
     #endif
     {tivxNegativeTestTargetNodeDescAcquireAllParameter, "", VX_SUCCESS},
     {tivxBranchTestTargetNodeDescAcquireParameter, "",VX_SUCCESS},
-    {tivxBranchTestTargetNodeDescAcquireParam,"",VX_SUCCESS},git push 
+    {tivxBranchTestTargetNodeDescAcquireParam,"",VX_SUCCESS},
     {tivxBranchTestTargetNodeDescReleaseAllParameter,"",VX_SUCCESS},
     {tivxBranchTargetNodeDescReleaseParameter,"",VX_SUCCESS},
-    {tivxBranchTargetNodeDescReleaseParam,"",VX_SUCCESS}
+    {tivxBranchTargetNodeDescReleaseParam,"",VX_SUCCESS},
+    {tivxNegativeTestObjDescAllocAndDescQueueCreate,"",VX_SUCCESS},
 };
 #endif /* FULL_CODE_COVERAGE */
 
