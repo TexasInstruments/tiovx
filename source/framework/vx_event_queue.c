@@ -78,6 +78,8 @@ vx_status ownEventQueueCreate(tivx_event_queue_t *event_q)
         status = tivxQueueCreate(&event_q->ready_queue,
                 TIVX_EVENT_QUEUE_MAX_SIZE, event_q->ready_queue_memory,
                 TIVX_QUEUE_FLAG_BLOCK_ON_GET);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1722- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM001 */
         if(status!=(vx_status)VX_SUCCESS)
         {
             /* void added as the status would be success
@@ -85,12 +87,16 @@ vx_status ownEventQueueCreate(tivx_event_queue_t *event_q)
              */
             (void)tivxQueueDelete(&event_q->free_queue);
         }
+#endif
     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1722- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM002 */
     if(status!=(vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to create queues\n");
     }
-    if(status==(vx_status)VX_SUCCESS)
+    else
+#endif
     {
         uint32_t i;
 
@@ -112,18 +118,26 @@ vx_status ownEventQueueDelete(tivx_event_queue_t *event_q)
 {
     event_q->enable = (vx_bool)vx_false_e;
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status1 = (vx_status)VX_SUCCESS;
 
     status = tivxQueueDelete(&event_q->free_queue);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1722- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM003 */
     if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete free_queue\n");
     }
+#endif
 
-    status = tivxQueueDelete(&event_q->ready_queue);
-    if(status != (vx_status)VX_SUCCESS)
+    status1 = tivxQueueDelete(&event_q->ready_queue);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1722- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM004 */
+    if(status1 != (vx_status)VX_SUCCESS)
     {
+        status = status1;
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete ready_queue\n");
     }
+#endif
 
     return status;
 }
@@ -307,10 +321,13 @@ vx_status vxWaitEventQueue(
                 event->app_value = (uint32_t)elem->param1;
                 event->event_info.user_event.user_event_parameter = (void*)elem->param2;
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1722- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM005 */
             else
             {
                 /* do nothing */
             }
+#endif
         }
 
         /* release index into free queue,

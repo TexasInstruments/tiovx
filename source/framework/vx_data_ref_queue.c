@@ -69,6 +69,7 @@ vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_refe
     vx_status status = (vx_status)VX_SUCCESS;
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM001 */
     if((data_ref_q == NULL) || (ref == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -128,6 +129,7 @@ vx_status ownDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_refer
     vx_status status = (vx_status)VX_SUCCESS;
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM002 */
     if((data_ref_q == NULL) || (ref == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -175,6 +177,7 @@ vx_status ownDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 t
     vx_status status = (vx_status)VX_SUCCESS;
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM003 */
     if(data_ref_q == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -195,6 +198,7 @@ vx_status ownDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_ui
     vx_status status = (vx_status)VX_SUCCESS;
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM004 */
     if((data_ref_q == NULL) || (count == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -256,29 +260,34 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
         if(ref->wait_done_ref_available_event != NULL)
         {
             status = tivxEventPost(ref->wait_done_ref_available_event);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM005 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to add post event\n");
             }
+#endif
         }
         if(ref->is_enable_send_ref_consumed_event != 0)
         {
             status = ownEventQueueAddEvent(&ref->base.context->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
                         (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM006 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
             }
+#endif
         }
     }
-#ifdef LDRA_UNTESTABLE_CODE
     else
     {
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
     }
-#endif
+
     return status;
 }
 
@@ -328,10 +337,13 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
 #endif
                 }
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM007 */
             if((vx_bool)vx_true_e == do_break)
             {
                 break;
             }
+#endif
         }
         if(status == (vx_status)VX_SUCCESS)
         {

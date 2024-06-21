@@ -193,6 +193,7 @@ static vx_reference ownCreateLutFromExemplar(
         sizeof(count)));
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM001 */
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {
@@ -219,6 +220,7 @@ static vx_reference ownCreateRemapFromExemplar(
         sizeof(dst_height)));
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM002 */
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {
@@ -243,6 +245,7 @@ static vx_reference ownCreateMatrixFromExemplar(
         sizeof(columns)));
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM003 */
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {
@@ -269,6 +272,7 @@ static vx_reference ownCreatePyramidFromExemplar(
     tivxCheckStatus(&status, vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_FORMAT, &format, sizeof(format)));
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM004 */
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {
@@ -293,6 +297,7 @@ static vx_reference ownCreateImageFromExemplar(
     tivxCheckStatus(&status, vxQueryImage(exemplar, (vx_enum)TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &stride_y_alignment, sizeof(stride_y_alignment)));
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM005 */
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {
@@ -319,6 +324,7 @@ static vx_reference ownCreateArrayFromExemplar(
     tivxCheckStatus(&status, vxQueryArray(exemplar, (vx_enum)VX_ARRAY_CAPACITY, &capacity, sizeof(capacity)));
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM006 */
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {
@@ -338,6 +344,7 @@ static vx_reference ownCreateScalarFromExemplar(
     tivxCheckStatus(&status, vxQueryScalar(exemplar, (vx_enum)VX_SCALAR_TYPE, &type, sizeof(type)));
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM007 */
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {
@@ -361,6 +368,7 @@ static vx_reference ownCreateDistributionFromExemplar(
     tivxCheckStatus(&status, vxQueryDistribution(exemplar, (vx_enum)VX_DISTRIBUTION_BINS, &num_bins, sizeof(num_bins)));
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM008 */
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {
@@ -384,6 +392,7 @@ static vx_reference ownCreateThresholdFromExemplar(
         sizeof(thr_type)));
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM009 */
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {
@@ -422,11 +431,13 @@ static vx_reference ownCreateObjectArrayFromExemplar(
 
     tivxCheckStatus(&status, vxQueryObjectArray(exemplar, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &count, sizeof(count)));
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM010 */
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {
         objarr_item_exemplar = vxGetObjectArrayItem(exemplar, 0);
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM011 */
         if(objarr_item_exemplar==NULL)
         {
             VX_PRINT(VX_ZONE_ERROR,"Invalid object array reference\n");
@@ -436,10 +447,13 @@ static vx_reference ownCreateObjectArrayFromExemplar(
         {
             objarr = vxCreateObjectArray(context, objarr_item_exemplar, count);
             status = vxReleaseReference(&objarr_item_exemplar);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM012 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to object item exemplar\n");
-            }    
+            }
+#endif
         }
     }
 
@@ -481,6 +495,7 @@ static vx_reference ownCreateUserDataObjectFromExemplar(
     tivxCheckStatus(&status, vxQueryUserDataObject(exemplar, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &size, sizeof(size)));
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM013 */
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {
@@ -506,6 +521,7 @@ static vx_reference ownCreateRawImageFromExemplar(
     tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &params.meta_height_after, sizeof(params.meta_height_after)));
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM014 */
     if ((vx_status)VX_SUCCESS == status)
 #endif
     {

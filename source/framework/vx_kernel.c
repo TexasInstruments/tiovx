@@ -58,10 +58,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
     {
         status = ownReleaseReferenceInt(vxCastRefFromKernelP(kernel),
                 (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, NULL);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1719- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UM001 */
         if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to destroy reference\n");
         }
+#endif
     }
     else
     {
@@ -440,12 +443,14 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                     {
                         /* for user kernel, add to HOST target by default */
                         status = tivxAddKernelTarget(kernel, TIVX_TARGET_HOST);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1719- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UM002 */
                         if((vx_status)VX_SUCCESS != status)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to add kernel to host target\n");
                             kernel = (vx_kernel)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
                         }
-
+#endif
                     }
                 }
             }

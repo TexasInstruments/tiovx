@@ -96,11 +96,14 @@ static vx_status ownGraphPipelineValidateRefsList(
                 {
                     status = vxSetMetaFormatFromReference(meta, graph_parameters_queue_param.refs_list[i]);
                 }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM001 */
                 else
                 {
                     status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "Meta Format is NULL\n");
                 }
+#endif
 
                 if ((vx_status)VX_SUCCESS == status)
                 {
@@ -114,37 +117,49 @@ static vx_status ownGraphPipelineValidateRefsList(
                         }
                     }
                 }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM002 */
                 else
                 {
                     break;
                 }
+#endif
 
                 if (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
                 {
                     status1 = ownReleaseMetaFormat(&meta);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM003 */
                     if((vx_status)VX_SUCCESS != status1)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Failed to release meta format object \n");
                         status = status1;
                     }
+#endif
                 }
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM004 */
             else
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid graph parameter ref list!\n");
             }
+#endif
         }
     }
 
     if (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta_base), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
     {
         status1 = ownReleaseMetaFormat(&meta_base);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM005 */
         if((vx_status)VX_SUCCESS != status1)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to release meta format object \n");
             status = status1;
         }
+#endif
     }
 
     return status;
@@ -864,8 +879,8 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
         {
             if(schedule_id!=total_num_schedule)
             {
-                /* for normal modes if all reqired graph schedules did not suceed
-                 * then this is a error condition as user has tried
+                /* for normal modes if all reqired graph schedules did not succeed
+                 * then this is an error condition as user has tried
                  * doing schedule more times than is supported
                  */
                 VX_PRINT(VX_ZONE_ERROR,"Free graph descriptor not available, cannot schedule graph\n");

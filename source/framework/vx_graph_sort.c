@@ -107,8 +107,9 @@ static inline vx_bool ownGraphSortStackPop(tivx_graph_sort_context *context, vx_
 void ownGraphTopologicalSort(tivx_graph_sort_context *context,
     vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle)
 {
-    uint16_t cur_node_idx, in_node_idx, out_node_idx, num_in_nodes, num_out_nodes, i;
+    uint16_t cur_node_idx, in_node_idx, out_node_idx, num_in_nodes, num_out_nodes;
     vx_node cur_node, next_node, prev_node;
+    vx_bool ret;
 
     if (num_nodes < TIVX_GRAPH_MAX_NODES)
     {
@@ -121,10 +122,14 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
             cur_node->incounter = (uint16_t)ownNodeGetNumInNodes(cur_node);
             if((cur_node->incounter==0U) && (cur_node->is_super_node == (vx_bool)vx_false_e))
             {
-                if((vx_bool)vx_true_e != ownGraphSortStackPush(context, cur_node))
+                ret = ownGraphSortStackPush(context, cur_node);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1717- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_SORT_UM001 */
+                if((vx_bool)vx_true_e != ret)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to push to stack \n");
                 }
+#endif
             }
         }
         cur_node_idx = 0;
@@ -156,14 +161,20 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
                     next_node->incounter--;
                     if(next_node->incounter==0U)
                     {
-                        if((vx_bool)vx_true_e != ownGraphSortStackPush(context, next_node))
+                        ret = ownGraphSortStackPush(context, next_node);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1717- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_SORT_UM002 */
+                        if((vx_bool)vx_true_e != ret)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to push to stack\n");
                         }
+#endif
                     }
                 }
             }
         }
+        #ifdef BUILD_BAM
+        uint16_t i;
         /* Add super nodes to the end of the list */
         for(i=0; i<num_nodes; i++)
         {
@@ -175,6 +186,7 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
                 cur_node_idx++;
             }
         }
+        #endif
         if( cur_node_idx == num_nodes)
         {
             uint32_t tmp_cur_node_idx;

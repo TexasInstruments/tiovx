@@ -238,11 +238,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
           )
         {
             status = g_module_table[idx].unpublish(context);
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1718- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MODULE_UM001 */
             if ((vx_status)VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR, "Unublish function for module %s failed\n", module);
+                VX_PRINT(VX_ZONE_ERROR, "Unpublish function for module %s failed\n", module);
             }
+#endif
             g_module_table[idx].is_loaded = (vx_bool)vx_false_e;
             break;
         }
