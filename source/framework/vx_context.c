@@ -791,11 +791,16 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 #endif
                 }
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM005 */
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
                 }
+#endif
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM006 */
             else
             {
                 if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
@@ -805,6 +810,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                     status = (vx_status)VX_FAILURE;
                 }
             }
+#endif
         }
         ownLogSetResourceUsedValue("TIVX_MAX_CTRL_CMD_OBJECTS", (uint16_t)obj_id);
     }
@@ -914,11 +920,16 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 #endif
                 }
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM007 */
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
                 }
+#endif
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM008 */
             else
             {
                 if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
@@ -928,6 +939,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                     status = (vx_status)VX_FAILURE;
                 }
             }
+#endif
         }
     }
 #ifdef LDRA_UNTESTABLE_CODE
@@ -1069,11 +1081,14 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                     }
                 }
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM009 */
             if(status!=(vx_status)VX_SUCCESS)
             {
                 /* some error context cannot be created */
                 context = NULL;
             }
+#endif
 
             if(status == (vx_status)VX_SUCCESS)
             {
@@ -1204,12 +1219,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                     if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_ERROR) )
                     {
                         status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_INTERNAL, NULL);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM010 */
                         if((vx_status)VX_SUCCESS != status1)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to destroy internal reference objects\n");
                             status = status1;
                             do_break = (vx_bool)vx_true_e;
                         }
+#endif
                     }
                     if((vx_status)VX_SUCCESS == status1)
                     {
