@@ -112,6 +112,7 @@ TESTCASE(tivxMapImage)
 TESTCASE(tivxObjDesc)
 TESTCASE(tivxSafeCasts)
 TESTCASE(tivxMemBoundary)
+TESTCASE(tivxQueue)
 #if !defined(SOC_AM62A)
 TESTCASE(tivxNestedUserNode)
 #endif
