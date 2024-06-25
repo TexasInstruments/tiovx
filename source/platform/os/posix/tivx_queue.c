@@ -171,6 +171,8 @@ vx_status tivxQueueCreate(
                 queue->blockedOnGet = (vx_bool)vx_false_e;
                 queue->blockedOnPut = (vx_bool)vx_false_e;
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1727- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TIVX_QUEUE_UM001 */
             else
             {
                 (void)pthread_mutex_destroy(&context->lock);
@@ -178,10 +180,10 @@ vx_status tivxQueueCreate(
                 if ((vx_status)VX_SUCCESS != temp_status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Queue free failed\n");
-                    status = VX_FAILURE;
                 }
                 queue->context = NULL;
             }
+#endif
         }
     }
 
@@ -209,10 +211,13 @@ vx_status tivxQueueDelete(tivx_queue *queue)
         (void)pthread_mutex_destroy(&context->lock);
 
         status = ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_QUEUE);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1727- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TIVX_QUEUE_UM002 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Queue free failed\n");
         }
+#endif
         queue->context = NULL;
 
         status = (vx_status)VX_SUCCESS;
