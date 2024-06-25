@@ -171,10 +171,13 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
             else
             {
                 status = ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_TASK);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM001 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Task free failed\n");
                 }
+#endif
             }
         }
     }
@@ -202,10 +205,13 @@ vx_status tivxTaskDelete(tivx_task *task)
         (void)pthread_join(context->hndl, &ret_val);
 
         status = ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_TASK);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM002 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Task free failed\n");
         }
+#endif
 
         task->tsk_handle = NULL;
     }

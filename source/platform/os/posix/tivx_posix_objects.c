@@ -242,11 +242,14 @@ vx_status ownPosixObjectInit(void)
                     (uint8_t *)g_tivx_posix_objects.mutex, g_tivx_posix_objects.isMutexUse,
                     TIVX_MUTEX_MAX_OBJECTS, (uint32_t)sizeof(tivx_mutex_t), "TIVX_MUTEX_MAX_OBJECTS");
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM001 */
     if (NULL == g_tivx_objects_lock)
     {
         status = (vx_status)VX_FAILURE;
         VX_PRINT(VX_ZONE_ERROR, "Error creating g_tivx_objects_lock\n");
     }
+#endif
 
     return status;
 }
