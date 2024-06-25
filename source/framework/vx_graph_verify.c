@@ -516,8 +516,11 @@ static vx_status ownGraphInitVirtualNode(
                                 }
                             }
                             break;
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM007 */
                         default:
                             break;
+#endif
                     }
                 }
 
@@ -1216,15 +1219,21 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
 
                 status = ownObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM008 */
             else
             {
                 status = (vx_status)VX_FAILURE;
             }
+#endif
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM009 */
             if(status!=(vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unable to prime data ref queue\n");
                 break;
             }
+#endif
         }
     }
     for(i=0; i<graph->num_delay_data_ref_q; i++)
@@ -1242,14 +1251,20 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
 
                 status = ownObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM010 */
             else
             {
                 status = (vx_status)VX_FAILURE;
             }
+#endif
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM011 */
             if(status!=(vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unable to prime delay data ref queue\n");
             }
+#endif
         }
         else
         {
@@ -1264,14 +1279,20 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
 
                 status = ownObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM012 */
             else
             {
                 status = (vx_status)VX_FAILURE;
             }
+#endif
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM013 */
             if(status!=(vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unable to prime delay data ref queue\n");
             }
+#endif
         }
     }
     return status;
@@ -1341,11 +1362,14 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
                         graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].data_ref_queue =
                             tivxDataRefQueueCreate(graph, &data_ref_create_prms);
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM014 */
                         if(graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].data_ref_queue == NULL)
                         {
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
                             VX_PRINT(VX_ZONE_ERROR,"Unable to allocate data ref queue for delay \n");
                         }
+#endif
                         if(status == (vx_status)VX_SUCCESS)
                         {
                             delay_data_ref_q_list[delay_slot_index] = graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].data_ref_queue;
@@ -1370,6 +1394,8 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
             }
         }
     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM015 */
     else
     {
         vx_reference node_ref;
@@ -1377,6 +1403,7 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR,"Graph parameter of node %s at index %d is NULL \n", node_ref->name, idx);
     }
+#endif
 
     return status;
 }
@@ -1424,11 +1451,14 @@ static vx_status ownGraphCreateIntermediateDataReferenceQueues(vx_graph graph)
                     status = ownGraphAllocateDataObject(graph->data_ref_q_list[i].node, graph->data_ref_q_list[i].index,
                             graph->data_ref_q_list[i].refs_list[buf_id]);
                 }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM016 */
                 else
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "Invalid reference in refs_list\n");
                 }
+#endif
                 if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Unable to allocate data object memory \n");
@@ -1492,11 +1522,14 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
                         status = ownGraphAllocateDataObject(graph->parameters[i].node, graph->parameters[i].index,
                                 graph->parameters[i].refs_list[buf_id]);
                     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM017 */
                     else
                     {
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         VX_PRINT(VX_ZONE_ERROR, "Invalid reference in refs_list\n");
                     }
+#endif
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate data object memory \n");
@@ -1532,19 +1565,28 @@ static vx_status ownGraphUpdateImageRefAfterKernetInit(vx_image exemplar, vx_ima
         {
             tivx_obj_desc_memcpy(&img_ref_obj_desc->valid_roi, &img_exemplar_obj_desc->valid_roi, (uint32_t)sizeof(img_exemplar_obj_desc->valid_roi));
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM018 */
         else
         {
             status = (vx_status)VX_FAILURE;
         }
+#endif
     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM019 */
     else
     {
         status = (vx_status)VX_FAILURE;
     }
+#endif
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM020 */
     if(status!=(vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to update image meta data after kernel init\n");
     }
+#endif
     return status;
 }
 
@@ -1563,10 +1605,13 @@ static vx_status ownGraphUpdatePyramidRefAfterKernetInit(vx_pyramid exemplar, vx
             tivxCheckStatus(&status, ownGraphUpdateImageRefAfterKernetInit(exemplar->img[i], ref->img[i]));
         }
     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM021 */
     if(status!=(vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to update pyramid meta data after kernel init\n");
     }
+#endif
     return status;
 }
 
@@ -1601,10 +1646,13 @@ static vx_status ownGraphUpdateObjArrRefAfterKernetInit(vx_object_array exemplar
             }
         }
     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM022 */
     if(status!=(vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to update pyramid meta data after kernel init\n");
     }
+#endif
     return status;
 }
 
@@ -1655,10 +1703,13 @@ static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_reference exemplar, vx_
     {
         /* do nothing */
     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM023 */
     if(status!=(vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to update data ref queue data refs meta data after kernel init\n");
     }
+#endif
 
     return status;
 }
@@ -1771,11 +1822,14 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
                     break;
                 }
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM024 */
             else
             {
                 status = (vx_status)VX_ERROR_INVALID_VALUE;
                 VX_PRINT(VX_ZONE_ERROR,"Supplied parameter has an incorrect value\n");
             }
+#endif
         }
     }
 
@@ -1811,11 +1865,14 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
                 {
                     vx_reference ref;
                     ref = tivxCreateReferenceFromExemplar(graph->base.context, exemplar);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM025 */
                     if(ref==NULL)
                     {
                         status = (vx_status)VX_ERROR_NO_RESOURCES;
                         VX_PRINT(VX_ZONE_ERROR,"Unable to create references\n");
                     }
+#endif
                     if(status==(vx_status)VX_SUCCESS)
                     {
                         if(is_replicated != 0)
@@ -1832,19 +1889,25 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
                                 vx_object_array object_array = vxCastRefAsObjectArray(ref, NULL);
                                 ref = object_array->ref[0];
                             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM026 */
                             else
                             {
                                 VX_PRINT(VX_ZONE_ERROR,"Invalid reference type for replicated parameter\n");
                                 status = (vx_status)VX_FAILURE;
                                 ref = NULL;
                             }
+#endif
                         }
                         graph->data_ref_q_list[graph->num_data_ref_q].refs_list[buf_id] = ref;
                     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM027 */
                     if(status!=(vx_status)VX_SUCCESS)
                     {
                         break;
                     }
+#endif
                 }
                 if(status==(vx_status)VX_SUCCESS)
                 {
