@@ -169,7 +169,10 @@ static vx_status ownDestructRawImage(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
     uint16_t exp_idx;
+/* Not used in current TIOVX spec, can be implemented and improved if/when it's added */
+#if 0
     tivx_raw_image raw_image = (tivx_raw_image)ref;
+#endif
 
     if(ref->type == TIVX_TYPE_RAW_IMAGE)
     {
@@ -204,6 +207,8 @@ static vx_status ownDestructRawImage(vx_reference ref)
 #endif
             }
         }
+/* Not used in current TIOVX spec, can be implemented and improved if/when it's added */
+#if 0
         if ((vx_status)VX_SUCCESS == status)
         {
             if (NULL != raw_image->parent)
@@ -215,7 +220,9 @@ static vx_status ownDestructRawImage(vx_reference ref)
                 }
             }
         }
+#endif
     }
+
     return status;
 }
 
