@@ -187,11 +187,14 @@ static vx_status ownDestructRawImage(vx_reference ref)
                     if(obj_desc->mem_ptr[exp_idx].host_ptr != (uint64_t)0)
                     {
                         status = tivxMemBufferFree(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx]);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1730- LDRA Uncovered Id: TIOVX_CODE_RAW_IMAGE_UM001 */
                         if ((vx_status)VX_SUCCESS != status)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "Raw Image buffer free failed!\n");
                             break;
                         }
+#endif
                     }
                 }
             }
@@ -370,17 +373,23 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                 }
             }
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1730- LDRA Uncovered Id: TIOVX_CODE_RAW_IMAGE_UM002 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "object descriptor is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
+#endif
     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1730- LDRA Uncovered Id: TIOVX_CODE_RAW_IMAGE_UM003 */
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "reference type is not a raw image\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
+#endif
 
     if((vx_status)VX_SUCCESS == status)
     {
@@ -507,11 +516,7 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
 
                 if(obj_desc == NULL)
                 {
-                    status = tivxReleaseRawImage(&raw_image);
-                    if((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "Releases reference to raw image\n");
-                    }
+                    (void)tivxReleaseRawImage(&raw_image);
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate raw image object descriptor\n");
                     raw_image = (tivx_raw_image)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
