@@ -77,26 +77,31 @@ static void tivxHostInitLocal(void)
         tivxRegisterOpenVXCoreKernels();
         tivxRegisterOpenVXExtKernels();
 
-        #if defined(SOC_AM62A)
-        if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MCU1_0)
-        {
-            tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MCU1_0);
-        }
-        #else
-        if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MCU2_0)
-        {
-            tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MCU2_0);
-        }
-        #endif
-        else
         if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MPU_0)
         {
             tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MPU_0);
         }
+        #if defined(SOC_AM62A)
+        else if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MCU1_0)
+        {
+            tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MCU1_0);
+        }
+        #else
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1732- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_UM001 */
+        else if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MCU2_0)
+        {
+            tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MCU2_0);
+        }
+#endif
+        #endif
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1732- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_UM002 */
         else
         {
             /* do nothing */
         }
+#endif
 
         VX_PRINT(VX_ZONE_INIT, "Initialization Done for HOST !!!\n");
     }

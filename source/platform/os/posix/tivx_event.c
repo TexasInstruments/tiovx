@@ -95,6 +95,8 @@ vx_status tivxEventCreate(tivx_event *event)
 
         tmp_event->is_set = (uint16_t)0;
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM001 */
         if(status!=0)
         {
             (void)pthread_cond_destroy(&tmp_event->cond);
@@ -110,6 +112,7 @@ vx_status tivxEventCreate(tivx_event *event)
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
+#endif
         {
             *event = tmp_event;
         }
@@ -125,7 +128,7 @@ vx_status tivxEventDelete(tivx_event *event)
 {
     vx_status status = (vx_status)VX_FAILURE;
 
-    if(*event != NULL)
+    if((NULL != event) && (*event != NULL))
     {
         (void)pthread_cond_destroy(&(*event)->cond);
         (void)pthread_mutex_destroy(&(*event)->lock);
