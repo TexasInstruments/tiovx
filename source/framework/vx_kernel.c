@@ -370,13 +370,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
 }
 
 VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
-                             const vx_char name[VX_MAX_KERNEL_NAME],
+                             const vx_char *name,
                              vx_enum enumeration,
                              vx_kernel_f func_ptr,
                              vx_uint32 numParams,
                              vx_kernel_validate_f validate,
-                             vx_kernel_initialize_f initialize,
-                             vx_kernel_deinitialize_f deinitialize)
+                             vx_kernel_initialize_f init,
+                             vx_kernel_deinitialize_f deinit)
 {
     vx_kernel kernel = NULL;
     vx_reference ref = NULL;
@@ -408,8 +408,8 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                     kernel->enumeration = enumeration;
                     kernel->function = func_ptr;
                     kernel->validate = validate;
-                    kernel->initialize = initialize;
-                    kernel->deinitialize = deinitialize;
+                    kernel->initialize = init;
+                    kernel->deinitialize = deinit;
                     kernel->num_targets = 0;
                     kernel->num_pipeup_bufs = 1;
                     kernel->pipeup_buf_idx  = 0;

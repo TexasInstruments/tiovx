@@ -819,7 +819,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel);
  * \retval * Kernel added to OpenVX.
  */
 VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
-                             const vx_char name[VX_MAX_KERNEL_NAME],
+                             const vx_char *name,
                              vx_enum enumeration,
                              vx_kernel_f func_ptr,
                              vx_uint32 numParams,
