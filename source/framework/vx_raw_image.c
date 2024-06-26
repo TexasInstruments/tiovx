@@ -497,7 +497,6 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
 {
     tivx_raw_image raw_image = NULL;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
