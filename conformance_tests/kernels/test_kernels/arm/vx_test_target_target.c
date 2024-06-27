@@ -1605,6 +1605,75 @@ static vx_status tivxNegativeTestObjDescAllocAndDescQueueCreate(uint8_t id)
     return status;
 }
 
+#if defined(A72) || defined(A53)
+static vx_status tivxTestTargetPlatformGetEnv(uint8_t id)
+{
+    extern char *tivxPlatformGetEnv(char *env_var);
+
+    vx_status status = (vx_status)VX_SUCCESS;
+    const char *env1 = "/test_data/";
+    const char *env2 = " ";
+
+    if(env1 != tivxPlatformGetEnv("VX_TEST_DATA_PATH"))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to get valid test data path\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(env2 != tivxPlatformGetEnv("INVALID_PATH"))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid environment variable\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+#endif
+
+#ifndef PC
+static vx_status tivxNegativeTestTargetPlatformDeleteTargetId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivxPlatformDeleteTargetId(-1);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetPlatformCreateTargetId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_enum cpu_id = tivxGetSelfCpuId();
+    vx_enum target_id = 0;
+
+    switch (cpu_id)
+    {
+        case 0:
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2;
+            break;
+        case 2:
+            target_id = (vx_enum)TIVX_TARGET_ID_MCU2_0;
+            break;
+        case 4:
+            target_id = (vx_enum)TIVX_TARGET_ID_MPU_0;
+            break;
+    }
+
+    /* To fail ownTargetCreate() inside  tivxPlatformCreateTargetId API */
+    tivxPlatformCreateTargetId(target_id, 0u, "TIVX_CPU0", 8U);
+
+    /* To fail ownTargetGetCpuId(target_id) == tivxGetSelfCpuId() check*/
+    tivxPlatformCreateTargetId((vx_enum)INVALID_ARG, 0u, "INVALID", 8U);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+#endif
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -1662,6 +1731,14 @@ FuncInfo arrOfFuncs[] = {
     {tivxBranchTargetNodeDescReleaseParameter,"",VX_SUCCESS},
     {tivxBranchTargetNodeDescReleaseParam,"",VX_SUCCESS},
     {tivxNegativeTestObjDescAllocAndDescQueueCreate,"",VX_SUCCESS},
+
+    #if defined(A72) || defined(A53)
+    {tivxTestTargetPlatformGetEnv, "",VX_SUCCESS},
+    #endif
+    #ifndef PC
+    {tivxNegativeTestTargetPlatformDeleteTargetId, "", VX_SUCCESS},
+    {tivxNegativeTestTargetPlatformCreateTargetId, "", VX_SUCCESS}
+    #endif
 };
 #endif /* FULL_CODE_COVERAGE */
 
