@@ -66,6 +66,7 @@
 #include <TI/tivx.h>
 #include <TI/tivx_debug.h>
 #include <VX/vx_types.h>
+#include <VX/vx_khr_safe_casts.h>
 #include <tivx_kernels_host_utils.h>
 
 vx_status tivxPublishKernels(vx_context context, const Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels)
@@ -177,7 +178,7 @@ vx_status tivxKernelValidateOutputSize(vx_uint32 expectedWidth, vx_uint32 output
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((vx_bool)vx_false_e == tivxIsReferenceVirtual((vx_reference)outputImage))
+    if ((vx_bool)vx_false_e == tivxIsReferenceVirtual(vxCastRefFromImage(outputImage)))
     {
         /* Check for frame sizes */
         if ((expectedWidth != outputWidth) || (expectedHeight != outputHeight))
