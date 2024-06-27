@@ -2102,22 +2102,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                 VX_PRINT(VX_ZONE_ERROR, "Parameter %d is NULL!\n", p);
                 status = (vx_status)VX_FAILURE;
             }
-            if ((vx_reference)NULL != ref)
-            {
-                if((vx_status)VX_SUCCESS != vxReleaseReference(&ref))
-                {
-                    status = (vx_status)VX_FAILURE;
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference\n");
-                }
-            }
-            if ((vx_parameter)NULL !=param)
-            {
-                if((vx_status)VX_SUCCESS != vxReleaseParameter(&param))
-                {
-                    status = (vx_status)VX_FAILURE;
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to parameter\n");
-                }
-            }
             if(status != (vx_status)VX_SUCCESS)
             {
                 break;
