@@ -534,7 +534,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                     if(status!=(vx_status)VX_SUCCESS)
                     {
                         vx_status tmp_status;
-                        ownReleaseRefFromDelay(delay, i);
+                        (void)ownReleaseRefFromDelay(delay, i);
                         tmp_status = vxReleaseDelay(&delay);
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM015 */
