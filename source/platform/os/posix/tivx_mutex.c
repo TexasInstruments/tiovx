@@ -82,8 +82,9 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
         status = (vx_status)temp_status;
         temp_status = (uint32_t)status | (uint32_t)pthread_mutex_init(&tmp_mutex->lock, &mutex_attr);
         status = (vx_status)temp_status;
-       
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1742- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MUTEX_UM001 */
         if(status!=0)
         {
             (void)pthread_mutex_destroy(&tmp_mutex->lock);
@@ -97,6 +98,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
+#endif
         {
             *mutex = tmp_mutex;
         }
@@ -128,11 +130,14 @@ vx_status tivxMutexLock(tivx_mutex mutex)
     if(mutex != NULL)
     {
         status = pthread_mutex_lock(&mutex->lock);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1742- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MUTEX_UM002 */
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "Mutex lock failed\n");
             status = (vx_status)VX_FAILURE;
         }
+#endif
     }
 
     return (status);
@@ -145,11 +150,14 @@ vx_status tivxMutexUnlock(tivx_mutex mutex)
     if(mutex != NULL)
     {
         status = pthread_mutex_unlock(&mutex->lock);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1742- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MUTEX_UM003 */
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "Mutex unlock failed\n");
             status = (vx_status)VX_FAILURE;
         }
+#endif
     }
 
     return (status);
