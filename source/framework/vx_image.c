@@ -277,10 +277,13 @@ static vx_status ownDestructImage(vx_reference ref)
         if (NULL != image->parent)
         {
             status = ownReleaseReferenceInt(vxCastRefFromImageP(&image->parent), (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_INTERNAL, NULL);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM009 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Image parent object release failed!\n");
             }
+#endif
         }
     }
     return status;
@@ -1293,10 +1296,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch failed\n");
-                    if((vx_status)VX_SUCCESS != vxReleaseImage(&image))
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to image object\n");
-                    }
+                    (void)vxReleaseImage(&image);
                     image = (vx_image)ownGetErrorObject(context, (vx_status)VX_FAILURE);
                     break;
                 }
@@ -2366,12 +2366,15 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
 
                             status = ownSwapSubImageCheckRemap(si_obj_desc, subimage, (void**)ptrs);
                         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM010 */
                         else
                         {
                             /* Should not hit this condition */
                             VX_PRINT(VX_ZONE_ERROR, "Invalid image create type\n");
                             status = (vx_status)VX_FAILURE;
                         }
+#endif
                     }
 
                     /* This is a valid image and thus adding to the list and incrementing k */
