@@ -1246,18 +1246,24 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                         if ((NULL != ref) && (ref->external_count > 0U) )
                         {
                             status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_EXTERNAL, NULL);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM011 */
                             if((vx_status)VX_SUCCESS != status1)
                             {
                                 VX_PRINT(VX_ZONE_ERROR,"Failed to destroy external reference objects\n");
                                 status = status1;
                                 do_break = (vx_bool)vx_true_e;
                             }
+#endif
                         }
                     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM012 */
                     if((vx_bool)vx_true_e == do_break)
                     {
                         break;
                     }
+#endif
                 }
 
                 /* By now, all external and internal references should be removed */
@@ -1272,18 +1278,24 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     #endif
 
                 status1 = ownContextDeleteCmdObj(context);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM013 */
                 if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"ownContextDeleteCmdObj() failed\n");
                     status = status1;
                 }
+#endif
 
                 status1 = ownEventQueueDelete(&context->event_queue);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM014 */
                 if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to delete event queue\n");
                     status = status1;
                 }
+#endif
 
                 ownLogResourceFree("TIVX_CONTEXT_MAX_OBJECTS", 1);
 
