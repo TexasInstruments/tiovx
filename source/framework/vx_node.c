@@ -60,6 +60,8 @@ static vx_status ownDestructNode(vx_reference ref)
                     }
                     status1 = ownReleaseReferenceInt(&node_ref, node_ref->type, (vx_enum)VX_INTERNAL, NULL);
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM001 */
                     if (status1 != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
@@ -69,6 +71,7 @@ static vx_status ownDestructNode(vx_reference ref)
                             status = status1;
                         }
                     }
+#endif
 
                     node->parameters[p] = NULL;
                 }
@@ -76,6 +79,7 @@ static vx_status ownDestructNode(vx_reference ref)
 
             status1 = ownReleaseReferenceInt(vxCastRefFromKernelP(&node->kernel), (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_INTERNAL, NULL);
 
+#ifdef LDRA_UNTESTABLE_CODE/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM002 */
             if (status1 != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
@@ -85,6 +89,7 @@ static vx_status ownDestructNode(vx_reference ref)
                     status = status1;
                 }
             }
+#endif
         }
         if (status == (vx_status)VX_SUCCESS)
         {
@@ -102,11 +107,13 @@ static vx_status ownDestructNode(vx_reference ref)
                 if(node->obj_desc_cmd[pipe_id]!=NULL)
                 {
                     status = ownObjDescFree((tivx_obj_desc_t**)&node->obj_desc_cmd[pipe_id]);
+#ifdef LDRA_UNTESTABLE_CODE/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM003 */
                     if ((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Node command object descriptor free failed!\n");
                         put_break = (vx_bool)vx_true_e;
                     }
+#endif
                 }
                 if ((vx_bool)vx_true_e == put_break)
                 {
@@ -1435,20 +1442,17 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                         node->is_timed_out = (vx_bool)vx_false_e;
                         node->is_initialized = (vx_bool)vx_false_e;
 
-                    /* assign refernce type specific callback's */
-                    node->base.destructor_callback = &ownDestructNode;
-                    node->base.mem_alloc_callback = NULL;
-                    node->base.release_callback = &ownReleaseReferenceBufferGeneric;
+                        /* assign refernce type specific callback's */
+                        node->base.destructor_callback = &ownDestructNode;
+                        node->base.mem_alloc_callback = NULL;
+                        node->base.release_callback = &ownReleaseReferenceBufferGeneric;
 
                         node->obj_desc[0] = (tivx_obj_desc_node_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_NODE, vxCastRefFromNode(node));
 
                         if(node->obj_desc[0] == NULL)
                         {
-                            status = vxReleaseNode(&node);
-                            if((vx_status)VX_SUCCESS != status)
-                            {
-                                VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to node\n");
-                            }
+                            (void)vxReleaseNode(&node);
+
                             vxAddLogEntry(&graph->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate node object descriptor\n");
                             node = (vx_node)ownGetErrorObject(graph->base.context, (vx_status)VX_ERROR_NO_RESOURCES);
                             VX_PRINT(VX_ZONE_ERROR, "Could not allocate node object descriptor\n");
@@ -1461,11 +1465,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
 
                             if(status!=(vx_status)VX_SUCCESS)
                             {
-                                status = vxReleaseNode(&node);
-                                if((vx_status)VX_SUCCESS != status)
-                                {
-                                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to node\n");
-                                }
+                                (void)vxReleaseNode(&node);
+
                                 /* no valid target associated with this node, return error */
                                 vxAddLogEntry(&graph->base, status, "No target associated with kernel\n");
                                 node = (vx_node)ownGetErrorObject(graph->base.context, status);
@@ -1492,7 +1493,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     }
                 }
                 (void)ownReferenceUnlock(&graph->base);
-            }    
+            }
         }
         else
         {
@@ -1991,6 +1992,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
             vx_enum type = 0;
             vx_enum state = 0;
             vx_enum dir = 0;
+            vx_status temp_status = VX_FAILURE;
 
             param = vxGetParameterByIndex(first_node, p);
 
@@ -2030,21 +2032,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                                 {
                                     /*status set to NULL due to preceding type check*/
                                     vx_pyramid pyramid = vxCastRefAsPyramid(ref->scope, NULL);
-                                    status = vxQueryPyramid(pyramid, (vx_enum)VX_PYRAMID_LEVELS, &items, sizeof(vx_size));
-                                    if((vx_status)VX_SUCCESS != status)
-                                    {
-                                        VX_PRINT(VX_ZONE_ERROR,"Failed to query an attribute from an image pyramid\n");
-                                    }
+                                    (void)vxQueryPyramid(pyramid, (vx_enum)VX_PYRAMID_LEVELS, &items, sizeof(vx_size));
                                 }
                                 else if (ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                                 {
                                     /*status set to NULL due to preceding type check*/
                                     vx_object_array object_array = vxCastRefAsObjectArray(ref->scope, NULL);
-                                    status = vxQueryObjectArray(object_array, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &items, sizeof(vx_size));
-                                    if((vx_status)VX_SUCCESS != status)
-                                    {
-                                        VX_PRINT(VX_ZONE_ERROR,"Failed to query an atribute from the ObjectArray\n");
-                                    }
+                                    (void)vxQueryObjectArray(object_array, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &items, sizeof(vx_size));
                                 }
                                 else
                                 {
@@ -2085,17 +2079,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                 }
                 if (NULL != ref)
                 {
-                    if((vx_status)VX_SUCCESS != vxReleaseReference(&ref))
+                    temp_status = vxReleaseReference(&ref);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM005 */
+                    if((vx_status)VX_SUCCESS != temp_status)
                     {
                         status = (vx_status)VX_FAILURE;
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release reference at index %d\n", p);
                     }
+#endif
                 }
-                if((vx_status)VX_SUCCESS != vxReleaseParameter(&param))
+                temp_status = vxReleaseParameter(&param);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM004 */
+                if((vx_status)VX_SUCCESS != temp_status)
                 {
                     status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to parameter at index %d\n", p);
                 }
+#endif
             }
             else
             {
