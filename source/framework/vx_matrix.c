@@ -226,11 +226,8 @@ VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                     (void)ownDestructReferenceGeneric(&matrix->base);
 
                     /* Release matrix */
-                    status = vxReleaseMatrix(&matrix);
-                    if((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to matrix object\n");
-                    }
+                    (void)vxReleaseMatrix(&matrix);
+
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate matrix object descriptor\n");
                     matrix = (vx_matrix)ownGetErrorObject(
