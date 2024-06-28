@@ -132,11 +132,7 @@ vx_status tivxEventDelete(tivx_event *event)
     {
         (void)pthread_cond_destroy(&(*event)->cond);
         (void)pthread_mutex_destroy(&(*event)->lock);
-        status = ownPosixObjectFree((uint8_t *)(*event), (vx_enum)TIVX_POSIX_TYPE_EVENT);
-        if ((vx_status)VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Event free failed\n");
-        }
+        (void)ownPosixObjectFree((uint8_t *)(*event), (vx_enum)TIVX_POSIX_TYPE_EVENT);
         *event = NULL;
         status = (vx_status)VX_SUCCESS;
     }

@@ -113,11 +113,7 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
     if(*mutex != NULL)
     {
         (void)pthread_mutex_destroy(&(*mutex)->lock);
-        status = ownPosixObjectFree((uint8_t *)(*mutex), (vx_enum)TIVX_POSIX_TYPE_MUTEX);
-        if ((vx_status)VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Mutex free failed\n");
-        }
+        (void)ownPosixObjectFree((uint8_t *)(*mutex), (vx_enum)TIVX_POSIX_TYPE_MUTEX);
         *mutex = NULL;
         status = (vx_status)VX_SUCCESS;
     }
