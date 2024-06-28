@@ -407,11 +407,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                     /* wait for "ref available for dequeue" event */
                     status = ownDataRefQueueWaitDoneRef(data_ref_q,
                             graph->timeout_val);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM006 */
                     if(status!=(vx_status)VX_SUCCESS)
                     {
                         /* some error in waiting for event, break loop with error */
                         exit_loop = (vx_bool)vx_true_e;
                     }
+#endif
                 }
             } while(exit_loop == (vx_bool)vx_false_e);
             if(status==(vx_status)VX_SUCCESS)
@@ -444,10 +447,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                 {
                     refs[ref_id] = ref->scope;
                 }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM007 */
                 else
                 {
                     /* do nothing */
                 }
+#endif
 
                 /* If the ref type doesn't match graph parameter type, throw an error */
                 if (refs[ref_id]->type != graph->parameters[graph_parameter_index].type)
@@ -457,12 +463,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM008 */
             else
             {
                 /* some error in dequeue, dont try to dequeue further,
                  * break from loop with error */
                 break;
             }
+#endif
         }
         *num_refs = ref_id;
     }
