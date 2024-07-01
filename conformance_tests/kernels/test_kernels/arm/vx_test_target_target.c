@@ -76,6 +76,7 @@
 #include <tivx_obj_desc_queue.h>
 #include <tivx_target_kernel_instance.h>
 #include <tivx_target.h>
+#include <utils/mem/include/app_mem.h>
 
 #ifndef PC
 #include <tivx_platform_psdk.h>
@@ -84,7 +85,6 @@
 
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
 #include <utils/rtos/include/app_rtos.h>
-#include <utils/mem/include/app_mem.h>
 #if defined(MCU_PLUS_SDK)
 #include <app_rtos_mcu_plus_priv.h>
 #else
@@ -103,6 +103,8 @@
 #define APP_IPC_HW_SPIN_LOCK_MAX        (256u)
 #define INVALID_TARGET "invalid"
 #define  TASK_IS_NOT_TERMINATED 0u
+
+#define INVALID_MEM_REGION    APP_MEM_HEAP_MAX + 1
 
 static tivx_target_kernel vx_test_target_target_kernel = NULL;
 
@@ -3221,6 +3223,267 @@ static vx_status tivxTestQueueCreate(uint8_t id)
     return status;
 }
 
+static vx_status tivxTestEnableLatch(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivxEnableL1DandL2CacheWb();
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestMemResetScratchHeap(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_enum mheap_region[] = {TIVX_MEM_INTERNAL_L2,
+                               TIVX_MEM_EXTERNAL_SCRATCH,TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE};
+    uint8_t i, max_region;
+    max_region = sizeof(mheap_region)/sizeof(mheap_region[0]);
+    for(i=0; i < max_region; i++)
+    {
+        if(vx_true_e == tivxMemRegionQuery(mheap_region[i]))
+        {
+            if(VX_SUCCESS != tivxMemResetScratchHeap(mheap_region[i]))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is not supported tivxMemResetScratchHeap\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+        }
+        else
+        {
+            if(VX_FAILURE != tivxMemResetScratchHeap(mheap_region[i]))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is enabled for tivxMemResetScratchHeap\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+        }
+    }
+    /*To hit else (negative) region of tivxMemResetScratchHeap*/
+    if(VX_FAILURE != tivxMemResetScratchHeap(TIVX_MEM_EXTERNAL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"TIVX_MEM_EXTERNAL is supported for tivxMemResetScratchHeap\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestMemoryHeapRegions(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_enum mheap_region[] = {TIVX_MEM_EXTERNAL,TIVX_MEM_INTERNAL_L3, TIVX_MEM_INTERNAL_L2, TIVX_MEM_INTERNAL_L1,
+                               TIVX_MEM_EXTERNAL_SCRATCH,TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE,
+                               TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE,TIVX_MEM_EXTERNAL_CACHEABLE_WT,INVALID_MEM_REGION};
+
+    tivx_shared_mem_ptr_t tsmp[1];
+    tivx_shared_mem_ptr_t *mem_ptr = &tsmp[0];
+    uint32_t size = 8U, i, max_region;
+    void *ptr;
+    tivx_mem_stats stat[1];
+    tivx_mem_stats *stats = &stat[0];
+    max_region = sizeof(mheap_region)/sizeof(mheap_region[0]);
+
+    for(i=0; i < max_region; i++)
+    {
+        mem_ptr->mem_heap_region= mheap_region[i];
+
+        tivxMemStats(stats, mheap_region[i]);
+
+        if(vx_true_e == tivxMemRegionQuery(mheap_region[i]))
+        {
+            if(VX_SUCCESS != tivxMemBufferAlloc(mem_ptr, size, mheap_region[i]))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is disabled for tivxMemBufferAlloc\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+            if(0 == tivxMemHost2SharedPtr(mem_ptr->host_ptr, mheap_region[i]))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is disabled for tivxMemHost2SharedPtr\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+            if(0 == tivxMemShared2PhysPtr(mem_ptr->shared_ptr, mheap_region[i]))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is disabled for tivxMemShared2PhysPtr\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+            ptr= tivxMemAlloc(size, mheap_region[i]);
+            if(ptr == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is disabled for tivxMemAlloc\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+            if(VX_SUCCESS !=tivxMemFree(ptr,size, mheap_region[i]))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is disabled for tivxMemFree\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+            if(VX_SUCCESS != tivxMemBufferFree(mem_ptr, size))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is disabled for tivxMemBufferFree\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+        }
+        else
+        {
+            if(VX_SUCCESS == tivxMemBufferAlloc(mem_ptr, size, mheap_region[i]))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is enabled for tivxMemBufferAlloc\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+            if(0 != tivxMemHost2SharedPtr(0, mheap_region[i]))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is disabled for tivxMemHost2SharedPtr\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+            if(0 != tivxMemShared2PhysPtr(0, mheap_region[i]))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is disabled for tivxMemShared2PhysPtr\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+            ptr= tivxMemAlloc(size, mheap_region[i]);
+            if(ptr != NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is enabled for tivxMemAlloc\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+            if(VX_FAILURE !=tivxMemFree(ptr,size, mheap_region[i]))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is enabled for tivxMemFree\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+            if(VX_FAILURE != tivxMemBufferFree(mem_ptr, size))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"mheap_region[%d] is enabled for tivxMemBufferFree\n",i);
+                status = (vx_status)VX_FAILURE;
+            }
+        }
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestMemBufferMap(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    void *host_ptr_t = NULL;
+
+    if(VX_FAILURE !=tivxMemBufferMap(host_ptr_t,1, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferMap not failed with 'host pointer = NULL '\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+/*To cover negative conditions of tivxMemTranslateVirtAddr and tivxMemTranslateFd*/
+static vx_status tivxNegativeTestMemTranslateFdVirtPhyAddr(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    void *phyAddr;
+    void *virtAddr ;
+    uint64_t dmaBufFd;
+    uint32_t size;
+    size   = 1024;
+
+    if(VX_FAILURE != tivxMemTranslateVirtAddr(NULL, &dmaBufFd, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemTranslateVirtAddr not failed with 'phyAddr = NULL '\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_FAILURE != tivxMemTranslateVirtAddr(&virtAddr , NULL, &phyAddr))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemTranslateVirtAddr not failed with 'fd = NULL '\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_FAILURE != tivxMemTranslateVirtAddr(NULL, &dmaBufFd, &phyAddr))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemTranslateVirtAddr not failed with 'virtAddr = NULL '\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_FAILURE != tivxMemTranslateFd(dmaBufFd, size, &virtAddr, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemTranslateFd not failed with 'phyAddr = NULL '\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_FAILURE != tivxMemTranslateFd(dmaBufFd, size, NULL, &phyAddr))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemTranslateFd not failed with 'virtAddr = NULL '\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestMemBufferAllocFree(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    if(VX_FAILURE != tivxMemBufferAlloc(NULL, 0,(vx_enum)TIVX_MEM_EXTERNAL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferAlloc not failed with mem_ptr = NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_FAILURE != tivxMemBufferFree(NULL, 0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferFree not failed with mem_ptr = NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestMemBufferUnmap(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if(VX_FAILURE != tivxMemBufferUnmap(NULL, 8,(vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferUnmap not failed with mem_ptr = NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestMemoryStats(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_mem_stats *stats = NULL;
+
+    tivxMemStats(stats, TIVX_MEM_EXTERNAL);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+/*To fail tivxMemTranslateFd() inside tivxMemCompareFd()*/
+static vx_status tivxNegativeTestMemCompareFd(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    /*value of dmabufFd1 and dmabufFd1 are -1 */
+    tivxMemCompareFd(-1u,-1u,8,8);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -3371,7 +3634,16 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestQueuePut, "", VX_SUCCESS},
     {tivxTestQueueGet, "", VX_SUCCESS},
     #endif
-    {tivxTestQueueCreate, "",VX_SUCCESS}
+    {tivxTestQueueCreate, "",VX_SUCCESS},
+    {tivxTestEnableLatch, "", VX_SUCCESS},
+    {tivxTestMemResetScratchHeap, "",VX_SUCCESS},
+    {tivxTestMemoryHeapRegions, "", VX_SUCCESS},
+    {tivxNegativeTestMemBufferMap, "", VX_SUCCESS},
+    {tivxNegativeTestMemTranslateFdVirtPhyAddr, "",VX_SUCCESS},
+    {tivxNegativeTestMemBufferAllocFree,"",VX_SUCCESS},
+    {tivxNegativeTestMemBufferUnmap,"",VX_SUCCESS},
+    {tivxNegativeTestMemoryStats,"",VX_SUCCESS},
+    {tivxNegativeTestMemCompareFd,"",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
