@@ -869,16 +869,16 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                                         {
                                           status = ownNodeReplaceInNode(out_node, node_cur, node_next);
                                         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM028 */
                                         else
                                         {
                                           status = (vx_status)VX_FAILURE;
                                         }
+#endif
                                     }
-                                    if ((vx_status)VX_SUCCESS != (vx_status)status)
-                                    {
-                                        VX_PRINT(VX_ZONE_ERROR, "Failed to replace input node %d with input node %d\n", node_cur_idx, node_next_idx);
-                                    }
-                                    else
+
+                                    if ((vx_status)VX_SUCCESS == (vx_status)status)
                                     {
                                         node_cur->obj_desc[0]->num_out_nodes = 0;
                                         node_next->obj_desc[0]->num_in_nodes = 0;
@@ -896,6 +896,13 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                                             VX_PRINT(VX_ZONE_ERROR, "Add out node for bidirectional at index %d failed\n", node_cur_idx);
                                         }
                                     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM029 */
+                                    else
+                                    {
+                                        VX_PRINT(VX_ZONE_ERROR, "Failed to replace input node %d with input node %d\n", node_cur_idx, node_next_idx);
+                                    }
+#endif
                                 }
                                 else
                                 {
@@ -2247,10 +2254,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 {
                     /* update data refs within data ref queues for meta data updated during kernel init */
                     status = ownGraphUpdateDataReferenceQueueRefsAfterKernelInit(graph);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM030 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Unable to update data ref queue refs for graph\n");
                     }
+#endif
                 }
 
                 if(status == (vx_status)VX_SUCCESS)
