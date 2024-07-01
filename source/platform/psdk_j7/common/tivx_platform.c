@@ -112,8 +112,11 @@ void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name,
         {
             VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
         }
-        ownPlatformGetTargetName(target_id, target_name);
-        VX_PRINT(VX_ZONE_INIT, "Added target %s \n", target_name);
+        else
+        {
+            ownPlatformGetTargetName(target_id, target_name);
+            VX_PRINT(VX_ZONE_INIT, "Added target %s \n", target_name);
+        }
     }
 }
 
