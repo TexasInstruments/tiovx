@@ -69,7 +69,7 @@
      This serves as an example for how the initializations should be done within a system integrating TIOVX.  There are several modules within the "app_utils"
      project which require initialization in order for TIOVX to work properly, including such items as shared memory, IPC, Sciclient, etc.
 
-     For host side initialization of TIOVX, the appInit function within vision_apps/utils/app_init shall be called.  This functions calls the appCommonInit,
+     For host side initialization of TIOVX, the appInit function within vision_apps/utils/app_init shall be called.  This function calls the appCommonInit,
      \ref tivxInit and \ref tivxHostInit calls.  The appCommonInit call performs the necessary host side initializations outside of TIOVX, including the
      set up of shared memory, IPC, timers as well as some optional initializations such as logging, performance measurement, etc.  This function is supported on
      both Linux and QNX, with the only difference across the two is the resource table usage on Linux (not supported on QNX).  The API also ensures that
@@ -81,6 +81,16 @@
      enabled in the system, certain memory sections may also be required if they are depended on by the respective kernels.
 
      Within the ENABLE_TIOVX macro, the key initialization call in order for TIOVX to be enabled properly is \ref tivxInit.
+
+     Furthermore, specific memory region carveouts are required in order for TIOVX to work properly.  More details can be found in the "Understanding and updating SDK
+     memory map for <SOC>" document in the PSDK RTOS top level developer notes.
+
+     One specific API which is of interest in the set up of these memory regions is the \ref tivxPlatformResetObjDescTableInfo function.  This function resets the
+     object descriptor table at init time.  This function is called solely on the remote core side since the RTOS cores init prior to the A-core.  This function
+     shall not be called from the A-core host side or separate from init time, otherwise it could cause undefined behavior.
+
+     In order to facilitate the adherence to the alignment and size requirements of these regions in the case of custom memory maps, build asserts have
+     been added to the TIOVX code in order to catch issues at the build stage of TIOVX.
 
      \section TIOVX_SAFETY_USAGE TIOVX Usage Recommendations for Safety
 
