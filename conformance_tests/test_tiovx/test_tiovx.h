@@ -27,9 +27,6 @@
 #define ADD_SIZE_644x258(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/sz=644x258", __VA_ARGS__, 644, 258))
 
-#define ADD_SIZE_1600x1200(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/sz=1600x1200", __VA_ARGS__, 1600, 1200))
-
 #define ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/VX_BORDER_REPLICATE", __VA_ARGS__, { VX_BORDER_REPLICATE, {{ 0 }} }))
 

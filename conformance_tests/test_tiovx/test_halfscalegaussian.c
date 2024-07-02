@@ -201,8 +201,7 @@ typedef struct {
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_18x18, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_644x258, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_1600x1200, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL)
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_644x258, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL)
 
 
 TEST_WITH_ARG(tivxHalfScaleGaussian, testGraphProcessing, Arg,

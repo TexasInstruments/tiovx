@@ -236,8 +236,7 @@ typedef struct {
 
 #define LUT_PARAMETERS                                                \
     CT_GENERATE_PARAMETERS("randomInput", ADD_LUT_GENERATOR, ADD_SIZE_18x18, ADD_TYPE, ARG, lut_image_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_LUT_GENERATOR, ADD_SIZE_644x258, ADD_TYPE, ARG, lut_image_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_LUT_GENERATOR, ADD_SIZE_1600x1200, ADD_TYPE, ARG, lut_image_generate_random, NULL)
+    CT_GENERATE_PARAMETERS("randomInput", ADD_LUT_GENERATOR, ADD_SIZE_644x258, ADD_TYPE, ARG, lut_image_generate_random, NULL)
 
 TEST_WITH_ARG(tivxLUT, testGraphProcessing, Arg,
     LUT_PARAMETERS

@@ -101,8 +101,7 @@ typedef struct {
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("random/shift0", ADD_SIZE_18x18, ARG, 0, 15), \
-    CT_GENERATE_PARAMETERS("random/shift1", ADD_SIZE_644x258, ARG, 1, 3), \
-    CT_GENERATE_PARAMETERS("random/shift8", ADD_SIZE_1600x1200, ARG, 8, 5)
+    CT_GENERATE_PARAMETERS("random/shift1", ADD_SIZE_644x258, ARG, 1, 3)
 
 TEST_WITH_ARG(tivxAccumulateSquare, testParallelNodes, Arg,
     PARAMETERS

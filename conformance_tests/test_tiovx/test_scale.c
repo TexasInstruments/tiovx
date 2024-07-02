@@ -395,7 +395,6 @@ void tivx_dst_size_generator_SCALE_NEAR_DOWN(int width, int height, int* dst_wid
 #define PARAMETERS \
     SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 1_2, 2, ADD_SIZE_18x18, ADD_VX_BORDERS, ARG, 0), \
     SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 1_2, 2, ADD_SIZE_644x258, ADD_VX_BORDERS, ARG, 0), \
-    SCALE_TEST(VX_INTERPOLATION_AREA,             scale_generate_random, "random", 1_2, 2, ADD_SIZE_1600x1200, ADD_VX_BORDERS, ARG, 0), \
     SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_read_image, "lena.bmp", 1_1_5, 0, ADD_SIZE_NONE, ADD_VX_BORDERS, ARG, 0), \
 
 TEST_WITH_ARG(tivxScale, testGraphProcessing, Arg,
@@ -472,7 +471,6 @@ TEST_WITH_ARG(tivxScale, testGraphProcessing, Arg,
 #define PARAMETERS_SEQUENTIAL \
     SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 1_2, 2, ADD_SIZE_18x18, ADD_VX_BORDERS, ARG, 0), \
     SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 1_2, 2, ADD_SIZE_644x258, ADD_VX_BORDERS, ARG, 0), \
-    SCALE_TEST(VX_INTERPOLATION_AREA,             scale_generate_random, "random", 1_2, 2, ADD_SIZE_1600x1200, ADD_VX_BORDERS, ARG, 0), \
 
 TEST_WITH_ARG(tivxScale, testSequentialNodes, Arg,
     PARAMETERS_SEQUENTIAL

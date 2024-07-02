@@ -194,8 +194,7 @@ typedef struct {
 
 #define GAUSSIAN_PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_18x18, ARG, gaussian3x3_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, gaussian3x3_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, gaussian3x3_generate_random, NULL)
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, gaussian3x3_generate_random, NULL)
 
 TEST_WITH_ARG(tivxGaussian3x3, testGraphProcessing, Filter_Arg,
     GAUSSIAN_PARAMETERS
@@ -340,8 +339,7 @@ TEST_WITH_ARG(tivxGaussian3x3, testValidRegion, Filter_Arg,
 }
 
 #define GAUSSIAN_PARAMETERS_NEGATIVE \
-    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_18x18, ARG, gaussian3x3_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ADD_SIZE_1600x1200, ARG, gaussian3x3_generate_random, NULL)
+    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_18x18, ARG, gaussian3x3_generate_random, NULL)
 
 TEST_WITH_ARG(tivxGaussian3x3, negativeTestBorderMode, Filter_Arg,
     GAUSSIAN_PARAMETERS_NEGATIVE

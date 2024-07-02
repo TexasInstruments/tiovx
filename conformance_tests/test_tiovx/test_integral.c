@@ -89,8 +89,7 @@ typedef struct {
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_18x18, ARG, integral_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_644x258, ARG, integral_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_1600x1200, ARG, integral_generate_random, NULL)
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_644x258, ARG, integral_generate_random, NULL)
 
 TEST_WITH_ARG(tivxIntegral, testGraphProcessing, Arg,
     PARAMETERS

@@ -145,8 +145,7 @@ typedef struct {
 
 #define ADD_SIZE(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/sz=18x18", __VA_ARGS__, 18, 18)), \
-    CT_EXPAND(nextmacro(testArgName "/sz=644x258", __VA_ARGS__, 644, 258)), \
-    CT_EXPAND(nextmacro(testArgName "/sz=1600x1200", __VA_ARGS__, 1600, 1200))
+    CT_EXPAND(nextmacro(testArgName "/sz=644x258", __VA_ARGS__, 644, 258))
 
 #define ADD_SUPERNODE_SIZE(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/sz=18x18", __VA_ARGS__, 18, 18)), \

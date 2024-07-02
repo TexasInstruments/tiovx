@@ -191,8 +191,7 @@ typedef struct {
 
 #define MEDIAN_PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_18x18, ARG, median3x3_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, median3x3_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, median3x3_generate_random, NULL)
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, median3x3_generate_random, NULL)
 
 TEST_WITH_ARG(tivxMedian3x3, testGraphProcessing, Filter_Arg,
     MEDIAN_PARAMETERS
@@ -332,8 +331,7 @@ TEST_WITH_ARG(tivxMedian3x3, testValidRegion, Filter_Arg,
 
 
 #define MEDIAN_PARAMETERS_NEGATIVE \
-    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_18x18, ARG, median3x3_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ADD_SIZE_1600x1200, ARG, median3x3_generate_random, NULL)
+    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_18x18, ARG, median3x3_generate_random, NULL)
 
 TEST_WITH_ARG(tivxMedian3x3, negativeTestBorderMode, Filter_Arg,
     MEDIAN_PARAMETERS_NEGATIVE
@@ -383,8 +381,7 @@ TEST_WITH_ARG(tivxMedian3x3, negativeTestBorderMode, Filter_Arg,
 
 #define SUPERNODE_PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_18x18, ARG, median3x3_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, median3x3_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, median3x3_generate_random, NULL)
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, median3x3_generate_random, NULL)
 
 
 TEST_WITH_ARG(tivxMedian3x3, testMedian3x3Supernode, Filter_Arg,

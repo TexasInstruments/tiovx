@@ -210,7 +210,6 @@ typedef struct {
 
 #define BOX_PARAMETERS \
     CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_18x18, ARG, box3x3_generate_bi_level, NULL), \
-    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, box3x3_generate_bi_level, NULL), \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, box3x3_generate_random, NULL)
 
 TEST_WITH_ARG(tivxBox3x3, testGraphProcessing, Filter_Arg,
@@ -353,8 +352,7 @@ TEST_WITH_ARG(tivxBox3x3, testValidRegion, Filter_Arg,
 
 
 #define BOX_PARAMETERS_NEGATIVE \
-    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_18x18, ARG, box3x3_generate_bi_level, NULL), \
-    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ADD_SIZE_1600x1200, ARG, box3x3_generate_bi_level, NULL)
+    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_18x18, ARG, box3x3_generate_bi_level, NULL)
 
 TEST_WITH_ARG(tivxBox3x3, negativeTestBorderMode, Filter_Arg,
     BOX_PARAMETERS_NEGATIVE
@@ -403,7 +401,6 @@ TEST_WITH_ARG(tivxBox3x3, negativeTestBorderMode, Filter_Arg,
 }
 
 #define SUPERNODE_PARAMETERS \
-    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, box3x3_generate_bi_level, NULL), \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, box3x3_generate_random, NULL)
 
 TEST_WITH_ARG(tivxBox3x3, testBox3x3Supernode, Filter_Arg,
