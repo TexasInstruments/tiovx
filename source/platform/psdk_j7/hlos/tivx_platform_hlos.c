@@ -248,34 +248,6 @@ vx_enum ownPlatformGetTargetId(const char *target_name)
     return (target_id);
 }
 
-vx_bool ownPlatformTargetMatch(
-    const char *kernel_target_name, const char *target_string)
-{
-    vx_bool status = (vx_bool)vx_false_e;
-    uint32_t i;
-
-    if ((NULL != kernel_target_name) && (NULL != target_string))
-    {
-        if (0 == strncmp(kernel_target_name, target_string,
-            TIVX_TARGET_MAX_NAME))
-        {
-            for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
-            {
-                if (0 == strncmp(
-                        g_tivx_platform_info.target_info[i].target_name,
-                        target_string,
-                        TIVX_TARGET_MAX_NAME))
-                {
-                    status = (vx_bool)vx_true_e;
-                    break;
-                }
-            }
-        }
-    }
-
-    return (status);
-}
-
 void tivxPlatformResetObjDescTableInfo(void)
 {
     tivx_obj_desc_t *tmp_obj_desc = NULL;

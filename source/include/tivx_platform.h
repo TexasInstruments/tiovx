@@ -176,19 +176,6 @@ vx_enum ownPlatformGetTargetId(const char *target_name);
 void ownPlatformGetTargetName(vx_enum target_id, char *target_name);
 
 /*!
- * \brief Match a user specified target_string with kernel suported target name
- *
- * \param kernel_target_name [in] Kernel supported target name
- * \param target_string [in] user specified target string
- *
- * \return vx_true_e if match found, else vx_false_e
- *
- * \ingroup group_tivx_platform
- */
-vx_bool ownPlatformTargetMatch(const char *kernel_target_name, const char *target_string);
-
-
-/*!
  * \brief Return shared memory info which holds the object descriptors
  *
  *        This is platform APIs since method of specifying shared memory,
