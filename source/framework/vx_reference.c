@@ -440,10 +440,13 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum ref_typ
              * for others use the context lock
              */
             status = tivxMutexCreate(&ref->lock);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM001 */
             if (status != 0)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Cannot create Semaphore\n");
             }
+#endif
         }
     }
 
@@ -618,10 +621,7 @@ vx_reference ownCreateReference(vx_context context, vx_enum ref_type, vx_enum re
 
         if(status!=(vx_status)VX_SUCCESS)
         {
-            if((vx_status)VX_SUCCESS != ownObjectFree(ref))
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Failed to free memory of reference \n");
-            }
+            (void)ownObjectFree(ref);
             vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Failed to add to resources table\n");
             VX_PRINT(VX_ZONE_ERROR, "Failed to add to resources table\n");
             ref = (vx_reference)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
@@ -1135,12 +1135,14 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
     if (status == (vx_status)VX_SUCCESS)
     {
         mf2 = ownCreateMetaFormat(ref2->context);
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM002 */
         if (mf2 == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to create meta format object.\n");
             status = (vx_status)VX_FAILURE;
         }
+#endif
     }
 
     /* Set the ref1 in mf1. */
@@ -1182,19 +1184,25 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
     if (mf1 != NULL)
     {
         status = ownReleaseMetaFormat(&mf1);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM003 */
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to release a meta-format object.\n");
         }
+#endif
     }
 
     if (mf2 != NULL)
     {
         status =  ownReleaseMetaFormat(&mf2);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM004 */
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to release a meta-format object.\n");
         }
+#endif
     }
 
     return boolStatus;

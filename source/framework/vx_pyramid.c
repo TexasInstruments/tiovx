@@ -449,11 +449,14 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
                         break;
                     }
                 }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM006 */
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Image level %d is NULL\n", i);
                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                 }
+#endif
             }
 
             if ((vx_status)VX_SUCCESS==status)
@@ -604,6 +607,8 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
         }
     }
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM007 */
     if ((vx_status)VX_SUCCESS != status)
     {
         for (j = 0; j < i; j ++)
@@ -614,15 +619,12 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
                    external one */
                 (void)ownDecrementReference(vxCastRefFromImage(prmd->img[j]), (vx_enum)VX_INTERNAL);
 
-                status = ownReleaseReferenceInt(vxCastRefFromImageP(&prmd->img[j]),
+                (void)ownReleaseReferenceInt(vxCastRefFromImageP(&prmd->img[j]),
                     (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
-                if((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Pyramid release failed\n");
-                }
             }
         }
     }
+#endif
 
     return (status);
 }

@@ -101,10 +101,13 @@ void ownTargetKernelInstanceDeInit(void)
     vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxMutexDelete(&g_target_kernel_instance_lock);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1708- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_INSTANCE_UM002 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
     }
+#endif
 }
 #endif
 

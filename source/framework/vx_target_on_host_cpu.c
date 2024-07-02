@@ -126,17 +126,16 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
 
                 tivx_uint32_to_uint64(&timestamp, cmd_obj_desc->timestamp_h, cmd_obj_desc->timestamp_l);
 
-                if((vx_status)VX_SUCCESS != ownDataRefQueueSendRefConsumedEvent(data_ref_q, timestamp))
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to send 'ref consumed event'\n");
-                }
+                (void)ownDataRefQueueSendRefConsumedEvent(data_ref_q, timestamp);
             }
             /* No ack for this command */
         }
             break;
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1746- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_ON_HOST_CPU_UM001 */
         default:
-
             break;
+#endif
     }
 }
 

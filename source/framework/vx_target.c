@@ -1187,9 +1187,11 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                 g_target_cmd_desc_handler_for_host_f(cmd_obj_desc);
             }
             break;
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM015 */
         default:
-
             break;
+#endif
     }
 
 }

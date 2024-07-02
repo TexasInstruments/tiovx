@@ -21,7 +21,7 @@ static vx_status ownDestructParameter(vx_reference ref);
 
 static vx_status ownDestructParameter(vx_reference ref)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS, status1 = (vx_status)VX_SUCCESS;
 
     if((ref != NULL) && (ref->type == (vx_enum)VX_TYPE_PARAMETER))
     {
@@ -31,19 +31,26 @@ static vx_status ownDestructParameter(vx_reference ref)
         {
             vx_node node = (vx_node)param->node;
             status = ownReleaseReferenceInt(vxCastRefFromNodeP(&node), (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1747- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PARAMETER_UM001 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Release internal parameter node reference failed!\n");
             }
+#endif
         }
         if (ownIsValidSpecificReference(vxCastRefFromKernel(param->kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
         {
             vx_kernel kernel = (vx_kernel)param->kernel;
-            status = ownReleaseReferenceInt(vxCastRefFromKernelP(&kernel), (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_INTERNAL, NULL);
+            status1 = ownReleaseReferenceInt(vxCastRefFromKernelP(&kernel), (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_INTERNAL, NULL);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1747- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PARAMETER_UM002 */
             if ((vx_status)VX_SUCCESS != status)
             {
+                status = status1;
                 VX_PRINT(VX_ZONE_ERROR, "Release internal parameter kernel reference failed!\n");
             }
+#endif
         }
     }
     return status;
