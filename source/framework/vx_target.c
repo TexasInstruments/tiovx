@@ -70,7 +70,12 @@ own_execute_user_kernel_f      g_executeUserKernel_f = (own_execute_user_kernel_
 own_target_cmd_desc_handler_f  g_target_cmd_desc_handler_for_host_f = (own_target_cmd_desc_handler_f)NULL;
 
 static tivx_target ownTargetAllocHandle(vx_enum target_id);
+
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM007 */
 static void ownTargetFreeHandle(tivx_target *target_handle);
+#endif
+
 static vx_status ownTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc_id, uint32_t timeout);
 static tivx_target ownTargetGetHandle(vx_enum target_id);
 static void ownTargetNodeDescSendComplete(const tivx_obj_desc_node_t *node_obj_desc);
@@ -129,6 +134,8 @@ static tivx_target ownTargetAllocHandle(vx_enum target_id)
     return target;
 }
 
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM007 */
 static void ownTargetFreeHandle(tivx_target *target_handle)
 {
     if((NULL != target_handle) && (*target_handle!=NULL))
@@ -139,6 +146,7 @@ static void ownTargetFreeHandle(tivx_target *target_handle)
         *target_handle = NULL;
     }
 }
+#endif
 
 static vx_status ownTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc_id, uint32_t timeout)
 {
@@ -233,7 +241,7 @@ static vx_bool ownTargetNodeDescCanNodeExecute(
         if( ownObjDescIsValidType( (tivx_obj_desc_t*)prev_node_obj_desc, TIVX_OBJ_DESC_NODE) != 0)
         {
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM05 */
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM005 */
             if( tivxFlagIsBitSet(prev_node_obj_desc->flags,
                         TIVX_NODE_FLAG_IS_EXECUTED) == (vx_bool)vx_false_e)
             {
@@ -932,7 +940,7 @@ static vx_status ownTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_ob
             (uint16_t)node_obj_desc->target_kernel_index[cnt], (vx_enum)node_obj_desc->kernel_id);
 
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM013 */
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM014 */
         if(target_kernel_instance == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance is NULL\n");
@@ -1238,7 +1246,7 @@ static void VX_CALLBACK ownTargetTaskMain(void *app_var)
                         }
                         break;
 #ifdef HOST_ONLY
-/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM005 */
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM006 */
                     default:
                         /* unsupported obj_desc received at target */
                         break;
