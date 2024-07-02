@@ -1674,6 +1674,60 @@ static vx_status tivxNegativeTestTargetPlatformCreateTargetId(uint8_t id)
 }
 #endif
 
+static vx_status tivxNegativeTestTargetTaskSetDefaultCreateParams(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivxTaskSetDefaultCreateParams(NULL);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetTaskDelete(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_task task;
+
+    if((vx_status)VX_FAILURE != tivxTaskDelete(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' task\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    task.tsk_handle =NULL;
+    if((vx_status)VX_FAILURE != tivxTaskDelete(&task))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' task handle\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetTaskCreate(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_task task;
+
+    if((vx_status)VX_FAILURE != tivxTaskCreate(NULL, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' task\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != tivxTaskCreate(&task, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' params\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -1737,8 +1791,11 @@ FuncInfo arrOfFuncs[] = {
     #endif
     #ifndef PC
     {tivxNegativeTestTargetPlatformDeleteTargetId, "", VX_SUCCESS},
-    {tivxNegativeTestTargetPlatformCreateTargetId, "", VX_SUCCESS}
+    {tivxNegativeTestTargetPlatformCreateTargetId, "", VX_SUCCESS},
     #endif
+    {tivxNegativeTestTargetTaskSetDefaultCreateParams, "", VX_SUCCESS},
+    {tivxNegativeTestTargetTaskDelete, "", VX_SUCCESS},
+    {tivxNegativeTestTargetTaskCreate, "", VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
