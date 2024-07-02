@@ -46,4 +46,12 @@ TESTCASE(tivxInternalDataRefQueue)
 TESTCASE(tivxInternalEventQueue)
 TESTCASE(tivxInternalReference)
 
+#if defined(A72) || defined(A53)
+TESTCASE(tivxTimer)
+#endif
+
+#if defined(LINUX) && !defined(PC)
+TESTCASE(tivxRpmsgChar)
+#endif
+
 #endif

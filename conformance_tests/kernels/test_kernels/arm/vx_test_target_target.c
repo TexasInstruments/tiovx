@@ -1666,6 +1666,59 @@ static vx_status tivxTestTargetPlatformGetEnv(uint8_t id)
 
     return status;
 }
+
+static vx_status tivxTestAppIpcGetIpcCpuId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t app_cpu_id = APP_IPC_CPU_MCU1_0;
+
+    if (IPC_MP_INVALID_ID == appIpcGetIpcCpuId(app_cpu_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for app_cpu_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestAppIpcGetAppCpuId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    const char *name  = appIpcGetCpuName(APP_IPC_CPU_MCU1_0);
+
+    if ((vx_status)VX_SUCCESS == appIpcGetAppCpuId((char *)name))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for name\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+
+}
+
+static vx_status tivxTestAppIpcGetCpuName(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t app_cpu_id = APP_IPC_CPU_MPU1_0;
+    const char *name1 = "";
+    const char *name2  = appIpcGetCpuName(APP_IPC_CPU_MPU1_0);
+
+    name1 = appIpcGetCpuName(app_cpu_id);
+    if((vx_status)VX_SUCCESS != strncmp(name1,name2,strlen(name2)))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for name1 and name2\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+
+}
 #endif
 
 #ifndef PC
@@ -3060,6 +3113,9 @@ FuncInfo arrOfFuncs[] = {
 
     #if defined(A72) || defined(A53)
     {tivxTestTargetPlatformGetEnv, "",VX_SUCCESS},
+    {tivxTestAppIpcGetIpcCpuId, "",VX_SUCCESS},
+    {tivxNegativeTestAppIpcGetAppCpuId, "",VX_SUCCESS},
+    {tivxTestAppIpcGetCpuName, "",VX_SUCCESS},
     #endif
     #ifndef PC
     {tivxNegativeTestTargetPlatformDeleteTargetId, "", VX_SUCCESS},
