@@ -246,6 +246,13 @@ The test framework is based on [Google Test](http://google.github.io/googletest/
 **Test Coverage:**
 The use of a code coverage tool is recommended to ensure that sufficient positive and negative test coverage is added for the added feature or bug fix.
 
+A script for assisting with code coverage analysis is available at the location below.  Please follow the instructions in the script for how to use it.
+
+```
+tiovx/tools/code_coverage/code-coverage-pc.sh
+```
+
+Before final merge of the code submission, the code coverage shall not have decreased from the main branch.
 
 # First bugs for Contributors
 
