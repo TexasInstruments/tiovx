@@ -215,6 +215,11 @@ vx_status tivxTaskDelete(tivx_task *task)
 
         task->tsk_handle = NULL;
     }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Task or task handle are NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
 
     return (status);
 }
