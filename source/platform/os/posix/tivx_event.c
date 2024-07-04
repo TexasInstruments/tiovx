@@ -205,7 +205,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                              "Timeout set to TIVX_EVENT_TIMEOUT_NO_WAIT\n");
-                    status = (vx_status)VX_FAILURE;
+                    status = (vx_status)TIVX_ERROR_EVENT_TIMEOUT;
                     done = (bool)vx_true_e;
                 }
                 else

@@ -1938,6 +1938,100 @@ static vx_status tivxTestTargetEnabled(uint8_t id)
 }
 #endif
 
+static vx_status tivxNegativeTestTargetEvent(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if((vx_status)VX_SUCCESS == tivxEventDelete(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' event\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_SUCCESS == tivxEventPost(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' event\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_SUCCESS == tivxEventWait(NULL,0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' event\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_SUCCESS == tivxEventClear(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' event\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestTargetEventClear(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_event event;
+
+    if((vx_status)VX_SUCCESS != tivxEventCreate(&event))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to create event\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_SUCCESS != tivxEventClear(event))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to clear event\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_SUCCESS != tivxEventDelete(&event))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to delete event\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestTargetEventWait(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_event event;
+    if((vx_status)VX_SUCCESS != tivxEventCreate(&event))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to create event\n");
+        status = (vx_status)VX_FAILURE;
+    }
+/* To hit micro >= 1000000LLU condition present inside linux tivx_event.c file*/
+#if defined (A72) || defined (A53) || defined PC
+    VX_PRINT(VX_ZONE_INFO,"---Testing  tivxEventWait API for timeout=1000--- \n");
+    if((vx_status)TIVX_ERROR_EVENT_TIMEOUT != tivxEventWait(event,1000))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for timeout value = 1000 \n");
+        status = (vx_status)VX_FAILURE;
+    }
+#endif
+
+    if((vx_status)TIVX_ERROR_EVENT_TIMEOUT!= tivxEventWait(event,TIVX_EVENT_TIMEOUT_NO_WAIT))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for timeout value = TIVX_EVENT_TIMEOUT_NO_WAIT\n");
+        status = (vx_status)VX_FAILURE;
+    }
+/* To hit else condition inside rtos tivxEventWait() by passing different timeout value than TIVX_EVENT_TIMEOUT_WAIT_FOREVER or TIVX_EVENT_TIMEOUT_NO_WAIT */
+    if((vx_status)TIVX_ERROR_EVENT_TIMEOUT != tivxEventWait(event,2))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for timeout value = 2\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_SUCCESS != tivxEventDelete(&event))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to delete event\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -2019,8 +2113,11 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestTargetMutex, "",VX_SUCCESS},
     {tivxTestTargetPlatformGetShmSize, "",VX_SUCCESS},
     #ifndef PC
-    {tivxTestTargetEnabled, "",VX_SUCCESS}
+    {tivxTestTargetEnabled, "",VX_SUCCESS},
     #endif
+    {tivxNegativeTestTargetEvent, "",VX_SUCCESS},
+    {tivxTestTargetEventClear, "",VX_SUCCESS},
+    {tivxTestTargetEventWait, "",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
