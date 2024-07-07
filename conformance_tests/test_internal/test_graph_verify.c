@@ -593,6 +593,144 @@ TEST(tivxInternalGraphVerify, testOwnGraphCheckIsRefMatch)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+/* Create a user kernel which returns failure on the deinitialize calls (ownGraphNodeKernelDeinit) */
+typedef enum _own_params_e
+{
+    OWN_PARAM_INPUT = 0,
+    OWN_PARAM_OUTPUT,
+} own_params_e;
+
+static vx_size local_size = 0;
+static vx_bool is_kernel_alloc = vx_false_e;
+static vx_size local_size_auto_alloc = 0;
+static vx_size local_size_kernel_alloc = 0;
+
+static enum vx_type_e type = VX_TYPE_INVALID;
+static enum vx_type_e objarray_itemtype = VX_TYPE_INVALID;
+
+static vx_status set_local_size_status_init = VX_SUCCESS;
+static vx_status set_local_ptr_status_init = VX_SUCCESS;
+
+static vx_status query_local_size_status_deinit = VX_SUCCESS;
+static vx_status query_local_ptr_status_deinit = VX_SUCCESS;
+static vx_status set_local_size_status_deinit = VX_SUCCESS;
+static vx_status set_local_ptr_status_deinit = VX_SUCCESS;
+
+#define VX_KERNEL_CONFORMANCE_TEST_OWN_USER (VX_KERNEL_BASE(VX_ID_DEFAULT, 0) + 2)
+#define VX_KERNEL_CONFORMANCE_TEST_OWN_USER_NAME "org.khronos.openvx.test.own_user"
+
+static vx_status VX_CALLBACK own_Kernel(vx_node node, const vx_reference *parameters, vx_uint32 num)
+{
+    return VX_SUCCESS;
+}
+
+static vx_bool is_initialize_called = vx_false_e;
+static vx_status VX_CALLBACK own_Initialize(vx_node node, const vx_reference *parameters, vx_uint32 num)
+{
+    return VX_SUCCESS;
+}
+
+static vx_bool is_deinitialize_called = vx_false_e;
+static vx_status VX_CALLBACK own_Deinitialize(vx_node node, const vx_reference *parameters, vx_uint32 num)
+{
+    /* Returning FAILURE instead of SUCCESS */
+    return VX_FAILURE;
+}
+
+static void own_register_kernel(vx_context context)
+{
+    vx_kernel kernel = 0;
+    vx_size size = local_size_auto_alloc;
+
+    ASSERT_VX_OBJECT(kernel = vxAddUserKernel(
+        context,
+        VX_KERNEL_CONFORMANCE_TEST_OWN_USER_NAME,
+        VX_KERNEL_CONFORMANCE_TEST_OWN_USER,
+        own_Kernel,
+        2,
+        NULL,
+        own_Initialize,
+        own_Deinitialize), VX_TYPE_KERNEL);
+
+    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_INPUT, VX_INPUT, type, VX_PARAMETER_STATE_REQUIRED));
+    {
+        vx_parameter parameter = 0;
+        vx_enum direction = 0;
+        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_INPUT), VX_TYPE_PARAMETER);
+        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
+        ASSERT(direction == VX_INPUT);
+        VX_CALL(vxReleaseParameter(&parameter));
+    }
+    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_OUTPUT, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
+    {
+        vx_parameter parameter = 0;
+        vx_enum direction = 0;
+        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_OUTPUT), VX_TYPE_PARAMETER);
+        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
+        ASSERT(direction == VX_OUTPUT);
+        VX_CALL(vxReleaseParameter(&parameter));
+    }
+    VX_CALL(vxSetKernelAttribute(kernel, VX_KERNEL_LOCAL_DATA_SIZE, &size, sizeof(size)));
+    VX_CALL(vxFinalizeKernel(kernel));
+    VX_CALL(vxReleaseKernel(&kernel));
+}
+
+TEST(tivxInternalGraphVerify, negativeTestUserKernelDeinitializeFailure)
+{
+    vx_context context = context_->vx_context_;
+    vx_reference exemplar = 0, src = 0, dst = 0;
+    vx_graph graph = 0;
+    vx_kernel user_kernel = 0;
+    vx_node node = 0;
+    type = VX_TYPE_OBJECT_ARRAY;
+
+
+    is_initialize_called = vx_false_e;
+    is_deinitialize_called = vx_false_e;
+
+    vx_uint32 width = 128, height = 128;
+    vx_enum format = VX_DF_IMAGE_U8;
+    vx_size capacity = 20;
+
+    ASSERT_VX_OBJECT(exemplar = (vx_reference)vxCreateImage(context, width, height, format), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(src = (vx_reference)vxCreateObjectArray(context, exemplar, capacity), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateObjectArray(context, exemplar, capacity), VX_TYPE_OBJECT_ARRAY);
+
+    ASSERT_NO_FAILURE(own_register_kernel(context));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(user_kernel = vxGetKernelByName(context, VX_KERNEL_CONFORMANCE_TEST_OWN_USER_NAME), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, user_kernel), VX_TYPE_NODE);
+
+    VX_CALL(vxSetParameterByIndex(node, 0, (vx_reference)src));
+    VX_CALL(vxSetParameterByIndex(node, 1, (vx_reference)dst));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    /* Calling vxVerifyGraph again to make first_time_verify false */
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(vxReleaseNode(&node));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxReleaseGraph(&graph));
+
+    /* user kernel should be removed only after all references to it released */
+    /* Note, vxRemoveKernel doesn't zeroing kernel ref */
+    VX_CALL(vxRemoveKernel(user_kernel));
+
+    VX_CALL(vxReleaseReference(&dst));
+    VX_CALL(vxReleaseReference(&src));
+    VX_CALL(vxReleaseReference(&exemplar));
+
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+    ASSERT(dst == 0);
+    ASSERT(src == 0);
+    ASSERT(exemplar == 0);
+}
+
 TESTCASE_TESTS(tivxInternalGraphVerify,
                negativeBoundaryTestVerifyGraph,
                negativeBoundaryTestOwnGraphCreateNodeCallbackCommands,
@@ -605,5 +743,6 @@ TESTCASE_TESTS(tivxInternalGraphVerify,
                negativeTestOwnGraphNodeKernelInit,
                negativeTestOwnGraphAddSingleDataReference,
                negativeTestOwnGraphAllocateDataObject,
-               testOwnGraphCheckIsRefMatch
+               testOwnGraphCheckIsRefMatch,
+               negativeTestUserKernelDeinitializeFailure
 )
