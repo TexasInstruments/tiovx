@@ -204,9 +204,12 @@ static void tivxDeInitLocal(void)
             VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");
         }
     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1759- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_INIT_UM001 */
     else
     {
         /* ERROR. */
         VX_PRINT(VX_ZONE_ERROR, "De-Initialization Error !!!\n");
     }
+#endif
 }

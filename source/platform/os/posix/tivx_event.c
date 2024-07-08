@@ -158,11 +158,14 @@ vx_status tivxEventPost(tivx_event event)
             status = (vx_status)temp_status;
            
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM002 */
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "Mutex post failed\n");
             status = (vx_status)VX_FAILURE;
         }
+#endif
     }
 
     return (status);
@@ -270,12 +273,14 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
             }
 
             status1 = pthread_mutex_unlock(&event->lock);
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM003 */
             if(status1 != 0)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Mutex unlock failed\n");
                 status = (vx_status)VX_FAILURE;
             }
+#endif
         }
     }
 
@@ -294,11 +299,14 @@ vx_status tivxEventClear(tivx_event event)
             event->is_set = 0;
             status = pthread_mutex_unlock(&event->lock);
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM004 */
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "Mutex lock failed\n");
             status = (vx_status)VX_FAILURE;
         }
+#endif
     }
 
     return status;

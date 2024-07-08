@@ -57,11 +57,14 @@ vx_status tivxEventDelete(tivx_event *event)
         {
             *event = NULL;
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1760- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RTOS_EVENT_UM001 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Semaphore delete returned an error\n");
             status = (vx_status)VX_FAILURE;
         }
+#endif
     }
     else
     {
@@ -78,11 +81,14 @@ vx_status tivxEventPost(tivx_event event)
     if (NULL != event)
     {
         ret_status = appRtosSemaphorePost((app_rtos_semaphore_handle_t)event);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1760- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RTOS_EVENT_UM002 */
         if(APP_RTOS_STATUS_SUCCESS != ret_status)
         {
             VX_PRINT(VX_ZONE_ERROR, "app IPC failed to unlock\n");
             status = (vx_status)VX_FAILURE;
         }
+#endif
     }
     else
     {

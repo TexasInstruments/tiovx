@@ -28,6 +28,11 @@ IDIRS       += $(TIOVX_PATH)/source/platform/psdk_j7/common
 IDIRS       += $(TIOVX_PATH)/source/platform/os/posix
 IDIRS       += $(APP_UTILS_PATH)
 DEFS        += LDRA_UNTESTABLE_CODE
+# This is used to signify which sections of code is only applicable
+# for the host for code coverage purposes. It has been left defined
+# for all cores, but can be wrapped in the appropriate CPU when generating
+# code coverage reports.
+DEFS        += HOST_ONLY
 
 DEFS += TARGET_HLOS
 

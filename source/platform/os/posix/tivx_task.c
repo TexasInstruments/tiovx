@@ -168,17 +168,17 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
             {
                 task->tsk_handle = (void *)context;
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM001 */
             else
             {
                 status = ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_TASK);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM001 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Task free failed\n");
                 }
-#endif
             }
+#endif
         }
     }
     else
@@ -233,9 +233,14 @@ void tivxTaskWaitMsecs(uint32_t msec)
     delay_time.tv_sec  = (int64_t)msec/1000;
     delay_time.tv_nsec = ((int64_t)msec%1000)*1000000;
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM003 */
     do
     {
+#endif
         ret = nanosleep(&delay_time, &remain_time);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM003 */
         if((ret < 0) && (remain_time.tv_sec > 0) && (remain_time.tv_nsec > 0))
         {
             /* restart for remaining time */
@@ -246,6 +251,7 @@ void tivxTaskWaitMsecs(uint32_t msec)
             break;
         }
     } while(true);
+#endif
 #else
     usleep(msec * 1000);
 #endif

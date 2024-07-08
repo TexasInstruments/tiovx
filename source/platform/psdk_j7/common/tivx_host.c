@@ -123,10 +123,13 @@ static void tivxHostDeInitLocal(void)
             tivxUnRegisterOpenVXCoreKernels();
         }
     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1732- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_UM003 */
     else
     {
         /* ERROR. */
         VX_PRINT(VX_ZONE_ERROR, "De-Initialization Error !!!\n");
     }
+#endif
 }
 

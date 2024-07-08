@@ -112,11 +112,14 @@ vx_status tivxTaskDelete(tivx_task *task)
     if ((NULL != task) && (NULL != task->tsk_handle))
     {
         ret_status = appRtosTaskDelete((app_rtos_task_handle_t*)&task->tsk_handle);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1761- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RTOS_TASK_UM001 */
         if (ret_status != (app_rtos_status_t)0)
         {
             VX_PRINT(VX_ZONE_ERROR,"Task_Delete: Task deletion failed\n");
             status = (vx_status)VX_FAILURE;
         }
+#endif
     }
     else
     {
