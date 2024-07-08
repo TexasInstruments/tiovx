@@ -220,6 +220,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     vx_uint32 src_width = 128, src_height = 128, src_stride_y_alignment = 16;
     vx_uint32 dst_width = 256, dst_height = 256;
     vx_enum item_type = (type == VX_TYPE_OBJECT_ARRAY) ? objarray_itemtype : VX_TYPE_UINT8;
+    vx_size item_size = 0;
     vx_size capacity = 20;
     vx_size levels = 8;
     vx_float32 scale = 0.5f;
@@ -244,6 +245,8 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     vx_enum actual_thresh_type = VX_TYPE_INVALID;
     vx_size actual_num_items = 0;
     vx_size actual_m = 0, actual_n = 0;
+    vx_enum matrix_pattern = VX_TYPE_INVALID;
+    vx_coordinates2d_t matrix_origin = {0,0};
 
     // For Tensor
     vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS;
@@ -349,12 +352,27 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
         VX_CALL_(return VX_FAILURE, vxQueryMatrix((vx_matrix)input, VX_MATRIX_TYPE, &actual_item_type, sizeof(vx_enum)));
         VX_CALL_(return VX_FAILURE, vxQueryMatrix((vx_matrix)input, VX_MATRIX_ROWS, &actual_m, sizeof(vx_size)));
         VX_CALL_(return VX_FAILURE, vxQueryMatrix((vx_matrix)input, VX_MATRIX_COLUMNS, &actual_n, sizeof(vx_size)));
+        VX_CALL_(return VX_FAILURE, vxQueryMatrix((vx_matrix)input, VX_MATRIX_SIZE, &actual_item_size, sizeof(vx_size)));
+        VX_CALL_(return VX_FAILURE, vxQueryMatrix((vx_matrix)input, VX_MATRIX_PATTERN, &matrix_pattern, sizeof(vx_enum)));
+        VX_CALL_(return VX_FAILURE, vxQueryMatrix((vx_matrix)input, VX_MATRIX_ORIGIN, &matrix_origin, sizeof(vx_coordinates2d_t)));
 
+        // Positive cases
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_MATRIX_TYPE, &item_type, sizeof(vx_enum)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_MATRIX_ROWS, &actual_m, sizeof(vx_size)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_MATRIX_COLUMNS, &actual_n, sizeof(vx_size)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_MATRIX_SIZE, &actual_item_size, sizeof(vx_size)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_MATRIX_PATTERN, &matrix_pattern, sizeof(vx_enum)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_MATRIX_ORIGIN, &matrix_origin, sizeof(vx_coordinates2d_t)));
+
+        // Negative cases
         if (actual_item_type == item_type && actual_m == m && actual_n == n)
         {
-            (void)vxSetMetaFormatAttribute(meta, VX_MATRIX_TYPE, &item_type, sizeofErr);
+            (void)vxSetMetaFormatAttribute(meta, VX_MATRIX_TYPE, &item_type, errInject(sizeof(vx_enum)));
             (void)vxSetMetaFormatAttribute(meta, VX_MATRIX_ROWS, &m, sizeofErr);
             (void)vxSetMetaFormatAttribute(meta, VX_MATRIX_COLUMNS, &n, sizeofErr);
+            (void)vxSetMetaFormatAttribute(meta, VX_MATRIX_SIZE, &matrix_pattern, sizeofErr);
+            (void)vxSetMetaFormatAttribute(meta, VX_MATRIX_PATTERN, &matrix_pattern, errInject(sizeof(vx_enum)));
+            (void)vxSetMetaFormatAttribute(meta, VX_MATRIX_ORIGIN, &matrix_origin, errInject(sizeof(vx_coordinates2d_t)));
         }
         else
         {
@@ -505,6 +523,33 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
             return VX_FAILURE;
         }
         if (vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_IMAGEPATCH_ADDRESSING, &bDummy, errInject(sizeof(uint32_t))) != VX_ERROR_NOT_SUPPORTED)
+        {
+            return VX_FAILURE;
+        }
+    }
+    break;
+    case VX_TYPE_CONVOLUTION:
+    {
+        // Positive cases
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_CONVOLUTION_SCALE, &scale, sizeof(vx_uint32)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_CONVOLUTION_ROWS, &actual_m, sizeof(vx_size)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_CONVOLUTION_COLUMNS, &actual_n, sizeof(vx_size)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_CONVOLUTION_SIZE, &actual_item_size, sizeof(vx_size)));
+
+        // Negative cases
+        if (vxSetMetaFormatAttribute(meta, VX_CONVOLUTION_SCALE, &u32Dummy, errInject(sizeof(uint32_t))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, VX_CONVOLUTION_COLUMNS, &u32Dummy, errInject(sizeof(uint32_t))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, VX_CONVOLUTION_ROWS, &u32Dummy, errInject(sizeof(uint32_t))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, VX_CONVOLUTION_SIZE, &u32Dummy, sizeofErr) != VX_ERROR_INVALID_PARAMETERS)
         {
             return VX_FAILURE;
         }
@@ -861,7 +906,8 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatRefrenceType, type_arg, USERKERNE
         CT_EXPAND(nextmacro(testArgName "RAWIMAGE", __VA_ARGS__, TIVX_TYPE_RAW_IMAGE)),      \
         CT_EXPAND(nextmacro(testArgName "UDATA", __VA_ARGS__, VX_TYPE_USER_DATA_OBJECT)),    \
         CT_EXPAND(nextmacro(testArgName "TENSOR", __VA_ARGS__, VX_TYPE_TENSOR)),             \
-        CT_EXPAND(nextmacro(testArgName "REMAP", __VA_ARGS__, VX_TYPE_REMAP))
+        CT_EXPAND(nextmacro(testArgName "REMAP", __VA_ARGS__, VX_TYPE_REMAP)),               \
+        CT_EXPAND(nextmacro(testArgName "CONVOLUTION", __VA_ARGS__, VX_TYPE_CONVOLUTION))
 
 #define ADD_FROM_FLAG(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "_FROM_ATTR", __VA_ARGS__, vx_false_e))
@@ -900,6 +946,7 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatAttributeType, type_arg, USERKERN
     vx_size num_items = 100;
     vx_size m = 5, n = 5;
     vx_size i, j;
+    vx_size rows = 3, cols = 3;
     vx_status status = VX_SUCCESS;
 
     vx_bool expectedFailure = 0;
@@ -1044,7 +1091,11 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatAttributeType, type_arg, USERKERN
         ASSERT_VX_OBJECT(src = (vx_reference)tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
         ASSERT_VX_OBJECT(dst = (vx_reference)tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
     }
-    break;
+        break;
+    case VX_TYPE_CONVOLUTION:
+        ASSERT_VX_OBJECT(src =  (vx_reference)vxCreateConvolution(context, cols, rows), VX_TYPE_CONVOLUTION);
+        ASSERT_VX_OBJECT(dst =  (vx_reference)vxCreateConvolution(context, cols, rows), VX_TYPE_CONVOLUTION);
+        break;
     default:
         break;
     }
