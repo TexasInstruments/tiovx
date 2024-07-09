@@ -2183,6 +2183,125 @@ static vx_status tivxNegativeTaskMain(uint8_t id)
     return status;
 }
 
+/*To hit uncovered regions in /psdk_j7/rtos/tivx_queue.c*/
+#if defined(R5F) || defined(C7X_FAMILY) || defined(C66)
+static vx_status tivxTestQueueCreateDelete(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivx_queue que[10];
+    tivx_queue *test_queue=&que[0];
+    uintptr_t mem[10];
+    uintptr_t *queue_memory = &mem[0];
+    uint32_t max_elements = 1;
+    uintptr_t data;
+
+    if(VX_SUCCESS != tivxQueueCreate(test_queue,max_elements,queue_memory,TIVX_QUEUE_FLAG_BLOCK_ON_PUT))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueueCreate failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    test_queue->count=0;
+    if(vx_true_e !=  tivxQueueIsEmpty((const tivx_queue *)test_queue))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Queue is not empty\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    test_queue->block_rd =NULL;
+    test_queue->flags = TIVX_QUEUE_FLAG_BLOCK_ON_GET;
+    if(VX_FAILURE != tivxQueuePut(test_queue,10,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Event posted for queue in tivxQueuePut() \n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_FAILURE != tivxQueuePut(test_queue,10,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"blocking on que put is not disabled\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if(VX_SUCCESS != tivxQueuePeek((const tivx_queue *)test_queue,&data))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Queue Peek failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    test_queue->flags = TIVX_QUEUE_FLAG_BLOCK_ON_PUT;
+    if(VX_SUCCESS != tivxQueueDelete(test_queue))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Queue Delete failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestQueuePutGetDelete(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivx_queue que[10];
+    tivx_queue *test_queue=&que[0];
+    uintptr_t mem[10];
+    uintptr_t *queue_memory = &mem[0];
+    uint32_t max_elements =1;
+    uintptr_t data;
+
+    if(VX_SUCCESS != tivxQueueCreate(test_queue,max_elements,queue_memory,TIVX_QUEUE_FLAG_BLOCK_ON_GET))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Queue is not Created \n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    test_queue->count=0;
+    test_queue->flags = TIVX_QUEUE_FLAG_BLOCK_ON_PUT;
+    if(VX_SUCCESS != tivxQueuePut(test_queue,10,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Event posted for queue\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if(VX_FAILURE != tivxQueuePut(test_queue,10,0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"timeout is not TIVX_EVENT_TIMEOUT_NO_WAIT\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    test_queue->block_wr =NULL;
+    test_queue->flags = TIVX_QUEUE_FLAG_BLOCK_ON_PUT;
+    if(VX_FAILURE != tivxQueueGet(test_queue,&data,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Event posted for queue in tivxQueueGet()\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_FAILURE != tivxQueueGet(test_queue,&data,0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"timeout for tivxQueueGet is not TIVX_EVENT_TIMEOUT_NO_WAIT\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_FAILURE != tivxQueueGet(test_queue,&data,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Blocking on que is not  disabled\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    test_queue->flags = TIVX_QUEUE_FLAG_BLOCK_ON_GET;
+    if(VX_SUCCESS != tivxQueueDelete(test_queue))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Queue Delete failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+#endif
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -2282,6 +2401,10 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestTargetIpcSendMsg, "",VX_SUCCESS},
     #endif
     {tivxNegativeTaskMain, "",VX_SUCCESS}
+    #if defined(R5F) || defined(C7X_FAMILY) || defined(C66)
+    {tivxTestQueueCreateDelete, "", VX_SUCCESS},
+    {tivxTestQueuePutGetDelete, "", VX_SUCCESS}
+    #endif
 };
 #endif /* FULL_CODE_COVERAGE */
 
