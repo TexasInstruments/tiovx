@@ -259,7 +259,7 @@ vx_status ownPosixObjectDeInit(void)
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t error_index;
 
-    status = ownFreePosixObject((uint8_t *)&g_tivx_objects_lock,
+    status = ownFreePosixObject((uint8_t *)g_tivx_objects_lock,
                                 (uint8_t *)g_tivx_posix_objects.mutex,
                                 g_tivx_posix_objects.isMutexUse,
                                 TIVX_MUTEX_MAX_OBJECTS,
@@ -267,6 +267,8 @@ vx_status ownPosixObjectDeInit(void)
 
     if ((vx_status)VX_SUCCESS == status)
     {
+        g_tivx_objects_lock = NULL;
+
         status = ownCheckUseFlag(g_tivx_posix_objects.isEventUse,
             TIVX_EVENT_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
