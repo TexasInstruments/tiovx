@@ -176,11 +176,7 @@ vx_status tivxQueueCreate(
             else
             {
                 (void)pthread_mutex_destroy(&context->lock);
-                temp_status = ownPosixObjectFree(queue->context, (vx_enum)TIVX_POSIX_TYPE_QUEUE);
-                if ((vx_status)VX_SUCCESS != temp_status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Queue free failed\n");
-                }
+                (void)ownPosixObjectFree(queue->context, (vx_enum)TIVX_POSIX_TYPE_QUEUE);
                 queue->context = NULL;
             }
 #endif
