@@ -419,6 +419,7 @@ static vx_status testTivxMemFreeObject(vx_reference ref, vx_enum type, uint32_t 
         {
             void           *virtAddr[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
             uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
+            vx_bool         is_allocated;
 
             /* Import NULL handles into obj[0]. */
             vxStatus = tivxReferenceImportHandle(ref,
@@ -429,6 +430,14 @@ static vx_status testTivxMemFreeObject(vx_reference ref, vx_enum type, uint32_t 
             if (vxStatus != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxReferenceImportHandle(NULL) failed.\n");
+            }
+
+            vxQueryReference(ref, TIVX_REFERENCE_BUFFER_IS_ALLOCATED, &is_allocated, sizeof(is_allocated));
+
+            if (is_allocated!=vx_false_e)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "reference is marked as allocated.\n");
+                vxStatus = VX_FAILURE;
             }
         }
     }
@@ -898,6 +907,7 @@ TEST_WITH_ARG(tivxMem, testReferenceExportMultipleImport, TestArg, TEST_PARAMS)
     vx_enum         region;
     uint32_t        release_memory = 0;
     uint32_t        numAllocInitial, numAllocFinal;
+    vx_bool         is_allocated;
 #if defined(QNX)
     uint32_t    numMapsInitial, numMapsFinal;
     uint32_t    numBufsInitial, numBufsFinal;
@@ -958,6 +968,10 @@ TEST_WITH_ARG(tivxMem, testReferenceExportMultipleImport, TestArg, TEST_PARAMS)
             VX_PRINT(VX_ZONE_ERROR, "tivxReferenceImportHandle() failed.\n");
             TIVX_TEST_FAIL_CLEANUP(testFail);
         }
+
+        VX_CALL(vxQueryReference(import_refs[i], TIVX_REFERENCE_BUFFER_IS_ALLOCATED, &is_allocated, sizeof(is_allocated)));
+
+        ASSERT(is_allocated==vx_true_e);
 
         /* For images and pyramids, the internal memory allocation across planes
          * is monolithic so address translation needs to be checked only for the

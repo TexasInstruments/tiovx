@@ -1658,6 +1658,15 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                                  "Non-NULL handle detected. Overwriting.\n");
                     }
 
+                    if (NULL != addr[i])
+                    {
+                        ref->is_allocated = (vx_bool)vx_true_e;
+                    }
+                    else
+                    {
+                        ref->is_allocated = (vx_bool)vx_false_e;
+                    }
+
                     mem_ptr[0].host_ptr        = (uint64_t)(uintptr_t)addr[i];
                     mem_ptr[0].shared_ptr      = shared_ptr[i];
                     mem_ptr[0].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
@@ -1694,6 +1703,15 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                         {
                             VX_PRINT(VX_ZONE_INFO,
                                     "Non-NULL handle detected. Overwriting.\n");
+                        }
+
+                        if (NULL != addr[i])
+                        {
+                            ref->is_allocated = (vx_bool)vx_true_e;
+                        }
+                        else
+                        {
+                            ref->is_allocated = (vx_bool)vx_false_e;
                         }
 
                         mem_ptr[i].host_ptr   = (uint64_t)(uintptr_t)addr[i];

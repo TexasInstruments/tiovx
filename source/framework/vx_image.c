@@ -793,7 +793,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
 
                 if(status == (vx_status)VX_SUCCESS)
                 {
-                    imagepatch_addr = &obj_desc->imagepatch_addr[plane_idx]; // note: could be an issue
+                    imagepatch_addr = &obj_desc->imagepatch_addr[plane_idx];
                     mem_ptr = &obj_desc->mem_ptr[plane_idx];
 
                     imagepatch_addr->stride_x = addrs[plane_idx].stride_x;
@@ -1047,7 +1047,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
 
                         for(plane_idx=0; plane_idx<si_obj_desc->planes; plane_idx++)
                         {
-                            subimage_imagepatch_addr = &si_obj_desc->imagepatch_addr[plane_idx]; // note: this could be an issue
+                            subimage_imagepatch_addr = &si_obj_desc->imagepatch_addr[plane_idx];
                             image_imagepatch_addr = &obj_desc->imagepatch_addr[plane_idx];
                             subimage_mem_ptr = &si_obj_desc->mem_ptr[plane_idx];
                             image_mem_ptr = &obj_desc->mem_ptr[plane_idx];
