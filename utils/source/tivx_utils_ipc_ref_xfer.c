@@ -203,7 +203,7 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
 
             obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
 
-            memcpy(&meta->raw_image,
+            tivx_obj_desc_memcpy(&meta->raw_image,
                    &obj_desc->params,
                    sizeof(tivx_raw_image_create_params_t));
         }

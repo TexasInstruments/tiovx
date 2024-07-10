@@ -980,7 +980,15 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
 #endif
                     }
                     subimage->channel_plane = channel_plane;
-                    si_obj_desc->mem_ptr[0] = *mem_ptr;
+
+                    si_obj_desc->mem_ptr[0].shared_ptr =
+                                (uint64_t)((uint64_t)mem_ptr->shared_ptr);
+                    si_obj_desc->mem_ptr[0].host_ptr =
+                                (uint64_t)((uint64_t)mem_ptr->host_ptr);
+                    si_obj_desc->mem_ptr[0].mem_heap_region = mem_ptr->mem_heap_region;
+                    si_obj_desc->mem_ptr[0].dma_buf_fd = mem_ptr->dma_buf_fd;
+                    si_obj_desc->mem_ptr[0].dma_buf_fd_offset = mem_ptr->dma_buf_fd_offset;
+
                     si_obj_desc->mem_size[0] = obj_desc->mem_size[channel_plane];
                 }
             }
@@ -1052,8 +1060,6 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
                             subimage_mem_ptr = &si_obj_desc->mem_ptr[plane_idx];
                             image_mem_ptr = &obj_desc->mem_ptr[plane_idx];
 
-                            *subimage_mem_ptr = *image_mem_ptr;
-
                             subimage_imagepatch_addr->stride_x = image_imagepatch_addr->stride_x;
                             subimage_imagepatch_addr->stride_y = image_imagepatch_addr->stride_y;
 
@@ -1066,9 +1072,11 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
 
                             subimage_mem_ptr->shared_ptr =
                                 (uint64_t)((uint64_t)image_mem_ptr->shared_ptr + subimage->mem_offset[plane_idx]);
-
                             subimage_mem_ptr->host_ptr =
                                 (uint64_t)((uint64_t)image_mem_ptr->host_ptr + subimage->mem_offset[plane_idx]);
+                            subimage_mem_ptr->mem_heap_region = image_mem_ptr->mem_heap_region;
+                            subimage_mem_ptr->dma_buf_fd = image_mem_ptr->dma_buf_fd;
+                            subimage_mem_ptr->dma_buf_fd_offset = image_mem_ptr->dma_buf_fd_offset;
                         }
                     }
                 }
