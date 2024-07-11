@@ -103,6 +103,7 @@
 #define IPC_MP_INVALID_ID            (0xFFFFFFFFU)
 #define APP_IPC_HW_SPIN_LOCK_MAX        (256u)
 #define INVALID_TARGET "invalid"
+#define  TASK_IS_NOT_TERMINATED 0u
 
 static tivx_target_kernel vx_test_target_target_kernel = NULL;
 
@@ -226,6 +227,13 @@ static vx_status tivxTestTargetTaskBoundary(uint8_t id)
 
     for (i = 0; i < j; i++)
     {
+        #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+        /* Test case to cover "appRtosTaskIsTerminated" API */
+        if (TASK_IS_NOT_TERMINATED != appRtosTaskIsTerminated((app_rtos_task_handle_t *)taskHandle[i].tsk_handle))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'tskHndl' \n");
+        }
+        #endif
         status = tivxTaskDelete(&taskHandle[i]);
     }
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
@@ -2144,6 +2152,109 @@ static vx_status tivxNegativeAppRtosTaskDelete(uint8_t id)
 
     return status;
 }
+
+static vx_status tivxNegativeappRtosSemaphorePend(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_semaphore_handle_t semhandle = NULL;
+    app_rtos_semaphore_params_t params;
+    uint32_t timeout = APP_RTOS_SEMAPHORE_NO_WAIT;
+
+    if ((app_rtos_status_t)APP_RTOS_STATUS_FAILURE != appRtosSemaphorePend(semhandle, timeout))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'semhandle' = NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    params.mode = APP_RTOS_SEMAPHORE_MODE_COUNTING;
+    params.maxValue = 0x02U;
+    params.initValue = 0U;
+
+    semhandle = appRtosSemaphoreCreate(params);
+    if (NULL == semhandle)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Semaphore creation failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if ((app_rtos_status_t)APP_RTOS_STATUS_TIMEOUT != appRtosSemaphorePend(semhandle, timeout))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'timeout' = APP_RTOS_SEMAPHORE_NO_WAIT\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    timeout = 1;
+    if ((app_rtos_status_t)APP_RTOS_STATUS_TIMEOUT != appRtosSemaphorePend(semhandle, timeout))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'timeout' = INVALID_ARG\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if ((app_rtos_status_t)APP_RTOS_STATUS_FAILURE == appRtosSemaphoreDelete(&semhandle))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to delete semaphore\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxAppRtosSemaphoreReset(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_semaphore_handle_t semhandle = NULL;
+
+    if ((app_rtos_status_t)APP_RTOS_STATUS_SUCCESS != appRtosSemaphoreReset(semhandle))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'semhandle' = NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeappRtosTaskCreate(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    const app_rtos_task_params_t *params = NULL;
+
+    if (NULL != appRtosTaskCreate(params))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'params' = NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxAppRtosTaskSleep(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t timeout = 100U;
+
+    appRtosTaskSleep(timeout);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxAppRtosTaskYield(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    appRtosTaskYield();
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
 #endif
 
 static vx_status tivxNegativeTestTargetEventCreate(uint8_t id)
@@ -2895,6 +3006,11 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeAppRtosSemaphorePost, "", VX_SUCCESS},
     {tivxNegativeAppRtosTaskParamsInit, "", VX_SUCCESS},
     {tivxNegativeAppRtosTaskDelete, "", VX_SUCCESS},
+    {tivxNegativeappRtosSemaphorePend, "", VX_SUCCESS},
+    {tivxAppRtosSemaphoreReset, "", VX_SUCCESS},
+    {tivxNegativeappRtosTaskCreate, "", VX_SUCCESS},
+    {tivxAppRtosTaskSleep, "", VX_SUCCESS},
+    {tivxAppRtosTaskYield, "", VX_SUCCESS},
     #endif
     {tivxNegativeTestTargetEventCreate, "",VX_SUCCESS},
     {tivxNegativeTestTargetMutex, "",VX_SUCCESS},
