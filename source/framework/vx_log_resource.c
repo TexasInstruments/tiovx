@@ -280,6 +280,10 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                              (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
+        TIVX_IMAGE_MAX_SUBIMAGE_DEPTH, 0, 0, 2, "TIVX_IMAGE_MAX_SUBIMAGE_DEPTH", { {0}, {0} }, \
+                                                             (vx_bool)vx_false_e, (vx_bool)vx_false_e
+    },
+    {
         TIVX_IMAGE_MAX_SUBIMAGES, 0, 0, 1, "TIVX_IMAGE_MAX_SUBIMAGES", { {(uint32_t)TIVX_TYPE_UINTPTR}, \
                                                                          {TIVX_IMAGE_MAX_OBJECTS} }, \
                                                                        (vx_bool)vx_false_e, (vx_bool)vx_false_e
@@ -414,7 +418,7 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                      (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST, 0, 0, 0, "TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", {{0}, {0}}, (vx_bool)vx_true_e, (vx_bool)vx_true_e
+        TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST, 0, 0, 1, "TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST", {{0}, {0}}, (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
         TIVX_PARAMETER_MAX_OBJECTS, 0, 0, 0, "TIVX_PARAMETER_MAX_OBJECTS", { {(uint32_t)VX_TYPE_PARAMETER, (uint32_t)VX_TYPE_BOOL}, \
@@ -488,7 +492,7 @@ void ownLogResourceInit(void)
     /* Leaf nodes can't exceed the defined graph node maximum */
     BUILD_ASSERT(((TIVX_GRAPH_MAX_LEAF_NODES <= TIVX_GRAPH_MAX_NODES)? 1 : 0));
 
-    /* Graph parameters can't exceed the defined paramater maximum */
+    /* Graph parameters can't exceed the defined parameter maximum */
     BUILD_ASSERT(((TIVX_GRAPH_MAX_PARAMS <= TIVX_PARAMETER_MAX_OBJECTS)? 1 : 0));
 
     /* Graph data ref queues can't exceed the defined data ref queue maximum */

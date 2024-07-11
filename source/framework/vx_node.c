@@ -1994,7 +1994,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
             vx_enum type = 0;
             vx_enum state = 0;
             vx_enum dir = 0;
-            vx_status temp_status = VX_FAILURE;
+            vx_status temp_status = (vx_status)VX_FAILURE;
 
             param = vxGetParameterByIndex(first_node, p);
 

@@ -73,6 +73,10 @@
            - \ref vxCreateImageFromHandle
            - \ref vxSwapImageHandle
        - An important note about these API's is that the handles used by these API's must be allocated using \ref tivxMemAlloc rather than by using malloc or other such memory.
+     \section TIOVX_USAGE_SUBIMAGE_API TIOVX Implementation of Subimages
+       - The OpenVX specification does not define the depth of the number of the subimages which a \ref vx_image may contain
+       - Therefore, the TIOVX implementation has added a max value of "2" for the number of subimage levels, as well as a max value of "16" for the number of subimages per level.
+       - These are configurable and can be updated in the max value configuration file.
  */
 
 /*!

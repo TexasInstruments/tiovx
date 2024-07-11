@@ -233,6 +233,11 @@ extern "C" {
  */
 #define TIVX_IMAGE_MAX_SUBIMAGES           (16u)
 
+/*! \brief Max depth for subimages of vx_image
+ * \ingroup group_vx_image_cfg
+*/
+#define TIVX_IMAGE_MAX_SUBIMAGE_DEPTH            (2U)
+
 /*! \brief Max number image objects supported
  * \ingroup group_vx_image_cfg
  */
@@ -503,7 +508,6 @@ extern "C" {
                                             TIVX_KERNEL_MAX_OBJECTS+ \
                                             TIVX_META_FORMAT_MAX_OBJECTS+ \
                                             TIVX_PARAMETER_MAX_OBJECTS)
-
 
 #ifdef __cplusplus
 }
