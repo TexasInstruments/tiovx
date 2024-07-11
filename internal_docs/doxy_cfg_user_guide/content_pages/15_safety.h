@@ -92,6 +92,12 @@
      In order to facilitate the adherence to the alignment and size requirements of these regions in the case of custom memory maps, build asserts have
      been added to the TIOVX code in order to catch issues at the build stage of TIOVX.
 
+     The vision_apps project also provides the "vision_apps_init.sh" script which enables remote core logging on the firmware.  This allows a developer to see if
+     there were any initialization or run-time error logs from the firmware.  Furthermore, the vision_apps firmware performs a ping test once all the required
+     firmwares have been initialized successfully, helping to identify issues during initialization from the remote firmware.  If this ping test does not succeed,
+     it does not allow further processing to occur on that remote core, as it may be in a bad state.  Refer to the vision_apps user guide for more information about
+     this diagnostics for help identifying issues in the remote firmware.
+
      \section TIOVX_SAFETY_USAGE TIOVX Usage Recommendations for Safety
 
      When utilizing TIOVX within a safety system, there are a few things to note regarding the implementation
