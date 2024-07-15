@@ -123,6 +123,11 @@ vx_status tivxMutexUnlock(tivx_mutex mutex)
         }
 #endif
     }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Mutex is NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
 
     return (status);
 }

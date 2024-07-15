@@ -72,55 +72,62 @@ vx_status tivxEventCreate(tivx_event *event)
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t temp_status;
 
-    tmp_event = (tivx_event)ownPosixObjectAlloc((vx_enum)TIVX_POSIX_TYPE_EVENT);
-    if(tmp_event==NULL)
+    if (NULL != event)
     {
-        *event = NULL;
-        VX_PRINT(VX_ZONE_ERROR, "Memory allocation failed\n");
-        status = (vx_status)VX_ERROR_NO_MEMORY;
-    }
-    else
-    {
-       
-        temp_status = (uint32_t)status | (uint32_t)pthread_mutexattr_init(&mutex_attr);
-        status = (vx_status)temp_status;
-        temp_status = (uint32_t)status | (uint32_t)pthread_condattr_init(&cond_attr);
-        status = (vx_status)temp_status;
-        
-
-        temp_status = (uint32_t)status | (uint32_t)pthread_mutex_init(&tmp_event->lock, &mutex_attr);
-        status = (vx_status)temp_status;
-        temp_status = (uint32_t)status | (uint32_t)pthread_cond_init(&tmp_event->cond, &cond_attr);
-        status = (vx_status)temp_status;
-
-        tmp_event->is_set = (uint16_t)0;
-
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM001 */
-        if(status!=0)
+        tmp_event = (tivx_event)ownPosixObjectAlloc((vx_enum)TIVX_POSIX_TYPE_EVENT);
+        if(tmp_event==NULL)
         {
-            (void)pthread_cond_destroy(&tmp_event->cond);
-            (void)pthread_mutex_destroy(&tmp_event->lock);
-            status = ownPosixObjectFree((uint8_t *)tmp_event, (vx_enum)TIVX_POSIX_TYPE_EVENT);
-            if ((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Event free failed\n");
-            }
-
             *event = NULL;
-            VX_PRINT(VX_ZONE_ERROR, "Mutex initialization failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Memory allocation failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
-#endif
         {
-            *event = tmp_event;
+        
+            temp_status = (uint32_t)status | (uint32_t)pthread_mutexattr_init(&mutex_attr);
+            status = (vx_status)temp_status;
+            temp_status = (uint32_t)status | (uint32_t)pthread_condattr_init(&cond_attr);
+            status = (vx_status)temp_status;
+
+
+            temp_status = (uint32_t)status | (uint32_t)pthread_mutex_init(&tmp_event->lock, &mutex_attr);
+            status = (vx_status)temp_status;
+            temp_status = (uint32_t)status | (uint32_t)pthread_cond_init(&tmp_event->cond, &cond_attr);
+            status = (vx_status)temp_status;
+
+            tmp_event->is_set = (uint16_t)0;
+
+    #ifdef LDRA_UNTESTABLE_CODE
+    /* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM001 */
+            if(status!=0)
+            {
+                (void)pthread_cond_destroy(&tmp_event->cond);
+                (void)pthread_mutex_destroy(&tmp_event->lock);
+                status = ownPosixObjectFree((uint8_t *)tmp_event, (vx_enum)TIVX_POSIX_TYPE_EVENT);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Event free failed\n");
+                }
+
+                *event = NULL;
+                VX_PRINT(VX_ZONE_ERROR, "Mutex initialization failed\n");
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+            else
+    #endif
+            {
+                *event = tmp_event;
+            }
+
+            (void)pthread_condattr_destroy(&cond_attr);
+            (void)pthread_mutexattr_destroy(&mutex_attr);
         }
-
-        (void)pthread_condattr_destroy(&cond_attr);
-        (void)pthread_mutexattr_destroy(&mutex_attr);
     }
-
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Event is NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
     return (status);
 }
 
