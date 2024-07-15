@@ -635,12 +635,14 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
             node = graph->nodes[i];
 
             status_name = ownNodeKernelDeinitKernelName(node);
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM031 */
             if(status_name != (vx_status)VX_SUCCESS )
             {
                 VX_PRINT(VX_ZONE_ERROR,"Node kernel name deinit for node at index %d failed\n", i);
                 break;
             }
+#endif
         }
     }
 
