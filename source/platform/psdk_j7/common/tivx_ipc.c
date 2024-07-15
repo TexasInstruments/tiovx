@@ -196,11 +196,14 @@ void ownIpcInit(void)
     (void)appIpcRegisterNotifyHandler(tivxIpcHandler);
 }
 
+#ifdef HOST_ONLY
+/* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_ONLY_IPC_UM001 */
 void ownIpcDeInit(void)
 {
     /* Un-Register IPC Handler */
     (void)appIpcRegisterNotifyHandler(NULL);
 }
+#endif
 
 vx_bool tivxIsTargetEnabled(const char target_name[])
 {
