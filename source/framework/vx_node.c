@@ -79,7 +79,8 @@ static vx_status ownDestructNode(vx_reference ref)
 
             status1 = ownReleaseReferenceInt(vxCastRefFromKernelP(&node->kernel), (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_INTERNAL, NULL);
 
-#ifdef LDRA_UNTESTABLE_CODE/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM002 */
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM002 */
             if (status1 != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
@@ -107,7 +108,8 @@ static vx_status ownDestructNode(vx_reference ref)
                 if(node->obj_desc_cmd[pipe_id]!=NULL)
                 {
                     status = ownObjDescFree((tivx_obj_desc_t**)&node->obj_desc_cmd[pipe_id]);
-#ifdef LDRA_UNTESTABLE_CODE/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM003 */
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM003 */
                     if ((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Node command object descriptor free failed!\n");

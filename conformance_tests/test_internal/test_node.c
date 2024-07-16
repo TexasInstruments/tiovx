@@ -65,7 +65,7 @@ TEST(tivxInternalNode, negativeTestSetNodeParameterNumBufByIndex)
     ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1, d2), VX_TYPE_NODE);
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,(tivxSetNodeParameterNumBufByIndex(n1, 1, get_num_buf))); // for number of buffers condition
-    get_num_buf = 1; 
+    get_num_buf = 1;
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS,(tivxSetNodeParameterNumBufByIndex(n1, 0, get_num_buf))); // for parameter directions condition
     VX_CALL(vxReleaseNode(&n1));
     VX_CALL(vxReleaseImage(&d1));
@@ -92,7 +92,7 @@ TEST(tivxInternalNode, negativeTestNodeGetParameterNumBuf)
 
     ASSERT(0 == ownNodeGetParameterNumBuf(n1, 100)); //more number of parameters condition
     ASSERT(0 == ownNodeGetParameterNumBuf(n1, 0)); //parameter direction condition
-    VX_CALL(vxReleaseNode(&n1));    
+    VX_CALL(vxReleaseNode(&n1));
     VX_CALL(vxReleaseImage(&d1));
     VX_CALL(vxReleaseImage(&d2));
     VX_CALL(vxReleaseGraph(&graph));
@@ -107,7 +107,7 @@ TEST(tivxInternalNode, negativeTestInitNodeObjDesc)
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
     kernel->num_targets = 0;
-    ASSERT(NULL == vxCreateGenericNode(graph, kernel));
+    ASSERT((vx_enum)VX_ERROR_INVALID_VALUE == ((tivx_error_t *) vxCreateGenericNode(graph, kernel))->status);
     VX_CALL(vxReleaseGraph(&graph));
 }
 
@@ -218,7 +218,7 @@ TEST(tivxInternalNode, negativeTestNodeIsPrmReplicated)
 }
 
 TEST(tivxInternalNode, negativeTestDestructNode)
-{ 
+{
     #define VX_DEFAULT 0
     vx_context context = context_->vx_context_;
     vx_delay   src_delay;
@@ -687,7 +687,7 @@ TEST(tivxInternalNode, negativeTestKernelInit)
     vx_enum format = VX_DF_IMAGE_U8;
     vx_uint32 src_width = 128, src_height = 128;
     vx_uint32 dst_width = 256, dst_height = 256;
-	
+
     ASSERT_VX_OBJECT(src = (vx_reference)vxCreateImage(context, src_width, src_height, format), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateImage(context, src_width, src_height, format), VX_TYPE_IMAGE);
 
@@ -759,7 +759,7 @@ TEST(tivxInternalNode, negativeTestKernelDeinit)
     vx_enum format = VX_DF_IMAGE_U8;
    	vx_uint32 src_width = 128, src_height = 128;
     vx_uint32 dst_width = 256, dst_height = 256;
-	
+
 	ASSERT_VX_OBJECT(src = (vx_reference)vxCreateImage(context, src_width, src_height, format), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateImage(context, src_width, src_height, format), VX_TYPE_IMAGE);
 
@@ -781,7 +781,7 @@ TEST(tivxInternalNode, negativeTestKernelDeinit)
     vx_image image;
 
     ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, 2, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
-    
+
     ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(obj_arr = vxCreateObjectArray(context, (vx_reference)image, 2), VX_TYPE_OBJECT_ARRAY);
     ASSERT_VX_OBJECT(dst_image = (vx_image)vxGetObjectArrayItem(obj_arr, 0), VX_TYPE_IMAGE);
@@ -790,7 +790,7 @@ TEST(tivxInternalNode, negativeTestKernelDeinit)
 
     vx_bool replicate[] = { vx_true_e, vx_true_e };
     ASSERT_VX_OBJECT(src_node = vxBox3x3Node(graph, src_image, dst_image), VX_TYPE_NODE);
-    VX_CALL(vxReplicateNode(graph, src_node, replicate, 2)); 
+    VX_CALL(vxReplicateNode(graph, src_node, replicate, 2));
 
     ASSERT(VX_SUCCESS == ownNodeKernelInit(src_node));
     ASSERT(VX_FAILURE == ownNodeKernelDeinit(node));
@@ -801,7 +801,7 @@ TEST(tivxInternalNode, negativeTestKernelDeinit)
     src_node->kernel->deinitialize = NULL;
 
     node->kernel->signature.num_parameters = 2;
-   
+
     // finalization
     VX_CALL(vxReleaseNode(&src_node));
     VX_CALL(vxReleaseNode(&node));
