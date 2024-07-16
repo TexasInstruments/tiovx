@@ -184,7 +184,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
             {
                 VX_CALL_(return VX_FAILURE, vxSetMetaFormatFromReference(meta, input));
                 vx_kernel_image_valid_rectangle_f callback = &own_set_image_valid_rect;
-                (void)vxSetMetaFormatAttribute(meta, errInject(VX_VALID_RECT_CALLBACK), &callback, sizeof(callback));
+                (void)vxSetMetaFormatAttribute(meta, VX_VALID_RECT_CALLBACK, &callback, errInject(sizeof(callback)));
             }
             else
             {
@@ -305,11 +305,17 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
         VX_CALL_(return VX_FAILURE, vxQueryArray((vx_array)input, VX_ARRAY_CAPACITY, &actual_capacity, sizeof(vx_size)));
         VX_CALL_(return VX_FAILURE, vxQueryArray((vx_array)input, VX_ARRAY_ITEMSIZE, &actual_item_size, sizeof(vx_size)));
 
+        // Positive cases
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_ARRAY_ITEMTYPE, &actual_item_type, sizeof(vx_enum)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_ARRAY_CAPACITY, &actual_item_size, sizeof(vx_size)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_ARRAY_ITEMSIZE, &actual_capacity, sizeof(vx_size)));
+
+        // Negative cases
         if (actual_item_type == item_type && actual_capacity == capacity)
         {
-            (void)vxSetMetaFormatAttribute(meta, VX_ARRAY_ITEMTYPE, &item_type, sizeofErr);
+            (void)vxSetMetaFormatAttribute(meta, VX_ARRAY_ITEMTYPE, &item_type, errInject(sizeof(vx_enum)));
             (void)vxSetMetaFormatAttribute(meta, VX_ARRAY_CAPACITY, &capacity, sizeofErr);
-            (void)vxSetMetaFormatAttribute(meta, VX_ARRAY_ITEMSIZE, &actual_item_size, sizeofErr);
+            (void)vxSetMetaFormatAttribute(meta, VX_ARRAY_ITEMSIZE, &item_size, sizeofErr);
         }
         else
         {
@@ -334,6 +340,8 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
             (void)vxSetMetaFormatAttribute(meta, VX_PYRAMID_SCALE, &scale, sizeofErr);
             vx_kernel_image_valid_rectangle_f callback = &own_set_image_valid_rect;
             VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, VX_VALID_RECT_CALLBACK, &callback, sizeof(callback)));
+            /* To hit VX_ERROR_INVALID_PARAMETERS of VX_VALID_RECT_CALLBACK of vxSetMetaFormatAttribute */
+            (void)vxSetMetaFormatAttribute(meta, VX_VALID_RECT_CALLBACK, &callback, errInject(sizeof(callback)));
         }
         else
         {
@@ -346,6 +354,12 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
         if (actual_item_type == item_type)
         {
             (void)vxSetMetaFormatAttribute(meta, VX_SCALAR_TYPE, &item_type, sizeofErr);
+        }
+        /* To hit VX_ERROR_INVALID_TYPE negative portion of VX_VALID_RECT_CALLBACK of vxSetMetaFormatAttribute */
+        vx_kernel_image_valid_rectangle_f callback = &own_set_image_valid_rect;
+        if (vxSetMetaFormatAttribute(meta, VX_VALID_RECT_CALLBACK, &callback, sizeof(callback)) == VX_ERROR_INVALID_TYPE)
+        {
+            return VX_FAILURE;
         }
         break;
     case VX_TYPE_MATRIX:
@@ -442,10 +456,16 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
         VX_CALL_(return VX_FAILURE, vxQueryObjectArray((vx_object_array)input, VX_OBJECT_ARRAY_ITEMTYPE, &actual_item_type, sizeof(vx_enum)));
         VX_CALL_(return VX_FAILURE, vxQueryObjectArray((vx_object_array)input, VX_OBJECT_ARRAY_NUMITEMS, &actual_capacity, sizeof(vx_size)));
 
-        if (actual_item_type == item_type && actual_capacity == capacity)
+        if (actual_capacity == capacity)
         {
-            (void)vxSetMetaFormatAttribute(meta, VX_OBJECT_ARRAY_ITEMTYPE, &item_type, sizeofErr);
-            (void)vxSetMetaFormatAttribute(meta, VX_OBJECT_ARRAY_NUMITEMS, &capacity, sizeofErr);
+            if (vxSetMetaFormatAttribute(meta, VX_OBJECT_ARRAY_ITEMTYPE, &actual_item_type, errInject(sizeof(vx_enum))) != VX_ERROR_INVALID_PARAMETERS)
+            {
+                return VX_FAILURE;
+            }
+            if (vxSetMetaFormatAttribute(meta, VX_OBJECT_ARRAY_NUMITEMS, &capacity, sizeofErr) != VX_ERROR_INVALID_PARAMETERS)
+            {
+                return VX_FAILURE;
+            }
         }
         else
         {
@@ -458,6 +478,10 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
         VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_DIMS, &dims, (sizeof(vx_size) * (vx_size)TIVX_CONTEXT_MAX_TENSOR_DIMS)));
         VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_FIXED_POINT_POSITION, &fpp, sizeof(vx_int8)));
         VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_DATA_TYPE, &dt, sizeof(vx_enum)));
+        /* TIVX types */
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, TIVX_TENSOR_SCALING_DIVISOR, &dt, sizeof(vx_uint8)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION, &dt, sizeof(vx_uint8)));
+
         // Negative Cases
         if (vxSetMetaFormatAttribute(meta, VX_TENSOR_DIMS, &dims, sizeofErr * (sizeof(vx_size) * (vx_size)TIVX_CONTEXT_MAX_TENSOR_DIMS)) != VX_ERROR_INVALID_PARAMETERS)
         {
@@ -472,6 +496,15 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
             return VX_FAILURE;
         }
         if (vxSetMetaFormatAttribute(meta, VX_TENSOR_DATA_TYPE, &dt, errInject(sizeof(vx_enum))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        /* TIVX types */
+        if (vxSetMetaFormatAttribute(meta, TIVX_TENSOR_SCALING_DIVISOR, &fpp, errInject(sizeof(vx_int8))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION, &dt, errInject(sizeof(vx_int8))) != VX_ERROR_INVALID_PARAMETERS)
         {
             return VX_FAILURE;
         }
@@ -907,7 +940,8 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatRefrenceType, type_arg, USERKERNE
         CT_EXPAND(nextmacro(testArgName "UDATA", __VA_ARGS__, VX_TYPE_USER_DATA_OBJECT)),    \
         CT_EXPAND(nextmacro(testArgName "TENSOR", __VA_ARGS__, VX_TYPE_TENSOR)),             \
         CT_EXPAND(nextmacro(testArgName "REMAP", __VA_ARGS__, VX_TYPE_REMAP)),               \
-        CT_EXPAND(nextmacro(testArgName "CONVOLUTION", __VA_ARGS__, VX_TYPE_CONVOLUTION))
+        CT_EXPAND(nextmacro(testArgName "CONVOLUTION", __VA_ARGS__, VX_TYPE_CONVOLUTION)),   \
+        CT_EXPAND(nextmacro(testArgName "OBJECT_ARRAY", __VA_ARGS__, VX_TYPE_OBJECT_ARRAY))
 
 #define ADD_FROM_FLAG(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "_FROM_ATTR", __VA_ARGS__, vx_false_e))
@@ -1003,6 +1037,19 @@ TEST_WITH_ARG(tivxMetaFormat, testSetMetaFormatAttributeType, type_arg, USERKERN
     {
         ASSERT_VX_OBJECT(src = (vx_reference)vxCreateArray(context, item_type, capacity), type);
         ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateArray(context, item_type, capacity), type);
+    }
+    break;
+    case VX_TYPE_OBJECT_ARRAY:
+    {
+        vx_image image1, image2;
+        ASSERT_VX_OBJECT(image1 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(image2 = vxCreateImage(context, 8, 8, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateObjectArray(context, (vx_reference)image1, capacity), VX_TYPE_OBJECT_ARRAY);
+        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateObjectArray(context, (vx_reference)image2, capacity), VX_TYPE_OBJECT_ARRAY);
+
+        VX_CALL(vxReleaseImage(&image1));
+        VX_CALL(vxReleaseImage(&image2));
     }
     break;
     case VX_TYPE_PYRAMID:
@@ -1368,4 +1415,5 @@ TESTCASE_TESTS(
     negativeTestSetMetaFormatFromReference,
     testIsMetaFormatEqual,
     testSetMetaFormatAttributeType,
-    testSetMetaFormatRefrenceType)
+    testSetMetaFormatRefrenceType
+    )
