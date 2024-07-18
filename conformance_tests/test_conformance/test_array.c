@@ -213,6 +213,18 @@ int own_verify_data_items(void* ptr1, void* ptr2, vx_size stride, vx_enum item_t
         curr_ptr1 = (vx_uint8*)ptr1 + i*stride;
         curr_ptr2 = (vx_uint8*)ptr2 + i*stride;
 
+        if (i == 0)
+        {
+            if (VX_TYPE_CHAR==item_type)
+            {
+                printf("verifying item_type = %d\n", item_type);
+            }
+            else
+            {
+                printf("verifying item_type = %d\n", item_type);
+            }
+        }
+
         switch (item_type)
         {
         case VX_TYPE_CHAR:
@@ -331,6 +343,7 @@ int own_verify_data_items(void* ptr1, void* ptr2, vx_size stride, vx_enum item_t
             }
             else
                 return 1;
+            break;
         }
     }
 

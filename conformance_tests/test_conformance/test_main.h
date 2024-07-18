@@ -20,7 +20,7 @@ TESTCASE(GraphCallback)
 TESTCASE(GraphDelay)
 TESTCASE(GraphROI)
 
-//TESTCASE(Array)
+TESTCASE(Array)
 TESTCASE(ObjectArray)
 TESTCASE(Image)
 
