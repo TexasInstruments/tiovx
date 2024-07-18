@@ -839,9 +839,8 @@ vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeli
  *               which are required for the control command on the given node.
  *             - Refer to node documentation to get details about the parameters
  *               required for given control command.
- *             - This reference must be allocated before calling this API.
- *               This can be done by calling either the vxMap/vxUnmap API or
- *               the vxCopy API associated with this data object.
+ *             - If the refs have not been allocated before calling this command,
+ *               the refs will be allocated within this command itself
  *             - Caller of this API should explicitly release these refs after
  *               their usage is completed.
  * \param [in] num_refs Number of valid entries/references in ref[] array
@@ -881,9 +880,8 @@ vx_status VX_API_CALL tivxNodeSendCommand(vx_node node,
  *               which are required for the control command on the given node.
  *             - Refer to node documentation to get details about the parameters
  *               required for given control command.
- *             - This reference must be allocated before calling this API.
- *               This can be done by calling either the vxMap/vxUnmap API or
- *               the vxCopy API associated with this data object.
+ *             - If the refs have not been allocated before calling this command,
+ *               the refs will be allocated within this command itself
  *             - Caller of this API should explicitly release these refs after
  *               their usage is completed.
  * \param [in] num_refs Number of valid entries/references in ref[] array
