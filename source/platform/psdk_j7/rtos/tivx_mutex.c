@@ -100,7 +100,7 @@ vx_status tivxMutexLock(tivx_mutex mutex)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Mutex is NULL\n");
-        status = (vx_status)VX_FAILURE;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return (status);
@@ -126,7 +126,7 @@ vx_status tivxMutexUnlock(tivx_mutex mutex)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Mutex is NULL\n");
-        status = (vx_status)VX_FAILURE;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return (status);

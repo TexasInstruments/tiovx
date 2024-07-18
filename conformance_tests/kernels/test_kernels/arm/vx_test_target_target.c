@@ -93,6 +93,7 @@
 #define MAX_LENGTH 64
 #define INVALID_ARG -1
 #define IPC_MP_INVALID_ID            (0xFFFFFFFFU)
+#define INVALID_TARGET "invalid"
 
 static tivx_target_kernel vx_test_target_target_kernel = NULL;
 
@@ -1851,6 +1852,92 @@ static vx_status tivxAppIpcGetCpuName(uint8_t id)
 }
 #endif
 
+static vx_status tivxNegativeTestTargetEventCreate(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if((vx_status)VX_FAILURE != tivxEventCreate(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' task\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetMutex(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if((vx_status)VX_FAILURE != tivxMutexCreate(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' task\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != tivxMutexDelete(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' task\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_ERROR_INVALID_PARAMETERS != tivxMutexLock(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' task\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_ERROR_INVALID_PARAMETERS != tivxMutexUnlock(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' task\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestTargetPlatformGetShmSize(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t shm_size =0;
+
+    if((uint32_t)0 != tivxPlatformGetShmSize(&shm_size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Unable to get TIOVX object descriptor memory carveout\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+#ifndef PC
+static vx_status tivxTestTargetEnabled(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if(vx_true_e != tivxIsTargetEnabled(TIVX_TARGET_MCU2_0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(vx_false_e != tivxIsTargetEnabled(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(vx_false_e != tivxIsTargetEnabled(INVALID_TARGET))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+#endif
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -1927,6 +2014,12 @@ FuncInfo arrOfFuncs[] = {
     {tivxAppIpcGetIpcCpuId, "", VX_SUCCESS},
     {tivxAppIpcGetAppCpuId, "", VX_SUCCESS},
     {tivxAppIpcGetCpuName, "", VX_SUCCESS},
+    #endif
+    {tivxNegativeTestTargetEventCreate, "",VX_SUCCESS},
+    {tivxNegativeTestTargetMutex, "",VX_SUCCESS},
+    {tivxTestTargetPlatformGetShmSize, "",VX_SUCCESS},
+    #ifndef PC
+    {tivxTestTargetEnabled, "",VX_SUCCESS}
     #endif
 };
 #endif /* FULL_CODE_COVERAGE */
