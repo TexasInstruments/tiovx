@@ -82,6 +82,11 @@
 #include <tivx_platform_psdk.h>
 #endif
 
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+#include <utils/rtos/include/app_rtos.h>
+#include <utils/perf_stats/include/app_perf_stats.h>
+#endif
+
 /* #define FULL_CODE_COVERAGE */
 /* Maximum length of testcase function name */
 #define MAX_LENGTH 64
@@ -1728,6 +1733,54 @@ static vx_status tivxNegativeTestTargetTaskCreate(uint8_t id)
     return status;
 }
 
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+static vx_status tivxAppMemPrintMemAllocInfo(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    appMemPrintMemAllocInfo();
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxAppMemGetNumAllocs(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    /* For rtos implementation, appMemGetNumAllocs() 
+    is not valid and just return -1 */
+    if ((uint32_t)(-1) != appMemGetNumAllocs())
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for appMemGetNumAllocs()\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxAppMemUnMap(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    void *virt_ptr = NULL;
+    uint32_t size = 0;
+
+    /* nothing to do in rtos */
+    if ((vx_status)VX_SUCCESS != appMemUnMap(virt_ptr, size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for appMemUnMap()\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+#endif
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -1795,7 +1848,12 @@ FuncInfo arrOfFuncs[] = {
     #endif
     {tivxNegativeTestTargetTaskSetDefaultCreateParams, "", VX_SUCCESS},
     {tivxNegativeTestTargetTaskDelete, "", VX_SUCCESS},
-    {tivxNegativeTestTargetTaskCreate, "", VX_SUCCESS}
+    {tivxNegativeTestTargetTaskCreate, "", VX_SUCCESS},
+    #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+    {tivxAppMemPrintMemAllocInfo, "", VX_SUCCESS},
+    {tivxAppMemGetNumAllocs, "", VX_SUCCESS},
+    {tivxAppMemUnMap, "", VX_SUCCESS},
+    #endif
 };
 #endif /* FULL_CODE_COVERAGE */
 
