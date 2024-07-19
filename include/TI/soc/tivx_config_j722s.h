@@ -76,17 +76,17 @@ extern "C" {
  * Context configuration resources
  */
 /*! \brief Max number context objects supported
- * \ingroup group_vx_context_j722s_cfg
+ * \ingroup group_vx_context_cfg
  */
 #define TIVX_CONTEXT_MAX_OBJECTS           (1u)
 
 /*! \brief Max possible unique kernels in a context
- * \ingroup group_vx_context_j722s_cfg
+ * \ingroup group_vx_context_cfg
  */
 #define TIVX_CONTEXT_MAX_KERNELS           (128u)
 
 /*! \brief Max possible user structs in a context
- * \ingroup group_vx_context_j722s_cfg
+ * \ingroup group_vx_context_cfg
  */
 #define TIVX_CONTEXT_MAX_USER_STRUCTS      (128u)
 
@@ -95,49 +95,49 @@ extern "C" {
  * Graph configuration resources
  */
 /*! \brief Max possible delays in graph
- * \ingroup group_vx_graph_j722s_cfg
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_DELAYS              (8u)
 
 /*! \brief Max possible head nodes in graph
- * \ingroup group_vx_graph_j722s_cfg
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_HEAD_NODES          (8u)
 
 /*! \brief Max possible pipeline depth of a graph
  *  \note The max value to be set by application is
  *         (TIVX_GRAPH_MAX_PIPELINE_DEPTH-1)
- * \ingroup group_vx_graph_j722s_cfg
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_PIPELINE_DEPTH      (16u)
 
 /*! \brief Max possible leaf nodes in graph
- * \ingroup group_vx_graph_j722s_cfg
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_LEAF_NODES          (16u)
 
 /*! \brief Max possible parameters in graph
- * \ingroup group_vx_graph_j722s_cfg
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_PARAMS              (16u)
 
 /*! \brief Max data ref queue in graph
- * \ingroup group_vx_graph_j722s_cfg
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_DATA_REF_QUEUE      (32u)
 
 /*! \brief Max possible nodes in graph
- * \ingroup group_vx_graph_j722s_cfg
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_NODES               (64u)
 
 /*! \brief Max possible data references in a graph
- * \ingroup group_vx_graph_j722s_cfg
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_DATA_REF            (128u)
 
 /*! \brief Max number graph objects supported
- * \ingroup group_vx_graph_j722s_cfg
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_OBJECTS             (256u)
 
@@ -146,22 +146,22 @@ extern "C" {
  * Node configuration resources
  */
 /*! \brief Max nodes taking output form a given node
- * \ingroup group_vx_node_j722s_cfg
+ * \ingroup group_vx_node_cfg
  */
 #define TIVX_NODE_MAX_OUT_NODES            (8u)
 
 /*! \brief Max nodes feeding input to a given node
- * \ingroup group_vx_node_j722s_cfg
+ * \ingroup group_vx_node_cfg
  */
 #define TIVX_NODE_MAX_IN_NODES             (8u)
 
 /*! \brief Max number of times a given node can be replicated
- * \ingroup group_vx_node_j722s_cfg
+ * \ingroup group_vx_node_cfg
  */
 #define TIVX_NODE_MAX_REPLICATE            (64u)
 
 /*! \brief Max number node objects supported
- * \ingroup group_vx_node_j722s_cfg
+ * \ingroup group_vx_node_cfg
  */
 #define TIVX_NODE_MAX_OBJECTS              (64u)
 
@@ -173,12 +173,12 @@ extern "C" {
  * Array data object configuration resources
  */
 /*! \brief Max possible mapping via vxMapArray supported
- * \ingroup group_vx_array_j722s_cfg
+ * \ingroup group_vx_array_cfg
  */
 #define TIVX_ARRAY_MAX_MAPS                (16u)
 
 /*! \brief Max number array objects supported
- * \ingroup group_vx_array_j722s_cfg
+ * \ingroup group_vx_array_cfg
  */
 #define TIVX_ARRAY_MAX_OBJECTS             (96u)
 
@@ -187,7 +187,7 @@ extern "C" {
  * Convolution data object configuration resources
  */
 /*! \brief Max number convolution objects supported
- * \ingroup group_vx_convolution_j722s_cfg
+ * \ingroup group_vx_convolution_cfg
  */
 #define TIVX_CONVOLUTION_MAX_OBJECTS       (48u)
 
@@ -196,7 +196,7 @@ extern "C" {
  * Distribution data object configuration resources
  */
 /*! \brief Max number distribution objects supported
- * \ingroup group_vx_distribution_j722s_cfg
+ * \ingroup group_vx_distribution_cfg
  */
 #define TIVX_DISTRIBUTION_MAX_OBJECTS      (48u)
 
@@ -205,17 +205,17 @@ extern "C" {
  * Delay data object configuration resources
  */
 /*! \brief Maximum number of objects supported inside delay object
- * \ingroup group_vx_delay_j722s_cfg
+ * \ingroup group_vx_delay_cfg
  */
 #define TIVX_DELAY_MAX_OBJECT              (8u)
 
 /*! \brief Maximum number of parameter objects that can be associated with a delay
- * \ingroup group_vx_delay_j722s_cfg
+ * \ingroup group_vx_delay_cfg
  */
 #define TIVX_DELAY_MAX_PRM_OBJECT          (16u)
 
 /*! \brief Max number delay objects supported
- * \ingroup group_vx_delay_j722s_cfg
+ * \ingroup group_vx_delay_cfg
  */
 #define TIVX_DELAY_MAX_OBJECTS             (48u)
 
@@ -224,17 +224,17 @@ extern "C" {
  * Image data object configuration resources
  */
 /*! \brief Max possible mapping via vxMapImagePatch supported
- * \ingroup group_vx_image_j722s_cfg
+ * \ingroup group_vx_image_cfg
  */
 #define TIVX_IMAGE_MAX_MAPS                (16u)
 
 /*! \brief Max possible sub images from a image
- * \ingroup group_vx_image_j722s_cfg
+ * \ingroup group_vx_image_cfg
  */
 #define TIVX_IMAGE_MAX_SUBIMAGES           (16u)
 
 /*! \brief Max number image objects supported
- * \ingroup group_vx_image_j722s_cfg
+ * \ingroup group_vx_image_cfg
  */
 #define TIVX_IMAGE_MAX_OBJECTS             (512u + 1u)
 
@@ -243,7 +243,7 @@ extern "C" {
  * LUT data object configuration resources
  */
 /*! \brief Max number LUT objects supported
- * \ingroup group_vx_lut_j722s_cfg
+ * \ingroup group_vx_lut_cfg
  */
 #define TIVX_LUT_MAX_OBJECTS               (48u)
 
@@ -252,7 +252,7 @@ extern "C" {
  * Matrix configuration resources
  */
 /*! \brief Max number matrix objects supported
- * \ingroup group_vx_matrix_j722s_cfg
+ * \ingroup group_vx_matrix_cfg
  */
 #define TIVX_MATRIX_MAX_OBJECTS            (48u)
 
@@ -261,12 +261,12 @@ extern "C" {
  * Object array configuration resources
  */
 /*! \brief Maximum number of objects supported in object array
- * \ingroup group_vx_object_array_j722s_cfg
+ * \ingroup group_vx_object_array_cfg
  */
 #define TIVX_OBJECT_ARRAY_MAX_ITEMS        (32u)
 
 /*! \brief Max number object arrays supported
- * \ingroup group_vx_object_array_j722s_cfg
+ * \ingroup group_vx_object_array_cfg
  */
 #define TIVX_OBJ_ARRAY_MAX_OBJECTS         (256u)
 
@@ -275,12 +275,12 @@ extern "C" {
  * Pyramid data object configuration resources
  */
 /*! \brief Maximum number of objects supported in pyramid
- * \ingroup group_vx_pyramid_j722s_cfg
+ * \ingroup group_vx_pyramid_cfg
  */
 #define TIVX_PYRAMID_MAX_LEVEL_OBJECTS     (64u)
 
 /*! \brief Max number pyramid objects supported
- * \ingroup group_vx_pyramid_j722s_cfg
+ * \ingroup group_vx_pyramid_cfg
  */
 #define TIVX_PYRAMID_MAX_OBJECTS           (64u)
 
@@ -289,12 +289,12 @@ extern "C" {
  * Raw image data object configuration resources
  */
 /*! \brief Max possible mapping via vxMapRawImagePatch supported
- * \ingroup group_tivx_raw_image_j722s_cfg
+ * \ingroup group_tivx_raw_image_cfg
  */
 #define TIVX_RAW_IMAGE_MAX_MAPS            (16u)
 
 /*! \brief Max number raw image objects supported
- * \ingroup group_tivx_raw_image_j722s_cfg
+ * \ingroup group_tivx_raw_image_cfg
  */
 #define TIVX_RAW_IMAGE_MAX_OBJECTS         (96u)
 
@@ -303,7 +303,7 @@ extern "C" {
  * Remap configuration resources
  */
 /*! \brief Max number remap objects supported
- * \ingroup group_vx_remap_j722s_cfg
+ * \ingroup group_vx_remap_cfg
  */
 #define TIVX_REMAP_MAX_OBJECTS             (48u)
 
@@ -312,7 +312,7 @@ extern "C" {
  * Scalar configuration resources
  */
 /*! \brief Max number scalar objects supported
- * \ingroup group_vx_scalar_j722s_cfg
+ * \ingroup group_vx_scalar_cfg
  */
 #define TIVX_SCALAR_MAX_OBJECTS            (48u)
 
@@ -321,12 +321,12 @@ extern "C" {
  * Tensor configuration resources
  */
 /*! \brief Max possible mapping via vxMapTensorPatch supported
- * \ingroup group_vx_tensor_j722s_cfg
+ * \ingroup group_vx_tensor_cfg
  */
 #define TIVX_TENSOR_MAX_MAPS               (16u)
 
 /*! \brief Max number tensor objects supported
- * \ingroup group_vx_tensor_j722s_cfg
+ * \ingroup group_vx_tensor_cfg
  */
 #define TIVX_TENSOR_MAX_OBJECTS            (256u)
 
@@ -335,7 +335,7 @@ extern "C" {
  * Threshold configuration resources
  */
 /*! \brief Max number threshold objects supported
- * \ingroup group_vx_threshold_j722s_cfg
+ * \ingroup group_vx_threshold_cfg
  */
 #define TIVX_THRESHOLD_MAX_OBJECTS         (48u)
 
@@ -344,12 +344,12 @@ extern "C" {
  * User data configuration resources
  */
 /*! \brief Max possible mapping via vxMapUserDataObject supported
- * \ingroup group_vx_user_data_j722s_cfg
+ * \ingroup group_vx_user_data_cfg
  */
 #define TIVX_USER_DATA_OBJECT_MAX_MAPS     (16u)
 
 /*! \brief Max number user data objects supported
- * \ingroup group_vx_user_data_j722s_cfg
+ * \ingroup group_vx_user_data_cfg
  */
 #define TIVX_USER_DATA_OBJECT_MAX_OBJECTS  (96u)
 
@@ -361,7 +361,7 @@ extern "C" {
  * Error configuration resources
  */
 /*! \brief Max number error objects supported
- * \ingroup group_vx_misc_j722s_cfg
+ * \ingroup group_vx_misc_cfg
  */
 #define TIVX_ERROR_MAX_OBJECTS             (30u)
 
@@ -370,7 +370,7 @@ extern "C" {
  * Event queue configuration resources
  */
 /*! \brief Max size of event queue
- * \ingroup group_vx_misc_j722s_cfg
+ * \ingroup group_vx_misc_cfg
  */
 #define TIVX_EVENT_QUEUE_MAX_SIZE          (256u)
 
@@ -379,12 +379,12 @@ extern "C" {
  * Kernel configuration resources
  */
 /*! \brief Max parameters in a kernel
- * \ingroup group_vx_misc_j722s_cfg
+ * \ingroup group_vx_misc_cfg
  */
 #define TIVX_KERNEL_MAX_PARAMS             (64u)
 
 /*! \brief Max number kernel objects supported
- * \ingroup group_vx_misc_j722s_cfg
+ * \ingroup group_vx_misc_cfg
  */
 #define TIVX_KERNEL_MAX_OBJECTS            (128u)
 
@@ -393,7 +393,7 @@ extern "C" {
  * Meta configuration resources
  */
 /*! \brief Max number meta format objects supported
- * \ingroup group_vx_misc_j722s_cfg
+ * \ingroup group_vx_misc_cfg
  */
 #define TIVX_META_FORMAT_MAX_OBJECTS       (512u)
 
@@ -402,7 +402,7 @@ extern "C" {
  * Module configuration resources
  */
 /*! \brief Maximum possible modules in system
- * \ingroup group_vx_misc_j722s_cfg
+ * \ingroup group_vx_misc_cfg
  */
 #define TIVX_MODULE_MAX                    (16u)
 
@@ -411,13 +411,13 @@ extern "C" {
  * Parameter configuration resources
  */
 /*! \brief Max number parameter objects supported
- * \ingroup group_vx_misc_j722s_cfg
+ * \ingroup group_vx_misc_cfg
  */
 #define TIVX_PARAMETER_MAX_OBJECTS         (48u)
 
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
- * \ingroup group_tivx_platform_j722s
+ * \ingroup group_tivx_platform
  */
 #define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (2048u)
 
@@ -429,7 +429,7 @@ extern "C" {
  * Reference queue configuration resources
  */
 /*! \brief Max number data reference queue objects supported
- * \ingroup group_vx_misc_j722s_cfg
+ * \ingroup group_vx_misc_cfg
  */
 #define TIVX_DATA_REF_Q_MAX_OBJECTS        (128u)
 
@@ -438,7 +438,7 @@ extern "C" {
  * Control command configuration resources
  */
 /*! \brief Max size of control command objects
- * \ingroup group_vx_ti_extensions_j722s_cfg
+ * \ingroup group_vx_ti_extensions_cfg
  */
 #define TIVX_MAX_CTRL_CMD_OBJECTS          (4u)
 
@@ -448,7 +448,7 @@ extern "C" {
  */
 /*!
  * \brief Max number of Target that can exist on a CPU
- * \ingroup group_vx_ti_extensions_j722s_cfg
+ * \ingroup group_vx_ti_extensions_cfg
  */
 #define TIVX_TARGET_MAX_TARGETS_IN_CPU     (128u)
 
@@ -457,17 +457,17 @@ extern "C" {
  * Target kernel configuration resources
  */
 /*! \brief Maximum targets a kernel can run on
- * \ingroup group_vx_ti_extensions_j722s_cfg
+ * \ingroup group_vx_ti_extensions_cfg
  */
 #define TIVX_MAX_TARGETS_PER_KERNEL        (32u)
 
 /*! \brief Max target kernel instances that will be active on a CPU at the same time
- * \ingroup group_vx_ti_extensions_j722s_cfg
+ * \ingroup group_vx_ti_extensions_cfg
  */
 #define TIVX_TARGET_KERNEL_INSTANCE_MAX    (64u)
 
 /*! \brief Max target kernel that will be active on a CPU at the same time
- * \ingroup group_vx_ti_extensions_j722s_cfg
+ * \ingroup group_vx_ti_extensions_cfg
  */
 #define TIVX_TARGET_KERNEL_MAX             (256u)
 
@@ -479,7 +479,7 @@ extern "C" {
  * Context configuration resources cont.
  */
 /*! \brief Max possible references in a context
- * \ingroup group_vx_context_j722s_cfg
+ * \ingroup group_vx_context_cfg
  */
 #define TIVX_CONTEXT_MAX_REFERENCES        (TIVX_GRAPH_MAX_OBJECTS+ \
                                             TIVX_NODE_MAX_OBJECTS+ \

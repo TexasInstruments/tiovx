@@ -137,70 +137,10 @@
  * \ingroup group_vx_framework_config
  */
 
- /*!
- * \defgroup group_vx_context_j721e_cfg J721E
- * \brief Device-specific context static configuration values for J721E
- * \ingroup group_vx_context_cfg
- */
-
-  /*!
- * \defgroup group_vx_context_j721s2_cfg J721S2
- * \brief Device-specific context static configuration values for J721S2
- * \ingroup group_vx_context_cfg
- */
-
-  /*!
- * \defgroup group_vx_context_j722s_cfg J722S
- * \brief Device-specific context static configuration values for J722S
- * \ingroup group_vx_context_cfg
- */
-
-  /*!
- * \defgroup group_vx_context_j784s4_cfg J784S4
- * \brief Device-specific context static configuration values for J784S4
- * \ingroup group_vx_context_cfg
- */
-
-  /*!
- * \defgroup group_vx_context_am62a_cfg AM62A
- * \brief Device-specific context static configuration values for AM62A
- * \ingroup group_vx_context_cfg
- */
-
 /*!
  * \defgroup group_vx_graph_cfg Graph Configuration
  * \brief Graph static configuration values
  * \ingroup group_vx_framework_config
- */
-
- /*!
- * \defgroup group_vx_graph_j721e_cfg J721E
- * \brief Device-specific graph static configuration values for J721E
- * \ingroup group_vx_graph_cfg
- */
-
-  /*!
- * \defgroup group_vx_graph_j721s2_cfg J721S2
- * \brief Device-specific graph static configuration values for J721S2
- * \ingroup group_vx_graph_cfg
- */
-
-  /*!
- * \defgroup group_vx_graph_j722s_cfg J722S
- * \brief Device-specific graph static configuration values for J722S
- * \ingroup group_vx_graph_cfg
- */
-
-  /*!
- * \defgroup group_vx_graph_j784s4_cfg J784S4
- * \brief Device-specific graph static configuration values for J784S4
- * \ingroup group_vx_graph_cfg
- */
-
-  /*!
- * \defgroup group_vx_graph_am62a_cfg AM62A
- * \brief Device-specific graph static configuration values for AM62A
- * \ingroup group_vx_graph_cfg
  */
 
 /*!
@@ -209,70 +149,10 @@
   * \ingroup group_vx_framework_config
   */
 
- /*!
- * \defgroup group_vx_node_j721e_cfg J721E
- * \brief Device-specific node static configuration values for J721E
- * \ingroup group_vx_node_cfg
- */
-
-  /*!
- * \defgroup group_vx_node_j721s2_cfg J721S2
- * \brief Device-specific node static configuration values for J721S2
- * \ingroup group_vx_node_cfg
- */
-
-  /*!
- * \defgroup group_vx_node_j722s_cfg J722S
- * \brief Device-specific node static configuration values for J722S
- * \ingroup group_vx_node_cfg
- */
-
-  /*!
- * \defgroup group_vx_node_j784s4_cfg J784S4
- * \brief Device-specific node static configuration values for J784S4
- * \ingroup group_vx_node_cfg
- */
-
-  /*!
- * \defgroup group_vx_node_am62a_cfg AM62A
- * \brief Device-specific node static configuration values for AM62A
- * \ingroup group_vx_node_cfg
- */
-
 /*!
  * \defgroup group_vx_array_cfg Data Object: Array Configuration
  * \brief Array static configuration values
  * \ingroup group_vx_framework_config
- */
-
- /*!
- * \defgroup group_vx_array_j721e_cfg J721E
- * \brief Device-specific array static configuration values for J721E
- * \ingroup group_vx_array_cfg
- */
-
-  /*!
- * \defgroup group_vx_array_j721s2_cfg J721S2
- * \brief Device-specific array static configuration values for J721S2
- * \ingroup group_vx_array_cfg
- */
-
-  /*!
- * \defgroup group_vx_array_j722s_cfg J722S
- * \brief Device-specific array static configuration values for J722S
- * \ingroup group_vx_array_cfg
- */
-
-  /*!
- * \defgroup group_vx_array_j784s4_cfg J784S4
- * \brief Device-specific array static configuration values for J784S4
- * \ingroup group_vx_array_cfg
- */
-
-  /*!
- * \defgroup group_vx_array_am62a_cfg AM62A
- * \brief Device-specific array static configuration values for AM62A
- * \ingroup group_vx_array_cfg
  */
 
 /*!
@@ -281,70 +161,10 @@
  * \ingroup group_vx_framework_config
  */
 
- /*!
- * \defgroup group_vx_convolution_j721e_cfg J721E
- * \brief Device-specific convolution static configuration values for J721E
- * \ingroup group_vx_convolution_cfg
- */
-
-  /*!
- * \defgroup group_vx_convolution_j721s2_cfg J721S2
- * \brief Device-specific convolution static configuration values for J721S2
- * \ingroup group_vx_convolution_cfg
- */
-
-  /*!
- * \defgroup group_vx_convolution_j722s_cfg J722S
- * \brief Device-specific convolution static configuration values for J722S
- * \ingroup group_vx_convolution_cfg
- */
-
-  /*!
- * \defgroup group_vx_convolution_j784s4_cfg J784S4
- * \brief Device-specific convolution static configuration values for J784S4
- * \ingroup group_vx_convolution_cfg
- */
-
-  /*!
- * \defgroup group_vx_convolution_am62a_cfg AM62A
- * \brief Device-specific convolution static configuration values for AM62A
- * \ingroup group_vx_convolution_cfg
- */
-
 /*!
  * \defgroup group_vx_distribution_cfg Data Object: Distribution Configuration
  * \brief Distribution static configuration values
  * \ingroup group_vx_framework_config
- */
-
- /*!
- * \defgroup group_vx_distribution_j721e_cfg J721E
- * \brief Device-specific distribution static configuration values for J721E
- * \ingroup group_vx_distribution_cfg
- */
-
-  /*!
- * \defgroup group_vx_distribution_j721s2_cfg J721S2
- * \brief Device-specific distribution static configuration values for J721S2
- * \ingroup group_vx_distribution_cfg
- */
-
-  /*!
- * \defgroup group_vx_distribution_j722s_cfg J722S
- * \brief Device-specific distribution static configuration values for J722S
- * \ingroup group_vx_distribution_cfg
- */
-
-  /*!
- * \defgroup group_vx_distribution_j784s4_cfg J784S4
- * \brief Device-specific distribution static configuration values for J784S4
- * \ingroup group_vx_distribution_cfg
- */
-
-  /*!
- * \defgroup group_vx_distribution_am62a_cfg AM62A
- * \brief Device-specific distribution static configuration values for AM62A
- * \ingroup group_vx_distribution_cfg
  */
 
 /*!
@@ -353,70 +173,10 @@
  * \ingroup group_vx_framework_config
  */
 
- /*!
- * \defgroup group_vx_delay_j721e_cfg J721E
- * \brief Device-specific delay static configuration values for J721E
- * \ingroup group_vx_delay_cfg
- */
-
-  /*!
- * \defgroup group_vx_delay_j721s2_cfg J721S2
- * \brief Device-specific delay static configuration values for J721S2
- * \ingroup group_vx_delay_cfg
- */
-
-  /*!
- * \defgroup group_vx_delay_j722s_cfg J722S
- * \brief Device-specific delay static configuration values for J722S
- * \ingroup group_vx_delay_cfg
- */
-
-  /*!
- * \defgroup group_vx_delay_j784s4_cfg J784S4
- * \brief Device-specific delay static configuration values for J784S4
- * \ingroup group_vx_delay_cfg
- */
-
-  /*!
- * \defgroup group_vx_delay_am62a_cfg AM62A
- * \brief Device-specific delay static configuration values for AM62A
- * \ingroup group_vx_delay_cfg
- */
-
 /*!
  * \defgroup group_vx_image_cfg Data Object: Image Configuration
  * \brief Image static configuration values
  * \ingroup group_vx_framework_config
- */
-
- /*!
- * \defgroup group_vx_image_j721e_cfg J721E
- * \brief Device-specific image static configuration values for J721E
- * \ingroup group_vx_image_cfg
- */
-
-  /*!
- * \defgroup group_vx_image_j721s2_cfg J721S2
- * \brief Device-specific image static configuration values for J721S2
- * \ingroup group_vx_image_cfg
- */
-
-  /*!
- * \defgroup group_vx_image_j722s_cfg J722S
- * \brief Device-specific image static configuration values for J722S
- * \ingroup group_vx_image_cfg
- */
-
-  /*!
- * \defgroup group_vx_image_j784s4_cfg J784S4
- * \brief Device-specific image static configuration values for J784S4
- * \ingroup group_vx_image_cfg
- */
-
-  /*!
- * \defgroup group_vx_image_am62a_cfg AM62A
- * \brief Device-specific image static configuration values for AM62A
- * \ingroup group_vx_image_cfg
  */
 
 /*!
@@ -425,70 +185,10 @@
  * \ingroup group_vx_framework_config
  */
 
- /*!
- * \defgroup group_vx_lut_j721e_cfg J721E
- * \brief Device-specific LUT static configuration values for J721E
- * \ingroup group_vx_lut_cfg
- */
-
-  /*!
- * \defgroup group_vx_lut_j721s2_cfg J721S2
- * \brief Device-specific LUT static configuration values for J721S2
- * \ingroup group_vx_lut_cfg
- */
-
-  /*!
- * \defgroup group_vx_lut_j722s_cfg J722S
- * \brief Device-specific LUT static configuration values for J722S
- * \ingroup group_vx_lut_cfg
- */
-
-  /*!
- * \defgroup group_vx_lut_j784s4_cfg J784S4
- * \brief Device-specific LUT static configuration values for J784S4
- * \ingroup group_vx_lut_cfg
- */
-
-  /*!
- * \defgroup group_vx_lut_am62a_cfg AM62A
- * \brief Device-specific LUT static configuration values for AM62A
- * \ingroup group_vx_lut_cfg
- */
-
 /*!
  * \defgroup group_vx_matrix_cfg Data Object: Matrix Configuration
  * \brief Matrix static configuration values
  * \ingroup group_vx_framework_config
- */
-
- /*!
- * \defgroup group_vx_matrix_j721e_cfg J721E
- * \brief Device-specific matrix static configuration values for J721E
- * \ingroup group_vx_matrix_cfg
- */
-
-  /*!
- * \defgroup group_vx_matrix_j721s2_cfg J721S2
- * \brief Device-specific matrix static configuration values for J721S2
- * \ingroup group_vx_matrix_cfg
- */
-
-  /*!
- * \defgroup group_vx_matrix_j722s_cfg J722S
- * \brief Device-specific matrix static configuration values for J722S
- * \ingroup group_vx_matrix_cfg
- */
-
-  /*!
- * \defgroup group_vx_matrix_j784s4_cfg J784S4
- * \brief Device-specific matrix static configuration values for J784S4
- * \ingroup group_vx_matrix_cfg
- */
-
-  /*!
- * \defgroup group_vx_matrix_am62a_cfg AM62A
- * \brief Device-specific matrix static configuration values for AM62A
- * \ingroup group_vx_matrix_cfg
  */
 
 /*!
@@ -497,70 +197,10 @@
  * \ingroup group_vx_framework_config
  */
 
- /*!
- * \defgroup group_vx_object_array_j721e_cfg J721E
- * \brief Device-specific object array static configuration values for J721E
- * \ingroup group_vx_object_array_cfg
- */
-
-  /*!
- * \defgroup group_vx_object_array_j721s2_cfg J721S2
- * \brief Device-specific object array static configuration values for J721S2
- * \ingroup group_vx_object_array_cfg
- */
-
-  /*!
- * \defgroup group_vx_object_array_j722s_cfg J722S
- * \brief Device-specific object array static configuration values for J722S
- * \ingroup group_vx_object_array_cfg
- */
-
-  /*!
- * \defgroup group_vx_object_array_j784s4_cfg J784S4
- * \brief Device-specific object array static configuration values for J784S4
- * \ingroup group_vx_object_array_cfg
- */
-
-  /*!
- * \defgroup group_vx_object_array_am62a_cfg AM62A
- * \brief Device-specific object array static configuration values for AM62A
- * \ingroup group_vx_object_array_cfg
- */
-
 /*!
  * \defgroup group_vx_pyramid_cfg Data Object: Pyramid Configuration
  * \brief Pyramid static configuration values
  * \ingroup group_vx_framework_config
- */
-
- /*!
- * \defgroup group_vx_pyramid_j721e_cfg J721E
- * \brief Device-specific pyramid static configuration values for J721E
- * \ingroup group_vx_pyramid_cfg
- */
-
-  /*!
- * \defgroup group_vx_pyramid_j721s2_cfg J721S2
- * \brief Device-specific pyramid static configuration values for J721S2
- * \ingroup group_vx_pyramid_cfg
- */
-
-  /*!
- * \defgroup group_vx_pyramid_j722s_cfg J722S
- * \brief Device-specific pyramid static configuration values for J722S
- * \ingroup group_vx_pyramid_cfg
- */
-
-  /*!
- * \defgroup group_vx_pyramid_j784s4_cfg J784S4
- * \brief Device-specific pyramid static configuration values for J784S4
- * \ingroup group_vx_pyramid_cfg
- */
-
-  /*!
- * \defgroup group_vx_pyramid_am62a_cfg AM62A
- * \brief Device-specific pyramid static configuration values for AM62A
- * \ingroup group_vx_pyramid_cfg
  */
 
 /*!
@@ -569,70 +209,10 @@
  * \ingroup group_vx_framework_config
  */
 
- /*!
- * \defgroup group_tivx_raw_image_j721e_cfg J721E
- * \brief Device-specific raw image static configuration values for J721E
- * \ingroup group_tivx_raw_image_cfg
- */
-
-  /*!
- * \defgroup group_tivx_raw_image_j721s2_cfg J721S2
- * \brief Device-specific raw image static configuration values for J721S2
- * \ingroup group_tivx_raw_image_cfg
- */
-
-  /*!
- * \defgroup group_tivx_raw_image_j722s_cfg J722S
- * \brief Device-specific raw image static configuration values for J722S
- * \ingroup group_tivx_raw_image_cfg
- */
-
-  /*!
- * \defgroup group_tivx_raw_image_j784s4_cfg J784S4
- * \brief Device-specific raw image static configuration values for J784S4
- * \ingroup group_tivx_raw_image_cfg
- */
-
-  /*!
- * \defgroup group_tivx_raw_image_am62a_cfg AM62A
- * \brief Device-specific raw image static configuration values for AM62A
- * \ingroup group_tivx_raw_image_cfg
- */
-
 /*!
  * \defgroup group_vx_remap_cfg Data Object: Remap Configuration
  * \brief Remap static configuration values
  * \ingroup group_vx_framework_config
- */
-
- /*!
- * \defgroup group_vx_remap_j721e_cfg J721E
- * \brief Device-specific remap static configuration values for J721E
- * \ingroup group_vx_remap_cfg
- */
-
-  /*!
- * \defgroup group_vx_remap_j721s2_cfg J721S2
- * \brief Device-specific remap static configuration values for J721S2
- * \ingroup group_vx_remap_cfg
- */
-
-  /*!
- * \defgroup group_vx_remap_j722s_cfg J722S
- * \brief Device-specific remap static configuration values for J722S
- * \ingroup group_vx_remap_cfg
- */
-
-  /*!
- * \defgroup group_vx_remap_j784s4_cfg J784S4
- * \brief Device-specific remap static configuration values for J784S4
- * \ingroup group_vx_remap_cfg
- */
-
-  /*!
- * \defgroup group_vx_remap_am62a_cfg AM62A
- * \brief Device-specific remap static configuration values for AM62A
- * \ingroup group_vx_remap_cfg
  */
 
 /*!
@@ -641,106 +221,16 @@
  * \ingroup group_vx_framework_config
  */
 
- /*!
- * \defgroup group_vx_scalar_j721e_cfg J721E
- * \brief Device-specific scalar static configuration values for J721E
- * \ingroup group_vx_scalar_cfg
- */
-
-  /*!
- * \defgroup group_vx_scalar_j721s2_cfg J721S2
- * \brief Device-specific scalar static configuration values for J721S2
- * \ingroup group_vx_scalar_cfg
- */
-
-  /*!
- * \defgroup group_vx_scalar_j722s_cfg J722S
- * \brief Device-specific scalar static configuration values for J722S
- * \ingroup group_vx_scalar_cfg
- */
-
-  /*!
- * \defgroup group_vx_scalar_j784s4_cfg J784S4
- * \brief Device-specific scalar static configuration values for J784S4
- * \ingroup group_vx_scalar_cfg
- */
-
-  /*!
- * \defgroup group_vx_scalar_am62a_cfg AM62A
- * \brief Device-specific scalar static configuration values for AM62A
- * \ingroup group_vx_scalar_cfg
- */
-
 /*!
  * \defgroup group_vx_tensor_cfg Data Object: Tensor Configuration
  * \brief Tensor static configuration values
  * \ingroup group_vx_framework_config
  */
 
- /*!
- * \defgroup group_vx_tensor_j721e_cfg J721E
- * \brief Device-specific tensor static configuration values for J721E
- * \ingroup group_vx_tensor_cfg
- */
-
-  /*!
- * \defgroup group_vx_tensor_j721s2_cfg J721S2
- * \brief Device-specific tensor static configuration values for J721S2
- * \ingroup group_vx_tensor_cfg
- */
-
-  /*!
- * \defgroup group_vx_tensor_j722s_cfg J722S
- * \brief Device-specific tensor static configuration values for J722S
- * \ingroup group_vx_tensor_cfg
- */
-
-  /*!
- * \defgroup group_vx_tensor_j784s4_cfg J784S4
- * \brief Device-specific tensor static configuration values for J784S4
- * \ingroup group_vx_tensor_cfg
- */
-
-  /*!
- * \defgroup group_vx_tensor_am62a_cfg AM62A
- * \brief Device-specific tensor static configuration values for AM62A
- * \ingroup group_vx_tensor_cfg
- */
-
 /*!
  * \defgroup group_vx_threshold_cfg Data Object: Threshold Configuration
  * \brief Threshold static configuration values
  * \ingroup group_vx_framework_config
- */
-
- /*!
- * \defgroup group_vx_threshold_j721e_cfg J721E
- * \brief Device-specific threshold static configuration values for J721E
- * \ingroup group_vx_threshold_cfg
- */
-
-  /*!
- * \defgroup group_vx_threshold_j721s2_cfg J721S2
- * \brief Device-specific threshold static configuration values for J721S2
- * \ingroup group_vx_threshold_cfg
- */
-
-  /*!
- * \defgroup group_vx_threshold_j722s_cfg J722S
- * \brief Device-specific threshold static configuration values for J722S
- * \ingroup group_vx_threshold_cfg
- */
-
-  /*!
- * \defgroup group_vx_threshold_j784s4_cfg J784S4
- * \brief Device-specific threshold static configuration values for J784S4
- * \ingroup group_vx_threshold_cfg
- */
-
-  /*!
- * \defgroup group_vx_threshold_am62a_cfg AM62A
- * \brief Device-specific threshold static configuration values for AM62A
- * \ingroup group_vx_threshold_cfg
  */
  
 /*!
@@ -749,106 +239,16 @@
  * \ingroup group_vx_framework_config
  */
 
- /*!
- * \defgroup group_vx_user_data_j721e_cfg J721E
- * \brief Device-specific user data static configuration values for J721E
- * \ingroup group_vx_user_data_cfg
- */
-
-  /*!
- * \defgroup group_vx_user_data_j721s2_cfg J721S2
- * \brief Device-specific user data static configuration values for J721S2
- * \ingroup group_vx_user_data_cfg
- */
-
-  /*!
- * \defgroup group_vx_user_data_j722s_cfg J722S
- * \brief Device-specific user data static configuration values for J722S
- * \ingroup group_vx_user_data_cfg
- */
-
-  /*!
- * \defgroup group_vx_user_data_j784s4_cfg J784S4
- * \brief Device-specific user data static configuration values for J784S4
- * \ingroup group_vx_user_data_cfg
- */
-
-  /*!
- * \defgroup group_vx_user_data_am62a_cfg AM62A
- * \brief Device-specific user data static configuration values for AM62A
- * \ingroup group_vx_user_data_cfg
- */
-
 /*!
- * \defgroup group_vx_misc_cfg Miscellaneous Object Configuration
- * \brief Miscellaneous object static configuration values
+ * \defgroup group_vx_misc_cfg Miscellaneous Objects Configuration
+ * \brief Miscellaneous objects static configuration values
  * \ingroup group_vx_framework_config
- */
-
- /*!
- * \defgroup group_vx_misc_j721e_cfg J721E
- * \brief Device-specific miscellaneous object static configuration values for J721E
- * \ingroup group_vx_misc_cfg
- */
-
-  /*!
- * \defgroup group_vx_misc_j721s2_cfg J721S2
- * \brief Device-specific miscellaneous object static configuration values for J721S2
- * \ingroup group_vx_misc_cfg
- */
-
-  /*!
- * \defgroup group_vx_misc_j722s_cfg J722S
- * \brief Device-specific miscellaneous object static configuration values for J722S
- * \ingroup group_vx_misc_cfg
- */
-
-  /*!
- * \defgroup group_vx_misc_j784s4_cfg J784S4
- * \brief Device-specific miscellaneous object static configuration values for J784S4
- * \ingroup group_vx_misc_cfg
- */
-
-  /*!
- * \defgroup group_vx_misc_am62a_cfg AM62A
- * \brief Device-specific miscellaneous object static configuration values for AM62A
- * \ingroup group_vx_misc_cfg
  */
 
 /*!
  * \defgroup group_vx_ti_extensions_cfg TI Extensions
- * \brief TI Extension static configuration values
+ * \brief TI Extensions static configuration values
  * \ingroup group_vx_framework_config
- */
-
- /*!
- * \defgroup group_vx_ti_extensions_j721e_cfg J721E
- * \brief Device-specific TI Extension static configuration values for J721E
- * \ingroup group_vx_ti_extensions_cfg
- */
-
-  /*!
- * \defgroup group_vx_ti_extensions_j721s2_cfg J721S2
- * \brief Device-specific TI Extension static configuration values for J721S2
- * \ingroup group_vx_ti_extensions_cfg
- */
-
-  /*!
- * \defgroup group_vx_ti_extensions_j722s_cfg J722S
- * \brief Device-specific TI Extension static configuration values for J722S
- * \ingroup group_vx_ti_extensions_cfg
- */
-
-  /*!
- * \defgroup group_vx_ti_extensions_j784s4_cfg J784S4
- * \brief Device-specific TI Extension static configuration values for J784S4
- * \ingroup group_vx_ti_extensions_cfg
- */
-
-  /*!
- * \defgroup group_vx_ti_extensions_am62a_cfg AM62A
- * \brief Device-specific TI Extension static configuration values for AM62A
- * \ingroup group_vx_ti_extensions_cfg
  */
 
 /*!
@@ -1145,35 +545,5 @@
  * \defgroup group_tivx_platform Platform APIs
  * \brief Internal APIs for platform operations
  * \ingroup group_vx_platform
- */
-
- /*!
- * \defgroup group_tivx_platform_j721e J721E
- * \brief Device-specific array static configuration values for J721E
- * \ingroup group_tivx_platform
- */
-
-  /*!
- * \defgroup group_tivx_platform_j721s2 J721S2
- * \brief Device-specific array static configuration values for J721S2
- * \ingroup group_tivx_platform
- */
-
-  /*!
- * \defgroup group_tivx_platform_j722s J722S
- * \brief Device-specific array static configuration values for J722S
- * \ingroup group_tivx_platform
- */
-
-  /*!
- * \defgroup group_tivx_platform_j784s4 J784S4
- * \brief Device-specific array static configuration values for J784S4
- * \ingroup group_tivx_platform
- */
-
-  /*!
- * \defgroup group_tivx_platform_am62a AM62A
- * \brief Device-specific array static configuration values for AM62A
- * \ingroup group_tivx_platform
  */
 
