@@ -26,6 +26,13 @@ CSOURCES    := \
 	$(COMMON_FILES_REL_PATH)/tivx_platform_common.c \
     tivx_platform.c
 
+DEFS        += LDRA_UNTESTABLE_CODE
+# This is used to signify which sections of code is only applicable
+# for the host for code coverage purposes. It has been left defined
+# for all cores, but can be wrapped in the appropriate CPU when generating
+# code coverage reports.
+DEFS        += HOST_ONLY
+
 IDIRS += $(TIOVX_PATH)/source/include $(COMMON_FILES_BASE_PATH)
 
 
