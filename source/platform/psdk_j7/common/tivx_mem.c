@@ -584,7 +584,9 @@ vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, 
 
 void tivxEnableL1DandL2CacheWb(void)
 {
+    #if defined(__C7120__) && defined(SOC_J784S4)
     appMemEnableL1DandL2CacheWb();
+    #endif
 }
 
 vx_bool tivxMemCompareFd(uint64_t dmaBufFd1, uint64_t dmaBufFd2, uint32_t size1, uint32_t size2)
