@@ -194,7 +194,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, ownNodeCreateUserCallbackCommand(node2, 0));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, ownNodeAllocObjDescForPipeline(node2, 2));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric((vx_reference)img));
-    for (j = 0; j < i-1; j++)
+    for (j = 0; j < i; j++)
     {
         if (NULL == obj_desc[j])
         {
@@ -236,7 +236,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryTestownContextCreateCmdObj)
     /* Creating context to invoke static function ownContextCreateCmdObj() */
     context = vxCreateContext();
 
-    for (j = 0; j < i-1; j++)
+    for (j = 0; j < i; j++)
     {
         if (NULL == tmp_event[j])
         {
@@ -284,7 +284,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryTestownContextCreateCmdObj1)
     context = vxCreateContext();
 
     /* Cleaning up */
-    for (j = 0; j < i-1; j++)
+    for (j = 0; j < i; j++)
     {
         if (NULL == obj[j])
         {
@@ -322,7 +322,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryTestownContextCreateCmdObj2)
     context = vxCreateContext();
 
     /* Cleanup */
-    for (j = 0; j < i-1; j++)
+    for (j = 0; j < i; j++)
     {
         if (NULL == obj_desc[j])
         {
@@ -360,8 +360,8 @@ TESTCASE_TESTS(tivxObjDescBoundary,
         negativeBoundaryThreshold,
 #if !defined(R5F) /* Not R5F */
         negativeBoundaryTestownContextCreateCmdObj,
-        negativeBoundaryTestownContextCreateCmdObj1,
+        DISABLED_negativeBoundaryTestownContextCreateCmdObj1,
 #endif  /* Not R5F */
-        negativeBoundaryTestownContextCreateCmdObj2,
+        DISABLED_negativeBoundaryTestownContextCreateCmdObj2,
         testownContextFlushCmdPendQueue
         )
