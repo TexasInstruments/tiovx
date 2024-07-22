@@ -43,7 +43,7 @@ typedef struct
 TEST_WITH_ARG(tivxInternalMetaFormat, negativeInternalTestSetMetaFormatFromReference, Arg,
               ARG_ENUM(VX_TYPE_IMAGE),
               ARG_ENUM(VX_TYPE_ARRAY),
-            //   ARG_ENUM(VX_TYPE_SCALAR), /* TODO: Commented due to a seg fault */
+              ARG_ENUM(VX_TYPE_SCALAR),
               ARG_ENUM(VX_TYPE_PYRAMID),
               ARG_ENUM(VX_TYPE_MATRIX),
               ARG_ENUM(VX_TYPE_DISTRIBUTION),
@@ -120,7 +120,6 @@ TEST_WITH_ARG(tivxInternalMetaFormat, negativeInternalTestSetMetaFormatFromRefer
 
             VX_CALL(vxReleaseArray((vx_array*)&exemplar));
         break;
-        // TODO: Segfault when this is enabled from Query scalar
         case VX_TYPE_SCALAR:
             ASSERT_VX_OBJECT(exemplar = (vx_reference)vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
             orig_obj_desc = ((vx_scalar)exemplar)->base.obj_desc;
@@ -217,7 +216,7 @@ TEST_WITH_ARG(tivxInternalMetaFormat, negativeInternalTestSetMetaFormatFromRefer
         break;
         case VX_TYPE_TENSOR:
             dims = (vx_size*)ct_alloc_mem((4) * sizeof(vx_size));
-            ASSERT_VX_OBJECT(exemplar = (vx_reference)vxCreateTensor(context, 4, dims, VX_TYPE_UINT8, 0), VX_TYPE_TENSOR);
+            ASSERT_VX_OBJECT(exemplar = (vx_reference)vxCreateTensor(context, 4, dims, VX_TYPE_UINT8, 0), (enum vx_type_e)VX_TYPE_TENSOR);
             orig_obj_desc = ((vx_tensor)exemplar)->base.obj_desc;
             ((vx_tensor)exemplar)->base.obj_desc = NULL;
 

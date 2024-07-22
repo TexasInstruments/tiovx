@@ -189,7 +189,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attri
     vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar pscalar = (vx_scalar)scalar;
 
-    if (ownIsValidSpecificReference(vxCastRefFromScalar(pscalar),(vx_enum)VX_TYPE_SCALAR) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromScalar(pscalar),(vx_enum)VX_TYPE_SCALAR) == (vx_bool)vx_false_e) ||  ((vx_scalar)scalar->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR, "invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
