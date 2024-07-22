@@ -2069,11 +2069,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
             if(first_time_verify == (vx_bool)vx_false_e)
             {
-                if((vx_status)VX_SUCCESS != ownGraphNodeKernelDeinit(graph))
+                status = ownGraphNodeKernelDeinit(graph);
+                if((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Graph Node kernel de-init failed\n");
                 }
             }
+            {
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* Find out nodes and in nodes for each node in the graph
                 * No resources are allocated in this step
@@ -2083,7 +2086,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Unable to calculate out nodes and in nodes for each node\n");
                 }
-
+            }
             if(status == (vx_status)VX_SUCCESS)
             {
                 vx_bool has_cycle = (vx_bool)vx_false_e;
