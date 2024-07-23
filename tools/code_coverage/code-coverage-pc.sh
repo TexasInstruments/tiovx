@@ -15,13 +15,25 @@
 #    ./code-coverage-pc.sh
 #
 
+TIOVX_CCOV_DIR=/tmp/tiovx_ccov
+
 # You will also need to install lcov and genhtml prior to running this script
-print_usage()
+set_soc()
 {
-    echo "make sure you set SDK_INSTALL_PATH before running this script"
+	echo "Make sure you set SOC environment variable to one of (j721e, j721s2, j784s4, j722s, am62a) before running this script"
 }
 
-TIOVX_CCOV_DIR=/tmp/tiovx_ccov
+print_usage()
+{
+	echo "This utility script will:"
+	echo "- Scrub build the SDK for PC emulation"
+	echo "- Run the full conformance test suite"
+	echo "- Generate a code coverage report at $TIOVX_CCOV_DIR\n"
+
+	echo "Before running this script:"
+	echo "- Install \"lcov\" [ sudo apt install lcov ]"
+	echo "- Set the SDK_INSTALL_PATH environment variable to your workarea"
+}
 
 build_for_test_coverage()
 {
@@ -47,6 +59,8 @@ gen_test_coverage()
 
 if [ -z "${SDK_INSTALL_PATH}" ]; then
 	print_usage
+elif [ -z "$SOC" ]; then
+	set_soc
 else
 	build_for_test_coverage
 	run_for_test_coverage
