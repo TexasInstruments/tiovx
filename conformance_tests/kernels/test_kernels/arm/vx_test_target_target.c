@@ -2032,6 +2032,80 @@ static vx_status tivxTestTargetEventWait(uint8_t id)
     return status;
 }
 
+#ifndef PC
+static vx_status tivxTestTargetPlatformSetHostTargetId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MPU_0);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+#endif
+
+static vx_status tivxNegativeTestTargetPlatformRtos(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    char target_name[64];
+    char test_char[] = "UNKNOWN";
+
+    if((vx_enum)TIVX_TARGET_ID_INVALID != ownPlatformGetTargetId(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' target_name \n");
+        status = (vx_status)VX_FAILURE;
+    }
+    ownPlatformGetObjDescTableInfo(NULL);
+
+    ownPlatformGetTargetName(TIVX_TARGET_ID_INVALID, target_name);
+    if(strncmp(test_char, target_name, sizeof(test_char)) != 0)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for target_id = TIVX_TARGET_ID_INVALID \n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    ownPlatformGetLogRtShmInfo(NULL,NULL);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestTargetPlatformSystemLock(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    ownPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT);
+    ownPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT);
+
+    /* To hit the else condition */
+    ownPlatformSystemLock((vx_enum)1);
+    ownPlatformSystemUnlock((vx_enum)1);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestTargetInitHost(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    /* To fail tivxInitLocal() and tivxDeinitLocal initial checks*/
+    tivxInit();
+    tivxDeInit();
+    /* To fail tivxHostInitLocal() and tivxHostDeinitLocal initial checks*/
+#if defined (A72) || defined (A53)
+    tivxHostInit();
+    tivxHostDeInit();
+#endif
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -2117,7 +2191,13 @@ FuncInfo arrOfFuncs[] = {
     #endif
     {tivxNegativeTestTargetEvent, "",VX_SUCCESS},
     {tivxTestTargetEventClear, "",VX_SUCCESS},
-    {tivxTestTargetEventWait, "",VX_SUCCESS}
+    {tivxTestTargetEventWait, "",VX_SUCCESS},
+    #ifndef PC
+    {tivxTestTargetPlatformSetHostTargetId, "",VX_SUCCESS},
+    #endif
+    {tivxNegativeTestTargetPlatformRtos, "",VX_SUCCESS},
+    {tivxTestTargetPlatformSystemLock, "",VX_SUCCESS},
+    {tivxNegativeTestTargetInitHost, "",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
