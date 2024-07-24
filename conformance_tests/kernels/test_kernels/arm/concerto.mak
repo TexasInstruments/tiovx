@@ -19,6 +19,12 @@ else
 IDIRS       += $(PDK_PATH)/packages/ti/osal/soc/$(SOC)
 endif
 
+ifeq ($(RTOS_SDK), mcu_plus_sdk)
+IDIRS       += $(APP_UTILS_PATH)/utils/rtos/src
+else
+IDIRS       += $(PDK_PATH)/packages/ti/osal/soc/$(SOC)
+endif
+
 include $(FINALE)
 
 endif
