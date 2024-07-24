@@ -102,7 +102,6 @@ vx_status tivxQueueCreate(
 vx_status tivxQueueDelete(tivx_queue *queue)
 {
     vx_status status = (vx_status)VX_FAILURE;
-    vx_status ret_status = (vx_status)VX_FAILURE;
 
     if (NULL != queue)
     {
@@ -120,11 +119,10 @@ vx_status tivxQueueDelete(tivx_queue *queue)
                 TIVX_QUEUE_FLAG_BLOCK_ON_PUT) &&
             (NULL != queue->block_wr))
         {
-            ret_status = tivxEventDelete(&queue->block_wr);
-            if (ret_status != (vx_status)VX_SUCCESS)
+            status = tivxEventDelete(&queue->block_wr);
+            if (status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
-                status =  ret_status;
             }
         }
     }
