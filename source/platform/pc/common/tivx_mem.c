@@ -113,6 +113,58 @@ __attribute__ ((aligned(TIVX_MEM_L2RAM_ALIGN)))
  */
 static vx_uint32 gL2RAM_mem_offset = 0;
 
+vx_status tivxMemRegionTranslate (uint32_t mem_heap_region, uint32_t *heap_id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    switch (mem_heap_region)
+        {
+            case (vx_enum)TIVX_MEM_EXTERNAL:
+                *heap_id = APP_MEM_HEAP_DDR;
+                break;
+            case (vx_enum)TIVX_MEM_INTERNAL_L3:
+                *heap_id = APP_MEM_HEAP_L3;
+                break;
+            case (vx_enum)TIVX_MEM_INTERNAL_L2:
+                *heap_id = APP_MEM_HEAP_L2;
+                break;
+            case (vx_enum)TIVX_MEM_INTERNAL_L1:
+                *heap_id = APP_MEM_HEAP_L1;
+                break;
+            case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
+                *heap_id = APP_MEM_HEAP_DDR_SCRATCH;
+                break;
+            case (vx_enum)TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE:
+                *heap_id = APP_MEM_HEAP_DDR_NON_CACHE;
+                break;
+            case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE:
+                *heap_id = APP_MEM_HEAP_DDR_NON_CACHE_SCRATCH;
+                break;
+            case (vx_enum)TIVX_MEM_EXTERNAL_CACHEABLE_WT:
+                *heap_id = APP_MEM_HEAP_DDR_WT_CACHE;
+                break;
+
+            default:
+                VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
+                status = (vx_status)VX_FAILURE;
+                break;
+        }
+    return (vx_status)status;
+}
+
+vx_bool tivxMemRegionQuery (vx_enum mem_heap_region)
+{
+    vx_bool enabled = (vx_bool)vx_false_e;
+    uint32_t heap_id = 0U;
+    vx_status status = (vx_status)VX_SUCCESS;
+    status = tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
+    if (status == VX_SUCCESS)
+    {
+        enabled = (appMemRegionQuery(heap_id)) ? (vx_bool)vx_true_e : (vx_bool)vx_false_e;
+    }
+
+    return enabled;
+}
+
 vx_status tivxMemBufferAlloc(
     tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_heap_region)
 {

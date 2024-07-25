@@ -342,6 +342,15 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region);
 void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region);
 
 /*!
+ * \brief Check is specified memory region is enabled
+ *
+ * \param [in] mem_heap_region  memory heap region
+ *
+ * \return vx_true_e if region is enabled, vx_false_e otherwise
+ */
+vx_bool tivxMemRegionQuery (vx_enum mem_heap_region);
+
+/*!
  * \brief Frees already allocated memory
  *
  * \param [in] ptr  Pointer to the memory

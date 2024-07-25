@@ -2011,6 +2011,16 @@ TEST(tivxMem, testSubimageNeg)
     VX_CALL(vxReleaseImage(&parent_image));
 }
 
+/* Positive and negative tests function as expected since ran on A-cores, isn't ran on RTOS cores */
+TEST(tivxMem, testMemRegionQuery)
+{
+    vx_enum region = TIVX_MEM_EXTERNAL;
+    ASSERT(tivxMemRegionQuery(region) == (vx_bool)vx_true_e);
+
+    region = TIVX_MEM_EXTERNAL_CACHEABLE_WT;
+    ASSERT(tivxMemRegionQuery(region) == (vx_bool)vx_false_e);
+}
+
 TESTCASE_TESTS(tivxMem,
                testTranslateAddrMemAlloc,
                testTranslateAddrMalloc,
@@ -2021,5 +2031,6 @@ TESTCASE_TESTS(tivxMem,
                testReferenceImportExportIpcValidObj,
                testReferenceImportNeg,
                testReferenceExportNeg,
-               testSubimageNeg
+               testSubimageNeg,
+               testMemRegionQuery
 )
