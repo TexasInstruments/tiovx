@@ -604,6 +604,8 @@ vx_bool tivxMemCompareFd(uint64_t dmaBufFd1, uint64_t dmaBufFd2, uint32_t size1,
         temp_status = (uint32_t)status | (uint32_t)tivxMemTranslateFd(dmaBufFd2, size2, &virtAddr2, &phyAddr2);
         status = (vx_status)temp_status;
 
+#ifdef HOST_ONLY
+/* TIOVX-1793- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_MEM_UM001 */
         if ((vx_status)VX_SUCCESS == status)
         {
             if (phyAddr1 == phyAddr2)
@@ -616,6 +618,7 @@ vx_bool tivxMemCompareFd(uint64_t dmaBufFd1, uint64_t dmaBufFd2, uint32_t size1,
             }
         }
         else
+#endif
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMemTranslateFd() failed.\n");
         }
