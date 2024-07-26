@@ -2140,6 +2140,30 @@ static vx_status tivxNegativeAppRtosSemaphoreCreate(uint8_t id)
 
     return status;
 }
+
+static vx_status tivxNegativeTestMemStats(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t heap_id = (uint32_t)APP_MEM_HEAP_MAX;
+    int32_t mem_heap_region = TIVX_MEM_EXTERNAL;
+    app_mem_stats_t mem_stats;
+
+    for (mem_heap_region = 0; mem_heap_region <= (uint32_t)APP_MEM_HEAP_MAX; mem_heap_region++)
+    {
+        if ((vx_bool)vx_false_e != tivxMemRegionQuery ((vx_enum)mem_heap_region))
+        {
+            if ((vx_status)VX_FAILURE != appMemStats(heap_id, &mem_stats))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'heap_id' = APP_MEM_HEAP_MAX\n");
+                status = (vx_status)VX_FAILURE;
+            }
+        }
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
 #endif
 
 #ifndef PC
@@ -2396,11 +2420,12 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestTargetInitHost, "",VX_SUCCESS},
     #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
     {tivxNegativeAppRtosSemaphoreCreate, "",VX_SUCCESS},
+    {tivxNegativeTestMemStats, "", VX_SUCCESS},
     #endif
     #ifndef PC
     {tivxNegativeTestTargetIpcSendMsg, "",VX_SUCCESS},
     #endif
-    {tivxNegativeTaskMain, "",VX_SUCCESS}
+    {tivxNegativeTaskMain, "",VX_SUCCESS},
     #if defined(R5F) || defined(C7X_FAMILY) || defined(C66)
     {tivxTestQueueCreateDelete, "", VX_SUCCESS},
     {tivxTestQueuePutGetDelete, "", VX_SUCCESS}
