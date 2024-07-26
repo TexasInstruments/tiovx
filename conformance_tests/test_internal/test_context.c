@@ -75,6 +75,7 @@ TEST(tivxInternalContext, negativeTestContextLock)
     vxAddLogEntry((vx_reference)dist1, VX_FAILURE, "hello world", 1, 2, 3);
 
     context->lock = lock1;
+    context->log_lock = lock2;
     dist=dist1;
     VX_CALL(vxReleaseDistribution(&dist));
     VX_CALL(vxRemoveKernel(kernel));
