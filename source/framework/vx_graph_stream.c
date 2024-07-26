@@ -519,6 +519,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     {
                         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
                         VX_PRINT(VX_ZONE_ERROR, "trigger node is not set with pipelining\n");
+                        (void)ownEventQueueDelete(&graph->event_queue);
                     }
 
                     if ((vx_status)VX_SUCCESS == status)
@@ -529,6 +530,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     {
                         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
                         VX_PRINT(VX_ZONE_ERROR, "event could not be registered\n");
+                        (void)ownEventQueueDelete(&graph->event_queue);
                     }
                 }
                 else
@@ -553,6 +555,8 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                             if ((vx_status)VX_SUCCESS != status)
                             {
                                 VX_PRINT(VX_ZONE_ERROR, "streaming task could not be created\n");
+                                (void)tivxEventDelete(&graph->delete_done);
+                                (void)tivxEventDelete(&graph->stop_done);
                             }
                             else
 #endif
@@ -566,6 +570,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                         else
                         {
                             VX_PRINT(VX_ZONE_ERROR, "event could not be created\n");
+                            (void)tivxEventDelete(&graph->delete_done);
                         }
 #endif
                     }
