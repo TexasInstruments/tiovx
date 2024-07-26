@@ -192,6 +192,18 @@ void tivxTestKernelsPrintPerformance(vx_perf_t performance, uint32_t numPixels, 
  */
 void tivxTestKernelsUnSetLoadKernelsFlag(void);
 
+/*!
+ * \brief Function to register TEST_KERNELS Kernels on the Host
+ * \ingroup group_tivx_ext
+ */
+void tivxRegisterTestKernelsKernels(void);
+
+/*!
+ * \brief Function to un-register TEST_KERNELS Kernels on the Host
+ * \ingroup group_tivx_ext
+ */
+void tivxUnRegisterTestKernelsKernels(void);
+
 #ifdef __cplusplus
 }
 #endif

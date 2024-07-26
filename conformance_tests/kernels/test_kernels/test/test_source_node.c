@@ -2458,6 +2458,9 @@ TEST(tivxSourceNode, testContextRelease)
     tivxTestKernelsLoadKernels(context);
 
     tivxTestKernelsUnSetLoadKernelsFlag();
+
+    /* Note: still need to call this in order to unload module */
+    tivxUnRegisterTestKernelsKernels();
 }
 
 TESTCASE_TESTS(tivxSourceNode,
