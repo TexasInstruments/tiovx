@@ -569,6 +569,7 @@ vx_status ownNodeKernelInit(vx_node node)
                     if ((vx_status)TIVX_ERROR_EVENT_TIMEOUT==status)
                     {
                         node->is_timed_out = (vx_bool)vx_true_e;
+                        VX_PRINT(VX_ZONE_ERROR,"Message for TIVX_CMD_NODE_CREATE command has TIMED OUT\n");
                     }
                     else if ((vx_status)VX_SUCCESS==status)
                     {
