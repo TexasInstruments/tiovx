@@ -78,6 +78,8 @@ vx_status ownPlatformInit(void)
 
     retVal = appIpcGetTiovxObjDescSharedMemInfo( (void **) &gTivxObjDescShmEntry, &shmSize);
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM001 */
     if( (0 != retVal) || (gTivxObjDescShmEntry == NULL)
         || ((uint32_t)shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*(uint32_t)sizeof(tivx_obj_desc_shm_entry_t))))
     {
@@ -85,6 +87,7 @@ vx_status ownPlatformInit(void)
         VX_PRINT(VX_ZONE_ERROR, "insufficient shared memory size\n");
         status = (vx_status)VX_FAILURE;
     }
+#endif
     if(status==(vx_status)VX_SUCCESS)
     {
         for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)

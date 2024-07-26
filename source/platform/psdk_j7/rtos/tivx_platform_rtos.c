@@ -64,6 +64,8 @@ vx_status ownPlatformInit(void)
 
     retVal = appIpcGetTiovxObjDescSharedMemInfo( (void **) &gTivxObjDescShmEntry, &shmSize);
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM001 */
     if( (0 != retVal) || (gTivxObjDescShmEntry == NULL)
         || (shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*(uint32_t)sizeof(tivx_obj_desc_shm_entry_t))))
     {
@@ -71,6 +73,7 @@ vx_status ownPlatformInit(void)
         VX_PRINT(VX_ZONE_ERROR, "insufficient shared memory size\n");
         status = (vx_status)VX_FAILURE;
     }
+#endif
     if(status==(vx_status)VX_SUCCESS)
     {
         /* init obj desc on RTOS side, it is assumed that linux starts after RTOS, so linux need not init the object descriptors */

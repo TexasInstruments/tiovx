@@ -257,6 +257,8 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                             /*Do Nothing*/
                         }
                     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM005 */
                     else
                     {
                         /* gettimeofday() failed. */
@@ -264,6 +266,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                         status = (vx_status)VX_FAILURE;
                         done = (bool)vx_true_e;
                     }
+#endif
                 }
                 else
                 {

@@ -230,10 +230,13 @@ vx_bool tivxIsTargetEnabled(const char target_name[])
                 {
                     isEnabled = (vx_bool)vx_true_e;
                 }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IPC_UM001 */
                 else
                 {
                     isEnabled = (vx_bool)vx_false_e;
                 }
+#endif
             }
         }
     }

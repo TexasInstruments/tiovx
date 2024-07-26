@@ -126,11 +126,14 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
             VX_PRINT(VX_ZONE_INFO, "Semaphore wait timed out\n");
             status = (app_rtos_status_t)TIVX_ERROR_EVENT_TIMEOUT;
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1760- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RTOS_EVENT_UM003 */
         else if (APP_RTOS_STATUS_FAILURE == retVal)
         {
             VX_PRINT(VX_ZONE_ERROR, "Semaphore wait returned an error\n");
             status = (vx_status)VX_FAILURE;
         }
+#endif
         else
         {
             /*Do Nothing*/
