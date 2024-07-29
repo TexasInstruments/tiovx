@@ -28,6 +28,7 @@ TESTCASE(tivxSuperNode)
 
 TESTCASE(tivxGraph)
 TESTCASE(tivxGraphDelay)
+TESTCASE(tivxGraphMultiThreaded)
 TESTCASE(tivxAccumulate)
 TESTCASE(tivxAccumulateSquare)
 TESTCASE(tivxAccumulateWeighted)
