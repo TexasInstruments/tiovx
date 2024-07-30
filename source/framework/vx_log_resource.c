@@ -418,7 +418,7 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                      (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST, 0, 0, 1, "TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST", {{0}, {0}}, (vx_bool)vx_true_e, (vx_bool)vx_true_e
+        TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST, 0, 0, 2048, "TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST", {{0}, {0}}, (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
         TIVX_PARAMETER_MAX_OBJECTS, 0, 0, 0, "TIVX_PARAMETER_MAX_OBJECTS", { {(uint32_t)VX_TYPE_PARAMETER, (uint32_t)VX_TYPE_BOOL}, \
@@ -707,6 +707,23 @@ static int32_t getNumDigits(int32_t value)
     return numDigits;
 }
 
+static char * getSOC(void)
+{
+    char * soc = "";
+#if defined(SOC_J721E)
+    soc = "J721E";
+#elif defined(SOC_J784S4)
+    soc = "J784S4";
+#elif defined(SOC_J721S2)
+    soc = "J721S2";
+#elif defined(SOC_J722S)
+    soc = "J722S";
+#elif defined(SOC_AM62A)
+    soc = "AM62A";
+#endif
+    return soc;
+}
+
 void tivxPrintAllResourceStats(void)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
@@ -796,7 +813,9 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void)
 
     char outputFilename[TIVX_CONFIG_PATH_LENGTH];
     const char *env;
+    const char *soc;
     env = test_file_path();
+    soc = getSOC();
 
     if (NULL != env)
     {
@@ -815,8 +834,8 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void)
             }
             else
             {
-                (void)fprintf(ofp, "#ifndef TIVX_CONFIG_H_\n");
-                (void)fprintf(ofp, "#define TIVX_CONFIG_H_\n\n");
+                (void)fprintf(ofp, "#ifndef TIVX_CONFIG_%s_H_\n", soc);
+                (void)fprintf(ofp, "#define TIVX_CONFIG_%s_H_\n\n", soc);
 
                 (void)fprintf(ofp, "#ifdef __cplusplus\n");
                 (void)fprintf(ofp, "extern \"C\" {\n");
