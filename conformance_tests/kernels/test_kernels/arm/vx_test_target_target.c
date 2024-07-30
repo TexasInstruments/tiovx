@@ -2106,6 +2106,30 @@ static vx_status tivxNegativeTestTargetInitHost(uint8_t id)
     return status;
 }
 
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+static vx_status tivxNegativeAppRtosSemaphoreCreate(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_semaphore_handle_t handle;
+    app_rtos_semaphore_params_t Params;
+
+    appRtosSemaphoreParamsInit(&Params);
+    Params.mode = APP_RTOS_SEMAPHORE_MODE_BINARY;
+    Params.initValue = -1U;
+
+    handle = appRtosSemaphoreCreate(Params);
+    if (NULL != handle)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'Params.initValue' = '-1u'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+#endif
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -2197,7 +2221,10 @@ FuncInfo arrOfFuncs[] = {
     #endif
     {tivxNegativeTestTargetPlatformRtos, "",VX_SUCCESS},
     {tivxTestTargetPlatformSystemLock, "",VX_SUCCESS},
-    {tivxNegativeTestTargetInitHost, "",VX_SUCCESS}
+    {tivxNegativeTestTargetInitHost, "",VX_SUCCESS},
+    #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+    {tivxNegativeAppRtosSemaphoreCreate, "",VX_SUCCESS},
+    #endif
 };
 #endif /* FULL_CODE_COVERAGE */
 
