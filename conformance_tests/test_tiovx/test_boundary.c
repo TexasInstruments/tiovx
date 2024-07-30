@@ -38,7 +38,7 @@ TESTCASE(tivxNegativeBoundary, CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tivxBoundary2, CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tivxNegativeBoundary2, CT_VXContext, ct_setup_vx_context, 0)
 
-TESTCASE(tivxFrameworkTest, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxBoundaryFrameworkTest, CT_VXContext, ct_setup_vx_context, 0)
 
 /* TIVX_CONTEXT_MAX_OBJECTS */
 TEST(tivxBoundary, testContext)
@@ -3808,13 +3808,13 @@ TEST(tivxNegativeBoundary2, negativeTestEventQueueBoundary)
 }
 
 /* Testing parameters use by the framework */
-TEST(tivxFrameworkTest, testGeneratedConfig)
+TEST(tivxBoundaryFrameworkTest, testGeneratedConfig)
 {
     tivxPrintAllResourceStats();
     tivxExportAllResourceMaxUsedValueToFile();
 }
 
-TEST(tivxFrameworkTest, testMemoryConsumption)
+TEST(tivxBoundaryFrameworkTest, testMemoryConsumption)
 {
     tivxExportMemoryConsumption(NULL, "", TIVX_MEM_LOG_ALL);
 }
@@ -3931,7 +3931,7 @@ TESTCASE_TESTS(tivxNegativeBoundary2,
         negativeTestControlCommandsBoundary
         )
 
-TESTCASE_TESTS(tivxFrameworkTest,
+TESTCASE_TESTS(tivxBoundaryFrameworkTest,
         testGeneratedConfig,
         testMemoryConsumption
         )
