@@ -2047,6 +2047,7 @@ static vx_status tivxTestTargetPlatformSetHostTargetId(uint8_t id)
 
 static vx_status tivxNegativeTestTargetPlatformRtos(uint8_t id)
 {
+    #define TEST_TARGET_ID_INVALID -2
     vx_status status = (vx_status)VX_SUCCESS;
     char target_name[64];
     char test_char[] = "UNKNOWN";
@@ -2059,6 +2060,13 @@ static vx_status tivxNegativeTestTargetPlatformRtos(uint8_t id)
     ownPlatformGetObjDescTableInfo(NULL);
 
     ownPlatformGetTargetName(TIVX_TARGET_ID_INVALID, target_name);
+    if(strncmp(test_char, target_name, sizeof(test_char)) != 0)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for target_id = TIVX_TARGET_ID_INVALID \n");
+        status = (vx_status)VX_FAILURE;
+    }
+    /*To fail i < TIVX_PLATFORM_MAX_TARGETS for-loop condition by passing invalid id other than TIVX_TARGET_ID_INVALID*/
+    ownPlatformGetTargetName(TEST_TARGET_ID_INVALID, target_name);
     if(strncmp(test_char, target_name, sizeof(test_char)) != 0)
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for target_id = TIVX_TARGET_ID_INVALID \n");
@@ -2082,6 +2090,10 @@ static vx_status tivxTestTargetPlatformSystemLock(uint8_t id)
     /* To hit the else condition */
     ownPlatformSystemLock((vx_enum)1);
     ownPlatformSystemUnlock((vx_enum)1);
+
+    /* To fail condition lock_id < ( vx_enum ) TIVX_PLATFORM_LOCK_MAX */
+    ownPlatformSystemLock((vx_enum) TIVX_PLATFORM_LOCK_MAX + 1);
+    ownPlatformSystemUnlock((vx_enum) TIVX_PLATFORM_LOCK_MAX + 1);
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -2129,6 +2141,25 @@ static vx_status tivxNegativeAppRtosSemaphoreCreate(uint8_t id)
     return status;
 }
 #endif
+
+static vx_status tivxNegativeTestTargetIpcSendMsg(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_enum cpu_id;
+
+    cpu_id = tivxGetSelfCpuId();
+
+    /* To fail ownIpcSendMsg() by passing invalid parameters */
+    if((vx_status)VX_ERROR_INVALID_PARAMETERS != ownIpcSendMsg(cpu_id, 0, cpu_id, 0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: host port ID=0 & payload=0 \n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
 
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
@@ -2225,6 +2256,7 @@ FuncInfo arrOfFuncs[] = {
     #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
     {tivxNegativeAppRtosSemaphoreCreate, "",VX_SUCCESS},
     #endif
+    {tivxNegativeTestTargetIpcSendMsg, "",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
