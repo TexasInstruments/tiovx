@@ -178,7 +178,7 @@ tivx_obj_desc_t *ownObjDescAlloc(vx_enum ref_type, vx_reference ref)
              * allocating and deallocating object descriptor slots in this file. */
             ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
-            ownLogResourceAlloc("TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", 1);
+            ownLogResourceAlloc("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST", 1);
             ownTableIncrementValue(ref_type);
             /* init entry that is found */
             tmp_obj_desc->obj_desc_id = (uint16_t)idx;
@@ -222,7 +222,7 @@ vx_status ownObjDescFree(tivx_obj_desc_t **obj_desc)
     {
         if((*obj_desc)->obj_desc_id < g_obj_desc_table.num_entries)
         {
-            ownLogResourceFree("TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", 1);
+            ownLogResourceFree("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST", 1);
             ownTableDecrementValue((vx_enum)(*obj_desc)->type);
             /* valid object descriptor, free it */
             (*obj_desc)->type = (vx_enum)TIVX_OBJ_DESC_INVALID;

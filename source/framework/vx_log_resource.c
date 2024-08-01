@@ -418,7 +418,7 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                      (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST, 0, 0, 2048, "TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST", {{0}, {0}}, (vx_bool)vx_true_e, (vx_bool)vx_true_e
+        TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST, 0, 0, 1, "TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST", {{0}, {0}}, (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
         TIVX_PARAMETER_MAX_OBJECTS, 0, 0, 1, "TIVX_PARAMETER_MAX_OBJECTS", { {(uint32_t)VX_TYPE_PARAMETER, (uint32_t)VX_TYPE_BOOL}, \
