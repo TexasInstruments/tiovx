@@ -60,8 +60,11 @@ extern "C" {
  */
 #define ASSERT_CONCAT_(a, b) a##b
 #define ASSERT_CONCAT(a, b) ASSERT_CONCAT_(a, b)
-#define BUILD_ASSERT(e) \
-     enum { ASSERT_CONCAT(assert_line_, __LINE__) = (bool)1/(!!(e)) }
+
+/*! \brief Max number of targets on a given R5F
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_TARGET_R5F_MAX            (26U)
 
 /*! \brief Target ID for supported targets
  * \ingroup group_tivx_platform
