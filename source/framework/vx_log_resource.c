@@ -235,7 +235,7 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                                      (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_NODE_MAX_OBJECTS, 0, 0, 0, "TIVX_NODE_MAX_OBJECTS", { {(uint32_t)VX_TYPE_NODE, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_NODE_MAX_OBJECTS, 0, 0, 2, "TIVX_NODE_MAX_OBJECTS", { {(uint32_t)VX_TYPE_NODE, (uint32_t)VX_TYPE_BOOL}, \
                                                                    {1, 1}}, \
                                                                  (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
@@ -245,17 +245,17 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                              (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_ARRAY_MAX_OBJECTS, 0, 0, 0, "TIVX_ARRAY_MAX_OBJECTS", { {(uint32_t)VX_TYPE_ARRAY, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_ARRAY_MAX_OBJECTS, 0, 0, 1, "TIVX_ARRAY_MAX_OBJECTS", { {(uint32_t)VX_TYPE_ARRAY, (uint32_t)VX_TYPE_BOOL}, \
                                                                      {1, 1} }, \
                                                                    (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
-        TIVX_CONVOLUTION_MAX_OBJECTS, 0, 0, 0, "TIVX_CONVOLUTION_MAX_OBJECTS", { {(uint32_t)VX_TYPE_CONVOLUTION, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_CONVOLUTION_MAX_OBJECTS, 0, 0, 1, "TIVX_CONVOLUTION_MAX_OBJECTS", { {(uint32_t)VX_TYPE_CONVOLUTION, (uint32_t)VX_TYPE_BOOL}, \
                                                                                  {1, 1} }, \
                                                                                (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
-        TIVX_DISTRIBUTION_MAX_OBJECTS, 0, 0, 0, "TIVX_DISTRIBUTION_MAX_OBJECTS", { {(uint32_t)VX_TYPE_DISTRIBUTION, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_DISTRIBUTION_MAX_OBJECTS, 0, 0, 1, "TIVX_DISTRIBUTION_MAX_OBJECTS", { {(uint32_t)VX_TYPE_DISTRIBUTION, (uint32_t)VX_TYPE_BOOL}, \
                                                                                    {1, 1} }, \
                                                                                  (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
@@ -270,7 +270,7 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                                          (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_DELAY_MAX_OBJECTS, 0, 0, 0, "TIVX_DELAY_MAX_OBJECTS", { {(uint32_t)VX_TYPE_DELAY, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_DELAY_MAX_OBJECTS, 0, 0, 1, "TIVX_DELAY_MAX_OBJECTS", { {(uint32_t)VX_TYPE_DELAY, (uint32_t)VX_TYPE_BOOL}, \
                                                                      {1, 1} }, \
                                                                    (vx_bool)vx_false_e, (vx_bool)vx_true_e
     },
@@ -289,17 +289,17 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                                        (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_IMAGE_MAX_OBJECTS, 0, 0, 0, "TIVX_IMAGE_MAX_OBJECTS", { {(uint32_t)VX_TYPE_IMAGE, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_IMAGE_MAX_OBJECTS, 0, 0, 1, "TIVX_IMAGE_MAX_OBJECTS", { {(uint32_t)VX_TYPE_IMAGE, (uint32_t)VX_TYPE_BOOL}, \
                                                                      {1, 1} }, \
                                                                    (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
-        TIVX_LUT_MAX_OBJECTS, 0, 0, 0, "TIVX_LUT_MAX_OBJECTS", { {(uint32_t)VX_TYPE_LUT, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_LUT_MAX_OBJECTS, 0, 0, 1, "TIVX_LUT_MAX_OBJECTS", { {(uint32_t)VX_TYPE_LUT, (uint32_t)VX_TYPE_BOOL}, \
                                                                  {1, 1}}, \
                                                                (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
-        TIVX_MATRIX_MAX_OBJECTS, 0, 0, 0, "TIVX_MATRIX_MAX_OBJECTS", { {(uint32_t)VX_TYPE_MATRIX, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_MATRIX_MAX_OBJECTS, 0, 0, 1, "TIVX_MATRIX_MAX_OBJECTS", { {(uint32_t)VX_TYPE_MATRIX, (uint32_t)VX_TYPE_BOOL}, \
                                                                        {1, 1} }, \
                                                                      (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
@@ -311,7 +311,7 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                                              (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_OBJ_ARRAY_MAX_OBJECTS, 0, 0, 0, "TIVX_OBJ_ARRAY_MAX_OBJECTS", { {(uint32_t)VX_TYPE_OBJECT_ARRAY, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_OBJ_ARRAY_MAX_OBJECTS, 0, 0, 1, "TIVX_OBJ_ARRAY_MAX_OBJECTS", { {(uint32_t)VX_TYPE_OBJECT_ARRAY, (uint32_t)VX_TYPE_BOOL}, \
                                                                              {1, 1} }, \
                                                                            (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
@@ -325,7 +325,7 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                                                    (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_PYRAMID_MAX_OBJECTS, 0, 0, 0, "TIVX_PYRAMID_MAX_OBJECTS", { {(uint32_t)VX_TYPE_PYRAMID, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_PYRAMID_MAX_OBJECTS, 0, 0, 1, "TIVX_PYRAMID_MAX_OBJECTS", { {(uint32_t)VX_TYPE_PYRAMID, (uint32_t)VX_TYPE_BOOL}, \
                                                                          {1, 1} }, \
                                                                        (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
@@ -335,17 +335,17 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                                      (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_RAW_IMAGE_MAX_OBJECTS, 0, 0, 0, "TIVX_RAW_IMAGE_MAX_OBJECTS", { {(uint32_t)TIVX_TYPE_RAW_IMAGE, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_RAW_IMAGE_MAX_OBJECTS, 0, 0, 1, "TIVX_RAW_IMAGE_MAX_OBJECTS", { {(uint32_t)TIVX_TYPE_RAW_IMAGE, (uint32_t)VX_TYPE_BOOL}, \
                                                                              {1, 1} }, \
                                                                            (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
-        TIVX_REMAP_MAX_OBJECTS, 0, 0, 0, "TIVX_REMAP_MAX_OBJECTS", { {(uint32_t)VX_TYPE_REMAP, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_REMAP_MAX_OBJECTS, 0, 0, 1, "TIVX_REMAP_MAX_OBJECTS", { {(uint32_t)VX_TYPE_REMAP, (uint32_t)VX_TYPE_BOOL}, \
                                                                      {1, 1} }, \
                                                                    (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
-        TIVX_SCALAR_MAX_OBJECTS, 0, 0, 0, "TIVX_SCALAR_MAX_OBJECTS", { {(uint32_t)VX_TYPE_SCALAR, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_SCALAR_MAX_OBJECTS, 0, 0, 1, "TIVX_SCALAR_MAX_OBJECTS", { {(uint32_t)VX_TYPE_SCALAR, (uint32_t)VX_TYPE_BOOL}, \
                                                                        {1, 1} }, \
                                                                      (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
@@ -355,12 +355,12 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                                (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_TENSOR_MAX_OBJECTS, 0, 0, 0, "TIVX_TENSOR_MAX_OBJECTS", { {(uint32_t)VX_TYPE_TENSOR, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_TENSOR_MAX_OBJECTS, 0, 0, 1, "TIVX_TENSOR_MAX_OBJECTS", { {(uint32_t)VX_TYPE_TENSOR, (uint32_t)VX_TYPE_BOOL}, \
                                                                        {1, 1} }, \
                                                                      (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
-        TIVX_THRESHOLD_MAX_OBJECTS, 0, 0, 0, "TIVX_THRESHOLD_MAX_OBJECTS", { {(uint32_t)VX_TYPE_THRESHOLD, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_THRESHOLD_MAX_OBJECTS, 0, 0, 1, "TIVX_THRESHOLD_MAX_OBJECTS", { {(uint32_t)VX_TYPE_THRESHOLD, (uint32_t)VX_TYPE_BOOL}, \
                                                                              {1, 1} }, \
                                                                            (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
@@ -370,7 +370,7 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                                                    (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_USER_DATA_OBJECT_MAX_OBJECTS, 0, 0, 0, "TIVX_USER_DATA_OBJECT_MAX_OBJECTS", { {VX_TYPE_USER_DATA_OBJECT, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_USER_DATA_OBJECT_MAX_OBJECTS, 0, 0, 1, "TIVX_USER_DATA_OBJECT_MAX_OBJECTS", { {VX_TYPE_USER_DATA_OBJECT, (uint32_t)VX_TYPE_BOOL}, \
                                                                                            {1, 1} }, \
                                                                                          (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
@@ -421,7 +421,7 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
         TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST, 0, 0, 2048, "TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST", {{0}, {0}}, (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
-        TIVX_PARAMETER_MAX_OBJECTS, 0, 0, 0, "TIVX_PARAMETER_MAX_OBJECTS", { {(uint32_t)VX_TYPE_PARAMETER, (uint32_t)VX_TYPE_BOOL}, \
+        TIVX_PARAMETER_MAX_OBJECTS, 0, 0, 1, "TIVX_PARAMETER_MAX_OBJECTS", { {(uint32_t)VX_TYPE_PARAMETER, (uint32_t)VX_TYPE_BOOL}, \
                                                                              {1, 1} }, \
                                                                            (vx_bool)vx_false_e, (vx_bool)vx_true_e
     },
@@ -707,23 +707,6 @@ static int32_t getNumDigits(int32_t value)
     return numDigits;
 }
 
-static char * getSOC(void)
-{
-    char * soc = "";
-#if defined(SOC_J721E)
-    soc = "J721E";
-#elif defined(SOC_J784S4)
-    soc = "J784S4";
-#elif defined(SOC_J721S2)
-    soc = "J721S2";
-#elif defined(SOC_J722S)
-    soc = "J722S";
-#elif defined(SOC_AM62A)
-    soc = "AM62A";
-#endif
-    return soc;
-}
-
 void tivxPrintAllResourceStats(void)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
@@ -813,9 +796,7 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void)
 
     char outputFilename[TIVX_CONFIG_PATH_LENGTH];
     const char *env;
-    const char *soc;
     env = test_file_path();
-    soc = getSOC();
 
     if (NULL != env)
     {
@@ -834,8 +815,8 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void)
             }
             else
             {
-                (void)fprintf(ofp, "#ifndef TIVX_CONFIG_%s_H_\n", soc);
-                (void)fprintf(ofp, "#define TIVX_CONFIG_%s_H_\n\n", soc);
+                (void)fprintf(ofp, "#ifndef TIVX_CONFIG_H_\n");
+                (void)fprintf(ofp, "#define TIVX_CONFIG_H_\n\n");
 
                 (void)fprintf(ofp, "#ifdef __cplusplus\n");
                 (void)fprintf(ofp, "extern \"C\" {\n");
