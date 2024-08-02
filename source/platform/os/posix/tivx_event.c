@@ -245,6 +245,8 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                             status = (vx_status)TIVX_ERROR_EVENT_TIMEOUT;
                             done = (bool)vx_true_e;
                         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM006 */
                         else if ((int32_t)0 != retVal)
                         {
                             /* Error other than ETIMEDOUT. */
@@ -252,6 +254,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                             status = (vx_status)VX_FAILURE;
                             done = (bool)vx_true_e;
                         }
+#endif
                         else
                         {
                             /*Do Nothing*/
@@ -272,13 +275,15 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                 {
                     /* timeout == TIVX_EVENT_TIMEOUT_WAIT_FOREVER */
                     retVal = pthread_cond_wait(&event->cond, &event->lock);
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM007 */
                     if ((int32_t)0 != retVal)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Event wait failed.\n");
                         status = (vx_status)VX_FAILURE;
                         done = (bool)vx_true_e;
                     }
+#endif
                 }
             }
 

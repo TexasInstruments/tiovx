@@ -23,10 +23,7 @@ void tivxRegisterTestKernelsTargetArmKernels(void);
 void tivxUnRegisterTestKernelsTargetArmKernels(void);
 
 static void tivxInitLocal(void);
-#ifdef HOST_ONLY
-/* TIOVX-1759- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_ONLY_INIT_UM002 */
 static void tivxDeInitLocal(void);
-#endif
 
 /* Counter for tracking the {init, de-init} calls. This is also used to
  * guarantee a single init/de-init operation.
@@ -65,13 +62,10 @@ void tivxInit(void)
     tivxInitLocal();
 }
 
-#ifdef HOST_ONLY
-/* TIOVX-1759- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_ONLY_INIT_UM001 */
 void tivxDeInit(void)
 {
     tivxDeInitLocal();
 }
-#endif
 #endif // defined(LINUX) || defined(QNX)
 
 static void tivxInitLocal(void)
@@ -145,14 +139,14 @@ static void tivxInitLocal(void)
     gInitCount++;
 }
 
-#ifdef HOST_ONLY
-/* TIOVX-1759- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_ONLY_INIT_UM002 */
 static void tivxDeInitLocal(void)
 {
     if (0U != gInitCount)
     {
         gInitCount--;
 
+#ifdef HOST_ONLY
+/* TIOVX-1759- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_ONLY_INIT_UM001 */
         if (0U == gInitCount)
         {
             ownPlatformDeleteTargets();
@@ -211,6 +205,7 @@ static void tivxDeInitLocal(void)
 
             VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");
         }
+#endif
     }
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1759- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_INIT_UM001 */
@@ -221,4 +216,3 @@ static void tivxDeInitLocal(void)
     }
 #endif
 }
-#endif

@@ -288,10 +288,13 @@ vx_status ownPosixObjectDeInit(void)
         }
         status = ownCheckUseFlag(g_tivx_posix_objects.isTaskUse,
             TIVX_TASK_MAX_OBJECTS, &error_index);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM002 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting task at index: %d failed\n", error_index);
         }
+#endif
         status = ownCheckUseFlag(g_tivx_posix_objects.isMutexUse,
             TIVX_MUTEX_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)

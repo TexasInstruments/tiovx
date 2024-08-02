@@ -82,8 +82,8 @@ vx_status ownPlatformInit(void)
         for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
         {
             status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);
-#ifdef HOST_ONLY
-/* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_ONLY_PLATFORM_RTOS_UM002 */
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM002 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 ownPlatformDeInit();
@@ -98,8 +98,8 @@ vx_status ownPlatformInit(void)
     return (status);
 }
 
-#ifdef HOST_ONLY
-/* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_ONLY_PLATFORM_RTOS_UM001 */
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM001 */
 void ownPlatformDeInit(void)
 {
     int32_t i;
@@ -114,7 +114,7 @@ void ownPlatformDeInit(void)
         }
     }
 }
-#endif
+/*LDRA_ANALYSIS*/
 
 void ownPlatformSystemLock(vx_enum lock_id)
 {
