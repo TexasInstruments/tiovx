@@ -180,7 +180,7 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                                          (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        TIVX_GRAPH_MAX_PIPELINE_DEPTH, 0, 0, 1, "TIVX_GRAPH_MAX_PIPELINE_DEPTH", { {(uint32_t)TIVX_TYPE_UINTPTR, (uint32_t)TIVX_TYPE_UINTPTR, \
+        TIVX_GRAPH_MAX_PIPELINE_DEPTH, 0, 0, 2, "TIVX_GRAPH_MAX_PIPELINE_DEPTH", { {(uint32_t)TIVX_TYPE_UINTPTR, (uint32_t)TIVX_TYPE_UINTPTR, \
                                                                                     (uint32_t)TIVX_TYPE_UINTPTR, (uint32_t)TIVX_TYPE_UINTPTR, \
                                                                                     (uint32_t)TIVX_TYPE_UINTPTR, (uint32_t)TIVX_TYPE_UINTPTR}, \
                                                                                    {TIVX_DATA_REF_Q_MAX_OBJECTS, TIVX_DATA_REF_Q_MAX_OBJECTS, \
