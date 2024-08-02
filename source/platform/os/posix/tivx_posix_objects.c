@@ -221,6 +221,11 @@ vx_status ownPosixObjectFree(uint8_t *obj, vx_enum type)
             (void)tivxMutexUnlock(g_tivx_objects_lock);
         }
     }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Posix Object is NULL\n");
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+    }
 
     return (status);
 }
