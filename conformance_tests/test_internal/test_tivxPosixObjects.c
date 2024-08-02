@@ -58,8 +58,14 @@ TEST(tivxPosixObjects, negativeTestPosixObjectAlloc)
     ASSERT(NULL == ownPosixObjectAlloc(INVALID_TYPE));
 }
 
+TEST(tivxPosixObjects, negativeTestPosixObjectFree)
+{
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownPosixObjectFree(NULL, INVALID_TYPE));
+}
+
 TESTCASE_TESTS(tivxPosixObjects,
                testPosixObjectFree,
-               negativeTestPosixObjectAlloc  
+               negativeTestPosixObjectAlloc,
+               negativeTestPosixObjectFree
 )
 #endif
