@@ -99,16 +99,14 @@ static void tivxInitLocal(void)
         tivxRegisterTutorialTargetKernels();
         #endif
     #endif
-    #endif
-
-    #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A) || defined (SOC_J722S)
+    #else
     #if defined (C7X_FAMILY)
         tivxRegisterOpenVXCoreTargetKernels();
         #ifdef BUILD_TUTORIAL
         tivxRegisterTutorialTargetKernels();
         #endif
     #endif
-    #endif
+    #endif /* defined(SOC_J721E) */
 
     #ifdef BUILD_CONFORMANCE_TEST
     #if defined (R5F)
@@ -154,16 +152,14 @@ static void tivxDeInitLocal(void)
             tivxUnRegisterTutorialTargetKernels();
             #endif
         #endif
-        #endif
-
-        #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A) || defined (SOC_J722S)
+        #else
         #if defined (C7X_FAMILY)
             tivxUnRegisterOpenVXCoreTargetKernels();
             #ifdef BUILD_TUTORIAL
             tivxUnRegisterTutorialTargetKernels();
             #endif
         #endif
-        #endif
+        #endif /* defined(SOC_J721E) */
 
         #ifdef BUILD_CONFORMANCE_TEST
         #if defined (R5F)

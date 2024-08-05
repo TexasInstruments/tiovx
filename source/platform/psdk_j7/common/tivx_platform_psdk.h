@@ -75,8 +75,10 @@
 #include <soc/tivx_platform_psdk_am62a.h>
 #elif defined(SOC_J722S)
 #include <soc/tivx_platform_psdk_j722s.h>
+#elif defined(SOC_J742S2)
+#include <soc/tivx_platform_psdk_j742s2.h>
 #else
-#error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A, SOC_J722S
+#error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A, SOC_J722S, SOC_J742S2
 #endif
 
 void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name, uint32_t task_pri);

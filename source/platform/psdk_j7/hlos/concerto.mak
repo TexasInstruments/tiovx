@@ -1,5 +1,4 @@
 
-ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J721E J721S2 J784S4 AM62A J722S))
 ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53))
 ifeq ($(TARGET_OS),$(filter $(TARGET_OS), LINUX QNX))
 
@@ -38,6 +37,5 @@ DEFS += TARGET_HLOS
 
 include $(FINALE)
 
-endif
 endif
 endif

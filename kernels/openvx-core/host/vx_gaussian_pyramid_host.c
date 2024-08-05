@@ -369,7 +369,7 @@ vx_status tivxAddKernelGaussianPyramid(vx_context context)
             tivxKernelsHostUtilsAddKernelTargetDsp(kernel);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC2);
-#if defined(SOC_J784S4)
+#if defined(SOC_J784S4) || defined(SOC_J742S2)
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC2_MSC1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC2_MSC2);
 #endif
