@@ -86,6 +86,14 @@
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
 #include <utils/rtos/include/app_rtos.h>
 #include <utils/perf_stats/include/app_perf_stats.h>
+#if defined(MCU_PLUS_SDK)
+#include <app_rtos_mcu_plus_priv.h>
+#else
+#include <osal_soc.h>
+#endif
+#endif
+#if defined(A72) || defined(A53) || defined(PC)
+#include <tivx_platform_posix.h>
 #endif
 
 /* #define FULL_CODE_COVERAGE */
@@ -1801,6 +1809,8 @@ static vx_status tivxAppIpcIsCpuEnabled(uint8_t id)
     return status;
 }
 
+#if !defined (MCU_PLUS_SDK)
+
 static vx_status tivxAppIpcGetIpcCpuId(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -1816,6 +1826,8 @@ static vx_status tivxAppIpcGetIpcCpuId(uint8_t id)
 
     return status;
 }
+
+#endif
 
 static vx_status tivxAppIpcGetAppCpuId(uint8_t id)
 {
@@ -2750,6 +2762,45 @@ static vx_status tivxNegativeTaskAppIpcSendNotify(uint8_t id)
 }
 #endif
 
+static vx_status tivxNegativeTestMutexMaxOut(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    int i,j = 0;
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+#if defined(MCU_PLUS_SDK)
+#define MAX_MUTEX APP_RTOS_MAX_SEMAPHORE_COUNT
+#else
+#define MAX_MUTEX OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC
+#endif
+#endif
+#if defined(A72) || defined(A53) || defined(PC)
+    #define MAX_MUTEX TIVX_MUTEX_MAX_OBJECTS
+#endif
+    tivx_mutex mutex[MAX_MUTEX];
+
+    for (i = 0; i < MAX_MUTEX; i++)
+    {
+        if((vx_status)VX_SUCCESS != tivxMutexCreate(&mutex[i]))
+        {
+            break;
+        }
+    }
+    j = i;
+
+    for (i = 0; i < j; i++)
+    {
+        if((vx_status)VX_SUCCESS != tivxMutexDelete(&mutex[i]))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex at the index %d\n",i);
+            status = (vx_status)VX_FAILURE;
+            break;
+        }
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -2823,7 +2874,9 @@ FuncInfo arrOfFuncs[] = {
     {tivxAppMemGetNumAllocs, "", VX_SUCCESS},
     {tivxAppMemUnMap, "", VX_SUCCESS},
     {tivxAppIpcIsCpuEnabled, "", VX_SUCCESS},
+#if !defined (MCU_PLUS_SDK)
     {tivxAppIpcGetIpcCpuId, "", VX_SUCCESS},
+#endif
     {tivxAppIpcGetAppCpuId, "", VX_SUCCESS},
     {tivxAppIpcGetCpuName, "", VX_SUCCESS},
     {tivxNegativeAppIpcHwLockAcquire, "", VX_SUCCESS},
@@ -2880,8 +2933,9 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTaskAappIpcHwLockAcquire, "", VX_SUCCESS},
     {tivxNegativeTaskAppIpcHwLockRelease, "", VX_SUCCESS},
     {tivxNegativeTaskAppIpcSendNotifyPort, "", VX_SUCCESS},
-    {tivxNegativeTaskAppIpcSendNotify, "", VX_SUCCESS}
+    {tivxNegativeTaskAppIpcSendNotify, "", VX_SUCCESS},
     #endif
+    {tivxNegativeTestMutexMaxOut, "",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
