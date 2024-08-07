@@ -12,43 +12,43 @@
 #    it can be exported in various formats including C code, JPG image
 #
 #    \section INSTALLATION Installation
-#    - Install Python 3.5.2 or later (https://www.python.org/)
-#      - To confirm "python" and "pip" are in your install path, type below
+#    - Install Python 3.5.2 or later (https://www.python.org/downloads/)
+#      - To confirm "python" and "pip" are in your install path, type below:
 #        \code
 #        python3 --version
 #        pip3 --version
 #        \endcode
-#    - Install 'dot' tool provided as part of 'graphviz' (http://www.graphviz.org/) \n
-#      'dot' is required to generated .JPG file for a OpenVX graph specification
-#      - To confirm "dot" tool is in your install path, type
+#    - Install 'dot' tool provided as part of 'graphviz' (http://www.graphviz.org/download/). \n
+#      'dot' is required to generated .JPG file for a OpenVX graph specification.
+#      - To confirm "dot" tool is in your install path, type:
 #        \code
 #        dot -V
 #        \endcode
 #    - Install 'tiovx' python module by executing below command at folder
-#      "<tiovx install path>/tools/PyTIOVX"
+#      "<tiovx install path>/tools/PyTIOVX".
 #      \code
 #      sudo pip3 install -e .
 #      \endcode
-#      Expected output,
+#      Expected output:
 #      \code
 #      Obtaining file:///<tiovx install path>/tiovx/tools/PyTIOVX
 #      Installing collected packages: tiovx
 #        Running setup.py develop for tiovx
 #      Successfully installed tiovx-0.1
 #      \endcode
-#    - Now tiovx python module can be imported and used in your python script
-#      by doing below,
+#    - Now, the tiovx python module can be imported and used in your python script
+#      by doing below:
 #      \code
 #      from tiovx import *
 #      \endcode
 #
 #    \section USAGE Usage
 #    - Describe your application graph or kernel wrapper using PyTIOVX APIs in a .py file.
-#      Execute the .py file by invoking python
+#      Execute the .py file by invoking python:
 #      \code
 #      python my_kernel_wrapper.py
 #      \endcode
-#      Note: if the following error is observed, please run using the command "python3.5 my_use_case.py"
+#      Note: if the following error is observed, please run using the command "python3.5 my_use_case.py".
 #      \code
 #      Traceback (most recent call last):
 #          File "kernel_generate_example.py", line 6, in <module>
@@ -60,10 +60,10 @@
 #      ImportError: No module named enum
 #      \endcode
 #    - See also examples in TIOVX tutorial
-#      <a href="../tutorial_guide/index.html" target="_blank">[HTML]</a>
-#      for making OpenVX usecases using PyTIOVX tool
-#    - See also sample python scripts (*.py) @
-#      "<tiovx install path>/tools/sample_use_cases" for additional examples
+#      <a href="CH03_GRAPH.html" target="_blank">[HTML]</a>
+#      for making OpenVX usecases using PyTIOVX tool.
+#    - See also sample python scripts (*.py) at
+#      "<tiovx install path>/tools/sample_use_cases" for additional examples.
 #
 #    \section KERNEL_SCRIPT Kernel Generation
 #    \par Example Kernel Generation Python Script
@@ -91,6 +91,9 @@
 #      \endcode
 #
 #    - The constructor for the KernelExportCode API contains arguments that serve as the directory paths of the generated code.
+#    - \code
+#      code = KernelExportCode(Module.IMAGING, Core.C66, "CUSTOM_APPLICATION_PATH")
+#      \endcode
 #          - The first argument, Module.IMAGING, is the intended module of the kernel. A full list of modules are contained with the module.py file of PyTIOVX.
 #            If the name of the module needed is not listed, either the module can be added to the module.py file or the module name can be passed as a string to the constructor.
 #          - The second argument, Core.C66 is the specific core that this kernel will run on. Similar to the module name, a list of core values are listed in core.py.
@@ -101,38 +104,63 @@
 #              - The include_subpath should be set to the string value of the company name of the developer and defaults to "TI".
 #              - The include_filename contains the path name to the include file. By default, this value is set an empty string which results in the filepath being set to "<lowercase(include_subpath)>vx_<module>". However, the filepath can be overwritten
 #                by filling in this optional parameter.
-#    - Several dedicated API's are provided in the case that certain parameters of KernelExportCode must be changed during execution of the script. This example shows one such API,
+#
+#    - \code
+#    code.setCoreDirectory("c66")
+#    \endcode
+#       - Several dedicated API's are provided in the case that certain parameters of KernelExportCode must be changed during execution of the script. This example shows one such API,
 #      setCoreDirectory. This method can change the intended core by passing in a particular core as its only argument.
-#    - The constructor for the Kernel class contains as its only argument the name of the kernel to be created.
-#    - Parameters of a kernel are set via the setParameter API as in the example above. In this example, 3 parameters are set, an input image, an input scalar enum and an output image.
-#    - The following are arguments of the setParameter method:
+#    - \code
+#    kernel = Kernel("channel_extract")
+#    \endcode
+#       - The constructor for the Kernel class contains as its only argument the name of the kernel to be created.
+#    - \code
+#    kernel.setParameter(Type.IMAGE, Direction.INPUT, ParamState.REQUIRED, "IN", ['VX_DF_IMAGE_U8'])
+#    kernel.setParameter(Type.ENUM, Direction.INPUT, ParamState.REQUIRED, "CHANNEL")
+#    kernel.setParameter(Type.IMAGE, Direction.OUTPUT, ParamState.REQUIRED, "OUT", ['VX_DF_IMAGE_U8'])
+#    \endcode
+#       - Parameters of a kernel are set via the setParameter API as in the example above. Here, 3 parameters are set: an input image, an input scalar enum, and an output image.
+#       - The following are arguments of the setParameter method:
 #          - The first argument is the OpenVX data type of the parameter. Allowed values can be found in enums.py.
 #          - The second argument is the direction of the parameter. Allowed values are Direction.INPUT or Direction.OUTPUT.
 #          - The third argument determines whether the parameter is required or optional. Allowed values are ParamState.REQUIRED or ParamState.OPTIONAL.
 #          - The fourth argument allows you to provide a name for the new parameter.  This argument accepts a string value as the input.  For instance, if this object is an input image,
-#            you may want to give it the argument "IN_IMAGE".
+#            you may want to provide the name argument "IN_IMAGE".
 #          - The fifth argument is optional and defines a set of allowed data types of the parameter. These are given as OpenVX data types as defined in the OpenVX 1.1 specification and
 #            are given as a comma separated list.
 #          - For further information, please refer to the API guide here \ref PYTIOVX_API.
-#    - After setting all parameters via the setParameter method, relationships among these parameters can be set via the setParameterRelationship method. This method is designed to ouput
-#      code in the validation callback to verify equality between certain attributes of parameters of the kernel. This validation of parameters is important in order no run-time errors of
-#      the kernel.
-#    - In this case, a relationship is set between the width and height of the "IN" and "OUT" parameters. This will produce code in the kernel validate callback that
-#      first queries the "IN" and "OUT" parameters for the width and height then checks for equality between the width of the "IN" parameter against the width of the "OUT" parameter
-#      in addition to checking for the equality between the height of the "IN" parameter against the height of the "OUT" parameter.
-#    - The allocateLocalMemory method is used to generate OpenVX code for allocating and free-ing local memory based on characteristics of existing data objects or on constant values.
-#      In this example, the allocateLocalMemory method is used to create a buffer with the name "img_scratch_mem" and is equal to the size of the width * height of the image, "IN".
-#      For further information, please refer to the API guide.
-#    - The list of targets for the kernel to run on can be set via the setTarget API. All possible targets that the kernel could run on should be given as arguments to this API. In this example, the target kernel is
-#      can be run on either DSP1 or DSP2 and therefore the setTarget API is called twice with each argument given. Allowed target values are given in enums.py.
-#    - After setting up all parameters and targets of the kernel, the kernel wrappers can be generated by running the export method.
-#    - Further documentation of the API's used for kernel code generation can be found <a href="modules.html" target="_blank">here</a>
+#    - \code
+#    kernel.setParameterRelationship(["IN", "OUT"], [Attribute.Image.WIDTH, Attribute.Image.HEIGHT])
+#    \endcode
+#       - After setting all parameters via the setParameter method, relationships among these parameters can be set via the setParameterRelationship method. This method is designed to ouput
+#       code in the validation callback to verify equality between certain attributes of parameters of the kernel. This validation of parameters is important in order no run-time errors of
+#       the kernel.
+#       - In this case, a relationship is set between the width and height of the "IN" and "OUT" parameters. This will produce code in the kernel validate callback that
+#       first queries the "IN" and "OUT" parameters for the width and height then checks for equality between the width of the "IN" parameter against the width of the "OUT" parameter
+#       in addition to checking for the equality between the height of the "IN" parameter against the height of the "OUT" parameter.
+#    - \code
+#    kernel.allocateLocalMemory("img_scratch_mem", ["width*height"], "IN")
+#    \endcode
+#       - The allocateLocalMemory method is used to generate OpenVX code for allocating and free-ing local memory based on characteristics of existing data objects or on constant values.
+#       In this example, the allocateLocalMemory method is used to create a buffer with the name "img_scratch_mem" and is equal to the size of the width * height of the image, "IN".
+#       For further information, please refer to the API guide.
+#    - \code
+#    kernel.setTarget(Target.DSP1)
+#    kernel.setTarget(Target.DSP2)
+#    \endcode
+#       - The list of targets for the kernel to run on can be set via the setTarget API. All possible targets that the kernel could run on should be given as arguments to this API. In this example, the target kernel is
+#       can be run on either DSP1 or DSP2 and therefore the setTarget API is called twice with each argument given. Allowed target values are given in enums.py.
+#    - \code
+#    code.export(kernel)
+#    \endcode
+#       - After setting up all parameters and targets of the kernel, the kernel wrappers can be generated by running the export method.
+#    - Further documentation of the API's used for kernel code generation can be found <a href="modules.html" target="_blank">here.</a>
 #
 #    \par Generated Kernel Code Overview
 #
 #    - This section describes the generated files based on the example given above.
-#    - Based on whether the code generation path is set to CUSTOM_APPLICATION_PATH or VISION_APPS_PATH, the kernel files are generated in different locations.
-#    - The files that are generated the first time only are noted.
+#    - The kernel files are generated in different locations depending on the address specified by the code generation path.
+#    - The files that are only generated the first time are noted. Here, the generation path was set to "custom_application_path".
 #      \image html custom_application_path.png
 #      \code
 #      <CUSTOM_APPLICATION_PATH>/DEVELOPER_TODO.txt (generated first time only)
@@ -153,7 +181,7 @@
 #      <CUSTOM_APPLICATION_PATH>/kernels/imaging/test/concerto.mak (generated first time only)
 #      <CUSTOM_APPLICATION_PATH>/kernels/imaging/test/test_main.h (generated first time only)
 #      \endcode
-#    - If the final argument was changed to VISION_APPS_PATH, the following files are produced:
+#    - If the final argument of the KernelExportCode function was provided as VISION_APPS_PATH, the following files are produced:
 #      \image html vision_apps_path.png
 #      \code
 #      <VISION_APPS_PATH>/kernels/DEVELOPER_TODO.txt (generated first time only)
@@ -173,7 +201,7 @@
 #      <VISION_APPS_PATH>/kernels/imaging/test/test_main.h (generated first time only)
 #      \endcode
 #    - As noted, the majority of the generated files are only generated once per kernel module. These files contain boilerplate code needed for registering/unregistering the new kernels and node creation.
-#    - In the case that the module already exists, code will simply be appended to the existing files rather than duplicating any previously generated files.
+#    - In the case that the module already exists, new code will simply be appended to the existing files. Previously generated files will not be duplicated.
 #
 #    \par Overview of Necessary Kernel Code Modifications
 #
@@ -202,6 +230,9 @@
 #          kernel.
 #    - Within the generated test folder, the test_main.h and concerto allows for simple integration into the TIOVX test framework.  However, the test case itself must be
 #      developed.  For test case references, please refer to tiovx/conformance_tests/
+#
+#    \par Integrating User Kernels and OpenVX Graphs
+#    - Further documentation on creating user kernel nodes can be found <a href="TIOVX_TARGET_KERNEL.html#KERNEL_MODULE_INTEGRATION" target="_blank">here.</a>
 #
 #    \if APP_GEN_TOOL
 #
