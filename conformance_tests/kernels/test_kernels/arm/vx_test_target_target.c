@@ -2142,6 +2142,7 @@ static vx_status tivxNegativeAppRtosSemaphoreCreate(uint8_t id)
 }
 #endif
 
+#ifndef PC
 static vx_status tivxNegativeTestTargetIpcSendMsg(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -2160,6 +2161,7 @@ static vx_status tivxNegativeTestTargetIpcSendMsg(uint8_t id)
 
     return status;
 }
+#endif
 
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
@@ -2256,7 +2258,9 @@ FuncInfo arrOfFuncs[] = {
     #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
     {tivxNegativeAppRtosSemaphoreCreate, "",VX_SUCCESS},
     #endif
+    #ifndef PC
     {tivxNegativeTestTargetIpcSendMsg, "",VX_SUCCESS}
+    #endif
 };
 #endif /* FULL_CODE_COVERAGE */
 
