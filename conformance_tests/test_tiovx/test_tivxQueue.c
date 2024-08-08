@@ -65,7 +65,28 @@ TEST(tivxQueue, testQueueCreatePutGetDelete)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueueDelete(queue_t));
 }
 
-TESTCASE_TESTS(tivxQueue,
-        testQueueCreatePutGetDelete
+TEST(tivxQueue, testQueueCreateGet)
+{
+    vx_status status = VX_SUCCESS;
+    tivx_queue test_queue[10];
+    uintptr_t test_qu_mem;
+    tivx_queue *queue_t = &test_queue[0];
+    uintptr_t *queue_mem_t=&test_qu_mem;
+    uintptr_t data;
+    
+    /*To create queue with block on queue put*/
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS,tivxQueueCreate(queue_t, 8, queue_mem_t, TIVX_QUEUE_FLAG_BLOCK_ON_PUT));
 
+    queue_t->max_ele =1;
+    queue_t->count =0;  
+    /*TO disable blocking on queue in tivxQueueGet */
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,tivxQueueGet(queue_t, &data, 1));
+
+    /*To Delete queue with block on queue put*/
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueueDelete(queue_t));
+}
+
+TESTCASE_TESTS(tivxQueue,
+        testQueueCreatePutGetDelete,
+        testQueueCreateGet
 )
