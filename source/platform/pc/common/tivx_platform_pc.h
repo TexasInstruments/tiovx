@@ -376,6 +376,7 @@ extern "C" {
     {TIVX_TARGET_CAPTURE4, 35},                              \
     {TIVX_TARGET_DMPAC_SDE, 36},                             \
     {TIVX_TARGET_DMPAC_DOF, 37},                             \
+    {TIVX_TARGET_MCU1_0, 38},                                  \
     /* TIVX_TARGET_HOST should point to the number associated with  \
      * the host target thread in list above                         \
      */                                                             \
