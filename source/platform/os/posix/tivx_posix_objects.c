@@ -276,16 +276,22 @@ vx_status ownPosixObjectDeInit(void)
 
         status = ownCheckUseFlag(g_tivx_posix_objects.isEventUse,
             TIVX_EVENT_MAX_OBJECTS, &error_index);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM003 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting event at index: %d failed\n", error_index);
         }
+#endif
         status = ownCheckUseFlag(g_tivx_posix_objects.isQueueUse,
             TIVX_QUEUE_MAX_OBJECTS, &error_index);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM004 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting queue at index: %d failed\n", error_index);
         }
+#endif
         status = ownCheckUseFlag(g_tivx_posix_objects.isTaskUse,
             TIVX_TASK_MAX_OBJECTS, &error_index);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -297,10 +303,13 @@ vx_status ownPosixObjectDeInit(void)
 #endif
         status = ownCheckUseFlag(g_tivx_posix_objects.isMutexUse,
             TIVX_MUTEX_MAX_OBJECTS, &error_index);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM005 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting mutex at index: %d failed\n", error_index);
         }
+#endif
     }
 
     return status;
