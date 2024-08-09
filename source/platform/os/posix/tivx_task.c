@@ -104,7 +104,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((NULL != task) && (NULL != params))
+    if ((NULL != task) && (NULL != params) && (NULL != params->task_main))
     {
         tivx_task_context context;
 

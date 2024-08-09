@@ -58,7 +58,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
     app_rtos_task_handle_t tskHndl;
     app_rtos_task_params_t rtos_task_prms;
 
-    if ((NULL != task) && (NULL != params))
+    if ((NULL != task) && (NULL != params) && (NULL != params->task_main))
     {
         /* Filling tivx_task structure */
         task->stack_ptr            = params->stack_ptr;
