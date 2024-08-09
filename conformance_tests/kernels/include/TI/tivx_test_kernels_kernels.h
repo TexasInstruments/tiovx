@@ -145,6 +145,11 @@ extern "C" {
  */
 #define TIVX_KERNEL_TEST_TARGET_NAME     "com.ti.test_kernels.test_target"
 
+/*! \brief tiovx_overhead kernel name
+ *  \see group_vision_function_tmp
+ */
+#define TIVX_KERNEL_TIOVX_OVERHEAD_NAME     "com.ti.test_kernels.tiovx_overhead"
+
 /*! End of group_vision_function_test_kernels */
 
 /*!

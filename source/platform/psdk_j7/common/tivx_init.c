@@ -116,16 +116,8 @@ static void tivxInitLocal(void)
         tivxRegisterTestKernelsTargetArmKernels();
     #endif
 
-    #if defined (SOC_J721E)
-    #if defined (C66)
+    #if defined (C7X_FAMILY) || defined (C66)
         tivxRegisterTestKernelsTargetDspKernels();
-    #endif
-    #endif
-
-    #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A) || defined (SOC_J722S)
-    #if defined (C7X_FAMILY)
-        tivxRegisterTestKernelsTargetDspKernels();
-    #endif
     #endif
     #endif  /* #ifdef BUILD_CONFORMANCE_TEST */
 

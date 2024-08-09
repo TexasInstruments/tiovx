@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2024 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -63,151 +63,149 @@
 #include "TI/tivx.h"
 #include "TI/tivx_test_kernels.h"
 #include "VX/vx.h"
-#include "tivx_test_kernels_kernels.h"
-#include "tivx_kernel_not_not.h"
+#include "tivx_kernel_tiovx_overhead.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
-#include "ti/vxlib/vxlib.h"
 
-static tivx_target_kernel vx_not_not_target_kernel = NULL;
+static tivx_target_kernel vx_tiovx_overhead_target_kernel = NULL;
 
-static vx_status VX_CALLBACK tivxNotNotProcess(
+static vx_status VX_CALLBACK tivxTiovxOverheadProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxNotNotCreate(
+static vx_status VX_CALLBACK tivxTiovxOverheadCreate(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxNotNotDelete(
+static vx_status VX_CALLBACK tivxTiovxOverheadDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxTiovxOverheadControl(
+       tivx_target_kernel_instance kernel,
+       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxNotNotProcess(
+static vx_status VX_CALLBACK tivxTiovxOverheadProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
-    tivx_obj_desc_image_t *input_desc;
-    tivx_obj_desc_image_t *output_desc;
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_scalar_t *in_scalar_desc;
+    tivx_obj_desc_scalar_t *out_scalar_desc;
 
-    if ( (num_params != TIVX_KERNEL_NOT_NOT_MAX_PARAMS)
-        || (NULL == obj_desc[TIVX_KERNEL_NOT_NOT_INPUT_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_NOT_NOT_OUTPUT_IDX])
+    if ( (num_params != TIVX_KERNEL_TIOVX_OVERHEAD_MAX_PARAMS)
+        || (NULL == obj_desc[TIVX_KERNEL_TIOVX_OVERHEAD_IN_SCALAR_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_TIOVX_OVERHEAD_OUT_SCALAR_IDX])
     )
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
-        input_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NOT_NOT_INPUT_IDX];
-        output_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NOT_NOT_OUTPUT_IDX];
-
+        in_scalar_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_TIOVX_OVERHEAD_IN_SCALAR_IDX];
+        out_scalar_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_TIOVX_OVERHEAD_OUT_SCALAR_IDX];
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
+        vx_uint8 in_scalar_value;
 
-        void *input_target_ptr;
-        void *output_target_ptr;
+        in_scalar_value = in_scalar_desc->data.u08;
 
-        input_target_ptr = tivxMemShared2TargetPtr(&input_desc->mem_ptr[0]);
-        tivxCheckStatus(&status, tivxMemBufferMap(input_target_ptr,
-           input_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-           VX_READ_ONLY));
-
-        output_target_ptr = tivxMemShared2TargetPtr(&output_desc->mem_ptr[0]);
-        tivxCheckStatus(&status, tivxMemBufferMap(output_target_ptr,
-           output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-           VX_WRITE_ONLY));
-
-
-
-        {
-            VXLIB_bufParams2D_t vxlib_input;
-            uint8_t *input_addr = NULL;
-            VXLIB_bufParams2D_t vxlib_output;
-            uint8_t *output_addr = NULL;
-
-            tivxInitBufParams(input_desc, &vxlib_input);
-            tivxSetPointerLocation(input_desc, &input_target_ptr, &input_addr);
-
-            tivxInitBufParams(output_desc, &vxlib_output);
-            tivxSetPointerLocation(output_desc, &output_target_ptr, &output_addr);
-
-            status = VXLIB_not_i8u_o8u(input_target_ptr, &vxlib_input, output_target_ptr, &vxlib_output);
-            status = VXLIB_not_i8u_o8u(output_target_ptr, &vxlib_output, output_target_ptr, &vxlib_output);
-
-        }
-        tivxCheckStatus(&status, tivxMemBufferUnmap(input_target_ptr,
-           input_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY));
-
-        tivxCheckStatus(&status, tivxMemBufferUnmap(output_target_ptr,
-           output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY));
-
-
-
+        out_scalar_desc->data.u08 = in_scalar_value;
     }
 
     return status;
 }
 
-static vx_status VX_CALLBACK tivxNotNotCreate(
+static vx_status VX_CALLBACK tivxTiovxOverheadCreate(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
-
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel create code here (e.g. allocating */
-    /*                   local memory buffers, one time initialization, etc) > */
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
 
-static vx_status VX_CALLBACK tivxNotNotDelete(
+static vx_status VX_CALLBACK tivxTiovxOverheadDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel delete code here (e.g. freeing */
-    /*                   local memory buffers, etc) > */
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
 
+static vx_status VX_CALLBACK tivxTiovxOverheadControl(
+       tivx_target_kernel_instance kernel,
+       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
 
-void tivxAddTargetKernelNotNot(void)
+    return status;
+}
+
+void tivxAddTargetKernelTiovxOverhead(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
+    vx_enum self_cpu;
 
-    if( (vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name))
+    self_cpu = tivxGetSelfCpuId();
+
+    if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) )
     {
-        vx_not_not_target_kernel = tivxAddTargetKernelByName(
-                            TIVX_KERNEL_NOT_NOT_NAME,
+        vx_tiovx_overhead_target_kernel = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
                             target_name,
-                            tivxNotNotProcess,
-                            tivxNotNotCreate,
-                            tivxNotNotDelete,
-                            NULL,
+                            tivxTiovxOverheadProcess,
+                            tivxTiovxOverheadCreate,
+                            tivxTiovxOverheadDelete,
+                            tivxTiovxOverheadControl,
                             NULL);
     }
+    else if (self_cpu == TIVX_CPU_ID_MPU_0)
+    {
+        strncpy(target_name, TIVX_TARGET_MPU_0, TIVX_TARGET_MAX_NAME);
+        vx_tiovx_overhead_target_kernel = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
+                            target_name,
+                            tivxTiovxOverheadProcess,
+                            tivxTiovxOverheadCreate,
+                            tivxTiovxOverheadDelete,
+                            tivxTiovxOverheadControl,
+                            NULL);
+    }
+    #if defined(SOC_J721E)
+    else if (self_cpu == TIVX_CPU_ID_DSP_C7_1)
+    {
+        strncpy(target_name, TIVX_TARGET_DSP_C7_1, TIVX_TARGET_MAX_NAME);
+        vx_tiovx_overhead_target_kernel = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
+                            target_name,
+                            tivxTiovxOverheadProcess,
+                            tivxTiovxOverheadCreate,
+                            tivxTiovxOverheadDelete,
+                            tivxTiovxOverheadControl,
+                            NULL);
+    }
+    #endif
 }
 
-void tivxRemoveTargetKernelNotNot(void)
+void tivxRemoveTargetKernelTiovxOverhead(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
-    status = tivxRemoveTargetKernel(vx_not_not_target_kernel);
-    if (status == VX_SUCCESS)
+    status = tivxRemoveTargetKernel(vx_tiovx_overhead_target_kernel);
+    if (status == (vx_status)VX_SUCCESS)
     {
-        vx_not_not_target_kernel = NULL;
+        vx_tiovx_overhead_target_kernel = NULL;
     }
 }
 

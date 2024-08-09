@@ -18,6 +18,8 @@
 
 #include "test_engine/test.h"
 #include "test_tiovx.h"
+#include <TI/tivx_test_kernels.h>
+#include <TI/tivx_test_kernels_nodes.h>
 
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
@@ -120,11 +122,6 @@ static void openFile()
 
         gTiovxKernIdx = 0;
     }
-}
-
-TEST(tiovxPerformance, tiovxPerfOpenFile)
-{
-    openFile();
 }
 
 TEST(tiovxPerformance2, tiovxPerfCloseFile)
@@ -7545,7 +7542,6 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfThreshold, threshold
 #endif
 
 TESTCASE_TESTS(tiovxPerformance,
-    tiovxPerfOpenFile,
     tiovxPerfAccumulate,
     tiovxPerfAccumulateSquare,
     tiovxPerfAccumulateWeighted,

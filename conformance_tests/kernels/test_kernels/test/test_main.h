@@ -64,6 +64,7 @@ TESTCASE(tivxTestKernelsNotNot)
 TESTCASE(tivxGraphStreaming)
 TESTCASE(tivxSourceNode)
 TESTCASE(tivxTimestamp)
+TESTCASE(tivxTiovxOverhead)
 #if !defined(SOC_AM62A)
 TESTCASE(tivxTestSinkNode)
 #endif

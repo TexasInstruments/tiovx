@@ -24,8 +24,6 @@ include $(FINALE)
 
 endif
 
-ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J721S2 J784S4 AM62A J722S))
-
 ifeq ($(TARGET_FAMILY),DSP)
 
 ifneq ($(TARGET_CPU),C66)
@@ -35,6 +33,7 @@ TARGET      := vx_target_kernels_dsp
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 CSOURCES    += ../arm/vx_test_target_target.c
+CSOURCES    += ../arm/vx_tiovx_overhead_target.c
 IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include
 IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/test_kernels/include
 IDIRS       += $(HOST_ROOT)/kernels/include
@@ -56,5 +55,3 @@ include $(FINALE)
 endif # ifneq ($(TARGET_CPU),C66)
 
 endif # ifeq ($(TARGET_FAMILY),DSP)
-
-endif # ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J721S2 J784S4 AM62A J722S))

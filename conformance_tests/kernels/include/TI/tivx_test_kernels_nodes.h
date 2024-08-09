@@ -188,6 +188,18 @@ VX_API_ENTRY vx_node VX_API_CALL tivxScalarIntermediate2Node(vx_graph graph,
 VX_API_ENTRY vx_node VX_API_CALL tivxTestTargetNode(vx_graph graph,
                                       vx_scalar            input,
                                       vx_scalar            output);
+/*! \brief [Graph] Creates a TIOVX_OVERHEAD Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] input
+ * \param [out] output
+ * \see <tt>TIVX_TIOVX_OVERHEAD_TARGET_NAME</tt>
+ * \ingroup group_vision_function_tiovx
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxTiovxOverheadNode(vx_graph graph,
+                                      vx_scalar            input,
+                                      vx_scalar            output);
 
 #ifdef __cplusplus
 }

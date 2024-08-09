@@ -272,3 +272,18 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTestTargetNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxTiovxOverheadNode(vx_graph graph,
+                                      vx_scalar            input,
+                                      vx_scalar            output)
+{
+    vx_reference prms[] = {
+            (vx_reference)input,
+            (vx_reference)output
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
