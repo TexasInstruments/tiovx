@@ -2163,6 +2163,26 @@ static vx_status tivxNegativeTestTargetIpcSendMsg(uint8_t id)
 }
 #endif
 
+static vx_status tivxNegativeTaskMain(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_task task;
+    tivx_task_create_params_t taskParams;
+    tivxTaskSetDefaultCreateParams(&taskParams);
+
+    taskParams.task_main = NULL;
+
+    if((vx_status)VX_FAILURE != tivxTaskCreate(&task, &taskParams))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' task_main\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -2259,8 +2279,9 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeAppRtosSemaphoreCreate, "",VX_SUCCESS},
     #endif
     #ifndef PC
-    {tivxNegativeTestTargetIpcSendMsg, "",VX_SUCCESS}
+    {tivxNegativeTestTargetIpcSendMsg, "",VX_SUCCESS},
     #endif
+    {tivxNegativeTaskMain, "",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
