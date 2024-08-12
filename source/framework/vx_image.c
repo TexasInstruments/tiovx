@@ -27,7 +27,7 @@ static vx_status isImageCopyable(vx_image input, vx_image output);
 static vx_status isImageSwapable(vx_image input, vx_image output);
 static vx_status copyImage(vx_image input, vx_image output);
 static vx_status swapImage(vx_image input, vx_image output);
-static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params);
+static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
 
 static vx_bool ownIsSupportedFourcc(vx_df_image code);
 static vx_bool ownIsOdd(vx_uint32 a);
@@ -214,7 +214,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
 
     /* refer to our parent image and internally refcount it */
     subimage->parent = parent;
-
+    subimage->base.is_virtual = parent->base.is_virtual;
     /* it will find free space for subimage since this was checked before */
     for (p = 0; p < TIVX_IMAGE_MAX_SUBIMAGES; p++)
     {
@@ -518,7 +518,7 @@ static vx_status copyImage(vx_image input, vx_image output)
     void *ptr;
     for (i = 0; i < ip_objd->planes; ++i)
     {
-        /* if the size of both ojects is the same, we can use memcpy for faster processing */
+        /* if the size of both objects is the same, we can use memcpy for faster processing */
         if (ip_objd->mem_size[i] == op_objd->mem_size[i])
         {
             tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)ip_objd->mem_ptr[i].host_ptr, ip_objd->mem_size[i], 
@@ -663,48 +663,41 @@ static vx_status swapImage(const vx_image input, const vx_image output)
     return (status);
 }
 
-static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params)
+static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
     vx_status res;
-    vx_image input  = NULL;
-    vx_image output = NULL;
-
-    if (2U != num_params)
+    vx_image input_img  = NULL;
+    vx_image output_img = NULL;
+ 
+    input_img  = vxCastRefAsImage(input, &res);
+    output_img = vxCastRefAsImage(output, &res);
+    /* do not check the res, as we know they are images at that point*/
+    switch (kernel_enum)
     {
-        res = (vx_status)VX_ERROR_NOT_SUPPORTED;
-    }
-    else
-    {  
-        input  = vxCastRefAsImage(params[0U], &res);
-        output = vxCastRefAsImage(params[1U], &res);
-        /* do not check the res, as we know they are images at that point*/
-        switch (kernel_enum)
-        {
-            case (vx_enum)VX_KERNEL_COPY:
-                if ((vx_bool)vx_true_e == validate_only)
-                {
-                    res =  isImageCopyable(input, output);
-                }
-                else
-                {
-                    res = copyImage(input, output);
-                }
-                break;
-            case (vx_enum)VX_KERNEL_SWAP:
-            case (vx_enum)VX_KERNEL_MOVE:
-                if ((vx_bool)vx_true_e == validate_only)
-                {
-                    res =  isImageSwapable(input, output);
-                }
-                else
-                {
-                    res = swapImage(input, output);
-                }
-                break;
-            default:
-                res = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                break;
-        }
+        case (vx_enum)VX_KERNEL_COPY:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                res =  isImageCopyable(input_img, output_img);
+            }
+            else
+            {
+                res = copyImage(input_img, output_img);
+            }
+            break;
+        case (vx_enum)VX_KERNEL_SWAP:
+        case (vx_enum)VX_KERNEL_MOVE:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                res =  isImageSwapable(input_img, output_img);
+            }
+            else
+            {
+                res = swapImage(input_img, output_img);
+            }
+            break;
+        default:
+            res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+            break;
     }
     return (res);
 }

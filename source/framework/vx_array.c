@@ -24,7 +24,7 @@ static vx_size ownGetArrayItemSize(vx_context context, vx_enum item_type);
 static vx_bool ownIsValidArrayItemType(vx_context context, vx_enum item_type);
 static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output);
 static vx_status isArrayCopyable(vx_array input, vx_array output);
-static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params);
+static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
 
 /*! \brief checks that the input and output references are not the same, and that both are valid arrays
 */
@@ -97,55 +97,44 @@ static vx_status isArrayCopyable(vx_array input, vx_array output)
 }
 
 /* Call back function that handles the copy, swap and move kernels */
-static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params)
+static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
     vx_status res;
-    vx_array input  = NULL;
-    vx_array output = NULL;
 
-    if (2U != num_params)
+    /* do not check the res, as we know they are arrays at that point*/
+    switch (kernel_enum)
     {
-        res = (vx_status)VX_ERROR_NOT_SUPPORTED;
-    }
-    else
-    {
-        input  = vxCastRefAsArray(params[0], &res);
-        output = vxCastRefAsArray(params[1], &res);
-        /* do not check the res, as we know they are arrays at that point*/
-        switch (kernel_enum)
-        {
-            case (vx_enum)VX_KERNEL_COPY:
-                if ((vx_bool)vx_true_e == validate_only)
+        case (vx_enum)VX_KERNEL_COPY:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                res =  isArrayCopyable(vxCastRefAsArray(input, &res), vxCastRefAsArray(output, &res));
+            }
+            else
+            {
+                res = ownCopyReferenceGeneric(input, output);
+            }
+            break;
+        case (vx_enum)VX_KERNEL_SWAP:
+        case (vx_enum)VX_KERNEL_MOVE:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(input, output))
                 {
-                    res =  isArrayCopyable(input, output);
+                    res = (vx_status)VX_SUCCESS;
                 }
                 else
                 {
-                    res = ownCopyReferenceGeneric(params[0], params[1]);
+                    res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
                 }
-                break;
-            case (vx_enum)VX_KERNEL_SWAP:
-            case (vx_enum)VX_KERNEL_MOVE:
-                if ((vx_bool)vx_true_e == validate_only)
-                {
-                    if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(params[0], params[1]))
-                    {
-                        res = (vx_status)VX_SUCCESS;
-                    }
-                    else
-                    {
-                        res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-                    }
-                }
-                else
-                {
-                    res = ownSwapReferenceGeneric(params[0], params[1]);
-                }
-                break;
-            default:
-                res = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                break;
-        }
+            }
+            else
+            {
+                res = ownSwapReferenceGeneric(input, output);
+            }
+            break;
+        default:
+            res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+            break;
     }
     return(res);
 }

@@ -28,43 +28,36 @@ static vx_status ownAddRefToObjArray(vx_context context,
 static vx_status ownReleaseRefFromObjArray(
             vx_object_array objarr, uint32_t num_items);
 
-static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params)
+static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if (num_params == 2U)
+    if ((vx_bool)vx_true_e == validate_only)
     {
-        if ((vx_bool)vx_true_e == validate_only)
+        if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(input, output))
         {
-            if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(params[0], params[1]))
+            status = (vx_status)VX_SUCCESS;
+        }
+        else
+        {
+            status =  (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+    }
+    else    /* dispatch to each sub-object in turn */
+    {
+        vx_uint32 item;
+        for (item = 0U; (item < ((tivx_obj_desc_object_array_t *)input->obj_desc)->num_items) && ((vx_status)VX_SUCCESS == status); ++item)
+        {
+            vx_reference p2[2] = {vxCastRefAsObjectArray(input, &status)->ref[item], vxCastRefAsObjectArray(output, &status)->ref[item]};
+            vx_kernel_callback_f kf = p2[0]->kernel_callback;
+            if ((kf != NULL) && ((vx_status)VX_SUCCESS == status))
             {
-                status = (vx_status)VX_SUCCESS;
+                status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
             }
             else
             {
-                status =  (vx_status)VX_ERROR_NOT_COMPATIBLE;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             }
         }
-        else    /* dispatch to each sub-object in turn */
-        {
-            vx_uint32 item;
-            for (item = 0U; (item < ((tivx_obj_desc_object_array_t *)params[0U]->obj_desc)->num_items) && ((vx_status)VX_SUCCESS == status); ++item)
-            {
-                vx_reference p2[2] = {vxCastRefAsObjectArray(params[0U], &status)->ref[item], vxCastRefAsObjectArray(params[1], &status)->ref[item]};
-                vx_kernel_callback_f kf = p2[0]->kernel_callback;
-                if ((kf != NULL) && ((vx_status)VX_SUCCESS == status))
-                {
-                    status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2, 2);
-                }
-                else
-                {
-                    status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                }
-            }
-        }
-    }
-    else
-    {
-        status =  (vx_status)VX_ERROR_NOT_COMPATIBLE;
     }
     return status;
 }
@@ -204,7 +197,7 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
             {
                 /* status set to NULL due to preceding type check */
                 objarr = vxCastRefAsObjectArray(ref,NULL);
-                /* assign refernce type specific callback's */
+                /* assign reference type specific callback's */
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
@@ -237,6 +230,9 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
 
                     ownLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
 
+                    objarr->base.is_virtual = (vx_bool)vx_true_e;
+                    ownReferenceSetScope(&objarr->base, &graph->base);
+
                     status = ownInitObjArrayFromObject(context, objarr, exemplar);
 
                     if(status != (vx_status)VX_SUCCESS)
@@ -257,11 +253,6 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                         VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
                         objarr = (vx_object_array)ownGetErrorObject(
                             context, (vx_status)VX_ERROR_NO_RESOURCES);
-                    }
-                    else
-                    {
-                        objarr->base.is_virtual = (vx_bool)vx_true_e;
-                        ownReferenceSetScope(&objarr->base, &graph->base);
                     }
                 }
             }
@@ -299,8 +290,7 @@ VX_API_ENTRY vx_reference VX_API_CALL vxGetObjectArrayItem(
 
         if ((ownIsValidSpecificReference(vxCastRefFromObjectArray(objarr), (vx_enum)VX_TYPE_OBJECT_ARRAY) ==
                 (vx_bool)vx_true_e) && (obj_desc != NULL) &&
-            (index < obj_desc->num_items) &&
-            (objarr->base.is_virtual == (vx_bool)vx_false_e))
+            (index < obj_desc->num_items))
         {
             ref = ownReferenceGetHandleFromObjDescId(obj_desc->obj_desc_id[index]);
 
@@ -398,6 +388,7 @@ static vx_status ownInitObjArrayFromObject(
         if(status == (vx_status)VX_SUCCESS)
         {
             status = ownAddRefToObjArray(context, objarr, ref, i);
+            ref->is_virtual = objarr->base.is_virtual;
         }
         else
         {

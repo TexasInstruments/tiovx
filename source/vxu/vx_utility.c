@@ -1310,15 +1310,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxuRemap(vx_context context, vx_image input, 
 static vx_status ownCallKernelFunc(vx_reference input, vx_reference output, vx_enum kernel)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_reference params[] = {input, output};
     if ((vx_bool)vx_true_e == ownIsValidReference(input))
     {
         if (NULL != input->kernel_callback)
         {
-            status = input->kernel_callback(kernel, (vx_bool)vx_true_e, params, 2);
+            status = input->kernel_callback(kernel, (vx_bool)vx_true_e, input, output);
             if ((vx_status)VX_SUCCESS == status)
             {
-                status = input->kernel_callback(kernel, (vx_bool)vx_false_e, params, 2);
+                status = input->kernel_callback(kernel, (vx_bool)vx_false_e, input, output);
             }
         }
         else

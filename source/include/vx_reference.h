@@ -59,11 +59,11 @@ typedef vx_status (* VX_API_CALL tivx_reference_release_callback_f)(vx_reference
  * involving generic references, such as Copy, Select, Swap or Pass
  * \param [in] kernel_enum        A <tt>\ vx_kernel_e </tt> which give the name of vision kernel
  * \param [in] validate_only      A <tt>\ref vx_bool</tt> used to validate if the kernel operation is possible or not
- * \param [in] params[]           The pointer to a \ref vx_references for the inputs and outputs used for the kernel operations
- * \param [in] num_params         The number of vx_references from params[] to be processed
+ * \param [in] input              The pointer to a \ref vx_references for the input and outputs used for the kernel operations
+ * \param [in] output             The pointer to a \ref vx_references for the output used for the kernel operations
  * \ingroup group_vx_reference
  */
-typedef vx_status (*vx_kernel_callback_f)(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params);
+typedef vx_status (*vx_kernel_callback_f)(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
 
 /*! \brief The most basic type in the OpenVX system. Any type that inherits
  *  from tivx_reference_t must have a vx_reference_t as its first member
@@ -316,7 +316,7 @@ vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output);
  *         This API must only be called on the host
  * \ingroup group_vx_reference
  */
-vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params);
+vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
 
 #ifdef __cplusplus
 }

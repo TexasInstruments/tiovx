@@ -512,46 +512,35 @@ vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
     return status;    
 }
 
-vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params)
+vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
     vx_status res;
-    vx_reference input  = NULL;
-    vx_reference output = NULL;
-
-    if (2U != num_params)
+       
+    if ((vx_bool)vx_true_e == validate_only)
     {
-        res = (vx_status)VX_ERROR_NOT_SUPPORTED;
-    }
-    else
-    {  
-        input  = params[0];
-        output = params[1];          
-        if ((vx_bool)vx_true_e == validate_only)
+        if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(input, output))
         {
-            if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(input, output))
-            {
-                res = (vx_status)VX_SUCCESS;
-            }
-            else
-            {
-                res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-            }
+            res = (vx_status)VX_SUCCESS;
         }
         else
         {
-            switch (kernel_enum)
-            {
-                case (vx_enum)VX_KERNEL_COPY:
-                    res = ownCopyReferenceGeneric(input, output);
-                    break;
-                case (vx_enum)VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-                case (vx_enum)VX_KERNEL_MOVE:
-                    res = ownSwapReferenceGeneric(input, output);
-                    break;
-                default:
-                    res = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                    break;
-            }
+            res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+    }
+    else
+    {
+        switch (kernel_enum)
+        {
+            case (vx_enum)VX_KERNEL_COPY:
+                res = ownCopyReferenceGeneric(input, output);
+                break;
+            case (vx_enum)VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+            case (vx_enum)VX_KERNEL_MOVE:
+                res = ownSwapReferenceGeneric(input, output);
+                break;
+            default:
+                res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                break;
         }
     }
     return (res);
