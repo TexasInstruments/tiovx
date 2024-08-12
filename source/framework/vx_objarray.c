@@ -76,7 +76,7 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(
             {
                 /* status set to NULL due to preceding type check */
                 objarr = vxCastRefAsObjectArray(ref,NULL);
-                /* assign refernce type specific callback's */
+                /* assign reference type specific callback's */
                 objarr->base.destructor_callback = &ownDestructObjArray;
                 objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;

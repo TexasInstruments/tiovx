@@ -835,12 +835,12 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetReferenceAttribute(vx_reference ref, v
 
                     if ((vx_bool)vx_true_e == is_ref_invalid)
                     {
-						tivxFlagBitSet(&ref->obj_desc->flags, TIVX_REF_FLAG_IS_INVALID);
-					}
-					else
-					{
-						tivxFlagBitClear(&ref->obj_desc->flags, TIVX_REF_FLAG_IS_INVALID);
-					}
+                        tivxFlagBitSet(&ref->obj_desc->flags, TIVX_REF_FLAG_IS_INVALID);
+                    }
+                    else
+                    {
+                        tivxFlagBitClear(&ref->obj_desc->flags, TIVX_REF_FLAG_IS_INVALID);
+                    }
                 }
                 else
                 {

@@ -129,7 +129,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
             ref = ownCreateReference(context, VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
-                (ref->type == VX_TYPE_USER_DATA_OBJECT))                
+                (ref->type == VX_TYPE_USER_DATA_OBJECT))
             {
                 /* status set to NULL due to preceding type check */
                 user_data_object = vxCastRefAsUserDataObject(ref, NULL);
