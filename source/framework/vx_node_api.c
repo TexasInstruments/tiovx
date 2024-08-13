@@ -62,10 +62,14 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
                 {
                     vxAddLogEntry(vxCastRefFromGraph(graph), status, "Kernel %d Parameter %u is invalid.\n", kernelenum, p);
                     status = vxReleaseNode(&node);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1809- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_API_UTJT001 */
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to node, node might not be a vx_node\n");
                     }
+/* END: TIOVX_CODE_COVERAGE_NODE_API_UTJT001 */
+/*LDRA_ANALYSIS*/
                     node = NULL;
                     break;
                 }
@@ -79,10 +83,14 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
         if (release_kernel != 0U)
         {
             status = vxReleaseKernel(&kernel);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1809- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_API_UTJT002 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to kernel, kernel might not be a vx_kernel\n");
             }
+/* END: TIOVX_CODE_COVERAGE_NODE_API_UTJT002 */
+/*LDRA_ANALYSIS*/
         }
     }
     else
@@ -124,10 +132,14 @@ vx_node tivxCreateNodeByKernelName(vx_graph graph,
         /* kernel is released inside vxCreateNodeByStructure */
         node =  vxCreateNodeByStructure(graph, kernel, 0, params, num);
         status = vxReleaseKernel(&kernel);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1809- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_API_UTJT003 */
         if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to kernel, kernel might not be a vx_kernel\n");
         }
+/* END: TIOVX_CODE_COVERAGE_NODE_API_UTJT003 */
+/*LDRA_ANALYSIS*/
     }
     else
     {
@@ -769,10 +781,14 @@ VX_API_ENTRY vx_node VX_API_CALL vxWarpAffineNode(vx_graph graph, vx_image input
         /* change node attribute as kernel attributes alreay copied to node */
         /* in tivxCreateNodeByKernelEnum() */
         status = ownSetNodeAttributeValidRectReset(node, (vx_bool)vx_true_e);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1809- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_API_UTJT004 */
         if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to set the attribute VX_NODE_VALID_RECT_RESET in node\n");
         }
+/* END: TIOVX_CODE_COVERAGE_NODE_API_UTJT004 */
+/*LDRA_ANALYSIS*/
     }
 
     return node;
@@ -804,10 +820,14 @@ VX_API_ENTRY vx_node VX_API_CALL vxWarpPerspectiveNode(vx_graph graph, vx_image 
         /* change node attribute as kernel attributes alreay copied to node */
         /* in tivxCreateNodeByKernelEnum() */
         status = ownSetNodeAttributeValidRectReset(node, (vx_bool)vx_true_e);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1809- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_API_UTJT005 */
         if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to set the attribute VX_NODE_VALID_RECT_RESET in node\n");
         }
+/* END: TIOVX_CODE_COVERAGE_NODE_API_UTJT005 */
+/*LDRA_ANALYSIS*/
     }
 
     return node;
@@ -949,10 +969,14 @@ VX_API_ENTRY vx_node VX_API_CALL vxRemapNode(vx_graph graph,
         /* change node attribute as kernel attributes alreay copied to node */
         /* in tivxCreateNodeByKernelEnum() */
         status = ownSetNodeAttributeValidRectReset(node, (vx_bool)vx_true_e);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1809- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_API_UTJT006 */
         if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to set the attribute VX_NODE_VALID_RECT_RESET in node\n");
         }
+/* END: TIOVX_CODE_COVERAGE_NODE_API_UTJT006 */
+/*LDRA_ANALYSIS*/
     }
 
     return node;
