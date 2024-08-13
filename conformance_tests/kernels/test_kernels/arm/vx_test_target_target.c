@@ -75,7 +75,6 @@
 #include <tivx_target_kernel_priv.h>
 #include <tivx_obj_desc_queue.h>
 #include <tivx_target_kernel_instance.h>
-#include <tivx_target_kernel_priv.h>
 #include <tivx_target.h>
 
 #ifndef PC
@@ -3145,6 +3144,54 @@ static vx_status tivxTestQueueGet(uint8_t id)
 }
 #endif
 
+/*Testcase to fail Queue memory allocation*/
+static vx_status tivxTestQueueCreate(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+#if defined(MCU_PLUS_SDK)
+    #define MAX_QUEUE APP_RTOS_MAX_SEMAPHORE_COUNT
+/*Below macro is used as tivxQueueCreate() depends on tivxEventCreate() which calls appRtosSemaphoreCreate*/
+#else
+    #define MAX_QUEUE OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC
+#endif
+#endif
+#if defined(A72) || defined(A53) || defined(PC)
+    #define MAX_QUEUE TIVX_QUEUE_MAX_OBJECTS
+#endif
+    tivx_queue test_queue[MAX_QUEUE];
+    uintptr_t test_qu_mem[MAX_QUEUE];
+    tivx_queue *queue_t = &test_queue[0];
+    uintptr_t *queue_mem_t=&test_qu_mem[0];
+    uint32_t i,j;
+
+    for(i = 0; i < MAX_QUEUE; i++)
+    {
+        if(VX_SUCCESS != tivxQueueCreate(queue_t, 8, queue_mem_t, TIVX_QUEUE_FLAG_BLOCK_ON_PUT))
+        {
+            break;
+        }
+        queue_t++;
+    }
+    j=i;
+
+    queue_t = &test_queue[0];
+    for(i=0; i<j;i++)
+    {
+        if(VX_SUCCESS !=tivxQueueDelete(queue_t))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to delete Queue at the index %d\n",i);
+            status = (vx_status)VX_FAILURE;
+            break;
+        }
+        queue_t++;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -3295,6 +3342,7 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestQueuePut, "", VX_SUCCESS},
     {tivxTestQueueGet, "", VX_SUCCESS},
     #endif
+    {tivxTestQueueCreate, "",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 

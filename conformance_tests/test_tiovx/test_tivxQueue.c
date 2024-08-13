@@ -86,7 +86,37 @@ TEST(tivxQueue, testQueueCreateGet)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueueDelete(queue_t));
 }
 
+TEST(tivxQueue, testQueueBranchCreatePutGetDelete)
+{
+    vx_status status = VX_SUCCESS;
+    tivx_queue test_queue[10];
+    uintptr_t test_qu_mem;
+    tivx_queue *queue_t = NULL;
+    uintptr_t *queue_mem_t=&test_qu_mem;
+    uintptr_t data;
+    uintptr_t dat;
+
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,tivxQueueCreate(queue_t, 8, queue_mem_t, TIVX_QUEUE_FLAG_BLOCK_ON_PUT));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,tivxQueuePut(queue_t, 8, 0));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,tivxQueueGet(queue_t, &data, 0));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,tivxQueuePeek((const tivx_queue *)queue_t, &dat));
+    ASSERT_EQ_VX_STATUS(1,tivxQueueIsEmpty((const tivx_queue *)queue_t));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, tivxQueueDelete(queue_t));
+
+    queue_t = &test_queue[0];
+    queue_mem_t = NULL;
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,tivxQueueCreate(queue_t, 8, queue_mem_t, TIVX_QUEUE_FLAG_BLOCK_ON_PUT));
+    queue_t->context=NULL;
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,tivxQueueGet(queue_t, &data, 0));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,tivxQueuePeek((const tivx_queue *)queue_t, &dat));
+    ASSERT_EQ_VX_STATUS(vx_true_e,tivxQueueIsEmpty((const tivx_queue *)queue_t));
+
+    queue_mem_t=&test_qu_mem;
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,tivxQueueCreate(queue_t, 0, queue_mem_t, TIVX_QUEUE_FLAG_BLOCK_ON_PUT));
+}
+
 TESTCASE_TESTS(tivxQueue,
         testQueueCreatePutGetDelete,
-        testQueueCreateGet
+        testQueueCreateGet,
+        testQueueBranchCreatePutGetDelete
 )
