@@ -236,7 +236,7 @@ typedef enum _tivx_target_id_e {
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformSetHostTargetId(tivx_target_id_e host_targe_id);
+void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id);
 
 #ifdef __cplusplus
 }

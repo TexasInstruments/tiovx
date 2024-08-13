@@ -14,7 +14,8 @@ CSOURCES    := 	tivx_event.c \
 				../common/tivx_mem.c \
 				../common/tivx_ipc.c \
 				../common/tivx_platform.c \
-				../common/tivx_host.c
+				../common/tivx_host.c \
+				../common/tivx_perf.c
 
 IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(HOST_ROOT)/source/platform/psdk_j7/common

@@ -20,7 +20,8 @@ CSOURCES    := \
     ../common/tivx_host.c                           \
     ../common/tivx_platform.c                       \
     ../common/tivx_mem.c                            \
-    tivx_platform_hlos.c
+    tivx_platform_hlos.c                            \
+    ../common/tivx_perf.c
 
 IDIRS       += $(TIOVX_PATH)/source/include
 IDIRS       += $(TIOVX_PATH)/source/platform/psdk_j7/common

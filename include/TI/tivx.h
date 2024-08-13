@@ -76,6 +76,7 @@
 #include <TI/tivx_ext_raw_image.h>
 #include <TI/tivx_ext_super_node.h>
 #include <TI/tivx_soc.h>
+#include <TI/tivx_log_stats.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -102,13 +103,6 @@ extern "C" {
  * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_HOST        "HOST"
-
-/*!
- * \brief Max size of macro
- *
- * \ingroup group_tivx_ext_host_resource_log
- */
-#define TIVX_RESOURCE_NAME_MAX (39u)
 
 /*!
  * \brief Max size of config file path
@@ -175,47 +169,6 @@ extern "C" {
  * \ingroup group_tivx_target_cfg
  */
 #define TIVX_MAX_LIBRARY_ID                (VX_LIBRARY(VX_LIBRARY_MASK))
-
-/*! \brief Max number of data objects that contribute to a configuration
- *         parameter's memory footprint
- *
- * \ingroup group_tivx_ext_host
- */
-#define TIVX_MAX_CONFIG_PARAM_OBJECTS (12u)
-
-/*! \brief Number of dimensions of a configuration parameter's object type array
- *
- * \ingroup group_tivx_ext_host
- */
-#define TIVX_CONFIG_PARAM_OBJECT_TYPE_DIM (2u)
-
-
-/*! \brief Struct containing config parameters of given static resource. Allows
- *         for a log to be kept of the resources used throughout runtime.
- *
- * \ingroup group_tivx_ext_host_resource_log
- */
-
-typedef struct _tivx_resource_stats_t {
-
-    uint32_t  max_value; /**< Maximum system quantity of the resource */
-
-    uint32_t  cur_used_value; /**< Count of times the resource is currently defined in statically allocated arrays */
-
-    uint32_t  max_used_value; /**< Highest resource count during current runtime */
-
-    uint32_t  min_required_value; /**< Minimum value required for framework/tests to compile */
-
-    char      name[TIVX_RESOURCE_NAME_MAX]; /**< Name of the resource */
-
-    uint32_t   object_types[TIVX_CONFIG_PARAM_OBJECT_TYPE_DIM][TIVX_MAX_CONFIG_PARAM_OBJECTS];
-    /**< Data objects with arrays of current parameter's length and multiplication factors */
-
-    vx_bool   is_obj_desc; /**< Flag to indicate parameter's object descriptor status */
-
-    vx_bool   is_size_cumulative; /**< Flag to indicate if a parameter is a total size or part of a bigger size */
-
-} tivx_resource_stats_t;
 
 /*! \brief TI attribute extensions for the graph object
  *
@@ -555,88 +508,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(const char *name);
  */
 vx_enum tivxGetSelfCpuId(void);
 
-/*!
- * \brief Query resource for resource stats
- *
- * \param [in] resource_name Name of the resource to query
- * \param [out] stats Pointer to resource statistic returned from the query
- *
- * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS No errors.
- * \retval VX_FAILURE Unable to find "resource_name" in list of resources
- *
- * \ingroup group_tivx_ext_host_resource_log
- */
-vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_t *stats);
-
-/*!
- * \brief Prints out resource stats
- *
- * \ingroup group_tivx_ext_host_resource_log
- */
-void tivxPrintAllResourceStats(void);
-
-/*!
- * \brief Exports the max used values to a file
- *
- *        Note 1: For PC emulation mode, the exported files will not have a legend with the correct target
- *        Note 2: For target mode, only the .txt files will be generated.  These can be converted to JPEG's using the following command:
- *
- *        dot -Tjpg -o<output file path>/<jpg name>.jpg <text file name>
- *
- *        For example, to generate a JPEG named "graph.jpg" for the file "graph.txt" in the current directory, the following command would be used.
- *
- *        dot -Tjpg -o./graph.jpg graph.txt
- *
- * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS Output was successfully written to file
- * \retval VX_FAILURE Unable to open output file, or TIVX_LOG_RESOURCE_ENABLE was not defined
- *
- * \ingroup group_tivx_ext_host_resource_log
- */
-vx_status tivxExportAllResourceMaxUsedValueToFile(void);
-
-/*!
- * \brief Exports memory consumption information to console or a specified file.
- *        Note that the object descriptor values returned by this API are local only to the
- *        process/core this is being called on.
- *
- * \param [in] outputFile Character pointer to indicate name of file where output is desired.
- *        The file name can be set to NULL if console output is desired.
- * \param [in] unit Character pointer to indicate the units desired in memory output.
- *        The unit options are "B", "KB", "MB", or "all". Any other choice is set to "all".
- * \param [in] displayMode Enum representing the desired mode of display.
- *        The mode options are defined in \ref tivx_memory_logging_e
- *
- * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS Output was output to the console or was successfully written to file
- * \retval VX_FAILURE Unable to open output file, or TIVX_LOG_RESOURCE_ENABLE was not defined
- *
- *
- * \ingroup group_tivx_ext_host_resource_log
- */
-vx_status tivxExportMemoryConsumption(char * outputFile, const char * unit, vx_enum displayMode);
-
-/*! \brief Enumerations of memory consumption tool's display modes
- *
- * \ingroup group_tivx_ext_host_resource_log
- */
-typedef enum _tivx_memory_logging_e {
-
-    /*! \brief Default display mode; Outputs only total global and obj desc memory */
-    TIVX_MEM_LOG_DEFAULT = 0,
-
-    /*! \brief Obj Desc display mode; Outputs only the object descriptor memory info */
-    TIVX_MEM_LOG_OBJECT_DESCRIPTOR = 1,
-
-    /*! \brief Global display mode; Outputs only the TIOVX global memory info */
-    TIVX_MEM_LOG_GLOBAL = 2,
-
-    /*! \brief All display mode; Outputs all possible information */
-    TIVX_MEM_LOG_ALL = 3
-
-} tivx_memory_logging_e;
-
 
 /*! \brief Macro to find size of array
  * \ingroup group_tivx_ext_host
@@ -743,22 +614,6 @@ vx_bool tivxIsTargetEnabled(const char target_name[]);
  * \ingroup group_tivx_ext_host
  */
 uint64_t tivxPlatformGetTimeInUsecs(void);
-
-/*!
- * \brief Export graph representation as DOT graph file
- *
- * Multiple representation of the graph are exported to different files
- * using 'output_file_prefix' as filename prefix.
- * The output files are stored at path 'output_file_path'
- * Note: This must be called after vxVerifyGraph()
- *
- * \param [in] graph Graph reference
- * \param [in] output_file_path String specifying the ouput file path
- * \param [in] output_file_prefix String specifying the filename prefix of the output file
- *
- * \ingroup group_tivx_ext_host_resource_log
- */
-vx_status VX_API_CALL tivxExportGraphToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
 
 /*!
  * \brief Set number of buffers to allocate at output of a node parameter

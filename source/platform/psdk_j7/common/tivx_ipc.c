@@ -184,6 +184,16 @@ vx_enum tivxGetSelfCpuId(void)
     return (cpu_id);
 }
 
+void ownIPCGetCpuMap(uint32_t cpu_id_map[TIVX_CPU_ID_MAX])
+{
+    uint32_t i;
+
+    for (i = 0; i < (vx_enum)TIVX_CPU_ID_MAX; i++)
+    {
+        cpu_id_map[i] = g_ipc_cpu_id_map[i];
+    }
+}
+
 uint16_t ownIpcGetHostPortId(uint16_t cpu_id)
 {
     /* convert OpenVX CPU ID to VSDK CPU ID */
@@ -223,6 +233,14 @@ void ownIpcDeInit(void)
 /*LDRA_ANALYSIS*/
 /* END: TIOVX_CODE_COVERAGE_HOST_ONLY_IPC_UM001 */
 #endif
+
+vx_bool ownIsCpuEnabled(uint32_t app_cpu_id)
+{
+    uint32_t vsdk_cpu_id;
+
+    vsdk_cpu_id = app_cpu_id;
+    return appIpcIsCpuEnabled(vsdk_cpu_id);
+}
 
 vx_bool tivxIsTargetEnabled(const char target_name[])
 {

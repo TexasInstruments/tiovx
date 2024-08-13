@@ -65,6 +65,8 @@
 #include <vx_internal.h>
 #include <tivx_platform_pc.h>
 #include <app_mem_map.h>
+#include <utils/perf_stats/include/app_perf_stats.h>
+#include <tivx_platform.h>
 
 /*! \brief Structure for keeping track of platform information
  *         Currently it is mainly used for mapping target id and target name
@@ -261,4 +263,14 @@ void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
 
 void ownPlatformTaskInit()
 {
+}
+
+void ownPlatformGetTargetPerfStats(uint32_t app_cpu_id, uint32_t target_values[TIVX_TARGET_RESOURCE_COUNT])
+{
+    uint32_t i;
+
+    for (i = 0; i < TIVX_TARGET_RESOURCE_COUNT; i++)
+    {
+        target_values[i] = 0;
+    }
 }

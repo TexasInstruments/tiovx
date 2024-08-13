@@ -144,6 +144,7 @@ static void ownTargetFreeHandle(tivx_target *target_handle)
         (*target_handle)->target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
 
         *target_handle = NULL;
+        ownLogResourceFree("TIVX_TARGET_MAX_TARGETS_IN_CPU", 1);
     }
 }
 #endif

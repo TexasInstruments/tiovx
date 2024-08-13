@@ -111,11 +111,25 @@ void ownIpcInit(void);
 uint16_t ownIpcGetHostPortId(uint16_t cpu_id);
 
 /*!
+ * \brief Utility function to check if a specified CPU is enabled
+ *
+ * \ingroup group_tivx_ipc
+ */
+vx_bool ownIsCpuEnabled(uint32_t app_cpu_id);
+
+/*!
  * \brief DeInit IPC module
  *
  * \ingroup group_tivx_ipc
  */
 void ownIpcDeInit(void);
+
+/*!
+ * \brief Get a map of CPU IDs
+ *
+ * \ingroup group_tivx_ipc
+ */
+void ownIPCGetCpuMap(uint32_t cpu_id_map[TIVX_CPU_ID_MAX]);
 
 #ifdef __cplusplus
 }

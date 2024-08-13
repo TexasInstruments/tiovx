@@ -148,7 +148,7 @@ static tivx_shm_obj_count_t g_tivx_obj_desc_shm_table[] = {
  * not the actual data objects. TIVX_TYPE_UINTPTR is used to represent the size of a vx_reference
  * in these cases.
  */
-static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
+tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     {
         TIVX_CONTEXT_MAX_KERNELS, 0, 0, 1, "TIVX_CONTEXT_MAX_KERNELS", { {(uint32_t)TIVX_TYPE_UINTPTR}, \
                                                                          {TIVX_CONTEXT_MAX_OBJECTS} }, \
@@ -452,22 +452,16 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
 #endif
     {
-        /*Minimum value set to parameter max; Value is not logged correctly on
-        evm because value is set from the target, not from the host*/
         TIVX_TARGET_MAX_TARGETS_IN_CPU, 0, 0, TIVX_TARGET_MAX_TARGETS_IN_CPU, "TIVX_TARGET_MAX_TARGETS_IN_CPU", { {(uint32_t)TIVX_TYPE_TARGET}, \
                                                                                      {1} }, \
                                                                                    (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        /*Minimum value set to parameter max; Value is not logged correctly on
-        evm because value is set from the target, not from the host*/
         TIVX_MAX_TARGETS_PER_KERNEL, 0, 0, TIVX_MAX_TARGETS_PER_KERNEL, "TIVX_MAX_TARGETS_PER_KERNEL", { {(uint32_t)VX_TYPE_CHAR}, \
                                                                                {TIVX_TARGET_MAX_NAME*TIVX_KERNEL_MAX_OBJECTS} }, \
                                                                              (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
     {
-        /*Minimum value set to parameter max; Value is not logged correctly on
-        evm because value is set from the target, not from the host*/
         TIVX_TARGET_KERNEL_INSTANCE_MAX, 0, 0, TIVX_TARGET_KERNEL_INSTANCE_MAX, "TIVX_TARGET_KERNEL_INSTANCE_MAX", { {(uint32_t)TIVX_TYPE_TARGET_KERNEL_INSTANCE}, \
                                                                                        {1} }, \
                                                                                      (vx_bool)vx_false_e, (vx_bool)vx_false_e
@@ -478,8 +472,6 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                                     (vx_bool)vx_false_e, (vx_bool)vx_false_e
     }
 };
-
-#define TIVX_RESOURCE_STATS_TABLE_SIZE (dimof(g_tivx_resource_stats_table))
 
 void ownLogResourceInit(void)
 {
@@ -707,15 +699,51 @@ static int32_t getNumDigits(int32_t value)
     return numDigits;
 }
 
+static void ownLogUpdateTargetValues(void)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t i, j;
+    tivx_resource_stats_t resource;
+    char target_resources[TIVX_TARGET_RESOURCE_COUNT][TIVX_RESOURCE_NAME_MAX] = {"TIVX_TARGET_MAX_TARGETS_IN_CPU",
+                                                                                       "TIVX_MAX_TARGETS_PER_KERNEL",
+                                                                                       "TIVX_TARGET_KERNEL_INSTANCE_MAX",
+                                                                                       "TIVX_TARGET_KERNEL_MAX"};
+    uint32_t target_values[TIVX_TARGET_RESOURCE_COUNT] = {0, 0, 0, 0};
+    uint32_t cpu_map[TIVX_CPU_ID_MAX];
+
+    ownIPCGetCpuMap(cpu_map);
+
+    for (i = 0; i < (uint32_t)TIVX_CPU_ID_MAX; i++)
+    {
+        if ((cpu_map[i] != 0) && (ownIsCpuEnabled(cpu_map[i])))
+        {
+            ownPlatformGetTargetPerfStats(cpu_map[i], target_values);
+
+            for (j = 0; j < TIVX_TARGET_RESOURCE_COUNT; j++)
+            {
+                status = tivxQueryResourceStats(target_resources[j], &resource);
+
+                if ((status == (vx_status)VX_SUCCESS) && (target_values[j] > resource.max_used_value) && (target_values[j] < resource.max_value))
+                {
+                    ownLogSetResourceUsedValue(resource.name, (uint16_t)target_values[j]);
+                }
+            }
+        }
+    }
+}
+
 void tivxPrintAllResourceStats(void)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
-    int32_t i, j;
-    tivx_resource_stats_t stat;
-    (void)printf("\n\n  MAX VALUE NAME:                         MAX VALUE:  VALUE USED:  REQ. VALUE:\n");
-    (void)printf("-------------------------------------------------------------------------------\n");
+    ownLogUpdateTargetValues();
+
     if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
     {
+
+        int32_t i, j;
+        tivx_resource_stats_t stat;
+        (void)printf("\n\n  MAX VALUE NAME:                         MAX VALUE:  VALUE USED:  REQ. VALUE:\n");
+        (void)printf("-------------------------------------------------------------------------------\n");
 
         for (i = 0; i < (int32_t)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
         {
@@ -786,6 +814,8 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void)
 {
     vx_status status = (vx_status)VX_FAILURE;
 #ifdef TIVX_RESOURCE_LOG_ENABLE
+    ownLogUpdateTargetValues();
+
     if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
     {
 
@@ -922,6 +952,8 @@ vx_status tivxExportMemoryConsumption(char * outputFile, const char * unit, vx_e
 {
     vx_status status = (vx_status)VX_FAILURE;
 #ifdef TIVX_RESOURCE_LOG_ENABLE
+    ownLogUpdateTargetValues();
+    
     if((vx_status)VX_SUCCESS != tivxMutexLock(g_tivx_log_resource_lock))
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to lock mutex\n");
