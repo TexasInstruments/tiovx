@@ -509,7 +509,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxAccumulateWeightedImageNodeX(vx_graph graph, 
     status = vxReleaseScalar(&salpha);
     if((vx_status)VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar object");
+        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar object\n");
     }
     return node;
 }
@@ -536,7 +536,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxAccumulateSquareImageNodeX(vx_graph graph, vx
     status = vxReleaseScalar(&scalar);
     if((vx_status)VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar object");
+        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar object\n");
     }
     return node;
 }

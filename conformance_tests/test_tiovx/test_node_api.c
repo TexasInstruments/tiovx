@@ -269,6 +269,26 @@ TEST(tivxNodeApi, negativeTestvxSubtractNode)
     ASSERT(NULL == vxSubtractNode(graph, in1, in2, policy, out));
 }
 
+TEST(tivxNodeApi, negativeTestvxAccumulateWeightedImageNodeX)
+{
+    vx_graph graph = NULL;
+    vx_image input = NULL;
+    vx_image accum = NULL;
+    vx_float32 alpha = (vx_float32)0;
+
+    ASSERT(NULL == vxAccumulateWeightedImageNodeX(graph, input, alpha, accum));
+}
+
+TEST(tivxNodeApi, negativeTestvxAccumulateSquareImageNodeX)
+{
+    vx_graph graph = NULL;
+    vx_image input = NULL;
+    vx_image accum = NULL;
+    vx_uint32 shift = (vx_uint32)0;
+
+    ASSERT(NULL == vxAccumulateSquareImageNodeX(graph, input, shift, accum));
+}
+
 TESTCASE_TESTS(
     tivxNodeApi,
     negativeTestWarpAffineNode,
@@ -288,5 +308,7 @@ TESTCASE_TESTS(
     negativeTestvxMultiplyNode,
     negativeTestvxNonLinearFilterNode,
     negativeTestvxOpticalFlowPyrLKNode,
-    negativeTestvxSubtractNode
+    negativeTestvxSubtractNode,
+    negativeTestvxAccumulateWeightedImageNodeX,
+    negativeTestvxAccumulateSquareImageNodeX
 )
