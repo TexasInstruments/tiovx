@@ -879,10 +879,14 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
         {
             /* schedule graph one time */
             status = ownGraphScheduleGraph(graph, 1);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1812- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UTJT001 */
             if((vx_status)VX_SUCCESS !=status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to schedule graph for execution \n");
             }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_UTJT001 */
+/*LDRA_ANALYSIS*/
         }
         else
         if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&

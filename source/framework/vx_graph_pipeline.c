@@ -293,28 +293,40 @@ vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
         for(ref_id=0; ref_id<num_refs; ref_id++)
         {
             status = ownGraphParameterCheckValidEnqueueRef(graph, graph_parameter_index, refs[ref_id]);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT002 */
             if(status!=(vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "Unable to enqueue ref due to invalid ref\n");
             }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT002 */
+/*LDRA_ANALYSIS*/
             if(status==(vx_status)VX_SUCCESS)
             {
                 status = ownDataRefQueueEnqueueReadyRef(data_ref_q, refs[ref_id]);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT001 */
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "Unable to enqueue ref\n");
                 }
                 else
+/* END: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT001 */
+#endif
                 {
                     num_enqueue++;
                 }
             }
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT003 */
             if(status!=(vx_status)VX_SUCCESS)
             {
                 break;
             }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT003 */
+/*LDRA_ANALYSIS*/
         }
 
         if(num_enqueue>0U)
@@ -340,10 +352,14 @@ vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
                 if(ownGraphDoScheduleGraphAfterEnqueue(graph, graph_parameter_index)==(vx_bool)vx_true_e)
                 {
                     status = ownGraphScheduleGraph(graph, num_enqueue);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT004 */
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to schedule graph \n");
                     }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT004 */
+/*LDRA_ANALYSIS*/
                 }
             }
         }
@@ -578,10 +594,14 @@ vx_status ownGraphDeleteQueues(vx_graph graph)
 {
     vx_status status;
     status = tivxQueueDelete(&graph->free_q);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT005 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "Failed to delete a queue\n");
     }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT005 */
+/*LDRA_ANALYSIS*/
     return status;
 }
 
@@ -858,11 +878,15 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
                 for(node_id=0; node_id<graph->num_head_nodes; node_id++)
                 {
                     tmp_status = ownNodeKernelSchedule(graph->head_nodes[node_id], graph_obj_desc->pipeline_id);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT006 */
                     if((vx_status)VX_SUCCESS != tmp_status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to schedule kernel\n");
                         status = tmp_status;
                     }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT006 */
+/*LDRA_ANALYSIS*/
                 }
             }
             else
