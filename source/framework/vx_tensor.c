@@ -30,7 +30,7 @@ Tensor HELPER FUNCTIONS
 
 static vx_status isTensorSwappable(vx_reference input, vx_reference output);
 static vx_status moveOrSwapTensor(vx_reference input, vx_reference output);
-static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params);
+static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
 static vx_bool ownIsValidTensorFormat(vx_enum data_type);
 static void ownInitTensorObject(
     vx_tensor tensor, const vx_size* dimensions, vx_size number_of_dimensions, vx_enum data_type, vx_int8 fixed_point_position);
@@ -91,54 +91,43 @@ static vx_status moveOrSwapTensor(vx_reference input, vx_reference output)
 /*! \brief The kernel operations function for vx_tensor
  * Handles both validation and kernel function
  */
-static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params)
+static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
     vx_status res;
-    vx_reference input  = NULL;
-    vx_reference output = NULL;    
-
-    if (2U != num_params)
+    
+    switch (kernel_enum)
     {
-        res = (vx_status)VX_ERROR_NOT_SUPPORTED;
-    }
-    else
-    {
-        input  = params[0];
-        output = params[1];        
-        switch (kernel_enum)
-        {
-            case (vx_enum)VX_KERNEL_COPY:
-                if ((vx_bool)vx_true_e == validate_only)
+        case (vx_enum)VX_KERNEL_COPY:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                if ((vx_bool) vx_true_e ==  tivxIsReferenceMetaFormatEqual(input, output))
                 {
-                    if ((vx_bool) vx_true_e ==  tivxIsReferenceMetaFormatEqual(input, output))
-                    {
-                        res = (vx_status)VX_SUCCESS;
-                    }
-                    else
-                    {
-                        res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-                    }
+                    res = (vx_status)VX_SUCCESS;
                 }
                 else
                 {
-                    res = ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output);
+                    res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
                 }
-                break;
-            case (vx_enum)VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
-            case (vx_enum)VX_KERNEL_MOVE:
-                if ((vx_bool)vx_true_e == validate_only)
-                {
-                    res =  isTensorSwappable(input, output);
-                }
-                else
-                {
-                    res = moveOrSwapTensor(input, output);
-                }
-                break;
-            default:
-                res =  (vx_status)VX_ERROR_NOT_SUPPORTED;
-                break;
-        }
+            }
+            else
+            {
+                res = ownCopyReferenceGeneric((vx_reference)input, (vx_reference)output);
+            }
+            break;
+        case (vx_enum)VX_KERNEL_SWAP:    /* Swap and move do exactly the same */
+        case (vx_enum)VX_KERNEL_MOVE:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                res =  isTensorSwappable(input, output);
+            }
+            else
+            {
+                res = moveOrSwapTensor(input, output);
+            }
+            break;
+        default:
+            res =  (vx_status)VX_ERROR_NOT_SUPPORTED;
+            break;
     }
     return (res);
 }

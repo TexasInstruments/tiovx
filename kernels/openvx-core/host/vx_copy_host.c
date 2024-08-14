@@ -56,7 +56,7 @@ static inline vx_status call_kernel_func(vx_enum kernel_enum, vx_bool validate_o
     vx_status status = (vx_status)VX_SUCCESS;
     if (NULL != params[0]->kernel_callback)
     {
-        status = (params[0]->kernel_callback)(kernel_enum, validate_only, params, 2U);
+        status = (params[0]->kernel_callback)(kernel_enum, validate_only, params[0], params[1]);
     }
     else
     {
