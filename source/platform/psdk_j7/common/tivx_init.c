@@ -117,6 +117,7 @@ static void tivxInitLocal(void)
     #endif
 
     #if defined (C7X_FAMILY) || defined (C66)
+        tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetDspKernels();
     #endif
     #endif  /* #ifdef BUILD_CONFORMANCE_TEST */
@@ -168,16 +169,9 @@ static void tivxDeInitLocal(void)
             tivxUnRegisterTestKernelsTargetArmKernels();
         #endif
 
-        #if defined (SOC_J721E)
-        #if defined (C66)
+        #if defined (C7X_FAMILY) || defined(C66)
+            tivxUnRegisterCaptureTargetArmKernels();
             tivxUnRegisterTestKernelsTargetDspKernels();
-        #endif
-        #endif
-
-        #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A) || defined (SOC_J722S)
-        #if defined (C7X_FAMILY)
-            tivxUnRegisterTestKernelsTargetDspKernels();
-        #endif
         #endif
         #endif  /* #ifdef BUILD_CONFORMANCE_TEST */
 

@@ -48,6 +48,7 @@ typedef struct {
     int num_buf;
     int loop_count;
     int measure_perf;
+    char *target_string;
 } Pipeline_Arg;
 
 #define ADD_BUF_1(testArgName, nextmacro, ...) \
@@ -98,16 +99,26 @@ typedef struct {
 #define ADD_SIZE_2048x1024(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/sz=2048x1024", __VA_ARGS__, 2048, 1024))
 
+#if defined(SOC_AM62A)
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU1_0", __VA_ARGS__, TIVX_TARGET_MCU1_0)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1))
+#else
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU2_0", __VA_ARGS__, TIVX_TARGET_MCU2_0)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1))
+#endif
+
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_0, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_0, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_MAX, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_100000, MEASURE_PERF_ON, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_2048x1024, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_ON, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_0, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_0, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_MAX, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_1000, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_1000, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_100000, MEASURE_PERF_ON, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_2048x1024, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_ON, ADD_SET_TARGET_PARAMETERS, ARG), \
 
 /*
  * Utility API to set number of buffers at a node parameter
@@ -177,12 +188,13 @@ static vx_status log_graph_rt_trace(vx_graph graph)
 typedef struct {
     const char* name;
     int stream_time;
+    char *target_string;
 } Arg;
 
 #define STREAMING_PARAMETERS \
-    CT_GENERATE_PARAMETERS("streaming", ARG, 2), \
+    CT_GENERATE_PARAMETERS("streaming", ADD_SET_TARGET_PARAMETERS, ARG, 2), \
 
-TEST(tivxPyramidNode, testIntermediateNodeCreation)
+TEST_WITH_ARG(tivxPyramidNode, testIntermediateNodeCreation, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
     vx_context context = context_->vx_context_;
@@ -203,11 +215,7 @@ TEST(tivxPyramidNode, testIntermediateNodeCreation)
 
     ASSERT_VX_OBJECT(n1 = tivxPyramidIntermediateNode(graph, pyr_in, pyr_out), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -220,7 +228,7 @@ TEST(tivxPyramidNode, testIntermediateNodeCreation)
     tivxTestKernelsUnLoadKernels(context);
 }
 
-TEST(tivxPyramidNode, testSourceNodeCreation)
+TEST_WITH_ARG(tivxPyramidNode, testSourceNodeCreation, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
     vx_context context = context_->vx_context_;
@@ -239,11 +247,7 @@ TEST(tivxPyramidNode, testSourceNodeCreation)
 
     ASSERT_VX_OBJECT(n1 = tivxPyramidSourceNode(graph, pyr_out), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -303,13 +307,8 @@ TEST_WITH_ARG(tivxPyramidNode, testObjectArrayPyramidPipeline, Arg, STREAMING_PA
     ASSERT_VX_OBJECT(n2 = tivxPyramidIntermediateNode(graph, pyr_1[0], pyr_2[0]), VX_TYPE_NODE);
     vxReplicateNode(graph, n2, pyr_intermediate_replicate, 2u);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     /* input @ node index 0, becomes graph parameter 1 */
     add_graph_parameter_by_node_index(graph, n1, 0);
@@ -465,15 +464,9 @@ TEST_WITH_ARG(tivxPyramidNode, testDelayPyramidPipeline, Arg, STREAMING_PARAMETE
     ASSERT_VX_OBJECT(n3 = tivxPyramidIntermediateNode(graph, (vx_pyramid)vxGetReferenceFromDelay(delay, 0),
                           pyr_3[0]), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));    
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, arg_->target_string));
 
     /* input @ node index 0, becomes graph parameter 1 */
     add_graph_parameter_by_node_index(graph, n1, 0);
@@ -642,15 +635,9 @@ TEST_WITH_ARG(tivxPyramidNode, testDelayObjectArrayPyramidPipeline, Arg, STREAMI
                           pyr_3[0]), VX_TYPE_NODE);
     vxReplicateNode(graph, n3, pyr_intermediate_replicate, 2u);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, arg_->target_string));
 
     /* input @ node index 0, becomes graph parameter 1 */
     add_graph_parameter_by_node_index(graph, n1, 0);

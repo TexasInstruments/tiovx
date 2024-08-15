@@ -47,6 +47,7 @@ typedef struct {
     int pipe_depth;
     int num_buf;
     int measure_perf;
+    char *target_string;
 } Pipeline_Arg;
 
 #define ADD_BUF_1(testArgName, nextmacro, ...) \
@@ -79,16 +80,26 @@ typedef struct {
 #define ADD_SIZE_2048x1024(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/sz=2048x1024", __VA_ARGS__, 2048, 1024))
 
+#if defined(SOC_AM62A)
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU1_0", __VA_ARGS__, TIVX_TARGET_MCU1_0)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1))
+#else
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU2_0", __VA_ARGS__, TIVX_TARGET_MCU2_0)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1))
+#endif
+
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_3, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_MAX, ADD_BUF_3, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, MEASURE_PERF_ON, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_2048x1024, ADD_PIPE_3, ADD_BUF_3, MEASURE_PERF_ON, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_3, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_MAX, ADD_BUF_3, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, MEASURE_PERF_OFF, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, MEASURE_PERF_ON, ADD_SET_TARGET_PARAMETERS, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_2048x1024, ADD_PIPE_3, ADD_BUF_3, MEASURE_PERF_ON, ADD_SET_TARGET_PARAMETERS, ARG), \
 
 /*
  * Utility API to set number of buffers at a node parameter
@@ -158,11 +169,12 @@ static vx_status log_graph_rt_trace(vx_graph graph)
 typedef struct {
     const char* name;
     int stream_time;
+    char *target_string;
 } Arg;
 
 #define STREAMING_PARAMETERS \
-    CT_GENERATE_PARAMETERS("streaming", ARG, 100), \
-    CT_GENERATE_PARAMETERS("streaming", ARG, 1000)
+    CT_GENERATE_PARAMETERS("streaming", ADD_SET_TARGET_PARAMETERS, ARG, 100), \
+    CT_GENERATE_PARAMETERS("streaming", ADD_SET_TARGET_PARAMETERS, ARG, 1000)
 
 int test = 0;
 TEST_WITH_ARG(tivxSourceNode, testSourceObjArray, Arg, STREAMING_PARAMETERS)
@@ -191,13 +203,8 @@ TEST_WITH_ARG(tivxSourceNode, testSourceObjArray, Arg, STREAMING_PARAMETERS)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     if (test == 0)
     {
@@ -222,7 +229,7 @@ TEST_WITH_ARG(tivxSourceNode, testSourceObjArray, Arg, STREAMING_PARAMETERS)
 
 /* test case for TIOVX-650 bug
    Note: currently disabled */
-TEST(tivxSourceNode, testSourceObjArray2)
+TEST_WITH_ARG(tivxSourceNode, testSourceObjArray2, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
     vx_context context = context_->vx_context_;
@@ -249,18 +256,10 @@ TEST(tivxSourceNode, testSourceObjArray2)
         scalar[i] = (vx_scalar)vxGetObjectArrayItem(obj_array_scalar, i);
         ASSERT_VX_OBJECT(scalar_out[i] = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
         ASSERT_VX_OBJECT(n2[i] = tivxScalarIntermediateNode(graph, scalar[i], scalar_out[i]), VX_TYPE_NODE);
-        #if defined(SOC_AM62A)
-        VX_CALL(vxSetNodeTarget(n2[i], VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-        #else
-        VX_CALL(vxSetNodeTarget(n2[i], VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-        #endif
+        VX_CALL(vxSetNodeTarget(n2[i], VX_TARGET_STRING, arg_->target_string));
     }
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, 3));
 
@@ -327,13 +326,8 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray, Arg, STREAMING_PARAMETERS)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSinkObjArrayNode(graph, obj_array_scalar), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -420,19 +414,9 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray2, Arg, STREAMING_PARAMETERS)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, num_buf));
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -551,19 +535,9 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray3, Arg, STREAMING_PARAMETERS)
             graph_parameters_queue_params_list
             );
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, num_buf));
 
@@ -689,26 +663,14 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray4, Arg, STREAMING_PARAMETERS)
             graph_parameters_queue_params_list
             );
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, arg_->target_string));
 
     for(ch_id=0; ch_id<4; ch_id++)
     {
-        #if defined(SOC_AM62A)
-        VX_CALL(vxSetNodeTarget(n1[ch_id], VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-        #else
-        VX_CALL(vxSetNodeTarget(n1[ch_id], VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-        #endif
+        VX_CALL(vxSetNodeTarget(n1[ch_id], VX_TARGET_STRING, arg_->target_string));
     }
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, num_buf));
 
@@ -856,26 +818,14 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray5, Arg, STREAMING_PARAMETERS)
             graph_parameters_queue_params_list
             );
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, arg_->target_string));
 
     for(ch_id=0; ch_id<4; ch_id++)
     {
-        #if defined(SOC_AM62A)
-        VX_CALL(vxSetNodeTarget(n1[ch_id], VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-        #else
-        VX_CALL(vxSetNodeTarget(n1[ch_id], VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-        #endif
+        VX_CALL(vxSetNodeTarget(n1[ch_id], VX_TARGET_STRING, arg_->target_string));
     }
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, num_buf));
 
@@ -952,7 +902,7 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray5, Arg, STREAMING_PARAMETERS)
  *                                     |
  *                                     |------------->  Obj Array element ---> tivxScalarIntermediate2Node
  */
-TEST(tivxSourceNode, testSinkObjArray6)
+TEST_WITH_ARG(tivxSourceNode, testSinkObjArray6, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
     vx_context context = context_->vx_context_;
@@ -1030,19 +980,9 @@ TEST(tivxSourceNode, testSinkObjArray6)
             graph_parameters_queue_params_list
             );
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, arg_->target_string));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, num_buf));
 
@@ -1116,7 +1056,7 @@ TEST(tivxSourceNode, testSinkObjArray6)
  *                                           |
  *                                           |-------------->  Obj Array element ---> tivxScalarIntermediate2Node (Repl) --->  Obj Array element ---> tivxScalarSink2Node
  */
-TEST(tivxSourceNode, testSinkObjArray7)
+TEST_WITH_ARG(tivxSourceNode, testSinkObjArray7, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
     vx_context context = context_->vx_context_;
@@ -1203,23 +1143,10 @@ TEST(tivxSourceNode, testSinkObjArray7)
             graph_parameters_queue_params_list
             );
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-
-    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-
-    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, arg_->target_string));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, num_buf));
 
@@ -1317,13 +1244,8 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourceSink, Arg, STREAMING_PARAMETERS)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     /* If i remove this, the test case hangs */
     //ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, 3));
@@ -1388,17 +1310,10 @@ TEST_WITH_ARG(tivxSourceNode, testNew2Source2Sink, Arg, STREAMING_PARAMETERS)
 
     ASSERT_VX_OBJECT(n4 = tivxScalarSink2Node(graph, scalar2), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, arg_->target_string));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n1));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n3));
@@ -1468,11 +1383,7 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourcePipeline, Arg, STREAMING_PARAMETERS)
             graph_parameters_queue_params_list
             );
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -1564,15 +1475,8 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourceSinkPipeline, Arg, STREAMING_PARAMETE
             graph_parameters_queue_params_list
             );
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -1672,15 +1576,8 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourceIntermediatePipeline, Arg, STREAMING_
             graph_parameters_queue_params_list
             );
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -1781,15 +1678,8 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourceIntermediatePipeline2, Arg, STREAMING
             graph_parameters_queue_params_list
             );
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -1880,14 +1770,14 @@ TEST_WITH_ARG(tivxSourceNode, testMultiGraphPipelined1, Arg, STREAMING_PARAMETER
 
     ASSERT_VX_OBJECT(n4 = tivxScalarSink2Node(graph2, scalar_g2), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
     #ifndef SOC_J722S
     VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_1));
     VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU2_1));
     #else
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, arg_->target_string));
     #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph1, n1));
@@ -1990,17 +1880,10 @@ TEST_WITH_ARG(tivxSourceNode, testMultiGraphPipelined2, Arg, STREAMING_PARAMETER
 
     ASSERT_VX_OBJECT(n4 = tivxScalarSink2Node(graph2, scalar_g2), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, arg_->target_string));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph1, n1));
 
@@ -2107,16 +1990,16 @@ TEST_WITH_ARG(tivxSourceNode, testMultiGraphPipelined3, Arg, STREAMING_PARAMETER
 
     ASSERT_VX_OBJECT(n5 = tivxScalarSink2Node(graph2, scalar_out_g2), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, arg_->target_string));
     #ifndef SOC_J722S
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_1));
     VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU2_1));
     VX_CALL(vxSetNodeTarget(n5, VX_TARGET_STRING, TIVX_TARGET_MCU2_1));
     #else
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n5, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n5, VX_TARGET_STRING, arg_->target_string));
     #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph1, n1));
@@ -2218,17 +2101,10 @@ TEST_WITH_ARG(tivxSourceNode, testPipeliningStreaming1, Pipeline_Arg, PARAMETERS
 
     ASSERT_VX_OBJECT(n3 = tivxScalarSink2Node(graph, scalar_out), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, arg_->target_string));
 
     /* Does not need explicit setting of num buf and pipeline depth */
 
@@ -2309,15 +2185,9 @@ TEST_WITH_ARG(tivxSourceNode, testPipeliningStreaming2, Pipeline_Arg, PARAMETERS
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar_out), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     /* explicitly set graph pipeline depth */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
@@ -2399,15 +2269,9 @@ TEST_WITH_ARG(tivxSourceNode, testPipeliningStreaming3, Pipeline_Arg, PARAMETERS
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar_out), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     /* explicitly set graph pipeline depth */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));

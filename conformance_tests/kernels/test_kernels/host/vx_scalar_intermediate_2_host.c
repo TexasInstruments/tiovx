@@ -218,6 +218,7 @@ vx_status tivxAddKernelScalarIntermediate2(vx_context context)
         {
             /* add supported target's */
             tivxKernelsHostUtilsAddKernelTargetMcu(kernel);
+            tivxKernelsHostUtilsAddKernelTargetDsp(kernel);
         }
         if (status == (vx_status)VX_SUCCESS)
         {
