@@ -1185,7 +1185,7 @@ TEST(supplementary_data, testCopySwapMove)
     status = VX_SUCCESS;
     for (int i = 0; i < 3; ++i)
     {
-        if (test1.numbers[i] != user_data2.numbers[i] || test2.numbers[i] != user_data1.numbers[i])
+        if ((test1.numbers[i] != user_data2.numbers[i]) || (test2.numbers[i] != user_data1.numbers[i]))
         {
             status = VX_FAILURE;
             break;

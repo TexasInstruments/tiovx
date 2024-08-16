@@ -23,7 +23,7 @@ static vx_status ownDestructPyramid(vx_reference ref);
 static vx_status ownAllocPyramidBuffer(vx_reference ref);
 static vx_status ownInitPyramid(vx_pyramid prmd);
 static vx_status isPyramidCopyable(vx_reference input, vx_reference output);
-static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params);
+static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
 
 static const vx_float32 gOrbScaleFactor
     [TIVX_PYRAMID_MAX_LEVELS_ORB] =
@@ -95,54 +95,42 @@ static vx_status isPyramidCopyable(vx_reference input, vx_reference output)
         out_objd->format = in_objd->format;
         out_objd->height = in_objd->height;
         out_objd->width = in_objd->width;
-        /* Q: do we have to do anything for the sub-images?
-              elsewhere in the framework this is not done for pyramid
-              metadata, but what about the valid region?
-              it seems like an omission, but probably
-              beyond the scope at present...*/
     }
     return status;
 }
 
-static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference params[], vx_uint32 num_params)
+static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool validate_only, vx_reference input, vx_reference output)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if (2U != num_params)
+    if ((vx_bool)vx_true_e == validate_only)
     {
-        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        status = isPyramidCopyable(input, output);
     }
-    else
+    else    /* dispatch to each sub-image in turn */
     {
-        if ((vx_bool)vx_true_e == validate_only)
+        vx_uint32 lvl;
+        for (lvl = 0U; (lvl < ((tivx_obj_desc_pyramid_t *)input->obj_desc)->num_levels) && ((vx_status)VX_SUCCESS == status); ++lvl)
         {
-            status = isPyramidCopyable(params[0], params[1]);
-        }
-        else    /* dispatch to each sub-image in turn */
-        {
-            vx_uint32 lvl;
-            for (lvl = 0U; (lvl < ((tivx_obj_desc_pyramid_t *)params[0U]->obj_desc)->num_levels) && ((vx_status)VX_SUCCESS == status); ++lvl)
+            vx_reference p2[2] = {&(vxCastRefAsPyramid(input, &status)->img[lvl]->base), &(vxCastRefAsPyramid(output, &status)->img[lvl]->base)};
+            vx_kernel_callback_f kf = p2[0]->kernel_callback;
+            if (NULL != kf)
             {
-                vx_reference p2[2] = {&(vxCastRefAsPyramid(params[0], &status)->img[lvl]->base), &(vxCastRefAsPyramid(params[1], &status)->img[lvl]->base)};
-                vx_kernel_callback_f kf = p2[0]->kernel_callback;
-                if (NULL != kf)
+                status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
+                if (((vx_status)VX_SUCCESS == status) &&
+                    (NULL != p2[0]->supplementary_data) &&
+                    (NULL != p2[1]->supplementary_data) &&
+                    (NULL != p2[0]->supplementary_data->base.kernel_callback))
                 {
-                    status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2, 2);
-                    if (((vx_status)VX_SUCCESS == status) &&
-                        (NULL != p2[0]->supplementary_data) &&
-                        (NULL != p2[1]->supplementary_data) &&
-                        (NULL != p2[0]->supplementary_data->base.kernel_callback))
+                    vx_reference supp_params[2] = {&p2[0]->supplementary_data->base, &p2[1]->supplementary_data->base};
+                    if (VX_SUCCESS == p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_true_e, supp_params[0], supp_params[1]))
                     {
-                        vx_reference supp_params[2] = {&p2[0]->supplementary_data->base, &p2[1]->supplementary_data->base};
-                        if (VX_SUCCESS == p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_true_e, supp_params, 2))
-                        {
-                            status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_false_e, supp_params, 2);
-                        }
-                    }                    
+                        status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_false_e, supp_params[0], supp_params[1]);
+                    }
                 }
-                else
-                {
-                    status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                }
+            }
+            else
+            {
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             }
         }
     }
@@ -300,14 +288,16 @@ VX_API_ENTRY vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 i
     else
     {
         if ((ownIsValidSpecificReference(vxCastRefFromPyramid(prmd), (vx_enum)VX_TYPE_PYRAMID) ==
-                (vx_bool)vx_true_e) && (prmd->base.obj_desc != NULL) &&
-            (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->
-                num_levels))
+                (vx_bool)vx_true_e) &&
+             (prmd->base.obj_desc != NULL) &&
+             (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->num_levels) &&
+             ((NULL != prmd->img[0]) ||
+              ((vx_status)VX_SUCCESS == ownInitPyramid(prmd))))
         {
             img = prmd->img[index];
 
             /* Should increment the reference count,
-             * To release this image, app should explicitely call ReleaseImage.
+             * To release this image, app should explicitly call ReleaseImage.
              * Setting it as void since return value 'count' not used further
              */
             (void)ownIncrementReference(&img->base, (vx_enum)VX_EXTERNAL);
@@ -649,8 +639,17 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
 
     for (i = 0; i < obj_desc->num_levels; i++)
     {
-        img = vxCreateImage(prmd->base.context, w, h,
-            obj_desc->format);
+        /* If this is a virtual pyramid, the images must be virtual images */
+        if (prmd->base.is_virtual)
+        {
+            img = vxCreateVirtualImage((vx_graph)(prmd->base.scope), w, h,
+                obj_desc->format);
+        }
+        else
+        {
+            img = vxCreateImage(prmd->base.context, w, h,
+                obj_desc->format);
+        }
 
         if (vxGetStatus(vxCastRefFromImage(img)) == (vx_status)VX_SUCCESS)
         {
