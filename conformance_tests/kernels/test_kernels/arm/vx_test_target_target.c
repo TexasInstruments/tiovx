@@ -2930,6 +2930,76 @@ static vx_status tivxNegativeTestMutexMaxOut(uint8_t id)
 
     return status;
 }
+
+static vx_status tivxTestTargetGetTargetKernelInstanceState(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_target_kernel_instance target_kernel_instance = NULL;
+    vx_enum state;
+
+    if((vx_status)VX_SUCCESS != tivxGetTargetKernelInstanceState((tivx_target_kernel_instance)&target_kernel_instance,&state))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: target kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestTargetIsTargetKernelInstanceReplicated(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_target_kernel_instance kernel_instance = NULL;
+
+    if ((vx_bool)vx_false_e == tivxIsTargetKernelInstanceReplicated((tivx_target_kernel_instance)&kernel_instance))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestGetObjElement(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_t *obj_desc = NULL;
+    tivx_obj_desc_object_array_t *obj_desc_object_array = NULL;
+
+    obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc((vx_enum)test_obj_desc->type, NULL);
+    if(NULL == obj_desc)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to allocate memory\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        obj_desc_object_array = (tivx_obj_desc_object_array_t *)obj_desc;
+        obj_desc_object_array->num_items = 1;
+        obj_desc->type = (uint16_t)INVALID_ARG;
+        obj_desc->scope_obj_desc_id = (uint16_t)TIVX_OBJ_DESC_INVALID;
+
+        if (obj_desc != tivxGetObjDescElement(obj_desc, (uint16_t)INVALID_ARG))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result for the ARG: obj_desc->scope_obj_desc_id\n");
+            status = (vx_status)VX_FAILURE;
+        }
+
+        if((vx_status)VX_SUCCESS != ownObjDescFree((tivx_obj_desc_t**)&obj_desc))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to deallocate memory\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -3069,7 +3139,11 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTaskAppIpcSendNotifyPort, "", VX_SUCCESS},
     {tivxNegativeTaskAppIpcSendNotify, "", VX_SUCCESS},
     #endif
-    {tivxNegativeTestMutexMaxOut, "",VX_SUCCESS}
+    {tivxNegativeTestMutexMaxOut, "",VX_SUCCESS},
+
+    {tivxTestTargetGetTargetKernelInstanceState, "",VX_SUCCESS},
+    {tivxTestTargetIsTargetKernelInstanceReplicated, "",VX_SUCCESS},
+    {tivxTestGetObjElement, "",VX_SUCCESS},
 };
 #endif /* FULL_CODE_COVERAGE */
 
