@@ -80,10 +80,10 @@
 
 #ifndef PC
 #include <tivx_platform_psdk.h>
+#include <utils/ipc/include/app_ipc.h>
 #endif
 
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-#include <utils/ipc/include/app_ipc.h>
 #include <utils/rtos/include/app_rtos.h>
 #include <utils/perf_stats/include/app_perf_stats.h>
 #endif
@@ -1920,11 +1920,11 @@ static vx_status tivxNegativeAppIpcGetAppCpuId(uint8_t id)
 static vx_status tivxNegativeAppIpcGetCpuName(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    uint32_t app_cpu_id = APP_IPC_CPU_MPU1_0;
+    uint32_t app_cpu_id = APP_IPC_CPU_MAX;
     const char *name1 = "";
-    const char *name2  = "unknown";
+    const char *name2  = "invalid";
 
-    name1 = appIpcGetCpuName(APP_IPC_CPU_MAX);
+    name1 = appIpcGetCpuName(app_cpu_id);
     if((vx_status)VX_SUCCESS != strncmp(name1,name2,strlen(name2)))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for name1 and name2\n");
@@ -2608,6 +2608,148 @@ static vx_status tivxTestQueuePutGetDelete(uint8_t id)
 
 #endif
 
+#ifndef PC
+#if defined(LINUX)
+static vx_status tivxNegativeTaskAppIpcGetHostPortId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t port_id = 0u;
+    uint32_t cpu_id = APP_IPC_CPU_MAX;
+
+    /* '0' in this case is failure */
+    port_id = appIpcGetHostPortId(cpu_id);
+    if((uint32_t)0 != port_id)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'APP_IPC_CPU_MAX' cpu_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+#endif
+
+static vx_status tivxNegativeTaskAppIpcGetIpcCpuId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t app_cpu_id = APP_IPC_CPU_MAX;
+
+    if((vx_status)VX_FAILURE != (vx_status)appIpcGetIpcCpuId(app_cpu_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'APP_IPC_CPU_MAX' app_cpu_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTaskAppIpcGetAppCpuId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    const char *name  = "invalid";
+
+    if(APP_IPC_CPU_INVALID  != appIpcGetAppCpuId((char *)name))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'invalid' name\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTaskAppIpcGetCpuName(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t app_cpu_id = APP_IPC_CPU_MAX;
+    const char *name1 = "";
+    const char *name2  = "invalid";
+
+    name1 = appIpcGetCpuName(app_cpu_id);
+    if((vx_status)VX_SUCCESS != strncmp(name1,name2,strlen(name2)))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for name1 and name2\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTaskAappIpcHwLockAcquire(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t hw_lock_id = APP_IPC_HW_SPIN_LOCK_MAX;
+    uint32_t timeout = 0;
+
+    if((vx_status)VX_FAILURE != appIpcHwLockAcquire(hw_lock_id, timeout))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'APP_IPC_HW_SPIN_LOCK_MAX' hw_lock_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTaskAppIpcHwLockRelease(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t hw_lock_id = APP_IPC_HW_SPIN_LOCK_MAX;
+
+    if((vx_status)VX_FAILURE != appIpcHwLockRelease(hw_lock_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'APP_IPC_HW_SPIN_LOCK_MAX' hw_lock_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTaskAppIpcSendNotifyPort(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t dest_cpu_id = APP_IPC_CPU_MAX;
+    uint32_t payload = 0;
+    uint32_t port_id = 0;
+
+    if((vx_status)VX_FAILURE != appIpcSendNotifyPort(dest_cpu_id, payload, port_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'APP_IPC_CPU_MAX' dest_cpu_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTaskAppIpcSendNotify(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t dest_cpu_id = APP_IPC_CPU_MAX;
+    uint32_t payload = 0;
+
+    if((vx_status)VX_FAILURE != appIpcSendNotify(dest_cpu_id, payload))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'APP_IPC_CPU_MAX' dest_cpu_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+#endif
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -2726,7 +2868,19 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTaskMain, "",VX_SUCCESS},
     #if defined(R5F) || defined(C7X_FAMILY) || defined(C66)
     {tivxTestQueueCreateDelete, "", VX_SUCCESS},
-    {tivxTestQueuePutGetDelete, "", VX_SUCCESS}
+    {tivxTestQueuePutGetDelete, "", VX_SUCCESS},
+    #endif
+    #ifndef PC
+    #if defined(LINUX)
+    {tivxNegativeTaskAppIpcGetHostPortId, "", VX_SUCCESS},
+    #endif
+    {tivxNegativeTaskAppIpcGetIpcCpuId, "", VX_SUCCESS},
+    {tivxNegativeTaskAppIpcGetAppCpuId, "", VX_SUCCESS},
+    {tivxNegativeTaskAppIpcGetCpuName, "", VX_SUCCESS},
+    {tivxNegativeTaskAappIpcHwLockAcquire, "", VX_SUCCESS},
+    {tivxNegativeTaskAppIpcHwLockRelease, "", VX_SUCCESS},
+    {tivxNegativeTaskAppIpcSendNotifyPort, "", VX_SUCCESS},
+    {tivxNegativeTaskAppIpcSendNotify, "", VX_SUCCESS}
     #endif
 };
 #endif /* FULL_CODE_COVERAGE */
