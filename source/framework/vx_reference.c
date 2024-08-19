@@ -495,9 +495,10 @@ vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
         if ((vx_status)VX_SUCCESS == status)
         {
             tivx_shared_mem_ptr_t mem_ptr;
-            mem_ptr = *op_mem_ptr;
-            *op_mem_ptr = *ip_mem_ptr;
-            *ip_mem_ptr = mem_ptr;
+            tivx_obj_desc_memcpy(&mem_ptr, op_mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
+            tivx_obj_desc_memcpy(op_mem_ptr, ip_mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
+            tivx_obj_desc_memcpy(ip_mem_ptr, &mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
+
             if ((vx_enum)VX_TYPE_ARRAY == input->type)
             {
                 tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->obj_desc;
