@@ -654,6 +654,32 @@ TEST(tivxImage, negativeTestCreateUniformImage1)
     VX_CALL(test_utils_release_maxed_out_heap_mem(tivx_shared_mem_info_array, num_chunks));
 }
 
+TEST(tivxImage, negativeTestCreateImageFromChannelROIBoundary)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image[TIVX_IMAGE_MAX_SUBIMAGE_DEPTH + 1], img1;
+    vx_uint32 width = 640, height = 480;
+    vx_df_image format = VX_DF_IMAGE_YUV4;
+    vx_rectangle_t rect = {0, 0, width, height/2};
+    int i =0;
+
+    ASSERT_VX_OBJECT(image[0] = vxCreateImage(context, width, height, format), VX_TYPE_IMAGE);
+
+    for(i = 0;i<TIVX_IMAGE_MAX_SUBIMAGE_DEPTH;i++)
+    {
+        ASSERT_VX_OBJECT(image[i+1] = vxCreateImageFromROI(image[i], &rect), VX_TYPE_IMAGE);
+    }
+    /* To hit condition parent subimages >= TIVX_IMAGE_MAX_SUBIMAGE_DEPTH */
+    EXPECT_VX_ERROR(img1 = vxCreateImageFromROI(image[i], &rect), VX_ERROR_NO_RESOURCES);
+
+    EXPECT_VX_ERROR(img1 = vxCreateImageFromChannel(image[i], VX_CHANNEL_V), VX_ERROR_NO_RESOURCES);
+
+    for(i = 0;i<=TIVX_IMAGE_MAX_SUBIMAGE_DEPTH;i++)
+    {
+        VX_CALL(vxReleaseImage(&image[i]));
+    }
+}
+
 TESTCASE_TESTS(
     tivxImage,
     negativeTestCreateImage,
@@ -685,4 +711,5 @@ TESTCASE_TESTS(
     testSetImageStride,
     testSetObjArrImageStride,
     testCreateImage,
-    testSetImageAttribute)
+    testSetImageAttribute,
+    negativeTestCreateImageFromChannelROIBoundary)
