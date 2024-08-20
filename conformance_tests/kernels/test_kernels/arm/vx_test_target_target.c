@@ -93,6 +93,7 @@
 #define MAX_LENGTH 64
 #define INVALID_ARG -1
 #define IPC_MP_INVALID_ID            (0xFFFFFFFFU)
+#define APP_IPC_HW_SPIN_LOCK_MAX        (256u)
 #define INVALID_TARGET "invalid"
 
 static tivx_target_kernel vx_test_target_target_kernel = NULL;
@@ -1850,6 +1851,287 @@ static vx_status tivxAppIpcGetCpuName(uint8_t id)
 
     return status;
 }
+
+static vx_status tivxNegativeAppIpcHwLockAcquire(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t hw_lock_id = APP_IPC_HW_SPIN_LOCK_MAX;
+    uint32_t timeout = 0;
+
+    if ((vx_status)VX_FAILURE != appIpcHwLockAcquire(hw_lock_id, timeout))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for hw_lock_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppIpcHwLockRelease(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t hw_lock_id = APP_IPC_HW_SPIN_LOCK_MAX;
+
+    if ((vx_status)VX_FAILURE != appIpcHwLockRelease(hw_lock_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for hw_lock_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppIpcGetIpcCpuId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t app_cpu_id = APP_IPC_CPU_MAX;
+
+    if (IPC_MP_INVALID_ID != appIpcGetIpcCpuId(app_cpu_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for app_cpu_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppIpcGetAppCpuId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    const char *name  = "invalid";
+
+    if (APP_IPC_CPU_INVALID  != appIpcGetAppCpuId((char *)name))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for name\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppIpcGetCpuName(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t app_cpu_id = APP_IPC_CPU_MPU1_0;
+    const char *name1 = "";
+    const char *name2  = "unknown";
+
+    name1 = appIpcGetCpuName(APP_IPC_CPU_MAX);
+    if((vx_status)VX_SUCCESS != strncmp(name1,name2,strlen(name2)))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for name1 and name2\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppIpcSendNotifyPort(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t dest_cpu_id = APP_IPC_CPU_MAX;
+    uint32_t payload = 0;
+    uint32_t port_id = 0;
+
+    if ((vx_status)VX_FAILURE != appIpcSendNotifyPort(dest_cpu_id, payload, port_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for dest_cpu_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppIpcSendNotify(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t dest_cpu_id = APP_IPC_CPU_MAX;
+    uint32_t payload = 0;
+
+    if ((vx_status)VX_FAILURE != appIpcSendNotify(dest_cpu_id, payload))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for dest_cpu_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppMemAlloc(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t heap_id = APP_MEM_HEAP_MAX;
+    uint32_t size = 0;
+    uint32_t align = 0;
+
+    if (NULL != appMemAlloc(heap_id, size, align))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for heap_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    heap_id = APP_MEM_HEAP_L3;
+    if (NULL != appMemAlloc(heap_id, size, align))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for heap_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppMemResetScratchHeap(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t heap_id = APP_MEM_HEAP_MAX;
+
+    if ((vx_status)VX_FAILURE != appMemResetScratchHeap(heap_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for heap_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppMemFree(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t heap_id = APP_MEM_HEAP_MAX;
+    void *ptr = NULL;
+    uint32_t size = 0u;
+
+    if ((vx_status)VX_FAILURE != appMemFree(heap_id, ptr, size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for heap_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppMemStats(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t heap_id = APP_MEM_HEAP_MAX;
+    app_mem_stats_t *stats = NULL;
+
+    if ((vx_status)VX_FAILURE != appMemStats(heap_id, stats))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for heap_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppRtosSemaphoreParamsInit(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_semaphore_params_t *params = NULL;
+
+    appRtosSemaphoreParamsInit(params);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppRtosSemaphoreDelete(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_semaphore_handle_t *semhandle = NULL;
+    app_rtos_semaphore_handle_t semhandle_temp = NULL;
+
+    if ((app_rtos_status_t)APP_RTOS_STATUS_FAILURE != appRtosSemaphoreDelete(semhandle))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if ((app_rtos_status_t)APP_RTOS_STATUS_FAILURE != appRtosSemaphoreDelete(&semhandle_temp))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for semhandle_temp\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppRtosSemaphorePost(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_semaphore_handle_t semhandle = NULL;
+
+    if ((app_rtos_status_t)APP_RTOS_STATUS_SUCCESS != appRtosSemaphorePost(semhandle))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppRtosTaskParamsInit(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_task_params_t *params = NULL;
+
+    appRtosTaskParamsInit(params);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppRtosTaskDelete(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_task_handle_t *handle = NULL;
+    app_rtos_task_handle_t handle_temp = NULL;
+
+    if ((app_rtos_status_t)APP_RTOS_STATUS_FAILURE != appRtosTaskDelete(handle))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if ((app_rtos_status_t)APP_RTOS_STATUS_FAILURE != appRtosTaskDelete(&handle_temp))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for semhandle_temp\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
 #endif
 
 static vx_status tivxNegativeTestTargetEventCreate(uint8_t id)
@@ -2402,6 +2684,22 @@ FuncInfo arrOfFuncs[] = {
     {tivxAppIpcGetIpcCpuId, "", VX_SUCCESS},
     {tivxAppIpcGetAppCpuId, "", VX_SUCCESS},
     {tivxAppIpcGetCpuName, "", VX_SUCCESS},
+    {tivxNegativeAppIpcHwLockAcquire, "", VX_SUCCESS},
+    {tivxNegativeAppIpcHwLockRelease, "", VX_SUCCESS},
+    {tivxNegativeAppIpcGetIpcCpuId, "", VX_SUCCESS},
+    {tivxNegativeAppIpcGetAppCpuId, "", VX_SUCCESS},
+    {tivxNegativeAppIpcGetCpuName, "", VX_SUCCESS},
+    {tivxNegativeAppIpcSendNotifyPort, "", VX_SUCCESS},
+    {tivxNegativeAppIpcSendNotify, "", VX_SUCCESS},
+    {tivxNegativeAppMemAlloc, "", VX_SUCCESS},
+    {tivxNegativeAppMemResetScratchHeap, "", VX_SUCCESS},
+    {tivxNegativeAppMemFree, "", VX_SUCCESS},
+    {tivxNegativeAppMemStats, "", VX_SUCCESS},
+    {tivxNegativeAppRtosSemaphoreParamsInit, "", VX_SUCCESS},
+    {tivxNegativeAppRtosSemaphoreDelete, "", VX_SUCCESS},
+    {tivxNegativeAppRtosSemaphorePost, "", VX_SUCCESS},
+    {tivxNegativeAppRtosTaskParamsInit, "", VX_SUCCESS},
+    {tivxNegativeAppRtosTaskDelete, "", VX_SUCCESS},
     #endif
     {tivxNegativeTestTargetEventCreate, "",VX_SUCCESS},
     {tivxNegativeTestTargetMutex, "",VX_SUCCESS},
