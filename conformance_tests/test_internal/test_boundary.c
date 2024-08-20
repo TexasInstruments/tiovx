@@ -26,6 +26,7 @@
 #include <math.h>
 #include <TI/tivx_mutex.h>
 #include <TI/tivx_queue.h>
+#include <TI/tivx_task.h>
 
 /* The below include files are used for TIVX_TEST_WAIVER_COMPLEXITY_AND_MAINTENANCE_COST_001
  * described below */
@@ -35,6 +36,7 @@
 #include <vx_context.h>
 #include <tivx_data_ref_queue.h>
 #include <vx_node.h>
+#include <vx_graph.h>
 
 #include "shared_functions.h"
 
@@ -194,6 +196,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, ownNodeCreateUserCallbackCommand(node2, 0));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, ownNodeAllocObjDescForPipeline(node2, 2));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric((vx_reference)img));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, ownGraphAllocAndEnqueueObjDescForPipeline(graph));
     for (j = 0; j < i; j++)
     {
         if (NULL == obj_desc[j])

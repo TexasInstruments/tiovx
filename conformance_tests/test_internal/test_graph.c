@@ -140,6 +140,27 @@ TEST(tivxInternalGraph, negativeTestOwnGraphGetFreeNodeIndex)
     ASSERT(ownGraphGetFreeNodeIndex(graph) < 0);
 }
 
+TEST(tivxInternalGraph, negativeTestOwnGraphScheduleGraphWrapper)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph =NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    graph->verified = (vx_bool)vx_true_e;
+    graph->state = (vx_enum)VX_GRAPH_STATE_VERIFIED;
+    graph->schedule_mode =(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL;
+    graph->is_streaming_enabled = (vx_bool)vx_true_e;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownGraphScheduleGraphWrapper(graph));
+
+    graph->verified = (vx_bool)vx_false_e;
+    graph->state = (vx_enum)VX_GRAPH_STATE_UNVERIFIED;
+    graph->schedule_mode = (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL;
+    graph->is_streaming_enabled   = (vx_bool)vx_false_e;
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxInternalGraph,
     negativeTestOwnUpdateGraphPerf,
     negativeTestOwnGraphAddNode,
@@ -150,5 +171,6 @@ TESTCASE_TESTS(tivxInternalGraph,
     negativeTestOwnGraphRegisterParameterConsumedEvent,
     negativeTestOwnSetGraphState,
     negativeTestGraphGetNode,
-    negativeTestOwnGraphGetFreeNodeIndex
+    negativeTestOwnGraphGetFreeNodeIndex,
+    negativeTestOwnGraphScheduleGraphWrapper
     )

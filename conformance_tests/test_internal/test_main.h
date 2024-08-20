@@ -41,5 +41,6 @@ TESTCASE(tivxInternalMatrix)
 TESTCASE(tivxPosixObjects)
 #endif
 TESTCASE(tivxInternalMetaFormat)
+TESTCASE(tivxInternalGraphPipeline)
 
 #endif
