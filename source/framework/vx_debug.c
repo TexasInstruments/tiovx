@@ -17,15 +17,9 @@
 
 #include <vx_internal.h>
 
-static vx_char *find_zone_name(vx_enum zone);
+static void tivx_print(vx_enum zone, vx_uint32 debug_zonemask, const char *format, va_list ap);
 
 static vx_uint32 g_debug_zonemask = 0;
-
-#ifdef ZONE_BIT
-#undef  ZONE_BIT
-#endif
-
-#define ZONE_BIT(zone)  ((vx_uint32)1U << (zone))
 
 #define STR2(x) {#x, (vx_enum)x}
 
@@ -54,10 +48,11 @@ static struct vx_string_and_enum_e g_debug_enumnames[] = {
     STR2(VX_ZONE_TARGET),
     STR2(VX_ZONE_LOG),
     STR2(VX_ZONE_INIT),
+    STR2(VX_ZONE_OPTIMIZATION),
     {"UNKNOWN", -1} /* if the zone is not found, this will be returned. */
 };
 
-static vx_char *find_zone_name(vx_enum zone)
+vx_char *tivx_find_zone_name(vx_enum zone)
 {
     vx_uint32 i;
 
@@ -74,23 +69,40 @@ static vx_char *find_zone_name(vx_enum zone)
 
 void tivx_set_debug_zone(vx_enum zone)
 {
-    if ( (0 <= zone) && (zone < (vx_enum)VX_ZONE_MAX) ) {
+    if ( (0 <= zone) && (zone < (vx_enum)VX_ZONE_MAX) )
+    {
+
         g_debug_zonemask |= ZONE_BIT((vx_uint32)zone);
-        tivx_print(zone, "Enabled\n");
+        tivx_print_object(VX_ZONE_LOG, ~(0U), "Globally Enabled %s\n", tivx_find_zone_name(zone));
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid debug zone specified\n");
     }
 }
 
 void tivx_clr_debug_zone(vx_enum zone)
 {
-    if ( (0 <= zone) && (zone < (vx_enum)VX_ZONE_MAX) ) {
-        tivx_print(zone, "Disabled\n");
+    if ( (0 <= zone) && (zone < (vx_enum)VX_ZONE_MAX) )
+    {
         g_debug_zonemask &= ~(ZONE_BIT((vx_uint32)zone));
+        tivx_print_object(VX_ZONE_LOG, ~(0U), "Globally Disabled %s\n", tivx_find_zone_name(zone));
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid debug zone specified\n");
     }
 }
 
-vx_bool tivx_get_debug_zone(vx_enum zone)
+vx_uint32 tivx_get_global_zonemask(void)
+{
+    return g_debug_zonemask;
+}
+
+vx_bool tivx_is_zone_enabled(vx_enum zone)
 {
     vx_bool zone_enabled;
+    printf("Zone: %d\n", (uint32_t)g_debug_zonemask);
 
     if ( (0 <= zone) && (zone < (vx_enum)VX_ZONE_MAX) )
     {
@@ -103,21 +115,33 @@ vx_bool tivx_get_debug_zone(vx_enum zone)
     return zone_enabled;
 }
 
-void tivx_print(vx_enum zone, const char *format, ...)
+static void tivx_print(vx_enum zone, vx_uint32 debug_zonemask, const char *format, va_list ap)
 {
-    if ((g_debug_zonemask & ZONE_BIT((vx_uint32)zone)) != 0U)
+    if ((debug_zonemask & ZONE_BIT((vx_uint32)zone)) != 0U)
     {
         uint32_t size;
         char string[1024];
-        va_list ap;
 
-        (void)memset(&ap, 0, sizeof(ap));
-        (void)va_start(ap, format);
-        (void)snprintf(string, sizeof(string), " %s:", find_zone_name(zone));
+        (void)snprintf(string, sizeof(string), " %s: ", tivx_find_zone_name(zone));
         size = (uint32_t)strlen(string);
+
         (void)vsnprintf(&string[size], sizeof(string)-size, format, ap);
         ownPlatformPrintf(string);
-        va_end(ap);
     }
 }
 
+void tivx_print_global(vx_enum zone, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    tivx_print(zone, g_debug_zonemask, format, args);
+    va_end(args);
+}
+
+void tivx_print_object(vx_enum zone, vx_uint32 debug_zonemask, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    tivx_print(zone, debug_zonemask, format, args);
+    va_end(args);
+}

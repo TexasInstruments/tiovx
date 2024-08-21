@@ -283,22 +283,22 @@ static vx_status tivxTestTargetDebugZone(uint8_t id)
     vx_status status = (vx_status)VX_SUCCESS;
     vx_enum zone = VX_ZONE_INFO;
 
-    if(vx_true_e != tivx_get_debug_zone(zone))
+    if(vx_true_e != tivx_is_zone_enabled(zone))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result:VX_ZONE_INFO is cleared\n");
         status = (vx_status)VX_FAILURE;
     }
-    if(vx_false_e != tivx_get_debug_zone(VX_ZONE_TARGET))
+    if(vx_false_e != tivx_is_zone_enabled(VX_ZONE_TARGET))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result:VX_ZONE_TARGET is enabled\n");
         status = (vx_status)VX_FAILURE;
     }
-    if(vx_false_e != tivx_get_debug_zone(-1))
+    if(vx_false_e != tivx_is_zone_enabled(-1))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for the ARG:-1\n");
         status = (vx_status)VX_FAILURE;
     }
-    if(vx_false_e != tivx_get_debug_zone(VX_ZONE_MAX))
+    if(vx_false_e != tivx_is_zone_enabled(VX_ZONE_MAX))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for the ARG:'VX_ZONE_MAX'\n");
         status = (vx_status)VX_FAILURE;

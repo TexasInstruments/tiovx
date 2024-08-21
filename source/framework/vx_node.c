@@ -1544,6 +1544,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                                 /* all condition successful for node creation, now set kernel, graph references */
                                 node->kernel = kernel;
                                 node->graph = graph;
+                                node->obj_desc[0]->debug_zonemask = node->graph->debug_zonemask;
 
                                 /* show that there are potentially multiple nodes using this kernel. */
                                 (void)ownIncrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
@@ -1773,7 +1774,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Query TIVX_NODE_TIMEOUT failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query TIVX_NODE_IS_TIMED_OUT failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -2508,6 +2509,7 @@ vx_status ownNodeAllocObjDescForPipeline(vx_node node, uint32_t pipeline_depth)
                 tivx_obj_desc_memcpy(&obj_desc->border_mode, &obj_desc_0->border_mode, (uint32_t)sizeof(vx_border_t));
                 obj_desc->is_prm_replicated = obj_desc_0->is_prm_replicated;
                 obj_desc->num_of_replicas = obj_desc_0->num_of_replicas;
+                obj_desc->debug_zonemask = obj_desc_0->debug_zonemask;
 
                 /* copying data_id[], out_node_id[], in_node_id[]
                  * from 0th obj desc but these are overriden later
@@ -2667,5 +2669,59 @@ vx_status VX_API_CALL tivxGetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR,"Invalid node\n");
     }
+    return status;
+}
+
+vx_status tivxNodeSetDebugZone(vx_node node, vx_uint32 debug_zone, vx_bool enable)
+{
+    vx_status status;
+
+    if (debug_zone > (vx_enum)VX_ZONE_MAX)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+                    "Invalid debug level specified (value greater than VX_ZONE_MAX): %d\n",
+                    debug_zone);
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+    }
+    else
+    {
+        if (enable == (vx_bool)vx_true_e)
+        {
+            uint32_t i;
+
+            for (i = 0; i < TIVX_GRAPH_MAX_PIPELINE_DEPTH; i++)
+            {
+                if (node->obj_desc[i] != NULL)
+                {
+                    node->obj_desc[i]->debug_zonemask |= ZONE_BIT(debug_zone);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            VX_PRINT_LOCAL(VX_ZONE_INFO, debug_zone, "Enabled %s for Node\n", tivx_find_zone_name(debug_zone));
+        }
+        else
+        {
+            uint32_t i;
+
+            for (i = 0; i < TIVX_GRAPH_MAX_PIPELINE_DEPTH; i++)
+            {
+                if (node->obj_desc[i] != NULL)
+                {
+                    node->obj_desc[i]->debug_zonemask &= ~(ZONE_BIT(debug_zone));
+                }
+                else
+                {
+                    break;
+                }
+            }
+            VX_PRINT_LOCAL(VX_ZONE_INFO, debug_zone, "Disabled %s for Node\n", tivx_find_zone_name(debug_zone));
+        }
+
+        status = VX_SUCCESS;
+    }
+
     return status;
 }

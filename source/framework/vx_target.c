@@ -608,6 +608,9 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
     uint64_t beg_time, end_time;
     uint16_t blocked_node_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
     uint16_t prm_obj_desc_id[TIVX_KERNEL_MAX_PARAMS];
+    uint32_t node_debug_zonemask;
+    
+    node_debug_zonemask = node_obj_desc->debug_zonemask;
 
     /* if node is already executed do nothing */
     if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_EXECUTED) == (vx_bool)vx_false_e ) /* TIOVX-1930- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR021 */
@@ -624,7 +627,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
 
             is_node_blocked = (vx_bool)vx_false_e;
 
-            VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) acquiring parameters on target %08x\n",
+            VX_PRINT_LOCAL(VX_ZONE_INFO, node_debug_zonemask, "Node (node=%d, pipe=%d) acquiring parameters on target %08x\n",
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id
@@ -679,7 +682,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
 
             if(is_node_blocked==(vx_bool)vx_false_e)
             {
-                VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) executing on target %08x\n",
+                VX_PRINT_LOCAL(VX_ZONE_INFO, node_debug_zonemask, "Node (node=%d, pipe=%d) executing on target %08x\n",
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id
@@ -695,7 +698,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
 
                 ownLogRtTraceNodeExeEnd(end_time, node_obj_desc);
 
-                VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) executing on target %08x ... DONE !!!\n",
+                VX_PRINT_LOCAL(VX_ZONE_INFO, node_debug_zonemask, "Node (node=%d, pipe=%d) executing on target %08x ... DONE !!!\n",
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id
@@ -721,7 +724,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
                 if((vx_enum)blocked_node_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
                     /* this will be same node in next pipeline to trigger it last */
-                    VX_PRINT(VX_ZONE_INFO,"Re-triggering (node=%d)\n",
+                    VX_PRINT_LOCAL(VX_ZONE_INFO, node_debug_zonemask, "Re-triggering (node=%d)\n",
                              blocked_node_id
                     );
                     ownTargetTriggerNode(blocked_node_id);
@@ -729,7 +732,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
             }
             else
             {
-                VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) ... BLOCKED for resources on target %08x\n",
+                VX_PRINT_LOCAL(VX_ZONE_INFO, node_debug_zonemask, "Node (node=%d, pipe=%d) ... BLOCKED for resources on target %08x\n",
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id
@@ -738,7 +741,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) ... BLOCKED for previous pipe instance node (node=%d) to complete !!!\n",
+            VX_PRINT_LOCAL(VX_ZONE_INFO, node_debug_zonemask, "Node (node=%d, pipe=%d) ... BLOCKED for previous pipe instance node (node=%d) to complete !!!\n",
                     node_obj_desc->base.obj_desc_id,
                     node_obj_desc->pipeline_id,
                     node_obj_desc->prev_pipe_node_id
@@ -758,6 +761,7 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
     tivx_obj_desc_t *prm_obj_desc;
     tivx_obj_desc_kernel_name_t *kernel_name_obj_desc;
     volatile char *kernel_name = NULL;
+    vx_uint32 node_debug_zonemask;
 
     if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
         (vx_bool)vx_true_e)
@@ -765,6 +769,7 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
         loop_max = (uint16_t)node_obj_desc->num_of_replicas;
     }
 
+    node_debug_zonemask = node_obj_desc->debug_zonemask;
     kernel_name_obj_desc = (tivx_obj_desc_kernel_name_t*)ownObjDescGet((uint16_t)node_obj_desc->kernel_name_obj_desc_id);
     if(kernel_name_obj_desc!=NULL) /* TIOVX-1930- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR023 */
     {
@@ -779,7 +784,7 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM011 */
         if(target_kernel_instance == NULL)
         {
-            VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance is NULL\n");
+            VX_PRINT_LOCAL(VX_ZONE_ERROR, node_debug_zonemask, "target_kernel_instance is NULL\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
         else
@@ -927,6 +932,9 @@ static vx_status ownTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_ob
     vx_status status = (vx_status)VX_SUCCESS;
     uint16_t i, cnt, loop_max = 1;
     tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
+    vx_uint32 node_debug_zonemask;
+
+    node_debug_zonemask = node_obj_desc->debug_zonemask;
 
     if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
         (vx_bool)vx_true_e)
@@ -943,7 +951,7 @@ static vx_status ownTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_ob
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM014 */
         if(target_kernel_instance == NULL)
         {
-            VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance is NULL\n");
+            VX_PRINT_LOCAL(VX_ZONE_ERROR, node_debug_zonemask, "target_kernel_instance is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         else
@@ -1022,6 +1030,9 @@ static vx_status ownTargetNodeDescNodeControl(
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint16_t cnt, loop_max = 1;
+    vx_uint32 node_debug_zonemask;
+
+    node_debug_zonemask = node_obj_desc->debug_zonemask;
 
     if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
         (vx_bool)vx_true_e)
@@ -1039,7 +1050,7 @@ static vx_status ownTargetNodeDescNodeControl(
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM017 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
+                    VX_PRINT_LOCAL(VX_ZONE_ERROR, node_debug_zonemask, "SendCommand Failed\n");
                     break;
                 }
 #endif
@@ -1057,12 +1068,12 @@ static vx_status ownTargetNodeDescNodeControl(
                     node_obj_desc);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
+                    VX_PRINT_LOCAL(VX_ZONE_ERROR, node_debug_zonemask, "SendCommand Failed\n");
                 }
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "Incorrect node id\n");
+                VX_PRINT_LOCAL(VX_ZONE_ERROR, node_debug_zonemask, "Incorrect node id\n");
                 status = (vx_status)VX_FAILURE;
             }
         }
@@ -1076,7 +1087,7 @@ static vx_status ownTargetNodeDescNodeControl(
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM018 */
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
+            VX_PRINT_LOCAL(VX_ZONE_ERROR, node_debug_zonemask, "SendCommand Failed\n");
         }
 #endif
     }

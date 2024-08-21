@@ -259,6 +259,20 @@ VX_API_ENTRY vx_bool tivxIsTargetKernelInstanceReplicated(tivx_target_kernel_ins
  */
 tivx_target_kernel tivxTargetKernelInstanceGetKernel(tivx_target_kernel_instance target_kernel_instance);
 
+/*!
+ * \brief Get debug zonemask for a given target kernel instance
+ *
+ * \ingroup group_tivx_target_kernel_instance
+ */
+vx_uint32 tivxGetTargetKernelInstanceDebugZonemask(tivx_target_kernel_instance kernel);
+
+/*!
+ * \brief Get debug zonemask for a given hoste node
+ *
+ * \ingroup group_tivx_target_kernel_instance
+ */
+vx_uint32 tivxGetHostKernelDebugZonemask(vx_node node);
+
 static inline vx_bool tivxFlagIsBitSet(uint32_t flag_var, uint32_t flag_val);
 static inline void tivxFlagBitSet(volatile uint32_t *flag_var, uint32_t flag_val);
 static inline void tivxFlagBitClear(volatile uint32_t *flag_var, uint32_t flag_val);

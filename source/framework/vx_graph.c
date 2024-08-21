@@ -462,6 +462,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->num_delay_data_ref_q = 0;
             graph->num_supernodes = 0;
             graph->timeout_val = TIVX_DEFAULT_GRAPH_TIMEOUT;
+            graph->debug_zonemask = tivx_get_global_zonemask();
 
             status = ownResetGraphPerf(graph);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -665,6 +666,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseGraph(vx_graph *g)
 {
+
     return ownReleaseReferenceInt(vxCastRefFromGraphP(g), (vx_enum)VX_TYPE_GRAPH, (vx_enum)VX_EXTERNAL, NULL);
 }
 
@@ -945,12 +947,15 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
 VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32 graph_debug_zonemask;
+
+    graph_debug_zonemask = graph->debug_zonemask;
 
     if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
         if (graph->is_streaming_enabled != 0)
         {
-            VX_PRINT(VX_ZONE_ERROR, "graph is already streaming\n");
+            VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "graph is already streaming\n");
             status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
         else
@@ -958,7 +963,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
             if(graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                VX_PRINT(VX_ZONE_ERROR, "not supported for VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO\n");
+                VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "not supported for VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO\n");
             }
             else
             {
@@ -968,7 +973,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "invalid graph reference\n");
+        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -978,6 +983,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
 VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32 graph_debug_zonemask;
+
+    graph_debug_zonemask = graph->debug_zonemask;
 
     if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) ==
             (vx_bool)vx_true_e)
@@ -999,18 +1007,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
+                VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "tivxEventWait() failed.\n");
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "graph not in expected state\n");
+            VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "graph not in expected state\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "invalid graph reference\n");
+        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -1170,4 +1178,31 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t idx)
     }
 
     return node;
+}
+
+vx_status tivxGraphSetDebugZone(vx_graph graph, vx_uint32 debug_zone, vx_bool enable)
+{
+    vx_status status;
+
+    if (debug_zone > (vx_enum)VX_ZONE_MAX)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+                    "Invalid debug level specified (value greater than VX_ZONE_MAX): %d\n",
+                    debug_zone);
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+    }
+    else
+    {
+        uint32_t i;
+
+        graph->debug_zonemask |= ZONE_BIT(debug_zone);
+        VX_PRINT_LOCAL(VX_ZONE_INFO, debug_zone, "Enabled %s for Graph\n", tivx_find_zone_name(debug_zone));
+        for (i = 0; i < graph->num_nodes; i++)
+        {
+            tivxNodeSetDebugZone(graph->nodes[i], debug_zone, enable);
+        }
+        status = VX_SUCCESS;
+    }
+
+    return status;
 }

@@ -2197,6 +2197,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
     vx_meta_format meta[TIVX_KERNEL_MAX_PARAMS] = {NULL};
     vx_bool first_time_verify = (vx_bool)vx_true_e;
+    vx_uint32 graph_debug_zonemask = 0;
 
     if (NULL != graph)
     {
@@ -2205,7 +2206,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"Invalid graph reference\n");
+        graph_debug_zonemask = graph->debug_zonemask;
+        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -2216,7 +2218,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
         /* This should not fail at all */
         if (vxGetStatus(vxCastRefFromMetaFormat(meta[i])) != (vx_status)VX_SUCCESS)
         {
-            VX_PRINT(VX_ZONE_ERROR,"Unable to create meta format object\n");
+            VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Unable to create meta format object\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -2233,7 +2235,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 status = ownGraphNodeKernelDeinit(graph);
                 if((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Graph Node kernel de-init failed\n");
+                    VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Graph Node kernel de-init failed\n");
                 }
             }
             if(status == (vx_status)VX_SUCCESS)
@@ -2244,7 +2246,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 status = ownGraphCalcInAndOutNodes(graph);
                 if(status != (vx_status)VX_SUCCESS)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Unable to calculate out nodes and in nodes for each node\n");
+                    VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Unable to calculate out nodes and in nodes for each node\n");
                 }
                 else
                 {
@@ -2272,7 +2274,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
                     if(has_cycle != 0)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Topological sort failed, due to cycles in graph\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Topological sort failed, due to cycles in graph\n");
                         status = (vx_status)VX_FAILURE;
                     }
                 }
@@ -2294,7 +2296,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Node kernel Validate failed\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Node kernel Validate failed\n");
                     }
                 }
 
@@ -2316,7 +2318,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     status = ownGraphValidatePipelineParameters(graph);
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Error in pipelining parameters\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Error in pipelining parameters\n");
                     }
                 }
 
@@ -2340,7 +2342,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     status = ownGraphCalcHeadAndLeafNodes(graph);
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Find head nodes and leaf nodes failed\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Find head nodes and leaf nodes failed\n");
                     }
                 }
 
@@ -2352,7 +2354,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Find and add data references failed\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Find and add data references failed\n");
                     }
 #endif
                 }
@@ -2373,7 +2375,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     status = ownGraphAllocateDataObjects(graph);
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Memory alloc for data objects failed\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Memory alloc for data objects failed\n");
                     }
                 }
 
@@ -2385,7 +2387,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 /* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT020 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Node pipelining failed\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Node pipelining failed\n");
                     }
 /* END: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT020 */
 /*LDRA_ANALYSIS*/
@@ -2401,7 +2403,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     status = ownGraphCreateNodeCallbackCommands(graph);
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Create node callback commands failed\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Create node callback commands failed\n");
                     }
                 }
 
@@ -2419,7 +2421,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 /* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT021 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Create data ref queues failed\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Create data ref queues failed\n");
                     }
 /* END: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT021 */
 /*LDRA_ANALYSIS*/
@@ -2436,7 +2438,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     status = ownGraphNodeKernelInit(graph);
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Node kernel init failed\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Node kernel init failed\n");
                     }
                 }
 
@@ -2448,7 +2450,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 /* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM030 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Unable to update data ref queue refs for graph\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Unable to update data ref queue refs for graph\n");
                     }
 #endif
                 }
@@ -2461,7 +2463,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 /* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT022 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj desc for graph\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Unable to alloc obj desc for graph\n");
                     }
 /* END: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT022 */
 /*LDRA_ANALYSIS*/
@@ -2473,7 +2475,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     status = ownGraphAllocForStreaming(graph);
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Unable to alloc streaming objects for graph\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Unable to alloc streaming objects for graph\n");
                     }
                 }
 
@@ -2485,7 +2487,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 /* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT023 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"If streaming is enabled, schedule mode must be normal\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "If streaming is enabled, schedule mode must be normal\n");
                     }
 /* END: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT023 */
 /*LDRA_ANALYSIS*/
@@ -2501,11 +2503,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
                 if(status != (vx_status)VX_SUCCESS)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Graph verify failed\n");
+                    VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Graph verify failed\n");
                     /* deinit kernel to recover resources */
                     if((vx_status)VX_SUCCESS != ownGraphNodeKernelDeinit(graph))
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Grade node kernel de-init failed\n");
+                        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Grade node kernel de-init failed\n");
                     }
                 }
 
@@ -2516,7 +2518,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"Invalid graph reference\n");
+        VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -2526,7 +2528,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
         {
             if((vx_status)VX_SUCCESS != ownReleaseMetaFormat(&meta[i]))
             {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to release met-format object\n");
+                VX_PRINT_LOCAL(VX_ZONE_ERROR, graph_debug_zonemask, "Failed to release met-format object\n");
             }
         }
     }

@@ -477,9 +477,29 @@
 
     This page itemizes the various debug utilities and methods recommended for TIOVX application development
 
+    - \subpage GRAPH_NODE_DEBUG - How to set graph/node specific debug levels
     - \subpage DEBUG_PRINT - How to enable debug print statements.
     - \subpage JPEG_TOOL - How to use the graph JPEG generation tool
     - \subpage DEBUG_LOG_RT - How to enable run-time event start/stop logging and offline visualization
+ */
+
+  /*!
+    \page GRAPH_NODE_DEBUG Setting Graph and Node Debug Levels
+
+    Explicitly setting logging levels creates flexibility for debugging specific graphs and nodes within an application.
+    Debug levels can be set for specific graphs and nodes using the TIVX_GRAPH_DEBUG_LEVEL and TIVX_NODE_DEBUG_LEVEL attributes of the 
+    \ref vxSetGraphAttribute and \ref vxSetNodeAttribute APIs respectively. Valid logging levels for nodes and graphs are VX_ZONE_ERROR,
+    VX_ZONE_WARNING, and VX_ZONE_INFO, increasing from error to info. When setting the logging level for a graph, all nodes that have lower
+    logging levels will be updated. Nodes with debug levels that are already set to a higher level will remain at their original debug levels.
+    When a graph or node are created, the default and lowest logging level is VX_ZONE_ERROR.
+
+    When creating a custom user kernel, a change must be made to the \ref VX_PRINT statement. Rather than passing just the VX_ZONE_* parameter,
+    the VX_DEBUG_ENCODE macro must be called which accepts a VX_ZONE_* parameter as well as the \ref debug_level of the current node or graph.
+    A check is performed in the \ref tivx_print definition to ensure that the proper debug level is set, even during node processing when
+    tasks that contain different nodes might be switching preemptively.
+    
+    More information on specific logging levels can be found in the documentation for \ref tivx_debug_zone_e.
+
  */
 
  /*!
@@ -496,7 +516,7 @@
  */
 
  /*!
-    \page JPEG_TOOL JPEG visualization of graph
+    \page JPEG_TOOL JPEG Visualization of Graph
 
     The \ref tivxExportGraphToDot API provides the ability to generate a JPEG diagramming the nodes in a graph. Below are a few notes on
     how to use this tool.
@@ -524,7 +544,7 @@
  */
 
  /*!
-    \page DEBUG_LOG_RT Run-time event logging and visualization
+    \page DEBUG_LOG_RT Run-time Event Logging and Visualization
 
     \tableofcontents
 

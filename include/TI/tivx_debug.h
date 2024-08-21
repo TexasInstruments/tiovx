@@ -66,6 +66,8 @@
 #define TIVX_DEBUG_H
 
 #include <stdbool.h>
+#include <VX/vx.h>
+
 /*! \brief Macros for build time check
  * \ingroup group_tivx_platform
  */
@@ -73,6 +75,8 @@
 #define ASSERT_CONCAT(a, b) ASSERT_CONCAT_(a, b)
 #define BUILD_ASSERT(e) \
      enum { ASSERT_CONCAT(assert_line_, __LINE__) = (1U/(e)) }
+
+#define ZONE_BIT(zone) ((vx_uint32)1U << (zone))
 
 /*!
  * \file
@@ -110,28 +114,39 @@ enum tivx_debug_zone_e {
 
     VX_ZONE_OPTIMIZATION = 19,   /*!< Used to provide optimization tips */
 
-    VX_ZONE_MAX          = 32
+    VX_ZONE_MAX          = 32   /*!< Maximum value a debug zone can be mapped to */
 };
 
-#define VX_PRINT(zone, message, ...) do { tivx_print(((vx_enum)zone), "[%s:%u] " message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (1 == 0)
-
 /*! \def VX_PRINT
- * \brief The OpenVX Debugging Facility.
+ * \brief Utility macro to print debug information if specified zone is globally set
  * \ingroup group_vx_debug
  */
+#define VX_PRINT(zone, message, ...) do { tivx_print_global(((vx_enum)zone), "[%s:%u] " message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (1 == 0)
 
+#define VX_PRINT_LOCAL(zone, debug_zonemask, message, ...) do { tivx_print_object(((vx_enum)zone), debug_zonemask, "[%s:%u] " message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (1 == 0)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*! \brief Internal Printing Function.
- * \param [in] zone The debug zone from \ref tivx_debug_zone_e.
+vx_char *tivx_find_zone_name(vx_enum zone);
+
+/*! \brief Internal printing function for the global debug zone bitmask
+ * \param [in] zone The debug zone from \ref tivx_debug_zone_e required to print the given message.
  * \param [in] format The format string to print.
  * \param [in] ... The variable list of arguments.
  * \ingroup group_vx_debug
  */
-void tivx_print(vx_enum zone, const char *format, ...);
+void tivx_print_global(vx_enum zone, const char *format, ...);
+
+/*! \brief Internal printing function for a framework object with a set debug zone bitmask
+ * \param [in] zone The debug zone from \ref tivx_debug_zone_e required to print the given message.
+ * \param [in] set_zone The debug zone bitmask of a framework object
+ * \param [in] format The format string to print.
+ * \param [in] ... The variable list of arguments.
+ * \ingroup group_vx_debug
+ */
+void tivx_print_object(vx_enum zone, vx_uint32 debug_zonemask, const char *format, ...);
 
 /*! \brief Sets a zone bit in the debug mask
  * \param [in] zone The debug zone from \ref tivx_debug_zone_e.
@@ -149,7 +164,35 @@ void tivx_clr_debug_zone(vx_enum zone);
  * \param [in] zone The debug zone from \ref tivx_debug_zone_e.
  * \ingroup group_vx_debug
  */
-vx_bool tivx_get_debug_zone(vx_enum zone);
+vx_bool tivx_is_zone_enabled(vx_enum zone);
+
+/*! \brief Returns the global debug zone bitmask
+ * \param [out] vx_uint32 The global debug zone bitmask
+ * \ingroup group_vx_debug
+ */
+vx_uint32 tivx_get_global_zonemask(void);
+
+/*!
+ * \brief Sets or clears a given debug zone for a graph
+ *
+ * \param [in] graph Graph reference
+ * \param [in] debug_zone Given debug zone enumeration
+ * \param [in] enable Flag to indicate if zone should be enabled or disabled
+ *
+ * \ingroup group_vx_graph
+ */
+vx_status tivxGraphSetDebugZone(vx_graph graph, vx_uint32 debug_zone, vx_bool enable);
+
+/*!
+ * \brief Sets or clears a given debug zone for a node
+ *
+ * \param [in] node Node reference
+ * \param [in] debug_zone Given debug zone enumeration
+ * \param [in] enable Flag to indicate if zone should be enabled or disabled
+ *
+ * \ingroup group_vx_node
+ */
+vx_status tivxNodeSetDebugZone(vx_node node, vx_uint32 debug_zone, vx_bool enable);
 
 #ifdef __cplusplus
 }
