@@ -194,6 +194,8 @@ void tivxInit(void)
         ownPlatformCreateTargets();
 
         VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
+
+        tivx_clr_debug_zone(VX_ZONE_INIT);
     }
 
     g_init_status++;

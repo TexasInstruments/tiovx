@@ -72,6 +72,7 @@ TEST_WITH_ARG(tivxTestKernelsNotNot, testSizes, size_arg, NOT_SIZE_ARGS)
 
     // build one-node graph
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    tivxSetGraphDebugZone(graph, VX_ZONE_INFO, vx_true_e);
     ASSERT_VX_OBJECT(dst   = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(node  = tivxNotNotNode(graph, src, dst), VX_TYPE_NODE);
 

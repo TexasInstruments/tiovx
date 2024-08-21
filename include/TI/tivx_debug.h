@@ -66,6 +66,8 @@
 #define TIVX_DEBUG_H
 
 #include <stdbool.h>
+#include <VX/vx.h>
+
 /*! \brief Macros for build time check
  * \ingroup group_tivx_platform
  */
@@ -110,28 +112,53 @@ enum tivx_debug_zone_e {
 
     VX_ZONE_OPTIMIZATION = 19,   /*!< Used to provide optimization tips */
 
-    VX_ZONE_MAX          = 32
+    VX_ZONE_MAX          = 32   /*!< Maximum value a debug zone can be mapped to */
 };
 
-#define VX_PRINT(zone, message, ...) do { tivx_print(((vx_enum)zone), "[%s:%u] " message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (1 == 0)
-
 /*! \def VX_PRINT
- * \brief The OpenVX Debugging Facility.
+ * \brief Utility macro to print debug information if specified zone is globally set
  * \ingroup group_vx_debug
  */
+#define VX_PRINT(zone, message, ...) do { tivx_print_global(((vx_enum)zone), "[%s:%u] " message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (1 == 0)
 
+/*! \def VX_PRINT_GRAPH
+ * \brief Utility macro to print debug information if specified zone is set on a given graph object
+ * \ingroup group_vx_debug
+ */
+#define VX_PRINT_GRAPH(zone, graph, message, ...) do { tivx_print_object(((vx_enum)zone), tivxGetGraphDebugZonemask(graph), "[ %s ] " message, tivxGetGraphName(graph), ## __VA_ARGS__); } while (1 == 0)
+
+/*! \def VX_PRINT_NODE
+ * \brief Utility macro to print debug information if specified zone is set on a given node object
+ * \ingroup group_vx_debug
+ */
+#define VX_PRINT_NODE(zone, node, message, ...) do { tivx_print_object(((vx_enum)zone), tivxGetNodeDebugZonemask(node), "[ %s ] " message, tivxGetNodeName(node), ## __VA_ARGS__); } while (1 == 0)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*! \brief Internal Printing Function.
+/*! \brief Returns the name of an enumerated debug zone
  * \param [in] zone The debug zone from \ref tivx_debug_zone_e.
+ * \ingroup group_vx_debug
+ */
+vx_char *tivx_find_zone_name(vx_enum zone);
+
+/*! \brief Internal printing function for the global debug zone bitmask
+ * \param [in] zone The debug zone from \ref tivx_debug_zone_e required to print the given message.
  * \param [in] format The format string to print.
  * \param [in] ... The variable list of arguments.
  * \ingroup group_vx_debug
  */
-void tivx_print(vx_enum zone, const char *format, ...);
+void tivx_print_global(vx_enum zone, const char *format, ...);
+
+/*! \brief Internal printing function for a framework object with a set debug zone bitmask
+ * \param [in] zone The debug zone from \ref tivx_debug_zone_e required to print the given message.
+ * \param [in] set_zone The debug zone bitmask of a framework object
+ * \param [in] format The format string to print.
+ * \param [in] ... The variable list of arguments.
+ * \ingroup group_vx_debug
+ */
+void tivx_print_object(vx_enum zone, vx_uint32 debug_zonemask, const char *format, ...);
 
 /*! \brief Sets a zone bit in the debug mask
  * \param [in] zone The debug zone from \ref tivx_debug_zone_e.
@@ -149,7 +176,51 @@ void tivx_clr_debug_zone(vx_enum zone);
  * \param [in] zone The debug zone from \ref tivx_debug_zone_e.
  * \ingroup group_vx_debug
  */
-vx_bool tivx_get_debug_zone(vx_enum zone);
+vx_bool tivx_is_zone_enabled(vx_enum zone);
+
+/*! \brief Returns the debug zonemask value of a node
+ * \param [in] node A given vx_node object.
+ * \ingroup group_vx_debug
+ */
+vx_uint32 tivxGetNodeDebugZonemask(vx_node node);
+
+/*! \brief Returns the debug zonemask value of a graph
+ * \param [in] graph A given vx_graph object.
+ * \ingroup group_vx_debug
+ */
+vx_uint32 tivxGetGraphDebugZonemask(vx_graph graph);
+
+/*!
+ * \brief Sets or clears a given debug zone for a graph
+ *
+ * \param [in] graph Graph reference
+ * \param [in] debug_zone Given debug zone enumeration
+ * \param [in] enable Flag to indicate if zone should be enabled or disabled
+ * \ingroup group_vx_debug
+ */
+vx_status tivxSetGraphDebugZone(vx_graph graph, vx_uint32 debug_zone, vx_bool enable);
+
+/*!
+ * \brief Sets or clears a given debug zone for a node
+ *
+ * \param [in] node Node reference
+ * \param [in] debug_zone Given debug zone enumeration
+ * \param [in] enable Flag to indicate if zone should be enabled or disabled
+ * \ingroup group_vx_debug
+ */
+vx_status tivxSetNodeDebugZone(vx_node node, vx_uint32 debug_zone, vx_bool enable);
+
+/*! \brief Returns the name of a node object
+ * \param [in] node A given vx_node object.
+ * \ingroup group_vx_debug
+ */
+const char * tivxGetNodeName(vx_node node);
+
+/*! \brief Returns the name of a graph object
+ * \param [in] graph A given vx_graph object.
+ * \ingroup group_vx_debug
+ */
+const char * tivxGetGraphName(vx_graph graph);
 
 #ifdef __cplusplus
 }

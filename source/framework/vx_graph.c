@@ -462,6 +462,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->num_delay_data_ref_q = 0;
             graph->num_supernodes = 0;
             graph->timeout_val = TIVX_DEFAULT_GRAPH_TIMEOUT;
+            graph->debug_zonemask = ownGetGlobalZonemask();
 
             status = ownResetGraphPerf(graph);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -950,7 +951,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
     {
         if (graph->is_streaming_enabled != 0)
         {
-            VX_PRINT(VX_ZONE_ERROR, "graph is already streaming\n");
+            VX_PRINT_GRAPH(VX_ZONE_ERROR, graph, "graph is already streaming\n");
             status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
         else
@@ -958,7 +959,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
             if(graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                VX_PRINT(VX_ZONE_ERROR, "not supported for VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO\n");
+                VX_PRINT_GRAPH(VX_ZONE_ERROR, graph, "not supported for VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO\n");
             }
             else
             {
@@ -968,7 +969,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "invalid graph reference\n");
+        VX_PRINT_GRAPH(VX_ZONE_ERROR, graph, "invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -999,18 +1000,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
+                VX_PRINT_GRAPH(VX_ZONE_ERROR, graph, "tivxEventWait() failed.\n");
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "graph not in expected state\n");
+            VX_PRINT_GRAPH(VX_ZONE_ERROR, graph, "graph not in expected state\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "invalid graph reference\n");
+        VX_PRINT_GRAPH(VX_ZONE_ERROR, graph, "invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -1170,4 +1171,78 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t idx)
     }
 
     return node;
+}
+
+vx_status tivxSetGraphDebugZone(vx_graph graph, vx_uint32 debug_zone, vx_bool enable)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    {
+        if ((vx_enum)debug_zone >= (vx_enum)VX_ZONE_MAX)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                        "Invalid debug level specified (value greater than VX_ZONE_MAX): %d\n",
+                        debug_zone);
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        }
+        else
+        {
+            uint32_t i;
+
+            if (enable == (vx_bool)vx_true_e)
+            {
+                graph->debug_zonemask |= ZONE_BIT(debug_zone);
+                VX_PRINT_GRAPH(VX_ZONE_INFO, graph, "Enabled %s for Graph\n", tivx_find_zone_name((vx_enum)debug_zone));
+            }
+            else
+            {
+                graph->debug_zonemask &= ~ZONE_BIT(debug_zone);
+                VX_PRINT_GRAPH(VX_ZONE_INFO, graph, "Disabled %s for Graph\n", tivx_find_zone_name((vx_enum)debug_zone));
+            }
+            for (i = 0; i < graph->num_nodes; i++)
+            {
+                (void)tivxSetNodeDebugZone(graph->nodes[i], debug_zone, enable);
+            }
+        }
+    }
+    else
+    {
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        VX_PRINT(VX_ZONE_ERROR, "Invalid graph reference\n");
+    }
+
+    return status;
+}
+
+vx_uint32 tivxGetGraphDebugZonemask(vx_graph graph)
+{
+    vx_uint32 debug_zonemask = 0U;
+
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    {
+        debug_zonemask = graph->debug_zonemask;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid graph reference\n");
+    }
+
+    return debug_zonemask;
+}
+
+const char * tivxGetGraphName(vx_graph graph)
+{
+    const char * output = "";
+
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    {
+        output = graph->base.name;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid graph reference\n");
+    }
+
+    return output;
 }

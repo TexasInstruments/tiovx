@@ -339,7 +339,9 @@ typedef struct _tivx_obj_desc_t {
  * \brief Node object descriptor
  *
  *        Fields with name target_* are only accessed by target CPU
+ *
  *        Fields with name host_* are only accessed by host CPU
+ *
  *        Other fields are accessed by both target and host
  *
  * \ingroup group_tivx_obj_desc
@@ -493,6 +495,10 @@ typedef struct _tivx_obj_desc_node
     /*! \brief variable to store the tile height for the given node
      */
     volatile uint32_t block_height;
+
+    /*! \brief Debug zonemask of a given object descriptor node.
+     */
+    volatile vx_uint32 debug_zonemask;
 
 } tivx_obj_desc_node_t;
 

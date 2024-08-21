@@ -120,6 +120,7 @@ static vx_status VX_CALLBACK tivxAddKernelNotNotValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
+        VX_PRINT_NODE(VX_ZONE_INFO, node, "Not Not Validate was successful\n");
         if (VX_DF_IMAGE_U8 != input_fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;

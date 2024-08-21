@@ -256,6 +256,7 @@ static vx_status VX_CALLBACK tivxNotNotCreate(
         if(status == VX_SUCCESS)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,  sizeof(tivxNotNotKernelParams));
+            VX_PRINT_KERNEL(VX_ZONE_INFO, kernel, "Not Not Kernel created\n");
         }
     }
     return status;

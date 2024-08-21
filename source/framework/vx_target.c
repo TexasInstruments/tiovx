@@ -62,6 +62,8 @@
 
 #include <vx_internal.h>
 
+#define VX_PRINT_OBJECT(zone, object, message, ...) do { tivx_print_object(((vx_enum)zone), object->debug_zonemask, "[%s:%u] " message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (1 == 0)
+
 static tivx_target_t g_target_table[TIVX_TARGET_MAX_TARGETS_IN_CPU];
 
 own_execute_user_kernel_f      g_executeUserKernel_f = (own_execute_user_kernel_f)NULL;
@@ -624,7 +626,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
 
             is_node_blocked = (vx_bool)vx_false_e;
 
-            VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) acquiring parameters on target %08x\n",
+            VX_PRINT_OBJECT(VX_ZONE_INFO, node_obj_desc, "Node (node=%d, pipe=%d) acquiring parameters on target %08x\n",
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id
@@ -679,7 +681,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
 
             if(is_node_blocked==(vx_bool)vx_false_e)
             {
-                VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) executing on target %08x\n",
+                VX_PRINT_OBJECT(VX_ZONE_INFO, node_obj_desc, "Node (node=%d, pipe=%d) executing on target %08x\n",
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id
@@ -695,7 +697,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
 
                 ownLogRtTraceNodeExeEnd(end_time, node_obj_desc);
 
-                VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) executing on target %08x ... DONE !!!\n",
+                VX_PRINT_OBJECT(VX_ZONE_INFO, node_obj_desc, "Node (node=%d, pipe=%d) executing on target %08x ... DONE !!!\n",
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id
@@ -721,7 +723,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
                 if((vx_enum)blocked_node_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
                     /* this will be same node in next pipeline to trigger it last */
-                    VX_PRINT(VX_ZONE_INFO,"Re-triggering (node=%d)\n",
+                    VX_PRINT_OBJECT(VX_ZONE_INFO, node_obj_desc, "Re-triggering (node=%d)\n",
                              blocked_node_id
                     );
                     ownTargetTriggerNode(blocked_node_id);
@@ -729,7 +731,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
             }
             else
             {
-                VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) ... BLOCKED for resources on target %08x\n",
+                VX_PRINT_OBJECT(VX_ZONE_INFO, node_obj_desc, "Node (node=%d, pipe=%d) ... BLOCKED for resources on target %08x\n",
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id
@@ -738,7 +740,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) ... BLOCKED for previous pipe instance node (node=%d) to complete !!!\n",
+            VX_PRINT_OBJECT(VX_ZONE_INFO, node_obj_desc, "Node (node=%d, pipe=%d) ... BLOCKED for previous pipe instance node (node=%d) to complete !!!\n",
                     node_obj_desc->base.obj_desc_id,
                     node_obj_desc->pipeline_id,
                     node_obj_desc->prev_pipe_node_id
@@ -779,7 +781,7 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM011 */
         if(target_kernel_instance == NULL)
         {
-            VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance is NULL\n");
+            VX_PRINT_OBJECT(VX_ZONE_ERROR, node_obj_desc, "target_kernel_instance is NULL\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
         else
@@ -943,7 +945,7 @@ static vx_status ownTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_ob
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM014 */
         if(target_kernel_instance == NULL)
         {
-            VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance is NULL\n");
+            VX_PRINT_OBJECT(VX_ZONE_ERROR, node_obj_desc, "target_kernel_instance is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         else
@@ -1039,7 +1041,7 @@ static vx_status ownTargetNodeDescNodeControl(
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM017 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
+                    VX_PRINT_OBJECT(VX_ZONE_ERROR, node_obj_desc, "SendCommand Failed\n");
                     break;
                 }
 #endif
@@ -1057,12 +1059,12 @@ static vx_status ownTargetNodeDescNodeControl(
                     node_obj_desc);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
+                    VX_PRINT_OBJECT(VX_ZONE_ERROR, node_obj_desc, "SendCommand Failed\n");
                 }
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "Incorrect node id\n");
+                VX_PRINT_OBJECT(VX_ZONE_ERROR, node_obj_desc, "Incorrect node id\n");
                 status = (vx_status)VX_FAILURE;
             }
         }
@@ -1076,7 +1078,7 @@ static vx_status ownTargetNodeDescNodeControl(
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM018 */
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
+            VX_PRINT_OBJECT(VX_ZONE_ERROR, node_obj_desc, "SendCommand Failed\n");
         }
 #endif
     }

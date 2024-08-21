@@ -66,10 +66,18 @@
 #include <ti/vxlib/src/common/VXLIB_bufParams.h>
 #include <tivx_kernels_common_utils.h>
 #include <TI/tivx_obj_desc.h>
+#include <TI/tivx_debug.h>
+#include <TI/tivx_target_kernel.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*! \def VX_PRINT_KERNEL
+ * \brief Utility macro to print debug information if specified zone is set on a given target kernel instance
+ * \ingroup group_vx_debug
+ */
+#define VX_PRINT_KERNEL(zone, kernel, message, ...) do { tivx_print_object(((vx_enum)zone), tivxGetTargetKernelInstanceDebugZonemask(kernel), "[%s:%u] " message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (1 == 0)
 
 #define MAX2(a, b) (((a) > (b)) ? (a) : (b))
 #define MAX3(a, b, c) (MAX2((MAX2((a), (b))), (c)))

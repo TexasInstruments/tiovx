@@ -7463,4 +7463,3 @@ TESTCASE_TESTS(
     negativeTestObjectArrayInconsistentRefs,
     negativeTestPyramidInconsistentRefs
 )
-

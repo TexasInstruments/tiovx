@@ -478,6 +478,7 @@
     This page itemizes the various debug utilities and methods recommended for TIOVX application development
 
     - \subpage DEBUG_PRINT - How to enable debug print statements.
+    - \subpage GRAPH_NODE_DEBUG - How to set graph/node specific debug levels
     - \subpage JPEG_TOOL - How to use the graph JPEG generation tool
     - \subpage DEBUG_LOG_RT - How to enable run-time event start/stop logging and offline visualization
  */
@@ -485,18 +486,153 @@
  /*!
     \page DEBUG_PRINT Debug Print Statements
 
-    The TIOVX framework contains informative debug logging that can be enabled and disabled.  The logging print statements are enabled
-    based on which level of logging that has been set.  The logging levels can be found as a part of the enum \ref tivx_debug_zone_e.
-    By default, the VX_ZONE_INFO, VX_ZONE_WARNING, and VX_ZONE_ERROR logging are enabled on each core.  Logging levels can be enabled and disabled
-    for each core by calling the \ref tivx_set_debug_zone and \ref tivx_clr_debug_zone respectively.  Note, these have to be called
-    for the individual cores, not system-wide.
+    The TIOVX framework contains informative debug logging that can be enabled and disabled. The logging print statements are enabled
+    based on the level of logging that has been set. The logging levels can be found as a part of the enum \ref tivx_debug_zone_e.
+    By default, the VX_ZONE_INFO and VX_ZONE_WARNING zones are globally enabled on each core. Logging levels can be globally enabled
+    and disabled for each core by calling the \ref tivx_set_debug_zone and \ref tivx_clr_debug_zone APIs respectively. Through the
+    \ref VX_PRINT API, additional information can be reported based on the global debug level state. Graph, node, and kernel-specific
+    statements can be printed via the \ref VX_PRINT_GRAPH, \ref VX_PRINT_NODE, and \ref VX_PRINT_KERNEL APIs respectively. See
+    \ref GRAPH_NODE_DEBUG for more details.
 
-    In order to add additional documentation to custom code written on a given core, reference the \ref VX_PRINT API.
+ */
+
+  /*!
+    \page GRAPH_NODE_DEBUG Maintaining Graph and Node Debug Levels
+
+    Explicitly setting logging levels creates flexibility for debugging specific graphs and nodes within an application.
+    Debug levels can be set for specific graphs and nodes using the \ref tivxSetGraphDebugZone and \ref tivxSetNodeDebugZone APIs
+    respectively. Including a vx_true_e flag enables a specified zone, and passing a vx_false_e flag disables a specified zone.
+    Changing the debug levels of a given graph will also update the levels of each node that belongs to it. When a graph is created,
+    each of its logging levels will be enabled or disabled to match the status of the global debug state. The debug levels of each
+    newly created node will match those of the graph it belongs to.
+
+    Changes to the debug zones of graphs and nodes can be made even at runtime. This allows for more debug control over specific objects
+    both before and after graph verification. To continue supporting the existing \ref VX_PRINT mechanism, a set of different APIs must
+    be used to take advantage of graph and node debug levels. \ref VX_PRINT_GRAPH and \ref VX_PRINT_NODE can be used at the
+    application/framework levels to print statements based on the debug levels of a given graph or node. VX_PRINT_NODE can also be used
+    within User Extension Kernel callbacks on the host side when a vx_node object is accessible. \ref VX_PRINT_KERNEL can be used within
+    User Target Kernel callbacks when a target_kernel_instance object is accessible. See the following examples for more information.
+
+    \section GRAPH_DEBUG_PRINT Graph-Specific Debug Prints
+
+    In order to print debug information for a specific graph, first enable/disable the desired debug zones using \ref tivxSetGraphDebugZone.
+    \code
+    tivxSetGraphDebugZone(VX_ZONE_INFO, graph, vx_true_e);
+    tivxSetGraphDebugZone(VX_ZONE_WARNING, graph, vx_false_e);
+    \endcode
+
+    These calls will enable the VX_ZONE_INFO zone and disable the VX_ZONE_WARNING zone for that graph. To add logging for this graph, call
+    the following:
+
+    \code
+    VX_PRINT_GRAPH(VX_ZONE_INFO, graph, "This is a graph-specific debug statement\n");
+    \endcode
+
+    Because the level VX_ZONE_INFO has been enabled for the graph, this print statement will execute wherever it exists in the
+    application/framework.
+
+    \section NODE_DEBUG_PRINT Node-Specific Debug Prints
+
+    \code
+    tivxSetNodeDebugZone(VX_ZONE_ERROR, node, vx_false_e)
+    tivxSetNodeDebugZone(VX_ZONE_INFO, node, vx_true_e)
+    \endcode
+
+    For this node, VX_ZONE_ERROR will be disabled while VX_ZONE_INFO is activated.
+
+    This print
+    \code
+    VX_PRINT_NODE(VX_ZONE_ERROR, node, "Node-specific error statement\n");
+    \endcode
+    will not be performed, but the following will:
+
+    \code
+    VX_PRINT_NODE(VX_ZONE_INFO, node, "Node-specific info statement\n");
+    \endcode
+
+    In addition to application and framework use cases, \ref VX_PRINT_NODE can be called within host-side user extension kernel
+    callback functions. When these kernel callbacks are invoked within an application, the user kernel print statements will be
+    executed assuming the required debug levels are enabled within the nodes that are instances of it. See the following example
+    within the Not user kernel validate callback function:
+
+    \code
+    static vx_status VX_CALLBACK tivxAddKernelNotNotValidate(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num,
+            vx_meta_format metas[])
+    {
+
+    ...
+
+    if (VX_SUCCESS == status)
+    {
+        VX_PRINT_NODE(VX_ZONE_ERROR, node, "Status is Success\n");
+
+    ...
+    \endcode
+
+    \section KERNEL_DEBUG_PRINT Kernel-Specific Debug Prints
+
+    Kernel-specific debug prints can also be added to user target kernel callback functions. This is achieved in a similar way as
+    the host-side user kernel callbacks, but the API \ref VX_PRINT_KERNEL is used instead. See the following example within the
+    Not target kernel create callback function:
+
+    \code
+    static vx_status VX_CALLBACK tivxNotNotCreate(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg)
+    {
+
+    ...
+
+    if(status == VX_SUCCESS)
+        {
+            VX_PRINT_KERNEL(VX_ZONE_ERROR, kernel, "Not Not Kernel created\n");
+    
+    ...
+    \endcode
+
+    \section DEBUG_PRINT_FAQ Frequently Asked Questions
+
+    \subsection LEGACY_PRINT Can I still use VX_PRINT?
+
+    Yes - VX_PRINT still functions as usual. Separate print APIs were created to ensure backward compatibility is
+    maintained and existing VX_PRINT calls continue to work properly.
+
+    \subsection NEW_PRINT_VS_LEGACY When should I use VX_PRINT_GRAPH/NODE/KERNEL instead of VX_PRINT?
+
+    The graph, node, and kernel prints can be used anywhere within an application, the framework, or a user extension kernel
+    that a \ref vx_graph, \ref vx_node, or \ref tivx_target_kernel_instance object are accessible. VX_PRINT can also be used
+    in these places, but the specific API selection ultimately depends on the collection of debug levels the print statement
+    will be evaluated against: the global core debug state or a local object's debug state.
+
+    \subsection DEBUG_SCENARIO_ANSWERS Which should be used in these scenarios?
+
+    \subsubsection FRAMEWORK_EXTENSION_DEBUG Writing a new extension to the framework:
+
+    The VX_PRINT API can be used anywhere throughout the framework for general debug print statements that are enabled as long
+    as the global debug level is set appropriately. Extensions to the kernel that specifically access node and graph objects
+    could potentially benefit from calling \ref VX_PRINT_GRAPH and \ref VX_PRINT_NODE. Debug statements would be enabled/disabled
+    for each individual graph or node depending on each one's debug state.
+
+    \subsubsection USER_KERNEL_DEBUG Developing a new user kernel:
+
+    Callback functions for host-side user kernels have access to a vx_node object, so these functions can benefit from using
+    the \ref VX_PRINT_NODE API. Some callback functions for the target user kernel have access to a tivx_target_kernel_instance
+    object. In these locations, the \ref VX_PRINT_KERNEL API can be leveraged. In both circumstances, the debug states of nodes
+    that are created as instances of these user kernels will be checked against the required debug zone to print kernel-specific
+    debug information.
+
+    \subsubsection APPLICATION_DEBUG Creating a new application:
+
+    Similiarly to framework extensions, both the VX_PRINT and graph/node/kernel print APIs are available for use within applications.
+    The specific use case will determine which to use as it depends on the availability of vx_graph and vx_node objects.
 
  */
 
  /*!
-    \page JPEG_TOOL JPEG visualization of graph
+    \page JPEG_TOOL JPEG Visualization of Graph
 
     The \ref tivxExportGraphToDot API provides the ability to generate a JPEG diagramming the nodes in a graph. Below are a few notes on
     how to use this tool.
@@ -524,7 +660,7 @@
  */
 
  /*!
-    \page DEBUG_LOG_RT Run-time event logging and visualization
+    \page DEBUG_LOG_RT Run-time Event Logging and Visualization
 
     \tableofcontents
 

@@ -254,6 +254,9 @@ typedef struct _vx_graph {
     /*! \brief Control API processing Timeout value in milli-sec. */
     vx_uint32 timeout_val;
 
+    /*! \brief Debug zonemask of a given graph. */
+    vx_uint32 debug_zonemask;
+
 } tivx_graph_t;
 
 
