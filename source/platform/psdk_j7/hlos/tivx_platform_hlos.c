@@ -78,6 +78,9 @@ vx_status ownPlatformInit(void)
         == 0U) ? 1U : 0U);
     BUILD_ASSERT(
     ((sizeof(tivx_obj_desc_shm_entry_t)) <= (TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE)) ? 1U : 0U);
+    /* This is required to be <= 32 per framework requirements since we are using a bitmask with a uint32_t type */
+    BUILD_ASSERT(
+    (TIVX_KERNEL_MAX_PARAMS <= 32) ? 1U : 0U);
 
     retVal = appIpcGetTiovxObjDescSharedMemInfo( (void **) &gTivxObjDescShmEntry, &shmSize);
 
