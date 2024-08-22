@@ -242,7 +242,6 @@ vx_status tivxAddKernelNotNot(vx_context context)
         if (status == VX_SUCCESS)
         {
             /* add supported target's */
-            tivxKernelsHostUtilsAddKernelTargetDsp(kernel);
             tivxAddKernelTarget(kernel, TIVX_TARGET_MPU_1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_MPU_2);
             tivxAddKernelTarget(kernel, TIVX_TARGET_MPU_3);
