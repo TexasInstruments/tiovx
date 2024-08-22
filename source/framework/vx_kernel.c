@@ -480,23 +480,33 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
         {
             for (p = 0; p < kernel->signature.num_parameters; p++)
             {
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT001 */
                 if (kernel->signature.directions[p] < (vx_enum)VX_INPUT)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Kernel signature directions less than VX_INPUT\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
-
+/* END: TIOVX_CODE_COVERAGE_KERNEL_UTJT001 */
+/*LDRA_ANALYSIS*/
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT002 */
                 if (kernel->signature.directions[p] > (vx_enum)VX_BIDIRECTIONAL)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Kernel signature directions greater than VX_BIDIRECTIONAL\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
-
+/* END: TIOVX_CODE_COVERAGE_KERNEL_UTJT002 */
+/*LDRA_ANALYSIS*/
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT003 */
                 if (ownIsValidType(kernel->signature.types[p]) == (vx_bool)vx_false_e)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Invalid kernel signature type\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
+/* END: TIOVX_CODE_COVERAGE_KERNEL_UTJT003 */
+/*LDRA_ANALYSIS*/
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     break;
@@ -507,11 +517,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
                 status = ownAddKernelToContext(kernel->base.context, kernel);
             }
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT004 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Number of parameters greater than maximum allowable\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
+/* END: TIOVX_CODE_COVERAGE_KERNEL_UTJT004 */
+#endif
     }
     else
     {
@@ -598,11 +612,15 @@ vx_enum ownKernelGetTarget(vx_kernel kernel, const char *target_string)
           (vx_bool)vx_true_e) &&
           (NULL != target_string))
     {
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT005 */
         if(kernel->num_targets==0U)
         {
             target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
         }
         else
+/* END: TIOVX_CODE_COVERAGE_KERNEL_UTJT005 */
+#endif
         {
             for (i = 0; i < kernel->num_targets; i ++)
             {
