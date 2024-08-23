@@ -74,8 +74,10 @@ static tivx_target_kernel vx_not_not_target_kernel[3] = {NULL};
 typedef struct {
 
     vx_graph graph;
-    vx_node node;
+    vx_node node1;
+    vx_node node2;
     vx_image image[2];
+    vx_image int_image;
 
     void     *addr[2][TIVX_IMAGE_MAX_PLANES];
     uint32_t size[2][TIVX_IMAGE_MAX_PLANES];
@@ -222,11 +224,16 @@ static vx_status VX_CALLBACK tivxNotNotCreate(
                 }
             }
 
+            prms->int_image = (vx_image)tivxCreateReferenceFromExemplar(context, (vx_reference)prms->image[0]);
+
             vxReleaseContext(&context);
 
-            prms->node = tivxNotNotNode(prms->graph, prms->image[0], prms->image[1]);
+            prms->node1 = vxNotNode(prms->graph, prms->image[0], prms->int_image);
+            prms->node2 = vxNotNode(prms->graph, prms->int_image, prms->image[1]);
 
-            status = vxGetStatus((vx_reference)prms->node);
+            status = vxGetStatus((vx_reference)prms->node1);
+
+            status |= vxGetStatus((vx_reference)prms->node2);
         }
 
         if(status == VX_SUCCESS)
@@ -294,6 +301,7 @@ static vx_status VX_CALLBACK tivxNotNotDelete(
         {
             status = vxReleaseImage(&prms->image[0]);
             status |= vxReleaseImage(&prms->image[1]);
+            status |= vxReleaseImage(&prms->int_image);
             status |= vxReleaseGraph(&prms->graph);
         }
     }
