@@ -99,7 +99,7 @@ vx_status ownPlatformInit(void)
 }
 
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM001 */
+/* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM003 */
 void ownPlatformDeInit(void)
 {
     int32_t i;
