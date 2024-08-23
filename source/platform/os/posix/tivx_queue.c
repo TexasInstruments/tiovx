@@ -206,10 +206,12 @@ vx_status tivxQueueDelete(tivx_queue *queue)
         }
         (void)pthread_mutex_destroy(&context->lock);
 
-        (void)ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_QUEUE);
+        status = ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_QUEUE);
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to free Posix Object\n");
+        }
         queue->context = NULL;
-
-        status = (vx_status)VX_SUCCESS;
     }
 
     return (status);
