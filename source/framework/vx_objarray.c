@@ -197,7 +197,8 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                     ownLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
 
                     status = ownInitObjArrayFromObject(context, objarr, exemplar);
-
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1859- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT003 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         status = vxReleaseObjectArray(&objarr);
@@ -218,6 +219,8 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                             context, (vx_status)VX_ERROR_NO_RESOURCES);
                     }
                     else
+/* END: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT003 */
+#endif
                     {
                         objarr->base.is_virtual = (vx_bool)vx_true_e;
                         ownReferenceSetScope(&objarr->base, &graph->base);
@@ -270,6 +273,8 @@ VX_API_ENTRY vx_reference VX_API_CALL vxGetObjectArrayItem(
                 /* set is_array_element flag */
                 ref->is_array_element = (vx_bool)vx_true_e;
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1859- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT004 */
             else
             {
                 vxAddLogEntry(&objarr->base.context->base, (vx_status)VX_ERROR_NO_RESOURCES,
@@ -277,6 +282,8 @@ VX_API_ENTRY vx_reference VX_API_CALL vxGetObjectArrayItem(
                 ref = ownGetErrorObject(objarr->base.context, (vx_status)VX_ERROR_NO_RESOURCES);
                 VX_PRINT(VX_ZONE_ERROR, "Object array item is invalid\n");
             }
+/* END: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT004 */
+#endif
         }
     }
 
@@ -511,17 +518,24 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
                     {
                         status = ref->mem_alloc_callback(ref);
                     }
-
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1859- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT001 */
                     if ((vx_status)VX_SUCCESS != status)
                     {
                         break;
                     }
+
+/*LDRA_ANALYSIS*/
                 }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1859- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT002 */
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Object array reference is NULL for %d num_item\n", i);
                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                 }
+/* END: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT002 */
+#endif
             }
 
             if ((vx_status)VX_SUCCESS==status)
