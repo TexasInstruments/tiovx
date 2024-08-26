@@ -455,6 +455,13 @@ typedef struct _tivx_obj_desc_node
      */
     volatile uint32_t is_prm_input;
 
+    /*! \brief bitmask which indicates if prm is bidirectional 
+     *         parameter to a node
+     *         bitN = 1 means param at index N is bidi parameter
+     *         to node
+     */
+    volatile uint32_t is_prm_bidi;
+
     /*! \brief bitmask which indicates if prm is data ref q
      *         bitN = 1 means param at index N is data ref q
      */

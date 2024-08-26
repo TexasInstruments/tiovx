@@ -1469,10 +1469,11 @@ void ownTargetSetTimestamp(
 {
     uint16_t prm_id;
     uint64_t timestamp = 0, obj_timestamp = 0;
-    uint32_t is_prm_input_flag;
+    uint32_t is_prm_input_flag, is_prm_bidi_flag;
     tivx_obj_desc_t *parent_obj_desc;
 
     is_prm_input_flag = node_obj_desc->is_prm_input;
+    is_prm_bidi_flag  = node_obj_desc->is_prm_bidi;
 
     /* Reading all input timestamps, taking the most recent of the timestamps to pass along */
     for (prm_id = 0U; prm_id < node_obj_desc->num_params; prm_id++)
@@ -1480,7 +1481,7 @@ void ownTargetSetTimestamp(
         if (NULL != obj_desc[prm_id])
         {
            if ((tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id))==(vx_bool)vx_true_e) ||
-                (tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)TIVX_OBJ_DESC_BIDIR_FLAG<<prm_id))==(vx_bool)vx_true_e))
+                (tivxFlagIsBitSet(is_prm_bidi_flag, ((uint32_t)1U<<prm_id))==(vx_bool)vx_true_e))
             {
                 obj_timestamp = obj_desc[prm_id]->timestamp;
 

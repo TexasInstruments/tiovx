@@ -512,11 +512,12 @@ void ownTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
 
 void ownTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
 {
-    uint32_t is_prm_input_flag, is_prm_data_ref_q_flag, prm_id;
+    uint32_t is_prm_input_flag, is_prm_bidi_flag, is_prm_data_ref_q_flag, prm_id;
     vx_bool is_prm_released, is_prm_input;
 
     is_prm_data_ref_q_flag = node_obj_desc->is_prm_data_ref_q;
     is_prm_input_flag = node_obj_desc->is_prm_input;
+    is_prm_bidi_flag  = node_obj_desc->is_prm_bidi;
 
     for(prm_id=0; prm_id<node_obj_desc->num_params; prm_id++)
     {
@@ -533,7 +534,7 @@ void ownTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc, 
             if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
                 bool temp;
-                temp = (bool)tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)) || (bool)tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)TIVX_OBJ_DESC_BIDIR_FLAG<<prm_id));
+                temp = (bool)tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)) || (bool)tivxFlagIsBitSet(is_prm_bidi_flag, ((uint32_t)1U<<prm_id));
                 is_prm_input = (vx_bool)temp;
                 is_prm_released = (vx_bool)vx_false_e;
 

@@ -163,6 +163,7 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pip
     obj_desc->num_in_nodes = 0;
     obj_desc->is_prm_replicated = 0;
     obj_desc->is_prm_input = 0;
+    obj_desc->is_prm_bidi = 0;
     obj_desc->is_prm_data_ref_q = 0;
     obj_desc->is_prm_array_element = 0;
     obj_desc->prev_pipe_node_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
@@ -1353,9 +1354,10 @@ static uint16_t ownNodeGetObjDescId(vx_node node, uint32_t pipeline_id)
 
 void ownNodeSetObjDescParamDirection(vx_node node)
 {
-    uint32_t prm_idx, prm_dir, is_prm_input;
+    uint32_t prm_idx, prm_dir, is_prm_input, is_prm_bidi;
 
     is_prm_input = 0;
+    is_prm_bidi = 0;
 
     for(prm_idx=0; prm_idx < ownNodeGetNumParameters(node); prm_idx++)
     {
@@ -1367,11 +1369,12 @@ void ownNodeSetObjDescParamDirection(vx_node node)
         }
         if(prm_dir==(uint32_t)VX_BIDIRECTIONAL)
         {
-            tivxFlagBitSet(&is_prm_input, ((uint32_t)TIVX_OBJ_DESC_BIDIR_FLAG << prm_idx));
+            tivxFlagBitSet(&is_prm_bidi, ((uint32_t)1U<<prm_idx));
         }
     }
 
     node->obj_desc[0]->is_prm_input = is_prm_input;
+    node->obj_desc[0]->is_prm_bidi  = is_prm_bidi;
 }
 
 void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
@@ -2522,6 +2525,7 @@ vx_status ownNodeAllocObjDescForPipeline(vx_node node, uint32_t pipeline_depth)
                 obj_desc->pipeline_id = (uint16_t)pipe_id;
                 obj_desc->prev_pipe_node_id = (vx_enum)TIVX_OBJ_DESC_INVALID; /* updated later */
                 obj_desc->is_prm_input = obj_desc_0->is_prm_input;
+                obj_desc->is_prm_bidi  = obj_desc_0->is_prm_bidi;
                 obj_desc->is_prm_data_ref_q = 0; /* this field is updated later */
                 obj_desc->is_prm_array_element = 0; /* this field is updated later */
             }
