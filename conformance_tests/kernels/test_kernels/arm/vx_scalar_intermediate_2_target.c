@@ -118,8 +118,6 @@ static vx_status VX_CALLBACK tivxScalarIntermediate2Process(
 
         in_value = in_desc->data.u08;
 
-        tivxTaskWaitMsecs(1);
-
         out_desc->data.u08 = in_value;
 
     }
