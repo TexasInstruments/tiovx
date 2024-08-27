@@ -565,6 +565,8 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
                     break;
                 }
             }
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT001 */
             if(idx>=dimof(context->kerneltable))
             {
                 /* free entry not found */
@@ -572,6 +574,8 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
                 VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_CONTEXT_MAX_KERNELS in tiovx/include/TI/tivx_config.h\n");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
+/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT001 */
+/*LDRA_ANALYSIS*/
 
             (void)ownContextUnlock(context);
         }
@@ -750,6 +754,9 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 
                 if (status == (vx_status)VX_SUCCESS)
                 {
+
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT002 */
                     if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,
@@ -757,6 +764,8 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                                  obj_desc_cmd->cmd_status);
                         status = (vx_status)VX_FAILURE;
                     }
+/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT002 */
+/*LDRA_ANALYSIS*/
 
                     /* Put the object back in the free queue. */
                     status1 = tivxQueuePut(&context->free_queue,
@@ -1057,6 +1066,9 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                         }
                     }
                 }
+
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT003 */
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"context objection creation failed\n");
@@ -1080,6 +1092,9 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
 #endif
                     }
                 }
+/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT003 */
+/*LDRA_ANALYSIS*/
+
             }
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM009 */
@@ -1238,11 +1253,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                             status = vxRemoveKernel(vxCastRefAsKernel(ref,NULL));
                         }
 
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT004 */
                         /* Warning above so user can fix release external objects, but close here anyway */
                         while ((NULL != ref)&& (ref->external_count > 1U) ) {
                             /* Setting it as void since return value 'count' is not used further */
                             (void)ownDecrementReference(ref, (vx_enum)VX_EXTERNAL);
                         }
+/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT004 */
+/*LDRA_ANALYSIS*/
+
                         if ((NULL != ref) && (ref->external_count > 0U) )
                         {
                             status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_EXTERNAL, NULL);
@@ -1302,24 +1322,40 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 /*! \internal wipe away the context memory first */
                 /* Normally destroy sem is part of release reference, but can't for context */
                 status1 = tivxMutexDelete(&context->base.lock);
+
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT005 */
                 if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
                     status = status1;
                 }
+/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT005 */
+/*LDRA_ANALYSIS*/
 
                 status1 = tivxMutexDelete(&context->log_lock);
+
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT006 */
                 if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
                     status = status1;
                 }
+/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT006 */
+/*LDRA_ANALYSIS*/
+
                 status1 = tivxMutexDelete(&context->lock);
+
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT007 */
                 if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
                     status = status1;
                 }
+/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT007 */
+/*LDRA_ANALYSIS*/
 
                 (void)memset(context, 0, sizeof(tivx_context_t));
 
