@@ -255,7 +255,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                        doesn't specify that only (vx_enum)VX_TYPE_SCALAR should be used for scalar types in
                        this function. */
                     /* status set to NULL due to type check */
-                    if((type == (vx_enum)VX_TYPE_SCALAR) && 
+                    if((type == (vx_enum)VX_TYPE_SCALAR) &&
                        (vxQueryScalar(vxCastRefAsScalar(value,NULL), (vx_enum)VX_SCALAR_TYPE, &data_type, sizeof(data_type)) == (vx_status)VX_SUCCESS))
                     {
                         if(data_type != node->kernel->signature.types[index])
@@ -276,6 +276,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
             {
                 if (node->parameters[index] != NULL)
                 {
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1862: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PARAMETER_UTJT001 */
                     if (node->parameters[index]->delay!=NULL) {
                         /* we already have a delay element here */
                         vx_bool res = ownRemoveAssociationToDelay(node->parameters[index], node, index);
@@ -284,6 +286,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                             status = (vx_status)VX_ERROR_INVALID_REFERENCE;
                         }
                     }
+/* END: TIOVX_CODE_COVERAGE_PARAMETER_UTJT001 */
+/*LDRA_ANALYSIS*/
                 }
             }
 
@@ -292,19 +296,27 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                 if (value->delay!=NULL) {
                     /* the new parameter is a delay element */
                     vx_bool res = ownAddAssociationToDelay(value, node, index);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1862: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PARAMETER_UTJT002 */
                     if (res == (vx_bool)vx_false_e) {
                         VX_PRINT(VX_ZONE_ERROR, "Internal error adding delay association\n");
                         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
                     }
+/* END: TIOVX_CODE_COVERAGE_PARAMETER_UTJT002 */
+/*LDRA_ANALYSIS*/
                 }
             }
 
             if(status == (vx_status)VX_SUCCESS)
             {
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1862: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PARAMETER_UTJT003 */
                 if((vx_status)VX_SUCCESS != ownNodeSetParameter(node, index, value))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to set node parameter\n");
                 }
+/* END: TIOVX_CODE_COVERAGE_PARAMETER_UTJT003 */
+/*LDRA_ANALYSIS*/
             }
 
             /* Note that we don't need to do anything special for parameters to child graphs. */
