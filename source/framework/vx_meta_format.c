@@ -204,11 +204,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
     {
         if(attribute != (vx_enum)VX_VALID_RECT_CALLBACK)
         {
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1861: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_META_FORMAT_UTJT001 */
             if (VX_TYPE(attribute) != (vx_uint32)meta->type)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Invalid meta format type\n");
                 status = (vx_status)VX_ERROR_INVALID_TYPE;
             }
+/* END: TIOVX_CODE_COVERAGE_META_FORMAT_UTJT001 */
+/*LDRA_ANALYSIS*/
         }
     }
 
