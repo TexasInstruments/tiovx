@@ -294,6 +294,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
             VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &src_stride_y_alignment, sizeof(src_stride_y_alignment)));
             vx_kernel_image_valid_rectangle_f callback = &own_set_image_valid_rect;
             (void)vxSetMetaFormatAttribute(meta, VX_VALID_RECT_CALLBACK, &callback, sizeof(callback));
+            (void)vxSetMetaFormatAttribute(meta, VX_VALID_RECT_CALLBACK, NULL, sizeof(callback));
         }
         else
         {

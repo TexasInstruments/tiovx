@@ -257,6 +257,19 @@ TEST_WITH_ARG(tivxInternalMetaFormat, negativeInternalTestSetMetaFormatFromRefer
     VX_CALL(ownReleaseMetaFormat(&meta));
 }
 
+TEST(tivxInternalMetaFormat, negativeTestOwnIsMetaFormatEqual)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_meta_format meta = ownCreateMetaFormat(context);
+
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta,meta, VX_TYPE_INVALID));
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(NULL,NULL, VX_TYPE_INVALID));
+
+    VX_CALL(ownReleaseMetaFormat(&meta));
+}
+
 TESTCASE_TESTS(tivxInternalMetaFormat,
-    negativeInternalTestSetMetaFormatFromReference
+    negativeInternalTestSetMetaFormatFromReference,
+    negativeTestOwnIsMetaFormatEqual
     )
