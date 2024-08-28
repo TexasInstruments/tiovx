@@ -834,7 +834,14 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
                         if((0 != node->replicated_flags[i]) &&
                            (NULL != prm_ref[i]))
                         {
-                            parent_ref[i] = prm_ref[i]->scope;
+                            if(prm_ref[i]->scope->obj_desc != NULL)
+                            {
+                                parent_ref[i] = prm_ref[i]->scope;
+                            }
+                            else
+                            {
+                                parent_ref[i] = prm_ref[i];
+                            }
                         }
                     }
 
@@ -878,6 +885,27 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
                 }
                 else
                 {
+                    uint32_t i;
+
+                    for(i=0; i<num_params; i++ )
+                    {
+                        if ( (NULL != node->parameters[i]) && (NULL != prm_ref[i]) )
+                        {
+                            if((node->parameters[i]->type) != (prm_ref[i]->type) )
+                            {
+                                VX_PRINT(VX_ZONE_WARNING, "node %s param index %d not match, expect type %d, get %d \n", node->base.name, i, node->parameters[i]->type, prm_ref[i]->type );
+                                if(prm_ref[i]->scope != NULL)
+                                {
+                                    if( (prm_ref[i]->scope->obj_desc != NULL) && 
+                                        (prm_ref[i]->scope->type == node->parameters[i]->type) )
+                                    {
+                                        prm_ref[i] = prm_ref[i]->scope;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     ownNodeUserKernelSetParamsAccesible(prm_ref, num_params, (vx_bool)vx_true_e);
 
                     /* user has given user kernel function so call it */

@@ -547,6 +547,242 @@ static vx_node test_user_kernel_node(vx_graph graph,
     return node;
 }
 
+/* New object array source user kernel */
+
+#define NUM_REPLICAS 4
+#define TEST_USER_KERNEL_OBJARR_NAME          "test_graph_pipeline.user_kernel_objarr"
+#define TEST_USER_KERNEL_OBJARR_NUM_PARAMS     (2u)
+static vx_kernel test_user_kernel_objarr = NULL;
+
+static vx_status test_user_kernel_objarr_validate(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num,
+            vx_meta_format metas[])
+{
+    vx_status status = VX_SUCCESS;
+    vx_scalar scalar;
+    vx_enum scalar_type;
+    vx_object_array objarr;
+    vx_uint32 i;
+
+    if (num != TEST_USER_KERNEL_OBJARR_NUM_PARAMS)
+    {
+        printf(" ERROR: Test user kernel: Number of parameters dont match !!!\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        scalar = (vx_scalar)parameters[0];
+        if(scalar != NULL)
+        {
+            /* i.e not a optional parameter */
+            status = vxQueryScalar(scalar,
+                VX_SCALAR_TYPE, &scalar_type,
+                sizeof(vx_enum));
+            if(status==VX_SUCCESS)
+            {
+                if(scalar_type != VX_TYPE_UINT32)
+                {
+                    printf(" ERROR: Test user kernel: Scalar type MUST be VX_TYPE_UINT32 !!!\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                vxSetMetaFormatAttribute(metas[0], VX_SCALAR_TYPE, &scalar_type,
+                    sizeof(scalar_type));
+            }
+            if(status!=VX_SUCCESS)
+            {
+                printf(" ERROR: Test user kernel: validate failed !!!\n");
+            }
+        }
+        else
+        {
+            printf(" ERROR: Test user kernel: Index 0 is NULL !!!\n");
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        /* TODO: validation check of obj arr */
+        objarr = (vx_object_array)parameters[1];
+
+        for (i = 0; i < NUM_REPLICAS; i++)
+        {
+            scalar  = (vx_scalar)vxGetObjectArrayItem(objarr, i);
+            /* i.e not a optional parameter */
+            status = vxQueryScalar(scalar,
+                VX_SCALAR_TYPE, &scalar_type,
+                sizeof(vx_enum));
+            if(status==VX_SUCCESS)
+            {
+                if(scalar_type != VX_TYPE_UINT32)
+                {
+                    printf(" ERROR: Test user kernel: Scalar type MUST be VX_TYPE_UINT32 !!!\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+            }
+            if(status!=VX_SUCCESS)
+            {
+                printf(" ERROR: Test user kernel: validate failed !!!\n");
+                break;
+            }
+            vxReleaseScalar(&scalar);
+        }
+    }
+
+    return status;
+}
+
+static vx_status test_user_kernel_objarr_run(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num)
+{
+    vx_status status = VX_SUCCESS;
+    vx_scalar in, tmp_scalar;
+    vx_object_array out;
+    vx_uint32 in_value = 0, out_value = 0, ch_id = 0;
+
+    /* Any of the parameter can be NULL since parameter is marked
+     * as optional during kernel register */
+    in  = (vx_scalar)parameters[0];
+    out = (vx_object_array)parameters[1];
+
+    if(in!=NULL)
+    {
+        vxCopyScalar(in,
+            &in_value,
+            VX_READ_ONLY,
+            VX_MEMORY_TYPE_HOST
+            );
+    }
+
+    out_value = 2*in_value;
+
+    if(out!=NULL)
+    {
+        for (ch_id = 0; ch_id < NUM_REPLICAS; ch_id++)
+        {
+            tmp_scalar  = (vx_scalar)vxGetObjectArrayItem(out, ch_id);
+            vxCopyScalar(tmp_scalar,
+                &out_value,
+                VX_WRITE_ONLY,
+                VX_MEMORY_TYPE_HOST
+                );
+            vxReleaseScalar(&tmp_scalar);
+        }
+    }
+
+    return status;
+}
+
+static vx_status test_user_kernel_objarr_register(vx_context context)
+{
+    vx_kernel kernel = NULL;
+    vx_status status;
+    uint32_t index;
+    vx_enum test_user_kernel_id = 0;
+
+    status = vxAllocateUserKernelId(context, &test_user_kernel_id);
+    if(status!=VX_SUCCESS)
+    {
+        printf(" ERROR: Test user kernel: vxAllocateUserKernelId failed (%d)!!!\n", status);
+    }
+    if(status==VX_SUCCESS)
+    {
+        kernel = vxAddUserKernel(
+                    context,
+                    TEST_USER_KERNEL_OBJARR_NAME,
+                    test_user_kernel_id,
+                    test_user_kernel_objarr_run,
+                    TEST_USER_KERNEL_OBJARR_NUM_PARAMS, /* number of parameters objects for this user function */
+                    test_user_kernel_objarr_validate,
+                    NULL,
+                    NULL);
+    }
+
+    status = vxGetStatus((vx_reference)kernel);
+    if ( status == VX_SUCCESS)
+    {
+        index = 0;
+
+        if ( status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                index,
+                VX_INPUT,
+                VX_TYPE_SCALAR,
+                VX_PARAMETER_STATE_REQUIRED
+                );
+            index++;
+        }
+        if ( status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                index,
+                VX_OUTPUT,
+                VX_TYPE_OBJECT_ARRAY,
+                VX_PARAMETER_STATE_REQUIRED
+                );
+            index++;
+        }
+        if ( status == VX_SUCCESS)
+        {
+            status = vxFinalizeKernel(kernel);
+        }
+        if( status != VX_SUCCESS)
+        {
+            printf(" ERROR: Test user kernel: vxAddParameterToKernel, vxFinalizeKernel failed (%d)!!!\n", status);
+            vxReleaseKernel(&kernel);
+            kernel = NULL;
+        }
+    }
+    else
+    {
+        kernel = NULL;
+        printf(" ERROR: Test user kernel: vxAddUserKernel failed (%d)!!!\n", status);
+    }
+    if(status==VX_SUCCESS)
+    {
+        test_user_kernel_objarr = kernel;
+    }
+
+    return status;
+}
+
+static vx_status test_user_kernel_objarr_unregister(vx_context context)
+{
+    vx_status status;
+
+    status = vxRemoveKernel(test_user_kernel_objarr);
+    test_user_kernel_objarr = NULL;
+
+    if(status!=VX_SUCCESS)
+    {
+        printf(" ERROR: Test user kernel: Unable to remove kernel (%d)!!!\n", status);
+    }
+
+    return status;
+}
+
+static vx_node test_user_kernel_objarr_node(vx_graph graph,
+            vx_scalar in,
+            vx_object_array out)
+{
+    vx_node node;
+
+    vx_reference refs[] = {
+        (vx_reference)in,
+        (vx_reference)out};
+
+    node = tivxCreateNodeByKernelName(graph,
+                TEST_USER_KERNEL_OBJARR_NAME,
+                refs, sizeof(refs)/sizeof(refs[0])
+                );
+
+    return node;
+}
+
 /*
  *  d0      n0     d2
  *  IMG --  OR -- IMG (*)
@@ -4009,6 +4245,448 @@ TEST_WITH_ARG(tivxGraphPipeline, testUserKernel, Arg, PARAMETERS)
 }
 
 /*
+ *  d0           n0           d1            n1         d2
+ * SCALAR -- USER_KERNEL -- SCALAR -- USER_KERNEL -- SCALAR
+ *              Repl          |         | Repl
+ *                            + --------+
+ *
+ * This test case test the below
+ * - User kernel nodes
+ * - Nodes with optional parameters
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testUserKernelReplicate, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_scalar d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
+    vx_object_array d0_arr[MAX_NUM_BUF] = {NULL}, d1_arr, d2_arr[MAX_NUM_BUF] = {NULL};
+    vx_scalar in_scalar, out_scalar, exemplar, tmp_scalar;
+    vx_node n0, n1;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    vx_uint32 in_value[MAX_NUM_BUF] = {0}, ref_out_value[MAX_NUM_BUF] = {0};
+    vx_uint32 tmp_value = 0;
+    vx_bool prms_replicate_n0[] =
+        {vx_true_e, vx_false_e, vx_true_e, vx_false_e};
+    vx_bool prms_replicate_n1[] =
+        {vx_true_e, vx_true_e, vx_true_e, vx_false_e};
+
+    uint32_t pipeline_depth, num_buf;
+    uint32_t buf_id, loop_id, loop_cnt, ch_id;
+    uint64_t exe_time;
+    char *filename="test_graph_pipeline_user_kernel_replicate";
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    test_user_kernel_register(context);
+
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        in_value[buf_id] = 10*(buf_id+1);
+        ref_out_value[buf_id] = 2 * in_value[buf_id];
+    }
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(exemplar = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0_arr[buf_id]    = vxCreateObjectArray(context, (vx_reference)exemplar, NUM_REPLICAS), VX_TYPE_OBJECT_ARRAY);
+        ASSERT_VX_OBJECT(d0[buf_id]        = (vx_scalar)vxGetObjectArrayItem(d0_arr[buf_id], 0), VX_TYPE_SCALAR);
+        ASSERT_VX_OBJECT(d2_arr[buf_id]    = vxCreateObjectArray(context, (vx_reference)exemplar, NUM_REPLICAS), VX_TYPE_OBJECT_ARRAY);
+        ASSERT_VX_OBJECT(d2[buf_id]        = (vx_scalar)vxGetObjectArrayItem(d2_arr[buf_id], 0), VX_TYPE_SCALAR);
+    }
+
+    ASSERT_VX_OBJECT(d1_arr  = vxCreateObjectArray(context, (vx_reference)exemplar, NUM_REPLICAS), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(d1      = (vx_scalar)vxGetObjectArrayItem(d1_arr, 0), VX_TYPE_SCALAR);
+
+    VX_CALL(vxReleaseScalar(&exemplar));
+
+    ASSERT_VX_OBJECT(n0    = test_user_kernel_node(graph, d0[0], NULL, d1, NULL), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n1    = test_user_kernel_node(graph, d1, d1, d2[0], NULL), VX_TYPE_NODE);
+
+    VX_CALL(vxReplicateNode(graph, n0, prms_replicate_n0, 4u));
+    VX_CALL(vxReplicateNode(graph, n1, prms_replicate_n1, 4u));
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ n1 index 2, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n1, 2);
+
+    /* set graph schedule config such that graph parameter @ index 0, 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
+
+    /* explicitly set graph pipeline depth */
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
+
+    VX_CALL(set_num_buf_by_node_index(n0, 2, num_buf));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
+
+    #if 1
+    /* fill reference data into input data reference */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        for (ch_id = 0; ch_id < NUM_REPLICAS; ch_id++)
+        {
+            ASSERT_VX_OBJECT(tmp_scalar  = (vx_scalar)vxGetObjectArrayItem(d0_arr[buf_id], ch_id), VX_TYPE_SCALAR);
+            ASSERT_NO_FAILURE(
+                vxCopyScalar(tmp_scalar,
+                &in_value[buf_id],
+                VX_WRITE_ONLY,
+                VX_MEMORY_TYPE_HOST));
+            VX_CALL(vxReleaseScalar(&tmp_scalar));
+        }
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    /* enqueue input and output references,
+     * input and output can be enqueued in any order
+     * can be enqueued all together, here they are enqueue one by one just as a example
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
+    }
+
+    buf_id = 0;
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        uint32_t num_refs;
+        vx_object_array in_objarr;
+
+        /* Get output reference, waits until a reference is available */
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs));
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs));
+
+        /* A graph execution completed, since we dequeued both input and output refs */
+        if(arg_->measure_perf==0)
+        {
+            /* when measuring performance dont check output since it affects graph performance numbers
+             */
+
+            if(loop_cnt > 100)
+            {
+                ct_update_progress(loop_id, loop_cnt+num_buf);
+            }
+        }
+
+        ASSERT_VX_OBJECT(in_objarr = (vx_object_array)tivxGetReferenceParent((vx_reference)out_scalar), VX_TYPE_OBJECT_ARRAY);
+
+        for (ch_id = 0; ch_id < NUM_REPLICAS; ch_id++)
+        {
+            ASSERT_VX_OBJECT(tmp_scalar  = (vx_scalar)vxGetObjectArrayItem(in_objarr, ch_id), VX_TYPE_SCALAR);
+            VX_CALL(vxCopyScalar(tmp_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+            /* compare output */
+            ASSERT_EQ_INT(tmp_value, ref_out_value[buf_id]);
+            VX_CALL(vxReleaseScalar(&tmp_scalar));
+        }
+
+        for (ch_id = 0; ch_id < NUM_REPLICAS; ch_id++)
+        {
+            ASSERT_VX_OBJECT(tmp_scalar  = (vx_scalar)vxGetObjectArrayItem(in_objarr, ch_id), VX_TYPE_SCALAR);
+            VX_CALL(vxCopyScalar(tmp_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+            /* clear value in output */
+            tmp_value = 0;
+            VX_CALL(vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+            VX_CALL(vxReleaseScalar(&tmp_scalar));
+        }
+
+        buf_id = (buf_id+1)%num_buf;
+
+        /* recycles dequeued input and output refs 'loop_cnt' times */
+        if(loop_id<loop_cnt)
+        {
+            /* input and output can be enqueued in any order */
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1));
+        }
+    }
+
+    /* ensure all graph processing is complete */
+    VX_CALL(vxWaitGraph(graph));
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    if(arg_->measure_perf==1)
+    {
+        vx_node nodes[] = { n0, n1 };
+
+        printGraphPipelinePerformance(graph, nodes, 2, exe_time, loop_cnt+num_buf, 1);
+    }
+    #endif
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseObjectArray(&d0_arr[buf_id]));
+        VX_CALL(vxReleaseScalar(&d0[buf_id]));
+        VX_CALL(vxReleaseObjectArray(&d2_arr[buf_id]));
+        VX_CALL(vxReleaseScalar(&d2[buf_id]));
+    }
+    VX_CALL(vxReleaseObjectArray(&d1_arr));
+    VX_CALL(vxReleaseScalar(&d1));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    test_user_kernel_unregister(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
+ *  d0           n0           d1            n1         d2
+ * SCALAR -- USER_KERNEL_OBJARR -- OBJARR -- USER_KERNEL -- SCALAR
+ *                                   |         | Repl
+ *                                   + --------+
+ *
+ * This test case test the below
+ * - User kernel nodes
+ * - Nodes with optional parameters
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testUserKernelReplicateObjArr, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_scalar d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
+    vx_object_array d1_arr, d2_arr[MAX_NUM_BUF] = {NULL};
+    vx_scalar in_scalar, out_scalar, exemplar, tmp_scalar;
+    vx_node n0, n1;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    vx_uint32 in_value[MAX_NUM_BUF] = {0}, ref_out_value[MAX_NUM_BUF] = {0};
+    vx_uint32 tmp_value = 0;
+    vx_bool prms_replicate_n1[] =
+        {vx_true_e, vx_true_e, vx_true_e, vx_false_e};
+
+    uint32_t pipeline_depth, num_buf;
+    uint32_t buf_id, loop_id, loop_cnt, ch_id;
+    uint64_t exe_time;
+    char *filename="test_graph_pipeline_user_kernel_replicate_objarr";
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    test_user_kernel_register(context);
+    test_user_kernel_objarr_register(context);
+
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        in_value[buf_id] = 10*(buf_id+1);
+        ref_out_value[buf_id] = 4 * in_value[buf_id];
+    }
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(exemplar = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]        = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+        ASSERT_VX_OBJECT(d2_arr[buf_id]    = vxCreateObjectArray(context, (vx_reference)exemplar, NUM_REPLICAS), VX_TYPE_OBJECT_ARRAY);
+        ASSERT_VX_OBJECT(d2[buf_id]        = (vx_scalar)vxGetObjectArrayItem(d2_arr[buf_id], 0), VX_TYPE_SCALAR);
+    }
+
+    ASSERT_VX_OBJECT(d1_arr  = vxCreateObjectArray(context, (vx_reference)exemplar, NUM_REPLICAS), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(d1      = (vx_scalar)vxGetObjectArrayItem(d1_arr, 0), VX_TYPE_SCALAR);
+
+    VX_CALL(vxReleaseScalar(&exemplar));
+
+    ASSERT_VX_OBJECT(n0    = test_user_kernel_objarr_node(graph, d0[0], d1_arr), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n1    = test_user_kernel_node(graph, d1, d1, d2[0], NULL), VX_TYPE_NODE);
+
+    VX_CALL(vxReplicateNode(graph, n1, prms_replicate_n1, 4u));
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ n1 index 2, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n1, 2);
+
+    /* set graph schedule config such that graph parameter @ index 0, 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
+
+    /* explicitly set graph pipeline depth */
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
+
+    VX_CALL(set_num_buf_by_node_index(n0, 1, num_buf));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    VX_CALL(export_graph_to_file(graph, filename));
+    VX_CALL(log_graph_rt_trace_enable(graph));
+
+    #if 1
+    /* fill reference data into input data reference */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE(
+            vxCopyScalar(d0[buf_id],
+            &in_value[buf_id],
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST));
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    /* enqueue input and output references,
+     * input and output can be enqueued in any order
+     * can be enqueued all together, here they are enqueue one by one just as a example
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
+    }
+
+    buf_id = 0;
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        uint32_t num_refs;
+        vx_object_array in_objarr;
+
+        /* Get output reference, waits until a reference is available */
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs));
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs));
+
+        /* A graph execution completed, since we dequeued both input and output refs */
+        if(arg_->measure_perf==0)
+        {
+            /* when measuring performance dont check output since it affects graph performance numbers
+             */
+
+            if(loop_cnt > 100)
+            {
+                ct_update_progress(loop_id, loop_cnt+num_buf);
+            }
+        }
+
+        ASSERT_VX_OBJECT(in_objarr = (vx_object_array)tivxGetReferenceParent((vx_reference)out_scalar), VX_TYPE_OBJECT_ARRAY);
+
+        for (ch_id = 0; ch_id < NUM_REPLICAS; ch_id++)
+        {
+            ASSERT_VX_OBJECT(tmp_scalar  = (vx_scalar)vxGetObjectArrayItem(in_objarr, ch_id), VX_TYPE_SCALAR);
+            VX_CALL(vxCopyScalar(tmp_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+            /* compare output */
+            ASSERT_EQ_INT(tmp_value, ref_out_value[buf_id]);
+            VX_CALL(vxReleaseScalar(&tmp_scalar));
+        }
+
+        for (ch_id = 0; ch_id < NUM_REPLICAS; ch_id++)
+        {
+            ASSERT_VX_OBJECT(tmp_scalar  = (vx_scalar)vxGetObjectArrayItem(in_objarr, ch_id), VX_TYPE_SCALAR);
+            VX_CALL(vxCopyScalar(tmp_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+            /* clear value in output */
+            tmp_value = 0;
+            VX_CALL(vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+            VX_CALL(vxReleaseScalar(&tmp_scalar));
+        }
+
+        buf_id = (buf_id+1)%num_buf;
+
+        /* recycles dequeued input and output refs 'loop_cnt' times */
+        if(loop_id<loop_cnt)
+        {
+            /* input and output can be enqueued in any order */
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1));
+        }
+    }
+
+    /* ensure all graph processing is complete */
+    VX_CALL(vxWaitGraph(graph));
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    if(arg_->measure_perf==1)
+    {
+        vx_node nodes[] = { n0, n1 };
+
+        printGraphPipelinePerformance(graph, nodes, 2, exe_time, loop_cnt+num_buf, 1);
+    }
+    #endif
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseScalar(&d0[buf_id]));
+        VX_CALL(vxReleaseObjectArray(&d2_arr[buf_id]));
+        VX_CALL(vxReleaseScalar(&d2[buf_id]));
+    }
+    VX_CALL(vxReleaseObjectArray(&d1_arr));
+    VX_CALL(vxReleaseScalar(&d1));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    test_user_kernel_unregister(context);
+    test_user_kernel_objarr_unregister(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
  *  d0     n0     d1     n1     d2
  * IMG -- NOT -- IMG -- NOT -- IMG
  *
@@ -5146,7 +5824,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
-TEST(tivxGraphPipeline, negativeTestPipelineDepth)
+TEST(tivxGraphPipelineLdra, negativeTestPipelineDepth)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
@@ -5489,7 +6167,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
  * values for the width and height of images
  *
  */
-TEST(tivxGraphPipeline, negativeTestImageInconsistentRefs)
+TEST(tivxGraphPipelineLdra, negativeTestImageInconsistentRefs)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
@@ -5566,7 +6244,7 @@ TEST(tivxGraphPipeline, negativeTestImageInconsistentRefs)
  * values for parameters of object arrays
  *
  */
-TEST(tivxGraphPipeline, negativeTestObjectArrayInconsistentRefs)
+TEST(tivxGraphPipelineLdra, negativeTestObjectArrayInconsistentRefs)
 {
     vx_graph graph;
     vx_context context = context_->vx_context_;
@@ -5632,7 +6310,7 @@ TEST(tivxGraphPipeline, negativeTestObjectArrayInconsistentRefs)
  * values for parameters of pyramids
  *
  */
-TEST(tivxGraphPipeline, negativeTestPyramidInconsistentRefs)
+TEST(tivxGraphPipelineLdra, negativeTestPyramidInconsistentRefs)
 {
     vx_graph graph;
     vx_context context = context_->vx_context_;
@@ -6757,16 +7435,14 @@ TESTCASE_TESTS(tivxGraphPipeline,
     DISABLED_testDontReplicateImage,
     testReplicateImage2,
     testUserKernel,
+    testUserKernelReplicate,
+    testUserKernelReplicateObjArr,
     testManualSchedule,
     testDelay1,
     testDelay2,
     testDelay3,
     testDelay4,
-    negativeTestPipelineDepth,
     testLoopCarriedDependency,
-    negativeTestImageInconsistentRefs,
-    negativeTestObjectArrayInconsistentRefs,
-    negativeTestPyramidInconsistentRefs,
     testGraphPipelineQuery,
     testGraphPipelineDepthDetectionSerial,
     testGraphPipelineDepthDetectionParallel,
@@ -6778,9 +7454,13 @@ TESTCASE_TESTS(tivxGraphPipeline,
 
 TESTCASE_TESTS(
     tivxGraphPipelineLdra,
+    negativeTestPipelineDepth,
     negativeTestSetGraphScheduleConfig,
     negativeTestGraphParameterCheckDoneRef,
     negativeTestGraphParameterDequeueDoneRef,
-    negativeTestSetGraphPipelineDepth
+    negativeTestSetGraphPipelineDepth,
+    negativeTestImageInconsistentRefs,
+    negativeTestObjectArrayInconsistentRefs,
+    negativeTestPyramidInconsistentRefs
 )
 
