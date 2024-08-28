@@ -43,5 +43,6 @@ TESTCASE(tivxPosixObjects)
 TESTCASE(tivxInternalMetaFormat)
 TESTCASE(tivxInternalGraphPipeline)
 TESTCASE(tivxInternalDataRefQueue)
+TESTCASE(tivxInternalEventQueue)
 
 #endif
