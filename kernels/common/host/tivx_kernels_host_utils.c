@@ -383,7 +383,10 @@ vx_status tivxKernelsHostUtilsAddKernelTargetMcu(vx_kernel kernel)
     status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU1_0);
     #endif
     #ifndef SOC_AM62A
-    status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_0);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_0);
+    }
     #ifndef SOC_J722S
     if ((vx_status)VX_SUCCESS == status)
     {

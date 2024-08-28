@@ -453,7 +453,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
     self_cpu = tivxGetSelfCpuId();
 
     #if defined(SOC_AM62A) || defined(SOC_J722S)
-    if (self_cpu == TIVX_CPU_ID_MCU1_0)
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
     {
         (void)strncpy(target_name, TIVX_TARGET_MCU1_0, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
