@@ -110,20 +110,28 @@ vx_status tivxQueueDelete(tivx_queue *queue)
             (NULL != queue->block_rd))
         {
             status = tivxEventDelete(&queue->block_rd);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM001 */
             if (status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
             }
+/* END: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM001 */
+/*LDRA_ANALYSIS*/
         }
         if (((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) ==
                 TIVX_QUEUE_FLAG_BLOCK_ON_PUT) &&
             (NULL != queue->block_wr))
         {
             status = tivxEventDelete(&queue->block_wr);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM002 */
             if (status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
             }
+/* END: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM002 */
+/*LDRA_ANALYSIS*/
         }
     }
 
@@ -137,7 +145,11 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
     uint32_t cookie;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004 */
     for(;;)
+/* END: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004 */
+#endif
     {
         /* disable interrupts */
         cookie = (uint32_t)HwiP_disable();
@@ -203,10 +215,14 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                     do_break = (vx_bool)vx_true_e;
                     /* error, exit with error */
                 }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM003 */
                 else
                 {
                     do_break = (vx_bool)vx_false_e;
                 }
+/* END: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM003 */
+#endif
                 /* received semaphore, recheck for available space in the que */
             }
             else
@@ -218,12 +234,15 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
             }
         }
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004 */
         if ((vx_bool)vx_true_e == do_break)
         {
             break;
         }
+/* END: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004 */
+#endif
     }
-  
 
     return (status);
 }
