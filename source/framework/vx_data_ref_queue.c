@@ -416,6 +416,8 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
                     if(prms->enable_user_queueing != 0)
                     {
                         ref->obj_desc_cmd[pipe_id] = (tivx_obj_desc_cmd_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_CMD, NULL);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1868- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT001 */
                         if(ref->obj_desc_cmd[pipe_id]==NULL)
                         {
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -423,6 +425,8 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
                             VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
                             VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
                         }
+/* END: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT001 */
+/*LDRA_ANALYSIS*/
                     }
                 }
             }
@@ -514,11 +518,15 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
                 VX_PRINT(VX_ZONE_ERROR, "Unable to alloc resources for data ref queue\n");
             }
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1868- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT002 */
         else
         {
             ref = NULL;
             VX_PRINT(VX_ZONE_ERROR, "Unable to create data ref queue\n");
         }
+/* END: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT002 */
+#endif
     }
     else
     {
