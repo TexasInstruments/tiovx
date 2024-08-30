@@ -1454,14 +1454,19 @@ void ownTargetInit(void)
     (void)ownTargetKernelInstanceInit();
 }
 
-#ifdef HOST_ONLY
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/*LDRA_NOANALYSIS*/
 /* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM004 */
+#endif
 void ownTargetDeInit(void)
 {
     ownTargetKernelInstanceDeInit();
     ownTargetKernelDeInit();
 
 }
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/* END: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM004 */
+/*LDRA_ANALYSIS*/
 #endif
 
 void ownTargetSetTimestamp(

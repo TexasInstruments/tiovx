@@ -104,12 +104,14 @@ vx_status ownTargetKernelInit(void)
     return status;
 }
 
-#ifdef HOST_ONLY
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/*LDRA_NOANALYSIS*/
 /* TIOVX-1707- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_UM001 */
+#endif
 void ownTargetKernelDeInit(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    
+
     status = tivxMutexDelete(&g_target_kernel_lock);
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1707- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM002 */
@@ -119,6 +121,9 @@ void ownTargetKernelDeInit(void)
     }
 #endif
 }
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/* END: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_UM001 */
+/*LDRA_ANALYSIS*/
 #endif
 
 static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(

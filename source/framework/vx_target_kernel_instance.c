@@ -94,8 +94,10 @@ vx_status ownTargetKernelInstanceInit(void)
     return status;
 }
 
-#ifdef HOST_ONLY
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/*LDRA_NOANALYSIS*/
 /* TIOVX-1708-Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_INSTANCE_UM001 */
+#endif
 void ownTargetKernelInstanceDeInit(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -109,6 +111,9 @@ void ownTargetKernelInstanceDeInit(void)
     }
 #endif
 }
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/* END: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_INSTANCE_UM001 */
+/*LDRA_ANALYSIS*/
 #endif
 
 tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id)
