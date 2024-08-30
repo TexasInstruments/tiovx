@@ -234,8 +234,12 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
         status = pthread_mutex_lock(&context->lock);
         if(status==0)
         {
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1737- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_UM003 */
             do
             {
+/* END: TIOVX_CODE_COVERAGE_QUEUE_UM003 */
+#endif
                 if (queue->count < queue->max_ele)
                 {
                     /* insert element */
@@ -270,6 +274,8 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                         status = (vx_status)VX_FAILURE;
                         do_break = (vx_bool)vx_true_e; /* non-blocking, so exit with error */
                     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1737- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_UM004 */
                     else if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != (uint32_t)0)
                     {
                         /* blocking on queue put enabled */
@@ -277,6 +283,8 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                         (void)pthread_cond_wait(&context->condPut, &context->lock);
                         queue->blockedOnPut = (vx_bool)vx_false_e;
                     }
+/* END: TIOVX_CODE_COVERAGE_QUEUE_UM004 */
+#endif
                     else
                     {
                         /* blocking on queue put disabled */
@@ -288,6 +296,8 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                     }
                 }
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1737- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_UM003 */
                 if ((vx_bool)vx_true_e == do_break)
                 {
                     break;
@@ -295,6 +305,8 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
             }
             while (true);
 
+/* END: TIOVX_CODE_COVERAGE_QUEUE_UM003 */
+#endif
             temp_status = (uint32_t)status | (uint32_t)pthread_mutex_unlock(&context->lock);
             status = (vx_status)temp_status;
         }
