@@ -477,11 +477,13 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
         // Positive Cases
         VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_NUMBER_OF_DIMS, &nod, sizeof(vx_size)));
         VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_DIMS, &dims, (sizeof(vx_size) * (vx_size)TIVX_CONTEXT_MAX_TENSOR_DIMS)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_DIMS, &dims, (sizeof(vx_size))));
         VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_FIXED_POINT_POSITION, &fpp, sizeof(vx_int8)));
         VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, VX_TENSOR_DATA_TYPE, &dt, sizeof(vx_enum)));
         /* TIVX types */
         VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, TIVX_TENSOR_SCALING_DIVISOR, &dt, sizeof(vx_uint8)));
         VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION, &dt, sizeof(vx_uint8)));
+        VX_CALL_(return VX_SUCCESS, vxSetMetaFormatAttribute(meta, TIVX_TENSOR_STRIDES, &dt, sizeof(vx_size)));
 
         // Negative Cases
         if (vxSetMetaFormatAttribute(meta, VX_TENSOR_DIMS, &dims, sizeofErr * (sizeof(vx_size) * (vx_size)TIVX_CONTEXT_MAX_TENSOR_DIMS)) != VX_ERROR_INVALID_PARAMETERS)
@@ -506,6 +508,10 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
             return VX_FAILURE;
         }
         if (vxSetMetaFormatAttribute(meta, TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION, &dt, errInject(sizeof(vx_int8))) != VX_ERROR_INVALID_PARAMETERS)
+        {
+            return VX_FAILURE;
+        }
+        if (vxSetMetaFormatAttribute(meta, TIVX_TENSOR_STRIDES, &dt, errInject((sizeof(vx_size)*(vx_size)TIVX_CONTEXT_MAX_TENSOR_DIMS))) != VX_ERROR_INVALID_PARAMETERS)
         {
             return VX_FAILURE;
         }
