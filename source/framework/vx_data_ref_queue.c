@@ -509,6 +509,11 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
 
             if(status!=(vx_status)VX_SUCCESS)
             {
+                status = ownDataRefQueueRelease(&ref);
+                if((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
+                }
                 ref = NULL;
                 VX_PRINT(VX_ZONE_ERROR, "Unable to alloc resources for data ref queue\n");
             }
