@@ -152,6 +152,9 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     params.format[2].msb = 11;
     params.meta_height_before = 5;
     params.meta_height_after = 0;
+    tivx_data_ref_queue ref;
+    tivx_data_ref_queue_create_params_t prms;
+    prms.pipeline_depth = 1;
 
     ASSERT_VX_OBJECT(conv = vxCreateConvolution(context, cols, rows), VX_TYPE_CONVOLUTION);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownAllocReferenceBufferGeneric((vx_reference)conv));
@@ -197,6 +200,7 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, ownNodeAllocObjDescForPipeline(node2, 2));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric((vx_reference)img));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, ownGraphAllocAndEnqueueObjDescForPipeline(graph));
+    ASSERT(NULL == tivxDataRefQueueCreate(graph,&prms));
     for (j = 0; j < i; j++)
     {
         if (NULL == obj_desc[j])
