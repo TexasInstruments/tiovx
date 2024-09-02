@@ -138,8 +138,10 @@ static void tivxDeInitLocal(void)
     {
         gInitCount--;
 
-#ifdef HOST_ONLY
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/*LDRA_NOANALYSIS*/
 /* TIOVX-1759- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_ONLY_INIT_UM001 */
+#endif
         if (0U == gInitCount)
         {
             ownPlatformDeleteTargets();
@@ -191,6 +193,9 @@ static void tivxDeInitLocal(void)
 
             VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");
         }
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/*LDRA_ANALYSIS*/
+/* END: TIOVX_CODE_COVERAGE_HOST_ONLY_INIT_UM001 */
 #endif
     }
 #ifdef LDRA_UNTESTABLE_CODE

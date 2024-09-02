@@ -11,9 +11,14 @@
 #include <utils/console_io/include/app_log.h>
 #include <utils/timer/include/app_timer.h>
 
-#ifdef HOST_ONLY
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/*LDRA_NOANALYSIS*/
 /* TIOVX-1766- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_PLATFORM_UM001 */
+#endif
 const char *tivxPlatformGetEnv(const char *env_var);
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/*LDRA_ANALYSIS*/
+/* END: TIOVX_CODE_COVERAGE_HOST_ONLY_PLATFORM_UM001 */
 #endif
 
 uint64_t tivxPlatformGetTimeInUsecs(void)
@@ -36,8 +41,10 @@ void ownPlatformDeactivate(void)
 
 }
 
-#ifdef HOST_ONLY
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/*LDRA_NOANALYSIS*/
 /* TIOVX-1766- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_PLATFORM_UM001 */
+#endif
 const char *tivxPlatformGetEnv(const char *env_var)
 {
     const char *value=" ";
@@ -48,6 +55,9 @@ const char *tivxPlatformGetEnv(const char *env_var)
     }
     return (value);
 }
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/*LDRA_ANALYSIS*/
+/* END: TIOVX_CODE_COVERAGE_HOST_ONLY_PLATFORM_UM001 */
 #endif
 
 #if defined(A72) || defined(A53)
