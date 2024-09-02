@@ -109,19 +109,10 @@ vx_status tivxMutexLock(tivx_mutex mutex)
 vx_status tivxMutexUnlock(tivx_mutex mutex)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    app_rtos_status_t retVal;
 
     if (NULL != mutex)
     {
-        retVal = appRtosSemaphorePost((app_rtos_semaphore_handle_t)mutex);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1773- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RTOS_MUTEX_UM003 */
-        if (APP_RTOS_STATUS_SUCCESS != retVal)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Semaphore post returned an error\n");
-            status = (vx_status)VX_FAILURE;
-        }
-#endif
+        (void)appRtosSemaphorePost((app_rtos_semaphore_handle_t)mutex);
     }
     else
     {
