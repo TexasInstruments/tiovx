@@ -44,5 +44,6 @@ TESTCASE(tivxInternalMetaFormat)
 TESTCASE(tivxInternalGraphPipeline)
 TESTCASE(tivxInternalDataRefQueue)
 TESTCASE(tivxInternalEventQueue)
+TESTCASE(tivxInternalReference)
 
 #endif
