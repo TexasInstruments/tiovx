@@ -167,6 +167,7 @@ void tivxInit(void)
         #endif
 
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
+        tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetArmKernels();
 
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);

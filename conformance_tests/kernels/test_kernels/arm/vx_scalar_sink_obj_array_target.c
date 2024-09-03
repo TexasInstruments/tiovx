@@ -229,7 +229,8 @@ void tivxAddTargetKernelScalarSinkObjArray(void)
     char target_name[TIVX_TARGET_MAX_NAME];
 
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
-        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) )
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)))
     {
         vx_scalar_sink_obj_array_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_NAME,

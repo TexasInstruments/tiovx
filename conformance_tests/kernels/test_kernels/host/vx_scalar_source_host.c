@@ -195,6 +195,7 @@ vx_status tivxAddKernelScalarSource(vx_context context)
             /* add supported target's */
             tivxKernelsHostUtilsAddKernelTargetMcu(kernel);
             tivxKernelsHostUtilsAddKernelTargetDsp(kernel);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_MPU_0);
         }
         if (status == VX_SUCCESS)
         {

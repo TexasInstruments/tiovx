@@ -3337,25 +3337,11 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
 void tivxAddTargetKernelTestTarget(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
-    vx_enum self_cpu;
-
-    self_cpu = tivxGetSelfCpuId();
 
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
-        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) )
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)))
     {
-        vx_test_target_target_kernel = tivxAddTargetKernelByName(
-                            TIVX_KERNEL_TEST_TARGET_NAME,
-                            target_name,
-                            tivxTestTargetProcess,
-                            tivxTestTargetCreate,
-                            tivxTestTargetDelete,
-                            tivxTestTargetControl,
-                            NULL);
-    }
-    else if (self_cpu == TIVX_CPU_ID_MPU_0)
-    {
-        strncpy(target_name, TIVX_TARGET_MPU_0, TIVX_TARGET_MAX_NAME);
         vx_test_target_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_TEST_TARGET_NAME,
                             target_name,

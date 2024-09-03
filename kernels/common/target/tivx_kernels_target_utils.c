@@ -485,3 +485,19 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
 
     return status;
 }
+
+vx_status tivxKernelsTargetUtilsAssignTargetNameMpu(char *target_name)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
+
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MPU_0)
+    {
+        (void)strncpy(target_name, TIVX_TARGET_MPU_0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+
+    return status;
+}

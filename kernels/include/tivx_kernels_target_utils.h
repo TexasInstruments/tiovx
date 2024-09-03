@@ -232,6 +232,13 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name);
 vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name);
 
 /*!
+ * \brief Function to assign MPU target name (TIVX_TARGET_MPU_0)
+ *
+ * \ingroup group_tivx_target_utils
+ */
+vx_status tivxKernelsTargetUtilsAssignTargetNameMpu(char *target_name);
+
+/*!
  * \ingroup group_tivx_target_utils
  */
 static inline vx_uint32 tivxComputePatchOffset(
