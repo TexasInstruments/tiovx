@@ -202,13 +202,10 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         status = vxReleaseObjectArray(&objarr);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM002 */
                         if((vx_status)VX_SUCCESS != status)
                         {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of ObjectArray object\n");
                         }
-#endif
 
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                             "Could not allocate objarr object descriptor\n");
@@ -374,6 +371,8 @@ static vx_status ownInitObjArrayFromObject(
 
     if ((vx_status)VX_SUCCESS != status)
     {
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1859- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT005 */
         for (; i > 0u; i--)
         {
             status = ownReleaseRefFromObjArray(objarr, i);
@@ -383,6 +382,8 @@ static vx_status ownInitObjArrayFromObject(
                 break;
             }
         }
+/* END: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT005 */
+/*LDRA_ANALYSIS*/
     }
 
     return (status);
@@ -413,7 +414,7 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
         ownReferenceSetScope(ref, &objarr->base);
     }
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM003 */
+/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM002 */
     else
     {
         status = (vx_status)VX_FAILURE;
@@ -443,7 +444,7 @@ static vx_status ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t num_
 
             status = vxReleaseReference(&objarr->ref[i]);
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM004 */
+/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM003 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Release object array element %d failed!\n", i);
@@ -524,7 +525,7 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
                     {
                         break;
                     }
-
+/* END: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT001 */
 /*LDRA_ANALYSIS*/
                 }
 #ifdef LDRA_UNTESTABLE_CODE
@@ -544,7 +545,7 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
             }
         }
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM005 */
+/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM004 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Object array object descriptor is NULL\n");
@@ -553,7 +554,7 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 #endif
     }
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM006 */
+/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM005 */
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Data type is not Object Array\n");
