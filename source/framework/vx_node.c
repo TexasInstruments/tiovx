@@ -314,12 +314,15 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
                          * and thus may not be allocated already, explicitly calling the
                          * reference allocation API. */
                         status = ownReferenceAllocMem(ref[cnt]);
-
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT001 */
                         if((vx_status)VX_SUCCESS != status)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "Allocating reference %d failed\n", cnt);
                             break;
                         }
+/* END: TIOVX_CODE_COVERAGE_NODE_UTJT001 */
+/*LDRA_ANALYSIS*/
                     }
                     else
                     {
@@ -345,10 +348,14 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
                     {
                         node->is_timed_out = (vx_bool)vx_false_e;
                     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT002 */
                     else
                     {
                         /* do nothing */
                     }
+/* END: TIOVX_CODE_COVERAGE_NODE_UTJT002 */
+#endif
                 }
             }
         }
@@ -427,12 +434,16 @@ vx_status ownNodeKernelInit(vx_node node)
             node->local_data_size = node->kernel->local_data_size;
             node->local_data_ptr = tivxMemAlloc((uint32_t)node->local_data_size,
                 (vx_enum)TIVX_MEM_EXTERNAL);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT003 */
             if(node->local_data_ptr==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR,"User kernel, local data memory alloc failed\n");
                 status = (vx_status)VX_ERROR_NO_MEMORY;
             }
             else
+/* END: TIOVX_CODE_COVERAGE_NODE_UTJT003 */
+#endif
             {
                 node->local_data_ptr_is_alloc = (vx_bool)vx_true_e;
             }
@@ -709,16 +720,24 @@ vx_status ownNodeKernelDeinit(vx_node node)
                                         /*status set to NULL due to preceding type check*/
                                         params[i] = vxCastRefFromImage((vxCastRefAsPyramid(parent_ref[i], NULL))->img[n]);
                                     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT004 */
                                     else
                                     {
                                         params[i] = NULL;
                                     }
+/* END: TIOVX_CODE_COVERAGE_NODE_UTJT004 */
+#endif
                                 }
                             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT005 */
                             else
                             {
                                 params[i] = node->parameters[i];
                             }
+/* END: TIOVX_CODE_COVERAGE_NODE_UTJT005 */
+#endif
                         }
 
                         tivxCheckStatus(&status, node->kernel->deinitialize(node, params, num_params));
@@ -729,11 +748,15 @@ vx_status ownNodeKernelDeinit(vx_node node)
                     /* user has given deinitialize function so call it */
                     status = node->kernel->deinitialize(node, node->parameters,
                         node->kernel->signature.num_parameters);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT006 */
                     if(status!=(vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"deinitialize callback failed\n");
                     }
                     else
+/* END: TIOVX_CODE_COVERAGE_NODE_UTJT006 */
+#endif
                     {
                         node->is_initialized = (vx_bool)vx_false_e;
                     }
@@ -864,10 +887,14 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
                                         /*status set to NULL due to preceding type check*/
                                         params[i] = vxCastRefFromImage((vxCastRefAsPyramid(parent_ref[i], NULL))->img[n]);
                                     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT007 */
                                     else
                                     {
                                         params[i] = NULL;
                                     }
+/* END: TIOVX_CODE_COVERAGE_NODE_UTJT007 */
+#endif
                                 }
                             }
                             else
@@ -2082,12 +2109,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                                     {
                                         num_of_replicas = items;
                                     }
-
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT008 */
                                     if ((num_of_replicas != 0U) && (items != num_of_replicas))
                                     {
                                         VX_PRINT(VX_ZONE_ERROR, "Number of replicas is not equal to zero and not equal to items\n");
                                         status = (vx_status)VX_FAILURE;
                                     }
+/* END: TIOVX_CODE_COVERAGE_NODE_UTJT008 */
+/*LDRA_ANALYSIS*/
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT009 */
                                     if (num_of_replicas > TIVX_NODE_MAX_REPLICATE)
                                     {
                                         VX_PRINT(VX_ZONE_ERROR, "Number of replicas is greater than maximum allowed\n");
@@ -2095,6 +2127,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                                         status = (vx_status)VX_FAILURE;
                                     }
                                     else
+/* END: TIOVX_CODE_COVERAGE_NODE_UTJT009 */
+/*LDRA_ANALYSIS*/
                                     {
                                         ownLogSetResourceUsedValue("TIVX_NODE_MAX_REPLICATE", (uint16_t)num_of_replicas);
                                     }
