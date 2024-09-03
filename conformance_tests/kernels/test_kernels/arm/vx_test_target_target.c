@@ -1245,7 +1245,13 @@ static vx_status tivxNegativeTestTargetGetHandleAndDelete(uint8_t id)
             target_id = (vx_enum)TIVX_TARGET_ID_MPU_2;
             break;
         case 4:
+            #if defined(SOC_J721S2)
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP1;
+            #elif defined(SOC_J721E)
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_1;
+            #else
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2;
+            #endif
             break;
     }
     if ((vx_status)VX_ERROR_INVALID_VALUE != ownTargetDelete((vx_enum)target_id))
@@ -1318,7 +1324,13 @@ static vx_status tivxNegativeTestObjDescAlloc(uint8_t id)
     switch (cpu_id)
     {
         case 0:
+            #if defined(SOC_J721S2)
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP1;
+            #elif defined(SOC_J721E)
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_1;
+            #else
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2;
+            #endif
             break;
         case 2:
             target_id = (vx_enum)TIVX_TARGET_ID_MCU2_0;
@@ -1677,7 +1689,13 @@ static vx_status tivxNegativeTestTargetPlatformCreateTargetId(uint8_t id)
     switch (cpu_id)
     {
         case 0:
+            #if defined(SOC_J721S2)
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP1;
+            #elif defined(SOC_J721E)
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_1;
+            #else
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2;
+            #endif
             break;
         case 2:
             target_id = (vx_enum)TIVX_TARGET_ID_MCU2_0;
