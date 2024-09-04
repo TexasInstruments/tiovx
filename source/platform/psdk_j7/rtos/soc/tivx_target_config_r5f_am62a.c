@@ -19,6 +19,8 @@ void ownPlatformCreateTargets(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1, 4u, "TIVX_VVISS1", 13u);
 }
 
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1769- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_CONFIG_R5F_UM001 */
 void ownPlatformDeleteTargets(void)
 {
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MCU1_0);
@@ -27,3 +29,4 @@ void ownPlatformDeleteTargets(void)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC2);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1);
 }
+/*LDRA_ANALYSIS*/
