@@ -202,10 +202,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
                 kernels_loaded ++;
                 break;
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1873- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MODULE_UTJT001 */
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "Publish function for module %s failed\n", module);
             }
+/* END: TIOVX_CODE_COVERAGE_MODULE_UTJT001 */
+#endif
         }
     }
     if((idx>=dimof(g_module_table)) && (0U == kernels_loaded))
