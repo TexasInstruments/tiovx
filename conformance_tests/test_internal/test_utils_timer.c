@@ -27,7 +27,7 @@
 #include <utils/mem/include/app_mem.h>
 
 #if defined(A72) || defined(A53)
-#include <utils/ipc/src/app_ipc_linux_priv.h>
+#include <utils/timer/include/app_timer.h>
 
 TESTCASE(tivxTimer, CT_VXContext, ct_setup_vx_context, 0)
 
