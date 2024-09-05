@@ -65,7 +65,8 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
         if ((ownIsValidArrayItemType(arr->base.context, item_type) ==
                 (vx_bool)vx_true_e) &&
             (capacity > 0U) &&
-            ((vx_enum)(vx_enum)VX_TYPE_INVALID != item_type) &&  /* It should not be invalid now */
+
+            ((vx_enum)(vx_enum)VX_TYPE_INVALID != item_type) &&  /* It should not be invalid now */ /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR001 */
             ((vx_bool)vx_true_e == arr->base.is_virtual))
         {
             ownInitArrayObject(arr, item_type, capacity, (vx_bool)vx_true_e);
@@ -91,7 +92,7 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
                 VX_PRINT(VX_ZONE_ERROR,"array item type is invalid\n");
             }
 
-            if ((vx_bool)vx_true_e != (arr->base.is_virtual))
+            if ((vx_bool)vx_true_e != (arr->base.is_virtual)) /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR002 */
             {
                 VX_PRINT(VX_ZONE_ERROR,"array is not virtual\n");
             }
@@ -143,10 +144,10 @@ VX_API_ENTRY vx_array VX_API_CALL vxCreateArray(
                 if(arr->base.obj_desc==NULL)
                 {
                     status = vxReleaseArray(&arr);
-                    if((vx_status)VX_SUCCESS != status)
+                    if((vx_status)VX_SUCCESS != status) /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR003 */
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
-                    }    
+                    }
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate arr object descriptor\n");
@@ -198,10 +199,10 @@ VX_API_ENTRY vx_array VX_API_CALL vxCreateVirtualArray(
             if(arr->base.obj_desc==NULL)
             {
                 status = vxReleaseArray(&arr);
-                if((vx_status)VX_SUCCESS != status)
+                if((vx_status)VX_SUCCESS != status) /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR004 */
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
-                } 
+                }
 
                 vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                     "Could not allocate arr object descriptor\n");
@@ -658,7 +659,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map
 #endif
 
         if ((map_id >= TIVX_ARRAY_MAX_MAPS) ||
-            (arr->maps[map_id].map_addr == NULL) ||
+            (arr->maps[map_id].map_addr == NULL) || /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR005 */
             (arr->maps[map_id].map_size == 0U))
         {
             VX_PRINT(VX_ZONE_ERROR,"Array map is invalid\n");
