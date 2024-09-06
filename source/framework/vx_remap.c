@@ -34,7 +34,6 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
     vx_remap remap = NULL;
     vx_reference ref = NULL;
     tivx_obj_desc_remap_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context)==(vx_bool)vx_true_e)
     {
@@ -53,11 +52,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                 obj_desc = (tivx_obj_desc_remap_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_REMAP, vxCastRefFromRemap(remap));
                 if(obj_desc==NULL)
                 {
-                    status = vxReleaseRemap(&remap);
-                    if((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to remap table object\n");
-                    }
+                    (void)vxReleaseRemap(&remap);
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate remap object descriptor\n");
                     remap = (vx_remap)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
@@ -182,7 +177,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
         {
             obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;
 
-            if(obj_desc->mem_ptr.host_ptr != (uint64_t)0)
+            if(obj_desc->mem_ptr.host_ptr != (uint64_t)0) /* TIOVX-1882- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REMAP_UBR001 */
             {
                 if ((dst_x < obj_desc->dst_width) &&
                     (dst_y < obj_desc->dst_height))
