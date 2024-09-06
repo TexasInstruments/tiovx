@@ -60,7 +60,6 @@
 *
 */
 
-
 #include <TI/tivx.h>
 #include <TI/tivx_debug.h>
 #include <VX/vx.h>
@@ -393,7 +392,7 @@ void tivxReserveC66xL2MEM(void)
 
 vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status = (vx_status)VX_FAILURE;
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
@@ -405,11 +404,13 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
         {
             (void)strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
+            status = (vx_status)VX_SUCCESS;
         }
         else
         {
             (void)strncpy(target_name, TIVX_TARGET_DSP2,
                 TIVX_TARGET_MAX_NAME);
+            status = (vx_status)VX_SUCCESS;
         }
     }
     else
@@ -423,6 +424,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
     {
         (void)strncpy(target_name, TIVX_TARGET_DSP1,
             TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
@@ -435,6 +437,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
     {
         (void)strncpy(target_name, TIVX_TARGET_DSP1,
             TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
@@ -445,9 +448,27 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
     return status;
 }
 
+vx_status tivxKernelsTargetUtilsAssignTargetNameC7x(char *target_name)
+{
+    vx_status status = (vx_status)VX_FAILURE;
+    #if defined(SOC_J721E)
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP_C7_1)
+    {
+        (void)strncpy(target_name, TIVX_TARGET_DSP_C7_1,
+            TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #endif
+
+    return status;
+}
+
 vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status = (vx_status)VX_FAILURE;
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
@@ -488,7 +509,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
 
 vx_status tivxKernelsTargetUtilsAssignTargetNameMpu(char *target_name)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status = (vx_status)VX_FAILURE;
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();

@@ -190,6 +190,9 @@ vx_status tivxAddKernelScalarSinkObjArray(vx_context context)
             tivxKernelsHostUtilsAddKernelTargetMcu(kernel);
             tivxKernelsHostUtilsAddKernelTargetDsp(kernel);
             tivxAddKernelTarget(kernel, TIVX_TARGET_MPU_0);
+            #if defined(SOC_J721E)
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1);
+            #endif
         }
         if (status == VX_SUCCESS)
         {

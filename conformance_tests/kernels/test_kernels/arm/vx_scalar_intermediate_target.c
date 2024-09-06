@@ -201,7 +201,8 @@ void tivxAddTargetKernelScalarIntermediate(void)
 
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) ||
-        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)))
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
         vx_scalar_intermediate_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_SCALAR_INTERMEDIATE_NAME,

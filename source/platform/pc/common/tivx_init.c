@@ -175,6 +175,7 @@ void tivxInit(void)
         tivxRegisterTestKernelsTargetDspKernels();
 
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP_C7_1);
+        tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetDspKernels();
 
         #if defined (SOC_J721E) || defined (SOC_J722S)
