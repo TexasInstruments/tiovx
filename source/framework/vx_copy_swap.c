@@ -346,10 +346,6 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                         /* Re-start the loop */
                         break;
                     }
-                    else
-                    {
-                        /* status will be reported */
-                    }
                 }
             }
         }
@@ -409,10 +405,6 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                         ownReassignGraphParameter(graph, node, 0, first, (vx_enum)VX_INPUT);
                         /* re-start the loop */
                         break;
-                    }
-                    else
-                    {
-                        /* status will be reported */;
                     }
                 }
             }
@@ -490,10 +482,6 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                             /* restart the loop */
                             break;
                         }
-                    }
-                    else
-                    {
-                        /*do nothing*/
                     }
                 }
             }

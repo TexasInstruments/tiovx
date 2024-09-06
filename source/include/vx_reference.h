@@ -59,8 +59,8 @@ typedef vx_status (* VX_API_CALL tivx_reference_release_callback_f)(vx_reference
  * involving generic references, such as Copy, Select, Swap or Pass
  * \param [in] kernel_enum        A <tt>\ vx_kernel_e </tt> which give the name of vision kernel
  * \param [in] validate_only      A <tt>\ref vx_bool</tt> used to validate if the kernel operation is possible or not
- * \param [in] input              The pointer to a \ref vx_references for the input and outputs used for the kernel operations
- * \param [in] output             The pointer to a \ref vx_references for the output used for the kernel operations
+ * \param [in] input              The pointer to a \ref vx_reference for the input used for the kernel operations
+ * \param [in] output             The pointer to a \ref vx_reference for the output used for the kernel operations
  * \ingroup group_vx_reference
  */
 typedef vx_status (*vx_kernel_callback_f)(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
