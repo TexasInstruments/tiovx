@@ -41,8 +41,10 @@ TEST(tivxRpmsgChar, testappIpcCreateTxCh)
 
     ASSERT((vx_status)VX_FAILURE == appIpcCreateTxCh(remote_app_cpu_id, remote_endpt, &local_endpt, (rpmsg_char_dev_t **)&rcdev, eptdev_name));
 
+    #if !defined(SOC_J722S) && !defined(SOC_AM62A)
     remote_app_cpu_id = APP_IPC_CPU_MCU1_1;
     ASSERT((vx_status)VX_FAILURE == appIpcCreateTxCh(remote_app_cpu_id, remote_endpt, &local_endpt, (rpmsg_char_dev_t **)&rcdev, eptdev_name));
+    #endif
 
     remote_app_cpu_id = -1u;
     ASSERT((vx_status)VX_FAILURE == appIpcCreateTxCh(remote_app_cpu_id, remote_endpt, &local_endpt, (rpmsg_char_dev_t **)&rcdev, eptdev_name));
