@@ -84,7 +84,7 @@
 
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
 #include <utils/rtos/include/app_rtos.h>
-#include <utils/perf_stats/include/app_perf_stats.h>
+#include <utils/mem/include/app_mem.h>
 #if defined(MCU_PLUS_SDK)
 #include <app_rtos_mcu_plus_priv.h>
 #else
@@ -1237,13 +1237,24 @@ static vx_status tivxNegativeTestTargetGetHandleAndDelete(uint8_t id)
 
     switch (cpu_id)
     {
-        case 0:
+        #if defined(SOC_J721E)
+        case TIVX_CPU_ID_DSP_C7_1:
+        #endif
+        case TIVX_CPU_ID_DSP1:
+            #if defined(AM62A)
+            target_id = (vx_enum)TIVX_TARGET_ID_MCU1_0;
+            #else
             target_id = (vx_enum)TIVX_TARGET_ID_MCU2_0;
+            #endif
             break;
-        case 2:
+        #if defined(AM62A)
+        case TIVX_CPU_ID_MCU1_0:
+        #else
+        case TIVX_CPU_ID_MCU2_0:
+        #endif
             target_id = (vx_enum)TIVX_TARGET_ID_MPU_2;
             break;
-        case 4:
+        case TIVX_CPU_ID_MPU_0:
             #if defined(SOC_J721S2)
             target_id = (vx_enum)TIVX_TARGET_ID_DSP1;
             #elif defined(SOC_J721E)
@@ -1322,21 +1333,30 @@ static vx_status tivxNegativeTestObjDescAlloc(uint8_t id)
 
     switch (cpu_id)
     {
-        case 0:
-            #if defined(SOC_J721S2)
+        case TIVX_CPU_ID_DSP1:
+            #if defined (SOC_J721E) || defined (SOC_J721S2)
             target_id = (vx_enum)TIVX_TARGET_ID_DSP1;
-            #elif defined(SOC_J721E)
-            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_1;
             #else
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2;
             #endif
             break;
-        case 2:
+        #if defined(AM62A)
+        case TIVX_CPU_ID_MCU1_0:
+            target_id = (vx_enum)TIVX_TARGET_ID_MCU1_0;
+            break;
+        #else
+        case TIVX_CPU_ID_MCU2_0:
             target_id = (vx_enum)TIVX_TARGET_ID_MCU2_0;
             break;
-        case 4:
+        #endif
+        case TIVX_CPU_ID_MPU_0:
             target_id = (vx_enum)TIVX_TARGET_ID_MPU_2;
             break;
+        #if defined(SOC_J721E)
+        case TIVX_CPU_ID_DSP_C7_1:
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_1;
+            break;
+        #endif
     }
 
     if (VX_ERROR_NO_RESOURCES != ownTargetCreate(target_id, NULL))
@@ -1740,7 +1760,7 @@ static vx_status tivxNegativeTestTargetPlatformCreateTargetId(uint8_t id)
 
     switch (cpu_id)
     {
-        case 0:
+        case TIVX_CPU_ID_DSP1:
             #if defined(SOC_J721S2)
             target_id = (vx_enum)TIVX_TARGET_ID_DSP1;
             #elif defined(SOC_J721E)
@@ -1749,12 +1769,21 @@ static vx_status tivxNegativeTestTargetPlatformCreateTargetId(uint8_t id)
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2;
             #endif
             break;
-        case 2:
+        #if defined(AM62A)
+        case TIVX_CPU_ID_MCU1_0:
+        #else
+        case TIVX_CPU_ID_MCU2_0:
+        #endif
             target_id = (vx_enum)TIVX_TARGET_ID_MCU2_0;
             break;
-        case 4:
+        case TIVX_CPU_ID_MPU_0:
             target_id = (vx_enum)TIVX_TARGET_ID_MPU_0;
             break;
+        #if defined(SOC_J721E)
+        case TIVX_CPU_ID_DSP_C7_1:
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_1;
+            break;
+        #endif
     }
 
     /* To fail ownTargetCreate() inside  tivxPlatformCreateTargetId API */
@@ -3480,10 +3509,12 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
 void tivxAddTargetKernelTestTarget(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
 
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
-        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) ||
-        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)))
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) )
     {
         vx_test_target_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_TEST_TARGET_NAME,
@@ -3494,6 +3525,20 @@ void tivxAddTargetKernelTestTarget(void)
                             tivxTestTargetControl,
                             NULL);
     }
+    #if defined(SOC_J721E)
+    else if (self_cpu == TIVX_CPU_ID_DSP_C7_1)
+    {
+        strncpy(target_name, TIVX_TARGET_DSP_C7_1, TIVX_TARGET_MAX_NAME);
+        vx_test_target_target_kernel = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_TEST_TARGET_NAME,
+                            target_name,
+                            tivxTestTargetProcess,
+                            tivxTestTargetCreate,
+                            tivxTestTargetDelete,
+                            tivxTestTargetControl,
+                            NULL);
+    }
+    #endif
 }
 
 void tivxRemoveTargetKernelTestTarget(void)
