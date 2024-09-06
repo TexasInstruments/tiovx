@@ -3509,12 +3509,15 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
 void tivxAddTargetKernelTestTarget(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
+    #if defined(SOC_J721E)
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
+    #endif
 
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
-        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) )
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)))
     {
         vx_test_target_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_TEST_TARGET_NAME,
