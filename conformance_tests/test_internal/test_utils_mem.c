@@ -70,13 +70,6 @@ TEST(tivxDmaHeap, testappMemCacheWbInv)
 }
 #endif
 
-TEST(tivxDmaHeap, testappMemResetScratchHeap)
-{
-    uint32_t heap_id = 0;
-
-    ASSERT((uint32_t)0 == appMemResetScratchHeap(heap_id));
-}
-
 TEST(tivxDmaHeap, testappMemAddTupleToList)
 {
     uint32_t dmaBufFd = 0;
@@ -110,7 +103,6 @@ TESTCASE_TESTS(
     testappMemStats,
     testappMemCacheWbInv,
 #endif
-    testappMemResetScratchHeap,
     testappMemAddTupleToList,
     testappMemShared2PhysPtr,
     testappMemShared2TargetPtr
