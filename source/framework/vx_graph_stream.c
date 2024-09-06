@@ -65,6 +65,8 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 #endif
                     }
 
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT001 */
                     if(STOP == event.app_value)
                     {
                         VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
@@ -77,6 +79,8 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
                         }
 #endif
                     }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT001 */
+/*LDRA_ANALYSIS*/
 
                     if(DELETE == event.app_value)
                     {
@@ -117,6 +121,8 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 #endif
                     }
 
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT002 */
                     if(DELETE == event.app_value)
                     {
                         VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
@@ -131,6 +137,8 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
                         state = IDLE;
                         done = (vx_bool)vx_true_e;
                     }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT002 */
+/*LDRA_ANALYSIS*/
 
                     if(RUN == event.app_value)
                     {
@@ -218,6 +226,8 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
                         }
                     }
 
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT003 */
                     if(STOP == event.app_value)
                     {
                         VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
@@ -230,7 +240,8 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
                         }
 #endif
                     }
-
+/* END: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT003 */
+/*LDRA_ANALYSIS*/
                     if(DELETE == event.app_value)
                     {
                         /* Break from loop and exit task */
@@ -238,19 +249,27 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
                         done = (vx_bool)vx_true_e;
                     }
 
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT004 */
                     if(RUN == event.app_value)
                     {
                         /* Do nothing, graph is stopped */
                         VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: RUN\n");
                     }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT004 */
+/*LDRA_ANALYSIS*/
 
                     break;
                 case RUNNING:
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT005 */
                     if(START == event.app_value)
                     {
                         /* Already running, ignore */
                         VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: START\n");
                     }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT005 */
+/*LDRA_ANALYSIS*/
 
                     if(STOP == event.app_value)
                     {
@@ -277,17 +296,25 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 #endif
                     }
 
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT006 */
                     if(DELETE == event.app_value)
                     {
                         VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
                         state = IDLE;
                         done = (vx_bool)vx_true_e;
                     }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT006 */
+/*LDRA_ANALYSIS*/
 
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT007 */
                     if(RUN == event.app_value)
                     {
                         VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: RUN\n");
                     }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT007 */
+/*LDRA_ANALYSIS*/
 
                     if(STREAMING_EVENT==event.app_value)
                     {
