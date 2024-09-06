@@ -38,18 +38,18 @@ static vx_bool ownIsValidObject(vx_enum type)
     vx_bool status = (vx_bool)vx_false_e;
 
     if (((vx_enum)VX_TYPE_IMAGE == type) ||
-        ((vx_enum)VX_TYPE_ARRAY == type) ||
-        ((vx_enum)VX_TYPE_SCALAR == type) ||
-        ((vx_enum)VX_TYPE_DISTRIBUTION == type) ||
+        ((vx_enum)VX_TYPE_ARRAY == type) || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR001 */
+        ((vx_enum)VX_TYPE_SCALAR == type) || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR002 */
+        ((vx_enum)VX_TYPE_DISTRIBUTION == type) || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR003 */
         ((vx_enum)VX_TYPE_THRESHOLD == type) ||
         ((vx_enum)VX_TYPE_PYRAMID == type) ||
-        ((vx_enum)VX_TYPE_MATRIX == type) ||
-        ((vx_enum)VX_TYPE_REMAP == type)  ||
-        ((vx_enum)VX_TYPE_LUT == type) ||
+        ((vx_enum)VX_TYPE_MATRIX == type) || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR004 */
+        ((vx_enum)VX_TYPE_REMAP == type)  || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR005 */
+        ((vx_enum)VX_TYPE_LUT == type) || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR006 */
         ((vx_enum)VX_TYPE_OBJECT_ARRAY == type) ||
         ((vx_enum)VX_TYPE_CONVOLUTION == type) ||
-        (VX_TYPE_USER_DATA_OBJECT == type) ||
-        (TIVX_TYPE_RAW_IMAGE == type)
+        (VX_TYPE_USER_DATA_OBJECT == type) || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR007 */
+        (TIVX_TYPE_RAW_IMAGE == type) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR008 */
         )
     {
         status = (vx_bool)vx_true_e;
@@ -74,7 +74,7 @@ static tivx_delay_param_t *ownAllocDelayPrm(vx_delay delay)
     tivx_delay_param_t *prm = NULL;
     vx_uint32 i;
 
-    for(i=0; i<TIVX_DELAY_MAX_PRM_OBJECT; i++)
+    for(i=0; i<TIVX_DELAY_MAX_PRM_OBJECT; i++) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR009 */
     {
         if(delay->prm_pool[i].node==NULL)
         {
@@ -122,10 +122,10 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
         tivx_delay_param_t **ptr = &delay->set[idx].next;
         for(;;)
         {
-            if (*ptr == NULL)
+            if (*ptr == NULL) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR010 */
             {
                 *ptr = ownAllocDelayPrm(delay);
-                if (*ptr != NULL)
+                if (*ptr != NULL) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR011 */
                 {
                     (*ptr)->node = n;
                     (*ptr)->index = i;
@@ -138,7 +138,7 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
                 }
 #endif
                 break;
-            }
+            } /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR012 */
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM003 */
             else
@@ -149,7 +149,7 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
         } 
     }
 
-    if(status == (vx_bool)vx_true_e)
+    if(status == (vx_bool)vx_true_e) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR013 */
     {
         /* Increment a reference to the delay */
         (void)ownIncrementReference(vxCastRefFromDelay(delay), (vx_enum)VX_INTERNAL);
@@ -184,7 +184,8 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
         {
             if (*ptr != NULL)
             {
-                if ( ((*ptr)->node == n) && ((*ptr)->index == i) )
+                if ( ((*ptr)->node == n) && /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR014 */
+                ((*ptr)->index == i) ) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR015 */
                 {
                     next = (*ptr)->next;
                     ownFreeDelayPrm(*ptr);
@@ -205,10 +206,10 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
                 do_break = (vx_bool)vx_true_e;
             }
 
-            if ((vx_bool)vx_true_e == do_break)
+            if ((vx_bool)vx_true_e == do_break) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR016 */
             {
                 break;
-            }
+            } /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR017 */
         } 
     }
 
@@ -249,7 +250,8 @@ static vx_status ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
 {
     uint32_t i;
     vx_status status = (vx_status)VX_FAILURE;
-    if (tivxIsValidDelay(delay) && (delay->type == (vx_enum)VX_TYPE_PYRAMID) && (delay->pyr_num_levels > 0U) )
+    if (tivxIsValidDelay(delay) && /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR018 */
+    (delay->type == (vx_enum)VX_TYPE_PYRAMID) && (delay->pyr_num_levels > 0U) )
     {
         /* release pyramid delays */
         for (i = 0; i < delay->pyr_num_levels; i++)
@@ -266,7 +268,8 @@ static vx_status ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
         delay->pyr_num_levels = 0;
     }
 
-    if (tivxIsValidDelay(delay) && (delay->type == (vx_enum)VX_TYPE_OBJECT_ARRAY) && (delay->obj_arr_num_items > 0U) )
+    if (tivxIsValidDelay(delay) && /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR019 */
+    (delay->type == (vx_enum)VX_TYPE_OBJECT_ARRAY) && (delay->obj_arr_num_items > 0U) )
     {
         /* release object array delays */
         for (i = 0; i < delay->obj_arr_num_items; i++)
@@ -451,30 +454,31 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                         /*status set to NULL due to preceding type check*/
                         status = vxQueryObjectArray(vxCastRefAsObjectArray(exemplar, NULL), (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &num_items, sizeof(num_items));
                         delay->obj_arr_num_items = 0;
-                        if(status == (vx_status)VX_SUCCESS)
+                        if(status == (vx_status)VX_SUCCESS) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR020 */
                         {
                             /*status set to NULL due to preceding type check*/
                             status = vxQueryObjectArray(vxCastRefAsObjectArray(exemplar, NULL), (vx_enum)VX_OBJECT_ARRAY_ITEMTYPE, &item_type, sizeof(item_type));
-                            if ((vx_status)VX_SUCCESS == status)
+                            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR021 */
                             {
                                 for (item_idx = 0; item_idx < num_items; item_idx++)
                                 {
                                     ref = ownCreateReference(context, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, vxCastRefFromDelay(delay));
                                     /*status set to NULL due to preceding type check*/
                                     delay->obj_arr_delay[item_idx] = vxCastRefAsDelay(ref, NULL);
-                                    if ( (vxGetStatus(ref) == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)VX_TYPE_DELAY) )
+                                    if ( (vxGetStatus(ref) == (vx_status)VX_SUCCESS) && /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR022 */
+                                    (ref->type == (vx_enum)VX_TYPE_DELAY) ) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR023 */
                                     {
                                         /*status set to NULL due to preceding type check*/
                                         objarrdelay = vxCastRefAsDelay(ref, NULL);
                                         ownDelayInit(objarrdelay, count, item_type);
                                         for (i = 0; i < count; i++)
                                         {
-                                            if(delay->refs[i]->type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
+                                            if(delay->refs[i]->type == (vx_enum)VX_TYPE_OBJECT_ARRAY) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR024 */
                                             {
                                                 /*status set to NULL due to preceding type check*/
                                                 ref = (vx_reference)vxGetObjectArrayItem(vxCastRefAsObjectArray(delay->refs[i], NULL), (vx_uint32)item_idx);
 
-                                                if (NULL != ref)
+                                                if (NULL != ref) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR025 */
                                                 {
                                                     status = ownAddRefToDelay(objarrdelay, ref, i);
                                                 }
@@ -504,21 +508,22 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                         /*status set to NULL due to preceding type check*/
                         status = vxQueryPyramid(vxCastRefAsPyramid(exemplar, NULL), (vx_enum)VX_PYRAMID_LEVELS, &levels, sizeof(levels));
                         delay->pyr_num_levels = 0;
-                        if(status == (vx_status)VX_SUCCESS)
+                        if(status == (vx_status)VX_SUCCESS) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR026 */
                         {
                             for (level_idx = 0; level_idx < levels; level_idx++)
                             {
                                 ref = ownCreateReference(context, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, vxCastRefFromDelay(delay));
                                 /*status set to NULL due to preceding type check*/
                                 delay->pyr_delay[level_idx] = vxCastRefAsDelay(ref, NULL);
-                                if ( (vxGetStatus((ref)) == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)VX_TYPE_DELAY) )
+                                if ( (vxGetStatus((ref)) == (vx_status)VX_SUCCESS) && /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR027 */
+                                 (ref->type == (vx_enum)VX_TYPE_DELAY) ) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR028 */
                                 {
                                     /*status set to NULL due to preceding type check*/
                                     pyrdelay = vxCastRefAsDelay((ref), NULL);
                                     ownDelayInit(pyrdelay, count, (vx_enum)VX_TYPE_IMAGE);
                                     for (i = 0; i < count; i++)
                                     {
-                                        if(delay->refs[i]->type == (vx_enum)VX_TYPE_PYRAMID)
+                                        if(delay->refs[i]->type == (vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR029 */
                                         {
                                             /*status set to NULL due to preceding type check*/
                                             ref = vxCastRefFromImage(vxGetPyramidLevel(vxCastRefAsPyramid(delay->refs[i], NULL), (vx_uint32)level_idx));
@@ -658,7 +663,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
         switch (delay->type)
         {
             case (vx_enum)VX_TYPE_PYRAMID:
-                if (delay->pyr_num_levels > 0U)
+                if (delay->pyr_num_levels > 0U) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR030 */
                 {
                     /* age pyramid levels */
                     vx_int32 numLevels = (vx_int32)delay->pyr_num_levels;
@@ -670,7 +675,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
                 break;
 
             case (vx_enum)VX_TYPE_OBJECT_ARRAY:
-                if (delay->obj_arr_num_items > 0U)
+                if (delay->obj_arr_num_items > 0U) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR031 */
                 {
                      /* age object array levels */
                     vx_int32 numLevels = (vx_int32)delay->obj_arr_num_items;
@@ -700,7 +705,7 @@ static vx_status ownAgeDelay(vx_delay delay)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (tivxIsValidDelay(delay))
+    if (tivxIsValidDelay(delay)) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR032 */
     {
         vx_int32 i,j;
 
