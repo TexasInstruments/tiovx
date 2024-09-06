@@ -37,7 +37,6 @@ TESTCASE(tivxInternalImage)
 TESTCASE(tivxInternalArray)
 TESTCASE(tivxInternalLUT)
 TESTCASE(tivxInternalMatrix)
-TESTCASE(tivxDmaHeap)
 #if defined(A72) || defined(A53) || defined(PC)
 TESTCASE(tivxPosixObjects)
 #endif
@@ -48,6 +47,7 @@ TESTCASE(tivxInternalEventQueue)
 TESTCASE(tivxInternalReference)
 
 #if defined(A72) || defined(A53)
+TESTCASE(tivxDmaHeap)
 TESTCASE(tivxTimer)
 #endif
 

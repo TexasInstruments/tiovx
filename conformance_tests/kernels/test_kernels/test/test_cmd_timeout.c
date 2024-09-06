@@ -805,7 +805,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCreateFail, TestArg, TEST_PARAMS)
     }
 
     /* Update the node timeout value to something that will now pass. */
-    vxSetTimeoutVal = 5;
+    vxSetTimeoutVal = 8;
 
     /* Set a valid timeout attribute.  */
     vxStatus = vxSetNodeAttribute(objCntxt.vxCmdTestNode, TIVX_NODE_TIMEOUT,
