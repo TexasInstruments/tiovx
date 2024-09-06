@@ -1768,6 +1768,23 @@ static vx_status tivxNegativeTestTargetPlatformCreateTargetId(uint8_t id)
 
     return status;
 }
+
+static vx_status tivxAppIpcIsCpuEnabled(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t cpu_id = APP_IPC_CPU_MAX;
+
+    /* '0' in this case is failure */
+    if ((uint32_t)0 != appIpcIsCpuEnabled(cpu_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for cpu_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
 #endif
 
 static vx_status tivxNegativeTestTargetTaskSetDefaultCreateParams(uint8_t id)
@@ -1816,23 +1833,6 @@ static vx_status tivxNegativeTestTargetTaskCreate(uint8_t id)
     if((vx_status)VX_FAILURE != tivxTaskCreate(&task, NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' params\n");
-        status = (vx_status)VX_FAILURE;
-    }
-
-    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
-
-    return status;
-}
-
-static vx_status tivxAppIpcIsCpuEnabled(uint8_t id)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-    uint32_t cpu_id = APP_IPC_CPU_MAX;
-
-    /* '0' in this case is failure */
-    if ((uint32_t)0 != appIpcIsCpuEnabled(cpu_id))
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for cpu_id\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -3212,11 +3212,11 @@ FuncInfo arrOfFuncs[] = {
     #ifndef PC
     {tivxNegativeTestTargetPlatformDeleteTargetId, "", VX_SUCCESS},
     {tivxNegativeTestTargetPlatformCreateTargetId, "", VX_SUCCESS},
+    {tivxAppIpcIsCpuEnabled, "", VX_SUCCESS},
     #endif
     {tivxNegativeTestTargetTaskSetDefaultCreateParams, "", VX_SUCCESS},
     {tivxNegativeTestTargetTaskDelete, "", VX_SUCCESS},
     {tivxNegativeTestTargetTaskCreate, "", VX_SUCCESS},
-    {tivxAppIpcIsCpuEnabled, "", VX_SUCCESS},
     #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
     {tivxAppMemPrintMemAllocInfo, "", VX_SUCCESS},
     {tivxAppMemGetNumAllocs, "", VX_SUCCESS},
