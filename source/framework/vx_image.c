@@ -2369,6 +2369,8 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
     while (0U < stack_pointer)
     {
         stack_pointer--;
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1881- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UTJT001 */
         /* this should not happen as the max depth for subimages is fixed */
         if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
         {
@@ -2377,6 +2379,8 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
             break;
         }
         else
+/* END: TIOVX_CODE_COVERAGE_IMAGE_UTJT001 */
+#endif
         {
             next_image = image_arr[stack_pointer];
 
@@ -2404,6 +2408,8 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
 
                     if (subimage != NULL)
                     {
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1881- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UTJT002 */
                         /* this should not happen as the max depth for subimages is fixed */
                         if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
                         {
@@ -2412,6 +2418,8 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
                             break;
                         }
                         else
+/* END: TIOVX_CODE_COVERAGE_IMAGE_UTJT002 */
+#endif
                         {
                             vx_uint8* ptrs[TIVX_IMAGE_MAX_PLANES] = {NULL};
 
@@ -2465,10 +2473,14 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
                     }
                 }
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1881- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UTJT003 */
             else
             {
                 break;
             }
+/* END: TIOVX_CODE_COVERAGE_IMAGE_UTJT003 */
+#endif
         }
     }
 
