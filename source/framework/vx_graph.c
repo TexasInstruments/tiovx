@@ -27,7 +27,7 @@ static vx_status ownDestructGraph(vx_reference ref)
     vx_status status1 = (vx_status)VX_SUCCESS;
     vx_graph graph = NULL;
 
-    if (ref->type == (vx_enum)VX_TYPE_GRAPH)
+    if (ref->type == (vx_enum)VX_TYPE_GRAPH) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR001 */
     {
         /* status set to NULL due to preceding type check */
         graph = vxCastRefAsGraph(ref, NULL);
@@ -69,7 +69,7 @@ static vx_status ownDestructGraph(vx_reference ref)
             }
             for(i=0; i<graph->num_data_ref_q; i++)
             {
-                if(graph->data_ref_q_list[i].data_ref_queue != NULL)
+                if(graph->data_ref_q_list[i].data_ref_queue != NULL) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR002 */
                 {
                     status1 = ownDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -115,7 +115,7 @@ static vx_status ownDestructGraph(vx_reference ref)
             }
             for(i=0; i<graph->num_delay_data_ref_q; i++)
             {
-                if(graph->delay_data_ref_q_list[i].data_ref_queue != NULL)
+                if(graph->delay_data_ref_q_list[i].data_ref_queue != NULL) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR003 */
                 {
                     status1 = ownDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -182,7 +182,7 @@ static vx_status ownDestructGraph(vx_reference ref)
             status = status1;
         }
 #endif
-        if(NULL != graph->all_graph_completed_event)
+        if(NULL != graph->all_graph_completed_event) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR004 */
         {
             status1 = tivxEventDelete(&graph->all_graph_completed_event);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -202,7 +202,8 @@ static vx_status ownResetGraphPerf(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), 
+    (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR005 */
     {
         graph->perf.tmp = 0;
         graph->perf.beg = 0;
@@ -378,7 +379,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
             }
         }
 
-        for(i=0; i < graph->num_nodes; i++)
+        for(i=0; i < graph->num_nodes; i++) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR006 */
         {
             if(node==graph->nodes[i])
             {
@@ -493,7 +494,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->state = (vx_enum)VX_GRAPH_STATE_UNVERIFIED;
 
             status = tivxEventCreate(&graph->all_graph_completed_event);
-            if(status==(vx_status)VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR007 */
             {
                 status = ownGraphCreateQueues(graph);
             }
@@ -889,12 +890,12 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
 /*LDRA_ANALYSIS*/
         }
         else
-        if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
+        if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) && /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR008 */
             ((vx_bool)vx_false_e == graph->is_streaming_enabled) )
         {
             uint32_t num_schedule = ownGraphGetNumSchedule(graph);
 
-            if(num_schedule>0U)
+            if(num_schedule>0U) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR009 */
             {
                 /* schedule graph 'num_schedule' times */
                 /* void is added as it returns always success for
@@ -904,8 +905,8 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
             }
         }
         else
-        if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
-            ((vx_bool)vx_true_e == graph->is_streaming_enabled) )
+        if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) && /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR010 */
+            ((vx_bool)vx_true_e == graph->is_streaming_enabled) ) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR011 */
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "manual mode is not allowed with streaming enabled\n");
