@@ -413,7 +413,7 @@ static vx_reference ownCreateConvolutionFromExemplar(
     tivxCheckStatus(&status, vxQueryConvolution(exemplar, (vx_enum)VX_CONVOLUTION_COLUMNS, &columns,
         sizeof(columns)));
 
-    if ((vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1889- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EXEMPLAR_UBR001 */
     {
         conv = vxCreateConvolution(context, columns, rows);
     }
@@ -475,7 +475,7 @@ static vx_reference ownCreateTensorFromExemplar(
     tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)VX_TENSOR_DATA_TYPE, &type, sizeof(type)));
     tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)VX_TENSOR_FIXED_POINT_POSITION, &fixed, sizeof(fixed)));
 
-    if ((vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1889- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EXEMPLAR_UBR002 */
     {
         tensor = vxCreateTensor(context, num_dims, dims, type, fixed);
     }
