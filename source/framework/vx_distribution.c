@@ -23,7 +23,6 @@ VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(
 {
     vx_distribution dist = NULL;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -48,11 +47,7 @@ VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(
                     (vx_enum)TIVX_OBJ_DESC_DISTRIBUTION, vxCastRefFromDistribution(dist));
                 if(obj_desc==NULL)
                 {
-                    status = vxReleaseDistribution(&dist);
-                    if((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to distribution object\n");
-                    }
+                    (void)vxReleaseDistribution(&dist);
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate dist object descriptor\n");
