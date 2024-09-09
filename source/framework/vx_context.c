@@ -1067,18 +1067,20 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                     }
                 }
 
-/*LDRA_NOANALYSIS*/
-/* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT003 */
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"context objection creation failed\n");
 
                     status = ownEventQueueDelete(&context->event_queue);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT008 */
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to delete Event Queue\n");
                     }
                     else
+/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT008 */
+#endif
                     {
                         status = tivxMutexDelete(&context->lock);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -1101,9 +1103,6 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                         }
                     }
                 }
-/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT003 */
-/*LDRA_ANALYSIS*/
-
             }
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM009 */
