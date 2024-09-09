@@ -300,10 +300,21 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
     vx_status status = (vx_status)VX_SUCCESS;
     uint64_t phys = 0;
 
-    status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
-    if(status == (vx_status)VX_SUCCESS)
+    if(vx_true_e == tivxMemRegionQuery(mem_heap_region))
     {
-        phys = appMemGetVirt2PhyBufPtr(host_ptr, heap_id);
+        status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
+        if(status == (vx_status)VX_SUCCESS)
+        {
+            phys = appMemGetVirt2PhyBufPtr(host_ptr, heap_id);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Invalid memory block\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid mem_heap_region %d\n", mem_heap_region);
     }
     return phys;
 }
@@ -323,10 +334,21 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
     vx_status status = (vx_status)VX_SUCCESS;
     uint64_t phys = 0;
 
-    status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
-    if(status == (vx_status)VX_SUCCESS)
+    if(vx_true_e == tivxMemRegionQuery(mem_heap_region))
     {
-        phys = appMemShared2PhysPtr(shared_ptr, heap_id);
+        status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
+        if(status == (vx_status)VX_SUCCESS)
+        {
+            phys = appMemShared2PhysPtr(shared_ptr, heap_id);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Invalid memory block\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid mem_heap_region %d\n", mem_heap_region);
     }
     return phys;
 }
