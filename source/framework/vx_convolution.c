@@ -54,11 +54,7 @@ VX_API_ENTRY vx_convolution VX_API_CALL vxCreateConvolution(
                     (vx_enum)TIVX_OBJ_DESC_CONVOLUTION, vxCastRefFromConvolution(cnvl));
                 if(obj_desc==NULL)
                 {
-                    status = vxReleaseConvolution(&cnvl);
-                    if((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to convolution matrix object\n");
-                    }
+                    (void)vxReleaseConvolution(&cnvl);
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate cnvl object descriptor\n");
