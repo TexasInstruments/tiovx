@@ -1072,24 +1072,33 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"context objection creation failed\n");
-                    status = tivxMutexDelete(&context->lock);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM002 */
+
+                    status = ownEventQueueDelete(&context->event_queue);
                     if((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
+                        VX_PRINT(VX_ZONE_ERROR,"Failed to delete Event Queue\n");
                     }
                     else
-#endif
                     {
-                        status = tivxMutexDelete(&context->log_lock);
+                        status = tivxMutexDelete(&context->lock);
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM003 */
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM002 */
                         if((vx_status)VX_SUCCESS != status)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
                         }
+                        else
 #endif
+                        {
+                            status = tivxMutexDelete(&context->log_lock);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM003 */
+                            if((vx_status)VX_SUCCESS != status)
+                            {
+                                VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
+                            }
+#endif
+                        }
                     }
                 }
 /* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT003 */

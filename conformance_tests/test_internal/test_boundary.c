@@ -367,8 +367,8 @@ TESTCASE_TESTS(tivxObjDescBoundary,
         negativeBoundaryThreshold,
 #if !defined(R5F) /* Not R5F */
         negativeBoundaryTestownContextCreateCmdObj,
-        DISABLED_negativeBoundaryTestownContextCreateCmdObj1,
+        negativeBoundaryTestownContextCreateCmdObj1,
 #endif  /* Not R5F */
-        DISABLED_negativeBoundaryTestownContextCreateCmdObj2,
+        negativeBoundaryTestownContextCreateCmdObj2,
         testownContextFlushCmdPendQueue
         )
