@@ -73,7 +73,7 @@ vx_status ownEventQueueCreate(tivx_event_queue_t *event_q)
     status = tivxQueueCreate(&event_q->free_queue,
                 TIVX_EVENT_QUEUE_MAX_SIZE, event_q->free_queue_memory, 0 /* non-blocking */
         );
-    if(status==(vx_status)VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS) /* TIOVX-1887- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR001 */
     {
         status = tivxQueueCreate(&event_q->ready_queue,
                 TIVX_EVENT_QUEUE_MAX_SIZE, event_q->ready_queue_memory,
@@ -152,7 +152,8 @@ vx_status ownEventQueueAddEvent(tivx_event_queue_t *event_q,
 {
     vx_status status = (vx_status)VX_FAILURE;
 
-    if((event_q != NULL) && (event_q->enable == (vx_bool)vx_true_e))
+    if((event_q != NULL) && /* TIOVX-1887- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR002 */
+    (event_q->enable == (vx_bool)vx_true_e))
     {
         uintptr_t idx;
 
@@ -172,7 +173,7 @@ vx_status ownEventQueueAddEvent(tivx_event_queue_t *event_q,
 
             status = tivxQueuePut(&event_q->ready_queue, idx, TIVX_EVENT_TIMEOUT_NO_WAIT);
 
-            if ((vx_status)VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1887- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR003 */
             {
                 ownLogSetResourceUsedValue("TIVX_EVENT_QUEUE_MAX_SIZE", (vx_uint16)idx+1U);
             }
@@ -316,7 +317,7 @@ vx_status vxWaitEventQueue(
                 event->event_info.node_error.status = (vx_status)elem->param3;
             }
             else
-            if(elem->event_id==(vx_enum)VX_EVENT_USER)
+            if(elem->event_id==(vx_enum)VX_EVENT_USER) /* TIOVX-1887- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR004 */
             {
                 event->app_value = (uint32_t)elem->param1;
                 event->event_info.user_event.user_event_parameter = (void*)elem->param2;
@@ -356,7 +357,7 @@ vx_status ownRegisterEvent(vx_reference ref,
 
     if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
-        if( ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_COMPLETED) ||
+        if( ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_COMPLETED) || /* TIOVX-1887- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR005 */
             ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_ERROR) )
         {
             /*status set to NULL due to preceding type check*/
