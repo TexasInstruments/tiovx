@@ -160,7 +160,7 @@ VX_API_ENTRY vx_pyramid VX_API_CALL vxCreatePyramid(
                     {
                         status = vxReleasePyramid(&prmd);
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM001 */
+/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM001 */
                         if((vx_status)VX_SUCCESS != status)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
@@ -450,7 +450,7 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
                     }
                 }
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM006 */
+/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM005 */
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Image level %d is NULL\n", i);
@@ -465,7 +465,7 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
             }
         }
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM002 */
+/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM002 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Pyramid base object descriptor is NULL\n");
@@ -474,7 +474,7 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
 #endif
     }
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM003 */
+/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM003 */
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Reference type is not pyramid\n");
@@ -519,7 +519,7 @@ static vx_status ownDestructPyramid(vx_reference ref)
                     status = ownReleaseReferenceInt(vxCastRefFromImageP(&prmd->img[i]),
                             (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM004 */
+/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM004 */
                     if ((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Pyramid level %d release failed\n", i);
@@ -608,7 +608,7 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
     }
 
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM007 */
+/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM006 */
     if ((vx_status)VX_SUCCESS != status)
     {
         for (j = 0; j < i; j ++)
