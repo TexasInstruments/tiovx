@@ -120,7 +120,11 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
     else
     {
         tivx_delay_param_t **ptr = &delay->set[idx].next;
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1877: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UTJT001 */
         for(;;)
+/* END: TIOVX_CODE_COVERAGE_DELAY_UTJT001 */
+#endif
         {
             if (*ptr == NULL) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR010 */
             {
@@ -137,7 +141,11 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
                     status = (vx_bool)vx_false_e;
                 }
 #endif
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1877: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UTJT001 */
                 break;
+/* END: TIOVX_CODE_COVERAGE_DELAY_UTJT001 */
+#endif
             }
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM003 */
@@ -180,7 +188,11 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
         tivx_delay_param_t **ptr = &delay->set[idx].next;
         tivx_delay_param_t *next = NULL;
         do_break = (vx_bool)vx_false_e;
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1877: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UTJT002 */
         for(;;)
+/* END: TIOVX_CODE_COVERAGE_DELAY_UTJT002 */
+#endif
         {
             if (*ptr != NULL)
             {
@@ -206,10 +218,14 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
                 do_break = (vx_bool)vx_true_e;
             }
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1877: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UTJT002 */
             if ((vx_bool)vx_true_e == do_break)
             {
                 break;
             }
+/* END: TIOVX_CODE_COVERAGE_DELAY_UTJT002 */
+#endif
         } 
     }
 
