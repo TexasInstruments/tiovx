@@ -181,7 +181,6 @@ typedef struct {
 } Arg;
 
 #define STREAMING_PARAMETERS \
-    CT_GENERATE_PARAMETERS("streaming", ADD_SET_TARGET_PARAMETERS, ARG, 100), \
     CT_GENERATE_PARAMETERS("streaming", ADD_SET_TARGET_PARAMETERS, ARG, 1000)
 
 int test = 0;
@@ -2320,6 +2319,49 @@ TEST_WITH_ARG(tivxSourceNode, testPipeliningStreaming3, Pipeline_Arg, PARAMETERS
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+TEST_WITH_ARG(tivxSourceNode, testIntermediateNodeErrorInject, Arg, STREAMING_PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_node n1;
+
+    uint32_t pipeline_depth, num_buf;
+    uint64_t exe_time;
+    uint32_t num_streams = 0;
+    vx_uint8  scalar_val = 10;
+    vx_scalar scalar, scalar_out;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(scalar_out = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(n1 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxVerifyGraph(graph));
+
+    scalar_val = 200;
+    VX_CALL(vxCopyScalar(scalar, &scalar_val, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    scalar_val = 30;
+    VX_CALL(vxCopyScalar(scalar, &scalar_val, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseScalar(&scalar_out));
+    VX_CALL(vxReleaseScalar(&scalar));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxReleaseGraph(&graph));
+    tivxTestKernelsUnLoadKernels(context);
+}
+
 /*
  * Test for TIOVX-1002
  * Calling load kernels and having the garbage collection perform the remove kernels
@@ -2361,5 +2403,6 @@ TESTCASE_TESTS(tivxSourceNode,
                testPipeliningStreaming1,
                testPipeliningStreaming2,
                testPipeliningStreaming3,
+               testIntermediateNodeErrorInject,
                testContextRelease)
 
