@@ -95,9 +95,53 @@ TEST(tivxInternalGraphPipeline, negativeTestSetGraphScheduleConfig)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+TEST(tivxInternalGraphPipeline, negativeTestownGraphPipeDepthBoundary)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+
+    node->node_depth = TIVX_GRAPH_MAX_PIPELINE_DEPTH;
+    graph->is_pipeline_depth_set = vx_false_e;
+    graph->leaf_nodes[0] = node;
+    
+    /*To hit 'pipe_depth >= TIVX_GRAPH_MAX_PIPELINE_DEPTH' condition*/
+    ASSERT((int32_t)TIVX_GRAPH_MAX_PIPELINE_DEPTH-1 == ownGraphGetPipeDepth(graph));
+
+    graph->leaf_nodes[0] = NULL;
+    node->node_depth = 1;
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseKernel(&kernel));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalGraphPipeline, negativeTestownGraphGetNumSchedule)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    uint32_t num_schedule = 0;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* To hit condition 'min_count == (uint32_t)-1' inside ownGraphGetNumSchedule()*/
+    graph -> schedule_mode = ( vx_enum ) VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL;
+    ASSERT(num_schedule == ownGraphGetNumSchedule(graph));
+
+    graph->schedule_mode = (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL;
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxInternalGraphPipeline,
     negativeTestownCheckGraphCompleted,
     negativeTestGraphParameterEnqueueReadyRef,
     negativeTestownGraphAllocAndEnqueueObjDescForPipeline,
-    negativeTestSetGraphScheduleConfig
+    negativeTestSetGraphScheduleConfig,
+    negativeTestownGraphPipeDepthBoundary,
+    negativeTestownGraphGetNumSchedule
     )
