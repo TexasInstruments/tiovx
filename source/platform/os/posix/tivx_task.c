@@ -226,7 +226,7 @@ vx_status tivxTaskDelete(tivx_task *task)
 
 void tivxTaskWaitMsecs(uint32_t msec)
 {
-#if _POSIX_C_SOURCE >= 199309L
+#if defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 199309L)
     struct timespec delay_time = {0}, remain_time = {0};
     int ret;
 
@@ -253,7 +253,7 @@ void tivxTaskWaitMsecs(uint32_t msec)
     } while(true);
 #endif
 #else
-    usleep(msec * 1000);
+    (void)usleep(msec * 1000U);
 #endif
 }
 

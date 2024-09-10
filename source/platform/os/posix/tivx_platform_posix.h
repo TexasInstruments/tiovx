@@ -66,7 +66,7 @@
 #include <vx_internal.h>
 #include <pthread.h>
 
-#if _POSIX_C_SOURCE >= 199309L
+#if defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 199309L)
 #include <time.h>   /* for nanosleep */
 
 int nanosleep(const struct timespec *req, struct timespec *rem);
