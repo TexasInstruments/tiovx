@@ -919,18 +919,22 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
                     {
                         if ( (NULL != node->parameters[i]) && (NULL != prm_ref[i]) )
                         {
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT010 */
                             if((node->parameters[i]->type) != (prm_ref[i]->type) )
                             {
                                 VX_PRINT(VX_ZONE_WARNING, "node %s param index %d not match, expect type %d, get %d \n", node->base.name, i, node->parameters[i]->type, prm_ref[i]->type );
                                 if(prm_ref[i]->scope != NULL)
                                 {
-                                    if( (prm_ref[i]->scope->obj_desc != NULL) && 
+                                    if( (prm_ref[i]->scope->obj_desc != NULL) &&
                                         (prm_ref[i]->scope->type == node->parameters[i]->type) )
                                     {
                                         prm_ref[i] = prm_ref[i]->scope;
                                     }
                                 }
                             }
+/* END: TIOVX_CODE_COVERAGE_NODE_UTJT010 */
+/*LDRA_ANALYSIS*/
                         }
                     }
 
