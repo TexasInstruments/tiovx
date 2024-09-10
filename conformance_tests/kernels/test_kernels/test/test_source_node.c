@@ -1447,6 +1447,8 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourceSinkPipeline, Arg, STREAMING_PARAMETE
     uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt;
     vx_node n1, n2;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
+    vx_uint32 pipeup_depth = 1, query_pipeup_depth = 0;
+    vx_kernel kernel;
 
     /* Setting to num buf of capture node */
     num_buf = 4;
@@ -1484,6 +1486,22 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourceSinkPipeline, Arg, STREAMING_PARAMETE
 
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
+
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByName(context, TIVX_KERNEL_SCALAR_SOURCE2_NAME), VX_TYPE_KERNEL);
+
+    VX_CALL(vxSetKernelAttribute(kernel, VX_KERNEL_PIPEUP_OUTPUT_DEPTH, &pipeup_depth, sizeof(pipeup_depth)));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryKernel(kernel, VX_KERNEL_PIPEUP_OUTPUT_DEPTH, &query_pipeup_depth, sizeof(vx_uint32)));
+
+    ASSERT(pipeup_depth==query_pipeup_depth);
+
+    pipeup_depth = 2;
+
+    VX_CALL(vxSetKernelAttribute(kernel, VX_KERNEL_PIPEUP_OUTPUT_DEPTH, &pipeup_depth, sizeof(pipeup_depth)));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryKernel(kernel, VX_KERNEL_PIPEUP_OUTPUT_DEPTH, &query_pipeup_depth, sizeof(vx_uint32)));
+
+    VX_CALL(vxReleaseKernel(&kernel));
 
     VX_CALL(vxVerifyGraph(graph));
 
