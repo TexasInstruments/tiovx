@@ -507,10 +507,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
                 }
 /* END: TIOVX_CODE_COVERAGE_KERNEL_UTJT003 */
 /*LDRA_ANALYSIS*/
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT006 */
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     break;
                 }
+/* END: TIOVX_CODE_COVERAGE_KERNEL_UTJT006 */
+/*LDRA_ANALYSIS*/
             }
             if (status == (vx_status)VX_SUCCESS)
             {
