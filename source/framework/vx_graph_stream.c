@@ -46,7 +46,7 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 
     while((vx_bool)vx_false_e == done)
     {
-        if((vx_status)VX_SUCCESS == tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e))
+        if((vx_status)VX_SUCCESS == tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e)) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR001 */
         {
             switch (state)
             {
@@ -202,7 +202,7 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 
     while((vx_bool)vx_false_e == done)
     {
-        if((vx_status)VX_SUCCESS == tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e))
+        if((vx_status)VX_SUCCESS == tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e)) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR002 */
         {
             switch (state)
             {
@@ -212,7 +212,7 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
                         VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
                         state = RUNNING;
                         /* Execute graph then trigger another graph execution */
-                        if ((vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode)
+                        if ((vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR003 */
                         {
                             graph->streaming_executions++;
                             status = ownGraphScheduleGraphWrapper(graph);
@@ -530,7 +530,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
 
             status = ownEventQueueCreate(&graph->event_queue);
 
-            if ((vx_status)VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR004 */
             {
                 ownEventQueueEnableEvents(&graph->event_queue, (vx_bool)vx_true_e);
 
@@ -569,11 +569,11 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                 {
                     status = tivxEventCreate(&graph->delete_done);
 
-                    if ((vx_status)VX_SUCCESS == status)
+                    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR005 */
                     {
                         status = tivxEventCreate(&graph->stop_done);
 
-                        if ((vx_status)VX_SUCCESS == status)
+                        if ((vx_status)VX_SUCCESS == status) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR006 */
                         {
                             status = tivxTaskCreate(&graph->streaming_task_handle, &streamingTaskParams);
 
@@ -653,7 +653,7 @@ vx_status ownGraphFreeStreaming(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
     vx_status tmp_status = (vx_status)VX_SUCCESS;
 
-    if (NULL != graph->delete_done)
+    if (NULL != graph->delete_done) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR007 */
     {
         /* Clear event and send user event */
         tmp_status = tivxEventClear(graph->delete_done);
@@ -677,7 +677,7 @@ vx_status ownGraphFreeStreaming(vx_graph graph)
     }
 #endif
 
-    if (NULL != graph->delete_done)
+    if (NULL != graph->delete_done) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR008 */
     {
         tmp_status = tivxEventWait(graph->delete_done, graph->timeout_val);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -702,7 +702,7 @@ vx_status ownGraphFreeStreaming(vx_graph graph)
     }
 #endif
 
-    if (NULL != graph->stop_done)
+    if (NULL != graph->stop_done) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR009 */
     {
         tmp_status = tivxEventDelete(&graph->stop_done);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -716,7 +716,7 @@ vx_status ownGraphFreeStreaming(vx_graph graph)
     }
 
 
-    if (NULL != graph->delete_done)
+    if (NULL != graph->delete_done) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR010 */
     {
         tmp_status = tivxEventDelete(&graph->delete_done);
 #ifdef LDRA_UNTESTABLE_CODE
