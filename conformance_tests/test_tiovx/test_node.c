@@ -189,11 +189,14 @@ TEST(tivxNode, negativeTestReplicateNode)
 {
     vx_context context = context_->vx_context_;
 
-    vx_node node = NULL;
+    vx_node node = NULL, node1 = NULL;
     vx_graph graph1 = NULL, graph2 = NULL;
     vx_kernel kernel = NULL;
     vx_bool replicate[2] = {vx_false_e, vx_false_e};
     vx_uint32 nop = 0;
+
+    vx_image src, dst;
+    vx_uint32 width = 16, height = 9;
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxReplicateNode(graph1, node, replicate, nop));
     ASSERT_VX_OBJECT(graph1 = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -209,7 +212,18 @@ TEST(tivxNode, negativeTestReplicateNode)
     vx_bool replicate2[2] = {vx_true_e, vx_true_e};
     ASSERT_EQ_VX_STATUS(VX_FAILURE, vxReplicateNode(graph1, node, replicate2, nop));
 
+    nop = 2;
+    ASSERT_VX_OBJECT(src = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst = vxCreateImage(context, width, height, VX_DF_IMAGE_UYVY), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(node1 = vxColorConvertNode(graph1, src, dst), VX_TYPE_NODE);
+
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxReplicateNode(graph1, node1, replicate2, nop));
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseImage(&dst));
     VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseKernel(&kernel));
     VX_CALL(vxReleaseGraph(&graph2));
     VX_CALL(vxReleaseGraph(&graph1));
