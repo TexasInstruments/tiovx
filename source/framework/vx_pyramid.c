@@ -128,7 +128,7 @@ VX_API_ENTRY vx_pyramid VX_API_CALL vxCreatePyramid(
                     (vx_enum)TIVX_OBJ_DESC_PYRAMID, vxCastRefFromPyramid(prmd));
                 if(obj_desc==NULL)
                 {
-                    if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd))
+                    if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd)) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR001 */
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
                     }
@@ -199,8 +199,9 @@ VX_API_ENTRY vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 i
     }
     else
     {
-        if ((ownIsValidSpecificReference(vxCastRefFromPyramid(prmd), (vx_enum)VX_TYPE_PYRAMID) ==
-                (vx_bool)vx_true_e) && (prmd->base.obj_desc != NULL) &&
+        if ((ownIsValidSpecificReference(vxCastRefFromPyramid(prmd),
+            (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e) && /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR002 */
+            (prmd->base.obj_desc != NULL) && /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR003 */
             (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->
                 num_levels))
         {
@@ -265,7 +266,7 @@ VX_API_ENTRY vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
                 (vx_enum)TIVX_OBJ_DESC_PYRAMID, vxCastRefFromPyramid(prmd));
             if(obj_desc==NULL)
             {
-                if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd))
+                if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd)) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR004 */
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
                 }
@@ -326,7 +327,7 @@ vx_status ownInitVirtualPyramid(
         obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
 
         if ((width > 0U) &&
-            (height > 0U) &&
+            (height > 0U) && /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR005 */
             (prmd->base.is_virtual == (vx_bool)vx_true_e))
         {
             obj_desc->width = width;
@@ -429,18 +430,19 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
     vx_image img;
 
-    if(ref->type == (vx_enum)VX_TYPE_PYRAMID)
+    if(ref->type == (vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR006 */
     {
         /* status set to NULL due to preceding type check */
         vx_pyramid prmd = vxCastRefAsPyramid(ref, NULL);
-        if(prmd->base.obj_desc != NULL)
+        if(prmd->base.obj_desc != NULL) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR007 */
         {
             obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
             for (i = 0u; i < obj_desc->num_levels; i++)
             {
                 img = prmd->img[i];
 
-                if ((NULL != img) && (NULL != img->base.mem_alloc_callback))
+                if ((NULL != img) && /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR008 */
+                (NULL != img->base.mem_alloc_callback)) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR009 */
                 {
                     status = img->base.mem_alloc_callback(vxCastRefFromImage(img));
 
@@ -491,7 +493,7 @@ static vx_status ownDestructPyramid(vx_reference ref)
     vx_uint32 i = 0;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
-    if(ref->type == (vx_enum)VX_TYPE_PYRAMID)
+    if(ref->type == (vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR010 */
     {
         /* status set to NULL due to preceding type check */
         vx_pyramid prmd = vxCastRefAsPyramid(ref, NULL);
@@ -529,7 +531,7 @@ static vx_status ownDestructPyramid(vx_reference ref)
                 }
             }
         }
-        if(prmd->base.type == (vx_enum)VX_TYPE_PYRAMID)
+        if(prmd->base.type == (vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR011 */
         {
             if(prmd->base.obj_desc!=NULL)
             {
