@@ -187,12 +187,15 @@ static vx_status ownContextCreateCmdObj(vx_context context)
                     }
 #endif
                 }
-
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT009 */
                 if (context->cmd_ack_event[i] != NULL)
                 {
                     /* Error status check is not done due to the previous check */
                     (void)tivxEventDelete(&context->cmd_ack_event[i]);
                 }
+/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT009 */
+/*LDRA_ANALYSIS*/
             }
 
             /* Delete the queues. No error checks are being made since we know
