@@ -125,6 +125,11 @@ extern "C" {
  */
 #define TIVX_KERNEL_SCALAR_INTERMEDIATE_NAME     "com.ti.capture.scalar_intermediate"
 
+/*! \brief image_intermediate kernel name
+ *  \see group_vision_function_capture
+ */
+#define TIVX_KERNEL_IMAGE_INTERMEDIATE_NAME     "com.ti.capture.image_intermediate"
+
 /*! \brief Scalar intermediate replicate query
  *  \see group_vision_function_capture
  */

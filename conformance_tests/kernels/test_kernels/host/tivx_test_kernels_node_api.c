@@ -145,6 +145,22 @@ VX_API_ENTRY vx_node VX_API_CALL tivxScalarIntermediateNode(vx_graph graph,
                                            dimof(prms));
     return node;
 }
+
+VX_API_ENTRY vx_node VX_API_CALL tivxImageIntermediateNode(vx_graph graph,
+                                      vx_image            in,
+                                      vx_image            out)
+{
+    vx_reference prms[] = {
+            (vx_reference)in,
+            (vx_reference)out
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_IMAGE_INTERMEDIATE_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
 VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceErrorNode(vx_graph graph,
                                       vx_scalar            out)
 {

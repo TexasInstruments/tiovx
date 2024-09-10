@@ -160,6 +160,19 @@ VX_API_ENTRY vx_node VX_API_CALL tivxScalarIntermediateNode(vx_graph graph,
                                       vx_scalar            in,
                                       vx_scalar            out);
 
+/*! \brief [Graph] Creates an IMAGE_INTERMEDIATE Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] in
+ * \param [out] out
+ * \see <tt>TIVX_KERNEL_IMAGE_INTERMEDIATE_NAME</tt>
+ * \ingroup group_vision_function_scalar_intermediate
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxImageIntermediateNode(vx_graph graph,
+                                      vx_image            in,
+                                      vx_image            out);
+
 #ifdef __cplusplus
 }
 #endif

@@ -2380,6 +2380,132 @@ TEST_WITH_ARG(tivxSourceNode, testIntermediateNodeErrorInject, Arg, STREAMING_PA
     tivxTestKernelsUnLoadKernels(context);
 }
 
+static void own_image_patch_from_ct_image_u8(CT_Image ref, vx_imagepatch_addressing_t* ref_addr, void** ref_ptrs, vx_df_image format)
+{
+    switch (format)
+    {
+    case VX_DF_IMAGE_U8:
+    {
+        ref_addr[0].dim_x   = ref->width;
+        ref_addr[0].dim_y   = ref->height;
+        ref_addr[0].stride_x = sizeof(vx_uint8);
+        ref_addr[0].stride_y = ref->stride * sizeof(vx_uint8);
+
+        ref_ptrs[0] = ref->data.y;
+    }
+    break;
+
+    default:
+        FAIL("unexpected image format: (%.4s)", format);
+        break;
+    } /* switch format */
+
+    return;
+} /* own_image_patch_from_ct_image_u8() */
+
+static CT_Image own_generate_rand_image(const char* fileName, int width, int height, vx_df_image format)
+{
+    CT_Image image;
+
+    ASSERT_NO_FAILURE_(return 0,
+        image = ct_allocate_ct_image_random(width, height, format, &CT()->seed_, 0, 256));
+
+    return image;
+} /* own_generate_rand_image() */
+
+TEST_WITH_ARG(tivxSourceNode, testIntermediateNodePyramidReplicate, Arg, STREAMING_PARAMETERS)
+{
+    #define PYRAMID_LEVELS 4
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_image  img_in, img_out, in_img_level, out_img_level;
+    vx_node n1;
+    vx_pyramid pyramid_source, pyramid_sink;
+    vx_bool prms_replicate[] =
+        {vx_true_e, vx_true_e};
+    vx_uint32 i, width, height;
+    CT_Image vxsrc = 0, vxdst = 0;
+    vx_rectangle_t rect = { 0, 0, 640, 480 };
+    vx_imagepatch_addressing_t addr;
+    vx_uint8 *internal_data = NULL;
+    vx_map_id map_id;
+    vx_size sz = 0;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(pyramid_source = vxCreatePyramid(context, PYRAMID_LEVELS, VX_SCALE_PYRAMID_HALF, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    ASSERT_VX_OBJECT(pyramid_sink   = vxCreatePyramid(context, PYRAMID_LEVELS, VX_SCALE_PYRAMID_HALF, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    for (i = 0; i < PYRAMID_LEVELS; i++)
+    {
+        ASSERT_VX_OBJECT(img_in = (vx_image)vxGetPyramidLevel(pyramid_source, i), VX_TYPE_IMAGE);
+
+        VX_CALL(vxQueryImage(img_in, VX_IMAGE_WIDTH, &width, sizeof(width)));
+        VX_CALL(vxQueryImage(img_in, VX_IMAGE_HEIGHT, &height, sizeof(height)));
+
+        rect.end_x = width;
+        rect.end_y = height;
+
+        VX_CALL(vxMapImagePatch(img_in, &rect, 0, &map_id, &addr, (void **)&internal_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL(vxUnmapImagePatch(img_in, map_id));
+
+        sz = vxComputeImagePatchSize(img_in, &rect, 0);
+
+        vx_uint8 *external_data = (vx_uint8 *)ct_alloc_mem(sz);
+
+        memset(external_data, 0xAB, sz);
+
+        VX_CALL(vxCopyImagePatch(img_in, &rect, 0, &addr, (void *)external_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        VX_CALL(vxReleaseImage(&img_in));
+        ct_free_mem(external_data);
+    }
+
+    ASSERT_VX_OBJECT(img_in = (vx_image)vxGetPyramidLevel(pyramid_source, 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(img_out = (vx_image)vxGetPyramidLevel(pyramid_sink, 0), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(n1 = tivxImageIntermediateNode(graph, img_in, img_out), VX_TYPE_NODE);
+
+    vxSetReferenceName((vx_reference)n1, "Intermediate_node");
+
+    VX_CALL(vxReplicateNode(graph, n1, prms_replicate, 2u));
+
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    for (i = 0; i < PYRAMID_LEVELS; i++)
+    {
+        ASSERT_VX_OBJECT(in_img_level  = (vx_image)vxGetPyramidLevel(pyramid_source, i), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(out_img_level = (vx_image)vxGetPyramidLevel(pyramid_sink, i), VX_TYPE_IMAGE);
+
+        ASSERT_NO_FAILURE({
+            vxsrc = ct_image_from_vx_image(in_img_level);
+        });
+
+        ASSERT_NO_FAILURE({
+            vxdst = ct_image_from_vx_image(out_img_level);
+        });
+
+        ASSERT_EQ_CTIMAGE(vxsrc, vxdst);
+
+        VX_CALL(vxReleaseImage(&in_img_level));
+        VX_CALL(vxReleaseImage(&out_img_level));
+    }
+
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseImage(&img_in));
+    VX_CALL(vxReleaseImage(&img_out));
+    VX_CALL(vxReleasePyramid(&pyramid_source));
+    VX_CALL(vxReleasePyramid(&pyramid_sink));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    tivxTestKernelsUnLoadKernels(context);
+}
+
 /*
  * Test for TIOVX-1002
  * Calling load kernels and having the garbage collection perform the remove kernels
@@ -2422,5 +2548,6 @@ TESTCASE_TESTS(tivxSourceNode,
                testPipeliningStreaming2,
                testPipeliningStreaming3,
                testIntermediateNodeErrorInject,
+               testIntermediateNodePyramidReplicate,
                testContextRelease)
 
