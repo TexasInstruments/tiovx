@@ -198,7 +198,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
             return VX_ERROR_INVALID_PARAMETERS;
             break;
         }
-        
+
     }
 
     return VX_SUCCESS;
@@ -1208,6 +1208,8 @@ TEST(tivxRawImage, negativeTestCopyRawImagePatch1)
     addr.stride_x = 0;
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxCopyRawImagePatch(raw_image, &rect, 2, &addr, (void *)&img,
                                                           VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxCopyRawImagePatch(raw_image, &rect, 2, &addr, (void *)&img,
+                                                          VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
     addr.stride_x = 3;
     rect.end_x = 16 + 16;
     rect.end_y = 19 + 1;
@@ -1229,6 +1231,14 @@ TEST(tivxRawImage, negativeTestCopyRawImagePatch1)
                                                           VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_META_AFTER_BUFFER));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxCopyRawImagePatch(raw_image1, &rect, 0, &addr, (void *)img,
                                                           VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+
+    addr.dim_x = (vx_uint32)-1;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxCopyRawImagePatch(raw_image, NULL, 0, &addr, (void *)img,
+                                                          VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_ALLOC_BUFFER));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxCopyRawImagePatch(raw_image1, &rect, 0, &addr, (void *)img,
+                                                          VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_META_AFTER_BUFFER));
+
+
     VX_CALL(tivxReleaseRawImage(&raw_image));
     VX_CALL(tivxReleaseRawImage(&raw_image1));
     ASSERT(raw_image == 0);
@@ -1307,7 +1317,7 @@ TEST(tivxRawImage, negativeTestCreateRawImage)
 {
     tivx_raw_image raw_image = NULL;
     tivx_raw_image_create_params_t params;
-    
+
     params.width = 128;
     params.height = 128;
     params.num_exposures = 1;
