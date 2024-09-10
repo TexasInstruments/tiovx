@@ -27,7 +27,8 @@ static vx_status ownDestructKernel(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     vx_kernel kernel = NULL;
 
-    if((ref != NULL) && (ref->type == (vx_enum)VX_TYPE_KERNEL))
+    if((ref != NULL) && /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR001 */
+    (ref->type == (vx_enum)VX_TYPE_KERNEL)) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR002 */
     {
         /* status set to NULL due to preceding type check */
         kernel = vxCastRefAsKernel(ref, NULL);
@@ -40,7 +41,8 @@ static vx_status ownDestructKernel(vx_reference ref)
          * return. */
         status = ownIsKernelInContext(kernel->base.context, kernel->enumeration, kernel->name, &is_found);
 
-        if ( ((vx_status)VX_SUCCESS == status) && (is_found == (vx_bool)vx_true_e) )
+        if ( ((vx_status)VX_SUCCESS == status) && /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR003 */
+        (is_found == (vx_bool)vx_true_e) )
         {
             VX_PRINT(VX_ZONE_INFO, "Kernel %s destructor called (removed from context)\n", kernel->name);
             status = ownRemoveKernelFromContext(kernel->base.context, kernel);
@@ -252,7 +254,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
         else
         {
             /* This is the first time vxRemoveKernel is called on this kernel */
-            if ( kernel->base.destructor_callback == NULL )
+            if ( kernel->base.destructor_callback == NULL ) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR004 */
             {
                 /* By default, we don't want to destruct user kernel unless user calls vxRemoveKernel,
                  * at which point we set the destructor callback so that it gets removed when all references
@@ -397,7 +399,8 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                 ))
             {
                 ref = ownCreateReference(context, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, &context->base);
-                if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)VX_TYPE_KERNEL))
+                if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) && /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR005 */
+                (ref->type == (vx_enum)VX_TYPE_KERNEL)) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR006 */
                 {
                     /* status set to NULL due to preceding type check */
                     kernel = vxCastRefAsKernel(ref, NULL);
@@ -476,7 +479,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
     {
         vx_uint32 p = 0;
 
-        if(kernel->signature.num_parameters <= TIVX_KERNEL_MAX_PARAMS )
+        if(kernel->signature.num_parameters <= TIVX_KERNEL_MAX_PARAMS ) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR007 */
         {
             for (p = 0; p < kernel->signature.num_parameters; p++)
             {
@@ -516,7 +519,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 /* END: TIOVX_CODE_COVERAGE_KERNEL_UTJT006 */
 /*LDRA_ANALYSIS*/
             }
-            if (status == (vx_status)VX_SUCCESS)
+            if (status == (vx_status)VX_SUCCESS) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR008 */
             {
                 status = ownAddKernelToContext(kernel->base.context, kernel);
             }
@@ -590,7 +593,8 @@ vx_enum ownKernelGetDefaultTarget(vx_kernel kernel)
 {
     vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
 
-    if (ownIsValidSpecificReference(vxCastRefFromKernel(kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromKernel(kernel),
+    (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR009 */
     {
         if(kernel->num_targets==0U)
         {
@@ -613,8 +617,8 @@ vx_enum ownKernelGetTarget(vx_kernel kernel, const char *target_string)
     vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
 
     if ((ownIsValidSpecificReference(vxCastRefFromKernel(kernel), (vx_enum)VX_TYPE_KERNEL) ==
-          (vx_bool)vx_true_e) &&
-          (NULL != target_string))
+          (vx_bool)vx_true_e) && /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR010 */
+          (NULL != target_string)) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR011 */
     {
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT005 */
