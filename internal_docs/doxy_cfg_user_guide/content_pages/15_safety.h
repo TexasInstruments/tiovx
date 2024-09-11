@@ -46,6 +46,7 @@
     - VXU functions
         - tiovx/source/vxu
     - Debug logging functionality
+        - tiovx/source/framework/vx_debug.c
         - tiovx/source/framework/vx_log_resource.c
     - RT logging functionality
         - tiovx/source/framework/vx_log_rt_trace.c
