@@ -408,6 +408,60 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
     return status;
 }
 
+vx_status ownCreateReferenceLock(vx_reference ref)
+{
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+
+    if (ref != NULL)
+    {
+        status = (vx_status)VX_SUCCESS;
+
+        if((ref->type==(vx_enum)VX_TYPE_CONTEXT) || (ref->type==(vx_enum)VX_TYPE_GRAPH))
+        {
+            /* create referencec only for context and graph
+             * for others use the context lock
+             */
+            status = tivxMutexCreate(&ref->lock);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM001 */
+            if (status != 0)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Cannot create Semaphore\n");
+            }
+#endif
+        }
+    }
+
+    return status;
+}
+
+vx_status ownDeleteReferenceLock(vx_reference ref)
+{
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+
+    if (ref != NULL)
+    {
+        status = (vx_status)VX_SUCCESS;
+
+        if((ref->type==(vx_enum)VX_TYPE_CONTEXT) || (ref->type==(vx_enum)VX_TYPE_GRAPH))
+        {
+            /* delete reference only from context and graph
+             * for others use the context lock
+             */
+            status = tivxMutexDelete(&ref->lock);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM005 */
+            if (status != 0)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Cannot delete mutex\n");
+            }
+#endif
+        }
+    }
+
+    return status;
+}
+
 vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum ref_type, vx_reference scope)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -432,27 +486,11 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum ref_typ
 
         ownReferenceSetScope(ref, scope);
 
-        status = (vx_status)VX_SUCCESS;
-
-        if((ref->type==(vx_enum)VX_TYPE_CONTEXT) || (ref->type==(vx_enum)VX_TYPE_GRAPH))
-        {
-            /* create referencec only for context and graph
-             * for others use the context lock
-             */
-            status = tivxMutexCreate(&ref->lock);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM001 */
-            if (status != 0)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Cannot create Semaphore\n");
-            }
-#endif
-        }
+        status = ownCreateReferenceLock(ref);
     }
 
     return status;
 }
-
 
 vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
 {
@@ -575,13 +613,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
                     }
                 }
 
-                if(ref->lock != NULL)
-                {
-                    /* error check is not required
-                    * as already checking for NULL in above check
-                    */
-                    (void)tivxMutexDelete(&ref->lock);
-                }
+                (void)ownDeleteReferenceLock(ref);
                 ref->magic = TIVX_BAD_MAGIC; /* make sure no existing copies of refs can use ref again */
                 if((vx_status)VX_SUCCESS != ownObjectFree(ref))
                 {

@@ -215,6 +215,24 @@ vx_bool ownIsValidType(vx_enum ref_type);
  */
 vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum ref_type, vx_reference scope);
 
+/**
+ * \brief Create mutex used for locking context/graph
+ *
+ * \param [in] ref     The reference
+ *
+ * \ingroup group_vx_reference
+ */
+vx_status ownCreateReferenceLock(vx_reference ref);
+
+/**
+ * \brief Delete mutex used for locking context/graph
+ *
+ * \param [in] ref     The reference
+ *
+ * \ingroup group_vx_reference
+ */
+vx_status ownDeleteReferenceLock(vx_reference ref);
+
 
 /**
  * \brief Check if reference is valid
