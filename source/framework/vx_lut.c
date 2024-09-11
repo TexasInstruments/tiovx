@@ -164,15 +164,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryLUT(
             case (vx_enum)VX_LUT_OFFSET:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    if ( ((vx_enum)VX_TYPE_UINT8 == obj_desc->item_type) ||
-                         ((vx_enum)VX_TYPE_UINT16 == obj_desc->item_type) ||
+                    if ( ((vx_enum)VX_TYPE_UINT8 == obj_desc->item_type) || /*TIOVX-1899- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_LUT_UBR001 */
+                         ((vx_enum)VX_TYPE_UINT16 == obj_desc->item_type) || /*TIOVX-1899- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_LUT_UBR002 */
                          ((vx_enum)VX_TYPE_UINT32 == obj_desc->item_type) ||
                          ((vx_enum)VX_TYPE_UINT64 == obj_desc->item_type) )
                     {
                         *(vx_uint32 *)ptr = 0;
                     }
-                    else if ( ((vx_enum)VX_TYPE_CHAR == obj_desc->item_type) ||
-                              ((vx_enum)VX_TYPE_INT8 == obj_desc->item_type) ||
+                    else if ( ((vx_enum)VX_TYPE_CHAR == obj_desc->item_type) || /*TIOVX-1899- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_LUT_UBR003 */
+                              ((vx_enum)VX_TYPE_INT8 == obj_desc->item_type) || /*TIOVX-1899- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_LUT_UBR004 */
                               ((vx_enum)VX_TYPE_INT16 == obj_desc->item_type) ||
                               ((vx_enum)VX_TYPE_INT32 == obj_desc->item_type) ||
                               ((vx_enum)VX_TYPE_INT64 == obj_desc->item_type) ||
