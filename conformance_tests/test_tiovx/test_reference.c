@@ -432,22 +432,38 @@ TEST(tivxReference, negativeTesttivxReferenceImportHandle2)
     vx_context context = context_->vx_context_;
     vx_image image;
     vx_uint64 is_invalid, set_is_valid = 10;
-    void *nonNullValue = (void *)0x1234567890AB;
-    void *addr[TIVX_REF_TEST_MAX_NUM_ADDR] = {nonNullValue};
-    void *addr1[TIVX_REF_TEST_MAX_NUM_ADDR];
 
-    for (uint32_t i = 0; i < TIVX_REF_TEST_MAX_NUM_ADDR; i++) {
-        addr1[i] = nonNullValue;
-    }
-    uint32_t size[TIVX_REF_TEST_MAX_NUM_ADDR] = { 10 }; 
-    uint32_t max_entries = 64; 
+    void *addr[TIVX_REF_TEST_MAX_NUM_ADDR];
+    void *addr1[TIVX_REF_TEST_MAX_NUM_ADDR];
+    void *addr2[TIVX_REF_TEST_MAX_NUM_ADDR];
+    
+    uint32_t size[TIVX_REF_TEST_MAX_NUM_ADDR] = { 0 };
+    uint32_t max_entries = 64;
     uint32_t num_entries = 10;
     vx_pyramid pyr_in;
+    vx_convolution conv;
+    vx_size rows = 3, cols = 3;
+    
+    vx_size block_size = 4;
+    vx_uint32 i = 0, j = 0, k = 0;
 
-    ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    for ( i = 0; i < TIVX_REF_TEST_MAX_NUM_ADDR; i++) {
+
+        addr[i] = tivxMemAlloc(block_size, TIVX_MEM_EXTERNAL);
+        addr1[i] = tivxMemAlloc(block_size, TIVX_MEM_EXTERNAL);
+        addr2[i] = tivxMemAlloc(block_size, TIVX_MEM_EXTERNAL);
+    }
+
+
+        ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)image, (const void **)addr, (const uint32_t *)size, num_entries)));
     ASSERT_VX_OBJECT(pyr_in = vxCreatePyramid(context, 4, 0.5f, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
     ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)pyr_in, (const void **)addr1, (const uint32_t *)size, num_entries)));
+    ASSERT_VX_OBJECT(conv = vxCreateConvolution(context, cols, rows), VX_TYPE_CONVOLUTION);
+    ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)conv, (const void **)addr2, (const uint32_t *)size, 1)));
+
+
+    VX_CALL(vxReleaseConvolution(&conv));
     VX_CALL(vxReleasePyramid(&pyr_in));
     VX_CALL(vxReleaseImage(&image));
 }
