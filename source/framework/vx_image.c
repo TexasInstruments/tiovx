@@ -1559,11 +1559,13 @@ VX_API_ENTRY vx_size VX_API_CALL vxComputeImagePatchSize(vx_image image,
             }
             else
             {
+                VX_PRINT(VX_ZONE_ERROR, "Plane index %u is out of bounds!\n", plane_index);
                 vxAddLogEntry(vxCastRefFromImage(image), (vx_status)VX_ERROR_INVALID_PARAMETERS, "Plane index %u is out of bounds!", plane_index);
             }
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "Input rect out of bounds!\n");
             vxAddLogEntry(vxCastRefFromImage(image), (vx_status)VX_ERROR_INVALID_PARAMETERS, "Input rect out of bounds!");
         }
     }
