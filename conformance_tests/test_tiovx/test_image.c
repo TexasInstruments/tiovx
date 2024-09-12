@@ -680,6 +680,97 @@ TEST(tivxImage, negativeTestCreateImageFromChannelROIBoundary)
     }
 }
 
+/*
+// Allocates image plane pointers from user controlled memory according to format, width, height params
+// and initialize with some value
+*/
+static void own_allocate_image_pointers(
+    vx_df_image format, int width, int height,
+    vx_uint32* nplanes, void* ptrs[], vx_imagepatch_addressing_t addr[],
+    vx_pixel_value_t* val)
+{
+    unsigned int p;
+    int channel[VX_PLANE_MAX] = { 0, 0, 0, 0 };
+
+    channel[0] = VX_CHANNEL_Y;
+    channel[1] = VX_CHANNEL_U;
+    channel[2] = VX_CHANNEL_V;
+
+
+    ASSERT_NO_FAILURE(*nplanes = ct_get_num_planes(format));
+
+    for (p = 0; p < *nplanes; p++)
+    {
+        size_t plane_size = 0;
+
+        vx_uint32 subsampling_x = 2;
+        vx_uint32 subsampling_y = 2;
+
+        addr[p].dim_x    = width  / subsampling_x;
+        addr[p].dim_y    = height / subsampling_y;
+        addr[p].stride_x = 1;
+        addr[p].stride_y = width;
+
+        plane_size = addr[p].stride_y * addr[p].dim_y;
+
+        if (plane_size != 0)
+        {
+            ptrs[p] = ct_alloc_mem(plane_size);
+            /* init memory */
+            ct_memset(ptrs[p], val->reserved[p], plane_size);
+        }
+    }
+
+    return;
+}
+
+/* To hit condition 'si_obj_desc -> create_type == ( vx_enum ) TIVX_IMAGE_FROM_CHANNEL' inside ownSwapSubImage() */
+TEST(tivxImage, testOwnSwapSubImageChannel)
+{
+    vx_context context = context_->vx_context_;
+    vx_uint32 n;
+    vx_image image;
+    vx_image subimage;
+    vx_imagepatch_addressing_t addr1[VX_PLANE_MAX] =
+    {
+        VX_IMAGEPATCH_ADDR_INIT,
+        VX_IMAGEPATCH_ADDR_INIT,
+        VX_IMAGEPATCH_ADDR_INIT,
+        VX_IMAGEPATCH_ADDR_INIT
+    };
+
+    vx_uint32 nplanes1 = 0;
+
+    vx_pixel_value_t val1;
+    void* mem1_ptrs[VX_PLANE_MAX] = { 0, 0, 0, 0 };
+
+    val1.reserved[0] = 0x11;
+    val1.reserved[1] = 0x22;
+    val1.reserved[2] = 0x33;
+    val1.reserved[3] = 0x44;
+
+    own_allocate_image_pointers(VX_DF_IMAGE_NV12, 16, 16, &nplanes1, mem1_ptrs, addr1, &val1);
+
+    EXPECT_VX_OBJECT(image = vxCreateImageFromHandle(context, VX_DF_IMAGE_NV12, addr1, mem1_ptrs, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(subimage = vxCreateImageFromChannel(image, VX_CHANNEL_Y), VX_TYPE_IMAGE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS,vxSwapImageHandle(image, mem1_ptrs, NULL, nplanes1));
+
+    VX_CALL(vxReleaseImage(&subimage));
+
+    for (n = 0; n < VX_PLANE_MAX; n++)
+    {
+        if (mem1_ptrs[n] != NULL)
+        {
+            ct_free_mem(mem1_ptrs[n]);
+            mem1_ptrs[n] = NULL;
+        }
+    }
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
 TESTCASE_TESTS(
     tivxImage,
     negativeTestCreateImage,
@@ -712,4 +803,5 @@ TESTCASE_TESTS(
     testSetObjArrImageStride,
     testCreateImage,
     testSetImageAttribute,
-    negativeTestCreateImageFromChannelROIBoundary)
+    negativeTestCreateImageFromChannelROIBoundary,
+    testOwnSwapSubImageChannel)
