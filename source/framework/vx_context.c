@@ -1076,11 +1076,15 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
 
                     /* Added the delete to take care of the mutex created in previous ownInitReference() call */
                     status = ownDeleteReferenceLock(&context->base);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT010 */
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to deinitialize Reference\n");
                     }
                     else
+/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT010 */
+#endif
                     {
                         status = ownEventQueueDelete(&context->event_queue);
 #ifdef LDRA_UNTESTABLE_CODE
