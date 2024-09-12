@@ -21,6 +21,7 @@ CSOURCES    := \
     ../common/tivx_host.c                           \
     ../common/tivx_platform.c                       \
     ../common/tivx_mem.c                            \
+    ../common/vx_target_on_host_cpu.c               \
     tivx_platform_hlos.c
 
 IDIRS       += $(TIOVX_PATH)/source/include
