@@ -23,7 +23,8 @@ static vx_status ownDestructParameter(vx_reference ref)
 {
     vx_status status = (vx_status)VX_SUCCESS, status1 = (vx_status)VX_SUCCESS;
 
-    if((ref != NULL) && (ref->type == (vx_enum)VX_TYPE_PARAMETER))
+    if((ref != NULL) && /* TIOVX-1927- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PARAMETER_UBR001 */
+     (ref->type == (vx_enum)VX_TYPE_PARAMETER)) /* TIOVX-1927- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PARAMETER_UBR002 */
     {
         /* status set to NULL due to preceding type check */
         vx_parameter param = vxCastRefAsParameter(ref, NULL);
@@ -39,7 +40,7 @@ static vx_status ownDestructParameter(vx_reference ref)
             }
 #endif
         }
-        if (ownIsValidSpecificReference(vxCastRefFromKernel(param->kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
+        if (ownIsValidSpecificReference(vxCastRefFromKernel(param->kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) /* TIOVX-1927- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PARAMETER_UBR003 */
         {
             vx_kernel kernel = (vx_kernel)param->kernel;
             status1 = ownReleaseReferenceInt(vxCastRefFromKernelP(&kernel), (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_INTERNAL, NULL);
@@ -242,7 +243,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
             if(status == (vx_status)VX_SUCCESS)
             {
                 /* if it was a valid reference then get the type from it */
-                if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type)))
+                if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type))) /* TIOVX-1927- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PARAMETER_UBR004 */
                 {
                     VX_PRINT(VX_ZONE_PARAMETER, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
                 }
