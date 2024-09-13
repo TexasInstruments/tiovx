@@ -37,7 +37,7 @@ static vx_bool ownIsValidCreateParams(const tivx_raw_image_create_params_t *para
 {
     vx_bool is_valid = (vx_bool)vx_true_e;
 
-    if( (params->width < 2u ) || (params->height < 1u ) || ((params->width & 1u) == 1u) )
+    if( (params->width < 2u ) || (params->height < 1u ) || ((params->width & 1u) == 1u) ) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR001 */
     {
         is_valid = (vx_bool)vx_false_e;
         VX_PRINT(VX_ZONE_ERROR, "invalid width and/or height\n");
@@ -174,13 +174,13 @@ static vx_status ownDestructRawImage(vx_reference ref)
     tivx_raw_image raw_image = (tivx_raw_image)ref;
 #endif
 
-    if(ref->type == TIVX_TYPE_RAW_IMAGE)
+    if(ref->type == TIVX_TYPE_RAW_IMAGE) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR002 */
     {
         obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
 
         if(obj_desc!=NULL)
         {
-            if ( (vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_NORMAL )
+            if ( (vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_NORMAL ) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR003 */
             {
                 for(exp_idx=0; exp_idx < obj_desc->params.num_exposures; exp_idx++)
                 {
@@ -198,7 +198,7 @@ static vx_status ownDestructRawImage(vx_reference ref)
                     }
                 }
             }
-            if ((vx_status)VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR003 */
             {
                 status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -331,13 +331,13 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     uint16_t exp_idx;
 
-    if(ref->type == TIVX_TYPE_RAW_IMAGE)
+    if(ref->type == TIVX_TYPE_RAW_IMAGE) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR005 */
     {
         obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
 
-        if(obj_desc != NULL)
+        if(obj_desc != NULL) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR006 */
         {
-            if ( (vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_NORMAL )
+            if ( (vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_NORMAL ) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR007 */
             {
                 for(exp_idx=0; exp_idx < obj_desc->params.num_exposures; exp_idx++)
                 {
@@ -616,9 +616,9 @@ static vx_status ownCopyAndMapCheckParams(
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
-        if ( ((vx_int32)buffer_select > (vx_enum)TIVX_RAW_IMAGE_META_AFTER_BUFFER ) ||
+        if ( ((vx_int32)buffer_select > (vx_enum)TIVX_RAW_IMAGE_META_AFTER_BUFFER ) || /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR008 */
             (((vx_int32)buffer_select == (vx_enum)TIVX_RAW_IMAGE_META_BEFORE_BUFFER) && (obj_desc->params.meta_height_before < 1U)) ||
-            (((vx_int32)buffer_select == (vx_enum)TIVX_RAW_IMAGE_META_AFTER_BUFFER) && (obj_desc->params.meta_height_after < 1U))
+            (((vx_int32)buffer_select == (vx_enum)TIVX_RAW_IMAGE_META_AFTER_BUFFER) && (obj_desc->params.meta_height_after < 1U)) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR009 */
            )
         {
             VX_PRINT(VX_ZONE_ERROR, "buffer_select is invalid \n");
@@ -750,7 +750,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 break;
             case (vx_enum)TIVX_RAW_IMAGE_FORMAT:
                 if ((NULL != ptr) &&
-                    (size >= sizeof(tivx_raw_image_format_t)) &&
+                    (size >= sizeof(tivx_raw_image_format_t)) && /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR010 */
                     (((vx_size)ptr & 0x3U) == 0U))
                 {
                     vx_size num_dims = size / sizeof(tivx_raw_image_format_t);
@@ -792,7 +792,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 break;
             case (vx_enum)TIVX_RAW_IMAGE_IMAGEPATCH_ADDRESSING:
                 if ((NULL != ptr) &&
-                    (size >= sizeof(vx_imagepatch_addressing_t)) &&
+                    (size >= sizeof(vx_imagepatch_addressing_t)) && /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR011 */
                     (((vx_size)ptr & 0x3U) == 0U))
                 {
                     vx_size num_dims = size / sizeof(vx_imagepatch_addressing_t);
