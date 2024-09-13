@@ -83,7 +83,7 @@ vx_status ownObjectInit(void)
 
     status = tivxMutexCreate(&g_tivx_objects_lock);
 
-    if ((vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1923- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJECTS_UBR001 */
     {
         ownInitUseFlag(g_tivx_objects.isMfUse,
             TIVX_META_FORMAT_MAX_OBJECTS);
