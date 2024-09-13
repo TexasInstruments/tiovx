@@ -905,11 +905,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
     if ((NULL == meta) || (NULL == exemplar))
     {
         status = (vx_status)VX_FAILURE;
-        if (NULL == meta)
+        if (NULL == meta) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR001 */
         {
             VX_PRINT(VX_ZONE_ERROR, "meta value is NULL\n");
         }
-        if (NULL == exemplar)
+        if (NULL == exemplar) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR002 */
         {
             VX_PRINT(VX_ZONE_ERROR, "exemplar value is NULL\n");
         }
@@ -1289,11 +1289,11 @@ static vx_bool ownIsMetaFormatImageEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR003 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR004 */)
     {
         if ( (meta1->img.width  == meta2->img.width) &&
-             (meta1->img.height == meta2->img.height) &&
+             (meta1->img.height == meta2->img.height) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR005 */
              (meta1->img.format == meta2->img.format) )
         {
             is_equal = (vx_bool)vx_true_e;
@@ -1312,10 +1312,10 @@ static vx_bool ownIsMetaFormatArrayEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR006 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR007 */)
     {
-        if ( (meta1->arr.item_type == meta2->arr.item_type) &&
+        if ( (meta1->arr.item_type == meta2->arr.item_type) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR008 */
              (meta1->arr.capacity  == meta2->arr.capacity) &&
              (meta1->arr.item_size == meta2->arr.item_size))
         {
@@ -1335,8 +1335,8 @@ static vx_bool ownIsMetaFormatScalarEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR009 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR010 */)
     {
         if ( meta1->sc.type == meta2->sc.type )
         {
@@ -1356,13 +1356,13 @@ static vx_bool ownIsMetaFormatPyramidEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR011 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR012 */)
     {
         if ( (meta1->pmd.width  == meta2->pmd.width) &&
-             (meta1->pmd.height == meta2->pmd.height) &&
-             (meta1->pmd.format == meta2->pmd.format) &&
-             (meta1->pmd.levels == meta2->pmd.levels) &&
+             (meta1->pmd.height == meta2->pmd.height) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR013 */
+             (meta1->pmd.format == meta2->pmd.format) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR014 */
+             (meta1->pmd.levels == meta2->pmd.levels) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR015 */
              (meta1->pmd.scale  == meta2->pmd.scale) )
         {
             is_equal = (vx_bool)vx_true_e;
@@ -1381,15 +1381,15 @@ static vx_bool ownIsMetaFormatMatrixEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR016 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR017 */)
     {
-        if ( (meta1->mat.type     == meta2->mat.type) &&
+        if ( (meta1->mat.type     == meta2->mat.type) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR018 */
              (meta1->mat.rows     == meta2->mat.rows) &&
-             (meta1->mat.cols     == meta2->mat.cols) &&
-             (meta1->mat.size     == meta2->mat.size) &&
-             (meta1->mat.pattern  == meta2->mat.pattern) &&
-             (meta1->mat.origin.x == meta2->mat.origin.x) &&
+             (meta1->mat.cols     == meta2->mat.cols) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR019 */
+             (meta1->mat.size     == meta2->mat.size) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR020 */
+             (meta1->mat.pattern  == meta2->mat.pattern) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR021 */
+             (meta1->mat.origin.x == meta2->mat.origin.x) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR022 */
              (meta1->mat.origin.y == meta2->mat.origin.y))
         {
             is_equal = (vx_bool)vx_true_e;
@@ -1408,11 +1408,11 @@ static vx_bool ownIsMetaFormatDistributionEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR023 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR024 */)
     {
-        if ( (meta1->dist.bins   == meta2->dist.bins) &&
-             (meta1->dist.offset == meta2->dist.offset) &&
+        if ( (meta1->dist.bins   == meta2->dist.bins) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR025 */
+             (meta1->dist.offset == meta2->dist.offset) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR026 */
              (meta1->dist.range  == meta2->dist.range) )
         {
             is_equal = (vx_bool)vx_true_e;
@@ -1431,12 +1431,12 @@ static vx_bool ownIsMetaFormatConvolutionEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR027 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR028 */)
     {
         if ( (meta1->conv.rows  == meta2->conv.rows) &&
-             (meta1->conv.cols  == meta2->conv.cols) &&
-             (meta1->conv.scale == meta2->conv.scale) &&
+             (meta1->conv.cols  == meta2->conv.cols) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR029 */
+             (meta1->conv.scale == meta2->conv.scale) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR030 */
              (meta1->conv.size  == meta2->conv.size) )
         {
             is_equal = (vx_bool)vx_true_e;
@@ -1455,12 +1455,12 @@ static vx_bool ownIsMetaFormatRemapEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR031 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR032 */)
     {
-        if ( (meta1->remap.src_width  == meta2->remap.src_width) &&
+        if ( (meta1->remap.src_width  == meta2->remap.src_width) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR033 */
              (meta1->remap.src_height == meta2->remap.src_height) &&
-             (meta1->remap.dst_width  == meta2->remap.dst_width) &&
+             (meta1->remap.dst_width  == meta2->remap.dst_width) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR034 */
              (meta1->remap.dst_height == meta2->remap.dst_height) )
         {
             is_equal = (vx_bool)vx_true_e;
@@ -1479,8 +1479,8 @@ static vx_bool ownIsMetaFormatThresholdEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR035 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR036 */)
     {
         if ( meta1->thres.type  == meta2->thres.type )
         {
@@ -1500,10 +1500,10 @@ static vx_bool ownIsMetaFormatObjectArrayEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR037 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR038 */)
     {
-        if ( (meta1->objarr.item_type == meta2->objarr.item_type) &&
+        if ( (meta1->objarr.item_type == meta2->objarr.item_type) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR039 */
              (meta1->objarr.num_items == meta2->objarr.num_items) )
         {
             is_equal = (vx_bool)vx_true_e;
@@ -1522,10 +1522,10 @@ static vx_bool ownIsMetaFormatLutEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR040 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR041 */)
     {
-        if ( (meta1->lut.type  == meta2->lut.type) &&
+        if ( (meta1->lut.type  == meta2->lut.type) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR042 */
              (meta1->lut.count == meta2->lut.count) )
         {
             is_equal = (vx_bool)vx_true_e;
@@ -1545,13 +1545,13 @@ static vx_bool ownIsMetaFormatTensorEqual(
     vx_bool is_equal = (vx_bool)vx_false_e;
     vx_uint32 i;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR043 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR044 */)
     {
-        if ( (meta1->tensor.number_of_dimensions                 == meta2->tensor.number_of_dimensions) &&
-             (meta1->tensor.data_type                            == meta2->tensor.data_type) &&
+        if ( (meta1->tensor.number_of_dimensions                 == meta2->tensor.number_of_dimensions) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR045 */
+             (meta1->tensor.data_type                            == meta2->tensor.data_type) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR046 */
              (meta1->tensor.fixed_point_position                 == meta2->tensor.fixed_point_position) &&
-             (meta1->tensor.scaling_divisor                      == meta2->tensor.scaling_divisor) &&
+             (meta1->tensor.scaling_divisor                      == meta2->tensor.scaling_divisor) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR047 */
              (meta1->tensor.scaling_divisor_fixed_point_position == meta2->tensor.scaling_divisor_fixed_point_position) )
         {
             for (i = 0; i < meta1->tensor.number_of_dimensions; i++)
@@ -1581,10 +1581,10 @@ static vx_bool ownIsMetaFormatUserDataObjectEqual(
 {
     vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR048 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR049 */)
     {
-        if ( (meta1->user_data_object.size == meta2->user_data_object.size) &&
+        if ( (meta1->user_data_object.size == meta2->user_data_object.size) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR050 */
              ( 0 == strncmp(meta1->user_data_object.type_name, meta2->user_data_object.type_name, VX_MAX_REFERENCE_NAME) ) )
         {
             is_equal = (vx_bool)vx_true_e;
@@ -1604,14 +1604,14 @@ static vx_bool ownIsMetaFormatRawImageEqual(
     vx_bool is_equal = (vx_bool)vx_false_e;
     vx_uint32 i;
 
-    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta1), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR051 */
+         (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta2), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR052 */)
     {
         if ( (meta1->raw_image.width              == meta2->raw_image.width) &&
-             (meta1->raw_image.height             == meta2->raw_image.height) &&
-             (meta1->raw_image.num_exposures      == meta2->raw_image.num_exposures) &&
-             (meta1->raw_image.line_interleaved   == meta2->raw_image.line_interleaved) &&
-             (meta1->raw_image.meta_height_before == meta2->raw_image.meta_height_before) &&
+             (meta1->raw_image.height             == meta2->raw_image.height) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR053 */
+             (meta1->raw_image.num_exposures      == meta2->raw_image.num_exposures) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR054 */
+             (meta1->raw_image.line_interleaved   == meta2->raw_image.line_interleaved) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR055 */
+             (meta1->raw_image.meta_height_before == meta2->raw_image.meta_height_before) && /* TIOVX-1922- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_META_FORMAT_UBR056 */
              (meta1->raw_image.meta_height_after  == meta2->raw_image.meta_height_after) )
         {
             for (i = 0; i < meta1->raw_image.num_exposures; i++)
