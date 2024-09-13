@@ -183,7 +183,6 @@ typedef struct {
 #define STREAMING_PARAMETERS \
     CT_GENERATE_PARAMETERS("streaming", ADD_SET_TARGET_PARAMETERS, ARG, 1000)
 
-int test = 0;
 TEST_WITH_ARG(tivxSourceNode, testSourceObjArray, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
@@ -206,21 +205,15 @@ TEST_WITH_ARG(tivxSourceNode, testSourceObjArray, Arg, STREAMING_PARAMETERS)
 
     ASSERT_VX_OBJECT(n1 = tivxScalarSourceObjArrayNode(graph, obj_array_scalar), VX_TYPE_NODE);
 
-    scalar = (vx_scalar)vxGetObjectArrayItem(obj_array_scalar, 0);
+    ASSERT_VX_OBJECT(scalar = (vx_scalar)vxGetObjectArrayItem(obj_array_scalar, 0), VX_TYPE_SCALAR);
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar), VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
-    if (test == 0)
-    {
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, 3));
-
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n1, 0, 3));
-    }
-
-    test++;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, 3));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n1, 0, 3));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -229,6 +222,49 @@ TEST_WITH_ARG(tivxSourceNode, testSourceObjArray, Arg, STREAMING_PARAMETERS)
     VX_CALL(vxReleaseObjectArray(&obj_array_scalar));
     VX_CALL(vxReleaseScalar(&scalar));
     VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseGraph(&graph));
+    tivxTestKernelsUnLoadKernels(context);
+}
+
+TEST_WITH_ARG(tivxSourceNode, testSourcePyramid, Arg, STREAMING_PARAMETERS)
+{
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_node n1, n2;
+    vx_pyramid pyr_in;
+    vx_image image_in, image_out;
+    uint32_t width, height;
+
+    width = 640;
+    height = 480;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(pyr_in = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    ASSERT_VX_OBJECT(n1 = tivxPyramidSourceNode(graph, pyr_in), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(image_in = vxGetPyramidLevel(pyr_in, 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image_out  = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(n2 = tivxImageIntermediateNode(graph, image_in, image_out), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, 3));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n1, 0, 3));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(vxReleaseImage(&image_in));
+    VX_CALL(vxReleaseImage(&image_out));
+    VX_CALL(vxReleasePyramid(&pyr_in));
     VX_CALL(vxReleaseNode(&n1));
     VX_CALL(vxReleaseGraph(&graph));
     tivxTestKernelsUnLoadKernels(context);
@@ -260,7 +296,7 @@ TEST_WITH_ARG(tivxSourceNode, testSourceObjArray2, Arg, STREAMING_PARAMETERS)
 
     for (i = 0; i < 4; i++)
     {
-        scalar[i] = (vx_scalar)vxGetObjectArrayItem(obj_array_scalar, i);
+        ASSERT_VX_OBJECT(scalar[i] = (vx_scalar)vxGetObjectArrayItem(obj_array_scalar, i), VX_TYPE_SCALAR);
         ASSERT_VX_OBJECT(scalar_out[i] = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
         ASSERT_VX_OBJECT(n2[i] = tivxScalarIntermediateNode(graph, scalar[i], scalar_out[i]), VX_TYPE_NODE);
         VX_CALL(vxSetNodeTarget(n2[i], VX_TARGET_STRING, arg_->target_string));
@@ -327,7 +363,7 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray, Arg, STREAMING_PARAMETERS)
 
     VX_CALL(vxReleaseScalar(&scalar));
 
-    scalar = (vx_scalar)vxGetObjectArrayItem(obj_array_scalar, 0);
+    ASSERT_VX_OBJECT(scalar = (vx_scalar)vxGetObjectArrayItem(obj_array_scalar, 0), VX_TYPE_SCALAR);
 
     ASSERT_VX_OBJECT(n1 = tivxScalarSourceNode(graph, scalar), VX_TYPE_NODE);
 
@@ -2506,6 +2542,130 @@ TEST_WITH_ARG(tivxSourceNode, testIntermediateNodePyramidReplicate, Arg, STREAMI
     tivxTestKernelsUnLoadKernels(context);
 }
 
+TEST_WITH_ARG(tivxSourceNode, testSourceIntSinkPyramid, Arg, STREAMING_PARAMETERS)
+{
+    #define NUM_PYRAMID_LEVELS
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    uint32_t num_streams = 0;
+    uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt;
+    vx_node n0, n1, n2;
+    vx_image image_in, image_out[MAX_NUM_BUF];
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    vx_pyramid pyramid_source[MAX_NUM_BUF], pyramid_sink[MAX_NUM_BUF];
+    vx_bool prms_replicate[] =
+        {vx_true_e, vx_true_e};
+
+    /* Setting to num buf of capture node */
+    num_buf = 3;
+    loop_cnt = 1;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+         ASSERT_VX_OBJECT(pyramid_source[buf_id] = vxCreatePyramid(context, PYRAMID_LEVELS, VX_SCALE_PYRAMID_HALF, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+         ASSERT_VX_OBJECT(pyramid_sink[buf_id]   = vxCreatePyramid(context, PYRAMID_LEVELS, VX_SCALE_PYRAMID_HALF, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+         ASSERT_VX_OBJECT(image_out[buf_id] = vxGetPyramidLevel(pyramid_sink[buf_id], 0), VX_TYPE_IMAGE);
+    }
+
+    ASSERT_VX_OBJECT(image_in = vxGetPyramidLevel(pyramid_source[0], 0), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(n0 = tivxPyramidSourceNode(graph, pyramid_source[0]), VX_TYPE_NODE);
+
+    vxSetReferenceName((vx_reference)n0, "Source_node");
+
+    ASSERT_VX_OBJECT(n1 = tivxImageIntermediateNode(graph, image_in, image_out[0]), VX_TYPE_NODE);
+
+    vxSetReferenceName((vx_reference)n1, "Intermediate_node");
+
+    VX_CALL(vxReplicateNode(graph, n1, prms_replicate, 2u));
+
+    ASSERT_VX_OBJECT(n2 = tivxPyramidSinkNode(graph, pyramid_sink[0]), VX_TYPE_NODE);
+
+    vxSetReferenceName((vx_reference)n2, "Sink_node");
+
+    /* input @ node index 0, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    add_graph_parameter_by_node_index(graph, n1, 1);
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&pyramid_source[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&image_out[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            2,
+            graph_parameters_queue_params_list
+            );
+
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, num_buf));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_sink_pyramid");
+    log_graph_rt_trace(graph);
+
+#if 1
+    /* enqueue buf for pipeup but dont trigger graph execution */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&pyramid_source[buf_id], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&image_out[buf_id], 1);
+    }
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        uint32_t num_refs;
+        vx_pyramid capture_pyr;
+        vx_image img;
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&capture_pyr, 1, &num_refs);
+
+        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&img, 1, &num_refs);
+
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&capture_pyr, 1);
+
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&img, 1);
+    }
+
+    /* ensure all graph processing is complete */
+    vxWaitGraph(graph);
+#endif
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseImage(&image_in));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    /* since buffers could be held by source node, first release graph
+     * to delete source node, then free the buffers
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleasePyramid(&pyramid_source[buf_id]));
+        VX_CALL(vxReleasePyramid(&pyramid_sink[buf_id]));
+        VX_CALL(vxReleaseImage(&image_out[buf_id]));
+    }
+    tivxTestKernelsUnLoadKernels(context);
+}
+
 /*
  * Test for TIOVX-1002
  * Calling load kernels and having the garbage collection perform the remove kernels
@@ -2523,6 +2683,7 @@ TEST(tivxSourceNode, testContextRelease)
 
 TESTCASE_TESTS(tivxSourceNode,
                testSourceObjArray,
+               testSourcePyramid,
                DISABLED_testSourceObjArray2,
                testSinkObjArray,
                testSinkObjArray2,
@@ -2549,5 +2710,6 @@ TESTCASE_TESTS(tivxSourceNode,
                testPipeliningStreaming3,
                testIntermediateNodeErrorInject,
                testIntermediateNodePyramidReplicate,
+               testSourceIntSinkPyramid,
                testContextRelease)
 

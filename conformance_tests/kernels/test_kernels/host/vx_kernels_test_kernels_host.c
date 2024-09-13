@@ -83,6 +83,7 @@ vx_status tivxAddKernelScalarSourceObjArray(vx_context context);
 vx_status tivxAddKernelScalarSinkObjArray(vx_context context);
 vx_status tivxAddKernelPyramidIntermediate(vx_context context);
 vx_status tivxAddKernelPyramidSource(vx_context context);
+vx_status tivxAddKernelPyramidSink(vx_context context);
 vx_status tivxAddKernelCmdTimeoutTest(vx_context context);
 vx_status tivxAddKernelScalarIntermediate2(vx_context context);
 vx_status tivxAddKernelTestTarget(vx_context context);
@@ -100,6 +101,7 @@ vx_status tivxRemoveKernelScalarSourceObjArray(vx_context context);
 vx_status tivxRemoveKernelScalarSinkObjArray(vx_context context);
 vx_status tivxRemoveKernelPyramidIntermediate(vx_context context);
 vx_status tivxRemoveKernelPyramidSource(vx_context context);
+vx_status tivxRemoveKernelPyramidSink(vx_context context);
 vx_status tivxRemoveKernelCmdTimeoutTest(vx_context context);
 vx_status tivxRemoveKernelScalarIntermediate2(vx_context context);
 vx_status tivxRemoveKernelTestTarget(vx_context context);
@@ -118,6 +120,7 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelScalarSinkObjArray, &tivxRemoveKernelScalarSinkObjArray},
     {&tivxAddKernelPyramidIntermediate, &tivxRemoveKernelPyramidIntermediate},
     {&tivxAddKernelPyramidSource, &tivxRemoveKernelPyramidSource},
+    {&tivxAddKernelPyramidSink, &tivxRemoveKernelPyramidSink},
     {&tivxAddKernelCmdTimeoutTest, &tivxRemoveKernelCmdTimeoutTest},
     {&tivxAddKernelScalarIntermediate2, &tivxRemoveKernelScalarIntermediate2},
     {&tivxAddKernelTestTarget, &tivxRemoveKernelTestTarget},
