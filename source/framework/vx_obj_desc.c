@@ -298,7 +298,8 @@ vx_status ownObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
 
         if (NULL != obj_desc)
         {
-            if((self_cpu_id < (vx_enum)TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU) && (self_cpu_id != -1))
+            if((self_cpu_id < (vx_enum)TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU) /* TIOVX-1921- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJ_DESC_UBR001 */ 
+            && (self_cpu_id != -1)) /* TIOVX-1921- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJ_DESC_UBR002 */
             {
                 /* target is on remote CPU, send using IPC */
                 status = ownIpcSendMsg(cpu_id, ipc_payload, obj_desc->host_cpu_id, obj_desc->host_port_id[self_cpu_id]);
@@ -458,7 +459,8 @@ int32_t tivx_obj_desc_strncmp_delim(volatile void *dst, volatile void *src, uint
 
     for(i=0; i<size; i++)
     {
-        if((d[i] != s[i]) || (d[i] == 0U) || (s[i] == 0U) || (d[i] == (uint8_t)delim) || (s[i] == (uint8_t)delim))
+        if((d[i] != s[i]) || (d[i] == 0U) || (s[i] == 0U) /* TIOVX-1921- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJ_DESC_UBR003 */
+        || (d[i] == (uint8_t)delim) || (s[i] == (uint8_t)delim))
         {
             if((d[i] != (uint8_t)delim) && (s[i] != (uint8_t)delim))
             {
