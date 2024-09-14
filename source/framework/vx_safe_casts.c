@@ -130,7 +130,7 @@ static vx_reference getRefAs(vx_reference ref, vx_enum type, vx_status *status)
     vx_status local_status = (vx_status)VX_SUCCESS;
     vx_reference retref = ref;
     if ((NULL != ref) &&
-       (ref->magic == TIVX_MAGIC) &&
+       (ref->magic == TIVX_MAGIC) && /* TIOVX-1928- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SAFE_CASTS_UBR001 */
        (ownIsValidContext(ref->context) == (vx_bool)vx_true_e))
     {
         if (ref->type == type)
@@ -149,8 +149,8 @@ static vx_reference getRefAs(vx_reference ref, vx_enum type, vx_status *status)
     {
         local_status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
-    if (status &&
-        ((vx_status)VX_SUCCESS == *status))
+    if (status && /* TIOVX-1928- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SAFE_CASTS_UBR002 */
+        ((vx_status)VX_SUCCESS == *status)) /* TIOVX-1928- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SAFE_CASTS_UBR003 */
     {
         *status = local_status;
     }
@@ -162,7 +162,7 @@ static vx_reference castRefAs(vx_reference ref, vx_enum type, vx_status *status)
     vx_status local_status = (vx_status)VX_SUCCESS;
     vx_reference retref = ref;
     if ((NULL != ref) &&
-        (ref->magic == TIVX_MAGIC) &&
+        (ref->magic == TIVX_MAGIC) && /* TIOVX-1928- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SAFE_CASTS_UBR004 */
         (ownIsValidContext(ref->context) == (vx_bool)vx_true_e))
     {
         if (ref->type != type)
