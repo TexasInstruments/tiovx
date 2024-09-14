@@ -132,13 +132,10 @@ vx_bool ownIsValidReference(vx_reference ref)
         {
             VX_PRINT(VX_ZONE_INFO, "Not a valid reference!\n");
         }
-#ifdef LDRA_UNTESTABLE_CODE
-/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM001 */
         else
         {
             /* do nothing as ret is already initialized */
         }
-#endif
     }
     else
     {
@@ -195,7 +192,7 @@ static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_share
 
     /* Note: the obj_desc is not checked for NULL here because
      * it is checked in the previous logic */
-    switch (ref->type)
+    switch (ref->type) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR001 */
     {
         case (vx_enum)VX_TYPE_ARRAY:
         {
@@ -638,7 +635,7 @@ vx_reference ownCreateReference(vx_context context, vx_enum ref_type, vx_enum re
     if (ref != NULL)
     {
         status = ownInitReference(ref, context, ref_type, scope);
-        if(status==(vx_status)VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR002 */
         {
             /* Setting it as void since return value 'ref count' is not used further */
             (void)ownIncrementReference(ref, reftype);
@@ -1616,7 +1613,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                         total_size += mem_size[j];
                     }
 
-                    if (total_size != size[i])
+                    if (total_size != size[i]) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR003 */
                     {
                         VX_PRINT(VX_ZONE_ERROR,
                                  "[Entry %d] Memory size mis-match: Expecting [%d] "
@@ -1629,7 +1626,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
             else if (ref->type == (vx_enum)VX_TYPE_IMAGE)
             {
-                if (total_size != size[0])
+                if (total_size != size[0]) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR004 */
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                              "[Entry %d] Memory size mis-match: Expecting [%d] "
@@ -1641,11 +1638,11 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
             else
             {
-                if (mem_size != NULL)
+                if (mem_size != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR005 */
                 {
                     for (i = 0; i < numMemElem; i++)
                     {
-                        if (mem_size[i] != size[i])
+                        if (mem_size[i] != size[i]) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR006 */
                         {
                             VX_PRINT(VX_ZONE_ERROR,
                                     "[Entry %d] Memory size mis-match: Expecting [%d] "
@@ -1725,7 +1722,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
             else
             {
-                if (mem_ptr != NULL)
+                if (mem_ptr != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR007 */
                 {
                     for (i = 0; i < numMemElem; i++)
                     {
@@ -2070,7 +2067,8 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
         if ((status == (vx_status)VX_SUCCESS) &&
             (ref->type != (vx_enum)VX_TYPE_PYRAMID))
         {
-            if ((mem_ptr != NULL) && (mem_size != NULL))
+            if ((mem_ptr != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR008 */
+            && (mem_size != NULL)) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR009 */
             {
                 for (i = 0; i < numMemElem; i++)
                 {
