@@ -146,7 +146,7 @@ static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
     {
         status = tivxMutexLock(g_target_kernel_lock);
 
-        if ((vx_status)VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status) /* TIOVX-1932- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR001 */
         {
             for(i=0; i<dimof(g_target_kernel_table); i++)
             {
@@ -235,7 +235,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
     if (NULL != target_kernel)
     {
         mutex_status = tivxMutexLock(g_target_kernel_lock);
-        if ((vx_status)VX_SUCCESS == mutex_status)
+        if ((vx_status)VX_SUCCESS == mutex_status) /* TIOVX-1932- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR002 */
         {
             for(i=0; i<dimof(g_target_kernel_table); i++)
             {
@@ -275,7 +275,7 @@ tivx_target_kernel ownTargetKernelGet(vx_enum kernel_id, volatile char *kernel_n
 
     status = tivxMutexLock(g_target_kernel_lock);
 
-    if ((vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1932- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR003 */
     {
         tivx_target_kernel tmp_knl = NULL;
 
