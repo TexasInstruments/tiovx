@@ -146,9 +146,9 @@ tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, vola
     {
         status = tivxMutexLock(g_target_kernel_instance_lock);
 
-        if(status == (vx_status)VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS) /* TIOVX-1936- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_INSTANCE_UBR001 */
         {
-            for(i=0; i<dimof(g_target_kernel_instance_table); i++)
+            for(i=0; i<dimof(g_target_kernel_instance_table); i++) /* TIOVX-1936- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_INSTANCE_UBR002 */
             {
                 tmp_kernel_instance = &g_target_kernel_instance_table[i];
                 if(tmp_kernel_instance->kernel_id == (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID)
