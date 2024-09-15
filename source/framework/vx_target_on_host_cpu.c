@@ -97,7 +97,7 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
             node_obj_desc_id = cmd_obj_desc->obj_desc_id[0];
             node_obj_desc = (tivx_obj_desc_node_t*)ownObjDescGet(node_obj_desc_id);
 
-            if( ownObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) != 0)
+            if( ownObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) != 0) /* TIOVX-1937- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR001 */
             {
                 uint64_t timestamp;
                 vx_action action;
@@ -120,7 +120,7 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
 
             data_ref_q = (tivx_data_ref_queue)ownReferenceGetHandleFromObjDescId(cmd_obj_desc->obj_desc_id[0]);
 
-            if( data_ref_q != NULL )
+            if( data_ref_q != NULL ) /* TIOVX-1937- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR002 */
             {
                 uint64_t timestamp;
 
