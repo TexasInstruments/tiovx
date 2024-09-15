@@ -215,11 +215,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
                     (vx_enum)TIVX_OBJ_DESC_TENSOR, vxCastRefFromTensor(tensor));
                 if(tensor->base.obj_desc==NULL)
                 {
-                    status = vxReleaseTensor(&tensor);
-                    if((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to tensor object\n");
-                    }
+                    (void)vxReleaseTensor(&tensor);
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate tensor object descriptor\n");
@@ -604,8 +600,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
         if (NULL == view_end)
         {
             for (i = 0; i < number_of_dims; i++)
-            {
-                if (NULL != obj_desc)
+            { 
+                if (NULL != obj_desc) /* TIOVX-1938- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR001 */
                 {
                     view_end_map[i] = obj_desc->dimensions[i];
                 }
@@ -644,7 +640,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
         map_addr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
         map_size = obj_desc->mem_size;
 
-        if (NULL != map_addr)
+        if (NULL != map_addr) /* TIOVX-1938- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR002 */
         {
             uint32_t offset;
 
