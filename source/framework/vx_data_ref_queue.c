@@ -94,7 +94,7 @@ vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_refe
         ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
         status = ownObjDescQueueEnqueue(queue_obj_desc_id, ref_obj_desc_id);
-        if(status==(vx_status)VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR001 */
         {
             blocked_nodes.num_nodes = 0;
 
@@ -105,7 +105,7 @@ vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_refe
 
         ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
-        if(status==(vx_status)VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR002 */
         {
             uint32_t node_id;
 
@@ -297,7 +297,7 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
     vx_status status=(vx_status)VX_SUCCESS;
     vx_bool do_break = (vx_bool)vx_false_e;
 
-    if(ref->type == (vx_enum)TIVX_TYPE_DATA_REF_Q)
+    if(ref->type == (vx_enum)TIVX_TYPE_DATA_REF_Q) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR003 */
     {
         tivx_data_ref_queue data_ref_q = (tivx_data_ref_queue)ref;
 
@@ -322,7 +322,7 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
                 }
 #endif
             }
-            if((vx_status)VX_SUCCESS == status)
+            if((vx_status)VX_SUCCESS == status) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR004 */
             {
                 if(data_ref_q->obj_desc_cmd[i] != NULL)
                 {
@@ -345,13 +345,13 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
             }
 #endif
         }
-        if(status == (vx_status)VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR005 */
         {
             if((vx_enum)data_ref_q->acquire_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
             {
                 status = ownObjDescQueueRelease(&data_ref_q->acquire_q_obj_desc_id);
             }
-            if(status == (vx_status)VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR006 */
             {
                 if((vx_enum)data_ref_q->release_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
@@ -372,8 +372,8 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
     {
         ref = (tivx_data_ref_queue)ownCreateReference(graph->base.context,
             (vx_enum)TIVX_TYPE_DATA_REF_Q, (vx_enum)VX_INTERNAL, &graph->base);
-        if ((vxGetStatus((vx_reference)ref) == (vx_status)VX_SUCCESS) &&
-            (ref->base.type == (vx_enum)TIVX_TYPE_DATA_REF_Q))
+        if ((vxGetStatus((vx_reference)ref) == (vx_status)VX_SUCCESS) && /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR007 */
+            (ref->base.type == (vx_enum)TIVX_TYPE_DATA_REF_Q)) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR008 */
         {
             uint32_t pipe_id;
 
