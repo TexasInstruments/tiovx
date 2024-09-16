@@ -347,7 +347,7 @@ TEST_WITH_ARG(tivxTimestamp, testTimestampPropagation, Arg, STREAMING_PARAMETERS
                 0
             );
 
-        tivxNodeSendCommand(n1, 0,
+        tivxNodeSendCommand(n1, TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES,
             TIVX_SCALAR_INTERMEDIATE_REPLICATE_QUERY, refs, 1u);
         replicate_struct = (tivx_scalar_intermediate_control_t*)data_ptr;
 
