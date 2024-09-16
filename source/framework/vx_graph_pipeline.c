@@ -332,16 +332,11 @@ vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
         if(num_enqueue>0U)
         {
             /* Note: keeping compatibility with deprecated API */
-            if((flags & TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP) != 0U)
+            if( graph->parameters[graph_parameter_index].node->obj_desc[0]->pipeup_buf_idx > 1U )
             {
                 /* if enqueing buffers for pipeup then dont schedule graph,
                  * just enqueue the buffers
                  */
-                graph->parameters[graph_parameter_index].node->obj_desc[0]->pipeup_buf_idx--;
-            }
-            /* Note: once pipeup_buf_idx == 1, the source node is in steady state */
-            else if (graph->parameters[graph_parameter_index].node->obj_desc[0]->pipeup_buf_idx > 1U)
-            {
                 graph->parameters[graph_parameter_index].node->obj_desc[0]->pipeup_buf_idx--;
             }
             else

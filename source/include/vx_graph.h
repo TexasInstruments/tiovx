@@ -37,17 +37,6 @@ extern "C" {
  */
 #define TIVX_DEFAULT_GRAPH_TIMEOUT         (TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
 
-/*!
- * \brief Flag used with tivxGraphParameterEnqueueReadyRef to
- *        indicate that this enqueue call if for pipeup phase
- *
- * Typically used only with source nodes which have a pipeup
- * requirement
- *
- * \ingroup group_vx_graph_cfg
- */
-#define TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP (0x00000001u)
-
 /*! \brief The list of graph parameters. */
 typedef struct {
     /*! \brief The reference to the node which has the parameter */
