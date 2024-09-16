@@ -45,11 +45,7 @@ IDIRS       += $(PSDK_PATH)/app_utils
 ifeq ($(RTOS_SDK), mcu_plus_sdk)
 IDIRS       += $(APP_UTILS_PATH)/utils/rtos/src
 else
-ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J742S2))
 IDIRS       += $(PDK_PATH)/packages/ti/osal/soc
-else
-IDIRS       += $(PDK_PATH)/packages/ti/osal/soc/${SOC}
-endif
 endif
 
 DEFS += CORE_DSP

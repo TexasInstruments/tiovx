@@ -84,8 +84,8 @@ static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
 static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     APP_IPC_CPU_C7x_2,
     APP_IPC_CPU_C7x_1,
-    APP_IPC_CPU_MCU2_0, /* in j784s4, TIOVX CPU IPU1-0 is mapped to vision_apps/pdk CPU mcu2-0 */
-    APP_IPC_CPU_MCU2_1, /* in j784s4, TIOVX CPU IPU1-1 is mapped to vision_apps/pdk CPU mcu2-1 */
+    APP_IPC_CPU_MCU2_0, /* in j742s2, TIOVX CPU IPU1-0 is mapped to vision_apps/pdk CPU mcu2-0 */
+    APP_IPC_CPU_MCU2_1, /* in j742s2, TIOVX CPU IPU1-1 is mapped to vision_apps/pdk CPU mcu2-1 */
     APP_IPC_CPU_MPU1_0,
     APP_IPC_CPU_MCU3_0,
     APP_IPC_CPU_MCU3_1,

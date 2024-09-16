@@ -1,7 +1,7 @@
 /*
  *******************************************************************************
  *
- * Copyright (C) 2023 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2024 Texas Instruments Incorporated - http://www.ti.com/
  * ALL RIGHTS RESERVED
  *
  *******************************************************************************

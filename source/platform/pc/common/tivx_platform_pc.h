@@ -90,7 +90,6 @@ extern "C" {
 #elif defined (SOC_J722S)
 #define TIVX_PLATFORM_MAX_TARGETS            (44u)
 #elif defined (SOC_J742S2)
-/* TODO: Optimize this value once fully complete */
 #define TIVX_PLATFORM_MAX_TARGETS            (63u)
 #endif
 
