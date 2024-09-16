@@ -58,6 +58,20 @@ TEST(tivxUserDataObject, testValidSize)
     ASSERT(user_data_object == 0);
 }
 
+TEST(tivxUserDataObject, testObjArray)
+{
+    vx_context context = context_->vx_context_;
+    vx_user_data_object user_data_object = 0;
+    vx_object_array objarr;
+
+    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, NULL, sizeof(wb_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+    ASSERT_VX_OBJECT(objarr = vxCreateObjectArray(context, (vx_reference)(user_data_object), 4), VX_TYPE_OBJECT_ARRAY);
+
+    VX_CALL(vxReleaseObjectArray(&objarr));
+    VX_CALL(vxReleaseUserDataObject(&user_data_object));
+}
+
 TEST(tivxUserDataObject, negativeTestCreateUserDataObject)
 {
     vx_context context = context_->vx_context_;
@@ -170,6 +184,7 @@ TEST(tivxUserDataObject, negativeTestSetUserDataObjectAttribute)
 TESTCASE_TESTS(
     tivxUserDataObject,
     testValidSize,
+    testObjArray,
     negativeTestCreateUserDataObject,
     negativeTestQueryUserDataObject,
     negativeTestCopyUserDataObject,

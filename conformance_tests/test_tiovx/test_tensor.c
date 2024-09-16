@@ -89,6 +89,30 @@ TEST_WITH_ARG(tivxTensor, testCreateTensor, Arg,
     VX_CALL(vxReleaseTensor(&tensor_int64));
 }
 
+TEST(tivxTensor, testObjArray)
+{
+    vx_context context = context_->vx_context_;
+    vx_tensor tensor_uint8 = 0;
+    vx_size i;
+    vx_object_array objarr;
+
+    vx_size *dims = (vx_size*)ct_alloc_mem(TENSOR_DIMS_NUM * sizeof(vx_size));
+
+    for(i = 0; i < TENSOR_DIMS_NUM; i++)
+    {
+        dims[i] = TENSOR_DIMS_LENGTH;
+    }
+
+    ASSERT_VX_OBJECT(tensor_uint8 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT8, 0), (enum vx_type_e)VX_TYPE_TENSOR);
+
+    ASSERT_VX_OBJECT(objarr = vxCreateObjectArray(context, (vx_reference)(tensor_uint8), 4), VX_TYPE_OBJECT_ARRAY);
+
+    ct_free_mem(dims);
+
+    VX_CALL(vxReleaseObjectArray(&objarr));
+    VX_CALL(vxReleaseTensor(&tensor_uint8));
+}
+
 TEST_WITH_ARG(tivxTensor, testQueryTensor, Arg,
     PARAMETERS
 )
@@ -605,6 +629,7 @@ TEST(tivxTensor, negativeTestQueryTensorNegativeCases)
 TESTCASE_TESTS(
     tivxTensor,
     testCreateTensor,
+    testObjArray,
     testQueryTensor,
     testCopyTensor,
     testMapTensor,
