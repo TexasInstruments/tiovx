@@ -2089,8 +2089,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                     {
                         if (replicate[p] == (vx_bool)vx_true_e)
                         {
-                            if ((ownIsValidSpecificReference(ref, type) == (vx_bool)vx_true_e) ||
-                                (((vx_enum)VX_TYPE_REFERENCE == type) && (NULL != ref)))
+                            if (((NULL != ref) && ((vx_enum)VX_TYPE_REFERENCE == type)) ||
+                                (ownIsValidSpecificReference(ref, type) == (vx_bool)vx_true_e))
                             {
                                 vx_size items = 0;
                                 if (ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
