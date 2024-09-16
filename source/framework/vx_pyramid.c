@@ -609,10 +609,10 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
         }
     }
 
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM006 */
     if ((vx_status)VX_SUCCESS != status)
     {
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM006 */
         for (j = 0; j < i; j ++)
         {
             if (NULL != prmd->img[j])
@@ -625,8 +625,8 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
                     (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
             }
         }
-    }
 #endif
+    }
 
     return (status);
 }
