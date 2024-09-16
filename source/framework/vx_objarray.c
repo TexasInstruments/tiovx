@@ -109,14 +109,7 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(
 
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        status = vxReleaseObjectArray(&objarr);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM001 */
-                        if((vx_status)VX_SUCCESS != status)
-                        {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of ObjectArray object\n");
-                        }
-#endif
+                        (void)vxReleaseObjectArray(&objarr);
 
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                             "Could not allocate objarr object descriptor\n");
@@ -193,11 +186,7 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
 /* TIOVX-1859- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT003 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
-                        status = vxReleaseObjectArray(&objarr);
-                        if((vx_status)VX_SUCCESS != status)
-                        {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of ObjectArray object\n");
-                        }
+                        (void)vxReleaseObjectArray(&objarr);
 
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                             "Could not allocate objarr object descriptor\n");

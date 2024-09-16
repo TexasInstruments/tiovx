@@ -310,14 +310,9 @@ static vx_status ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
                external one */
             (void)ownDecrementReference(delay->refs[i], (vx_enum)VX_INTERNAL);
 
-            status =  vxReleaseReference(&delay->refs[i]);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM008 */
-            if((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to release delay reference \n");
-            }
-#endif
+            (void)vxReleaseReference(&delay->refs[i]);
+
+            status = (vx_status)VX_SUCCESS;
         }
     }
 
@@ -554,16 +549,8 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                     }
                     if(status!=(vx_status)VX_SUCCESS)
                     {
-                        vx_status tmp_status;
                         (void)ownReleaseRefFromDelay(delay, i);
-                        tmp_status = vxReleaseDelay(&delay);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM015 */
-                        if((vx_status)VX_SUCCESS != tmp_status)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,"Failed to release a reference to delay object\n");
-                        }
-#endif
+                        (void)vxReleaseDelay(&delay);
 
                         VX_PRINT(VX_ZONE_ERROR, "Could not allocate delay object descriptor\n");
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,

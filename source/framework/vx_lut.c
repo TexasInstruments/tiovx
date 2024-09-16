@@ -31,7 +31,6 @@ VX_API_ENTRY vx_lut VX_API_CALL vxCreateLUT(
     vx_reference ref = NULL;
     vx_size dim = 0;
     tivx_obj_desc_lut_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -82,11 +81,7 @@ VX_API_ENTRY vx_lut VX_API_CALL vxCreateLUT(
                     (vx_enum)TIVX_OBJ_DESC_LUT, vxCastRefFromLUT(lut));
                 if(obj_desc==NULL)
                 {
-                    status = vxReleaseLUT(&lut);
-                    if((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to LUT object\n");
-                    }
+                    (void)vxReleaseLUT(&lut);
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate lut object descriptor\n");

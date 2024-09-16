@@ -61,15 +61,7 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
                 if (status != (vx_status)VX_SUCCESS)
                 {
                     vxAddLogEntry(vxCastRefFromGraph(graph), status, "Kernel %d Parameter %u is invalid.\n", kernelenum, p);
-                    status = vxReleaseNode(&node);
-/*LDRA_NOANALYSIS*/
-/* TIOVX-1809- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_API_UTJT001 */
-                    if((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to node, node might not be a vx_node\n");
-                    }
-/* END: TIOVX_CODE_COVERAGE_NODE_API_UTJT001 */
-/*LDRA_ANALYSIS*/
+                    (void)vxReleaseNode(&node);
                     node = NULL;
                     break;
                 }
@@ -82,15 +74,7 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
         }
         if (release_kernel != 0U)
         {
-            status = vxReleaseKernel(&kernel);
-/*LDRA_NOANALYSIS*/
-/* TIOVX-1809- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_API_UTJT002 */
-            if((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to kernel, kernel might not be a vx_kernel\n");
-            }
-/* END: TIOVX_CODE_COVERAGE_NODE_API_UTJT002 */
-/*LDRA_ANALYSIS*/
+            (void)vxReleaseKernel(&kernel);
         }
     }
     else
@@ -125,21 +109,12 @@ vx_node tivxCreateNodeByKernelName(vx_graph graph,
     vx_node node = NULL;
     vx_kernel kernel;
     vx_context context = vxGetContext(vxCastRefFromGraph(graph));
-    vx_status status = (vx_status)VX_SUCCESS;
     kernel = vxGetKernelByName(context, kernel_name);
     if(kernel!=NULL)
     {
         /* kernel is released inside vxCreateNodeByStructure */
         node =  vxCreateNodeByStructure(graph, kernel, 0, params, num);
-        status = vxReleaseKernel(&kernel);
-/*LDRA_NOANALYSIS*/
-/* TIOVX-1809- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_API_UTJT003 */
-        if((vx_status)VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to kernel, kernel might not be a vx_kernel\n");
-        }
-/* END: TIOVX_CODE_COVERAGE_NODE_API_UTJT003 */
-/*LDRA_ANALYSIS*/
+        (void)vxReleaseKernel(&kernel);
     }
     else
     {
@@ -163,7 +138,6 @@ VX_API_ENTRY vx_node VX_API_CALL vxChannelExtractNode(vx_graph graph,
                              vx_image output)
 {
     vx_context context = vxGetContext(vxCastRefFromGraph(graph));
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar scalar = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &channelNum);
     vx_reference params[] = {
         vxCastRefFromImage(input),
@@ -174,11 +148,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxChannelExtractNode(vx_graph graph,
                                            (vx_enum)VX_KERNEL_CHANNEL_EXTRACT,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&scalar); /* node hold reference */
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, scalar might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&scalar); /* node hold reference */
+
     return node;
 }
 
@@ -244,7 +215,6 @@ VX_API_ENTRY vx_node VX_API_CALL vxPhaseNode(vx_graph graph, vx_image grad_x, vx
 VX_API_ENTRY vx_node VX_API_CALL vxScaleImageNode(vx_graph graph, vx_image src, vx_image dst, vx_enum type)
 {
     vx_context context = vxGetContext(vxCastRefFromGraph(graph));
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar stype = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &type);
     vx_reference params[] = {
         vxCastRefFromImage(src),
@@ -255,11 +225,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxScaleImageNode(vx_graph graph, vx_image src, 
                                            (vx_enum)VX_KERNEL_SCALE_IMAGE,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&stype);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, stype might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&stype);
+
     return node;
 }
 
@@ -414,7 +381,6 @@ VX_API_ENTRY vx_node VX_API_CALL vxGaussian3x3Node(vx_graph graph, vx_image inpu
 VX_API_ENTRY vx_node VX_API_CALL vxNonLinearFilterNode(vx_graph graph, vx_enum function, vx_image input, vx_matrix mask, vx_image output)
 {
     vx_scalar func = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)), (vx_enum)VX_TYPE_ENUM, &function);
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_reference params[] = {
         vxCastRefFromScalar(func),
         vxCastRefFromImage(input),
@@ -427,11 +393,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxNonLinearFilterNode(vx_graph graph, vx_enum f
         params,
         dimof(params));
 
-    status = vxReleaseScalar(&func);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, func might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&func);
+
     return node;
 }
 
@@ -514,15 +477,11 @@ VX_API_ENTRY vx_node VX_API_CALL vxAccumulateWeightedImageNode(vx_graph graph, v
 
 VX_API_ENTRY vx_node VX_API_CALL vxAccumulateWeightedImageNodeX(vx_graph graph, vx_image input, vx_float32 alpha, vx_image accum)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar salpha = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)), (vx_enum)VX_TYPE_FLOAT32, &alpha);
     vx_node node = vxAccumulateWeightedImageNode(graph, input, salpha, accum);
 
-    status = vxReleaseScalar(&salpha);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar object\n");
-    }
+    (void)vxReleaseScalar(&salpha);
+
     return node;
 }
 
@@ -541,15 +500,11 @@ VX_API_ENTRY vx_node VX_API_CALL vxAccumulateSquareImageNode(vx_graph graph, vx_
 
 VX_API_ENTRY vx_node VX_API_CALL vxAccumulateSquareImageNodeX(vx_graph graph, vx_image input, vx_uint32 shift, vx_image accum)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar scalar = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)), (vx_enum)VX_TYPE_UINT32, &shift);
     vx_node node = vxAccumulateSquareImageNode(graph, input, scalar, accum);
 
-    status = vxReleaseScalar(&scalar);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar object\n");
-    }
+    (void)vxReleaseScalar(&scalar);
+
     return node;
 }
 
@@ -576,7 +531,6 @@ VX_API_ENTRY vx_node VX_API_CALL vxMinMaxLocNode(vx_graph graph,
 
 VX_API_ENTRY vx_node VX_API_CALL vxConvertDepthNode(vx_graph graph, vx_image input, vx_image output, vx_enum policy, vx_scalar shift)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar pol = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)), (vx_enum)VX_TYPE_ENUM, &policy);
     vx_reference params[] = {
         vxCastRefFromImage(input),
@@ -588,11 +542,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxConvertDepthNode(vx_graph graph, vx_image inp
                                    (vx_enum)VX_KERNEL_CONVERTDEPTH,
                                    params,
                                    dimof(params));
-    status = vxReleaseScalar(&pol);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, pol might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&pol);
+
     return node;
 }
 
@@ -600,7 +551,6 @@ VX_API_ENTRY vx_node VX_API_CALL vxCannyEdgeDetectorNode(vx_graph graph, vx_imag
                                 vx_int32 gradient_size, vx_enum norm_type,
                                 vx_image output)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar gs = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)), (vx_enum)VX_TYPE_INT32, &gradient_size);
     vx_scalar nt = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)), (vx_enum)VX_TYPE_ENUM, &norm_type);
     vx_reference params[] = {
@@ -614,16 +564,10 @@ VX_API_ENTRY vx_node VX_API_CALL vxCannyEdgeDetectorNode(vx_graph graph, vx_imag
                                            (vx_enum)VX_KERNEL_CANNY_EDGE_DETECTOR,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&gs);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, gs might not be a vx_scalar\n");
-    }
-    status = vxReleaseScalar(&nt);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, nt might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&gs);
+
+    (void)vxReleaseScalar(&nt);
+
     return node;
 }
 
@@ -680,7 +624,6 @@ VX_API_ENTRY vx_node VX_API_CALL vxNotNode(vx_graph graph, vx_image input, vx_im
 
 VX_API_ENTRY vx_node VX_API_CALL vxMultiplyNode(vx_graph graph, vx_image in1, vx_image in2, vx_scalar scale, vx_enum overflow_policy, vx_enum rounding_policy, vx_image out)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_context context = vxGetContext(vxCastRefFromGraph(graph));
     vx_scalar spolicy = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &overflow_policy);
     vx_scalar rpolicy = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &rounding_policy);
@@ -696,22 +639,15 @@ VX_API_ENTRY vx_node VX_API_CALL vxMultiplyNode(vx_graph graph, vx_image in1, vx
                                            (vx_enum)VX_KERNEL_MULTIPLY,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&spolicy);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, spolicy might not be a vx_scalar\n");
-    }
-    status = vxReleaseScalar(&rpolicy);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, rpolicy might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&spolicy);
+
+    (void)vxReleaseScalar(&rpolicy);
+
     return node;
 }
 
 VX_API_ENTRY vx_node VX_API_CALL vxAddNode(vx_graph graph, vx_image in1, vx_image in2, vx_enum policy, vx_image out)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_context context = vxGetContext(vxCastRefFromGraph(graph));
     vx_scalar spolicy = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &policy);
     vx_reference params[] = {
@@ -724,17 +660,13 @@ VX_API_ENTRY vx_node VX_API_CALL vxAddNode(vx_graph graph, vx_image in1, vx_imag
                                            (vx_enum)VX_KERNEL_ADD,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&spolicy);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, spolicy might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&spolicy);
+
     return node;
 }
 
 VX_API_ENTRY vx_node VX_API_CALL vxSubtractNode(vx_graph graph, vx_image in1, vx_image in2, vx_enum policy, vx_image out)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_context context = vxGetContext(vxCastRefFromGraph(graph));
     vx_scalar spolicy = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &policy);
     vx_reference params[] = {
@@ -747,17 +679,13 @@ VX_API_ENTRY vx_node VX_API_CALL vxSubtractNode(vx_graph graph, vx_image in1, vx
                                            (vx_enum)VX_KERNEL_SUBTRACT,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&spolicy);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, spolicy might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&spolicy);
+
     return node;
 }
 
 VX_API_ENTRY vx_node VX_API_CALL vxWarpAffineNode(vx_graph graph, vx_image input, vx_matrix matrix, vx_enum type, vx_image output)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_context context = vxGetContext(vxCastRefFromGraph(graph));
     vx_scalar stype = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &type);
     vx_reference params[] = {
@@ -770,25 +698,14 @@ VX_API_ENTRY vx_node VX_API_CALL vxWarpAffineNode(vx_graph graph, vx_image input
                                            (vx_enum)VX_KERNEL_WARP_AFFINE,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&stype);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, stype might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&stype);
+
     if (vxGetStatus(vxCastRefFromNode(node)) == (vx_status)VX_SUCCESS)
     {
         /* default value for Warp node */
         /* change node attribute as kernel attributes alreay copied to node */
         /* in tivxCreateNodeByKernelEnum() */
-        status = ownSetNodeAttributeValidRectReset(node, (vx_bool)vx_true_e);
-/*LDRA_NOANALYSIS*/
-/* TIOVX-1809- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_API_UTJT004 */
-        if((vx_status)VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to set the attribute VX_NODE_VALID_RECT_RESET in node\n");
-        }
-/* END: TIOVX_CODE_COVERAGE_NODE_API_UTJT004 */
-/*LDRA_ANALYSIS*/
+        (void)ownSetNodeAttributeValidRectReset(node, (vx_bool)vx_true_e);
     }
 
     return node;
@@ -796,7 +713,6 @@ VX_API_ENTRY vx_node VX_API_CALL vxWarpAffineNode(vx_graph graph, vx_image input
 
 VX_API_ENTRY vx_node VX_API_CALL vxWarpPerspectiveNode(vx_graph graph, vx_image input, vx_matrix matrix, vx_enum type, vx_image output)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_context context = vxGetContext(vxCastRefFromGraph(graph));
     vx_scalar stype = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &type);
     vx_reference params[] = {
@@ -809,25 +725,14 @@ VX_API_ENTRY vx_node VX_API_CALL vxWarpPerspectiveNode(vx_graph graph, vx_image 
                                            (vx_enum)VX_KERNEL_WARP_PERSPECTIVE,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&stype);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, stype might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&stype);
+
     if (vxGetStatus(vxCastRefFromNode(node)) == (vx_status)VX_SUCCESS)
     {
         /* default value for Warp node */
         /* change node attribute as kernel attributes alreay copied to node */
         /* in tivxCreateNodeByKernelEnum() */
-        status = ownSetNodeAttributeValidRectReset(node, (vx_bool)vx_true_e);
-/*LDRA_NOANALYSIS*/
-/* TIOVX-1809- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_API_UTJT005 */
-        if((vx_status)VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to set the attribute VX_NODE_VALID_RECT_RESET in node\n");
-        }
-/* END: TIOVX_CODE_COVERAGE_NODE_API_UTJT005 */
-/*LDRA_ANALYSIS*/
+        (void)ownSetNodeAttributeValidRectReset(node, (vx_bool)vx_true_e);
     }
 
     return node;
@@ -843,7 +748,6 @@ VX_API_ENTRY vx_node VX_API_CALL vxHarrisCornersNode(vx_graph graph,
                             vx_array corners,
                             vx_scalar num_corners)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar win = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)), (vx_enum)VX_TYPE_INT32, &gradient_size);
     vx_scalar blk = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)), (vx_enum)VX_TYPE_INT32, &block_size);
     vx_reference params[] = {
@@ -860,22 +764,15 @@ VX_API_ENTRY vx_node VX_API_CALL vxHarrisCornersNode(vx_graph graph,
                                            (vx_enum)VX_KERNEL_HARRIS_CORNERS,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&win);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, win might not be a vx_scalar\n");
-    }
-    status = vxReleaseScalar(&blk);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, blk might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&win);
+
+    (void)vxReleaseScalar(&blk);
+
     return node;
 }
 
 VX_API_ENTRY vx_node VX_API_CALL vxFastCornersNode(vx_graph graph, vx_image input, vx_scalar strength_thresh, vx_bool nonmax_suppression, vx_array corners, vx_scalar num_corners)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar nonmax = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)),(vx_enum)VX_TYPE_BOOL, &nonmax_suppression);
     vx_reference params[] = {
             vxCastRefFromImage(input),
@@ -888,11 +785,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxFastCornersNode(vx_graph graph, vx_image inpu
                                            (vx_enum)VX_KERNEL_FAST_CORNERS,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&nonmax);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, nonmax might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&nonmax);
+
     return node;
 }
 
@@ -908,7 +802,6 @@ VX_API_ENTRY vx_node VX_API_CALL vxOpticalFlowPyrLKNode(vx_graph graph,
                                vx_scalar use_initial_estimate,
                                vx_size window_dimension)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar term = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)), (vx_enum)VX_TYPE_ENUM, &termination);
     vx_scalar winsize = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)), (vx_enum)VX_TYPE_SIZE, &window_dimension);
     vx_reference params[] = {
@@ -927,16 +820,10 @@ VX_API_ENTRY vx_node VX_API_CALL vxOpticalFlowPyrLKNode(vx_graph graph,
                                            (vx_enum)VX_KERNEL_OPTICAL_FLOW_PYR_LK,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&term);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, term might not be a vx_scalar\n");
-    }
-    status = vxReleaseScalar(&winsize);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, winsize might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&term);
+
+    (void)vxReleaseScalar(&winsize);
+
     return node;
 }
 
@@ -946,7 +833,6 @@ VX_API_ENTRY vx_node VX_API_CALL vxRemapNode(vx_graph graph,
                     vx_enum policy,
                     vx_image output)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar spolicy = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)), (vx_enum)VX_TYPE_ENUM, &policy);
     vx_reference params[] = {
             vxCastRefFromImage(input),
@@ -958,25 +844,14 @@ VX_API_ENTRY vx_node VX_API_CALL vxRemapNode(vx_graph graph,
                                            (vx_enum)VX_KERNEL_REMAP,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&spolicy);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, spolicy might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&spolicy);
+
     if (vxGetStatus(vxCastRefFromNode(node)) == (vx_status)VX_SUCCESS)
     {
         /* default value for Remap node */
         /* change node attribute as kernel attributes alreay copied to node */
         /* in tivxCreateNodeByKernelEnum() */
-        status = ownSetNodeAttributeValidRectReset(node, (vx_bool)vx_true_e);
-/*LDRA_NOANALYSIS*/
-/* TIOVX-1809- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_API_UTJT006 */
-        if((vx_status)VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to set the attribute VX_NODE_VALID_RECT_RESET in node\n");
-        }
-/* END: TIOVX_CODE_COVERAGE_NODE_API_UTJT006 */
-/*LDRA_ANALYSIS*/
+        (void)ownSetNodeAttributeValidRectReset(node, (vx_bool)vx_true_e);
     }
 
     return node;
@@ -984,7 +859,6 @@ VX_API_ENTRY vx_node VX_API_CALL vxRemapNode(vx_graph graph,
 
 VX_API_ENTRY vx_node VX_API_CALL vxHalfScaleGaussianNode(vx_graph graph, vx_image input, vx_image output, vx_int32 kernel_size)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar ksize = vxCreateScalar(vxGetContext(vxCastRefFromGraph(graph)), (vx_enum)VX_TYPE_INT32, &kernel_size);
     vx_reference params[] = {
             vxCastRefFromImage(input),
@@ -995,10 +869,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxHalfScaleGaussianNode(vx_graph graph, vx_imag
                                            (vx_enum)VX_KERNEL_HALFSCALE_GAUSSIAN,
                                            params,
                                            dimof(params));
-    status = vxReleaseScalar(&ksize);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to scalar, ksize might not be a vx_scalar\n");
-    }
+    (void)vxReleaseScalar(&ksize);
+
     return node;
 }

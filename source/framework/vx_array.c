@@ -118,7 +118,6 @@ VX_API_ENTRY vx_array VX_API_CALL vxCreateArray(
 {
     vx_array arr = NULL;
     vx_reference ref =NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -143,11 +142,7 @@ VX_API_ENTRY vx_array VX_API_CALL vxCreateArray(
                     (vx_enum)TIVX_OBJ_DESC_ARRAY, vxCastRefFromArray(arr));
                 if(arr->base.obj_desc==NULL)
                 {
-                    status = vxReleaseArray(&arr);
-                    if((vx_status)VX_SUCCESS != status) /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR003 */
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
-                    }
+                    (void)vxReleaseArray(&arr);
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate arr object descriptor\n");
@@ -171,7 +166,6 @@ VX_API_ENTRY vx_array VX_API_CALL vxCreateVirtualArray(
     vx_array arr = NULL;
     vx_reference ref = NULL;
     vx_context context;
-    vx_status status= (vx_status)VX_SUCCESS;
 
     if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
@@ -198,11 +192,7 @@ VX_API_ENTRY vx_array VX_API_CALL vxCreateVirtualArray(
                 (vx_enum)TIVX_OBJ_DESC_ARRAY, vxCastRefFromArray(arr));
             if(arr->base.obj_desc==NULL)
             {
-                status = vxReleaseArray(&arr);
-                if((vx_status)VX_SUCCESS != status) /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR004 */
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference of array object\n");
-                }
+                (void)vxReleaseArray(&arr);
 
                 vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                     "Could not allocate arr object descriptor\n");

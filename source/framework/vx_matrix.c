@@ -25,7 +25,6 @@ VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrix(
     vx_reference ref = NULL;
     vx_size dim = 0U;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -75,11 +74,7 @@ VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrix(
                     (vx_enum)TIVX_OBJ_DESC_MATRIX, vxCastRefFromMatrix(matrix));
                 if(obj_desc==NULL)
                 {
-                    status = vxReleaseMatrix(&matrix);
-                    if((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to matrix object\n");
-                    }
+                    (void)vxReleaseMatrix(&matrix);
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate matrix object descriptor\n");
@@ -113,11 +108,11 @@ VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrix(
 VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     vx_context context, vx_enum pattern, vx_size columns, vx_size rows)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     vx_matrix matrix = NULL;
     vx_size dim = 0U, i, j;
     vx_uint8 *pTempDataPtr;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     /* Check for errors */
     if(ownIsValidContext(context) != (vx_bool)vx_true_e)
@@ -181,11 +176,7 @@ VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 (vx_enum)TIVX_OBJ_DESC_MATRIX, vxCastRefFromMatrix(matrix));
             if(obj_desc==NULL)
             {
-                status = vxReleaseMatrix(&matrix);
-                if((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to matrix object\n");
-                }
+                (void)vxReleaseMatrix(&matrix);
 
                 vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                     "Could not allocate matrix object descriptor\n");

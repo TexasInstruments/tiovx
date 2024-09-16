@@ -128,10 +128,8 @@ VX_API_ENTRY vx_pyramid VX_API_CALL vxCreatePyramid(
                     (vx_enum)TIVX_OBJ_DESC_PYRAMID, vxCastRefFromPyramid(prmd));
                 if(obj_desc==NULL)
                 {
-                    if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd)) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR001 */
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
-                    }
+                    (void)vxReleasePyramid(&prmd);
+
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate prmd object descriptor\n");
                     prmd = (vx_pyramid)ownGetErrorObject(
@@ -158,14 +156,7 @@ VX_API_ENTRY vx_pyramid VX_API_CALL vxCreatePyramid(
 
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        status = vxReleasePyramid(&prmd);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM001 */
-                        if((vx_status)VX_SUCCESS != status)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
-                        }
-#endif
+                        (void)vxReleasePyramid(&prmd);
                     }
                 }
             }
@@ -266,10 +257,7 @@ VX_API_ENTRY vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
                 (vx_enum)TIVX_OBJ_DESC_PYRAMID, vxCastRefFromPyramid(prmd));
             if(obj_desc==NULL)
             {
-                if((vx_status)VX_SUCCESS != vxReleasePyramid(&prmd)) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR004 */
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to release reference to pyramid object\n");
-                }
+                (void)vxReleasePyramid(&prmd);
 
                 vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                     "Could not allocate prmd object descriptor\n");
