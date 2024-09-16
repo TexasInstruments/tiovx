@@ -1547,7 +1547,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
 
                                 status = ownGraphAddNode(graph, node, n);
 #ifdef LDRA_UNTESTABLE_CODE
-/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DEFENSIVE_PROG_UM001 */
+/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM006 */
                                 if((vx_status)VX_SUCCESS != status)
                                 {
                                     VX_PRINT(VX_ZONE_ERROR,"Failed to add graph node\n");
