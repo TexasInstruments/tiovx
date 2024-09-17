@@ -110,9 +110,9 @@ vx_enum tivxGetSelfCpuId(void)
     return (g_cpu_id);
 }
 
-void ownIpcGetCpuName(uint32_t app_cpu_id, char * name)
+vx_bool ownIsCpuEnabled(uint32_t app_cpu_id)
 {
-    strncpy(name, "TIVX_CPU_ID_DSP1", TIVX_TARGET_MAX_NAME);
+    return ((vx_bool)vx_true_e);
 }
 
 void ownIPCGetCpuMap(uint32_t blank_map[TIVX_CPU_ID_MAX])
