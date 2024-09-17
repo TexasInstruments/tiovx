@@ -23,6 +23,16 @@ void ownPlatformPrintf(const char *format)
     appLogPrintf(format);
 }
 
+void ownPlatformWriteLogString(vx_uint32 zone, const char *string)
+{
+    appLogWriteString(zone, string);
+}
+
+int ownPlatformIsWriteLogStringEnsbled()
+{
+    return appLogIsWriteCallbackEnabled();
+}
+
 void ownPlatformActivate(void)
 {
 

@@ -251,6 +251,21 @@ void ownPlatformDeInit(void);
 void ownPlatformPrintf(const char *format);
 
 /*!
+ * \brief Write given log string for the given debug zone
+ *
+ * \ingroup group_tivx_platform
+ */
+void ownPlatformWriteLogString(vx_uint32 zone, const char *string);
+
+/*!
+ * \brief Returns non zero if ownPlatformWriteLogString() function is enabled,
+ *        otherwise, ownPlatformPrintf() must be used
+ *
+ * \ingroup group_tivx_platform
+ */
+int ownPlatformIsWriteLogStringEnsbled();
+
+/*!
  * \brief Function to set the target configuration
  *
  *        It creates target and adds it to the list of targets supported

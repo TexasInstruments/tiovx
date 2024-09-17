@@ -113,10 +113,19 @@ void tivx_print(vx_enum zone, const char *format, ...)
 
         (void)memset(&ap, 0, sizeof(ap));
         (void)va_start(ap, format);
-        (void)snprintf(string, sizeof(string), " %s:", find_zone_name(zone));
-        size = (uint32_t)strlen(string);
-        (void)vsnprintf(&string[size], sizeof(string)-size, format, ap);
-        ownPlatformPrintf(string);
+
+        if(0 != ownPlatformIsWriteLogStringEnsbled())
+        {
+            (void)vsnprintf(&string[0], sizeof(string), format, ap);
+            ownPlatformWriteLogString((vx_uint32)zone, string);
+        }
+        else
+        {
+            (void)snprintf(string, sizeof(string), " %s:", find_zone_name(zone));
+            size = (uint32_t)strlen(string);
+            (void)vsnprintf(&string[size], sizeof(string)-size, format, ap);
+            ownPlatformPrintf(string);
+        }
         va_end(ap);
     }
 }
