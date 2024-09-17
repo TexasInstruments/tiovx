@@ -1183,6 +1183,8 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
             }
 #endif
             break;
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM008 */
         /* TIVX_CMD_NODE_USER_CALLBACK command is initated by the command sent from target via: \ref ownTargetNodeDescSendComplete()
            It is always executed on HOST target to check if there is any user callback, and if so executes it, otherwise, does nothing */
         case (vx_enum)TIVX_CMD_NODE_USER_CALLBACK:
@@ -1197,6 +1199,7 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                 g_target_cmd_desc_handler_for_host_f(cmd_obj_desc);
             }
             break;
+#endif
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM015 */
         default:
@@ -1220,7 +1223,8 @@ static void VX_CALLBACK ownTargetTaskMain(void *app_var)
     {
         status = ownTargetDequeueObjDesc(target,
                     &obj_desc_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM009 */
         if(    (status != (vx_status)VX_SUCCESS)
             || ((vx_enum)obj_desc_id == (vx_enum)TIVX_OBJ_DESC_INVALID) )
         {
@@ -1230,6 +1234,7 @@ static void VX_CALLBACK ownTargetTaskMain(void *app_var)
              */
         }
         else
+#endif
         {
             obj_desc = ownObjDescGet(obj_desc_id);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -1270,7 +1275,10 @@ static void VX_CALLBACK ownTargetTaskMain(void *app_var)
         }
     }
 
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM010 */
     target->targetExitDone = (vx_bool)vx_true_e;
+#endif
 }
 
 vx_status ownTargetCreate(vx_enum target_id, const tivx_target_create_params_t *params)
@@ -1329,7 +1337,10 @@ vx_status ownTargetCreate(vx_enum target_id, const tivx_target_create_params_t *
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM003 */
         if (status != (vx_status)VX_SUCCESS)
         {
+#ifdef HOST_ONLY
+/* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM007 */
             ownTargetFreeHandle(&target);
+#endif
         }
 #endif
     }
