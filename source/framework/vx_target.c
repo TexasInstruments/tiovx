@@ -369,10 +369,13 @@ static void ownTargetNodeDescNodeExecuteTargetKernel(
                             ((tivx_obj_desc_pyramid_t*)parent_obj_desc[i])->
                                 obj_desc_id[cnt]);
                     }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM016 */
                     else
                     {
                         params[i] = NULL;
                     }
+#endif
                 }
             }
             else if((is_prm_array_element & ((uint32_t)1U << i)) != 0U)
@@ -1036,13 +1039,18 @@ static vx_status ownTargetNodeDescNodeControl(
             {
                 status = ownTargetNodeSendCommand(cmd_obj_desc, cnt,
                     node_obj_desc);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM017 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
                     break;
                 }
+#endif
             }
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM007 */
         else
         {
             /* Replicated node idx must be less than total replicated nodes. */
@@ -1056,24 +1064,25 @@ static vx_status ownTargetNodeDescNodeControl(
                     VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
                 }
             }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM007 */
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "Incorrect node id\n");
                 status = (vx_status)VX_FAILURE;
             }
-#endif
         }
+#endif
     }
     else
     {
         /* For non-replicated node, ignore node-id field */
         status = ownTargetNodeSendCommand(cmd_obj_desc, 0U, node_obj_desc);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM018 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
         }
+#endif
     }
 
     return status;
