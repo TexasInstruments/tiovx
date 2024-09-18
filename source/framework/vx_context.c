@@ -113,7 +113,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
                              context->free_queue_memory,
                              TIVX_QUEUE_FLAG_BLOCK_ON_GET); /* blocking */
 
-    if (status == (vx_status)VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR001 */
     {
         status = tivxQueueCreate(&context->pend_queue,
                                  TIVX_MAX_CTRL_CMD_OBJECTS,
@@ -304,12 +304,12 @@ static vx_status ownDeallocateUserKernelId(vx_context context, vx_kernel kernel)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
 
-    if ( (ownIsValidContext(context) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(vxCastRefFromKernel(kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) )
+    if ( (ownIsValidContext(context) == (vx_bool)vx_true_e) && /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR002 */
+         (ownIsValidSpecificReference(vxCastRefFromKernel(kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) ) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR003 */
     {
         status = (vx_status)VX_SUCCESS;
 
-        if ( (kernel->enumeration >= (int32_t)VX_KERNEL_BASE(VX_ID_USER, 0U)) &&
+        if ( (kernel->enumeration >= (int32_t)VX_KERNEL_BASE(VX_ID_USER, 0U)) && /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR004 */
              (kernel->enumeration <  (int32_t)(VX_KERNEL_BASE(VX_ID_USER, 0U) + (int32_t)TIVX_MAX_KERNEL_ID)) )
         {
             int32_t idx = kernel->enumeration - VX_KERNEL_BASE(VX_ID_USER, 0U);
@@ -340,7 +340,7 @@ vx_status ownContextFlushCmdPendQueue(vx_context context)
                                   &obj_id,
                                   TIVX_EVENT_TIMEOUT_NO_WAIT);
 
-            if (status == (vx_status)VX_SUCCESS)
+            if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR005 */
             {
                 vx_status   status1;
 
@@ -348,7 +348,7 @@ vx_status ownContextFlushCmdPendQueue(vx_context context)
                                        obj_id,
                                        TIVX_EVENT_TIMEOUT_NO_WAIT);
 
-                if (status1 != (vx_status)VX_SUCCESS)
+                if (status1 != (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR006 */
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                              "tivxQueuePut(free_queue) failed\n");
@@ -499,7 +499,7 @@ vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref)
         else
         {
 
-            for(ref_idx=0; ref_idx < dimof(context->reftable); ref_idx++)
+            for(ref_idx=0; ref_idx < dimof(context->reftable);/* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR007 */ ref_idx++)
             {
                 if(context->reftable[ref_idx]==ref)
                 {
@@ -555,7 +555,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
         else
         {
 
-            for(idx=0; idx<dimof(context->kerneltable); idx++)
+            for(idx=0; idx<dimof(context->kerneltable);/* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR008 */ idx++)
             {
                 if ((NULL == context->kerneltable[idx]) && (context->num_unique_kernels < dimof(context->kerneltable)))
                 {
@@ -620,7 +620,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
 
                     status = ownDeallocateUserKernelId(context, kernel);
 
-                    if ((vx_status)VX_SUCCESS == status)
+                    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR009 */
                     {
                         context->kerneltable[idx] = NULL;
                         context->num_unique_kernels--;
@@ -720,7 +720,8 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 
         status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
-        if ((status == (vx_status)VX_SUCCESS) && (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS))
+        if ((status == (vx_status)VX_SUCCESS) && /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR010 */
+         (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS))
         {
             obj_desc_cmd  = context->obj_desc_cmd[obj_id];
             cmd_ack_event = context->cmd_ack_event[obj_id];
@@ -751,7 +752,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 
             status = ownObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
 
-            if (status == (vx_status)VX_SUCCESS)
+            if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR011 */
             {
                 status = tivxEventWait(cmd_ack_event, timeout);
 
@@ -784,7 +785,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                     }
 #endif
                 }
-                else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
+                else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR012 */
                 {
                     /* Queue the object into the pend queue for later
                      * action.
@@ -852,7 +853,8 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
     vx_status status1 = (vx_status)VX_SUCCESS;
     uint32_t i;
 
-    if( (ownIsValidContext(context) == (vx_bool)vx_true_e) && (num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS) )
+    if( (ownIsValidContext(context) == (vx_bool)vx_true_e) &&
+    (num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS) )
     {
         tivx_obj_desc_cmd_t *obj_desc_cmd;
         tivx_event cmd_ack_event;
@@ -861,7 +863,8 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
         status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
-        if ((status == (vx_status)VX_SUCCESS) && (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS))
+        if ((status == (vx_status)VX_SUCCESS) && /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR013 */
+        (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS))
         {
             obj_desc_cmd  = context->obj_desc_cmd[obj_id];
             cmd_ack_event = context->cmd_ack_event[obj_id];
@@ -886,7 +889,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
             status = ownObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
 
-            if (status == (vx_status)VX_SUCCESS)
+            if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR014 */
             {
                 status = tivxEventWait(cmd_ack_event, timeout);
 
@@ -914,7 +917,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                     }
 #endif
                 }
-                else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
+                else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR015 */
                 {
                     /* Queue the object into the pend queue for later
                      * action.
@@ -1036,18 +1039,18 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                 &ownReleaseReferenceBufferGeneric;
 
             status = tivxMutexCreate(&context->lock);
-            if(status==(vx_status)VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR016 */
             {
                 status = tivxMutexCreate(&context->log_lock);
             }
-            if(status==(vx_status)VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR017 */
             {
                 status = ownEventQueueCreate(&context->event_queue);
             }
-            if(status==(vx_status)VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR018 */
             {
                 status = ownInitReference(&context->base, NULL, (vx_enum)VX_TYPE_CONTEXT, NULL);
-                if(status==(vx_status)VX_SUCCESS)
+                if(status==(vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR019 */
                 {
                     status = ownContextCreateCmdObj(context);
                     if(status == (vx_status)VX_SUCCESS)
@@ -1129,7 +1132,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
             }
 #endif
 
-            if(status == (vx_status)VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR020 */
             {
                 ownLogResourceAlloc("TIVX_CONTEXT_MAX_OBJECTS", 1);
                 /* set flag to disallow removal of built kernels
@@ -1225,7 +1228,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 }
 #endif
             }
-            if((vx_status)VX_SUCCESS == status)
+            if((vx_status)VX_SUCCESS == status) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR021 */
             {
 
                 ownContextSetKernelRemoveLock(context, (vx_bool)vx_false_e);
@@ -1268,7 +1271,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                         }
 #endif
                     }
-                    if((vx_status)VX_SUCCESS == status1)
+                    if((vx_status)VX_SUCCESS == status1) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR022 */
                     {
                         if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_KERNEL) ) {
                             VX_PRINT(VX_ZONE_WARNING,"A kernel with name %s has not been removed, possibly due to a kernel module not being unloaded.\n", ref->name);
