@@ -300,7 +300,7 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
     vx_status status = (vx_status)VX_SUCCESS;
     uint64_t phys = 0;
 
-    if(vx_true_e == tivxMemRegionQuery(mem_heap_region))
+    if((vx_bool)vx_true_e == tivxMemRegionQuery(mem_heap_region))
     {
         status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
         if(status == (vx_status)VX_SUCCESS)
@@ -334,7 +334,7 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
     vx_status status = (vx_status)VX_SUCCESS;
     uint64_t phys = 0;
 
-    if(vx_true_e == tivxMemRegionQuery(mem_heap_region))
+    if((vx_bool)vx_true_e == tivxMemRegionQuery(mem_heap_region))
     {
         status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
         if(status == (vx_status)VX_SUCCESS)
