@@ -48,7 +48,7 @@ TEST(tivxInternalError, negativeTestCreateConstErrors)
 TEST(tivxInternalError, negativeTestContextReftable)
 {
     vx_context context = context_->vx_context_;
-    vx_reference ref;
+    vx_reference ref, ref1;
     vx_image image;
     vx_reference reft = context->reftable[0];
     vx_reference reft1 = context->reftable[1];
@@ -57,10 +57,13 @@ TEST(tivxInternalError, negativeTestContextReftable)
     context->reftable[1] = (vx_reference)image;
     ref = (vx_reference)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
+    ref1 = (vx_reference)ownGetErrorObject(
+                        context, (vx_status)VX_ERROR_REFERENCE_NONZERO);
     context->reftable[0]=reft;
     context->reftable[1]=reft1;
     VX_CALL(vxReleaseImage(&image));
     EXPECT(ref != NULL);
+    EXPECT(ref1 == NULL);
 }
 
 TESTCASE_TESTS(tivxInternalError,
