@@ -731,6 +731,15 @@ TEST(tivxInternalGraphVerify, negativeTestUserKernelDeinitializeFailure)
     ASSERT(exemplar == 0);
 }
 
+TEST(tivxInternalGraphVerify, negativeTestownGraphCheckIsRefMatch)
+{
+    vx_graph graph = NULL;
+    vx_reference ref1 = NULL;
+    vx_reference ref2 = NULL;
+
+    ASSERT((vx_bool)vx_false_e == ownGraphCheckIsRefMatch(graph, ref1, ref2));
+}
+
 TESTCASE_TESTS(tivxInternalGraphVerify,
                negativeBoundaryTestVerifyGraph,
                negativeBoundaryTestOwnGraphCreateNodeCallbackCommands,
@@ -744,5 +753,6 @@ TESTCASE_TESTS(tivxInternalGraphVerify,
                negativeTestOwnGraphAddSingleDataReference,
                negativeTestOwnGraphAllocateDataObject,
                testOwnGraphCheckIsRefMatch,
-               negativeTestUserKernelDeinitializeFailure
+               negativeTestUserKernelDeinitializeFailure,
+               negativeTestownGraphCheckIsRefMatch
 )
