@@ -307,10 +307,14 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
         {
             phys = appMemGetVirt2PhyBufPtr(host_ptr, heap_id);
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1793: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MEM_UM001 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid memory block\n");
         }
+/* END: TIOVX_CODE_COVERAGE_MEM_UM001 */
+#endif
     }
     else
     {
@@ -341,10 +345,14 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
         {
             phys = appMemShared2PhysPtr(shared_ptr, heap_id);
         }
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1793: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MEM_UM002 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid memory block\n");
         }
+/* END: TIOVX_CODE_COVERAGE_MEM_UM002 */
+#endif
     }
     else
     {
