@@ -77,6 +77,10 @@
        - The OpenVX specification does not define the depth of the number of the subimages which a \ref vx_image may contain
        - Therefore, the TIOVX implementation has added a max value of "2" for the number of subimage levels, as well as a max value of "16" for the number of subimages per level.
        - These are configurable and can be updated in the max value configuration file.
+     \section TIOVX_USAGE_REC_SEND_NODE_COMMAND tivxNodeSendCommand()
+       -  The intention behind the \ref tivxNodeSendCommand() is to send non-real time data to a node and/or to query for information from the node
+       -  Particularly if using pipelining, this API shall not be used for sending/receiving data from a node for every execution of the node.  If that is the requirement of a
+          given use case, the node API should be changed to encapsulate this parameter.
  */
 
 /*!
