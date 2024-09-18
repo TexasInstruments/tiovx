@@ -32,6 +32,10 @@
 #include "shared_functions.h"
 #include "test_utils_mem_operations.h"
 
+/* The below header is used for getting posix enums: TIVX_MUTEX_MAX_OBJECTS.*/
+#if !defined(R5F)
+#include <os/posix/tivx_platform_posix.h>
+#endif /* Not R5F */
 
 TESTCASE(tivxInternalReference, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -129,6 +133,135 @@ TEST(tivxInternalReference, negativeTestGetReferenceParent)
     VX_CALL(vxReleaseImage(&image));
 }
 
+TEST(tivxInternalReference, negativeTestOwnDeleteReferenceLock)
+{
+    vx_context context = context_->vx_context_;
+    vx_reference ref;
+    tivx_mutex mutex;
+
+    ref = (vx_reference)context;
+    mutex = ref->lock;
+    ref->lock = NULL;
+
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownDeleteReferenceLock(ref));
+    ref->lock = mutex;
+}
+
+TEST(tivxInternalReference, negativeTestOwnAllocReferenceBufferGeneric)
+{
+    vx_context context = context_->vx_context_;
+    tivx_obj_desc_t *base_obj_desc = NULL;
+    vx_reference ref;
+
+    ref = ownCreateReference(context, (vx_enum)VX_TYPE_ARRAY, (vx_enum)VX_EXTERNAL, &context->base);
+    base_obj_desc = ref->obj_desc;
+    ref->obj_desc = NULL;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric(ref));
+    ref->obj_desc = base_obj_desc;
+
+    VX_CALL(ownReleaseReferenceInt(&ref, (vx_enum)VX_TYPE_ARRAY, (vx_enum)VX_EXTERNAL, NULL));
+}
+typedef struct
+{
+    const char *name;
+    vx_enum type;
+} Arg;
+
+/* To hit 'obj_desc == NULL' condition for all ref types inside tivxReferenceImportHandle() & tivxReferenceExportHandle() */
+TEST_WITH_ARG(tivxInternalReference, negativetestReferenceImportExportHandle, Arg,
+              ARG_ENUM(VX_TYPE_IMAGE),
+              ARG_ENUM(VX_TYPE_TENSOR),
+              ARG_ENUM(VX_TYPE_USER_DATA_OBJECT),
+              ARG_ENUM(VX_TYPE_ARRAY),
+              ARG_ENUM(VX_TYPE_CONVOLUTION),
+              ARG_ENUM(VX_TYPE_MATRIX),
+              ARG_ENUM(VX_TYPE_DISTRIBUTION),
+              ARG_ENUM(TIVX_TYPE_RAW_IMAGE),
+              ARG_ENUM(VX_TYPE_PYRAMID))
+{
+
+    vx_context context = context_->vx_context_;
+    tivx_obj_desc_t *base_obj_desc = NULL;
+    vx_reference ref;
+    void *addr[1] = {NULL};
+    uint32_t size[1];
+    uint32_t num_entries;
+
+    ref = ownCreateReference(context, (vx_enum)arg_->type, (vx_enum)VX_EXTERNAL, &context->base);
+    base_obj_desc = ref->obj_desc;
+    ref->obj_desc = NULL;
+
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, tivxReferenceImportHandle(ref,(const void **)addr, (const uint32_t *)size,1));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, tivxReferenceExportHandle(ref,(void **)addr, (uint32_t *)size, 1, &num_entries));
+    ref->obj_desc = base_obj_desc;
+
+    VX_CALL(ownReleaseReferenceInt(&ref, (vx_enum)arg_->type, (vx_enum)VX_EXTERNAL, NULL));
+}
+
+/* The Below test is defined for POSIX only, as it is getting the
+max value and/or alloc/free functions from POSIX headers */
+#if !defined(R5F) /* Not R5F */
+TEST(tivxInternalReference, negativeTestOwnCreateReferenceLock)
+{
+    vx_context context = context_->vx_context_;
+    vx_reference ref = (vx_reference)context;
+    tivx_mutex mutex[TIVX_MUTEX_MAX_OBJECTS];
+    int i,j = 0;
+    tivx_mutex mutex1 = ref->lock;
+
+    for (i = 0; i < TIVX_MUTEX_MAX_OBJECTS; i++)
+    {
+        if((vx_status)VX_SUCCESS != tivxMutexCreate(&mutex[i]))
+        {
+            break;
+        }
+    }
+
+/* To fail tivxMutexCreate() inside ownCreateReferenceLock API by maxing out */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_MEMORY, ownCreateReferenceLock(ref));
+    j = i;
+
+    for (i = 0; i < j; i++)
+    {
+        VX_CALL(tivxMutexDelete(&mutex[i]));
+    }
+    ref->lock = mutex1;
+}
+#endif
+
+/* To hit 'img_obj_desc == NULL' condition for pyramid ref->type inside tivxReferenceImportHandle() & tivxReferenceExportHandle() */
+TEST(tivxInternalReference, negativetestReferenceImportExportHandlePyramid)
+{
+    vx_context context = context_->vx_context_;
+
+    tivx_obj_desc_t *img_obj_desc = NULL;
+    vx_reference ref;
+    void *addr[1] = {NULL};
+    uint32_t size[1];
+    uint32_t num_entries;
+
+    vx_pyramid pymd = NULL;
+    vx_image img = NULL;
+    vx_size levels = 1;
+    vx_float32 scale = 0.9f;
+    vx_uint32 width = 3, height = 3;
+    vx_df_image format = VX_DF_IMAGE_U8;
+
+    ASSERT_VX_OBJECT(pymd = vxCreatePyramid(context, levels, scale, width, height, format), VX_TYPE_PYRAMID);
+
+    img = pymd->img[0];
+    img_obj_desc = img->base.obj_desc;
+
+    img->base.obj_desc = NULL;
+
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, tivxReferenceImportHandle((vx_reference)pymd,(const void **)addr, (const uint32_t *)size,1));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, tivxReferenceExportHandle((vx_reference)pymd,(void **)addr, (uint32_t *)size, 1, &num_entries));
+    img->base.obj_desc = img_obj_desc;
+
+    VX_CALL(vxReleasePyramid(&pymd));
+}
+
 TESTCASE_TESTS(tivxInternalReference,
                negativeTestOwnDestructReferenceGeneric,
                negativeTestOwnIsValidReference,
@@ -136,5 +269,12 @@ TESTCASE_TESTS(tivxInternalReference,
                negativeTestOwnReleaseReferenceInt,
                negativeTestOwnReferenceLock,
                negativeTestReleaseReference,
-               negativeTestGetReferenceParent
+               negativeTestGetReferenceParent,
+               negativeTestOwnDeleteReferenceLock,
+               negativeTestOwnAllocReferenceBufferGeneric,
+               negativetestReferenceImportExportHandle,
+#if !defined(R5F)
+               negativeTestOwnCreateReferenceLock,
+#endif
+               negativetestReferenceImportExportHandlePyramid
 )
