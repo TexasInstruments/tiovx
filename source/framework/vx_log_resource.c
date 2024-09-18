@@ -711,7 +711,7 @@ static void ownLogUpdateTargetValues(void)
     uint32_t target_values[TIVX_TARGET_RESOURCE_COUNT] = {0, 0, 0, 0};
     uint32_t cpu_map[TIVX_CPU_ID_MAX];
 
-    ownIPCGetCpuMap(cpu_map);
+    ownIpcGetCpuMap(cpu_map);
 
     for (i = 0; i < (uint32_t)TIVX_CPU_ID_MAX; i++)
     {

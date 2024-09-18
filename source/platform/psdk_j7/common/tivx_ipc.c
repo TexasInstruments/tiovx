@@ -22,7 +22,7 @@ static void tivxIpcHandler(uint32_t src_cpu_id, uint32_t payload);
  * \ingroup group_tivx_ipc
  */
 #if defined (SOC_J721E)
-static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
+uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     APP_IPC_CPU_C6x_1,
     APP_IPC_CPU_C6x_2,
     APP_IPC_CPU_C7x_1,
@@ -35,7 +35,7 @@ static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
 #endif
 
 #if defined (SOC_J721S2)
-static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
+uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     APP_IPC_CPU_C7x_2,
     APP_IPC_CPU_C7x_1,
     APP_IPC_CPU_MCU2_0, /* in j721s2, TIOVX CPU IPU1-0 is mapped to vision_apps/pdk CPU mcu2-0 */
@@ -47,7 +47,7 @@ static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
 #endif
 
 #if defined (SOC_J784S4)
-static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
+uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     APP_IPC_CPU_C7x_2,
     APP_IPC_CPU_C7x_1,
     APP_IPC_CPU_MCU2_0, /* in j784s4, TIOVX CPU IPU1-0 is mapped to vision_apps/pdk CPU mcu2-0 */
@@ -63,7 +63,7 @@ static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
 #endif
 
 #if defined (SOC_AM62A)
-static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
+uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     APP_IPC_CPU_C7x_1,
     APP_IPC_CPU_MCU1_0, /* in am62a, TIOVX CPU IPU1-0 is mapped to vision_apps/pdk CPU mcu1-0 */
     APP_IPC_CPU_MPU1_0
@@ -71,7 +71,7 @@ static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
 #endif
 
 #if defined (SOC_J722S)
-static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
+uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     APP_IPC_CPU_C7x_1,
     APP_IPC_CPU_C7x_2,
     APP_IPC_CPU_MCU1_0,
@@ -81,7 +81,7 @@ static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
 #endif
 
 #if defined (SOC_J742S2)
-static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
+uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     APP_IPC_CPU_C7x_2,
     APP_IPC_CPU_C7x_1,
     APP_IPC_CPU_MCU2_0, /* in j742s2, TIOVX CPU IPU1-0 is mapped to vision_apps/pdk CPU mcu2-0 */
@@ -184,16 +184,6 @@ vx_enum tivxGetSelfCpuId(void)
     return (cpu_id);
 }
 
-void ownIPCGetCpuMap(uint32_t cpu_id_map[TIVX_CPU_ID_MAX])
-{
-    uint32_t i;
-
-    for (i = 0; i < (vx_enum)TIVX_CPU_ID_MAX; i++)
-    {
-        cpu_id_map[i] = g_ipc_cpu_id_map[i];
-    }
-}
-
 uint16_t ownIpcGetHostPortId(uint16_t cpu_id)
 {
     /* convert OpenVX CPU ID to VSDK CPU ID */
@@ -239,7 +229,7 @@ vx_bool ownIsCpuEnabled(uint32_t app_cpu_id)
     uint32_t vsdk_cpu_id;
 
     vsdk_cpu_id = app_cpu_id;
-    return appIpcIsCpuEnabled(vsdk_cpu_id);
+    return (vx_bool)appIpcIsCpuEnabled(vsdk_cpu_id);
 }
 
 vx_bool tivxIsTargetEnabled(const char target_name[])

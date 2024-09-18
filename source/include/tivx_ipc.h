@@ -129,7 +129,7 @@ void ownIpcDeInit(void);
  *
  * \ingroup group_tivx_ipc
  */
-void ownIPCGetCpuMap(uint32_t cpu_id_map[TIVX_CPU_ID_MAX]);
+void ownIpcGetCpuMap(uint32_t cpu_id_map[TIVX_CPU_ID_MAX]);
 
 #ifdef __cplusplus
 }

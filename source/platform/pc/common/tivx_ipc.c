@@ -115,7 +115,7 @@ vx_bool ownIsCpuEnabled(uint32_t app_cpu_id)
     return ((vx_bool)vx_true_e);
 }
 
-void ownIPCGetCpuMap(uint32_t blank_map[TIVX_CPU_ID_MAX])
+void ownIpcGetCpuMap(uint32_t blank_map[TIVX_CPU_ID_MAX])
 {
     uint32_t i;
 
