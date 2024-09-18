@@ -56,7 +56,7 @@ vx_reference ownGetErrorObject(vx_context context, vx_status status)
     }
     else
     {
-        for (i = 0U; i < dimof(context->reftable); i++) /* TIOVX-1935- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ERROR_UBR001 */
+        for (i = 0U; i < dimof(context->reftable); i++)
         {
             if (context->reftable[i] != NULL)
             {
