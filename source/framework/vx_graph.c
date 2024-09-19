@@ -379,7 +379,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
             }
         }
 
-        for(i=0; i < graph->num_nodes; i++) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR006 */
+        for(i=0; i < graph->num_nodes; i++)
         {
             if(node==graph->nodes[i])
             {
@@ -494,7 +494,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->state = (vx_enum)VX_GRAPH_STATE_UNVERIFIED;
 
             status = tivxEventCreate(&graph->all_graph_completed_event);
-            if(status==(vx_status)VX_SUCCESS) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR007 */
+            if(status==(vx_status)VX_SUCCESS) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR006 */
             {
                 status = ownGraphCreateQueues(graph);
             }
@@ -890,12 +890,12 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
 /*LDRA_ANALYSIS*/
         }
         else
-        if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) && /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR008 */
+        if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
             ((vx_bool)vx_false_e == graph->is_streaming_enabled) )
         {
             uint32_t num_schedule = ownGraphGetNumSchedule(graph);
 
-            if(num_schedule>0U) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR009 */
+            if(num_schedule>0U) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR007 */
             {
                 /* schedule graph 'num_schedule' times */
                 /* void is added as it returns always success for
@@ -905,19 +905,16 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
             }
         }
         else
-        if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) && /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR010 */
-            ((vx_bool)vx_true_e == graph->is_streaming_enabled) ) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR011 */
+        if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
+            ((vx_bool)vx_true_e == graph->is_streaming_enabled) ) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR008 */
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "manual mode is not allowed with streaming enabled\n");
         }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM012 */
         else
         {
             /* Do nothing, required by MISRA-C */
         }
-#endif
     }
     else
     {
