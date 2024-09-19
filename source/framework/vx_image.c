@@ -133,12 +133,16 @@ static vx_bool ownIsValidDimensions(vx_uint32 width, vx_uint32 height, vx_df_ima
 {
     vx_bool is_valid = (vx_bool)vx_true_e;
 
-    if ((ownIsOdd(width) != (vx_bool)vx_false_e) && ( (color == (vx_df_image)VX_DF_IMAGE_UYVY) || (color == (vx_df_image)VX_DF_IMAGE_YUYV)))
+    if ((ownIsOdd(width) != (vx_bool)vx_false_e)
+    && ( (color == (vx_df_image)VX_DF_IMAGE_UYVY) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR001 */
+    || (color == (vx_df_image)VX_DF_IMAGE_YUYV)))
     {
         is_valid = (vx_bool)vx_false_e;
     }
     else if (((ownIsOdd(width) != (vx_bool)vx_false_e) || (ownIsOdd(height) != (vx_bool)vx_false_e)) &&
-              ((color == (vx_df_image)VX_DF_IMAGE_IYUV) || (color == (vx_df_image)VX_DF_IMAGE_NV12) || (color == (vx_df_image)VX_DF_IMAGE_NV21)))
+              ((color == (vx_df_image)VX_DF_IMAGE_IYUV)
+              || (color == (vx_df_image)VX_DF_IMAGE_NV12) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR002 */
+              || (color == (vx_df_image)VX_DF_IMAGE_NV21)))
     {
         is_valid = (vx_bool)vx_false_e;
     }
@@ -175,7 +179,7 @@ static vx_uint32 ownComputePatchOffset(vx_uint32 x, vx_uint32 y, const vx_imagep
 static vx_size ownSizeOfChannel(vx_df_image color)
 {
     vx_size size = 0U;
-    if (ownIsSupportedFourcc(color) != 0)
+    if (ownIsSupportedFourcc(color) != 0) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR003 */
     {
         switch (color)
         {
@@ -211,7 +215,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
     subimage->parent = parent;
 
     /* it will find free space for subimage since this was checked before */
-    for (p = 0; p < TIVX_IMAGE_MAX_SUBIMAGES; p++)
+    for (p = 0; p < TIVX_IMAGE_MAX_SUBIMAGES; p++) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR004 */
     {
         if (parent->subimages[p] == NULL)
         {
@@ -269,7 +273,7 @@ static vx_status ownDestructImage(vx_reference ref)
     vx_image image = NULL;
     uint32_t size = 0;
 
-    if(ref->type == (vx_enum)VX_TYPE_IMAGE)
+    if(ref->type == (vx_enum)VX_TYPE_IMAGE) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR005 */
     {
         /* status set to NULL due to preceding type check */
         image = vxCastRefAsImage(ref,NULL);
@@ -409,7 +413,7 @@ static void ownInitPlane(vx_image image,
     uint32_t mem_size;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
-    if (image != NULL)
+    if (image != NULL) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR006 */
     {
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
@@ -723,7 +727,9 @@ static vx_status ownCopyAndMapCheckParams(
 
     if(status==(vx_status)VX_SUCCESS)
     {
-        if ( ((vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_UNIFORM) && ( ((vx_enum)usage == (vx_enum)VX_WRITE_ONLY) || ((vx_enum)usage == (vx_enum)VX_READ_AND_WRITE) ) )
+        if ( ((vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_UNIFORM)
+        && ( ((vx_enum)usage == (vx_enum)VX_WRITE_ONLY) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR007 */
+        || ((vx_enum)usage == (vx_enum)VX_READ_AND_WRITE) ) )
         {
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             vxAddLogEntry(&image->base, status, "Can't write to constant data, only read!\n");
@@ -776,7 +782,8 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
     {
         image = (vx_image)ownCreateImageInt(context, addrs[0].dim_x, addrs[0].dim_y, color, TIVX_IMAGE_FROM_HANDLE);
 
-        if ( (vxGetStatus(vxCastRefFromImage(image)) == (vx_status)VX_SUCCESS) && (image->base.type == (vx_enum)VX_TYPE_IMAGE) )
+        if ( (vxGetStatus(vxCastRefFromImage(image)) == (vx_status)VX_SUCCESS) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR008 */
+         && (image->base.type == (vx_enum)VX_TYPE_IMAGE) ) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR009 */
         {
             vx_uint32 plane_idx = 0;
             vx_status status = (vx_status)VX_SUCCESS;
@@ -933,7 +940,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                     width = 0;
                     height = 0;
 
-                    switch (obj_desc->format)
+                    switch (obj_desc->format) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR010 */
                     {
                         case (vx_df_image)VX_DF_IMAGE_YUV4:
                         {
@@ -959,7 +966,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                         case (vx_df_image)VX_DF_IMAGE_NV12:
                         case (vx_df_image)VX_DF_IMAGE_NV21:
                         {
-                            if(channel_plane==0U)
+                            if(channel_plane==0U) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR011 */
                             {
                                 width = imagepatch_addr->dim_x;
                                 height = imagepatch_addr->dim_y;
@@ -983,7 +990,8 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
 
                     subimage = (vx_image)ownCreateImageInt(context, width, height, (uint32_t)subimage_format, TIVX_IMAGE_FROM_CHANNEL);
 
-                    if ((vxGetStatus(vxCastRefFromImage(subimage)) == (vx_status)VX_SUCCESS) && (subimage->base.type == (vx_enum)VX_TYPE_IMAGE))
+                    if ((vxGetStatus(vxCastRefFromImage(subimage)) == (vx_status)VX_SUCCESS) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR012 */
+                    && (subimage->base.type == (vx_enum)VX_TYPE_IMAGE)) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR013 */
                     {
                         ownLinkParentSubimage(image, subimage);
 
@@ -1083,8 +1091,8 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
                 {
                     subimage = (vx_image)ownCreateImageInt(context, width, height, (uint32_t)format, TIVX_IMAGE_FROM_ROI);
 
-                    if ((vxGetStatus(vxCastRefFromImage(subimage)) == (vx_status)VX_SUCCESS) &&
-                        (subimage->base.type == (vx_enum)VX_TYPE_IMAGE))
+                    if ((vxGetStatus(vxCastRefFromImage(subimage)) == (vx_status)VX_SUCCESS) && /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR014 */
+                        (subimage->base.type == (vx_enum)VX_TYPE_IMAGE)) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR015 */
                     {
                         ownLinkParentSubimage(image, subimage);
 
@@ -1311,7 +1319,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                                         ptr[1] = pixel[0];
                                     }
                                 }
-                                else if (format == (vx_df_image)VX_DF_IMAGE_YUYV)
+                                else if (format == (vx_df_image)VX_DF_IMAGE_YUYV) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR016 */
                                 {
                                     vx_uint8 *pixel = (vx_uint8 *)&value->YUV;
                                     vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
@@ -1374,7 +1382,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseImage(vx_image* image)
             {
                 vx_uint32 subimage_idx;
 
-                for (subimage_idx = 0; subimage_idx < TIVX_IMAGE_MAX_SUBIMAGES; subimage_idx++)
+                for (subimage_idx = 0; subimage_idx < TIVX_IMAGE_MAX_SUBIMAGES; subimage_idx++) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR017 */
                 {
                     if (parent->subimages[subimage_idx] == this_image)
                     {
@@ -1689,7 +1697,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 break;
             case (vx_enum)TIVX_IMAGE_IMAGEPATCH_ADDRESSING:
                 if ((NULL != ptr) &&
-                    (size >= sizeof(vx_imagepatch_addressing_t)) &&
+                    (size >= sizeof(vx_imagepatch_addressing_t)) && /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR018 */
                     (((vx_size)ptr & 0x3U) == 0U))
                 {
                     vx_size num_dims = size / sizeof(vx_imagepatch_addressing_t);
@@ -2318,7 +2326,7 @@ static vx_status ownSwapSubImageCheckRemap(tivx_obj_desc_image_t *obj_desc, vx_i
 
     status = ownSwapImageCheck(obj_desc, image, new_ptrs, (void **)NULL, obj_desc->planes);
 
-    if(status == (vx_status)VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR019 */
     {
         ownSwapImageUnmap(obj_desc, new_ptrs, obj_desc->planes);
     }
@@ -2335,7 +2343,7 @@ static void ownSwapImageMap(tivx_obj_desc_image_t *obj_desc, void* prev_ptrs[], 
     {
         prev_ptrs[p] = (void*)(uintptr_t)obj_desc->mem_ptr[p].host_ptr;
 
-        if (NULL != prev_ptrs[p])
+        if (NULL != prev_ptrs[p]) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR020 */
         {
             (void)tivxMemBufferMap(prev_ptrs[p], obj_desc->mem_size[p],
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
@@ -2386,7 +2394,7 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
         {
             next_image = image_arr[stack_pointer];
 
-            if (ownIsValidImage(next_image) == (vx_bool)vx_true_e)
+            if (ownIsValidImage(next_image) == (vx_bool)vx_true_e) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR021 */
             {
                 if ((vx_bool)vx_false_e == is_first_time)
                 {
@@ -2444,7 +2452,7 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
                                     status = ownSwapSubImageCheckRemap(si_obj_desc, subimage, (void**)ptrs);
                                 }
                                 else
-                                if((vx_enum)si_obj_desc->create_type==(vx_enum)TIVX_IMAGE_FROM_CHANNEL)
+                                if((vx_enum)si_obj_desc->create_type==(vx_enum)TIVX_IMAGE_FROM_CHANNEL) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR022 */
                                 {
                                     ptrs[0] = next_new_ptrs[subimage->channel_plane];
 
@@ -2462,7 +2470,7 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
                             }
 
                             /* This is a valid image and thus adding to the list and incrementing k */
-                            if ((vx_status)VX_SUCCESS == status)
+                            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR023 */
                             {
                                 image_arr[stack_pointer] = subimage;
                                 for (p = 0; p < si_obj_desc->planes; p++)
@@ -2506,7 +2514,7 @@ static void ownSwapImageUnmap(tivx_obj_desc_image_t *obj_desc, void* const new_p
             obj_desc->mem_ptr[p].host_ptr = (uint64_t)(uintptr_t)new_ptrs[p];
             obj_desc->mem_ptr[p].shared_ptr = tivxMemHost2SharedPtr((uint64_t)(uintptr_t)new_ptrs[p], (int32_t)obj_desc->mem_ptr[p].mem_heap_region);
 
-            if (NULL != new_ptrs[p])
+            if (NULL != new_ptrs[p]) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR024 */
             {
                 (void)tivxMemBufferUnmap(new_ptrs[p], obj_desc->mem_size[p],
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
