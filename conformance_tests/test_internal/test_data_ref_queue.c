@@ -42,7 +42,24 @@ TEST(tivxInternalDataRefQueue, negativeTestTivxDataRefQueueCreate)
 
 TEST(tivxInternalDataRefQueue, negativeTestOwnDataRefQueueSendRefConsumedEvent)
 {
+    vx_context context = context_->vx_context_;
+    tivx_data_ref_queue ref = NULL;
+    uint32_t pipeline_id = 0u;
+    vx_graph graph = NULL;
+    tivx_data_ref_queue_create_params_t prms;
+    prms.pipeline_depth = 1;
+
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownDataRefQueueSendRefConsumedEvent(NULL, 0));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(ref = tivxDataRefQueueCreate(graph, &prms), (vx_enum)TIVX_TYPE_DATA_REF_Q);
+
+    ref->wait_done_ref_available_event = NULL;
+    ref->is_enable_send_ref_consumed_event = 0;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownDataRefQueueSendRefConsumedEvent(ref, 0));
+
+    VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(ownDataRefQueueRelease(&ref));
 }
 
 TEST(tivxInternalDataRefQueue, negativeTestOwnDataRefQueueDataRefQueueEnqueueReadyRef)
@@ -65,6 +82,28 @@ TEST(tivxInternalDataRefQueue, negativeTestOwnDataRefQueueGetDoneQueueCount)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownDataRefQueueGetDoneQueueCount(NULL, NULL));
 }
 
+TEST(tivxInternalDataRefQueue, negativeTestownDataRefQueueGetObjDescId)
+{
+    vx_context context = context_->vx_context_;
+    tivx_data_ref_queue ref = NULL;
+    uint32_t pipeline_id = 0u;
+    vx_graph graph = NULL;
+    tivx_data_ref_queue_create_params_t prms;
+    prms.pipeline_depth = 1;
+
+    ASSERT_EQ_VX_STATUS(TIVX_OBJ_DESC_INVALID, ownDataRefQueueGetObjDescId(ref, pipeline_id));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(ref = tivxDataRefQueueCreate(graph, &prms), (vx_enum)TIVX_TYPE_DATA_REF_Q);
+
+    pipeline_id = 0;
+    ref->pipeline_depth = 0;
+    ASSERT_EQ_VX_STATUS(TIVX_OBJ_DESC_INVALID, ownDataRefQueueGetObjDescId(ref, pipeline_id));
+
+    VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(ownDataRefQueueRelease(&ref));
+}
+
 TESTCASE_TESTS(
     tivxInternalDataRefQueue,
     negativeTestOwnDataRefQueueGetReadyQueueCount,
@@ -73,5 +112,6 @@ TESTCASE_TESTS(
     negativeTestOwnDataRefQueueDataRefQueueEnqueueReadyRef,
     negativeTestOwnDataRefQueueDequeueDoneRef,
     negativeTestOwnDataRefQueueWaitDoneRef,
-    negativeTestOwnDataRefQueueGetDoneQueueCount
+    negativeTestOwnDataRefQueueGetDoneQueueCount,
+    negativeTestownDataRefQueueGetObjDescId
 )
