@@ -1583,7 +1583,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                         total_size += mem_size[j];
                     }
 
-                    if (total_size != size[i]) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR003 */
+                    if (total_size != size[i])
                     {
                         VX_PRINT(VX_ZONE_ERROR,
                                  "[Entry %d] Memory size mis-match: Expecting [%d] "
@@ -1596,7 +1596,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
             else if (ref->type == (vx_enum)VX_TYPE_IMAGE)
             {
-                if (total_size != size[0]) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR004 */
+                if (total_size != size[0])
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                              "[Entry %d] Memory size mis-match: Expecting [%d] "
@@ -1608,11 +1608,11 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
             else
             {
-                if (mem_size != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR005 */
+                if (mem_size != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR003 */
                 {
                     for (i = 0; i < numMemElem; i++)
                     {
-                        if (mem_size[i] != size[i]) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR006 */
+                        if (mem_size[i] != size[i])
                         {
                             VX_PRINT(VX_ZONE_ERROR,
                                     "[Entry %d] Memory size mis-match: Expecting [%d] "
@@ -1692,7 +1692,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
             else
             {
-                if (mem_ptr != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR007 */
+                if (mem_ptr != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR004 */
                 {
                     for (i = 0; i < numMemElem; i++)
                     {
@@ -2016,8 +2016,8 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
         if ((status == (vx_status)VX_SUCCESS) &&
             (ref->type != (vx_enum)VX_TYPE_PYRAMID))
         {
-            if ((mem_ptr != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR008 */
-            && (mem_size != NULL)) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR009 */
+            if ((mem_ptr != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR005 */
+            && (mem_size != NULL)) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR006 */
             {
                 for (i = 0; i < numMemElem; i++)
                 {
