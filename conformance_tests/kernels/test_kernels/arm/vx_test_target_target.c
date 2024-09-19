@@ -173,12 +173,12 @@ FuncInfo arrOfFuncs[];
 vx_status create_function(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg);
 vx_status process_function(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg);
 
-vx_status create_function(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg) 
+vx_status create_function(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
-vx_status process_function(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg) 
+vx_status process_function(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
@@ -407,7 +407,7 @@ static vx_status tivxTestTargetQueryNumTargetKernel(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t *ptr = (uint32_t *)tivxMemAlloc(sizeof(uint32_t), TIVX_MEM_EXTERNAL);
-    
+
     if((vx_status)VX_SUCCESS != tivxQueryNumTargetKernel(ptr))
     {
        VX_PRINT(VX_ZONE_ERROR,"Invalid result:Failed to query number of target kernels\n");
@@ -439,11 +439,11 @@ static vx_status tivxNegativeTestAddTargetKernelInternal(uint8_t id)
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for ARG:'NULL'\n");
         status = (vx_status)VX_FAILURE;
-    }  
+    }
 
     tivxQueryNumTargetKernel(&num_target_kernels);
 
-    for (i=num_target_kernels; i<TIVX_TARGET_KERNEL_MAX; i++) 
+    for (i=num_target_kernels; i<TIVX_TARGET_KERNEL_MAX; i++)
     {
         kernel_id = (vx_enum)(i);
         ttk[i] = tivxAddTargetKernel(kernel_id, tname, process_function, create_function, NULL, NULL, (void *)(&priv_arg));
@@ -464,7 +464,7 @@ static vx_status tivxNegativeTestAddTargetKernelInternal(uint8_t id)
         status = (vx_status)VX_FAILURE;
     }
 
-    for (i=num_target_kernels; i<TIVX_TARGET_KERNEL_MAX; i++) 
+    for (i=num_target_kernels; i<TIVX_TARGET_KERNEL_MAX; i++)
     {
         if((vx_status)VX_SUCCESS != tivxRemoveTargetKernel(ttk[i]))
         {
@@ -482,7 +482,7 @@ static vx_status tivxNegativeTestRemoveTargetKernel(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 ttkaddress = 0;
-    
+
     if((vx_status)VX_FAILURE != tivxRemoveTargetKernel(NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for ARG:'NULL'\n");
@@ -753,7 +753,7 @@ static vx_status tivxNegativeTestTargetObjDescQueueEnqueue(uint8_t id)
     }
 
     tivxMemFree((void *)objdesc_q_id, sizeof(uint16_t), TIVX_MEM_EXTERNAL);
-    
+
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
     return status;
@@ -809,7 +809,7 @@ static vx_status tivxNegativeTestTargetObjDescQueueAddBlockedNode(uint8_t id)
     }
 
     tivxMemFree((void *)objdesc_q_id, sizeof(uint16_t), TIVX_MEM_EXTERNAL);
-    
+
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
     return status;
@@ -876,7 +876,7 @@ static vx_status tivxBranchTestTargetKernelInstanceAlloc(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'kernel_name = NULL'\n");
         status = (vx_status)VX_FAILURE;
     }
-    
+
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
     return status;
@@ -887,7 +887,7 @@ static vx_status tivxBranchTestTargetKernelInstanceAllocate(uint8_t id)
     vx_status status = (vx_status)VX_SUCCESS;
     volatile char kernel[TIVX_KERNEL_MAX_PARAMS] = {1};
     volatile char *kernel_name = kernel;
-    
+
     /*to hit tmp_kernel_instance->kernel_id != (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID*/
     if(NULL != ownTargetKernelInstanceAlloc(1, kernel_name, 1))
     {
@@ -903,7 +903,7 @@ static vx_status tivxBranchTestTargetKernelInstanceAllocate(uint8_t id)
 static vx_status tivxBranchTestTargetKernelInstanceGet(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    
+
     /*to hit target_kernel_index > TIVX_TARGET_KERNEL_INSTANCE_MAX*/
     if(NULL != ownTargetKernelInstanceGet(TIVX_TARGET_KERNEL_INSTANCE_MAX*3, 1))
     {
@@ -1132,7 +1132,7 @@ static vx_status tivxTestDescStrncpy(uint8_t id)
 
     return status;
 }
- 
+
 static vx_status tivxTestDescStrncmpDelim(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -1388,13 +1388,13 @@ static vx_status tivxNegativeTestTargetGetHandle(uint8_t id)
 }
 #endif
 
-/*Test case to fail the condition 'if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q)' 
+/*Test case to fail the condition 'if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q)'
  *inside the function ownTargetNodeDescAcquireAllParameters
  */
 static vx_status tivxNegativeTestTargetNodeDescAcquireAllParameter(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
- 
+
     tivx_obj_desc_node_t *test_obj_desc_node = NULL;
     vx_bool test_node_blocked;
     uint16_t obj_desc_id_t = 1;
@@ -1404,7 +1404,7 @@ static vx_status tivxNegativeTestTargetNodeDescAcquireAllParameter(uint8_t id)
     /*to set is_prm_data_ref_q_flag so that tivxFlagIsBitSet() returns '1' inside ownTargetNodeDescReleaseAllParameters() */
     test_obj_desc_node->is_prm_data_ref_q = 1;
     test_obj_desc_node->num_params =1;
-    
+
     if(test_obj_desc_node != NULL)
     {
         ownTargetNodeDescAcquireAllParameters(test_obj_desc_node, prm_obj_desc_id, &test_node_blocked, 0);
@@ -1421,9 +1421,9 @@ static vx_status tivxNegativeTestTargetNodeDescAcquireAllParameter(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to get test_obj_desc_node\n");
         status = (vx_status)VX_FAILURE;
     }
- 
+
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
- 
+
     return status;
 }
 
@@ -1431,7 +1431,7 @@ static vx_status tivxNegativeTestTargetNodeDescAcquireAllParameter(uint8_t id)
 static vx_status tivxBranchTestTargetNodeDescAcquireParameter(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
- 
+
     tivx_obj_desc_node_t *test_obj_desc_node = NULL;
     vx_bool test_node_blocked;
     vx_bool test_pipe = (vx_bool)vx_true_e;
@@ -1452,7 +1452,7 @@ static vx_status tivxBranchTestTargetNodeDescAcquireParameter(uint8_t id)
     if(obj_desc !=NULL && test_obj_desc_node != NULL)
     {
         ownTargetNodeDescAcquireAllParameters(test_obj_desc_node, prm_obj_desc_id, &test_node_blocked, test_pipe);
-        
+
         /*test_node_blocked is updated inside ownTargetNodeDescAcquireParameter()*/
         if(test_node_blocked != vx_false_e)
         {
@@ -1467,7 +1467,7 @@ static vx_status tivxBranchTestTargetNodeDescAcquireParameter(uint8_t id)
     }
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
- 
+
     return status;
 }
 
@@ -1475,7 +1475,7 @@ static vx_status tivxBranchTestTargetNodeDescAcquireParameter(uint8_t id)
 static vx_status tivxBranchTestTargetNodeDescAcquireParam(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
- 
+
     tivx_obj_desc_node_t *test_obj_desc_node = NULL;
     vx_bool test_node_blocked;
     vx_bool test_pipe = (vx_bool)vx_false_e;
@@ -1492,7 +1492,7 @@ static vx_status tivxBranchTestTargetNodeDescAcquireParam(uint8_t id)
     /*To create valid obj_desc of TIVX_OBJ_DESC_DATA_REF_Q type*/
     test_obj_desc_node->data_ref_q_id[0]= obj_desc->obj_desc_id;
     test_obj_desc_node->is_prm_input = 0;
- 
+
     if(obj_desc !=NULL && test_obj_desc_node != NULL)
     {
         ownTargetNodeDescAcquireAllParameters(test_obj_desc_node, prm_obj_desc_id, &test_node_blocked, test_pipe);
@@ -1509,13 +1509,13 @@ static vx_status tivxBranchTestTargetNodeDescAcquireParam(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to allocate memory\n");
         status = (vx_status)VX_FAILURE;
     }
- 
+
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
- 
+
     return status;
 }
 
-/*Test case to create data_ref_q_obj_desc which is not corresponding to TIVX_OBJ_DESC_DATA_REF_Q 
+/*Test case to create data_ref_q_obj_desc which is not corresponding to TIVX_OBJ_DESC_DATA_REF_Q
  *in ownTargetNodeDescReleaseAllParameters.
  */
 static vx_status tivxBranchTestTargetNodeDescReleaseAllParameter(uint8_t id)
@@ -1542,9 +1542,9 @@ static vx_status tivxBranchTestTargetNodeDescReleaseAllParameter(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to get test_obj_desc_node \n");
         status = (vx_status)VX_FAILURE;
     }
- 
+
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
- 
+
     return status;
 }
 
@@ -1552,7 +1552,7 @@ static vx_status tivxBranchTestTargetNodeDescReleaseAllParameter(uint8_t id)
 static vx_status tivxBranchTargetNodeDescReleaseParameter(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
- 
+
     tivx_obj_desc_node_t *test_obj_desc_node = NULL;
     tivx_obj_desc_t *obj_desc =NULL;
     uint16_t obj_desc_id_t = 1;
@@ -1566,16 +1566,16 @@ static vx_status tivxBranchTargetNodeDescReleaseParameter(uint8_t id)
 
     /*To create valid obj_desc of TIVX_OBJ_DESC_DATA_REF_Q type*/
     test_obj_desc_node->data_ref_q_id[0]= obj_desc->obj_desc_id;
- 
+
     /*
-     *prm_input should be a value other than 0(vx_false_e) and 1(vx_true_e) 
+     *prm_input should be a value other than 0(vx_false_e) and 1(vx_true_e)
      *to validate 'data_ref_q_obj_desc->num_in_nodes' inside ownTargetNodeDescReleaseParameter()
      */
     test_obj_desc_node->is_prm_input = 2;
- 
+
     /*To make obj_desc = NULL inside ownTargetNodeDescReleaseParameter() */
     prm_obj_desc_id[0] = (vx_enum)TIVX_OBJ_DESC_INVALID;
- 
+
     if(obj_desc !=NULL && test_obj_desc_node != NULL)
     {
         ownTargetNodeDescReleaseAllParameters(test_obj_desc_node, prm_obj_desc_id);
@@ -1587,7 +1587,7 @@ static vx_status tivxBranchTargetNodeDescReleaseParameter(uint8_t id)
     }
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
-    
+
     return status;
 }
 
@@ -1602,14 +1602,14 @@ static vx_status tivxBranchTargetNodeDescReleaseParam(uint8_t id)
     uint16_t prm_obj_desc_id[TIVX_KERNEL_MAX_PARAMS]={0};
     obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(TIVX_OBJ_DESC_DATA_REF_Q, NULL);
     test_obj_desc_node = (tivx_obj_desc_node_t *)ownObjDescGet(obj_desc_id_t);
-    
+
    /*to set is_prm_data_ref_q_flag so that tivxFlagIsBitSet() returns '1' inside ownTargetNodeDescReleaseAllParameters() */
     test_obj_desc_node->is_prm_data_ref_q = 1;
     test_obj_desc_node->num_params =1;
 
     /*To create valid obj_desc of TIVX_OBJ_DESC_DATA_REF_Q type*/
     test_obj_desc_node->data_ref_q_id[0]= obj_desc->obj_desc_id;
-    test_obj_desc_node->is_prm_input = 0; 
+    test_obj_desc_node->is_prm_input = 0;
 
     if(obj_desc !=NULL && test_obj_desc_node != NULL)
     {
@@ -1620,7 +1620,7 @@ static vx_status tivxBranchTargetNodeDescReleaseParam(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to allocate memory\n");
         status = (vx_status)VX_FAILURE;
     }
- 
+
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
     return status;
@@ -1646,7 +1646,7 @@ static vx_status tivxNegativeTestObjDescAllocAndDescQueueCreate(uint8_t id)
             break;
         }
     }
- 
+
     for (j = 0; j < i; j++)
     {
         if (NULL == g_obj_desc[j])
@@ -1887,7 +1887,7 @@ static vx_status tivxAppMemGetNumAllocs(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    /* For rtos implementation, appMemGetNumAllocs() 
+    /* For rtos implementation, appMemGetNumAllocs()
     is not valid and just return -1 */
     if ((uint32_t)(-1) != appMemGetNumAllocs())
     {
@@ -3017,10 +3017,16 @@ static vx_status tivxNegativeTestMutexMaxOut(uint8_t id)
 static vx_status tivxTestTargetGetTargetKernelInstanceState(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    tivx_target_kernel_instance target_kernel_instance = NULL;
+    tivx_target_kernel_instance_t target_kernel_instance;
+    target_kernel_instance.state = VX_TYPE_INVALID;
     vx_enum state;
 
-    if((vx_status)VX_SUCCESS != tivxGetTargetKernelInstanceState((tivx_target_kernel_instance)&target_kernel_instance,&state))
+    if((vx_status)VX_SUCCESS == tivxGetTargetKernelInstanceState(NULL, &state))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: target kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else if((vx_status)VX_SUCCESS != tivxGetTargetKernelInstanceState(&target_kernel_instance, &state))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: target kernel instance\n");
         status = (vx_status)VX_FAILURE;
@@ -3034,12 +3040,24 @@ static vx_status tivxTestTargetGetTargetKernelInstanceState(uint8_t id)
 static vx_status tivxTestTargetIsTargetKernelInstanceReplicated(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    tivx_target_kernel_instance kernel_instance = NULL;
+    tivx_target_kernel_instance_t kernel_instance;
 
-    if ((vx_bool)vx_false_e == tivxIsTargetKernelInstanceReplicated((tivx_target_kernel_instance)&kernel_instance))
+    kernel_instance.is_kernel_instance_replicated = vx_true_e;
+
+    if ((vx_bool)vx_true_e != tivxIsTargetKernelInstanceReplicated(&kernel_instance))
     {
-        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: kernel instance\n");
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: kernel instance replicated\n");
         status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        kernel_instance.is_kernel_instance_replicated = vx_false_e;
+
+        if ((vx_bool)vx_false_e != tivxIsTargetKernelInstanceReplicated(&kernel_instance))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: kernel instance not replicated\n");
+            status = (vx_status)VX_FAILURE;
+        }
     }
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
