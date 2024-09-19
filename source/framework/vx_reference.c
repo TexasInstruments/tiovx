@@ -267,7 +267,7 @@ static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_share
             break;
         }
 #ifdef LDRA_UNTESTABLE_CODE
-/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM001 */
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM001 */
         default:
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -377,7 +377,7 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
                 status = tivxMemBufferFree(
                     mem_ptr, mem_size);
 #ifdef LDRA_UNTESTABLE_CODE
-/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM002 */
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM002 */
                 if((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Buffer free failed!\n");
@@ -391,7 +391,7 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
     {
         status = ownObjDescFree((tivx_obj_desc_t**)&base_obj_desc);
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1692- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM003 */
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM003 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Object descriptor free failed!\n");
@@ -1170,7 +1170,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
     {
         status = vxSetMetaFormatFromReference(mf1, ref1);
 #ifdef LDRA_UNTESTABLE_CODE
-/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM005 */
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM005 */
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,
@@ -1185,7 +1185,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
     {
         status = vxSetMetaFormatFromReference(mf2, ref2);
 #ifdef LDRA_UNTESTABLE_CODE
-/* LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM006 */
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM006 */
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,

@@ -666,7 +666,7 @@ vx_status ownGraphFreeObjDesc(vx_graph graph)
         {
             status = ownObjDescFree((tivx_obj_desc_t**)&graph->obj_desc[i]);
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1692- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJ_DESC_FREE_UM003 */
+/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM009 */
             if(status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to free the object descriptor\n");

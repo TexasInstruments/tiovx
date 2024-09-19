@@ -202,7 +202,7 @@ static vx_status ownDestructRawImage(vx_reference ref)
             {
                 status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1692- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJ_DESC_FREE_UM006 */
+/* TIOVX-1730- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RAW_IMAGE_UM008 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Raw Image object descriptor free failed!\n");
