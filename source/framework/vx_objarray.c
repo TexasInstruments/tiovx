@@ -53,10 +53,14 @@ static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_b
             {
                 status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/*  this code cannot be reached because the callback applis only on objArray, so the cast must be successfull
+    end the kernel callback is also set during the object creation so it cannot be NULL*/    
             else
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             }
+#endif
         }
     }
     return status;
@@ -485,34 +489,31 @@ static vx_status ownDestructObjArray(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     vx_object_array objarr = NULL;
 
-    if(ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
+    /* status set to NULL due to preceding type check */
+    objarr = vxCastRefAsObjectArray(ref,NULL);
+    if(objarr->base.obj_desc!=NULL)
     {
-        /* status set to NULL due to preceding type check */
-        objarr = vxCastRefAsObjectArray(ref,NULL);
-        if(objarr->base.obj_desc!=NULL)
+        tivx_obj_desc_object_array_t *obj_desc =
+            (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
+
+        status = ownReleaseRefFromObjArray(objarr, obj_desc->num_items);
+
+        if ((vx_status)VX_SUCCESS == status)
         {
-            tivx_obj_desc_object_array_t *obj_desc =
-                (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
-
-            status = ownReleaseRefFromObjArray(objarr, obj_desc->num_items);
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                status = ownObjDescFree(&objarr->base.obj_desc);
+            status = ownObjDescFree(&objarr->base.obj_desc);
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1692- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJ_DESC_FREE_UM004 */
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Object array object descriptor release failed!\n");
-                }
-#endif
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Object array object descriptor release failed!\n");
             }
+#endif
         }
-        else
-        {
-            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-            VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
-        }
+    }
+    else
+    {
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
     }
     return status;
 }

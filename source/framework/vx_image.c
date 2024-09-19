@@ -404,15 +404,7 @@ static vx_status isImageCopyable(vx_image input, vx_image output)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *in_objd = (tivx_obj_desc_image_t *)input->base.obj_desc;
     tivx_obj_desc_image_t *out_objd = (tivx_obj_desc_image_t *)output->base.obj_desc;
-    if ((vx_bool)vx_false_e == ownIsValidImage(input))
-    {
-        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-    }
-    else if ((vx_bool)vx_false_e == ownIsValidImage(output))
-    {
-        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-    }
-    else if ((vx_enum)TIVX_IMAGE_UNIFORM == (vx_enum)out_objd->create_type)
+    if ((vx_enum)TIVX_IMAGE_UNIFORM == (vx_enum)out_objd->create_type)
     {
         /* If the output image cannot be uniform, as these are defined to be read-only */
         status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
@@ -437,17 +429,6 @@ static vx_status isImageCopyable(vx_image input, vx_image output)
     {
         /* Output format must be the same as input format unless output is virtual with virtual format */
         status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-    }
-    else
-    {
-        /* All OK, so we propagate metadata and valid region */
-        out_objd->color_range = in_objd->color_range;
-        out_objd->color_space = in_objd->color_space;
-        /* struct assigment, use the special copy function */
-        tivx_obj_desc_memcpy(&out_objd->valid_roi, &in_objd->valid_roi, (uint32_t)sizeof(out_objd->valid_roi));
-        out_objd->width = in_objd->width;
-        out_objd->height = in_objd->height;
-        out_objd->format = in_objd->format;
     }
     return status;
 }
@@ -516,6 +497,16 @@ static vx_status copyImage(vx_image input, vx_image output)
     vx_imagepatch_addressing_t addr;
     vx_map_id map_id;
     void *ptr;
+
+    /* All OK, so we propagate metadata and valid region */
+    op_objd->color_range = ip_objd->color_range;
+    op_objd->color_space = ip_objd->color_space;
+    /* struct assigment, use the special copy function */
+    tivx_obj_desc_memcpy(&op_objd->valid_roi, &ip_objd->valid_roi, (uint32_t)sizeof(op_objd->valid_roi));
+    op_objd->width  = ip_objd->width;
+    op_objd->height = ip_objd->height;
+    op_objd->format = ip_objd->format;
+
     for (i = 0; i < ip_objd->planes; ++i)
     {
         /* if the size of both objects is the same, we can use memcpy for faster processing */
@@ -596,6 +587,7 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
         {
             if (NULL != subimages[i])
             {
+#ifdef LDRA_UNTESTABLE_CODE
                 /* this should not happen as the max depth for subimages is fixed */
                 if (TIVX_SUBIMAGE_STACK_SIZE < stack_pointer)
                 {
@@ -603,6 +595,7 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
                     break;
                 }
+#endif
                 else
                 {
                     stack[stack_pointer] = subimages[i];
@@ -665,39 +658,53 @@ static vx_status swapImage(const vx_image input, const vx_image output)
 
 static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
-    vx_status res;
+    vx_status res  = (vx_status) VX_SUCCESS;
+    vx_status res1 = (vx_status) VX_SUCCESS;
+
     vx_image input_img  = NULL;
     vx_image output_img = NULL;
  
     input_img  = vxCastRefAsImage(input, &res);
-    output_img = vxCastRefAsImage(output, &res);
-    /* do not check the res, as we know they are images at that point*/
-    switch (kernel_enum)
+    output_img = vxCastRefAsImage(output, &res1);
+    /* check the result only on the output, as we know that the input must be an image at that point
+       otherwise the imageKernelCallback would not be called */
+    if (((vx_status) VX_SUCCESS == res1))
     {
-        case (vx_enum)VX_KERNEL_COPY:
-            if ((vx_bool)vx_true_e == validate_only)
-            {
-                res =  isImageCopyable(input_img, output_img);
-            }
-            else
-            {
-                res = copyImage(input_img, output_img);
-            }
-            break;
-        case (vx_enum)VX_KERNEL_SWAP:
-        case (vx_enum)VX_KERNEL_MOVE:
-            if ((vx_bool)vx_true_e == validate_only)
-            {
-                res =  isImageSwapable(input_img, output_img);
-            }
-            else
-            {
-                res = swapImage(input_img, output_img);
-            }
-            break;
-        default:
-            res = (vx_status)VX_ERROR_NOT_SUPPORTED;
-            break;
+        switch (kernel_enum)
+        {
+            case (vx_enum)VX_KERNEL_COPY:
+                if ((vx_bool)vx_true_e == validate_only)
+                {
+                    res =  isImageCopyable(input_img, output_img);
+                }
+                else
+                {
+                    res = copyImage(input_img, output_img);
+                }
+                break;
+            case (vx_enum)VX_KERNEL_SWAP:
+            case (vx_enum)VX_KERNEL_MOVE:
+                if ((vx_bool)vx_true_e == validate_only)
+                {
+                    res =  isImageSwapable(input_img, output_img);
+                }
+                else
+                {
+                    res = swapImage(input_img, output_img);
+                }
+                break;
+#ifdef LDRA_UNTESTABLE_CODE
+/* the interface for copy-move - swap is done via the copy/move/swap via the direct adressing mode (vxu_...-) or creating the specific node
+   so this is no possible to reach this */                 
+            default:
+                res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                break;
+#endif
+        }
+    }
+    else
+    {
+        res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
     }
     return (res);
 }
@@ -1452,6 +1459,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
 {
     vx_image image = NULL;
     vx_status status;
+    tivx_obj_desc_image_t * l_objdesc;
 
     if (value == NULL)
     {
@@ -2672,6 +2680,7 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
     while (0U < stack_pointer)
     {
         stack_pointer--;
+#ifdef LDRA_UNTESTABLE_CODE
         /* this should not happen as the max depth for subimages is fixed */
         if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
         {
@@ -2679,6 +2688,7 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
             status = (vx_status)VX_ERROR_NO_RESOURCES;
             break;
         }
+#endif
         else
         {
             next_image = image_arr[stack_pointer];
@@ -2707,6 +2717,7 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
 
                     if (subimage != NULL)
                     {
+#ifdef LDRA_UNTESTABLE_CODE                        
                         /* this should not happen as the max depth for subimages is fixed */
                         if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
                         {
@@ -2714,6 +2725,7 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
                             break;
                         }
+#endif                        
                         else
                         {
                             vx_uint8* ptrs[TIVX_IMAGE_MAX_PLANES] = {NULL};

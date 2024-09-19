@@ -117,10 +117,14 @@ static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool 
             {
                 status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
             }
+#ifdef LDRA_UNTESTABLE_CODE
+/*  this code cannot be reached because the callback applis only on objArray, so the cast must be successfull
+    end the kernel callback is also set during the object creation so it cannot be NULL*/
             else
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             }
+#endif
         }
     }
     return status;
@@ -575,57 +579,54 @@ static vx_status ownDestructPyramid(vx_reference ref)
     vx_uint32 i = 0;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
-    if(ref->type == (vx_enum)VX_TYPE_PYRAMID)
+    /* status set to NULL due to preceding type check */
+    vx_pyramid prmd = vxCastRefAsPyramid(ref, NULL);
+
+    obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
+    if(obj_desc == NULL)
     {
-        /* status set to NULL due to preceding type check */
-        vx_pyramid prmd = vxCastRefAsPyramid(ref, NULL);
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
+    }
+    else
+    {
 
-        obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
-        if(obj_desc == NULL)
+        for (i = 0; i < obj_desc->num_levels; i++)
         {
-            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-            VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
-        }
-        else
-        {
-
-            for (i = 0; i < obj_desc->num_levels; i++)
+            if ((NULL != prmd->img[i]) &&
+                (vxGetStatus(vxCastRefFromImage(prmd->img[i])) == (vx_status)VX_SUCCESS))
             {
-                if ((NULL != prmd->img[i]) &&
-                    (vxGetStatus(vxCastRefFromImage(prmd->img[i])) == (vx_status)VX_SUCCESS))
-                {
-                    /* decrement the internal counter on the image, not the
-                    * external one. Setting it as void since return value
-                    * 'count' is not used further.
-                    */
-                    (void)ownDecrementReference(vxCastRefFromImage(prmd->img[i]), (vx_enum)VX_INTERNAL);
+                /* decrement the internal counter on the image, not the
+                * external one. Setting it as void since return value
+                * 'count' is not used further.
+                */
+                (void)ownDecrementReference(vxCastRefFromImage(prmd->img[i]), (vx_enum)VX_INTERNAL);
 
-                    status = ownReleaseReferenceInt(vxCastRefFromImageP(&prmd->img[i]),
-                            (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
+                status = ownReleaseReferenceInt(vxCastRefFromImageP(&prmd->img[i]),
+                        (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM004 */
-                    if ((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "Pyramid level %d release failed\n", i);
-                        break;
-                    }
-#endif
-                }
-            }
-        }
-        if(prmd->base.type == (vx_enum)VX_TYPE_PYRAMID)
-        {
-            if(prmd->base.obj_desc!=NULL)
-            {
-                status = ownObjDescFree((tivx_obj_desc_t**)&prmd->base.obj_desc);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1692- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJ_DESC_FREE_UM005 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "Pyramid object descriptor free failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Pyramid level %d release failed\n", i);
+                    break;
                 }
 #endif
             }
+        }
+    }
+    if(prmd->base.type == (vx_enum)VX_TYPE_PYRAMID)
+    {
+        if(prmd->base.obj_desc!=NULL)
+        {
+            status = ownObjDescFree((tivx_obj_desc_t**)&prmd->base.obj_desc);
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1692- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJ_DESC_FREE_UM005 */
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Pyramid object descriptor free failed\n");
+            }
+#endif
         }
     }
     return status;

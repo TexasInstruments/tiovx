@@ -351,20 +351,12 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_t *base_obj_desc = NULL;
 
-    if((vx_bool)vx_true_e == ownIsGenericReferenceType(ref->type))
-    {
         base_obj_desc = (tivx_obj_desc_t *)ref->obj_desc;
 
-        if(base_obj_desc == NULL)
-        {
-            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-            VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
-        }
-    }
-    else
+    if(base_obj_desc == NULL)
     {
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-        VX_PRINT(VX_ZONE_ERROR, "Invalid reference provided to destructor!\n");
+        VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL!\n");
     }
 
     if ((vx_status)VX_SUCCESS == status)
