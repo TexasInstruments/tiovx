@@ -95,13 +95,28 @@ TEST(tivxInternalGraphStream, negativeTestStartGraphStreaming)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+TEST(tivxInternalGraphStream, negativeTestownGraphFreeStreaming)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    graph->delete_done = NULL;
+    graph->stop_done = NULL;
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownGraphFreeStreaming(graph));
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(
     tivxInternalGraphStream,
     negativeTestGraphEvent,
     negativeTestGraphVerfiyStreamingNode,
     negativeTestGraphAllocForStreaming,
     negativeTestStopGraphStreaming,
-    negativeTestStartGraphStreaming
+    negativeTestStartGraphStreaming,
+    negativeTestownGraphFreeStreaming
 
 )
 

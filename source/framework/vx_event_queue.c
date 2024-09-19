@@ -121,23 +121,17 @@ vx_status ownEventQueueDelete(tivx_event_queue_t *event_q)
     vx_status status1 = (vx_status)VX_SUCCESS;
 
     status = tivxQueueDelete(&event_q->free_queue);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1722- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM003 */
     if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete free_queue\n");
     }
-#endif
 
     status1 = tivxQueueDelete(&event_q->ready_queue);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1722- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM004 */
     if(status1 != (vx_status)VX_SUCCESS)
     {
         status = status1;
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete ready_queue\n");
     }
-#endif
 
     return status;
 }
@@ -323,7 +317,7 @@ vx_status vxWaitEventQueue(
                 event->event_info.user_event.user_event_parameter = (void*)elem->param2;
             }
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1722- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM005 */
+/* TIOVX-1722- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM003 */
             else
             {
                 /* do nothing */
