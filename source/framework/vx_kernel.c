@@ -546,7 +546,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const char *target_name)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if (ownIsValidSpecificReference(vxCastRefFromKernel(kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromKernel(kernel), (vx_enum)VX_TYPE_KERNEL)) == (vx_bool)vx_true_e)
     {
         if(kernel->num_targets < TIVX_MAX_TARGETS_PER_KERNEL)
         {
@@ -593,8 +593,7 @@ vx_enum ownKernelGetDefaultTarget(vx_kernel kernel)
 {
     vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
 
-    if (ownIsValidSpecificReference(vxCastRefFromKernel(kernel),
-    (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR009 */
+    if ((ownIsValidSpecificReference(vxCastRefFromKernel(kernel), (vx_enum)VX_TYPE_KERNEL)) == (vx_bool)vx_true_e)
     {
         if(kernel->num_targets==0U)
         {
@@ -616,9 +615,7 @@ vx_enum ownKernelGetTarget(vx_kernel kernel, const char *target_string)
     uint32_t i;
     vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
 
-    if ((ownIsValidSpecificReference(vxCastRefFromKernel(kernel), (vx_enum)VX_TYPE_KERNEL) ==
-          (vx_bool)vx_true_e) && /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR010 */
-          (NULL != target_string)) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR011 */
+    if (((ownIsValidSpecificReference(vxCastRefFromKernel(kernel), (vx_enum)VX_TYPE_KERNEL)) == (vx_bool)vx_true_e) && (NULL != target_string))
     {
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT005 */
