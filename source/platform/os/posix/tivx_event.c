@@ -155,7 +155,7 @@ vx_status tivxEventPost(tivx_event event)
     if(event != NULL)
     {
         status = pthread_mutex_lock(&event->lock);
-        if(status == 0)
+        if(status == 0) /* TIOVX-1944- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_UBR001 */
         {
             event->is_set = 1;
 
@@ -187,7 +187,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
     if(event != NULL)
     {
         status = pthread_mutex_lock(&event->lock);
-        if(status == 0)
+        if(status == 0) /* TIOVX-1944- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_UBR002 */
         {
             bool done = (bool)vx_false_e;
 
@@ -217,7 +217,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 
                     retVal = gettimeofday(&tv, NULL);
 
-                    if (retVal == 0)
+                    if (retVal == 0) /* TIOVX-1944- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_UBR003 */
                     {
                         uint32_t        sec;
                         unsigned long   micro;
@@ -309,7 +309,7 @@ vx_status tivxEventClear(tivx_event event)
     if(event != NULL)
     {
         status = pthread_mutex_lock(&event->lock);
-        if(status == 0)
+        if(status == 0) /* TIOVX-1944- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_UBR004 */
         {
             event->is_set = 0;
             status = pthread_mutex_unlock(&event->lock);
