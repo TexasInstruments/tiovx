@@ -54,5 +54,6 @@ TESTCASE(tivxTimer)
 #if defined(LINUX) && !defined(PC)
 TESTCASE(tivxRpmsgChar)
 #endif
+TESTCASE(tivxInternalGraphSort)
 
 #endif
