@@ -111,7 +111,7 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
     vx_node cur_node, next_node, prev_node;
     vx_bool ret;
 
-    if (num_nodes < TIVX_GRAPH_MAX_NODES) /* TIOVX-1910- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR002 */
+    if (num_nodes < TIVX_GRAPH_MAX_NODES)
     {
         ownGraphSortStackReset(context, (uint16_t)num_nodes);
 
@@ -144,7 +144,7 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
             for (in_node_idx=0; in_node_idx < num_in_nodes; in_node_idx++)
             {
                 prev_node = ownNodeGetNextInNode(cur_node, in_node_idx);
-                if(prev_node != NULL) /* TIOVX-1910- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR003 */
+                if(prev_node != NULL) /* TIOVX-1910- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR002 */
                 {
                     if (cur_node->node_depth <= prev_node->node_depth)
                     {
@@ -156,7 +156,7 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
             for(out_node_idx=0; out_node_idx < num_out_nodes; out_node_idx++)
             {
                 next_node = ownNodeGetNextNode(cur_node, out_node_idx);
-                if(next_node != NULL) /* TIOVX-1910- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR004 */
+                if(next_node != NULL) /* TIOVX-1910- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR003 */
                 {
                     next_node->incounter--;
                     if(next_node->incounter==0U)
