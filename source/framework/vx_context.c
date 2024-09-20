@@ -835,7 +835,6 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
         }
         ownLogSetResourceUsedValue("TIVX_MAX_CTRL_CMD_OBJECTS", (uint16_t)obj_id);
     }
-#ifdef LDRA_UNTESTABLE_CODE
     else
     {
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -850,7 +849,6 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                 "Invalid Context\n");
         }
     }
-#endif
 
     return status;
 }
@@ -973,13 +971,11 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
             }
         }
     }
-#ifdef LDRA_UNTESTABLE_CODE
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"invalid parameters\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
-#endif
 
     return status;
 }
