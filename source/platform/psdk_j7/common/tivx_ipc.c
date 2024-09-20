@@ -106,7 +106,7 @@ static tivx_ipc_handler_f g_ipc_handler = NULL;
  */
 static void tivxIpcHandler(uint32_t src_cpu_id, uint32_t payload)
 {
-    if (NULL != g_ipc_handler)
+    if (NULL != g_ipc_handler) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR001 */
     {
         g_ipc_handler(payload);
     }
@@ -172,7 +172,7 @@ vx_enum tivxGetSelfCpuId(void)
 
     vsdk_cpu_id =  appIpcGetSelfCpuId();
 
-    for (i = 0; i < dimof(g_ipc_cpu_id_map); i ++)
+    for (i = 0; i < dimof(g_ipc_cpu_id_map); i ++) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR002 */
     {
         if (vsdk_cpu_id == g_ipc_cpu_id_map[i])
         {
@@ -194,7 +194,7 @@ uint16_t ownIpcGetHostPortId(uint16_t cpu_id)
     {
         vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
 
-        if(vsdk_cpu_id != APP_IPC_CPU_INVALID )
+        if(vsdk_cpu_id != APP_IPC_CPU_INVALID ) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR003 */
         {
             host_port_id = appIpcGetHostPortId((uint16_t)vsdk_cpu_id);
         }
@@ -247,13 +247,13 @@ vx_bool tivxIsTargetEnabled(const char target_name[])
         if (target_id != (vx_enum)TIVX_TARGET_ID_INVALID)
         {
             cpu_id = ownTargetGetCpuId(target_id);
-            if( cpu_id < (vx_enum)TIVX_CPU_ID_MAX)
+            if( cpu_id < (vx_enum)TIVX_CPU_ID_MAX) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR004 */
             {
                 vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
 
                 vsdk_isenabled = appIpcIsCpuEnabled(vsdk_cpu_id);
 
-                if (1U == vsdk_isenabled)
+                if (1U == vsdk_isenabled) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR005 */
                 {
                     isEnabled = (vx_bool)vx_true_e;
                 }
