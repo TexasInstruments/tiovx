@@ -1103,6 +1103,21 @@ TEST(copySwap, testVxu)
     VX_CALL(vxReleaseReference(&example1));
     VX_CALL(vxReleaseReference(&example2));
 
+    /* negative testing for scalar */
+    vx_uint32 value = 0;
+    example1 = (vx_reference)vxCreateScalar(context, VX_TYPE_UINT32, &value);
+    example2 = (vx_reference)vxCreateScalar(context, VX_TYPE_UINT16, &value);
+    EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxuCopy(context, example1, example2));
+    VX_CALL(vxReleaseReference(&example1));
+    VX_CALL(vxReleaseReference(&example2));
+
+    /* negative test for tensor */
+    vx_size dims1[3] = {4, 4, 4};
+    example1 = (vx_reference)vxCreateTensor(context, 3, dims1, VX_TYPE_INT32, 0);
+    example2 = (vx_reference)vxCreateTensor(context, 3, dims1, VX_TYPE_INT16, 0);
+    EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxuSwap(context, example1, example2));
+    VX_CALL(vxReleaseReference(&example1));
+    VX_CALL(vxReleaseReference(&example2));     
 }
 
 /* Check sub-image. This must cover sub-images

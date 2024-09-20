@@ -92,9 +92,13 @@ static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool v
             case (vx_enum)VX_KERNEL_MOVE:
                 res = swapScalar(input, output);
                 break;
+#ifdef LDRA_UNTESTABLE_CODE
+/* the interface for copy-move - swap is done via the copy/move/swap via the direct adressing mode (vxu_...-) or creating the specific node
+   so this is no possible to reach this */                 
             default:
                 res = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
+#endif
         }
     }
     return (res);
