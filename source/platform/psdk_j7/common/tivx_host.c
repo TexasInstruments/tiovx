@@ -77,7 +77,7 @@ static void tivxHostInitLocal(void)
         tivxRegisterOpenVXCoreKernels();
         tivxRegisterOpenVXExtKernels();
 
-        if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MPU_0)
+        if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MPU_0) /* TIOVX-1946- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_HOST_UBR001 */
         {
             tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MPU_0);
         }
@@ -111,7 +111,7 @@ static void tivxHostInitLocal(void)
 
 static void tivxHostDeInitLocal(void)
 {
-    if (0U != gInitCount)
+    if (0U != gInitCount) /* TIOVX-1946- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_HOST_UBR002 */
     {
         gInitCount--;
 
