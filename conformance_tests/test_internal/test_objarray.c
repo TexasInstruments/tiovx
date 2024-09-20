@@ -73,6 +73,7 @@ TEST(tivxInternalObjArray, negativeTestGetObjectArrayItem2)
     vx_image img = NULL;
     vx_uint32 index = 0;
     vx_reference exemplar = NULL;
+    tivx_obj_desc_t *obj_desc = NULL;
 
     ASSERT_VX_OBJECT(img = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
@@ -87,6 +88,12 @@ TEST(tivxInternalObjArray, negativeTestGetObjectArrayItem2)
     ASSERT(NULL == vxGetObjectArrayItem(object_array, index));
     ref->type = VX_TYPE_OBJECT_ARRAY;
     context->base.magic = TIVX_MAGIC;
+
+    /* To fail object_array>base.obj_desc != NULL condition */
+    obj_desc = object_array->base.obj_desc;
+    object_array->base.obj_desc = NULL;
+    ASSERT(NULL == vxGetObjectArrayItem(object_array, index));
+    object_array->base.obj_desc = obj_desc;
 
     VX_CALL(vxReleaseObjectArray(&object_array));
     VX_CALL(vxReleaseImage(&img));

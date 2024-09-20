@@ -47,6 +47,8 @@ TEST(tivxInternalPyramid, negativeTestOwnInitVirtualPyramid)
     ASSERT_VX_OBJECT(pymd = vxCreateVirtualPyramid(graph, 4, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
     pymd->base.is_virtual = vx_false_e;
     ASSERT(VX_FAILURE == ownInitVirtualPyramid(pymd,width,height,format));
+    width = 1U;
+    ASSERT(VX_FAILURE == ownInitVirtualPyramid(pymd,width,height,format));
 
     VX_CALL(vxReleasePyramid(&pymd));
     VX_CALL(vxReleaseGraph(&graph));
@@ -108,6 +110,7 @@ TEST(tivxInternalPyramid, negativeTestGetPyramidLevel)
     vx_float32 scale = 0.9f;
     vx_uint32 index = 3, width = 3, height = 3;
     vx_df_image format = VX_DF_IMAGE_U8;
+    tivx_obj_desc_t *obj_desc = NULL;
 
     ASSERT_VX_OBJECT(pymd = vxCreatePyramid(context, levels, scale, width, height, format), VX_TYPE_PYRAMID);
 
@@ -120,6 +123,12 @@ TEST(tivxInternalPyramid, negativeTestGetPyramidLevel)
     ASSERT(NULL == vxGetPyramidLevel(pymd, index));
     ref->type = VX_TYPE_PYRAMID;
     context->base.magic = TIVX_MAGIC;
+
+    /* To fail prmd->base.obj_desc != NULL condition */
+    obj_desc = pymd->base.obj_desc;
+    pymd->base.obj_desc = NULL;
+    EXPECT_VX_ERROR(img = vxGetPyramidLevel(pymd, index), VX_ERROR_INVALID_PARAMETERS);
+    pymd->base.obj_desc = obj_desc;
 
     VX_CALL(vxReleasePyramid(&pymd));
 }
