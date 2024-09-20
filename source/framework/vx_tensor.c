@@ -54,7 +54,7 @@ static vx_status isTensorSwappable(vx_reference input, vx_reference output)
         tivx_obj_desc_tensor_t * op_obj_desc = (tivx_obj_desc_tensor_t *)output->obj_desc;
 #ifdef LDRA_UNTESTABLE_CODE
 /* vxCreateTensorFromHandle does not exist in the current TI implementation 
-   thus this piece of code cannot be reached. We can keep this check for future immpelentation.
+   thus this code cannot be reached. Nevertheless We could keep this check for future implementation.
  */         
         if (ip_obj_desc->mem_size != op_obj_desc->mem_size)
         {
@@ -131,8 +131,8 @@ static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool v
             }
             break;
 #ifdef LDRA_UNTESTABLE_CODE
-/* the interface for copy-move - swap is done via the copy/move/swap via the direct adressing mode (vxu_...-) or creating the specific node
-   so this is no possible to reach this */                
+/* the interface for copy, move and swap is done via the direct adressing mode (vxu_...-) or when creating the corresponding specific node
+   so this is not possible to reach this */      
         default:
             res =  (vx_status)VX_ERROR_NOT_SUPPORTED;
             break;

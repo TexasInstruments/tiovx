@@ -694,8 +694,8 @@ static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool va
                 }
                 break;
 #ifdef LDRA_UNTESTABLE_CODE
-/* the interface for copy-move - swap is done via the copy/move/swap via the direct adressing mode (vxu_...-) or creating the specific node
-   so this is no possible to reach this */                 
+/* the interface for copy, move and swap is done via the direct adressing mode (vxu_...-) or when creating the corresponding specific node
+   so this is not possible to reach this code because the kernel type is specified by the private functions */      
             default:
                 res = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;

@@ -118,8 +118,8 @@ static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool 
                 status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
             }
 #ifdef LDRA_UNTESTABLE_CODE
-/*  this code cannot be reached because the callback applis only on objArray, so the cast must be successfull
-    end the kernel callback is also set during the object creation so it cannot be NULL*/
+/*  this code cannot be reached because the callback applies only on objArray, so the cast must be successfull.
+    The kernel callback is also set during the object creation and cannot be NULL*/
             else
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
