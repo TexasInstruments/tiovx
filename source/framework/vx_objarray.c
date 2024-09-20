@@ -33,9 +33,9 @@ static vx_bool ownIsValidObject(vx_enum type)
     vx_bool status = (vx_bool)vx_false_e;
 
     if (((vx_enum)VX_TYPE_IMAGE == type) ||
-        ((vx_enum)VX_TYPE_TENSOR == type) || /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR001 */
+        ((vx_enum)VX_TYPE_TENSOR == type) ||
         ((vx_enum)VX_TYPE_ARRAY == type) ||
-        (VX_TYPE_USER_DATA_OBJECT == type) || /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR002 */
+        (VX_TYPE_USER_DATA_OBJECT == type) ||
         (TIVX_TYPE_RAW_IMAGE == type) ||
         ((vx_enum)VX_TYPE_SCALAR == type) ||
         ((vx_enum)VX_TYPE_DISTRIBUTION == type) ||
@@ -238,14 +238,14 @@ VX_API_ENTRY vx_reference VX_API_CALL vxGetObjectArrayItem(
             (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
         if ((ownIsValidSpecificReference(vxCastRefFromObjectArray(objarr), (vx_enum)VX_TYPE_OBJECT_ARRAY) ==
-                (vx_bool)vx_true_e) && /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR003 */
-                (obj_desc != NULL) && /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR004 */
+                (vx_bool)vx_true_e) && /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR001 */
+                (obj_desc != NULL) &&
             (index < obj_desc->num_items) &&
             (objarr->base.is_virtual == (vx_bool)vx_false_e))
         {
             ref = ownReferenceGetHandleFromObjDescId(obj_desc->obj_desc_id[index]);
 
-            if (NULL != ref) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR005 */
+            if (NULL != ref) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR002 */
             {
                 /* Setting it as void since the return value 'count' is not used further */
                 (void)ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
@@ -375,7 +375,7 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (vxGetStatus(ref) == (vx_status)VX_SUCCESS) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR006 */
+    if (vxGetStatus(ref) == (vx_status)VX_SUCCESS) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR003 */
     {
         tivx_obj_desc_object_array_t *obj_desc =
             (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
@@ -443,7 +443,7 @@ static vx_status ownDestructObjArray(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     vx_object_array objarr = NULL;
 
-    if(ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR007 */
+    if(ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR004 */
     {
         /* status set to NULL due to preceding type check */
         objarr = vxCastRefAsObjectArray(ref,NULL);
@@ -454,7 +454,7 @@ static vx_status ownDestructObjArray(vx_reference ref)
 
             status = ownReleaseRefFromObjArray(objarr, obj_desc->num_items);
 
-            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR008 */
+            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR005 */
             {
                 status = ownObjDescFree(&objarr->base.obj_desc);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -483,18 +483,18 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
     tivx_obj_desc_object_array_t *obj_desc = NULL;
     vx_reference ref;
 
-    if(objarr_ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR009 */
+    if(objarr_ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR006 */
     {
         /* status set to NULL due to preceding type check */
         objarr = vxCastRefAsObjectArray(objarr_ref,NULL);
-        if(objarr->base.obj_desc != NULL) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR010 */
+        if(objarr->base.obj_desc != NULL) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR007 */
         {
             obj_desc = (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
             for (i = 0u; i < obj_desc->num_items; i++)
             {
                 ref = objarr->ref[i];
 
-                if (ref != NULL) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR011 */
+                if (ref != NULL) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR008 */
                 {
                     status = (vx_status)VX_SUCCESS;
                     if(ref->mem_alloc_callback != NULL)
@@ -521,7 +521,7 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 #endif
             }
 
-            if ((vx_status)VX_SUCCESS==status) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR012 */
+            if ((vx_status)VX_SUCCESS==status) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR009 */
             {
                 objarr_ref->is_allocated = (vx_bool)vx_true_e;
             }

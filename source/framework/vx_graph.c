@@ -906,7 +906,7 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
         }
         else
         if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
-            ((vx_bool)vx_true_e == graph->is_streaming_enabled) ) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR008 */
+            ((vx_bool)vx_true_e == graph->is_streaming_enabled) )
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "manual mode is not allowed with streaming enabled\n");
