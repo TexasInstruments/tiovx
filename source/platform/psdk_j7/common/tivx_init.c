@@ -132,7 +132,7 @@ static void tivxInitLocal(void)
 
 static void tivxDeInitLocal(void)
 {
-    if (0U != gInitCount)
+    if (0U != gInitCount) /* TIOVX-1949- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_INIT_UBR001 */
     {
         gInitCount--;
 
