@@ -127,7 +127,7 @@ vx_status tivxQueueCreate(
 
             (void)pthread_mutexattr_destroy(&mutex_attr);
 
-            if(status==0)
+            if(status==0) /* TIOVX-1947- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_QUEUE_UBR001 */
             {
                 if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != (uint32_t)0)
                 {
@@ -166,7 +166,7 @@ vx_status tivxQueueCreate(
                     (void)pthread_condattr_destroy(&cond_attr);
                 }
             }
-            if ((vx_status)VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1947- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_QUEUE_UBR002 */
             {
                 queue->blockedOnGet = (vx_bool)vx_false_e;
                 queue->blockedOnPut = (vx_bool)vx_false_e;
@@ -232,7 +232,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
         context = queue->context;
 
         status = pthread_mutex_lock(&context->lock);
-        if(status==0)
+        if(status==0) /* TIOVX-1947- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_QUEUE_UBR003 */
         {
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1737- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_UM003 */
@@ -327,7 +327,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
         context = queue->context;
 
         status = pthread_mutex_lock(&context->lock);
-        if(status==0)
+        if(status==0) /* TIOVX-1947- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_QUEUE_UBR004 */
         {
             do
             {
@@ -389,7 +389,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                     break;
                 }
             }
-            while (true);
+            while (true); /* TIOVX-1947- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_QUEUE_UBR005 */
           
             temp_status = (uint32_t)status | (uint32_t)pthread_mutex_unlock(&context->lock);
             status = (vx_status)temp_status;
@@ -409,7 +409,7 @@ vx_bool tivxQueueIsEmpty(const tivx_queue *queue)
         context = queue->context;
 
         status = pthread_mutex_lock(&context->lock);
-        if(status==0)
+        if(status==0) /* TIOVX-1947- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_QUEUE_UBR006 */
         {
             if (queue->count == 0U)
             {
