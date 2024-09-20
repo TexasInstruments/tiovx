@@ -78,21 +78,22 @@ static vx_status ownGraphPipelineValidateRefsList(
     vx_meta_format meta_base = NULL, meta = NULL;
     vx_uint32 i;
 
-    if (NULL != graph_parameters_queue_param.refs_list[0])
+    if (NULL != graph_parameters_queue_param.refs_list[0]) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR001 */
     {
         meta_base = ownCreateMetaFormat(graph_parameters_queue_param.refs_list[0]->context);
         status = vxSetMetaFormatFromReference(meta_base, graph_parameters_queue_param.refs_list[0]);
     }
 
-    if ( ((vx_status)VX_SUCCESS == status) && (NULL != meta_base) )
+    if ( ((vx_status)VX_SUCCESS == status) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR002 */
+    && (NULL != meta_base) ) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR003 */
     {
         for (i = 1; i < graph_parameters_queue_param.refs_list_size; i++)
         {
-            if (NULL != graph_parameters_queue_param.refs_list[i])
+            if (NULL != graph_parameters_queue_param.refs_list[i]) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR004 */
             {
                 meta = ownCreateMetaFormat(graph_parameters_queue_param.refs_list[i]->context);
 
-                if (NULL != meta)
+                if (NULL != meta) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR005 */
                 {
                     status = vxSetMetaFormatFromReference(meta, graph_parameters_queue_param.refs_list[i]);
                 }
@@ -105,10 +106,10 @@ static vx_status ownGraphPipelineValidateRefsList(
                 }
 #endif
 
-                if ((vx_status)VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR006 */
                 {
                     if (graph_parameters_queue_param.refs_list[0]->type ==
-                        graph_parameters_queue_param.refs_list[i]->type)
+                        graph_parameters_queue_param.refs_list[i]->type) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR007 */
                     {
                         if ((vx_bool)vx_true_e != ownIsMetaFormatEqual(meta_base, meta, graph_parameters_queue_param.refs_list[0]->type))
                         {
@@ -125,7 +126,8 @@ static vx_status ownGraphPipelineValidateRefsList(
                 }
 #endif
 
-                if (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
+                if (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta), (vx_enum)VX_TYPE_META_FORMAT) == 
+                                                (vx_bool)vx_true_e) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR008 */
                 {
                     status1 = ownReleaseMetaFormat(&meta);
 /*LDRA_NOANALYSIS*/
@@ -149,7 +151,8 @@ static vx_status ownGraphPipelineValidateRefsList(
         }
     }
 
-    if (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta_base), (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta_base), (vx_enum)VX_TYPE_META_FORMAT) == 
+                                    (vx_bool)vx_true_e) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR009 */
     {
         status1 = ownReleaseMetaFormat(&meta_base);
 /*LDRA_NOANALYSIS*/
@@ -302,17 +305,17 @@ vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
             }
 /* END: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT002 */
 /*LDRA_ANALYSIS*/
-            if(status==(vx_status)VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR010 */
             {
                 status = ownDataRefQueueEnqueueReadyRef(data_ref_q, refs[ref_id]);
 /* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT001 */
-                if(status!=(vx_status)VX_SUCCESS)
+                if(status!=(vx_status)VX_SUCCESS) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR011 */
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "Unable to enqueue ref\n");
                 }
 /* END: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT001 */
-                else
+                else /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR012 */
                 {
                     num_enqueue++;
                 }
@@ -327,7 +330,7 @@ vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
 /*LDRA_ANALYSIS*/
         }
 
-        if(num_enqueue>0U)
+        if(num_enqueue>0U) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR013 */
         {
             /* Note: keeping compatibility with deprecated API */
             if( graph->parameters[graph_parameter_index].node->obj_desc[0]->pipeup_buf_idx > 1U )
@@ -426,7 +429,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
 /*LDRA_ANALYSIS*/
                 }
             } while(exit_loop == (vx_bool)vx_false_e);
-            if(status==(vx_status)VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR014 */
             {
                 /* If the ref type matches the graph parameter type, return graph parameter */
                 if (ref->type == graph->parameters[graph_parameter_index].type)
@@ -444,7 +447,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                 }
                 /* If the ref type is a pyramid that didn't match the graph parameter type, return img[0] of pyramid */
                 /* Note: this assumes it is replicated.  In the future, this assumption could be removed */
-                else if(ref->type==(vx_enum)VX_TYPE_PYRAMID)
+                else if(ref->type==(vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR015 */
                 {
                     /* status set to NULL due to preceding type check */
                     vx_pyramid pyr = vxCastRefAsPyramid(ref, NULL);
@@ -530,7 +533,7 @@ vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_p
     {
         uint32_t buf_id;
 
-        for(buf_id=0; buf_id<graph->parameters[graph_parameter_index].num_buf; buf_id++)
+        for(buf_id=0; buf_id<graph->parameters[graph_parameter_index].num_buf; buf_id++) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR016 */
         {
             if(ref==graph->parameters[graph_parameter_index].refs_list[buf_id])
             {
@@ -554,7 +557,8 @@ static tivx_obj_desc_graph_t *ownGraphDequeueFreeObjDesc(vx_graph graph)
     if( (vx_bool)vx_false_e == is_q_empty )
     {
         status = tivxQueueGet(&graph->free_q, &pipeline_id, 0);
-        if((status == (vx_status)VX_SUCCESS) && (pipeline_id < graph->pipeline_depth))
+        if((status == (vx_status)VX_SUCCESS) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR017 */
+        && (pipeline_id < graph->pipeline_depth)) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR018 */
         {
             obj_desc = graph->obj_desc[pipeline_id];
         }
@@ -564,7 +568,8 @@ static tivx_obj_desc_graph_t *ownGraphDequeueFreeObjDesc(vx_graph graph)
 
 static void ownGraphEnqueueFreeObjDesc(vx_graph graph, const tivx_obj_desc_graph_t *obj_desc)
 {
-    if((obj_desc != NULL) && (obj_desc->pipeline_id < graph->pipeline_depth))
+    if((obj_desc != NULL) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR019 */
+    && (obj_desc->pipeline_id < graph->pipeline_depth)) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR020 */
     {
         (void)tivxQueuePut(&graph->free_q, obj_desc->pipeline_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
     }
@@ -728,7 +733,7 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
                 if(graph->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL)
                 {
                     /* delays need aging only if pipelining is not used */
-                    for(i=0; i<TIVX_GRAPH_MAX_DELAYS; i++)
+                    for(i=0; i<TIVX_GRAPH_MAX_DELAYS; i++) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR021 */
                     {
                         if(graph->delays[i] != NULL)
                         {
@@ -1011,7 +1016,7 @@ uint32_t ownGraphGetNumSchedule(vx_graph graph)
 
             for(i=0; i<graph->num_params; i++)
             {
-                if(graph->parameters[i].queue_enable != 0)
+                if(graph->parameters[i].queue_enable != 0) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR022 */
                 {
                     count = 0;
 
@@ -1077,9 +1082,9 @@ static uint32_t ownGraphGetOptimalNumBuf(vx_graph graph, vx_reference ref)
     uint32_t num_bufs = 1U;
     uint32_t i;
 
-    for(i=0; i<graph->num_data_ref; i++)
+    for(i=0; i<graph->num_data_ref; i++) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR023 */
     {
-        if (i < TIVX_GRAPH_MAX_DATA_REF)
+        if (i < TIVX_GRAPH_MAX_DATA_REF) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR024 */
         {
             if(ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref) != 0)
             {
