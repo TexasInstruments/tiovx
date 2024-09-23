@@ -111,9 +111,9 @@ vx_status ownObjDescQueueRelease(uint16_t *obj_desc_id)
     {
         obj_desc = (tivx_obj_desc_queue_t *)ownObjDescGet(*obj_desc_id);
 
-        if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))/* TIOVX-1924- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_OBJ_DESC_QUEUE_UBR001 */
+        if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
         {
-            if((vx_status)VX_SUCCESS == ownObjDescFree((tivx_obj_desc_t**)&obj_desc))/* TIOVX-1924- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_OBJ_DESC_QUEUE_UBR002 */
+            if((vx_status)VX_SUCCESS == ownObjDescFree((tivx_obj_desc_t**)&obj_desc))/* TIOVX-1924- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_OBJ_DESC_QUEUE_UBR001 */
             {
                 *obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
@@ -139,7 +139,7 @@ vx_status ownObjDescQueueEnqueue(uint16_t obj_desc_q_id, uint16_t obj_desc_id)
 
     obj_desc = (tivx_obj_desc_queue_t *)ownObjDescGet(obj_desc_q_id);
 
-    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))/* TIOVX-1924- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_OBJ_DESC_QUEUE_UBR003 */
+    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
     {
         uint16_t cur_wr, count;
 
@@ -177,7 +177,7 @@ vx_status ownObjDescQueueGetCount(uint16_t obj_desc_q_id, uint32_t *count)
 
     obj_desc = (tivx_obj_desc_queue_t *)ownObjDescGet(obj_desc_q_id);
 
-    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))/* TIOVX-1924- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_OBJ_DESC_QUEUE_UBR004 */
+    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
     {
         *count = obj_desc->count;
 
@@ -198,7 +198,7 @@ vx_status ownObjDescQueueDequeue(uint16_t obj_desc_q_id, uint16_t *obj_desc_id)
     obj_desc = (tivx_obj_desc_queue_t *)ownObjDescGet(obj_desc_q_id);
     *obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
-    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))/* TIOVX-1924- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_OBJ_DESC_QUEUE_UBR005 */
+    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
     {
         uint16_t cur_rd, count;
 
@@ -232,7 +232,7 @@ vx_status ownObjDescQueueAddBlockedNode(uint16_t obj_desc_q_id, uint16_t node_id
 
     obj_desc = (tivx_obj_desc_queue_t *)ownObjDescGet(obj_desc_q_id);
 
-    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))/* TIOVX-1924- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_OBJ_DESC_QUEUE_UBR006 */
+    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
     {
         uint16_t num_nodes;
 
@@ -271,7 +271,7 @@ vx_status ownObjDescQueueExtractBlockedNodes(uint16_t obj_desc_q_id,
 
     obj_desc = (tivx_obj_desc_queue_t *)ownObjDescGet(obj_desc_q_id);
 
-    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE)) /* TIOVX-1924- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_OBJ_DESC_QUEUE_UBR007 */
+    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
     {
         uint16_t node_id;
 

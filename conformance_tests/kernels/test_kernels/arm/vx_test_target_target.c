@@ -95,7 +95,7 @@
 #include <tivx_platform_posix.h>
 #endif
 
- #define FULL_CODE_COVERAGE 
+/* #define FULL_CODE_COVERAGE */
 /* Maximum length of testcase function name */
 #define MAX_LENGTH 64
 #define INVALID_ARG -1
