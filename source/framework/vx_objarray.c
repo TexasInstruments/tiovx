@@ -489,7 +489,7 @@ static vx_status ownDestructObjArray(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     vx_object_array objarr = NULL;
 
-    /* status set to NULL due to preceding type check */
+    /* status check set to NULL due to guaranteed type in internal function */
     objarr = vxCastRefAsObjectArray(ref,NULL);
     if(objarr->base.obj_desc!=NULL)
     {

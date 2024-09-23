@@ -579,7 +579,7 @@ static vx_status ownDestructPyramid(vx_reference ref)
     vx_uint32 i = 0;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
-    /* status set to NULL due to preceding type check */
+    /* status check set to NULL due to guaranteed type in internal function */
     vx_pyramid prmd = vxCastRefAsPyramid(ref, NULL);
 
     obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
