@@ -92,7 +92,8 @@ static void *tivxTaskMain(void *arg)
 {
     tivx_task *task = (tivx_task*)arg;
 
-    if( task && task->task_func)
+    if( task /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR001 */
+    && task->task_func) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR002 */
     {
         task->task_func(task->app_var);
     }
@@ -129,7 +130,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
 
             status = pthread_attr_init(&thread_attr);
 
-            if(status==0)
+            if(status==0) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR003 */
             {
                 #if 0
                 {
@@ -158,13 +159,13 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
                 }
                 #endif
 
-                if(status==0)
+                if(status==0) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR004 */
                 {
                     status = pthread_create(&context->hndl, &thread_attr, tivxTaskMain, task);
                 }
                 (void)pthread_attr_destroy(&thread_attr);
             }
-            if (status == 0)
+            if (status == 0) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR005 */
             {
                 task->tsk_handle = (void *)context;
             }
