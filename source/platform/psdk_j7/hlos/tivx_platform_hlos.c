@@ -94,7 +94,7 @@ vx_status ownPlatformInit(void)
         status = (vx_status)VX_FAILURE;
     }
 #endif
-    if(status==(vx_status)VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS) /* TIOVX-1951- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR001 */
     {
         for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
         {
@@ -176,7 +176,7 @@ void ownPlatformDeInit(void)
 
     for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
     {
-        if (NULL != g_tivx_platform_info.g_platform_lock[i])
+        if (NULL != g_tivx_platform_info.g_platform_lock[i]) /* TIOVX-1951- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR002 */
         {
             (void)tivxMutexDelete(&g_tivx_platform_info.g_platform_lock[i]);
         }
@@ -299,7 +299,7 @@ void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
 {
     uint32_t i;
 
-    for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
+    for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS;/* TIOVX-1951- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR003 */ i ++)
     {
         if (0 == strncmp(
                 g_tivx_platform_info.target_info[i].target_name,
