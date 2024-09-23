@@ -268,6 +268,68 @@ static vx_uint32 ownComputePatchOffset(vx_size num_dims, const vx_size *dim_coor
     return offset;
 }
 
+static vx_status ownDestructTensor(vx_reference ref)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_tensor_t *obj_desc = NULL;
+    vx_tensor tensor = (vx_tensor)ref;
+    vx_enum create_type;
+    vx_uint32 i;
+
+    if ((vx_enum)VX_TYPE_TENSOR == ref->type)
+    {
+        obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
+        if (NULL != obj_desc)
+        {
+            if ((vx_enum)TIVX_TENSOR_NORMAL == (vx_enum)obj_desc->create_type)
+            {
+                if (obj_desc->mem_ptr.host_ptr != (uint64_t)(uintptr_t)NULL)
+                {
+                    tivxMemBufferFree(
+                        &obj_desc->mem_ptr, obj_desc->mem_size);
+                }
+            }
+
+            create_type = (vx_enum)obj_desc->create_type;
+            ownObjDescFree((tivx_obj_desc_t **)&obj_desc);
+
+            if (NULL != tensor->parent)
+            {
+                /* if the parent is an image */
+                if ((vx_enum)VX_TYPE_IMAGE == ((vx_reference)(tensor->parent))->type &&
+                    ((vx_enum)TIVX_TENSOR_FROM_ROI == create_type ||
+                     (vx_enum)TIVX_TENSOR_FROM_CHANNEL == create_type))
+                {
+                    /* wipe this child from the parent's list of subtensors */
+                    for (i = 0; TIVX_IMAGE_MAX_SUBTENSORS > i; i++)
+                    {
+                        if (((vx_image)(tensor->parent))->subtensors[i] == (vx_tensor)ref)
+                        {
+                            ((vx_image)(tensor->parent))->subtensors[i] = NULL;
+                        }
+                    }
+                }
+                /* if the parent is a tensor */
+                if ((vx_enum)VX_TYPE_TENSOR == ((vx_reference)(tensor->parent))->type &&
+                    (vx_enum)TIVX_TENSOR_FROM_VIEW == create_type)
+                {
+                    /* wipe this child from the parent's list of subtensors */
+                    for (i = 0; TIVX_TENSOR_MAX_SUBTENSORS > i; i++)
+                    {
+                        if (((vx_tensor)(tensor->parent))->subtensors[i] == (vx_tensor)ref)
+                        {
+                            ((vx_tensor)(tensor->parent))->subtensors[i] = NULL;
+                        }
+                    }
+                }
+                /* decrement the parent's internal reference count */
+                ownDecrementReference((vx_reference)(&tensor->parent->base), (vx_enum)VX_INTERNAL);
+            }
+        }
+    }
+    return status;
+}
+
 
 /*==============================================================================
    Tensor API FUNCTIONS
@@ -307,7 +369,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
                 /* status set to NULL due to preceding type check */
                 tensor = vxCastRefAsTensor(ref, NULL);
                 /* assign reference type specific callback's */
-                tensor->base.destructor_callback = &ownDestructReferenceGeneric;
+                tensor->base.destructor_callback = &ownDestructTensor;
                 tensor->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 tensor->base.release_callback =
                    &ownReleaseReferenceBufferGeneric;
