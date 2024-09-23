@@ -764,12 +764,10 @@ TEST (copySwap, testCopy)
     node = vxCopyNode(graph, (vx_reference)image_0, (vx_reference)image_1);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxReleaseReference(&image_0));    
     VX_CALL(vxReleaseImage(&image_1));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
-
-    //vxReleaseImage(&array);
-    vxReleaseReference(&image_0);
 
     /* improve test coverage */
     /* vx_pyramid : negative test cases */

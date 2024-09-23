@@ -60,8 +60,8 @@ static vx_status isTensorSwappable(vx_reference input, vx_reference output)
         {
            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
        }
+#endif       
     }
-#endif
     else
     {
         status = (vx_status)VX_ERROR_NOT_SUPPORTED;

@@ -430,6 +430,11 @@ static vx_status isImageCopyable(vx_image input, vx_image output)
         /* Output format must be the same as input format unless output is virtual with virtual format */
         status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
     }
+    else
+    {
+        /* Do nothing */
+    }
+    
     return status;
 }
 
@@ -595,8 +600,8 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
                     break;
                 }
-#endif
                 else
+#endif                
                 {
                     stack[stack_pointer] = subimages[i];
                     stack_pointer++;
@@ -2688,8 +2693,8 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
             status = (vx_status)VX_ERROR_NO_RESOURCES;
             break;
         }
-#endif
         else
+#endif        
         {
             next_image = image_arr[stack_pointer];
 
@@ -2724,9 +2729,9 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
                             VX_PRINT(VX_ZONE_ERROR, "Too many sub-images, may need to increase the value of TIVX_SUBIMAGE_STACK_SIZE\n");
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
                             break;
-                        }
-#endif                        
+                        }                       
                         else
+#endif                         
                         {
                             vx_uint8* ptrs[TIVX_IMAGE_MAX_PLANES] = {NULL};
 
