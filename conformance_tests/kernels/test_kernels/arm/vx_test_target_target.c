@@ -95,7 +95,7 @@
 #include <tivx_platform_posix.h>
 #endif
 
-/* #define FULL_CODE_COVERAGE */
+ #define FULL_CODE_COVERAGE 
 /* Maximum length of testcase function name */
 #define MAX_LENGTH 64
 #define INVALID_ARG -1
@@ -3502,6 +3502,49 @@ static vx_status tivxNegativeTestMemCompareFd(uint8_t id)
     return status;
 }
 
+static vx_status tivxBranchTestTargetObjDescQueue(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint16_t id_t = (vx_enum)TIVX_OBJ_DESC_INVALID -1;
+    uint16_t *obj_id = &id_t;
+
+    if((vx_status)VX_FAILURE != ownObjDescQueueRelease(obj_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_id' \n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownObjDescQueueEnqueue((vx_enum)TIVX_OBJ_DESC_INVALID,0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_q_id' \n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownObjDescQueueGetCount((vx_enum)TIVX_OBJ_DESC_INVALID, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_q_id' \n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownObjDescQueueDequeue((vx_enum)TIVX_OBJ_DESC_INVALID,obj_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_q_id' \n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownObjDescQueueAddBlockedNode((vx_enum)TIVX_OBJ_DESC_INVALID, 0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_q_id' \n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != ownObjDescQueueExtractBlockedNodes((vx_enum)TIVX_OBJ_DESC_INVALID, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_q_id' \n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -3661,7 +3704,8 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestMemBufferAllocFree,"",VX_SUCCESS},
     {tivxNegativeTestMemBufferUnmap,"",VX_SUCCESS},
     {tivxNegativeTestMemoryStats,"",VX_SUCCESS},
-    {tivxNegativeTestMemCompareFd,"",VX_SUCCESS}
+    {tivxNegativeTestMemCompareFd,"",VX_SUCCESS},
+    {tivxBranchTestTargetObjDescQueue,"",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
