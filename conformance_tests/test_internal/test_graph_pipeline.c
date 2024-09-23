@@ -137,11 +137,93 @@ TEST(tivxInternalGraphPipeline, negativeTestownGraphGetNumSchedule)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+TEST(tivxInternalGraphPipeline, negativeTestownGraphParameterCheckValidEnqueueRef)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownGraphParameterCheckValidEnqueueRef(NULL, 0, NULL));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownGraphParameterCheckValidEnqueueRef(graph, 0, NULL));
+    graph->num_params = 1;
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownGraphParameterCheckValidEnqueueRef(graph, 0, NULL));
+
+    graph->num_params = 0;
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+/* To fail ownReferenceLock() inside ownCheckGraphCompleted API */
+TEST(tivxInternalGraphPipeline, negativeTestownCheckGraphCompleted1)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    tivx_mutex mutex, mutex1;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    mutex = graph->base.lock;
+    mutex1 = graph->base.context->base.lock;
+    graph->base.lock = NULL;
+    graph->base.context->base.lock = NULL;
+    ASSERT(vx_false_e == ownCheckGraphCompleted(graph, 0));
+
+    graph->base.lock = mutex;
+    graph->base.context->base.lock = mutex1;
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+/* To fail ownReferenceLock() inside ownGraphScheduleGraph API */
+TEST(tivxInternalGraphPipeline, negativeTestownGraphScheduleGraph)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    tivx_mutex mutex, mutex1;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    mutex = graph->base.lock;
+    mutex1 = graph->base.context->base.lock;
+    graph->base.lock = NULL;
+    graph->base.context->base.lock = NULL;
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownGraphScheduleGraph(graph, 0));
+
+    graph->base.lock = mutex;
+    graph->base.context->base.lock = mutex1;
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalGraphPipeline, negativeTestownGraphDoScheduleGraphAfterEnqueue)
+{
+    ASSERT(vx_false_e == ownGraphDoScheduleGraphAfterEnqueue(NULL, 0));
+}
+
+TEST(tivxInternalGraphPipeline, negativeTestownGraphGetNumSchedule1)
+{
+    vx_context context = context_->vx_context_;
+    uint32_t num_schedule = 0;
+    vx_graph graph;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT(num_schedule == ownGraphGetNumSchedule(NULL));
+    /* To fail condition 'graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL' */
+    ASSERT(num_schedule == ownGraphGetNumSchedule(graph));
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxInternalGraphPipeline,
     negativeTestownCheckGraphCompleted,
     negativeTestGraphParameterEnqueueReadyRef,
     negativeTestownGraphAllocAndEnqueueObjDescForPipeline,
     negativeTestSetGraphScheduleConfig,
     negativeTestownGraphPipeDepthBoundary,
-    negativeTestownGraphGetNumSchedule
+    negativeTestownGraphGetNumSchedule,
+    negativeTestownGraphParameterCheckValidEnqueueRef,
+    negativeTestownCheckGraphCompleted1,
+    negativeTestownGraphScheduleGraph,
+    negativeTestownGraphDoScheduleGraphAfterEnqueue,
+    negativeTestownGraphGetNumSchedule1
     )
