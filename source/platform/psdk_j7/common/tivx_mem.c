@@ -225,7 +225,7 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
         {
             ret_val = appMemStats(heap_id, &heap_stats);
 
-            if (0 == ret_val)
+            if (0 == ret_val) /* TIOVX-1950- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_MEM_UBR001 */
             {
                 stats->mem_size = heap_stats.heap_size;
                 stats->free_size = heap_stats.free_size;
@@ -303,7 +303,7 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
     if((vx_bool)vx_true_e == tivxMemRegionQuery(mem_heap_region))
     {
         status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
-        if(status == (vx_status)VX_SUCCESS) /* TIOVX-1959- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR001 */
+        if(status == (vx_status)VX_SUCCESS) /* TIOVX-1950- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_MEM_UBR002 */
         {
             phys = appMemGetVirt2PhyBufPtr(host_ptr, heap_id);
         }
@@ -341,7 +341,7 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
     if((vx_bool)vx_true_e == tivxMemRegionQuery(mem_heap_region))
     {
         status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
-        if(status == (vx_status)VX_SUCCESS) /* TIOVX-1959- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR002 */
+        if(status == (vx_status)VX_SUCCESS) /* TIOVX-1950- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_MEM_UBR003 */
         {
             phys = appMemShared2PhysPtr(shared_ptr, heap_id);
         }
