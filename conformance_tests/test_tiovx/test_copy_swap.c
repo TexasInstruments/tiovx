@@ -606,21 +606,23 @@ TEST (copySwap, testCopy)
 
     /* improve test coverage */
     vx_node node;
-    vx_array example1, example2;
+    vx_array example1;
+    vx_matrix vxmatrix1;
     /* negative test case for different input and output types */
     /* arrays and matrixes */
     graph = vxCreateGraph(context);
     example1 = vxCreateArray(context, VX_TYPE_UINT8, 4);
-    example2 = vxCreateMatrix(context, VX_TYPE_UINT8, 4, 4);
-    node = vxCopyNode(graph, (vx_reference)example1, (vx_reference)example2);
+    vxmatrix1 = vxCreateMatrix(context, VX_TYPE_UINT8, 4, 4);
+    node = vxCopyNode(graph, (vx_reference)example1, (vx_reference)vxmatrix1);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
     EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxVerifyGraph(graph));
     VX_CALL(vxReleaseArray(&example1));
-    VX_CALL(vxReleaseMatrix(&example2));
+    VX_CALL(vxReleaseMatrix(&vxmatrix1));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
     /* negative test cases for vx_array */
     /* arrays of different sizes */
+    vx_array example2;
     graph = vxCreateGraph(context);
     example1 = vxCreateArray(context, VX_TYPE_UINT8, 4);
     example2 = vxCreateArray(context, VX_TYPE_UINT8, 3);
@@ -764,7 +766,7 @@ TEST (copySwap, testCopy)
     node = vxCopyNode(graph, (vx_reference)image_0, (vx_reference)image_1);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-    VX_CALL(vxReleaseReference(&image_0));    
+    VX_CALL(vxReleaseImage(&image_0));    
     VX_CALL(vxReleaseImage(&image_1));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));

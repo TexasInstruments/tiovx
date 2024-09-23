@@ -1464,7 +1464,6 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
 {
     vx_image image = NULL;
     vx_status status;
-    tivx_obj_desc_image_t * l_objdesc;
 
     if (value == NULL)
     {
