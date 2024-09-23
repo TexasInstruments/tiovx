@@ -2139,12 +2139,34 @@ static vx_status tivxNegativeAppMemFree(uint8_t id)
     uint32_t heap_id = APP_MEM_HEAP_MAX;
     void *ptr = NULL;
     uint32_t size = 0u;
+    uint32_t mem_size = 4;
 
     if ((vx_status)VX_FAILURE != appMemFree(heap_id, ptr, size))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for heap_id\n");
         status = (vx_status)VX_FAILURE;
     }
+
+    heap_id = APP_MEM_HEAP_DDR;
+    if ((vx_status)VX_FAILURE != appMemFree(heap_id, ptr, size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for heap_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    ptr = appMemAlloc(heap_id, mem_size, 4);
+    if(NULL == ptr)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"REMOTE_SERVICE_TEST: Test failed!!!\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if ((vx_status)VX_FAILURE != appMemFree(heap_id, ptr, size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for heap_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    appMemFree(heap_id, ptr, mem_size);
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
