@@ -303,7 +303,7 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
     if((vx_bool)vx_true_e == tivxMemRegionQuery(mem_heap_region))
     {
         status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
-        if(status == (vx_status)VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS) /* TIOVX-1959- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR001 */
         {
             phys = appMemGetVirt2PhyBufPtr(host_ptr, heap_id);
         }
@@ -341,7 +341,7 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
     if((vx_bool)vx_true_e == tivxMemRegionQuery(mem_heap_region))
     {
         status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
-        if(status == (vx_status)VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS) /* TIOVX-1959- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR002 */
         {
             phys = appMemShared2PhysPtr(shared_ptr, heap_id);
         }
@@ -408,7 +408,8 @@ vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **ph
         *phyAddr = (void *)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)virtAddr,
                                                             (vx_enum)TIVX_MEM_EXTERNAL);
 
-        if ((*fd == (uint32_t)-1) || (*phyAddr == (void*)0))
+        if ((*fd == (uint32_t)-1) || /* TIOVX-1959- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR003 */
+        (*phyAddr == (void*)0)) /* TIOVX-1959- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR004 */
         {
             vxStatus = (vx_status)VX_FAILURE;
         }
@@ -447,7 +448,7 @@ vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, 
                                          (uint64_t*)phyAddr);
         #endif
 
-        if (status < 0)
+        if (status < 0) /* TIOVX-1959- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR005 */
         {
             VX_PRINT(VX_ZONE_ERROR, "appMemTranslateDmaBufFd() failed.\n");
             vxStatus = (vx_status)VX_FAILURE;
