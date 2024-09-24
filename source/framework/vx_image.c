@@ -2940,11 +2940,11 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const v
                         }
 
                         /* child is useless without the parent's data, so add an internal reference */
-                        //ownIncrementReference(&tensor->parent->base, VX_INTERNAL);
+                        ownIncrementReference(&tensor->parent->base, VX_INTERNAL);
 
                         /* stride[1] must match that of the image, not be calculated from the dimensions of the ROI */
                         c_obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
-                        //c_obj_desc->create_type = //(vx_uint32)TIVX_TENSOR_FROM_ROI; //TODO import create type
+                        c_obj_desc->create_type = (vx_uint32)TIVX_TENSOR_FROM_ROI; //TODO import create type
                         c_obj_desc->stride[1] = p_obj_desc->imagepatch_addr[0].stride_y;
 
                         /* calculate tensor host_ptr */
@@ -2980,4 +2980,3 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const v
     }
     return tensor;
 }
-

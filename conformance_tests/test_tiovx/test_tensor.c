@@ -35,6 +35,39 @@ typedef struct {
     int useReferencePyramid;
 } Arg;
 
+void checkCreateImageROIType(vx_context context, vx_df_image image_type, vx_enum tensor_type)
+{
+    vx_image image = vxCreateImage(context, 32, 16, image_type);
+    vx_tensor tensor = vxCreateTensorFromROI(image, NULL, 0);
+    vx_enum created_type;
+    vx_size dims[2];
+    vx_size expected[2];
+    switch (image_type)
+    {
+        case VX_DF_IMAGE_RGB:
+        case VX_DF_IMAGE_RGBX:
+            expected[0] = 32; // was 128, when tensor format for this image type was UINT8
+            expected[1] = 16;
+            break;
+        case VX_DF_IMAGE_UYVY:
+        case VX_DF_IMAGE_YUYV:
+            expected[0] = 32; // was 64, when tensor format for this image type was UINT8
+            expected[1] = 16;
+            break;
+        default:
+            expected[0] = 32;
+            expected[1] = 16;
+            break;
+    }
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryTensor(tensor, VX_TENSOR_DATA_TYPE, &created_type, sizeof(created_type)));
+    ASSERT_EQ_VX_STATUS(created_type, tensor_type);
+    ASSERT_EQ_VX_STATUS(vxQueryTensor(tensor, VX_TENSOR_DIMS, &dims, sizeof(dims)), VX_SUCCESS);
+    ASSERT_EQ_INT(dims[0], expected[0]);
+    ASSERT_EQ_INT(dims[1], expected[1]);
+
+    vxReleaseTensor(&tensor);
+    vxReleaseImage(&image);
+}
 
 #define PARAMETERS \
     ARG("Tensor/Create", NULL, 5, 1)
@@ -602,6 +635,154 @@ TEST(tivxTensor, negativeTestQueryTensorNegativeCases)
     VX_CALL(vxReleaseTensor(&tensor));
 }
 
+TEST(tivxTensor, testCreateTensorFromROI)
+{
+    vx_context context = context_->vx_context_;
+    printf("\nTensor from ROI\n");
+    /* We use different height and width to distinguish them.
+        Notice there are lots of magic numbers in this function!  (don't change them...) */
+    vx_image imageu8 = vxCreateImage(context, 14, 8, VX_DF_IMAGE_U8);
+    vx_tensor tensor = vxCreateTensorFromROI(imageu8, NULL, 0);
+    vx_graph graph = vxCreateGraph(context);
+    vx_image virt_image = vxCreateVirtualImage(graph, 14, 8, VX_DF_IMAGE_U8);
+    vx_size num_dims = 2;
+    vx_size strides[2] = {1, 14};
+    vx_map_id iid, tid;
+    void * iptr, * tptr;
+    vx_imagepatch_addressing_t addr;
+    vx_image type_virt_image = vxCreateVirtualImage(graph, 5, 2, VX_DF_IMAGE_VIRT);
+    vx_image no_height_image = vxCreateVirtualImage(graph, 5, 0, VX_DF_IMAGE_U8);
+    vx_image no_width_image = vxCreateVirtualImage(graph, 0, 2, VX_DF_IMAGE_U8);
+    vx_image image_YUV4 = vxCreateImage(context, 5, 2, VX_DF_IMAGE_YUV4);
+    vx_rectangle_t bad_rectu8 = {.start_x = 0, .end_x = 99, .start_y = 4, .end_y = 7};
+    vx_rectangle_t bad_rectu1 = {.start_x = 3, .end_x = 7, .start_y = 0, .end_y = 8};
+    vx_rectangle_t good_rect = {.start_x = 2, .end_x = 10, .start_y = 1, .end_y = 8};
+    vx_rectangle_t full_rect = {.start_x = 0, .start_y = 0, .end_x = 14, .end_y = 8};
+
+    /* Check creation of different types of tensor */
+    checkCreateImageROIType(context, VX_DF_IMAGE_U8, VX_TYPE_UINT8);
+    checkCreateImageROIType(context, VX_DF_IMAGE_U16, VX_TYPE_UINT16);
+    checkCreateImageROIType(context, VX_DF_IMAGE_S16, VX_TYPE_INT16);
+    checkCreateImageROIType(context, VX_DF_IMAGE_U32, VX_TYPE_UINT32);
+    checkCreateImageROIType(context, VX_DF_IMAGE_S32, VX_TYPE_INT32);
+    checkCreateImageROIType(context, VX_DF_IMAGE_RGB, VX_TYPE_UINT32);
+    checkCreateImageROIType(context, VX_DF_IMAGE_RGBX, VX_TYPE_UINT32);
+    checkCreateImageROIType(context, VX_DF_IMAGE_YUYV, VX_TYPE_UINT16);
+    checkCreateImageROIType(context, VX_DF_IMAGE_UYVY, VX_TYPE_UINT16);
+
+    vxReleaseTensor(&tensor);
+    /* Now check creation of virtual tensor */
+    tensor = vxCreateTensorFromROI(virt_image, &good_rect, 0);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensor));
+
+    /*those tests will currently fail because tivxMapTensorPatch will not check whether base image is  
+    virtual because technically as of right now virtual image is created just like a non-virtual image*/ 
+    //ASSERT_NE_VX_STATUS(tivxMapTensorPatch(tensor, 2, NULL, NULL, &tid, strides, &tptr, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST), VX_SUCCESS);
+    //tivxUnmapTensorPatch(tensor, tid);
+    vxReleaseTensor(&tensor);
+
+    /* Now check that modifying data in the image affects data in the tensor & vice-versa, with a good rectangle */
+    tensor = vxCreateTensorFromROI(imageu8, &good_rect, 0);
+    ASSERT_EQ_VX_STATUS(vxMapImagePatch(imageu8, &full_rect, 0, &iid, &addr, &iptr, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0 ), VX_SUCCESS);
+    ASSERT_EQ_VX_STATUS(tivxMapTensorPatch(tensor, 2, NULL, NULL, &tid, strides, &tptr, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST), VX_SUCCESS);
+
+    /* First, write 0 to image and check tensor */
+    int i, j, k = 0;
+    vx_status status = VX_SUCCESS;
+    for (i = 0; i < full_rect.end_x; ++i)
+        for (j = 0; j < full_rect.end_y; ++j)
+        {
+            vx_uint8 *pp = (vx_uint8 *)vxFormatImagePatchAddress2d(iptr, i, j, &addr);
+            *pp = 0;
+        }
+    for (i = 0; i < good_rect.end_x - good_rect.start_x && VX_SUCCESS == status; ++i)
+        for (j = 0; j < good_rect.end_y - good_rect.start_y && VX_SUCCESS == status; ++j)
+        {
+            if (*(vxFormatArrayPointer(tptr, j, strides[1]) + i))
+                status = VX_FAILURE;
+        }
+    /* Now, write ascending data to image; we should see in the tensor only what is in the ROI */
+    for (i = 0; i < full_rect.end_x; ++i)
+        for (j = 0; j < full_rect.end_y; ++j)
+        {
+            vx_uint8 *pp = (vx_uint8 *)vxFormatImagePatchAddress2d(iptr, i, j, &addr);
+            *pp = k++;
+        }
+    for (i = 0; i < good_rect.end_x - good_rect.start_x && VX_SUCCESS == status; ++i)
+        for (j = 0; j < good_rect.end_y - good_rect.start_y && VX_SUCCESS == status; ++j)
+        {
+            k = (j + good_rect.start_y) + (i + good_rect.start_x) * full_rect.end_y;
+            if (*(vxFormatArrayPointer(tptr, j, strides[1]) + i) != k)
+                status = VX_FAILURE;
+        }
+    ASSERT_EQ_VX_STATUS(status, VX_SUCCESS);
+    /* Now, change the tensor data; we should see the changes only in the ROI part of the image */
+    status = VX_SUCCESS;
+    for (i = 0; i < good_rect.end_x - good_rect.start_x == status; ++i)
+        for (j = 0; j < good_rect.end_y - good_rect.start_y == status; ++j)
+        {
+            ++*(vxFormatArrayPointer(tptr, j, strides[1]) + i);
+        }
+    k = 0;
+    for (i = 0; i < full_rect.end_x && VX_SUCCESS; ++i)
+        for (j = 0; j < full_rect.end_y && VX_SUCCESS; ++j)
+        {
+            vx_uint8 *pp = (vx_uint8 *)vxFormatImagePatchAddress2d(iptr, i, j, &addr);
+            if (i < good_rect.start_x || i >= good_rect.end_x || j < good_rect.start_y || j >= good_rect.end_y)
+            {
+                /* outside of the area mapped by the tensor, image should be unchanged */
+                if (k != *pp)
+                {
+                    status = VX_FAILURE;
+                }
+            }
+            else
+            {
+                /* inside the area mapped by the tensor, image should be altered */
+                if (k + 1 != *pp)
+                {
+                    status = VX_FAILURE;
+                }
+            }
+            k++;
+        }
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(imageu8, iid));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxUnmapTensorPatch(tensor, tid));
+    vxReleaseTensor(&tensor);
+
+    /* Now check errors */
+    tensor = vxCreateTensorFromROI(NULL, NULL, 0);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensor));
+    vxReleaseTensor(&tensor);
+    tensor = vxCreateTensorFromROI((vx_image)context, NULL, 0);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensor));
+    vxReleaseTensor(&tensor);
+    tensor = vxCreateTensorFromROI(no_width_image, NULL, 0);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensor));
+    vxReleaseTensor(&tensor);
+    tensor = vxCreateTensorFromROI(no_height_image, NULL, 0);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensor));
+    vxReleaseTensor(&tensor);
+    tensor = vxCreateTensorFromROI(type_virt_image, NULL, 0);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensor));
+    vxReleaseTensor(&tensor);
+    tensor = vxCreateTensorFromROI(image_YUV4, NULL, 0);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensor));
+    vxReleaseTensor(&tensor);
+    tensor = vxCreateTensorFromROI(imageu8, &bad_rectu8, 0);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensor));
+    vxReleaseTensor(&tensor);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensor));
+    vxReleaseTensor(&tensor);
+    vxReleaseImage(&image_YUV4);
+    vxReleaseImage(&imageu8);
+    vxReleaseImage(&virt_image);
+    vxReleaseImage(&type_virt_image);
+    vxReleaseImage(&no_height_image);
+    vxReleaseImage(&no_width_image);
+    vxReleaseGraph(&graph);
+}
+
 TESTCASE_TESTS(
     tivxTensor,
     testCreateTensor,
@@ -614,6 +795,7 @@ TESTCASE_TESTS(
     negativeTestCopyTensor,
     negativeTestMapTensorPatch,
     negativeTestUnmapTensorPatch,
-    negativeTestQueryTensorNegativeCases
+    negativeTestQueryTensorNegativeCases,
+    testCreateTensorFromROI
 )
 
