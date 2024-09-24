@@ -53,7 +53,7 @@ vx_status tivxEventDelete(tivx_event *event)
     {
         handle = (app_rtos_semaphore_handle_t)*event;
         ret_status = appRtosSemaphoreDelete(&handle);
-        if ((app_rtos_status_t)APP_RTOS_STATUS_SUCCESS == ret_status)
+        if ((app_rtos_status_t)APP_RTOS_STATUS_SUCCESS == ret_status) /* TIOVX-1955- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_EVENT_UBR001 */
         {
             *event = NULL;
         }
