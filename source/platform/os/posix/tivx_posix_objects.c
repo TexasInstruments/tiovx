@@ -121,7 +121,7 @@ uint8_t *ownPosixObjectAlloc(vx_enum type)
 
     status = tivxMutexLock(g_tivx_objects_lock);
 
-    if ((vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1954- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_POSIX_OBJECTS_UBR001 */
     {
         switch(type)
         {
@@ -164,7 +164,7 @@ vx_status ownPosixObjectFree(uint8_t *obj, vx_enum type)
     {
         status = tivxMutexLock(g_tivx_objects_lock);
 
-        if ((vx_status)VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status) /* TIOVX-1954- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_POSIX_OBJECTS_UBR002 */
         {
             switch(type)
             {
@@ -270,7 +270,7 @@ vx_status ownPosixObjectDeInit(void)
                                 TIVX_MUTEX_MAX_OBJECTS,
                                 (uint32_t)sizeof(tivx_mutex_t));
 
-    if ((vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1954- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_POSIX_OBJECTS_UBR003 */
     {
         g_tivx_objects_lock = NULL;
 
