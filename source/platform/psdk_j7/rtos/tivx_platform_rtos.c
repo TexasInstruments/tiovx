@@ -74,7 +74,7 @@ vx_status ownPlatformInit(void)
         status = (vx_status)VX_FAILURE;
     }
 #endif
-    if(status==(vx_status)VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS) /* TIOVX-1957- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR001 */
     {
         /* init obj desc on RTOS side, it is assumed that linux starts after RTOS, so linux need not init the object descriptors */
         tivxPlatformResetObjDescTableInfo();
@@ -225,7 +225,7 @@ void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
 {
     uint32_t i;
 
-    for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
+    for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS;/* TIOVX-1957- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR002 */ i ++)
     {
         if (0 == strncmp(
                 g_tivx_platform_info.target_info[i].target_name,
@@ -272,7 +272,7 @@ void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
     {
         appIpcGetTiovxLogRtSharedMemInfo(shm_base, shm_size);
         /* Needs to be called once by someone, size RTOS boots first, we call it in RTOS side */
-        if(*shm_base != NULL)
+        if(*shm_base != NULL) /* TIOVX-1957- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR003 */
         {
             ownLogRtResetShm(*shm_base);
         }
