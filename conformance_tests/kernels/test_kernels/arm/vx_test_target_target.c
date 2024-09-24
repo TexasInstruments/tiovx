@@ -3563,7 +3563,7 @@ static vx_status tivxBranchTestTargetObjDescQueue(uint8_t id)
     if((vx_status)VX_FAILURE != ownObjDescQueueExtractBlockedNodes((vx_enum)TIVX_OBJ_DESC_INVALID, NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_q_id' \n");
-        status = (vx_status)VX_FAILURE;
+         status = (vx_status)VX_FAILURE;
     }
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
@@ -3630,6 +3630,71 @@ static vx_status tivxBranchTestQueue(uint8_t id)
     if(VX_SUCCESS != tivxQueueDelete(test_queue))
     {
         VX_PRINT(VX_ZONE_ERROR,"Queue Delete failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxBranchTestMemCompareFd(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivxMemCompareFd(0,0,8,0);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxBranchTestMemBufferUnmap(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    void *host_ptr_t = tivxMemAlloc(sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+
+    if(VX_SUCCESS != tivxMemBufferMap(host_ptr_t, 8,(vx_enum)TIVX_MEMORY_TYPE_DMA, (vx_enum)VX_WRITE_ONLY))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferMap  failed with mem_type = TIVX_MEMORY_TYPE_DMA\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_SUCCESS != tivxMemBufferUnmap(host_ptr_t, 8,(vx_enum)TIVX_MEMORY_TYPE_DMA, (vx_enum)VX_WRITE_ONLY))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferUnmap failed with mem_type = TIVX_MEMORY_TYPE_DMA\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tivxMemFree(host_ptr_t,sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+static vx_status tivxBranchTestMemBufferAllocFree(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_shared_mem_ptr_t tsmp[1];
+    tivx_shared_mem_ptr_t *mem_ptr = &tsmp[0];
+
+    if(VX_FAILURE != tivxMemBufferAlloc(NULL, 8,(vx_enum)TIVX_MEM_EXTERNAL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferAlloc not failed with mem_ptr = NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_FAILURE != tivxMemBufferAlloc(mem_ptr, 0,(vx_enum)TIVX_MEM_EXTERNAL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferAlloc not failed with size = 0\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_FAILURE != tivxMemBufferFree(NULL, 8))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferFree not failed with mem_ptr = NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_FAILURE != tivxMemBufferFree(mem_ptr, 0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferFree not failed with size = 0\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -3799,7 +3864,10 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestMemoryStats,"",VX_SUCCESS},
     {tivxNegativeTestMemCompareFd,"",VX_SUCCESS},
     {tivxBranchTestTargetObjDescQueue,"",VX_SUCCESS},
-    {tivxBranchTestQueue,"",VX_SUCCESS}
+    {tivxBranchTestQueue,"",VX_SUCCESS},
+    {tivxBranchTestMemCompareFd,"",VX_SUCCESS},
+    {tivxBranchTestMemBufferUnmap,"",VX_SUCCESS},
+    {tivxBranchTestMemBufferAllocFree,"",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
