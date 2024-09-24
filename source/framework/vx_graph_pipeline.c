@@ -927,6 +927,11 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
         }
         (void)ownReferenceUnlock(&graph->base);
     }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to lock reference\n");
+        status = (vx_status)VX_FAILURE;
+    }
     return status;
 }
 
