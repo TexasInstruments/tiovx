@@ -141,7 +141,7 @@ void tivxPlatformDeleteTargetId(vx_enum target_id)
     vx_status status;
 
     status = ownTargetDelete(target_id);
-    if ((vx_status)VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status) /* TIOVX-1958- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_UBR001 */
     {
         VX_PRINT(VX_ZONE_ERROR, "Could not Delete Target\n");
     }
