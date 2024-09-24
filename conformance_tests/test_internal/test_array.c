@@ -57,6 +57,44 @@ TEST(tivxInternalArray, negativeTestInitVirtualArray)
     VX_CALL(vxReleaseArray(&array));
 }
 
+TEST(tivxInternalArray, negativeTestUnmapArrayRange)
+{
+    vx_context context = context_->vx_context_;
+    vx_array array;
+    vx_enum item_type = VX_TYPE_BOOL;
+    vx_size capacity = 10;
+    vx_size num_items = 10;
+
+    void* array_items = 0;
+    vx_size item_size = sizeof(vx_bool);
+    vx_size stride = 0;
+    void* ptr = 0;
+    vx_map_id map_id;
+
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, capacity), VX_TYPE_ARRAY);
+
+    array_items = ct_alloc_mem(num_items * item_size);
+
+    for (int i = 0; i < num_items; i++)
+    {
+        ((vx_bool*)array_items)[i] = (vx_bool)(i & 1 ? vx_true_e : vx_false_e);
+    }
+
+    VX_CALL(vxAddArrayItems(array, num_items, array_items, item_size));
+
+    VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+
+    uint8_t *map_addr = array->maps[map_id].map_addr;
+    array->maps[map_id].map_addr = NULL;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxUnmapArrayRange(array, map_id));
+
+    array->maps[map_id].map_addr = map_addr;
+    VX_CALL(vxUnmapArrayRange(array, map_id));
+
+    VX_CALL(vxReleaseArray(&array));
+}
+
 TESTCASE_TESTS(tivxInternalArray,
-    negativeTestInitVirtualArray
+    negativeTestInitVirtualArray,
+    negativeTestUnmapArrayRange
 )
