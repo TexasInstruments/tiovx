@@ -95,7 +95,7 @@
 #include <tivx_platform_posix.h>
 #endif
 
-/* #define FULL_CODE_COVERAGE */
+ #define FULL_CODE_COVERAGE 
 /* Maximum length of testcase function name */
 #define MAX_LENGTH 64
 #define INVALID_ARG -1
@@ -3558,6 +3558,68 @@ static vx_status tivxBranchTestTargetObjDescQueue(uint8_t id)
     if((vx_status)VX_FAILURE != ownObjDescQueueExtractBlockedNodes((vx_enum)TIVX_OBJ_DESC_INVALID, NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_q_id' \n");
+
+static vx_status tivxBranchTestQueue(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_queue que[10];
+    tivx_queue *test_queue=&que[0];
+    uintptr_t mem[10];
+    uintptr_t *queue_memory = &mem[0];
+    uint32_t max_elements = 1;
+    uintptr_t data;
+
+    if(VX_SUCCESS == tivxQueueCreate(NULL,max_elements,queue_memory,TIVX_QUEUE_FLAG_BLOCK_ON_GET))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueueCreate failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_SUCCESS == tivxQueueCreate(test_queue,max_elements,NULL,TIVX_QUEUE_FLAG_BLOCK_ON_GET))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueueCreate failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_SUCCESS == tivxQueueCreate(test_queue,0,queue_memory,TIVX_QUEUE_FLAG_BLOCK_ON_GET))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueueCreate failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_FAILURE != tivxQueueDelete(NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Queue Delete failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_SUCCESS != tivxQueueCreate(test_queue,max_elements,queue_memory,TIVX_QUEUE_FLAG_BLOCK_ON_GET))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueueCreate failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if(VX_FAILURE!= tivxQueuePeek(test_queue,&data))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"blocking on que Get is not disabled\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(VX_SUCCESS != tivxQueuePut(test_queue,10,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Event posted for queue\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    test_queue->flags = TIVX_QUEUE_FLAG_BLOCK_ON_PUT;
+    if(VX_FAILURE != tivxQueueGet(test_queue,&data,1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Event posted for queue in tivxQueueGet()\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if(vx_false_e !=  tivxQueueIsEmpty((const tivx_queue *)test_queue))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Queue is empty\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    test_queue->flags = TIVX_QUEUE_FLAG_BLOCK_ON_GET;
+    if(VX_SUCCESS != tivxQueueDelete(test_queue))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Queue Delete failed\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -3565,7 +3627,6 @@ static vx_status tivxBranchTestTargetObjDescQueue(uint8_t id)
 
     return status;
 }
-
 
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
@@ -3727,7 +3788,8 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestMemBufferUnmap,"",VX_SUCCESS},
     {tivxNegativeTestMemoryStats,"",VX_SUCCESS},
     {tivxNegativeTestMemCompareFd,"",VX_SUCCESS},
-    {tivxBranchTestTargetObjDescQueue,"",VX_SUCCESS}
+    {tivxBranchTestTargetObjDescQueue,"",VX_SUCCESS},
+    {tivxBranchTestQueue,"",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
@@ -3793,6 +3855,7 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
                     VX_PRINT(VX_ZONE_INFO,"[ PASSED ] TARGET TESTCASE: %s\n",arrOfFuncs[i].funcName);
                     pcount++;
                 }
+            tivxTaskWaitMsecs(200);    
             }
         }
         VX_PRINT(VX_ZONE_INFO,"------------------REMOTE-CORE TESTCASES SUMMARY-------------------------\n");
