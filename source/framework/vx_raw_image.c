@@ -37,7 +37,7 @@ static vx_bool ownIsValidCreateParams(const tivx_raw_image_create_params_t *para
 {
     vx_bool is_valid = (vx_bool)vx_true_e;
 
-    if( (params->width < 2u ) || (params->height < 1u ) || ((params->width & 1u) == 1u) ) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR001 */
+    if( (params->width < 2u ) || (params->height < 1u ) || ((params->width & 1u) == 1u) )
     {
         is_valid = (vx_bool)vx_false_e;
         VX_PRINT(VX_ZONE_ERROR, "invalid width and/or height\n");
@@ -198,7 +198,7 @@ static vx_status ownDestructRawImage(vx_reference ref)
                     }
                 }
             }
-            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR003 */
+            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR004 */
             {
                 status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -616,9 +616,9 @@ static vx_status ownCopyAndMapCheckParams(
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
-        if ( ((vx_int32)buffer_select > (vx_enum)TIVX_RAW_IMAGE_META_AFTER_BUFFER ) || /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR008 */
+        if ( ((vx_int32)buffer_select > (vx_enum)TIVX_RAW_IMAGE_META_AFTER_BUFFER ) ||
             (((vx_int32)buffer_select == (vx_enum)TIVX_RAW_IMAGE_META_BEFORE_BUFFER) && (obj_desc->params.meta_height_before < 1U)) ||
-            (((vx_int32)buffer_select == (vx_enum)TIVX_RAW_IMAGE_META_AFTER_BUFFER) && (obj_desc->params.meta_height_after < 1U)) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR009 */
+            (((vx_int32)buffer_select == (vx_enum)TIVX_RAW_IMAGE_META_AFTER_BUFFER) && (obj_desc->params.meta_height_after < 1U))
            )
         {
             VX_PRINT(VX_ZONE_ERROR, "buffer_select is invalid \n");
@@ -750,7 +750,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 break;
             case (vx_enum)TIVX_RAW_IMAGE_FORMAT:
                 if ((NULL != ptr) &&
-                    (size >= sizeof(tivx_raw_image_format_t)) && /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR010 */
+                    (size >= sizeof(tivx_raw_image_format_t)) &&
                     (((vx_size)ptr & 0x3U) == 0U))
                 {
                     vx_size num_dims = size / sizeof(tivx_raw_image_format_t);
@@ -792,7 +792,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 break;
             case (vx_enum)TIVX_RAW_IMAGE_IMAGEPATCH_ADDRESSING:
                 if ((NULL != ptr) &&
-                    (size >= sizeof(vx_imagepatch_addressing_t)) && /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR011 */
+                    (size >= sizeof(vx_imagepatch_addressing_t)) &&
                     (((vx_size)ptr & 0x3U) == 0U))
                 {
                     vx_size num_dims = size / sizeof(vx_imagepatch_addressing_t);
