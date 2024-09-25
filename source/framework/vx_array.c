@@ -649,7 +649,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map
 #endif
 
         if ((map_id >= TIVX_ARRAY_MAX_MAPS) ||
-            (arr->maps[map_id].map_addr == NULL) || /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR005 */
+            (arr->maps[map_id].map_addr == NULL) ||
             (arr->maps[map_id].map_size == 0U))
         {
             VX_PRINT(VX_ZONE_ERROR,"Array map is invalid\n");
