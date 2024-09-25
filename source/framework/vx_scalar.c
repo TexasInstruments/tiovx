@@ -35,7 +35,7 @@ static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
     else
     {
         obj_desc = (tivx_obj_desc_scalar_t *)scalar->base.obj_desc;
-        switch (obj_desc->data_type)
+        switch (obj_desc->data_type) /* TIOVX-1931- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR001 */
         {
             case (vx_enum)VX_TYPE_CHAR:     *(vx_char*)user_ptr = obj_desc->data.chr; break;
             case (vx_enum)VX_TYPE_INT8:     *(vx_int8*)user_ptr = obj_desc->data.s08; break;
@@ -83,7 +83,7 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
     else
     {
         obj_desc = (tivx_obj_desc_scalar_t *)scalar->base.obj_desc;
-        switch (obj_desc->data_type)
+        switch (obj_desc->data_type) /* TIOVX-1931- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR002 */
         {
             case (vx_enum)VX_TYPE_CHAR:     obj_desc->data.chr = *(const vx_char*)user_ptr; break;
             case (vx_enum)VX_TYPE_INT8:     obj_desc->data.s08 = *(const vx_int8*)user_ptr; break;
