@@ -718,8 +718,8 @@ TEST(tivxTensor, testCreateTensorFromROI)
     ASSERT_EQ_VX_STATUS(status, VX_SUCCESS);
     /* Now, change the tensor data; we should see the changes only in the ROI part of the image */
     status = VX_SUCCESS;
-    for (i = 0; i < good_rect.end_x - good_rect.start_x == status; ++i)
-        for (j = 0; j < good_rect.end_y - good_rect.start_y == status; ++j)
+    for (i = 0; i < ((good_rect.end_x - good_rect.start_x) == status); ++i)
+        for (j = 0; j < ((good_rect.end_y - good_rect.start_y) == status); ++j)
         {
             ++*(vxFormatArrayPointer(tptr, j, strides[1]) + i);
         }
