@@ -731,14 +731,11 @@ static vx_status ownAgeDelay(vx_delay delay)
             } while (param != NULL);
         }
     }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM017 */
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "invalid delay\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
-#endif
     return status;
 }
 
