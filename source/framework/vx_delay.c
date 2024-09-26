@@ -657,7 +657,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
         switch (delay->type)
         {
             case (vx_enum)VX_TYPE_PYRAMID:
-                if (delay->pyr_num_levels > 0U) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR027 */
+                if (delay->pyr_num_levels > 0U)
                 {
                     /* age pyramid levels */
                     vx_int32 numLevels = (vx_int32)delay->pyr_num_levels;
@@ -669,7 +669,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
                 break;
 
             case (vx_enum)VX_TYPE_OBJECT_ARRAY:
-                if (delay->obj_arr_num_items > 0U) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR028 */
+                if (delay->obj_arr_num_items > 0U)
                 {
                      /* age object array levels */
                     vx_int32 numLevels = (vx_int32)delay->obj_arr_num_items;
@@ -699,7 +699,7 @@ static vx_status ownAgeDelay(vx_delay delay)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (tivxIsValidDelay(delay)) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR029 */
+    if (tivxIsValidDelay(delay))
     {
         vx_int32 i,j;
 
