@@ -437,7 +437,7 @@ static vx_status ownGraphInitVirtualNode(
 
                 if ((vx_status)VX_SUCCESS == status)
                 {
-                    switch (mf->type)
+                    switch (mf->type) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR071 */
                     {
                         case (vx_enum)VX_TYPE_SCALAR:
                             /* status set to NULL due to preceding type check */
