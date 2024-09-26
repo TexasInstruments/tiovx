@@ -290,7 +290,7 @@ static void ownTargetNodeDescTriggerNextNodes(
 static void ownTargetNodeDescNodeExecuteKernel(
     tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
 {
-    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0)
+    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0) /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR001 */
     {
         ownTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
     }
@@ -640,7 +640,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
                 (uint16_t)node_obj_desc->target_kernel_index[0], (vx_enum)node_obj_desc->kernel_id);
 
             /* Note: in the case of user kernel, target_kernel instance is NULL */
-            if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0)
+            if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0) /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR002 */
             {
                 if (NULL != target_kernel_instance) /* TIOVX-1930- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR022 */
                 {
@@ -673,8 +673,8 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
 
                 node_obj_desc->source_state = (vx_enum)VX_NODE_STATE_STEADY;
 
-                if( (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != (vx_bool)vx_false_e) &&
-                    (NULL != target_kernel_instance))
+                if( (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != (vx_bool)vx_false_e) && /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR003 */
+                    (NULL != target_kernel_instance)) /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR004 */
                 {
                     target_kernel_instance->state = (vx_enum)VX_NODE_STATE_STEADY;
                 }
@@ -1133,7 +1133,7 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
         case (vx_enum)TIVX_CMD_NODE_CREATE:
         case (vx_enum)TIVX_CMD_NODE_DELETE:
         case (vx_enum)TIVX_CMD_NODE_CONTROL:
-            if( tivxFlagIsBitSet( cmd_obj_desc->flags, TIVX_CMD_FLAG_IS_ACK) == (vx_bool)vx_false_e )
+            if( tivxFlagIsBitSet( cmd_obj_desc->flags, TIVX_CMD_FLAG_IS_ACK) == (vx_bool)vx_false_e ) /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR005 */
             {
                 node_obj_desc_id = cmd_obj_desc->obj_desc_id[0];
                 node_obj_desc = (tivx_obj_desc_node_t*)ownObjDescGet(node_obj_desc_id);
@@ -1220,7 +1220,7 @@ static void VX_CALLBACK ownTargetTaskMain(void *app_var)
     /* Adding OS-specific task init functions */
     ownPlatformTaskInit();
 
-    while(target->targetExitRequest == (vx_bool)vx_false_e)
+    while(target->targetExitRequest == (vx_bool)vx_false_e) /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR006 */
     {
         status = ownTargetDequeueObjDesc(target,
                     &obj_desc_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
@@ -1249,7 +1249,7 @@ static void VX_CALLBACK ownTargetTaskMain(void *app_var)
             {
                 ownLogRtTraceTargetExeStart(target, obj_desc);
 
-                switch(obj_desc->type)
+                switch(obj_desc->type) /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR007 */
                 {
                     case (vx_enum)TIVX_OBJ_DESC_CMD:
                         if( ownObjDescIsValidType( obj_desc, TIVX_OBJ_DESC_CMD) != 0) /* TIOVX-1930- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR036 */
