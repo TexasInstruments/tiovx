@@ -260,16 +260,143 @@ TEST_WITH_ARG(tivxInternalMetaFormat, negativeInternalTestSetMetaFormatFromRefer
 TEST(tivxInternalMetaFormat, negativeTestOwnIsMetaFormatEqual)
 {
     vx_context context = context_->vx_context_;
+    vx_enum temp_type = (vx_enum)VX_TYPE_INVALID;
+    vx_size temp_size = 0u;
+    vx_size temp_pattern = 0u;
+    vx_uint32 temp_x = 0u;
 
-    vx_meta_format meta = ownCreateMetaFormat(context);
+    vx_meta_format meta1 = ownCreateMetaFormat(context);
+    vx_meta_format meta2 = ownCreateMetaFormat(context);
 
-    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta,meta, VX_TYPE_INVALID));
-    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(NULL,NULL, VX_TYPE_INVALID));
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta1, VX_TYPE_INVALID));
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(NULL, NULL, VX_TYPE_INVALID));
 
-    VX_CALL(ownReleaseMetaFormat(&meta));
+    meta1->img.height = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_IMAGE));
+    meta1->img.height = 0u;
+
+    meta1->arr.item_type = (vx_enum)VX_TYPE_CHAR;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_ARRAY));
+    meta1->arr.item_type = (vx_enum)VX_TYPE_INVALID;
+    meta1->pmd.height = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_PYRAMID));
+    meta1->pmd.height = 0u;
+    meta1->pmd.format = (vx_enum)VX_TYPE_CHAR;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_PYRAMID));
+    meta1->pmd.format = (vx_enum)VX_TYPE_INVALID;
+    meta1->pmd.levels = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_PYRAMID));
+    meta1->pmd.levels = 0u;
+
+    temp_type = meta1->mat.type;
+    meta1->mat.type = (vx_enum)VX_TYPE_CHAR;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_MATRIX));
+    meta1->mat.type = temp_type;
+
+    meta1->mat.cols = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_MATRIX));
+    meta1->mat.cols = 0u;
+
+    temp_size = meta1->mat.size;
+    meta1->mat.size = VX_TYPE_MATRIX;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_MATRIX));
+    meta1->mat.size = temp_size;
+
+    temp_pattern = meta1->mat.pattern;
+    meta1->mat.pattern = VX_MATRIX_ORIGIN;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_MATRIX));
+    meta1->mat.pattern = temp_pattern;
+
+    temp_x = meta1->mat.origin.x;
+    meta1->mat.origin.x = -1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_MATRIX));
+    meta1->mat.origin.x = temp_x;
+
+    meta1->dist.bins = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_DISTRIBUTION));
+    meta1->dist.bins = 0u;
+
+    meta1->dist.offset = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_DISTRIBUTION));
+    meta1->dist.offset = 0u;
+
+    meta1->conv.cols = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_CONVOLUTION));
+    meta1->conv.cols = 0u;
+
+    meta1->conv.scale = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_CONVOLUTION));
+    meta1->conv.scale = 0u;
+
+    meta1->remap.src_width = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_REMAP));
+    meta1->remap.src_width = 0u;
+
+    meta1->remap.dst_width = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_REMAP));
+    meta1->remap.dst_width = 0u;
+
+    meta1->objarr.item_type = (vx_enum)VX_TYPE_CHAR;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_OBJECT_ARRAY));
+    meta1->objarr.item_type = (vx_enum)VX_TYPE_INVALID;
+
+
+    meta1->tensor.number_of_dimensions = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_TENSOR));
+    meta1->tensor.number_of_dimensions = 0u;
+
+    meta1->tensor.data_type = (vx_enum)VX_TYPE_CHAR;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_TENSOR));
+    meta1->tensor.data_type = (vx_enum)VX_TYPE_INVALID;
+
+    meta1->tensor.scaling_divisor = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_TENSOR));
+    meta1->tensor.scaling_divisor = 0u;
+
+    meta1->user_data_object.size = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_USER_DATA_OBJECT));
+    meta1->user_data_object.size  = 0u;
+
+    meta1->raw_image.height = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)TIVX_TYPE_RAW_IMAGE));
+    meta1->raw_image.height = 0u;
+
+    meta1->raw_image.num_exposures= 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)TIVX_TYPE_RAW_IMAGE));
+    meta1->raw_image.num_exposures  = 0u;
+
+    meta1->raw_image.line_interleaved = (vx_bool)vx_true_e;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)TIVX_TYPE_RAW_IMAGE));
+    meta1->raw_image.line_interleaved  = (vx_bool)vx_false_e;
+
+    meta1->raw_image.meta_height_before = 1u;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)TIVX_TYPE_RAW_IMAGE));
+    meta1->raw_image.meta_height_before  = 0u;
+
+
+    VX_CALL(ownReleaseMetaFormat(&meta1));
+    VX_CALL(ownReleaseMetaFormat(&meta2));
 }
 
+TEST(tivxInternalMetaFormat, negativeTestvxSetMetaFormatFromReference)
+{
+    vx_context context = context_->vx_context_;
+    vx_reference exemplar = NULL;
+    vx_meta_format meta = NULL;
+    vx_meta_format temp_meta = NULL;
+
+    meta = ownCreateMetaFormat(context);
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxSetMetaFormatFromReference(meta, exemplar));
+
+    ASSERT_VX_OBJECT(exemplar = (vx_reference)vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxSetMetaFormatFromReference(temp_meta, exemplar));
+
+    VX_CALL(vxReleaseImage((vx_image*)&exemplar));
+    VX_CALL(ownReleaseMetaFormat(&meta));
+}
 TESTCASE_TESTS(tivxInternalMetaFormat,
     negativeInternalTestSetMetaFormatFromReference,
-    negativeTestOwnIsMetaFormatEqual
+    negativeTestOwnIsMetaFormatEqual,
+    negativeTestvxSetMetaFormatFromReference
+
     )
