@@ -440,6 +440,11 @@ static vx_status tivxNegativeTestAddTargetKernelInternal(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for ARG:'NULL'\n");
         status = (vx_status)VX_FAILURE;
     }
+    if(NULL != tivxAddTargetKernel(0,tname,NULL,NULL,NULL,NULL,NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for ARG:'NULL'\n");
+        status = (vx_status)VX_FAILURE;
+    }
 
     tivxQueryNumTargetKernel(&num_target_kernels);
 
@@ -3558,6 +3563,13 @@ static vx_status tivxBranchTestTargetObjDescQueue(uint8_t id)
     if((vx_status)VX_FAILURE != ownObjDescQueueExtractBlockedNodes((vx_enum)TIVX_OBJ_DESC_INVALID, NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid 'obj_desc_q_id' \n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
 
 static vx_status tivxBranchTestQueue(uint8_t id)
 {
