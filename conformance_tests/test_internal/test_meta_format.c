@@ -303,12 +303,12 @@ TEST(tivxInternalMetaFormat, negativeTestOwnIsMetaFormatEqual)
     meta1->mat.size = temp_size;
 
     temp_pattern = meta1->mat.pattern;
-    meta1->mat.pattern = VX_MATRIX_ORIGIN;
+    meta1->mat.pattern = VX_TYPE_OBJECT_ARRAY;
     ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_MATRIX));
     meta1->mat.pattern = temp_pattern;
 
     temp_x = meta1->mat.origin.x;
-    meta1->mat.origin.x = -1u;
+    meta1->mat.origin.x = 6u;
     ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_MATRIX));
     meta1->mat.origin.x = temp_x;
 
@@ -373,6 +373,9 @@ TEST(tivxInternalMetaFormat, negativeTestOwnIsMetaFormatEqual)
     ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)TIVX_TYPE_RAW_IMAGE));
     meta1->raw_image.meta_height_before  = 0u;
 
+    meta1->lut.type= (vx_enum)VX_TYPE_CHAR;
+    ASSERT_EQ_INT((vx_bool)vx_false_e, ownIsMetaFormatEqual(meta1, meta2, (vx_enum)VX_TYPE_LUT));
+    meta1->lut.type = (vx_enum)VX_TYPE_INVALID;;
 
     VX_CALL(ownReleaseMetaFormat(&meta1));
     VX_CALL(ownReleaseMetaFormat(&meta2));
