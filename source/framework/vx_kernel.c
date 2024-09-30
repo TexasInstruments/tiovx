@@ -254,7 +254,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
         else
         {
             /* This is the first time vxRemoveKernel is called on this kernel */
-            if ( kernel->base.destructor_callback == NULL ) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR004 */
+            if ( kernel->base.destructor_callback == NULL )
             {
                 /* By default, we don't want to destruct user kernel unless user calls vxRemoveKernel,
                  * at which point we set the destructor callback so that it gets removed when all references
