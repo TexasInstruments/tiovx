@@ -57,5 +57,6 @@ TESTCASE(tivxTimer)
 TESTCASE(tivxRpmsgChar)
 #endif
 TESTCASE(tivxInternalGraphSort)
+TESTCASE(tivxInternalSafeCasts)
 
 #endif
