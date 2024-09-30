@@ -91,7 +91,7 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
     uint16_t node_obj_desc_id;
     tivx_obj_desc_node_t *node_obj_desc;
 
-    switch(cmd_obj_desc->cmd_id)
+    switch(cmd_obj_desc->cmd_id) /* TIOVX-1937- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR003 */
     {
         case (vx_enum)TIVX_CMD_NODE_USER_CALLBACK:
             node_obj_desc_id = cmd_obj_desc->obj_desc_id[0];
