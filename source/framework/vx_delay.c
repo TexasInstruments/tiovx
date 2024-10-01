@@ -126,7 +126,7 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
 /* END: TIOVX_CODE_COVERAGE_DELAY_UTJT001 */
 #endif
         {
-            if (*ptr == NULL) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR010 */
+            if (*ptr == NULL)
             {
                 *ptr = ownAllocDelayPrm(delay);
                 if (*ptr != NULL) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR011 */
@@ -196,8 +196,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
         {
             if (*ptr != NULL)
             {
-                if ( ((*ptr)->node == n) && /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR013 */
-                ((*ptr)->index == i) ) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR014 */
+                if ( ((*ptr)->node == n) &&  ((*ptr)->index == i) )
                 {
                     next = (*ptr)->next;
                     ownFreeDelayPrm(*ptr);
