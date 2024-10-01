@@ -1950,7 +1950,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
                         if(is_replicated != 0)
                         {
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT015 */
+/* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT015 */
                             if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                             {
                                 /* status set to NULL due to preceding type check */
@@ -1998,7 +1998,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
             }
         }
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT016 */
+/* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT016 */
         else
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -2048,7 +2048,7 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
 
         status = ownNodeAllocObjDescForPipeline(graph->nodes[node_id], graph->pipeline_depth);
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT017 */
+/* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT017 */
         if(status!=(vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj descriptors at node for pipelining\n");
@@ -2090,7 +2090,7 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
                 {
                     status = ownGraphAddDataRefQ(graph, node, prm_id);
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT018 */
+/* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT018 */
                     if(status!=(vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Unable to add data ref q to graph\n");
@@ -2100,7 +2100,7 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
 /*LDRA_ANALYSIS*/
                 }
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT019 */
+/* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT019 */
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     break;
@@ -2289,7 +2289,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     /* Pipeline node objects */
                     status = ownGraphNodePipeline(graph);
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT020 */
+/* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT020 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Node pipelining failed\n");
@@ -2323,7 +2323,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     /* create and link data references queues to node parameters */
                     status = ownGraphCreateAndLinkDataReferenceQueues(graph);
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT021 */
+/* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT021 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Create data ref queues failed\n");
@@ -2365,7 +2365,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     /* alloc object descriptor for graph and enqueue them */
                     status = ownGraphAllocAndEnqueueObjDescForPipeline(graph);
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT022 */
+/* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT022 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj desc for graph\n");
@@ -2389,7 +2389,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     /* verify graph schedule mode with streaming */
                     status = ownGraphVerifyStreamingMode(graph);
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT023 */
+/* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT023 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"If streaming is enabled, schedule mode must be normal\n");

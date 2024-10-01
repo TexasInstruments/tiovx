@@ -455,7 +455,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                     refs[ref_id] = vxCastRefFromImage(pyr->img[0]);
                 }
 #ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT009 */
+/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT009 */
                 /* If the ref type is an array element that didn't match the graph parameter type, return parent of element */
                 else if((vx_bool)vx_true_e == ref->is_array_element)
                 {
@@ -472,7 +472,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
 #endif
 
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT010 */
+/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT010 */
                 /* If the ref type doesn't match graph parameter type, throw an error */
                 if (refs[ref_id]->type != graph->parameters[graph_parameter_index].type)
                 {
@@ -601,7 +601,7 @@ vx_status ownGraphDeleteQueues(vx_graph graph)
     vx_status status;
     status = tivxQueueDelete(&graph->free_q);
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT005 */
+/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT005 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "Failed to delete a queue\n");
@@ -885,7 +885,7 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
                 {
                     tmp_status = ownNodeKernelSchedule(graph->head_nodes[node_id], graph_obj_desc->pipeline_id);
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT006 */
+/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT006 */
                     if((vx_status)VX_SUCCESS != tmp_status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to schedule kernel\n");
@@ -917,7 +917,7 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
         else
         {
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT007 */
+/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT007 */
             if(schedule_id!=total_num_schedule)
             {
                 /* for normal modes if all reqired graph schedules did not succeed
@@ -1096,7 +1096,7 @@ static uint32_t ownGraphGetOptimalNumBuf(vx_graph graph, vx_reference ref)
     }
 
 /*LDRA_NOANALYSIS*/
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT008 */
+/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT008 */
     if (num_bufs >= TIVX_OBJ_DESC_QUEUE_MAX_DEPTH)
     {
         VX_PRINT(VX_ZONE_OPTIMIZATION, "Required number of buffers = %d but max buffer depth = %d\n", num_bufs, (int32_t)TIVX_OBJ_DESC_QUEUE_MAX_DEPTH-1);
