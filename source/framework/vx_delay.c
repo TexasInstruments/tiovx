@@ -147,13 +147,10 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
 /* END: TIOVX_CODE_COVERAGE_DELAY_UTJT001 */
 #endif
             }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM003 */
             else
             {
                 ptr = &((*ptr)->next);
             }
-#endif
         } 
     }
 
@@ -203,13 +200,10 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
                     *ptr = next;
                     do_break = (vx_bool)vx_true_e;
                 }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM004 */
                 else
                 {
                    ptr = &((*ptr)->next);
                 }
-#endif
             }
             else
             {
