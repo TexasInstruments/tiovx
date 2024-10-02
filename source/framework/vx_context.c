@@ -720,110 +720,118 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 
         status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
-        if ((status == (vx_status)VX_SUCCESS) && /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR010 */
-         (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS))
+        if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR010 */
         {
-            obj_desc_cmd  = context->obj_desc_cmd[obj_id];
-            cmd_ack_event = context->cmd_ack_event[obj_id];
-
-            tivx_uint64_to_uint32(
-                timestamp,
-                &obj_desc_cmd->timestamp_h,
-                &obj_desc_cmd->timestamp_l
-            );
-
-            obj_desc_cmd->cmd_id = (vx_enum)TIVX_CMD_NODE_CONTROL;
-            obj_desc_cmd->dst_target_id = target_id;
-            obj_desc_cmd->src_target_id =
-                (uint32_t)ownPlatformGetTargetId(TIVX_TARGET_HOST);
-            obj_desc_cmd->num_obj_desc = 1u;
-            obj_desc_cmd->obj_desc_id[0u] = node_obj_desc;
-            obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
-            obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)cmd_ack_event;
-
-            obj_desc_cmd->replicated_node_idx = (int32_t)replicated_node_idx;
-            obj_desc_cmd->node_cmd_id = node_cmd_id;
-            obj_desc_cmd->num_cmd_params = num_obj_desc;
-
-            for (i = 0; i < num_obj_desc; i ++)
+            if (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS)
             {
-                obj_desc_cmd->cmd_params_desc_id[i] = obj_desc_id[i];
-            }
+                obj_desc_cmd  = context->obj_desc_cmd[obj_id];
+                cmd_ack_event = context->cmd_ack_event[obj_id];
 
-            status = ownObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
+                tivx_uint64_to_uint32(
+                    timestamp,
+                    &obj_desc_cmd->timestamp_h,
+                    &obj_desc_cmd->timestamp_l
+                );
 
-            if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR011 */
-            {
-                status = tivxEventWait(cmd_ack_event, timeout);
+                obj_desc_cmd->cmd_id = (vx_enum)TIVX_CMD_NODE_CONTROL;
+                obj_desc_cmd->dst_target_id = target_id;
+                obj_desc_cmd->src_target_id =
+                    (uint32_t)ownPlatformGetTargetId(TIVX_TARGET_HOST);
+                obj_desc_cmd->num_obj_desc = 1u;
+                obj_desc_cmd->obj_desc_id[0u] = node_obj_desc;
+                obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
+                obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)cmd_ack_event;
 
-                if (status == (vx_status)VX_SUCCESS)
+                obj_desc_cmd->replicated_node_idx = (int32_t)replicated_node_idx;
+                obj_desc_cmd->node_cmd_id = node_cmd_id;
+                obj_desc_cmd->num_cmd_params = num_obj_desc;
+
+                for (i = 0; i < num_obj_desc; i ++)
                 {
+                    obj_desc_cmd->cmd_params_desc_id[i] = obj_desc_id[i];
+                }
 
-/*LDRA_NOANALYSIS*/
-/* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT002 */
+                status = ownObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
+
+                if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR011 */
+                {
+                    status = tivxEventWait(cmd_ack_event, timeout);
+
+                    if (status == (vx_status)VX_SUCCESS)
+                    {
+
+    /*LDRA_NOANALYSIS*/
+    /* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT002 */
+                        if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,
+                                    "Command ack message returned failure cmd_status: %d\n",
+                                    obj_desc_cmd->cmd_status);
+                            status = (vx_status)VX_FAILURE;
+                        }
+    /* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT002 */
+    /*LDRA_ANALYSIS*/
+
+                        /* Put the object back in the free queue. */
+                        status1 = tivxQueuePut(&context->free_queue,
+                                            obj_id,
+                                            TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+    #ifdef LDRA_UNTESTABLE_CODE
+                        if (status1 != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,
+                                    "Failed to release the object desc id.\n");
+                            status = (vx_status)VX_FAILURE;
+                        }
+    #endif
+                    }
+                    else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR012 */
+                    {
+                        /* Queue the object into the pend queue for later
+                        * action.
+                        */
+                        status1 = tivxQueuePut(&context->pend_queue,
+                                            obj_id,
+                                            TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+    #ifdef LDRA_UNTESTABLE_CODE
+                        if (status1 != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,
+                                    "Failed to queue the object desc in pend queue.\n");
+                            status = (vx_status)VX_FAILURE;
+                        }
+    #endif
+                    }
+
+    #ifdef LDRA_UNTESTABLE_CODE
+    /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM005 */
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
+                    }
+    #endif
+                }
+    #ifdef LDRA_UNTESTABLE_CODE
+    /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM006 */
+                else
+                {
                     if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,
-                                 "Command ack message returned failure cmd_status: %d\n",
-                                 obj_desc_cmd->cmd_status);
+                                "Failed to send object desc\n");
                         status = (vx_status)VX_FAILURE;
                     }
-/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT002 */
-/*LDRA_ANALYSIS*/
-
-                    /* Put the object back in the free queue. */
-                    status1 = tivxQueuePut(&context->free_queue,
-                                           obj_id,
-                                           TIVX_EVENT_TIMEOUT_NO_WAIT);
-
-#ifdef LDRA_UNTESTABLE_CODE
-                    if (status1 != (vx_status)VX_SUCCESS)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,
-                                 "Failed to release the object desc id.\n");
-                        status = (vx_status)VX_FAILURE;
-                    }
-#endif
                 }
-                else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR012 */
-                {
-                    /* Queue the object into the pend queue for later
-                     * action.
-                     */
-                    status1 = tivxQueuePut(&context->pend_queue,
-                                           obj_id,
-                                           TIVX_EVENT_TIMEOUT_NO_WAIT);
-
-#ifdef LDRA_UNTESTABLE_CODE
-                    if (status1 != (vx_status)VX_SUCCESS)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,
-                                 "Failed to queue the object desc in pend queue.\n");
-                        status = (vx_status)VX_FAILURE;
-                    }
-#endif
-                }
-
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM005 */
-                else
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
-                }
-#endif
+    #endif
             }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM006 */
             else
             {
-                if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,
-                             "Failed to send object desc\n");
-                    status = (vx_status)VX_FAILURE;
-                }
+                VX_PRINT(VX_ZONE_ERROR,
+                        "Invalid object desc id (>= TIVX_MAX_CTRL_CMD_OBJECTS)\n");
+                status = (vx_status)VX_FAILURE;
             }
-#endif
         }
         ownLogSetResourceUsedValue("TIVX_MAX_CTRL_CMD_OBJECTS", (uint16_t)obj_id);
     }
@@ -863,98 +871,106 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
         status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
-        if ((status == (vx_status)VX_SUCCESS) && /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR013 */
-        (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS))
+        if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR010 */
         {
-            obj_desc_cmd  = context->obj_desc_cmd[obj_id];
-            cmd_ack_event = context->cmd_ack_event[obj_id];
-
-            tivx_uint64_to_uint32(
-                timestamp,
-                &obj_desc_cmd->timestamp_h,
-                &obj_desc_cmd->timestamp_l
-            );
-
-            obj_desc_cmd->cmd_id = cmd;
-            obj_desc_cmd->dst_target_id = target_id;
-            obj_desc_cmd->src_target_id = (uint32_t)ownPlatformGetTargetId(TIVX_TARGET_HOST);
-            obj_desc_cmd->num_obj_desc = num_obj_desc;
-            obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
-            obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)cmd_ack_event;
-
-            for(i=0; i<num_obj_desc; i++)
+            if (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS)
             {
-                obj_desc_cmd->obj_desc_id[i] = obj_desc_id[i];
-            }
+                obj_desc_cmd  = context->obj_desc_cmd[obj_id];
+                cmd_ack_event = context->cmd_ack_event[obj_id];
 
-            status = ownObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
+                tivx_uint64_to_uint32(
+                    timestamp,
+                    &obj_desc_cmd->timestamp_h,
+                    &obj_desc_cmd->timestamp_l
+                );
 
-            if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR014 */
-            {
-                status = tivxEventWait(cmd_ack_event, timeout);
+                obj_desc_cmd->cmd_id = cmd;
+                obj_desc_cmd->dst_target_id = target_id;
+                obj_desc_cmd->src_target_id = (uint32_t)ownPlatformGetTargetId(TIVX_TARGET_HOST);
+                obj_desc_cmd->num_obj_desc = num_obj_desc;
+                obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
+                obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)cmd_ack_event;
 
-                if (status == (vx_status)VX_SUCCESS)
+                for(i=0; i<num_obj_desc; i++)
+                {
+                    obj_desc_cmd->obj_desc_id[i] = obj_desc_id[i];
+                }
+
+                status = ownObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
+
+                if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR014 */
+                {
+                    status = tivxEventWait(cmd_ack_event, timeout);
+
+                    if (status == (vx_status)VX_SUCCESS)
+                    {
+                        if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,
+                                    "Command ack message returned failure cmd_status: %d\n",
+                                    obj_desc_cmd->cmd_status);
+                            status = (vx_status)VX_FAILURE;
+                        }
+
+                        /* Put the object back in the free queue. */
+                        status1 = tivxQueuePut(&context->free_queue,
+                                            obj_id,
+                                            TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+    #ifdef LDRA_UNTESTABLE_CODE
+                        if (status1 != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,
+                                    "Failed to release the object desc id.\n");
+                            status = (vx_status)VX_FAILURE;
+                        }
+    #endif
+                    }
+                    else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR015 */
+                    {
+                        /* Queue the object into the pend queue for later
+                        * action.
+                        */
+                        status1 = tivxQueuePut(&context->pend_queue,
+                                            obj_id,
+                                            TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+    #ifdef LDRA_UNTESTABLE_CODE
+                        if (status1 != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,
+                                    "Failed to queue the object desc in pend queue.\n");
+                        }
+    #endif
+                    }
+
+    #ifdef LDRA_UNTESTABLE_CODE
+    /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM007 */
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
+                    }
+    #endif
+                }
+    #ifdef LDRA_UNTESTABLE_CODE
+    /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM008 */
+                else
                 {
                     if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,
-                                 "Command ack message returned failure cmd_status: %d\n",
-                                 obj_desc_cmd->cmd_status);
+                                "Failed to send object desc\n");
                         status = (vx_status)VX_FAILURE;
                     }
-
-                    /* Put the object back in the free queue. */
-                    status1 = tivxQueuePut(&context->free_queue,
-                                           obj_id,
-                                           TIVX_EVENT_TIMEOUT_NO_WAIT);
-
-#ifdef LDRA_UNTESTABLE_CODE
-                    if (status1 != (vx_status)VX_SUCCESS)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,
-                                 "Failed to release the object desc id.\n");
-                        status = (vx_status)VX_FAILURE;
-                    }
-#endif
                 }
-                else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR015 */
-                {
-                    /* Queue the object into the pend queue for later
-                     * action.
-                     */
-                    status1 = tivxQueuePut(&context->pend_queue,
-                                           obj_id,
-                                           TIVX_EVENT_TIMEOUT_NO_WAIT);
-
-#ifdef LDRA_UNTESTABLE_CODE
-                    if (status1 != (vx_status)VX_SUCCESS)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,
-                                 "Failed to queue the object desc in pend queue.\n");
-                    }
-#endif
-                }
-
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM007 */
-                else
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
-                }
-#endif
+    #endif
             }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM008 */
             else
             {
-                if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,
-                             "Failed to send object desc\n");
-                    status = (vx_status)VX_FAILURE;
-                }
+                VX_PRINT(VX_ZONE_ERROR,
+                        "Invalid object desc id (>= TIVX_MAX_CTRL_CMD_OBJECTS)\n");
+                status = (vx_status)VX_FAILURE;
             }
-#endif
         }
     }
 #ifdef LDRA_UNTESTABLE_CODE
