@@ -61,6 +61,8 @@ void ownPlatformCreateTargets(void)
     #endif /* defined(SOC_J784S4) || defined(SOC_J722S) || defined(SOC_J742S2) */
 }
 
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1970- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_CONFIG_C7x_UM001 */
 void ownPlatformDeleteTargets(void)
 {
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1);
@@ -105,3 +107,4 @@ void ownPlatformDeleteTargets(void)
     #endif /* defined(SOC_J784S4) */
     #endif /* defined(SOC_J784S4) || defined(SOC_J722S) || defined(SOC_J742S2) */
 }
+/*LDRA_ANALYSIS*/
