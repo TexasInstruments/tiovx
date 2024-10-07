@@ -38,17 +38,17 @@ static vx_bool ownIsValidObject(vx_enum type)
     vx_bool status = (vx_bool)vx_false_e;
 
     if (((vx_enum)VX_TYPE_IMAGE == type) ||
-        ((vx_enum)VX_TYPE_ARRAY == type) || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR001 */
-        ((vx_enum)VX_TYPE_SCALAR == type) || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR002 */
-        ((vx_enum)VX_TYPE_DISTRIBUTION == type) || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR003 */
+        ((vx_enum)VX_TYPE_ARRAY == type) ||
+        ((vx_enum)VX_TYPE_SCALAR == type) ||
+        ((vx_enum)VX_TYPE_DISTRIBUTION == type) ||
         ((vx_enum)VX_TYPE_THRESHOLD == type) ||
         ((vx_enum)VX_TYPE_PYRAMID == type) ||
-        ((vx_enum)VX_TYPE_MATRIX == type) || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR004 */
-        ((vx_enum)VX_TYPE_REMAP == type)  || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR005 */
-        ((vx_enum)VX_TYPE_LUT == type) || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR006 */
+        ((vx_enum)VX_TYPE_MATRIX == type) ||
+        ((vx_enum)VX_TYPE_REMAP == type)  ||
+        ((vx_enum)VX_TYPE_LUT == type) ||
         ((vx_enum)VX_TYPE_OBJECT_ARRAY == type) ||
         ((vx_enum)VX_TYPE_CONVOLUTION == type) ||
-        (VX_TYPE_USER_DATA_OBJECT == type) || /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR007 */
+        (VX_TYPE_USER_DATA_OBJECT == type) ||
         (TIVX_TYPE_RAW_IMAGE == type) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR008 */
         )
     {
