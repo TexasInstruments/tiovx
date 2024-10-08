@@ -1042,7 +1042,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 }
                 break;
             case (vx_enum)VX_REFERENCE_ENQUEUE_COUNT: 
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32*, 0x3U))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = ref->obj_desc->num_enqueues; 
                 }
