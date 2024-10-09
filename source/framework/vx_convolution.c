@@ -27,7 +27,7 @@ VX_API_ENTRY vx_convolution VX_API_CALL vxCreateConvolution(
     vx_convolution cnvl = NULL;
     vx_reference ref = NULL;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
+	vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -49,7 +49,7 @@ VX_API_ENTRY vx_convolution VX_API_CALL vxCreateConvolution(
                 cnvl->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 cnvl->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+                cnvl->base.kernel_callback = &ownKernelCallbackGeneric;
                 obj_desc = (tivx_obj_desc_convolution_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_CONVOLUTION, vxCastRefFromConvolution(cnvl));
                 if(obj_desc==NULL)
@@ -336,4 +336,3 @@ static int8_t isodd(size_t a)
     int8_t result = (((a & 1ULL) != 0ULL)? 1 : 0);
     return result;
 }
-

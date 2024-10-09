@@ -18,14 +18,13 @@
 
 #include <vx_internal.h>
 
-VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrix(
-    vx_context context, vx_enum data_type, vx_size columns, vx_size rows)
+VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrix(vx_context context, vx_enum data_type, vx_size columns, vx_size rows)
 {
     vx_matrix matrix = NULL;
     vx_reference ref = NULL;
     vx_size dim = 0U;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
+	vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -68,9 +67,8 @@ VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrix(
                 /* assign refernce type specific callback's */
                 matrix->base.destructor_callback = &ownDestructReferenceGeneric;
                 matrix->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
-                matrix->base.release_callback =
-                    &ownReleaseReferenceBufferGeneric;
-
+                matrix->base.release_callback = &ownReleaseReferenceBufferGeneric;
+                matrix->base.kernel_callback = &ownKernelCallbackGeneric;
                 obj_desc = (tivx_obj_desc_matrix_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_MATRIX, vxCastRefFromMatrix(matrix));
                 if(obj_desc==NULL)
@@ -176,7 +174,7 @@ VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             matrix->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
             matrix->base.release_callback =
                 &ownReleaseReferenceBufferGeneric;
-
+            matrix->base.kernel_callback = &ownKernelCallbackGeneric;
             obj_desc = (tivx_obj_desc_matrix_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_MATRIX, vxCastRefFromMatrix(matrix));
             if(obj_desc==NULL)

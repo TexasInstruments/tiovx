@@ -24,14 +24,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseLUT(vx_lut *lut)
         vxCastRefFromLUTP(lut), (vx_enum)VX_TYPE_LUT, (vx_enum)VX_EXTERNAL, NULL));
 }
 
-VX_API_ENTRY vx_lut VX_API_CALL vxCreateLUT(
-    vx_context context, vx_enum data_type, vx_size count)
+VX_API_ENTRY vx_lut VX_API_CALL vxCreateLUT(vx_context context, vx_enum data_type, vx_size count)
 {
     vx_lut lut = NULL;
     vx_reference ref = NULL;
     vx_size dim = 0;
     tivx_obj_desc_lut_t *obj_desc = NULL;
-    vx_status status = (vx_status)VX_SUCCESS;
+	vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
@@ -77,7 +76,7 @@ VX_API_ENTRY vx_lut VX_API_CALL vxCreateLUT(
                 lut->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 lut->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+                lut->base.kernel_callback = &ownKernelCallbackGeneric;
                 obj_desc = (tivx_obj_desc_lut_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_LUT, vxCastRefFromLUT(lut));
                 if(obj_desc==NULL)

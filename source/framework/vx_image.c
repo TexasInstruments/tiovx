@@ -22,7 +22,16 @@
 #define TIVX_IMG_ALIGN(size)    (((size + (TIVX_IMG_ALIGN_BYTES-1U)) / TIVX_IMG_ALIGN_BYTES) * TIVX_IMG_ALIGN_BYTES)
 /* Max bound of iterating through sub-image for swapping; the size is directly proportional to the task stack usage */
 /* the stack can hold two time the max number of subimages */
+<<<<<<< HEAD
 #define TIVX_SUBIMAGE_STACK_SIZE (TIVX_IMAGE_MAX_SUBIMAGES * TIVX_IMAGE_MAX_SUBIMAGE_DEPTH)
+=======
+#define TIVX_SUBIMAGE_STACK_SIZE (TIVX_IMAGE_MAX_SUBIMAGES * TIVX_MAX_SUBIMAGE_DEPTH)
+static vx_status isImageCopyable(vx_image input, vx_image output);
+static vx_status isImageSwapable(vx_image input, vx_image output);
+static vx_status copyImage(vx_image input, vx_image output);
+static vx_status swapImage(vx_image input, vx_image output);
+static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
+>>>>>>> origin/bosch-9-2-integration-branch
 
 static vx_bool ownIsSupportedFourcc(vx_df_image code);
 static vx_bool ownIsOdd(vx_uint32 a);
@@ -44,11 +53,6 @@ static void ownInitPlane(vx_image image,
                  vx_uint32 bits_per_pixel  /* Valid when (size_of_ch == 0), otherwise don't care */);
 static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_df_image format);
 static vx_status ownIsFreeSubimageAvailable(vx_image image);
-static vx_image ownCreateImageInt(vx_context context,
-                                     vx_uint32 width,
-                                     vx_uint32 height,
-                                     vx_df_image color,
-                                     tivx_image_create_type_e create_type);
 static vx_status ownCopyAndMapCheckParams(
     vx_image image,
     const vx_rectangle_t* rect,
@@ -209,7 +213,8 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
 
     /* refer to our parent image and internally refcount it */
     subimage->parent = parent;
-
+    subimage->base.is_virtual = parent->base.is_virtual;
+    ((tivx_obj_desc_image_t *)subimage->base.obj_desc)->parent_ID = parent->base.obj_desc->obj_desc_id;
     /* it will find free space for subimage since this was checked before */
     for (p = 0; p < TIVX_IMAGE_MAX_SUBIMAGES; p++)
     {
@@ -228,6 +233,21 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
     }
 #endif
     (void)ownIncrementReference(&parent->base, (vx_enum)VX_INTERNAL);
+
+}
+
+static uint16_t ownGetNumParentSubimages(const vx_image image)
+{
+    vx_image p = image;
+    uint16_t num_parents = 0;
+
+    while (p->parent != NULL)
+    {
+        num_parents++;
+        p = p->parent;
+    }
+
+    return num_parents;
 }
 
 static uint16_t ownGetNumParentSubimages(const vx_image image)
@@ -394,6 +414,308 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
     return status;
 }
 
+static vx_status isImageCopyable(vx_image input, vx_image output)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_image_t *in_objd = (tivx_obj_desc_image_t *)input->base.obj_desc;
+    tivx_obj_desc_image_t *out_objd = (tivx_obj_desc_image_t *)output->base.obj_desc;
+    if ((vx_bool)vx_false_e == ownIsValidImage(input))
+    {
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((vx_bool)vx_false_e == ownIsValidImage(output))
+    {
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((vx_enum)TIVX_IMAGE_UNIFORM == (vx_enum)out_objd->create_type)
+    {
+        /* If the output image cannot be uniform, as these are defined to be read-only */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((in_objd->width != out_objd->width) &&
+        ((0U != out_objd->width) ||
+         ((vx_bool)vx_false_e == output->base.is_virtual)))
+    {
+        /* output width must be the same as input width unless output is virtual with width zero */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((in_objd->height != out_objd->height) &&
+             ((0U != out_objd->height) ||
+              ((vx_bool)vx_false_e == output->base.is_virtual)))
+    {
+        /* output height must be the same as input height unless output is virtual with height zero */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((in_objd->format != out_objd->format) &&
+             (((uint32_t)VX_DF_IMAGE_VIRT != out_objd->format) ||
+              ((vx_bool)vx_false_e == output->base.is_virtual)))
+    {
+        /* Output format must be the same as input format unless output is virtual with virtual format */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else
+    {
+        /* All OK, so we propagate metadata and valid region */
+        out_objd->color_range = in_objd->color_range;
+        out_objd->color_space = in_objd->color_space;
+        /* struct assigment, use the special copy function */
+        tivx_obj_desc_memcpy(&out_objd->valid_roi, &in_objd->valid_roi, (uint32_t)sizeof(out_objd->valid_roi));
+        out_objd->width = in_objd->width;
+        out_objd->height = in_objd->height;
+        out_objd->format = in_objd->format;
+    }
+    return status;
+}
+
+static vx_status isImageSwapable(vx_image input, vx_image output)
+{
+    tivx_obj_desc_image_t *in_objd = (tivx_obj_desc_image_t *)input->base.obj_desc;
+    vx_status status = isImageCopyable(input, output);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        if ((vx_enum)TIVX_IMAGE_UNIFORM == (vx_enum)in_objd->create_type)
+        {
+            /* Neither image can be uniform */
+            status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+        else if ((NULL != input->parent) ||
+                 (NULL != output->parent))
+        {
+            /* Neither image may be a sub-image */
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        }
+        else
+        {
+            tivx_obj_desc_image_t *out_objd = (tivx_obj_desc_image_t *)output->base.obj_desc;
+            vx_uint32 i;
+            vx_bool has_sub_objects = (vx_bool)vx_false_e;
+            for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; ++i)
+            {
+                if ((NULL != input->subimages[i]) ||
+                    (NULL != output->subimages[i]))
+                {
+                    has_sub_objects = (vx_bool)vx_true_e;
+                    break;
+                }
+            }
+            if ((vx_bool)vx_true_e == has_sub_objects)
+            {
+                for (i = 0; i < in_objd->planes; ++i)
+                {
+                    if ((in_objd->mem_size[i] != out_objd->mem_size[i]))
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Swapping images with sub-objects and differing allocated memory size is not supported (size 1 = %zu, size 2 = %zu)\n", in_objd->mem_size[i], out_objd->mem_size[i]);
+                        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return status;
+}
+
+static vx_status copyImage(vx_image input, vx_image output)
+{
+    /* Copy entire image by using memcpy only if memory sizes are equal,
+       otherwise use the high-level functions
+       NOTE that this will need updating if uniform images are
+       implemented in a more efficient manner!
+       The images must be copyable!
+     */
+    vx_uint32 i;
+    tivx_obj_desc_image_t *ip_objd = (tivx_obj_desc_image_t *)input->base.obj_desc;
+    tivx_obj_desc_image_t *op_objd = (tivx_obj_desc_image_t *)output->base.obj_desc;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_rectangle_t rect = {.start_x = 0, .start_y = 0, .end_x = ip_objd->width, .end_y = ip_objd->height};
+    vx_imagepatch_addressing_t addr;
+    vx_map_id map_id;
+    void *ptr;
+    for (i = 0; i < ip_objd->planes; ++i)
+    {
+        /* if the size of both objects is the same, we can use memcpy for faster processing */
+        if (ip_objd->mem_size[i] == op_objd->mem_size[i])
+        {
+            tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)ip_objd->mem_ptr[i].host_ptr, ip_objd->mem_size[i], 
+                                                      (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)op_objd->mem_ptr[i].host_ptr, ip_objd->mem_size[i], 
+                                                          (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    (void)memcpy((void *)(uintptr_t)op_objd->mem_ptr[i].host_ptr, (void *)(uintptr_t)ip_objd->mem_ptr[i].host_ptr, ip_objd->mem_size[i]);
+                }
+                tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)op_objd->mem_ptr[i].host_ptr, op_objd->mem_size[i],
+                                                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+            }
+            tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)ip_objd->mem_ptr[i].host_ptr, ip_objd->mem_size[i],
+                                                      (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                break;
+            }
+        }
+        else
+        {
+            tivxCheckStatus(&status, vxMapImagePatch(input, &rect, i, &map_id, &addr, &ptr, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0));
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                status = vxCopyImagePatch(output, &rect, i, &addr, ptr, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
+            }
+            tivxCheckStatus(&status, vxUnmapImagePatch(input, map_id));
+        }
+    }
+    return status;
+}
+
+/*! \brief Adjust the memory pointer of the image by the given offset
+ * This involves non-recursively visiting every sub-image
+ * and adjusting the memory pointer for that, as well.
+ */
+static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MAX_PLANES])
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_image stack[TIVX_SUBIMAGE_STACK_SIZE];
+    vx_image local_img;
+    vx_image *subimages = NULL;
+    vx_uint32 stack_pointer = 0;
+    vx_uint32 i;
+
+    for (i = 0; i < TIVX_SUBIMAGE_STACK_SIZE; ++i)
+    {
+        stack[i] = NULL;
+    }
+    stack[stack_pointer] = ref;
+    stack_pointer++;
+    while (0U < stack_pointer)
+    {
+        stack_pointer--;
+        local_img = stack[stack_pointer];
+        subimages = local_img->subimages;
+        tivx_obj_desc_image_t *obj_desc = (tivx_obj_desc_image_t *)local_img->base.obj_desc;
+        if (obj_desc->planes > 0U)
+        {
+            for (i = 0; i < obj_desc->planes; ++i)
+            {
+                obj_desc->mem_ptr[i].host_ptr = obj_desc->mem_ptr[i].host_ptr + offset[i];
+                obj_desc->mem_ptr[i].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[i].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+            }
+        }
+        else
+        {
+            obj_desc->mem_ptr[0U].host_ptr = obj_desc->mem_ptr[0].host_ptr + offset[local_img->channel_plane];
+            obj_desc->mem_ptr[0U].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[0U].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+        }
+        for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; ++i)
+        {
+            if (NULL != subimages[i])
+            {
+                /* this should not happen as the max depth for subimages is fixed */
+                if (TIVX_SUBIMAGE_STACK_SIZE < stack_pointer)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Too many sub-images, may need to increase the value of TIVX_SUBIMAGE_STACK_SIZE\n");
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
+                    break;
+                }
+                else
+                {
+                    stack[stack_pointer] = subimages[i];
+                    stack_pointer++;
+                }
+            }
+        }
+    }
+    return status;
+}
+
+static vx_status swapImage(const vx_image input, const vx_image output)
+{
+    /* Swap image handles. Need to recalculate for all the sub-images
+        NOTE that this will need updating if uniform images are
+        implemented in a more efficient manner!
+        lock only one reference as this is locking the global vx context
+    */
+    vx_status status = ownReferenceLock(&output->base);
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        tivx_obj_desc_image_t *ip_obj_desc = (tivx_obj_desc_image_t *)input->base.obj_desc;
+        tivx_obj_desc_image_t *op_obj_desc = (tivx_obj_desc_image_t *)output->base.obj_desc;
+        vx_uint32 i;
+        vx_uint64 offsets[TIVX_IMAGE_MAX_PLANES];
+        vx_imagepatch_addressing_t addrs;
+        tivx_reference_callback_f destructor;
+        uint32_t creation_type;
+        uint32_t mem_size;
+        for (i = 0; i < TIVX_IMAGE_MAX_PLANES; ++i)
+        {
+            offsets[i] = op_obj_desc->mem_ptr[i].host_ptr - ip_obj_desc->mem_ptr[i].host_ptr;
+            tivx_obj_desc_memcpy(&addrs, &op_obj_desc->imagepatch_addr[i], (uint32_t)sizeof(addrs));
+            tivx_obj_desc_memcpy(&op_obj_desc->imagepatch_addr[i], &ip_obj_desc->imagepatch_addr[i], (uint32_t)sizeof(op_obj_desc->imagepatch_addr[i]));
+            tivx_obj_desc_memcpy(&ip_obj_desc->imagepatch_addr[i], &addrs, (uint32_t)sizeof(ip_obj_desc->imagepatch_addr[i]));
+            /* swap destructors even if they are generic (identical).
+               we do it for completeness and to ensure that in case 
+               there is later a need of unique destructors */
+            destructor = output->base.destructor_callback;
+            output->base.destructor_callback = input->base.destructor_callback;
+            input->base.destructor_callback = destructor;
+            creation_type = op_obj_desc->create_type;
+            op_obj_desc->create_type = ip_obj_desc->create_type;
+            ip_obj_desc->create_type = creation_type;
+            mem_size = op_obj_desc->mem_size[i];
+            op_obj_desc->mem_size[i] = ip_obj_desc->mem_size[i];
+            ip_obj_desc->mem_size[i] = mem_size;
+        }
+        status = adjustMemoryPointer(input, offsets);
+        /* One's complement to swap the addresses offsets between input and output images */
+        for (i = 0; i < TIVX_IMAGE_MAX_PLANES; ++i)
+        {
+            offsets[i] = ~(offsets[i] - 1UL);
+        }
+        status = adjustMemoryPointer(output, offsets);
+        (void)ownReferenceUnlock(&output->base);     
+    }
+    return (status);
+}
+
+static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
+{
+    vx_status res;
+    vx_image input_img  = NULL;
+    vx_image output_img = NULL;
+ 
+    input_img  = vxCastRefAsImage(input, &res);
+    output_img = vxCastRefAsImage(output, &res);
+    /* do not check the res, as we know they are images at that point*/
+    switch (kernel_enum)
+    {
+        case (vx_enum)VX_KERNEL_COPY:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                res =  isImageCopyable(input_img, output_img);
+            }
+            else
+            {
+                res = copyImage(input_img, output_img);
+            }
+            break;
+        case (vx_enum)VX_KERNEL_SWAP:
+        case (vx_enum)VX_KERNEL_MOVE:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                res =  isImageSwapable(input_img, output_img);
+            }
+            else
+            {
+                res = swapImage(input_img, output_img);
+            }
+            break;
+        default:
+            res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+            break;
+    }
+    return (res);
+}
 static void ownInitPlane(vx_image image,
                  vx_uint32 idx,
                  vx_uint32 size_of_ch,
@@ -482,6 +804,7 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
     obj_desc->valid_roi.start_y = 0;
     obj_desc->valid_roi.end_x = width;
     obj_desc->valid_roi.end_y = height;
+    obj_desc->parent_ID = (vx_uint16)TIVX_OBJ_DESC_INVALID;
 
     switch (format)
     {
@@ -588,7 +911,7 @@ static vx_status ownIsFreeSubimageAvailable(vx_image image)
     return status;
 }
 
-static vx_image ownCreateImageInt(vx_context context,
+vx_image ownCreateImageInt(vx_context context,
                                      vx_uint32 width,
                                      vx_uint32 height,
                                      vx_df_image color,
@@ -613,7 +936,7 @@ static vx_image ownCreateImageInt(vx_context context,
                     image->base.destructor_callback = &ownDestructImage;
                     image->base.mem_alloc_callback = &ownAllocImageBuffer;
                     image->base.release_callback = &ownReleaseReferenceBufferGeneric;
-
+                    image->base.kernel_callback = &imageKernelCallback;
                     obj_desc = (tivx_obj_desc_image_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_IMAGE, vxCastRefFromImage(image));
 
                     if(obj_desc == NULL)
@@ -2112,7 +2435,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
 
             /* Move Map Pointer as per Valid ROI */
             map_addr = vxFormatImagePatchAddress2d(map_addr, rect->start_x,
-                rect->start_y, image_addr);
+                                                   rect->start_y, image_addr);
 
             for(map_idx=0; map_idx<TIVX_IMAGE_MAX_MAPS; map_idx++)
             {
@@ -2173,10 +2496,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
 
     if(status == (vx_status)VX_SUCCESS)
     {
-        if ((image->base.is_virtual == (vx_bool)vx_true_e)
-            &&
-            (image->base.is_accessible == (vx_bool)vx_false_e)
-            )
+        if ((image->base.is_virtual == (vx_bool)vx_true_e) &&
+            (image->base.is_accessible == (vx_bool)vx_false_e))
         {
             /* cannot be accessed by app */
             VX_PRINT(VX_ZONE_ERROR, "image cannot be accessed by application\n");
@@ -2533,4 +2854,207 @@ vx_status ownInitVirtualImage(
     }
 
     return (status);
+}
+
+
+#define NO_ALIGN 1
+#define BYTE_ALIGN 8
+
+#define DEFAULT_MULTIPLIER 1
+#define U1_MULTIPLIER 8
+
+VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const vx_rectangle_t *rect, vx_int8 fixed_point_position)
+{
+    tivx_obj_desc_image_t *p_obj_desc;
+    tivx_obj_desc_tensor_t *c_obj_desc;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_tensor tensor = NULL;
+    vx_uint32 i;
+
+    /* parent image must be a valid image */
+    if (((vx_bool)vx_false_e == ownIsValidSpecificReference(&image->base, (vx_enum)VX_TYPE_IMAGE)) || (NULL == image->base.obj_desc))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        return tensor;
+    }
+    else
+    {
+        /* image's width and height must be defined */
+        p_obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+        if (0 == p_obj_desc->width || 0 == p_obj_desc->height)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Invalid image dimension\n");
+            status = (vx_status)VX_ERROR_INVALID_DIMENSION;
+        }
+        else
+        {
+            /* check image format and prepare format-appropriate modifiers */
+            uint32_t tensor_type = VX_TYPE_UINT8;
+            uint16_t rect_align = NO_ALIGN;
+            uint16_t x_multiplier = DEFAULT_MULTIPLIER;
+            uint16_t y_multiplier = DEFAULT_MULTIPLIER;
+
+            switch (p_obj_desc->format)
+            {
+            case VX_DF_IMAGE_U8:
+                tensor_type = VX_TYPE_UINT8;
+                break;
+            case VX_DF_IMAGE_U16:
+                tensor_type = VX_TYPE_UINT16;
+                break;
+            case VX_DF_IMAGE_S16:
+                tensor_type = VX_TYPE_INT16;
+                break;
+            case VX_DF_IMAGE_U32:
+                tensor_type = VX_TYPE_UINT32;
+                break;
+            case VX_DF_IMAGE_S32:
+                tensor_type = VX_TYPE_INT32;
+                break;
+            case VX_DF_IMAGE_RGB:
+                tensor_type = VX_TYPE_UINT32;
+                break;
+            case VX_DF_IMAGE_RGBX:
+                tensor_type = VX_TYPE_UINT32;
+                break;
+            case VX_DF_IMAGE_UYVY:
+                tensor_type = VX_TYPE_UINT16;
+                break;
+            case VX_DF_IMAGE_YUYV:
+                tensor_type = VX_TYPE_UINT16;
+                break;
+            case TIVX_DF_IMAGE_RGB565:
+                tensor_type = VX_TYPE_UINT16;
+                break;
+            case TIVX_DF_IMAGE_BGRX:
+                tensor_type = VX_TYPE_UINT32;
+                break;
+            case TIVX_DF_IMAGE_P12:
+                tensor_type = VX_TYPE_UINT16;
+                break;
+            case VX_DF_IMAGE_VIRT:
+            case VX_DF_IMAGE_NV12:
+            case VX_DF_IMAGE_NV21:
+            case VX_DF_IMAGE_IYUV:
+            case VX_DF_IMAGE_YUV4:
+            case TIVX_DF_IMAGE_NV12_P12:
+                /* Investigate whether these 5 are valid and if so, what tensor data format they need */
+            default:
+                VX_PRINT(VX_ZONE_ERROR, "Invalid image format\n");
+                status = VX_ERROR_INVALID_FORMAT;
+                break;
+            }
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                vx_rectangle_t roi;
+
+                /* a NULL rect pointer indicates that the ROI is the whole image */
+                if (NULL == rect)
+                {
+                    roi.start_x = 0;
+                    roi.start_y = 0;
+                    roi.end_x = p_obj_desc->width;
+                    roi.end_y = p_obj_desc->height;
+                }
+                else
+                {
+                    roi.start_x = rect->start_x;
+                    roi.start_y = rect->start_y;
+                    roi.end_x = rect->end_x;
+                    roi.end_y = rect->end_y;
+                }
+                /* check alignment */
+                if (0 != roi.start_x % rect_align)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid rectangle alignment\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                /* rectangle sanity check */
+                else if (roi.start_x > roi.end_x || roi.start_y > roi.end_y)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid rectangle\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                /* check ROI fits in the image */
+                else if (roi.end_x > p_obj_desc->width || roi.end_y > p_obj_desc->height)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid rectangle\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                else
+                {
+                    /* In case the parent image hasn't been allocated yet */
+                    status = ownAllocImageBuffer(&image->base);
+                    if ((vx_status)VX_SUCCESS == status)
+                    {
+                        /* create tensor with the context of the parent image and correct dimensions and data type */
+                        vx_size dimensions[2];
+                        dimensions[0] = (roi.end_x - roi.start_x + x_multiplier - 1) / x_multiplier;
+                        dimensions[1] = (roi.end_y - roi.start_y + y_multiplier - 1) / y_multiplier;
+                        tensor = vxCreateTensor(image->base.context, 2, dimensions, tensor_type, fixed_point_position);
+
+                        /* register the image as the tensor's parent */
+                        tensor->base.scope = &image->base;
+                        tensor->parent = (vx_tensor)image;
+                        ((tivx_obj_desc_tensor_t *)tensor->base.obj_desc)->parent_ID = image->base.obj_desc->obj_desc_id;
+                        tensor->base.is_virtual = image->base.is_virtual;
+                        tensor->channel_plane = image->channel_plane;
+                        /* add the child as a subtensor of the parent */
+                        for (i = 0; TIVX_IMAGE_MAX_SUBTENSORS > i; i++)
+                        {
+                            if (NULL == image->subtensors[i])
+                            {
+                                image->subtensors[i] = tensor;
+                                ownLogSetResourceUsedValue("TIVX_IMAGE_MAX_SUBTENSORS", (uint16_t)i + 1U);
+                                break;
+                            }
+                        }
+                        if (TIVX_IMAGE_MAX_SUBTENSORS == i)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "No available subtensor slots\n");
+                            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_IMAGE_MAX_SUBTENSORS in include/TI/tivx_config.h\n");
+                            status = (vx_status)VX_ERROR_NO_RESOURCES;
+                        }
+
+                        /* child is useless without the parent's data, so add an internal reference */
+                        ownIncrementReference(&tensor->parent->base, VX_INTERNAL);
+
+                        /* stride[1] must match that of the image, not be calculated from the dimensions of the ROI */
+                        c_obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
+                        c_obj_desc->create_type = (vx_uint32)TIVX_TENSOR_FROM_ROI; //TODO import create type
+                        c_obj_desc->stride[1] = p_obj_desc->imagepatch_addr[0].stride_y;
+
+                        /* calculate tensor host_ptr */
+                        c_obj_desc->mem_ptr.host_ptr = (uint64_t)((uintptr_t)p_obj_desc->mem_ptr[0].host_ptr + (roi.start_x * c_obj_desc->stride[0]) + (roi.start_y * c_obj_desc->stride[1]));
+
+                        /* calculate shared_ptr */
+                        c_obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(c_obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+
+                        /* use parent supplementary data ID */
+                        if (TIVX_OBJ_DESC_INVALID != image->base.obj_desc->supp_data_ID)
+                        {
+                            tensor->base.obj_desc->supp_data_ID = image->base.obj_desc->supp_data_ID; 
+                            tensor->base.supplementary_data = image->base.supplementary_data;
+                            VX_PRINT(VX_ZONE_INFO, "Found parent supplementary data ID %u, setting to child%s", tensor->base.obj_desc->supp_data_ID, "\n");
+                        }
+                        else
+                        {
+                            VX_PRINT(VX_ZONE_INFO, "Parent has no supplementary data ID%s", "\n");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if ((vx_status)VX_SUCCESS != status)
+    {
+        if (tensor)
+        {
+            vxReleaseTensor(&tensor);
+        }
+        tensor = (vx_tensor)ownGetErrorObject((vx_context)image->base.context, status);
+    }
+    return tensor;
 }

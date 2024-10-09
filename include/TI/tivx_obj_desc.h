@@ -133,6 +133,15 @@ extern "C" {
  */
 #define TIVX_NODE_FLAG_IS_SUPERNODE  (0x00000010u)
 
+/*! \brief flag set when kernel is called to indicate that this is an input parameter */
+#define TIVX_REF_FLAG_IS_INPUT (0x00000020u)
+
+/*! \brief flag set when kernel is called to indicate that we're in the kernel function  */
+#define TIVX_REF_FLAG_IS_IN_KERNEL (0x00000040u)
+
+/*! \brief flag set when a ref is associated with a verified graph  */
+#define TIVX_REF_FLAG_IS_IN_GRAPH (0x00000080u)
+
 /*! \brief State of a node object descriptor to indicate it is IDLE
  *
  * \ingroup group_tivx_obj_desc
@@ -268,6 +277,28 @@ typedef enum _tivx_image_create_type_e
 } tivx_image_create_type_e;
 
 /*!
+ * \brief Method by which tensor is created
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef enum _tivx_tensor_create_type_e
+{
+    /*! \brief Create using vxCreateTensor() */
+    TIVX_TENSOR_NORMAL,
+    /*! \brief Create using vxCreateTensorFromView() */
+    TIVX_TENSOR_FROM_VIEW,
+    /*! \brief Create using vxCreateVirtualTensor() */
+    TIVX_TENSOR_VIRTUAL,
+    /*! \brief Create using vxCreateTensorFromHandle() */
+    TIVX_TENSOR_FROM_HANDLE,
+    /*! \brief Create using vxCreateTensorFromROI() */
+    TIVX_TENSOR_FROM_ROI,
+    /*! \brief Create using vxCreateTensorFromChannel() */
+    TIVX_TENSOR_FROM_CHANNEL
+
+} tivx_tensor_create_type_e;
+
+/*!
  * \brief Remap point in remap table
  *
  * \ingroup group_tivx_obj_desc
@@ -321,8 +352,14 @@ typedef struct _tivx_obj_desc_t {
     /*! \brief holds the CPU ID of the OpenVX host for this object descriptor */
     volatile uint32_t host_cpu_id;
 
+    /*! \brief ID of supplementary data object descriptor in shared memory */
+    volatile uint16_t supp_data_ID;
+  
+    /*! \brief holds the count of the number of times this reference has been enqueued and not dequeued */
+    volatile uint16_t num_enqueues;
+
     /*! \brief reserved to make 64b aligned */
-    volatile uint32_t rsv0;
+    volatile uint16_t rsv0;
 
     /*! \brief holds the index of the IPC port on OpenVX host for this object descriptor for each remote CPU
      *
@@ -331,7 +368,6 @@ typedef struct _tivx_obj_desc_t {
      *         TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU MUST be <= TIVX_CPU_ID_MAX
      * */
     volatile uint16_t host_port_id[TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU];
-
 
 } tivx_obj_desc_t;
 
@@ -514,8 +550,10 @@ typedef struct _tivx_obj_desc_image
     volatile uint32_t color_range;
     /*! \brief image plane buffer size */
     volatile uint32_t mem_size[TIVX_IMAGE_MAX_PLANES];
+    /*! \brief object descriptor ID of parent (if any) */
+    volatile uint16_t parent_ID;
     /*! \brief reserved for 64b alignment */
-    volatile uint32_t rsv[1];
+    volatile uint16_t rsv[1];
     /*! \brief the value to use to fill for a uniform image.
      *
      * bit 0.. 7 - Component 0 - R or Y or U8.
@@ -862,6 +900,8 @@ typedef struct _tivx_obj_desc_tensor
     volatile uint32_t number_of_dimensions;
     /*! \brief Data type of tensor */
     volatile uint32_t data_type;
+    /*! \brief method by which tensor was created, see \ref tivx_tensor_create_type_e */
+    volatile uint32_t create_type;
     /*! \brief Fixed point precision of the tensor */
     volatile uint32_t fixed_point_position;
     /*! \brief each element of the tensor can be divided by this scaling value in order to obtain its real value */
@@ -886,6 +926,22 @@ typedef struct _tivx_obj_desc_tensor
     volatile uint32_t stride[TIVX_CONTEXT_MAX_TENSOR_DIMS];
     /*! \brief Buffer size */
     volatile uint32_t mem_size;
+    /*! \brief out channel pitch */
+    volatile uint32_t outChannelPitchAligned;
+    /*! \brief out padding channels */
+    volatile uint32_t outPadCh;
+    /*! \brief out padding left */
+    volatile uint32_t outPadL;
+    /*! \brief out padding top */
+    volatile uint32_t outPadT;
+    /*! \brief out padding right */
+    volatile uint32_t outPadR;
+    /*! \brief out padding bottom */
+    volatile uint32_t outPadB;
+    /*! \brief object descriptor ID of parent (if any) */
+    volatile uint16_t parent_ID;
+    /*! \brief alignment */
+    volatile uint16_t align[1];
 } tivx_obj_desc_tensor_t;
 
 /*!

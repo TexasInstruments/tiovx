@@ -70,6 +70,8 @@ static tivx_obj_desc_graph_t *ownGraphGetObjDesc(vx_graph graph, uint32_t pipeli
 static vx_status ownGraphPipelineValidateRefsList(
                      const vx_graph_parameter_queue_params_t graph_parameters_queue_param);
 
+static vx_status ownDecrementEnqueueCount(vx_reference ref); // part of RBOVX-98
+
 static vx_status ownGraphPipelineValidateRefsList(
     const vx_graph_parameter_queue_params_t graph_parameters_queue_param)
 {
@@ -163,6 +165,26 @@ static vx_status ownGraphPipelineValidateRefsList(
     }
 
     return status;
+}
+
+static vx_status ownDecrementEnqueueCount(vx_reference ref)
+{
+    ref->obj_desc->flags &= ~TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED;
+    if (ref->obj_desc->num_enqueues > 0U)
+    {
+        ref->obj_desc->num_enqueues --;
+        return VX_SUCCESS;
+    }
+    else if (NULL == ref->delay)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Reference enqueue count underflow!, ref=%p, type=%d, name=%s \n", ref, ref->type, ref->name);
+        return VX_FAILURE;
+    }
+    else
+    {
+        /* for a delay, ignore the count if it was already zero, this is the case for pipelining */
+        return VX_SUCCESS;
+    }
 }
 
 VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
@@ -290,39 +312,162 @@ vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
         vx_uint32 ref_id;
         vx_uint32 num_enqueue = 0;
 
-        for(ref_id=0; ref_id<num_refs; ref_id++)
+        for(ref_id=0; ref_id < num_refs && (vx_status)VX_SUCCESS == status; ref_id++)
         {
-            status = ownGraphParameterCheckValidEnqueueRef(graph, graph_parameter_index, refs[ref_id]);
-            if(status!=(vx_status)VX_SUCCESS)
+            vx_reference ref = refs[ref_id];
+            status = VX_FAILURE;
+            if (NULL != ref)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "Unable to enqueue ref due to invalid ref\n");
-            }
-            if(status==(vx_status)VX_SUCCESS)
-            {
-                status = ownDataRefQueueEnqueueReadyRef(data_ref_q, refs[ref_id]);
-                if(status!=(vx_status)VX_SUCCESS)
+                const tivx_obj_desc_node_t *nobj = graph->parameters[graph_parameter_index].node->obj_desc[0];
+                vx_bool is_input = tivxFlagIsBitSet(nobj->is_prm_input, ((uint32_t)1U<<graph->parameters[graph_parameter_index].index));
+                vx_bool is_replicated = tivxFlagIsBitSet(nobj->is_prm_replicated, ((uint32_t)1U<<graph->parameters[graph_parameter_index].index));
+                vx_uint32 num_replicas = ((vx_bool)vx_true_e == is_replicated) ? nobj->num_of_replicas : 0;
+                    /* Reference is valid if all these conditions are true:
+                    - the reference is on the list of valid references for this parameter
+                    - the parameter is an input and the reference isn't queued on an output or bidirectional somewhere
+                    - the parameter is an output or bidirectional and the reference isn't queued anywhere else
+                    We keep track of the number of times a reference is queued using ref->obj_desc->num_enqueues,
+                    and set TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED when a reference is enqueued on an output or bidirectional.
+
+                    Notice that for replicated parameters we have to check *all* the references in case part of an object array or
+                    pyramid has been queued elsewhere; and then we have to increment the counter and set the flag for *all*
+                    references in case part of the object may be queued elsewhere. Thus for an object array where the first element
+                    is used for a replicated parameter, all elements *and* the the object array itself must be marked.
+                */
+                uint32_t buf_id;
+                for(buf_id=0; buf_id < graph->parameters[graph_parameter_index].num_buf; buf_id++)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "Unable to enqueue ref\n");
-                }
-                else
-                {
-                    num_enqueue++;
+                    if (ref == graph->parameters[graph_parameter_index].refs_list[buf_id])
+                    {
+                        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+                        tivx_obj_desc_t *objd = ref->obj_desc;
+                        vx_reference const * ref_list = NULL;
+                        vx_bool can_be_queued = vx_true_e;
+                        if ((vx_bool)is_replicated == vx_true_e)
+                        {
+                            objd = ref->scope->obj_desc;
+                            if ((vx_enum)VX_TYPE_OBJECT_ARRAY == ref->scope->type)
+                            {
+                                ref_list = ((vx_object_array)ref->scope)->ref; // mfl7si add safecast
+                            }
+                            else if ((vx_enum)VX_TYPE_PYRAMID == ref->scope->type)
+                            {
+                                ref_list = (vx_reference *)(uintptr_t)((vx_pyramid)ref->scope)->img; // mfl7si add safecast
+                            }
+                            else
+                            {
+                                /* Should not happen, but if it does, complain! */
+                                can_be_queued = vx_false_e;
+                                VX_PRINT(VX_ZONE_ERROR, "Found a scope (%d) that was not object array or pyramid!\n", ref->scope->type);
+                            }
+                        }
+                        if ((tivxFlagIsBitSet(objd->flags, TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED) == (vx_bool)vx_true_e) ||
+                            ( ((vx_bool)vx_false_e == is_input) && (objd->num_enqueues > 0)))
+                        {
+                            can_be_queued = vx_false_e;
+                        }
+                        else if (NULL != ref_list)
+                        {
+                            vx_uint32 i;
+                            for (i = 0; i < num_replicas; ++i)
+                            {
+                                tivx_obj_desc_t const * odi = ref_list[i]->obj_desc;
+                                if (NULL == odi)
+                                {
+                                    VX_PRINT(VX_ZONE_ERROR, "Could not get object descriptor from list!\n");
+                                    can_be_queued = vx_false_e;
+                                }
+                                else if ((tivxFlagIsBitSet(odi->flags, TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED) == (vx_bool)vx_true_e) ||
+                                    ( ((vx_bool)vx_false_e == is_input) && odi->num_enqueues > 0U))
+                                {
+                                    can_be_queued = vx_false_e;
+                                    break;
+                                } else { /* do nothing */ }
+                            }
+                        } else { /* do nothing */ }
+                        if ((vx_bool)vx_false_e == can_be_queued)
+                        {
+                            ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+                            VX_PRINT(VX_ZONE_ERROR, "ref %p can't be queued. obj_desc_id=%d, param=%d(%s), #enqueues=%d\n",
+                                                    ref, ref->obj_desc->obj_desc_id, graph_parameter_index, is_input? "input":"output", objd->num_enqueues);
+                        }
+                        else
+                        {
+                            tivx_obj_desc_queue_blocked_nodes_t blocked_nodes;
+
+                            /* get queue object descriptor */
+                            uint16_t queue_obj_desc_id = data_ref_q->ready_q_obj_desc_id;
+                            /* get reference object descriptor */
+                            uint16_t ref_obj_desc_id = ref->obj_desc->obj_desc_id;
+
+                            status = ownObjDescQueueEnqueue(queue_obj_desc_id, ref_obj_desc_id);
+                            if(status==(vx_status)VX_SUCCESS)
+                            {
+                                blocked_nodes.num_nodes = 0;
+                                /* if any node is blocked on ref enqueued to this queue, then get the list of blocked nodes */
+                                (void)ownObjDescQueueExtractBlockedNodes(queue_obj_desc_id, &blocked_nodes);
+                                /* if this parameter is on a replicated node, we need to increment the queue counter
+                                   and set the enqueued flag for all elements of the corresponding container */
+                                /* Increment the queue counter */
+                                objd->num_enqueues ++;
+                                if ((vx_bool)vx_false_e == is_input)
+                                {
+                                    /* not an input, it's output or bidirectional so set the exclusive use flag */
+                                    objd->flags |= TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED;
+                                }
+                                if (NULL != ref_list)
+                                {
+                                    vx_uint32 i;
+                                    for (i = 0; i < num_replicas; ++i)
+                                    {
+                                        tivx_obj_desc_t *odi = ref_list[i]->obj_desc;
+                                        /* Increment the queue counter */
+                                        odi->num_enqueues ++;
+                                        if ((vx_bool)vx_false_e == is_input)
+                                        {
+                                            /* not an input, it's output or bidirectional so set the exclusive use flag */
+                                            odi->flags |= TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED;
+                                        }
+                                    }
+                                }
+                                num_enqueue++;
+                            }
+
+                            ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+
+                            VX_PRINT(VX_ZONE_INFO, "Q (queue=%d, ref=%d)\n", queue_obj_desc_id, ref_obj_desc_id);
+                            
+                            if(status==(vx_status)VX_SUCCESS)
+                            {
+                                uint32_t node_id;
+                                /* re-trigger blocked nodes */
+                                for(node_id=0; node_id<blocked_nodes.num_nodes; node_id++)
+                                {
+                                    VX_PRINT(VX_ZONE_INFO,"Re-triggering (node=%d)\n", blocked_nodes.node_id[node_id]);
+                                    ownTargetTriggerNode(blocked_nodes.node_id[node_id]);
+                                }
+                            }
+                            else
+                            {
+                                VX_PRINT(VX_ZONE_ERROR, "Unable to enqueue ref\n");
+                            }
+                        }
+                        break;
+                    }
                 }
             }
-            if(status!=(vx_status)VX_SUCCESS)
+            else
             {
-                break;
+                VX_PRINT(VX_ZONE_ERROR, "Unable to enqueue a reference because it is NULL\n");
             }
         }
 
-        if(num_enqueue>0U)
+        if((vx_status)VX_SUCCESS == status && num_enqueue > 0U)
         {
             /* Note: keeping compatibility with deprecated API */
             if((flags & TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP) != 0U)
             {
-                /* if enqueing buffers for pipeup then dont schedule graph,
+                /* if enqueueing buffers for pipeup then dont schedule graph,
                  * just enqueue the buffers
                  */
                 graph->parameters[graph_parameter_index].node->obj_desc[0]->pipeup_buf_idx--;
@@ -370,6 +515,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
 {
     tivx_data_ref_queue data_ref_q = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32 l_num_refs = 0;
 
     /* get data ref queue associated with a graph parameter
      * if this graph parameter is not enabled in queuing mode,
@@ -384,88 +530,123 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
     }
     else
     {
+        tivx_obj_desc_node_t const * nobj = graph->parameters[graph_parameter_index].node->obj_desc[0];
+        vx_bool is_replicated = tivxFlagIsBitSet(nobj->is_prm_replicated, ((uint32_t)1U<<graph->parameters[graph_parameter_index].index));
+        vx_uint32 num_replicas = is_replicated ? nobj->num_of_replicas : 0;
         vx_uint32 ref_id;
-
-
-        for(ref_id=0; ref_id<max_refs; ref_id++)
+        vx_bool exit_loop = vx_false_e;
+        for(ref_id = 0; ref_id < max_refs; ref_id++)
         {
             vx_reference ref;
-            vx_bool exit_loop = (vx_bool)vx_false_e;
-
             /* wait until a reference is dequeued */
             do
             {
                 ref = NULL;
-                status = ownDataRefQueueDequeueDoneRef(data_ref_q, &ref);
-                if((status == (vx_status)VX_SUCCESS) && (ref != NULL))
+                uint16_t queue_obj_desc_id, ref_obj_desc_id;
+                /* get queue object descriptor */
+                queue_obj_desc_id = data_ref_q->done_q_obj_desc_id;
+                ownPlatformSystemLock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+                status = ownObjDescQueueDequeue(queue_obj_desc_id, &ref_obj_desc_id);
+                if(((vx_status)VX_SUCCESS == status) &&
+                    ((vx_enum)TIVX_OBJ_DESC_INVALID != ref_obj_desc_id))
                 {
-                    /* reference is dequeued break from do - while loop with success */
-                    exit_loop = (vx_bool)vx_true_e;
-                }
-                else
-                {
-                    /* wait for "ref available for dequeue" event */
-                    status = ownDataRefQueueWaitDoneRef(data_ref_q,
-                            graph->timeout_val);
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM006 */
-                    if(status!=(vx_status)VX_SUCCESS)
+                    /* Decrement the queue counter, make reference accessible again */
+                    ref = ownReferenceGetHandleFromObjDescId(ref_obj_desc_id);
+                    if ((vx_bool)vx_true_e == is_replicated)
                     {
-                        /* some error in waiting for event, break loop with error */
-                        exit_loop = (vx_bool)vx_true_e;
+                        vx_uint32 i;
+                        vx_reference const * ref_list = NULL;
+                        /* We may get here with either the reference of the container,
+                           or the reference of the first element of the container.
+                           Notice that because we can't have object arrays of object
+                           arrays, we can distinguish with the following test.
+                           Note we only call ownDecrementEnqueueCount when we know
+                           we have a valid container, otherwise we might be calling it
+                           on a context or graph.
+                           For a valid dequeued reference on a replicated node, we decrement
+                           the counts on the container and all the references in it. */
+                        if (ref->type == graph->parameters[graph_parameter_index].type)
+                        {
+                            ref = ref->scope;
+                        }
+                        if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
+                        {
+                            ref_list = ((vx_object_array)(ref))->ref; // mfl7si safecast
+                            status = ownDecrementEnqueueCount(ref);
+                        }
+                        else if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+                        {
+                            ref_list = (vx_reference *)(uintptr_t)((vx_pyramid)(ref))->img; // mfl7si safecast
+                            status = ownDecrementEnqueueCount(ref);
+                        }
+                        else 
+                        {
+                            /* do nothing */
+                        }
+                        if (NULL != ref_list)
+                        {
+                            ref = ref_list[0];
+                            for (i = 0; i < num_replicas &&
+                                 (vx_status)VX_SUCCESS == status; ++i)
+                            {
+                                status = ownDecrementEnqueueCount(ref_list[i]);
+                            }
+                        }
+                        else
+                        {
+                            /* There is no other container, so this suggests we have the wrong type
+                            of parameter, or that the container didn't have ref_list initialised */
+                            status = VX_FAILURE;
+                        }
+                    }
+                    else
+                    {
+                        /* Node not replicated */
+                        status = ownDecrementEnqueueCount(ref);
+                    }
+                    ownPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+                    VX_PRINT(VX_ZONE_INFO,"DQ (queue=%d, ref=%d, num enqueues left = %d)\n", queue_obj_desc_id, ref_obj_desc_id, ref->obj_desc->num_enqueues);
+                    exit_loop = vx_true_e;
+                    ++l_num_refs;
+                    if((vx_status)VX_SUCCESS == status)
+                    {
+                        /* If the ref type matches the graph parameter type, return graph parameter */
+                        if (ref->type == graph->parameters[graph_parameter_index].type)
+                        {
+                            refs[ref_id] = ref;
+                        }
+                        /* If the ref type doesn't match graph parameter type, throw an error */
+                        else
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,
+                                "Returned reference does not match the expected reference at graph parameter %d\n", graph_parameter_index);
+                            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                        }
                     }
 #endif
                 }
-            } while(exit_loop == (vx_bool)vx_false_e);
-            if(status==(vx_status)VX_SUCCESS)
-            {
-                /* If the ref type matches the graph parameter type, return graph parameter */
-                if (ref->type == graph->parameters[graph_parameter_index].type)
+                else if (0 == l_num_refs)
                 {
-                    refs[ref_id] = ref;
-                }
-                /* If the ref type is an object array that didn't match the graph parameter type, return ref[0] of obj array */
-                /* Note: this assumes it is replicated.  In the future, this assumption could be removed */
-                else if(ref->type==(vx_enum)VX_TYPE_OBJECT_ARRAY)
-                {
-                    /* status set to NULL due to preceding type check */
-                    vx_object_array obj_arr = vxCastRefAsObjectArray(ref, NULL);
-
-                    refs[ref_id] = obj_arr->ref[0];
-                }
-                /* If the ref type is a pyramid that didn't match the graph parameter type, return img[0] of pyramid */
-                /* Note: this assumes it is replicated.  In the future, this assumption could be removed */
-                else if(ref->type==(vx_enum)VX_TYPE_PYRAMID)
-                {
-                    /* status set to NULL due to preceding type check */
-                    vx_pyramid pyr = vxCastRefAsPyramid(ref, NULL);
-
-                    refs[ref_id] = vxCastRefFromImage(pyr->img[0]);
-                }
-                /* If the ref type is an array element that didn't match the graph parameter type, return parent of element */
-                else if((vx_bool)vx_true_e == ref->is_array_element)
-                {
-                    refs[ref_id] = ref->scope;
+                    ownPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+                    VX_PRINT(VX_ZONE_INFO,"DQ (queue=%d) .. NO BUFFER\n", queue_obj_desc_id);
+                    /* wait for "ref available for dequeue" event */
+                    status =  ownDataRefQueueWaitDoneRef(data_ref_q->wait_done_ref_available_event, graph->timeout_val);
+                    if((vx_status)VX_SUCCESS != status)
+                    {
+                        /* some error in waiting for event, break loop with error */
+                        exit_loop = vx_true_e;
+                    }
                 }
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM007 */
                 else
                 {
-                    /* do nothing */
+                    ownPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+                    status = VX_SUCCESS;
+                    exit_loop = vx_true_e;
                 }
-#endif
-
-                /* If the ref type doesn't match graph parameter type, throw an error */
-                if (refs[ref_id]->type != graph->parameters[graph_parameter_index].type)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "Returned reference does not match the expected reference at graph parameter %d\n", graph_parameter_index);
-                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                }
-            }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM008 */
-            else
+            } while((vx_bool)exit_loop == vx_false_e);
+            if ((vx_status)VX_SUCCESS != status)
             {
                 /* some error in dequeue, dont try to dequeue further,
                  * break from loop with error */
@@ -473,7 +654,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
             }
 #endif
         }
-        *num_refs = ref_id;
+        *num_refs = l_num_refs;
     }
     return status;
 }
@@ -501,26 +682,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterCheckDoneRef(vx_graph graph,
     {
         *num_refs = 0;
         status = ownDataRefQueueGetDoneQueueCount(data_ref_q, num_refs);
-    }
-    return status;
-}
-
-vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_parameter_index, vx_reference ref)
-{
-    vx_status status = (vx_status)VX_FAILURE;
-
-    if((graph != NULL) && (graph_parameter_index < graph->num_params) && (ref != NULL))
-    {
-        uint32_t buf_id;
-
-        for(buf_id=0; buf_id<graph->parameters[graph_parameter_index].num_buf; buf_id++)
-        {
-            if(ref==graph->parameters[graph_parameter_index].refs_list[buf_id])
-            {
-                status = (vx_status)VX_SUCCESS;
-                break;
-            }
-        }
     }
     return status;
 }
@@ -569,7 +730,10 @@ vx_status ownGraphCreateQueues(vx_graph graph)
     vx_status status;
 
     status = tivxQueueCreate(&graph->free_q, TIVX_GRAPH_MAX_PIPELINE_DEPTH, graph->free_q_mem, 0);
-
+    if (VX_SUCCESS == status)
+    {
+        status = ownEventQueueCreate(&graph->graph_event_queue);
+    }
     return status;
 }
 
@@ -582,6 +746,8 @@ vx_status ownGraphDeleteQueues(vx_graph graph)
     {
         VX_PRINT(VX_ZONE_ERROR, "Failed to delete a queue\n");
     }
+    tivxQueueDelete(&graph->graph_event_queue.free_queue);
+    tivxQueueDelete(&graph->graph_event_queue.ready_queue);
     return status;
 }
 

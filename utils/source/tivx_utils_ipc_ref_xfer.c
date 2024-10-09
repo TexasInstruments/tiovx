@@ -65,6 +65,99 @@
 
 #include <tivx_utils_ipc_ref_xfer.h>
 
+vx_status rbvx_utils_export_ref_for_ipc_xfer_objarray(const vx_reference ref,
+                                                      vx_uint32 *numMessages,
+                                                      tivx_utils_ref_ipc_msg_t *ipcMsgHandle,
+                                                      tivx_utils_ref_ipc_msg_t  ipcMsgArray[])
+{
+    vx_status vxStatus = VX_SUCCESS;
+    tivx_utils_ref_desc_t *refDesc  = NULL;
+    vx_object_array objarr;
+    tivx_obj_desc_object_array_t *obj_desc;
+    vx_enum itemType;
+    uint32_t numItems = 0;
+    uint32_t i;
+
+    /* Validate the arguments. */
+    if (ref == NULL || numMessages == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'ref' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+    else if (ipcMsgHandle == NULL || ipcMsgArray == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "One of ipcMsg* pointers is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+
+    if (vxStatus == (vx_status)VX_SUCCESS)
+    {
+        refDesc = &ipcMsgHandle->refDesc;
+
+        /* Validate object type and get metadata */
+        if(ref->type == VX_TYPE_OBJECT_ARRAY)
+        {
+            objarr = (vx_object_array) ref;
+            obj_desc = (tivx_obj_desc_object_array_t *) objarr->base.obj_desc;
+            itemType = obj_desc->item_type;
+            numItems = obj_desc->num_items;
+            VX_PRINT(VX_ZONE_INFO, "Exporting object array of type %d\n", itemType);
+
+            for(i = 0; i < numItems; i++)
+            {
+                VX_PRINT(VX_ZONE_INFO, "Item number - %d\n", i);
+                vx_reference itemRef = NULL;
+                itemRef = objarr->ref[i];
+                if (itemRef == NULL)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Cannot get current reference, aborting.\n");
+                    vxStatus = (vx_status)VX_FAILURE;
+                    break;
+                }
+
+                /* allocate memory for data reference, independent of graph state */
+                vxStatus = ownReferenceAllocMem(itemRef);
+                if (vxStatus != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Memory allocation for data reference failed\n");
+                    break;
+                }
+
+                vxStatus = tivx_utils_export_ref_for_ipc_xfer(itemRef, &ipcMsgArray[i]);
+                if (vxStatus != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Cannot export one of the images, aborting\n");
+                    break;
+                }
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Not an object array\n");
+            vxStatus = (vx_status)VX_FAILURE;
+        }
+    }
+
+    /* Object array itself does not have exportable planes ...*/
+
+    /* Export the object array metadata */
+    if (vxStatus == (vx_status) VX_SUCCESS)
+    {
+        tivx_utils_meta_format_t   *meta;
+        meta       = &refDesc->meta;
+
+        meta->type = ref->type;
+        meta->object_array.num_items = numItems;
+        meta->object_array.item_type = itemType;
+
+        ipcMsgHandle->numFd = 0;
+        *numMessages = numItems;
+        VX_PRINT(VX_ZONE_INFO, "rbvx_utils_export_ref_for_ipc_xfer_objarray() successfull.\n");
+    }
+
+    return vxStatus;
+}
+
 vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
                                              tivx_utils_ref_ipc_msg_t  *ipcMsg)
 {
@@ -251,6 +344,84 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
             }
 
             ipcMsg->fd[i] = fd64;
+        }
+    }
+
+    return vxStatus;
+}
+
+vx_status rbvx_utils_import_ref_from_ipc_xfer_objarray(vx_context                context,
+                                                       tivx_utils_ref_ipc_msg_t *ipcMsgHandle,
+                                                       tivx_utils_ref_ipc_msg_t  ipcMsgArray[],
+                                                       vx_reference             *ref)
+{
+    tivx_utils_meta_format_t const *meta;
+    tivx_utils_ref_desc_t          *refDesc;
+    vx_reference                    objArrayRefs[TIVX_OBJECT_ARRAY_MAX_ITEMS];
+    uint32_t                        numItems;
+    uint32_t                        i;
+    vx_status                       vxStatus = VX_SUCCESS;
+
+    refDesc = (tivx_utils_ref_desc_t *)&ipcMsgHandle->refDesc;
+
+    /* Validate the arguments. */
+    if (context == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'context' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+    else if (ref == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'ref' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+    else if ((ipcMsgHandle == NULL) || (ipcMsgArray == NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "One of the IPC message pointers is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+
+    /* Check if we have been provided a valid reference to work with. */
+    if ((vxStatus == (vx_status)VX_SUCCESS) && (*ref == NULL))
+    {
+        meta = &refDesc->meta;
+
+        if (meta->type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
+        {
+            /* Import all the items from the array, gather the references */
+            numItems = meta->object_array.num_items;
+
+            for(i = 0; i < numItems; i++)
+            {
+                vx_reference itemRef = NULL;
+                vxStatus = tivx_utils_import_ref_from_ipc_xfer(context, &ipcMsgArray[i], &itemRef);
+                if (vxStatus != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Could not import the item reference\n");
+                    break;
+                }
+
+                VX_PRINT(VX_ZONE_INFO, "Importing item reference %d\n", i);
+                objArrayRefs[i] = itemRef;
+            }
+
+            /* Create new object array with imported references in place of exemplars */
+            if (vxStatus == VX_SUCCESS)
+            {
+                vx_object_array obj;
+
+                obj = rbvx_createObjectArrayImportedRefs(context, (vx_reference *) &objArrayRefs, numItems);
+
+                if (obj == NULL)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "rbvx_create_objarray_imported() failed.\n");
+                    vxStatus = VX_FAILURE;
+                }
+                else
+                {
+                    *ref = (vx_reference)obj;
+                }
+            }
         }
     }
 

@@ -186,6 +186,18 @@ typedef struct
         vx_size size;
     } user_data_object;
 
+    /*!< \brief structure containing information about object array
+                used when type is set to VX_TYPE_OBJECT_ARRAY
+                NOTE: assume the underlying type is vx_image */
+    struct {
+        /*!< \brief The number of image objects */
+        vx_uint32 num_items;
+        /*!< \brief VX type of the object, must be image */
+        vx_enum item_type;
+        /*!< \brief Array of descriptor ids of the images */
+        volatile uint16_t obj_desc_id[TIVX_OBJECT_ARRAY_MAX_ITEMS];
+    } object_array;
+
     /*!< \brief structure containing information about raw image
                 used when type is set to TIVX_TYPE_RAW_IMAGE */
     tivx_raw_image_create_params_t raw_image;
@@ -244,6 +256,24 @@ typedef struct
 } tivx_utils_ref_ipc_msg_t;
 
 /**
+ * \brief Export the object array, so that the information
+ *        could be transferred over Linux/QNX IPC mechanism to a remote process.
+ *        This is just a wrapper for tivx_utils_export_ref_for_ipc_xfer.
+ *
+ * \param [in] ref  A valid openVX reference for an object array of images
+ * \param [out] numMessages   Number of IPC messages after export
+ * \param [out] ipcMsgHandle  Exported object array metadata
+ * \param [out] ipcMsgArray   Array of pointers to exported item data
+ *
+ * \return VX_SUCCESS on success, else failure
+ *
+ */
+vx_status rbvx_utils_export_ref_for_ipc_xfer_objarray(const vx_reference ref,
+                                                      vx_uint32 *numMessages,
+                                                      tivx_utils_ref_ipc_msg_t *ipcMsgHandle,
+                                                      tivx_utils_ref_ipc_msg_t ipcMsgArray[]);
+
+/**
  * \brief Export the internal handle information of a valid reference as a
  *        buffer descriptor along with meta information so that the information
  *        could be transferred over Linux/QNX IPC mechanism to a remote process.
@@ -267,6 +297,27 @@ typedef struct
  */
 vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
                                              tivx_utils_ref_ipc_msg_t  *ipcMsg);
+
+/**
+ * \brief Import the external handle information of a valid reference as a
+ *        buffer descriptor along with meta information exchanged via Linux/
+ *        QNX IPC mechanism. 
+ *
+ * \param [in] context  A valid openVX context
+ * \param [in] ipcMsgHandle  Exported object array information
+ * \param [in] ipcMsgArray   Array of exported image information
+ * \param [in,out] ref  A valid openVX reference to import. If *ref is NULL,
+ *                 then a new object will be allocated with the imported
+ *                 handles and returned. If *ref is not NULL then the object
+ *                 will be used to import the handles.
+ *
+ * \return VX_SUCCESS on success, else failure
+ *
+ */
+vx_status rbvx_utils_import_ref_from_ipc_xfer_objarray(vx_context                context,
+                                                       tivx_utils_ref_ipc_msg_t *ipcMsgHandle,
+                                                       tivx_utils_ref_ipc_msg_t  ipcMsgArray[],
+                                                       vx_reference             *ref);
 
 /**
  * \brief Import the external handle information of a valid reference as a
@@ -317,4 +368,5 @@ vx_bool tivx_utils_compare_refs_from_ipc_xfer(tivx_utils_ref_ipc_msg_t *ipcMsg1,
 #endif
 
 #endif /* _TIVX_UTILS_IPC_REF_XFER_H_ */
+
 

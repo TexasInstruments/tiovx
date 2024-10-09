@@ -747,7 +747,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
 
  * org.khronos.openvx.non_linear_filter
 
- * \param [in] context The reference to the implementation context.
+ * org.khronos.openvx.copy
+
+ * org.khronos.openvx.swap
+
+ * org.khronos.openvx.move
+
+* \param [in] context The reference to the implementation context.
  * \param [in] name The string of the name of the kernel to get.
  * \return A kernel reference or zero if an error occurred. Any possible errors 
  * preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
@@ -2356,6 +2362,23 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array array, vx_map_id m
 VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(vx_context context, vx_reference exemplar, vx_size count);
 
 /*!
+ * \brief Creates a reference to an ObjectArray of count objects.
+ *
+ * Create an object array of images using the provided references. Should serve as a proper duplicate
+ * of the object array in the exporting process.
+ * 
+ * \param [in] context      The reference to the overall Context.
+ * \param [in] exemplar     Array of image object references imported from difference process.
+ * \param [in] count        Number of Objects to create in the ObjectArray.
+ *
+ * \returns An ObjectArray reference <tt>\ref vx_object_array</tt>. Any possible errors preventing a 
+ * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
+ *
+ * \ingroup group_object_array
+ */
+VX_API_ENTRY vx_object_array VX_API_CALL rbvx_createObjectArrayImportedRefs(vx_context context, vx_reference references[], vx_size count);
+
+/*!
  * \brief Creates an opaque reference to a virtual ObjectArray with no direct user access.
  *
  * This function creates an ObjectArray of count objects with similar behavior as 
@@ -2417,6 +2440,334 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseObjectArray(vx_object_array *arr);
  */
 VX_API_ENTRY vx_status VX_API_CALL vxQueryObjectArray(vx_object_array arr, vx_enum attribute, void *ptr, vx_size size);
 
+/*==============================================================================
+ TENSOR
+ =============================================================================*/
+/*! \brief Creates an opaque reference to a tensor data buffer.
+ * \details Not guaranteed to exist until the <tt>\ref vx_graph</tt> containing it has been verified.
+ * Since functions using tensors, need to understand the context of each dimension. We describe a layout of the dimensions in each function using tensors.
+ * That layout is not mandatory. It is done specifically to explain the functions and not to mandate layout. Different implementation may have different layout.
+ * Therefore the layout description is logical and not physical. It refers to the order of dimensions given in this function.
+ * \param [in] context The reference to the implementation context.
+ * \param [in] number_of_dims The number of dimensions.
+ * \param [in] dims Dimensions sizes in elements.
+ * \param [in] data_type The <tt>\ref vx_type_e</tt> that represents the data type of the tensor data elements. 
+ * \param [in] fixed_point_position Specifies the fixed point position when the input element type is integer. if 0, calculations are performed in integer math.
+ * \return A tensor data reference. Any possible errors preventing a
+ * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
+ * \ingroup group_object_tensor
+ */
+VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(vx_context context, vx_size number_of_dims, const vx_size * dims, vx_enum data_type,vx_int8 fixed_point_position);
+
+/*! \brief Creates a child tensor from a view patch from a parent tensor object.
+ * \details The child's data buffer is a pointer into the parent's, and therefore must not be freed. Creating the child establishes an internal reference to the 
+ * parent, which is eliminated when the child is released, preventing the parent from being released first.
+ * \param [in] parent The tensor whose data will be made available to the new child tensor.
+ * \param [in] number_of_dimensions The number of dimensions.
+ * \param [in] start Array of patch start points in each dimension.
+ * \param [in] end Array of patch end points in each dimension.
+ * \return A tensor data reference. Any possible errors preventing a
+ * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
+ * \ingroup group_object_tensor
+ */
+VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromView(vx_tensor parent, vx_size number_of_dimensions, const vx_size *start, const vx_size *end);
+
+/*! \brief Creates a reference to an tensor object that was externally allocated
+ * \param [in] context The reference to the implementation context.
+ * \param [in] number_of_dims The number of dimensions.
+ * \param [in] dims Dimensions sizes in elements.
+ * \param [in] data_type The <tt>\ref vx_type_e</tt> that represents the data type of the tensor data elements. 
+ * \param [in] fixed_point_position Specifies the fixed point position when the input element type is integer. if 0, calculations are performed in integer math.
+ * \param [in] stride An array of stride in all dimensions in bytes. The stride value at index 0 must be size of the tensor data element type
+ * \param [in] ptr The platform-defined reference to tensor
+ * \param [in] memory_type vx_memory_type_e. When giving [VX_MEMORY_TYPE_HOST] the ptr is assumed to be HOST accessible pointer to memory
+ * \return A tensor data reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
+ * \ingroup group_object_tensor
+ */
+VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromHandle(vx_context context, vx_size number_of_dims, const vx_size *dims,
+                                                                vx_enum data_type, vx_int8 fixed_point_position,
+                                                                        const vx_size *stride, void * ptr, vx_enum memory_type);
+
+/*! \brief Creates an image object array from a view patch from a parent tensor object.
+ * \param [in] parent The tensor whose data will be made available to the image object array.
+ * \param [in] rect The rectanle of image data to be referred to by the image object array.
+ * \param [in] rect The rectangle of tensor data to be referred to by the images in the object array. Where the data unit size of the tensor format and the image
+ *                  format are not identical, co-ordinates of the rectangle refer to the source data in the tensor.
+ * \param [in] array_size The number of images in the resulting array.
+ * \param [in] jump Jump over <jump> images, i.e. jump=1 => use every image, jump=2 => use every other image (alternate images), etc.
+ * \param [in] image_format The requested image format, which should match the data type of the tensor.
+ * \param [in] image_format The requested image format, which must be compatible with the data type of the tensor.
+ */
+VX_API_ENTRY vx_object_array VX_API_CALL vxCreateImageObjectArrayFromTensor(vx_tensor tensor, const vx_rectangle_t *rect,
+                                                                                vx_size array_size, vx_size jump,
+                                                                                vx_df_image image_format);
+                                                                                
+/*! \brief Swaps the tensor handle of an tensor previously created from handle
+* \param [in] tensor The reference to an tensor created from handle.
+* \param [in] new_ptr new tensor handle. If the new_ptr is NULL, the previous tensor storage memory is
+*                     reclaimed by the caller, while no new handle is provided .
+* \param [out] prev_ptr pointer to return the previous tensor handle. If prev_ptr is NULL, the previous handle
+*                       is not returned.
+* \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS - No errors; any other value indicates failure.
+ * \retval VX_ERROR_INVALID_REFERENCE - The tensor reference is not actually an tensor reference.
+ * \retval VX_ERROR_INVALID_PARAMETERS - The tensor was not created from handle or the content of new_ptr is not valid
+ * \retval VX_FAILURE - The tensor was already being accessed
+ * \ingroup group_object_tensor
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxSwapTensorHandle(vx_tensor tensor, void* new_ptr, void** prev_ptr);
+
+/*! \brief Allows the application to copy a view patch from/into an tensor object .
+ * \param [in] tensor The reference to the tensor object that is the source or the
+ * destination of the copy.
+ * \param [in] number_of_dims Number of patch dimension. Error return if 0 or greater than number of
+ * tensor dimensions. If smaller than number of tensor dimensions, the lower dimensions are assumed.
+ * \param [in] view_start Array of patch start points in each dimension
+ * \param [in] view_end Array of patch end points in each dimension
+ * \param [in] user_stride Array of user memory strides in each dimension
+ * \param [in] user_ptr The address of the memory location where to store the requested data
+ * if the copy was requested in read mode, or from where to get the data to store into the tensor
+ * object if the copy was requested in write mode. The accessible memory must be large enough
+ * to contain the specified patch with the specified layout:\n
+ * accessible memory in bytes >= (end[last_dimension] - start[last_dimension]) * stride[last_dimension].\n
+ * The layout of the user memory must follow a row major order.
+ * \param [in] usage This declares the effect of the copy with regard to the tensor object
+ * using the <tt>\ref vx_accessor_e</tt> enumeration. Only <tt>\ref VX_READ_ONLY</tt> and <tt>\ref VX_WRITE_ONLY</tt> are supported:
+ * \arg <tt>\ref VX_READ_ONLY</tt> means that data is copied from the tensor object into the application memory
+ * \arg <tt>\ref VX_WRITE_ONLY</tt> means that data is copied into the tensor object from the application memory
+ * \param [in] user_memory_type A <tt>\ref vx_memory_type_e</tt> enumeration that specifies
+ * the memory type of the memory referenced by the user_addr.
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_ERROR_OPTIMIZED_AWAY This is a reference to a virtual tensor that cannot be
+ * accessed by the application.
+ * \retval VX_ERROR_INVALID_REFERENCE The tensor reference is not actually an tensor reference.
+ * \retval VX_ERROR_INVALID_PARAMETERS An other parameter is incorrect.
+ * \ingroup group_object_tensor
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor, vx_size number_of_dims, const vx_size * view_start, const vx_size * view_end,
+        const vx_size * user_stride, void * user_ptr, vx_enum usage, vx_enum user_memory_type);
+
+/*! \brief Retrieves various attributes of a tensor data.
+ * \param [in] tensor The reference to the tensor data to query.
+ * \param [in] attribute The attribute to query. Use a <tt>\ref vx_tensor_attribute_e</tt>.
+ * \param [out] ptr The location at which to store the resulting value.
+ * \param [in] size The size of the container to which \a ptr points.
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors.
+ * \retval VX_ERROR_INVALID_REFERENCE If data is not a <tt>\ref vx_tensor</tt>.
+ * \retval VX_ERROR_INVALID_PARAMETERS If any of the other parameters are incorrect.
+ * \ingroup group_object_tensor
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(vx_tensor tensor, vx_enum attribute, void *ptr, vx_size size);
+
+/*! \brief Sets attributes of a tensor object.
+ * \param [in] tensor The tensor object to set.
+ * \param [in] attribute The attribute to modify. Use a <tt>\ref vx_tensor_attribute_e</tt> enumeration.
+ * \param [in] ptr The pointer to the value to which to set the attribute.
+ * \param [in] size The size of the data pointed to by \a ptr.
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors.
+ * \retval VX_ERROR_INVALID_REFERENCE If data is not a <tt>\ref vx_tensor</tt>.
+ * \retval VX_ERROR_INVALID_PARAMETERS If any of the other parameters are incorrect.
+ * \ingroup group_object_tensor
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
+    vx_tensor tensor, vx_enum attribute, const void *ptr, vx_size size);
+
+/*! \brief Releases a reference to a tensor data object.
+ * The object may not be garbage collected until its total reference count is zero.
+ * \param [in] tensor The pointer to the tensor data to release.
+ * \post After returning from this function the reference is zeroed.
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors; all other values indicate failure
+ * \retval * An error occurred. See <tt>\ref vx_status_e</tt>.
+ * \ingroup group_object_tensor
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxReleaseTensor(vx_tensor *tensor);
+
+
+/*! \brief Allows the application to get direct access to a patch of tensor object.
+ * \param [in] tensor The reference to the tensor object that is the source or the
+ * destination for direct access.
+ * \param [in] number_of_dims The number of dimensions. Must be same as tensor number_of_dims.
+ * \param [in] view_start Array of patch start points in each dimension. This is optional parameter and will be zero when NULL.
+ * \param [in] view_end Array of patch end points in each dimension. This is optional parameter and will be dims[] of tensor when NULL.
+ * \param [out] map_id The address of a vx_map_id variable where the function returns a map identifier.
+ * \arg (*map_id) must eventually be provided as the map_id parameter of a call to <tt>\ref tivxUnmapTensorPatch</tt>.
+ * \param [out] stride An array of stride in all dimensions in bytes. The stride value at index 0 must be size of the tensor data element type.
+ * \param [out] ptr The address of a pointer that the function sets to the
+ * address where the requested data can be accessed. The returned (*ptr) address
+ * is only valid between the call to the function and the corresponding call to
+ * <tt>\ref tivxUnmapTensorPatch</tt>.
+ * \param [in] usage This declares the access mode for the tensor patch, using
+ * the <tt>\ref vx_accessor_e</tt> enumeration.
+ * \arg VX_READ_ONLY: after the function call, the content of the memory location
+ * pointed by (*ptr) contains the tensor patch data. Writing into this memory location
+ * is forbidden and its behavior is undefined.
+ * \arg VX_READ_AND_WRITE : after the function call, the content of the memory
+ * location pointed by (*ptr) contains the tensor patch data; writing into this memory
+ * is allowed only for the location of items and will result in a modification of the
+ * affected items in the tensor object once the range is unmapped. Writing into
+ * a gap between items (when (*stride) > item size in bytes) is forbidden and its
+ * behavior is undefined.
+ * \arg VX_WRITE_ONLY: after the function call, the memory location pointed by (*ptr)
+ * contains undefined data; writing each item of the range is required prior to
+ * unmapping. Items not written by the application before unmap will become
+ * undefined after unmap, even if they were well defined before map. Like for
+ * VX_READ_AND_WRITE, writing into a gap between items is forbidden and its behavior
+ * is undefined.
+ * \param [in] mem_type A <tt>\ref vx_memory_type_e</tt> enumeration that
+ * specifies the type of the memory where the tensor patch is requested to be mapped.
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_ERROR_OPTIMIZED_AWAY This is a reference to a virtual tensor that cannot be accessed by the application.
+ * \retval VX_ERROR_INVALID_REFERENCE The tensor reference is not actually an tensor reference.
+ * \retval VX_ERROR_INVALID_PARAMETERS An other parameter is incorrect.
+ * \retval VX_ERROR_NO_MEMORY Internal memory allocation failed.
+ * \ingroup group_tensor
+ * \post <tt>\ref tivxUnmapTensorPatch </tt> with same (*map_id) value.
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
+    vx_tensor tensor,
+    vx_size number_of_dims,
+    const vx_size * view_start,
+    const vx_size * view_end,
+    vx_map_id * map_id,
+    vx_size * stride,
+    void ** ptr,
+    vx_enum usage,
+    vx_enum mem_type);
+
+
+/*! \brief Unmap and commit potential changes to a tensor object patch that were previously mapped.
+* Unmapping a tensor patch invalidates the memory location from which the patch could
+* be accessed by the application. Accessing this memory location after the unmap function
+* completes has an undefined behavior.
+* \param [in] tensor The reference to the tensor object to unmap.
+* \param [out] map_id The unique map identifier that was returned by <tt>\ref tivxMapTensorPatch</tt> .
+* \return A <tt>\ref vx_status_e</tt> enumeration.
+* \retval VX_ERROR_INVALID_REFERENCE The tensor reference is not actually a tensor reference.
+* \retval VX_ERROR_INVALID_PARAMETERS An other parameter is incorrect.
+* \ingroup group_object_tensor
+* \pre <tt>\ref tivxMapTensorPatch</tt> with same map_id value
+*/
+VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map_id map_id);
+
+/*! \brief Creates an opaque reference to a tensor data buffer with no direct
+ * user access. This function allows setting the tensor data dimensions or data format.
+ * \details Virtual data objects allow users to connect various nodes within a
+ * graph via data references without access to that data, but they also permit the
+ * implementation to take maximum advantage of possible optimizations. Use this
+ * API to create a data reference to link two or more nodes together when the
+ * intermediate data are not required to be accessed by outside entities. This API
+ * in particular allows the user to define the tensor data format of the data without
+ * requiring the exact dimensions. Virtual objects are scoped within the graph
+ * they are declared a part of, and can't be shared outside of this scope.
+ * Since functions using tensors, need to understand the context of each dimension. We describe a layout of the dimensions in each function.
+ * That layout is not mandated. It is done specifically to explain the functions and not to mandate layout. Different implementation may have different layout.
+ * Therfore the layout description is logical and not physical. It refers to the order of dimensions given in <tt>\ref vxCreateTensor</tt> and <tt>\ref vxCreateVirtualTensor</tt>.
+ * \param [in] graph The reference to the parent graph.
+ * \param [in] number_of_dims The number of dimensions.
+ * \param [in] dims Dimensions sizes in elements.
+ * \param [in] data_type The <tt>\ref vx_type_e</tt> that represents the data type of the tensor data elements.
+ * \param [in] fixed_point_position Specifies the fixed point position when the input element type is integer. If 0, calculations are performed in integer math.
+ * \return A tensor data reference.Any possible errors preventing a
+ * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
+ * \note Passing this reference to <tt>\ref vxCopyTensorPatch</tt> will return an error.
+ * \ingroup group_object_tensor
+ */
+VX_API_ENTRY vx_tensor VX_API_CALL vxCreateVirtualTensor(vx_graph graph, vx_size number_of_dims, const vx_size *dims, vx_enum data_type, vx_int8 fixed_point_position);
+
+/*! \brief Allows the application to get direct access to a patch of tensor object.
+ * \param [in] tensor The reference to the tensor object that is the source or the
+ * destination for direct access.
+ * \param [in] number_of_dims The number of dimensions. Must be same as tensor number_of_dims.
+ * \param [in] view_start Array of patch start points in each dimension. This is optional parameter and will be zero when NULL.
+ * \param [in] view_end Array of patch end points in each dimension. This is optional parameter and will be dims[] of tensor when NULL.
+ * \param [out] map_id The address of a vx_map_id variable where the function returns a map identifier.
+ * \arg (*map_id) must eventually be provided as the map_id parameter of a call to <tt>\ref vxUnmapTensorPatch</tt>.
+ * \param [out] stride An array of stride in all dimensions in bytes. The stride value at index 0 must be size of the tensor data element type.
+ * \param [out] ptr The address of a pointer that the function sets to the
+ * address where the requested data can be accessed. The returned (*ptr) address
+ * is only valid between the call to the function and the corresponding call to
+ * <tt>\ref vxUnmapTensorPatch</tt>.
+ * \param [in] usage This declares the access mode for the tensor patch, using
+ * the <tt>\ref vx_accessor_e</tt> enumeration.
+ * \arg VX_READ_ONLY: after the function call, the content of the memory location
+ * pointed by (*ptr) contains the tensor patch data. Writing into this memory location
+ * is forbidden and its behavior is undefined.
+ * \arg VX_READ_AND_WRITE : after the function call, the content of the memory
+ * location pointed by (*ptr) contains the tensor patch data; writing into this memory
+ * is allowed only for the location of items and will result in a modification of the
+ * affected items in the tensor object once the range is unmapped. Writing into
+ * a gap between items (when (*stride) > item size in bytes) is forbidden and its
+ * behavior is undefined.
+ * \arg VX_WRITE_ONLY: after the function call, the memory location pointed by (*ptr)
+ * contains undefined data; writing each item of the range is required prior to
+ * unmapping. Items not written by the application before unmap will become
+ * undefined after unmap, even if they were well defined before map. Like for
+ * VX_READ_AND_WRITE, writing into a gap between items is forbidden and its behavior
+ * is undefined.
+ * \param [in] mem_type A <tt>\ref vx_memory_type_e</tt> enumeration that
+ * specifies the type of the memory where the tensor patch is requested to be mapped.
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_ERROR_OPTIMIZED_AWAY This is a reference to a virtual tensor that cannot be accessed by the application.
+ * \retval VX_ERROR_INVALID_REFERENCE The tensor reference is not actually an tensor reference.
+ * \retval VX_ERROR_INVALID_PARAMETERS An other parameter is incorrect.
+ * \retval VX_ERROR_NO_MEMORY Internal memory allocation failed.
+ * \ingroup group_tensor
+ * \post <tt>\ref vxUnmapTensorPatch </tt> with same (*map_id) value.
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxMapTensorPatch(vx_tensor tensor, vx_size number_of_dims, const vx_size * view_start, const vx_size * view_end, vx_map_id * map_id, vx_size * stride, void ** ptr, vx_enum usage, vx_enum mem_type);
+
+/*! \brief Unmap and commit potential changes to a tensor object patch that was previously mapped.
+ * Unmapping a tensor patch invalidates the memory location from which the patch could
+ * be accessed by the application. Accessing this memory location after the unmap function
+ * completes has an undefined behavior.
+ * \param [in] tensor The reference to the tensor object to unmap.
+ * \param [in] map_id The unique map identifier that was returned when calling
+ * <tt>\ref vxMapTensorPatch</tt> .
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_ERROR_INVALID_REFERENCE The tensor reference is not actually an tensor reference.
+ * \retval VX_ERROR_INVALID_PARAMETERS An other parameter is incorrect.
+ * \ingroup group_tensor
+ * \pre <tt>\ref vxMapTensorPatch</tt> returning the same map_id value
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxUnmapTensorPatch(vx_tensor tensor, const vx_map_id map_id);
+
+/*!  \brief Creates tensor or virtual tensor from an image, given a rectangle.
+ *
+ * The original image may be virtual or non-virtual.
+ *
+ * \param [in] image                the reference to the parent image
+ * \param [in] rect                 the region of interest rectangle.
+ *                                  Must contain points within the parent image pixel space.
+ * \param [in] fixed_point_position Specifies the fixed point position. 
+ *                                  If 0, calculations are performed using integer arithmetic.
+ *
+ * The input image must be a non-virtual or virtual image with width, height and format all defined.
+ * The rectangle rect must be defined within the pixel space of the parent image, or the pointer can
+ * be NULL, in which case the entire image is assumed as the ROI.
+ * For VX_DF_IMAGE_U1-type images there are some restrictions for the rectangle that can be used to
+ * create a tensor using vxCreateTensorFromROI. Namely, the rectangle needs to have its left edge
+ * aligned to a byte boundary in the parent image, i.e., _start_x in the vx_rectangle_t must be a multiple
+ * of 8 (including 0). This is because images of type VX_DF_IMAGE_U1 must start on a byte boundary and
+ * a tensor created by vxCreateTensorFromROI points to data in the original image.
+ *
+ * \return Returns a reference to the tensor; any possible errors preventing a successful
+ *         creation may be checked using vxGetStatus().
+ * Possible causes of errors are:
+ *  -   Invalid input reference
+ *  -   Input reference is not to an image
+ *  -   Input image does not have its width, height or format specified
+ *  -   Input image does not contain the region described by rect or are not supported for the image format
+ *  -   Out of resources
+ * The new reference refers to data in the original image, so that updates to the tensor update the
+ * parent image, and updates to the parent image in the region of interest update the tensor.
+ * If the input image is virtual, the new reference returned is to a virtual tensor.
+ * If the input image is non-virtual, the new reference returned is to a non-virtual tensor.
+  */
+VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const vx_rectangle_t* rect, vx_int8 fixed_point_position);
+
 
 /*==============================================================================
  META FORMAT
@@ -2472,4 +2823,3 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(vx_meta_format m
 #endif
 
 #endif
-

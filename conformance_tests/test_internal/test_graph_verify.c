@@ -143,6 +143,47 @@ TEST(tivxInternalGraphVerify, negativeBoundaryTestVerifyGraph)
 
     /* Releasing graph */
     VX_CALL(vxReleaseGraph(&graph));
+
+    /* negative test for the graph parameters */
+    /*link twice the same graph parameter */
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output = vxCreateImage(context, width, height, VX_DF_IMAGE_UYVY), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(color_convert_node = vxColorConvertNode(graph, input, output), VX_TYPE_NODE);
+    vx_parameter p = vxGetParameterByIndex(color_convert_node, 0);
+    vx_parameter p1 = vxGetParameterByIndex(color_convert_node, 0);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS,vxAddParameterToGraph(graph, p));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS,vxAddParameterToGraph(graph, p1));
+    vxReleaseParameter(&p);
+    vxReleaseParameter(&p1);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxVerifyGraph(graph));
+    VX_CALL(vxReleaseImage(&input));
+    VX_CALL(vxReleaseImage(&output));
+    VX_CALL(vxReleaseNode(&color_convert_node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    /* Maxing out the number of references */
+    vx_uint16 numberOfnodes = TIVX_GRAPH_MAX_PARAM_REFS+2;
+    vx_node node[numberOfnodes];
+    vx_image imageOut[numberOfnodes];
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+    for (uint16_t i = 0; i < numberOfnodes; i++)
+    {
+        ASSERT_VX_OBJECT(imageOut[i] = vxCreateImage(context, width, height, VX_DF_IMAGE_UYVY), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(node[i]= vxColorConvertNode(graph, input, imageOut[i]), VX_TYPE_NODE);
+    }
+    p = vxGetParameterByIndex(node[0], 0);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS,vxAddParameterToGraph(graph, p));
+    vxReleaseParameter(&p);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxVerifyGraph(graph));
+    for (uint16_t i = 0; i < numberOfnodes; i++)
+    {
+        VX_CALL(vxReleaseImage(&imageOut[i]));
+        VX_CALL(vxReleaseNode(&node[i]));
+    }
+    VX_CALL(vxReleaseImage(&input));
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 /* Test to hit invalid scope portion of ownGraphInitVirtualNode and corresponding negative sections

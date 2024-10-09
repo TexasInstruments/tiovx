@@ -25,6 +25,7 @@ CSOURCES    := \
 	$(COMMON_FILES_REL_PATH)/tivx_host.c \
 	$(COMMON_FILES_REL_PATH)/tivx_target_config_pc.c \
 	$(COMMON_FILES_REL_PATH)/tivx_platform_common.c \
+	$(COMMON_FILES_REL_PATH)/vx_target_on_host_cpu.c \
     tivx_platform.c
 
 DEFS        += LDRA_UNTESTABLE_CODE

@@ -49,11 +49,27 @@ typedef enum _tivx_reftype_e {
  */
 typedef vx_status (*tivx_reference_callback_f)(vx_reference ref);
 
+/*! \brief Callback type used to register destructor
+ *    callbacks from object derived from references
+ * \ingroup group_vx_reference
+ */
+typedef vx_status (* VX_API_CALL tivx_reference_destructor_callback_f)(vx_reference ref);
+
 /*! \brief Callback type used to register release
  *    callbacks from object derived from references
  * \ingroup group_vx_reference
  */
 typedef vx_status (* VX_API_CALL tivx_reference_release_callback_f)(vx_reference *ref);
+
+/*! \brief Callback type used to validate or implement kernels for operations
+ * involving generic references, such as Copy, Select, Swap or Pass
+ * \param [in] kernel_enum        A <tt>\ vx_kernel_e </tt> which give the name of vision kernel
+ * \param [in] validate_only      A <tt>\ref vx_bool</tt> used to validate if the kernel operation is possible or not
+ * \param [in] input              The pointer to a \ref vx_references for the input and outputs used for the kernel operations
+ * \param [in] output             The pointer to a \ref vx_references for the output used for the kernel operations
+ * \ingroup group_vx_reference
+ */
+typedef vx_status (*vx_kernel_callback_f)(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
 
 /*! \brief The most basic type in the OpenVX system. Any type that inherits
  *  from tivx_reference_t must have a vx_reference_t as its first member
@@ -107,6 +123,11 @@ typedef struct _vx_reference {
      */
     tivx_reference_release_callback_f release_callback;
 
+    /* \brief Object specific function that is called for generic kernel operations
+     * such as Copy and Select
+    */
+    vx_kernel_callback_f kernel_callback;
+
     /*! \brief Lock to take for the reference */
     tivx_mutex lock;
 
@@ -136,6 +157,9 @@ typedef struct _vx_reference {
 
     /*! \brief object descriptor */
     tivx_obj_desc_t *obj_desc;
+
+    /*! \brief supplementary data */
+    vx_user_data_object supplementary_data;
 
 } tivx_reference_t;
 
@@ -196,6 +220,18 @@ vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype);
  */
 vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype);
 
+/*! \brief Returns the total reference count of the object.
+ * \param [in] ref The reference to print.
+ * \ingroup group_vx_reference
+ */
+vx_uint32 ownTotalReferenceCount(vx_reference ref);
+
+/*! \brief Print reference information
+ * \param [in] ref The reference.
+ * \ingroup group_vx_reference
+ */
+void ownPrintReference(vx_reference ref);
+
 /*! \brief This returns true if the type is within the definition of types in OpenVX.
  * \note VX_TYPE_INVALID is not valid for determining a type.
  * \param [in] ref_type The \ref vx_type_e value.
@@ -250,6 +286,13 @@ vx_size ownSizeOfEnumType(vx_enum item_type);
 void ownReferenceSetScope(vx_reference ref, vx_reference scope);
 
 
+/*! \brief Create reference from a exemplar object
+ * \ingroup group_vx_reference
+ */
+vx_reference ownCreateReferenceFromExemplar(
+    vx_context context, vx_reference exemplar);
+
+
 /*! \brief Return reference given a obj desc ID
  *         This API must only be called on the host
  * \ingroup group_vx_reference
@@ -280,6 +323,34 @@ vx_status ownAllocReferenceBufferGeneric(vx_reference ref);
  * \ingroup group_vx_reference
  */
 vx_status ownDestructReferenceGeneric(vx_reference ref);
+
+/*! \brief There are several reference types that are copied in the same way
+ *         This API generalizes this in order to enhance code reuse
+ *         This API must only be called on the host
+ * \ingroup group_vx_reference
+ */
+vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output);
+
+
+/*! \brief There are several reference types that are swaped in the same way
+ *         This API generalizes this in order to enhance code reuse
+ *         This API must only be called on the host
+ * \ingroup group_vx_reference
+ */
+vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output);
+/*! \brief Add an already allocated supplementary data reference to a ref
+*/
+vx_status ownInheritSupplementaryData(vx_reference ref, vx_reference parent);
+
+/*! \brief create a supplementary data ref and add it to ref */
+vx_status ownCreateSupplementaryData(vx_reference ref);
+
+/*! \brief Object specific function that is called for generic kernel operations
+ *         such as Copy, move, swap and Select
+ *         This API must only be called on the host
+ * \ingroup group_vx_reference
+ */
+vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
 
 #ifdef __cplusplus
 }

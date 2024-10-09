@@ -239,6 +239,16 @@ void ownPlatformPrintf(const char *format)
     printf(buf);
 }
 
+void ownPlatformWriteLogString(vx_uint32 zone, const char *string)
+{
+
+}
+
+int ownPlatformIsWriteLogStringEnsbled()
+{
+    return 0;
+}
+
 void ownPlatformActivate()
 {
 }

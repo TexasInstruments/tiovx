@@ -61,8 +61,6 @@
 */
 
 
-
-
 #include <vx_internal.h>
 
 
@@ -175,7 +173,10 @@ vx_reference tivxCreateReferenceFromExemplar(
         default:
             break;
     }
-
+    if (exemplar->supplementary_data)
+    {
+        vxSetSupplementaryUserDataObject(ref, exemplar->supplementary_data);
+    }
     return (ref);
 }
 
@@ -280,6 +281,17 @@ static vx_reference ownCreatePyramidFromExemplar(
             format);
     }
 
+    if ((vx_enum)VX_SUCCESS == vxGetStatus((vx_reference)pmd))
+    {
+        vx_uint32 i;
+        for (i = 0; (i < levels) && ((vx_enum)VX_SUCCESS == status); ++i)
+        {
+            if (exemplar->img[i]->base.supplementary_data)
+            {
+                status = vxSetSupplementaryUserDataObject(&pmd->img[i]->base, exemplar->img[i]->base.supplementary_data);
+            }
+        }
+    }
     return vxCastRefFromPyramid(pmd);
 }
 
@@ -519,7 +531,7 @@ static vx_reference ownCreateRawImageFromExemplar(
     tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_FORMAT, &params.format, sizeof(params.format)));
     tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &params.meta_height_before, sizeof(params.meta_height_before)));
     tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &params.meta_height_after, sizeof(params.meta_height_after)));
-
+    tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_ON_SEPARATE_CHANNEL, &params.meta_on_separate_channel, sizeof(params.meta_on_separate_channel)));
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM014 */
     if ((vx_status)VX_SUCCESS == status)
@@ -530,4 +542,3 @@ static vx_reference ownCreateRawImageFromExemplar(
 
     return (vx_reference)img;
 }
-

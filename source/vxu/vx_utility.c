@@ -30,6 +30,7 @@
 static vx_status setNodeTarget(vx_node node);
 static vx_status vx_isBorderModeSupported(vx_enum mode_to_check, const vx_enum supported_modes[], vx_size num_modes);
 static vx_status vx_useImmediateBorderMode(vx_context context, vx_node node, const vx_enum supported_modes[], vx_size num_modes);
+static vx_status ownCallKernelFunc(vx_reference input, vx_reference output, vx_enum kernel);
 
 static vx_status setNodeTarget(vx_node node)
 {
@@ -1305,4 +1306,55 @@ VX_API_ENTRY vx_status VX_API_CALL vxuRemap(vx_context context, vx_image input, 
         vxReleaseGraph(&graph);
     }
     return status;
+}
+
+static vx_status ownCallKernelFunc(vx_reference input, vx_reference output, vx_enum kernel)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    if ((vx_bool)vx_true_e == ownIsValidReference(input))
+    {
+        if (NULL != input->kernel_callback)
+        {
+            status = input->kernel_callback(kernel, (vx_bool)vx_true_e, input, output);
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                status = input->kernel_callback(kernel, (vx_bool)vx_false_e, input, output);
+            }
+            if (((vx_status)VX_SUCCESS == status) &&
+                (NULL != input->supplementary_data) &&
+                (NULL != output->supplementary_data) &&
+                (NULL != input->supplementary_data->base.kernel_callback))
+            {
+                vx_reference supp_params[2] = {&input->supplementary_data->base, &output->supplementary_data->base};
+                if ((vx_status)VX_SUCCESS == input->supplementary_data->base.kernel_callback(kernel, (vx_bool)vx_true_e, supp_params[0], supp_params[1]))
+                {
+                    status = input->supplementary_data->base.kernel_callback(kernel, (vx_bool)vx_false_e, supp_params[0], supp_params[1]);
+                }
+            }
+        }
+        else
+        {
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        }
+    }
+    else
+    {
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    }
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxuCopy(vx_context context, vx_reference input, vx_reference output)
+{
+    return ownCallKernelFunc(input, output, (vx_enum)VX_KERNEL_COPY);
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxuSwap(vx_context context, vx_reference first, vx_reference second)
+{
+    return ownCallKernelFunc(first, second, (vx_enum)VX_KERNEL_SWAP);
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxuMove(vx_context context, vx_reference first, vx_reference second)
+{
+    return ownCallKernelFunc(first, second, (vx_enum)VX_KERNEL_MOVE);
 }
