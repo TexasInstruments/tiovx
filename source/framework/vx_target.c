@@ -60,8 +60,6 @@
 *
 */
 
-
-
 #include <vx_internal.h>
 
 static tivx_target_t g_target_table[TIVX_TARGET_MAX_TARGETS_IN_CPU];
@@ -242,15 +240,12 @@ static vx_bool ownTargetNodeDescCanNodeExecute(
 
         if( ownObjDescIsValidType( (tivx_obj_desc_t*)prev_node_obj_desc, TIVX_OBJ_DESC_NODE) != 0) /* TIOVX-1930- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR006 */
         {
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM005 */
             if( tivxFlagIsBitSet(prev_node_obj_desc->flags,
                         TIVX_NODE_FLAG_IS_EXECUTED) == (vx_bool)vx_false_e)
             {
                 can_execute = (vx_bool)vx_false_e;
                 break;
             }
-#endif
         }
     }
 

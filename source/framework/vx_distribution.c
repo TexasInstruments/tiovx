@@ -18,8 +18,7 @@
 
 #include <vx_internal.h>
 
-VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(
-    vx_context context, vx_size num_bins, vx_int32 offset, vx_uint32 range)
+VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(vx_context context, vx_size num_bins, vx_int32 offset, vx_uint32 range)
 {
     vx_distribution dist = NULL;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
@@ -42,7 +41,7 @@ VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(
                 dist->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 dist->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+                dist->base.kernel_callback = &ownKernelCallbackGeneric;
                 obj_desc = (tivx_obj_desc_distribution_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_DISTRIBUTION, vxCastRefFromDistribution(dist));
                 if(obj_desc==NULL)
