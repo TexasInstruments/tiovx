@@ -24,6 +24,7 @@
 #include "VX/vxu.h"
 #include "TI/tivx.h"
 #include <TI/tivx_config.h>
+#include <TI/tivx_tensor.h>
 #include <VX/vx_khr_safe_casts.h>
 #include <VX/vx_khr_swap_move.h>
 

@@ -18,6 +18,7 @@
 #include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <TI/tivx_tensor.h>
 #include <TI/tivx_obj_desc.h>
 #include <string.h>
 

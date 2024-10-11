@@ -258,12 +258,12 @@ static vx_status VX_CALLBACK myUserTestKernelFunction(vx_node node, const vx_ref
     vx_size size = 4;
     vx_map_id map_id;
     void * ptr;
-    ERROR_EXPECT_STATUS_BAD(tivxSetUserDataObjectAttribute(input, TIVX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "Cannot set valid size of input supplementary data");
+    ERROR_EXPECT_STATUS_BAD(vxSetUserDataObjectAttribute(input, VX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "Cannot set valid size of input supplementary data");
     ERROR_EXPECT_STATUS_BAD(vxCopyUserDataObject(input, 0, sizeof(size), &size, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST), "Cannot copy to the supplementary data of input object");
     ERROR_EXPECT_STATUS_BAD(vxMapUserDataObject(input, 0, sizeof(size), &map_id, &ptr, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0), "Cannot map supplementary data of input for writing");
     ERROR_EXPECT_STATUS_BAD(vxSetSupplementaryUserDataObject(params[2], input), "Cannot create supplementary data in kernel function");
     vx_user_data_object output = vxGetSupplementaryUserDataObject(params[3], NULL, &status);
-    ERROR_CHECK_VX_SUCCESS(tivxSetUserDataObjectAttribute(output, TIVX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "Can set valid size of output supplementary data");
+    ERROR_CHECK_VX_SUCCESS(vxSetUserDataObjectAttribute(output, VX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "Can set valid size of output supplementary data");
     ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(output, 0, sizeof(size), &size, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST), "Can copy to the supplementary data of output object");
     ERROR_CHECK_VX_SUCCESS(vxMapUserDataObject(output, 0, sizeof(size), &map_id, &ptr, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0), "Can map supplementary data of output for writing");
     ERROR_CHECK_VX_SUCCESS(vxUnmapUserDataObject(output, map_id), "Successfully unmapped supplementary data of output");
@@ -1393,7 +1393,7 @@ TEST(supplementary_data, testReadOnlyObjects)
     vx_size size = sizeof(user_data_t);
     vx_map_id map_id;
     void *ptr;
-    ERROR_EXPECT_STATUS_BAD(tivxSetUserDataObjectAttribute(childSupp, TIVX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "Cannot set attribute of read-only supplementary data");
+    ERROR_EXPECT_STATUS_BAD(vxSetUserDataObjectAttribute(childSupp, VX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "Cannot set attribute of read-only supplementary data");
     ERROR_EXPECT_STATUS_BAD(vxMapUserDataObject(childSupp, 0, size, &map_id, &ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0), "Cannot map read-only supplementary data for writing");
     vx_image output1 = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
     vx_image output2 = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);

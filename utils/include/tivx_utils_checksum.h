@@ -70,6 +70,7 @@
 
 #include <VX/vx.h>
 #include <VX/vx_khr_user_data_object.h>
+#include <TI/tivx_tensor.h>
 
 #ifdef __cplusplus
 extern "C" {

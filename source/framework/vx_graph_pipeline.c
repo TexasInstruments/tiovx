@@ -630,7 +630,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                     ownPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
                     VX_PRINT(VX_ZONE_INFO,"DQ (queue=%d) .. NO BUFFER\n", queue_obj_desc_id);
                     /* wait for "ref available for dequeue" event */
-                    status =  ownDataRefQueueWaitDoneRef(data_ref_q->wait_done_ref_available_event, graph->timeout_val);
+                    status =  ownDataRefQueueWaitDoneRef(data_ref_q, graph->timeout_val);
                     if((vx_status)VX_SUCCESS != status)
                     {
                         /* some error in waiting for event, break loop with error */

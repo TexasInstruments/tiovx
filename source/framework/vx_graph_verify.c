@@ -2161,7 +2161,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     VX_PRINT(VX_ZONE_ERROR,"Graph Node kernel de-init failed\n");
                 }
             }
-            {
             if(status == (vx_status)VX_SUCCESS)
             {
                 /* Find out nodes and in nodes for each node in the graph

@@ -22,17 +22,12 @@
 #define TIVX_IMG_ALIGN(size)    (((size + (TIVX_IMG_ALIGN_BYTES-1U)) / TIVX_IMG_ALIGN_BYTES) * TIVX_IMG_ALIGN_BYTES)
 /* Max bound of iterating through sub-image for swapping; the size is directly proportional to the task stack usage */
 /* the stack can hold two time the max number of subimages */
-<<<<<<< HEAD
 #define TIVX_SUBIMAGE_STACK_SIZE (TIVX_IMAGE_MAX_SUBIMAGES * TIVX_IMAGE_MAX_SUBIMAGE_DEPTH)
-=======
-#define TIVX_SUBIMAGE_STACK_SIZE (TIVX_IMAGE_MAX_SUBIMAGES * TIVX_MAX_SUBIMAGE_DEPTH)
 static vx_status isImageCopyable(vx_image input, vx_image output);
 static vx_status isImageSwapable(vx_image input, vx_image output);
 static vx_status copyImage(vx_image input, vx_image output);
 static vx_status swapImage(vx_image input, vx_image output);
 static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
->>>>>>> origin/bosch-9-2-integration-branch
-
 static vx_bool ownIsSupportedFourcc(vx_df_image code);
 static vx_bool ownIsOdd(vx_uint32 a);
 static vx_bool ownIsValidDimensions(vx_uint32 width, vx_uint32 height, vx_df_image color);
@@ -234,20 +229,6 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
 #endif
     (void)ownIncrementReference(&parent->base, (vx_enum)VX_INTERNAL);
 
-}
-
-static uint16_t ownGetNumParentSubimages(const vx_image image)
-{
-    vx_image p = image;
-    uint16_t num_parents = 0;
-
-    while (p->parent != NULL)
-    {
-        num_parents++;
-        p = p->parent;
-    }
-
-    return num_parents;
 }
 
 static uint16_t ownGetNumParentSubimages(const vx_image image)

@@ -372,7 +372,6 @@ enum vx_type_e {
     VX_TYPE_ERROR           = 0x811,/*!< \brief An error object which has no type. */
     VX_TYPE_META_FORMAT     = 0x812,/*!< \brief A <tt>\ref vx_meta_format</tt>. */
     VX_TYPE_OBJECT_ARRAY    = 0x813,/*!< \brief A <tt>\ref vx_object_array</tt>. */
-    VX_TYPE_TENSOR          = 0x815,/*!< \brief A <tt>\ref vx_tensor</tt>. */
 
     /* \todo add new object types here */
 
@@ -811,9 +810,6 @@ enum vx_context_attribute_e {
      * Read-only. Use a <tt>\ref vx_size</tt> parameter.
      */
     VX_CONTEXT_NONLINEAR_MAX_DIMENSION = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_CONTEXT) + 0xd,
-    /*! \brief tensor Data maximal number of dimensions supported by the implementation.
-     */
-    VX_CONTEXT_MAX_TENSOR_DIMS = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_CONTEXT) + 0xE,
 };
 
 /*! \brief The kernel attributes list
@@ -1091,31 +1087,6 @@ enum vx_object_array_attribute_e {
 enum vx_meta_valid_rect_attribute_e {
     /*! \brief Valid rectangle callback during output parameter validation. Write-only. */
     VX_VALID_RECT_CALLBACK = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_META_FORMAT) + 0x1,
-};
-
-/*! \brief tensor Data attributes.
- * \ingroup group_object_tensor
- */
-enum vx_tensor_attribute_e
-{
-    /*! \brief Number of dimensions. */
-    VX_TENSOR_NUMBER_OF_DIMS = VX_ATTRIBUTE_BASE( VX_ID_KHRONOS, VX_TYPE_TENSOR ) + 0x0,
-    /*! \brief Dimension sizes. */
-    VX_TENSOR_DIMS        = VX_ATTRIBUTE_BASE( VX_ID_KHRONOS, VX_TYPE_TENSOR ) + 0x1,
-    /*! \brief tensor Data element data type. <tt>vx_type_e</tt> */
-    VX_TENSOR_DATA_TYPE   = VX_ATTRIBUTE_BASE( VX_ID_KHRONOS, VX_TYPE_TENSOR ) + 0x2,
-    /*! \brief fixed point position when the input element type is integer.
-     * Read-Write.
-     */
-    VX_TENSOR_FIXED_POINT_POSITION = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_TENSOR) + 0x3,
-    /*! \brief scaling divisor to be applied to each element when the input element type is integer.
-     * Read-Write.
-     */
-    TIVX_TENSOR_SCALING_DIVISOR = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_TENSOR) + 0x4,
-    /*! \brief fixed point position of the scaling divisor
-     * Read-Write.
-     */
-    TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_TENSOR) + 0x5
 };
 
 /*! \brief The channel enumerations for channel extractions.
