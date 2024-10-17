@@ -62,6 +62,7 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
     uint32_t num_kernel_info = 0, idx;
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM015 */
     if( ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Context is invalid\n");
@@ -237,6 +238,7 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
             status1 = ownObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM016 */
             if (status1 != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,
@@ -252,6 +254,7 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
             status1 = tivxEventDelete(&context->cmd_ack_event[i]);
 
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM017 */
             if (status1 != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,
@@ -269,7 +272,6 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
 
     status1 = tivxQueueDelete(&context->free_queue);
 
-#ifdef LDRA_UNTESTABLE_CODE
     if (status1 != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -280,16 +282,16 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
             status = status1;
         }
     }
-#endif
 
     status1 = tivxQueueDelete(&context->pend_queue);
 
-#ifdef LDRA_UNTESTABLE_CODE
     if (status1 != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "Context control command pend queue deletion failed\n");
 
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM019 */
         if (status == (vx_status)VX_SUCCESS)
         {
             status = status1;
@@ -627,6 +629,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
                         ownLogResourceFree("TIVX_CONTEXT_MAX_KERNELS", 1);
                     }
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM020 */
                     else
                     {
                         VX_PRINT(VX_ZONE_ERROR,"deallocate user kernel id failed\n");
@@ -778,6 +781,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                                             TIVX_EVENT_TIMEOUT_NO_WAIT);
 
     #ifdef LDRA_UNTESTABLE_CODE
+    /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM021 */
                         if (status1 != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR,
@@ -796,6 +800,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                                             TIVX_EVENT_TIMEOUT_NO_WAIT);
 
     #ifdef LDRA_UNTESTABLE_CODE
+    /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM022 */
                         if (status1 != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR,
@@ -916,6 +921,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                                             TIVX_EVENT_TIMEOUT_NO_WAIT);
 
     #ifdef LDRA_UNTESTABLE_CODE
+    /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM023 */
                         if (status1 != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR,
@@ -934,6 +940,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                                             TIVX_EVENT_TIMEOUT_NO_WAIT);
 
     #ifdef LDRA_UNTESTABLE_CODE
+    /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM024 */
                         if (status1 != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR,
@@ -1072,6 +1079,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                         (void)ownIncrementReference(&context->base, (vx_enum)VX_EXTERNAL);
                         ret = ownCreateConstErrors(context);
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM025 */
                         if ((vx_bool)vx_false_e==ret)
                         {
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -1326,7 +1334,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 }
 
                 /* By now, all external and internal references should be removed */
-    #ifdef LDRA_UNTESTABLE_CODE
+#ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM026 */
                 for (r = 0; r < dimof(context->reftable); r++)
                 {
                     if(context->reftable[r] != NULL)
@@ -1334,7 +1343,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                             VX_PRINT(VX_ZONE_ERROR,"Reference %d not removed\n", r);
                     }
                 }
-    #endif
+#endif
 
                 status1 = ownContextDeleteCmdObj(context);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -1679,6 +1688,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxDirective(vx_reference reference, vx_enum d
             context = reference->context;
         }
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM027 */
         if (ownIsValidContext(context) == (vx_bool)vx_false_e)
         {
             VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
