@@ -88,8 +88,8 @@ static vx_status moveOrSwapTensor(vx_reference input, vx_reference output)
         tivx_obj_desc_t *op_obj_desc = output->obj_desc;
         output->obj_desc = input->obj_desc;
         input->obj_desc  = op_obj_desc;
+        (void)ownReferenceUnlock(output);
     }
-    status = ownReferenceUnlock(output);
     return status;
 }
 
@@ -98,7 +98,7 @@ static vx_status moveOrSwapTensor(vx_reference input, vx_reference output)
  */
 static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
-    vx_status res;
+    vx_status res = (vx_status)VX_ERROR_NOT_SUPPORTED;
     
     switch (kernel_enum)
     {

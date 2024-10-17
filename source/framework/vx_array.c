@@ -99,7 +99,7 @@ static vx_status isArrayCopyable(vx_array input, vx_array output)
 /* Call back function that handles the copy, swap and move kernels */
 static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
-    vx_status res;
+    vx_status res = (vx_status)VX_ERROR_NOT_SUPPORTED;
 
     /* do not check the res, as we know they are arrays at that point*/
     switch (kernel_enum)

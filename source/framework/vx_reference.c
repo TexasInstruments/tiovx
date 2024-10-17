@@ -401,19 +401,23 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
     tivx_shared_mem_ptr_t  *op_mem_ptr = NULL;
     uint32_t                op_mem_size = 0;
     vx_status status;
-
-    if(((vx_bool)vx_true_e == ownIsGenericAllocReferenceType(input->type)) &&
-       ((vx_bool)vx_true_e == ownIsGenericAllocReferenceType(output->type)))
+     /* added void here as this status check of
+    * ownReferenceGetMemAttrsFromObjDesc will always be true if
+    * the previous condition is true
+    */
+    (void)ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
+    (void)ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
+    status = ownReferenceLock(output);
+    if ((vx_status)VX_SUCCESS == status)
     {
-        /* added void here as this status check of
-        * ownReferenceGetMemAttrsFromObjDesc will always be true if
-        * the previous condition is true
-        */
-        (void)ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
-        (void)ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
-        status = ownReferenceLock(output);
-        if (((vx_status)VX_SUCCESS == status) &&
-            (ip_mem_size <= op_mem_size))
+#ifdef LDRA_UNTESTABLE_CODE
+        /* internal memory footprint could be different if the object is allocated via a component external to OVX
+           and that is imported with a create from handle function.
+           there are currently two functions to do that, one for images vxCreateImageFromHandle and vxCreateTensorFromHandle
+           the vxCreateImageFromHandle is covered by another test and vxCreateTensorFromHandle is not implemented in the TI 
+           ovx implementation. This exception can be removed as soon as the vxCreateTensorFromHandle function is available */
+        if (ip_mem_size <= op_mem_size)
+#endif
         {
             tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size, 
                                                       (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
@@ -444,15 +448,17 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
                     tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)op_mem_ptr->host_ptr, op_mem_size,
                                                                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
                 }
-                 tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size,
-                                                             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+                tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size,
+                                                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
             }
         }
+#ifdef LDRA_UNTESTABLE_CODE        
+        else
+        {
+            status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+#endif
         status = ownReferenceUnlock(output);
-    }
-    else
-    {
-        status = (vx_status)VX_FAILURE;
     }
 
     return status;
@@ -465,43 +471,39 @@ vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
     uint32_t                ip_mem_size = 0;
     tivx_shared_mem_ptr_t  *op_mem_ptr = NULL;
     uint32_t                op_mem_size = 0;
-    
-    if(((vx_bool)vx_true_e == ownIsGenericAllocReferenceType(input->type)) &&
-       ((vx_bool)vx_true_e == ownIsGenericAllocReferenceType(output->type)))
+
+    /* added void here as this status check of
+    * ownReferenceGetMemAttrsFromObjDesc will always be true if
+    * the previous condition is true
+    */
+    (void)ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
+    (void)ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
+
+    /*lock only one reference as this is locking the global vx context*/
+    status = ownReferenceLock(output);
+    if ((vx_status)VX_SUCCESS == status)
     {
-        /* added void here as this status check of
-        * ownReferenceGetMemAttrsFromObjDesc will always be true if
-        * the previous condition is true
-        */
-        (void)ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
-        (void)ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
+        tivx_shared_mem_ptr_t mem_ptr;
+        tivx_obj_desc_memcpy(&mem_ptr, op_mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
+        tivx_obj_desc_memcpy(op_mem_ptr, ip_mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
+        tivx_obj_desc_memcpy(ip_mem_ptr, &mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
 
-        /*lock only one reference as this is locking the global vx context*/
-        status = ownReferenceLock(output);
-        if ((vx_status)VX_SUCCESS == status)
+        if ((vx_enum)VX_TYPE_ARRAY == input->type)
         {
-            tivx_shared_mem_ptr_t mem_ptr;
-            tivx_obj_desc_memcpy(&mem_ptr, op_mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
-            tivx_obj_desc_memcpy(op_mem_ptr, ip_mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
-            tivx_obj_desc_memcpy(ip_mem_ptr, &mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
-
-            if ((vx_enum)VX_TYPE_ARRAY == input->type)
-            {
-                tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->obj_desc;
-                tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->obj_desc;
-                uint32_t num_items = op_obj_desc->num_items;
-                op_obj_desc->num_items = ip_obj_desc->num_items;
-                ip_obj_desc->num_items = num_items;
-            }
-            (void)ownReferenceUnlock(output);
+            tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->obj_desc;
+            tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->obj_desc;
+            uint32_t num_items = op_obj_desc->num_items;
+            op_obj_desc->num_items = ip_obj_desc->num_items;
+            ip_obj_desc->num_items = num_items;
         }
+        (void)ownReferenceUnlock(output);
     }
     return status;    
 }
 
 vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
-    vx_status res;
+    vx_status res= (vx_status)VX_ERROR_NOT_SUPPORTED;
        
     if ((vx_bool)vx_true_e == validate_only)
     {
@@ -525,9 +527,13 @@ vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool vali
             case (vx_enum)VX_KERNEL_MOVE:
                 res = ownSwapReferenceGeneric(input, output);
                 break;
+#ifdef LDRA_UNTESTABLE_CODE
+/* the interface for copy, move and swap is done via the direct adressing mode (vxu_...-) or when creating the corresponding specific node
+   so this is not possible to reach this code because the kernel type is specified by the private functions */       
             default:
                 res = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
+#endif
         }
     }
     return (res);

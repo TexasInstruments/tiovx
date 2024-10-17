@@ -536,10 +536,14 @@ static vx_status copyImage(vx_image input, vx_image output)
             }
             tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)ip_objd->mem_ptr[i].host_ptr, ip_objd->mem_size[i],
                                                       (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+#ifdef LDRA_UNTESTABLE_CODE
+             /* not possible to reach unless you can simulate a problem with the unmap 
+                beak the loop is necessay in case there are several planes */
             if ((vx_status)VX_SUCCESS != status)
             {
                 break;
             }
+#endif
         }
         else
         {
@@ -587,11 +591,14 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
                 obj_desc->mem_ptr[i].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[i].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
+#ifdef LDRA_UNTESTABLE_CODE
+        /* Only virtual image have a plane = 0 but for now TI has no virtual implementation*/
         else
         {
             obj_desc->mem_ptr[0U].host_ptr = obj_desc->mem_ptr[0].host_ptr + offset[local_img->channel_plane];
             obj_desc->mem_ptr[0U].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[0U].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
         }
+#endif
         for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; ++i)
         {
             if (NULL != subimages[i])

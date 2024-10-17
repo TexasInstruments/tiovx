@@ -41,8 +41,8 @@ static vx_status copyScalar(vx_reference input, vx_reference output)
         /* Just copy the entire union from input to output
            use the extra memcopy for volatile struct */
         tivx_obj_desc_memcpy(&op_obj_desc->data, &ip_obj_desc->data, (uint32_t)sizeof(op_obj_desc->data));
+        (void)ownReferenceUnlock(output);
     }
-    status = ownReferenceUnlock(output);
     return status;
 }
 
@@ -60,15 +60,15 @@ static vx_status swapScalar(vx_reference input, vx_reference output)
         tivx_obj_desc_memcpy(&data_obj.data, &op_obj_desc->data, (uint32_t)sizeof(data_obj.data));
         tivx_obj_desc_memcpy(&op_obj_desc->data, &ip_obj_desc->data, (uint32_t)sizeof(op_obj_desc->data));
         tivx_obj_desc_memcpy(&ip_obj_desc->data, &data_obj.data, (uint32_t)sizeof(ip_obj_desc->data));
+        (void)ownReferenceUnlock(output);
     }
-    status = ownReferenceUnlock(output);
     return status;
 }
 
 /* Call back function that handles the copy, swap and move kernels */
 static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
-    vx_status res;
+    vx_status res = (vx_status)VX_ERROR_NOT_SUPPORTED;
 
     if ((vx_bool)vx_true_e == validate_only)
     {

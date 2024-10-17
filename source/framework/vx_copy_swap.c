@@ -73,7 +73,10 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
         tivx_obj_desc_node_t *out_objd = out_node->obj_desc[0];
         vx_uint32 j = 0;
         /* remove old node from in nodes of the out node */
-        while (old_node_id != out_objd->in_node_id[j]) j++;
+        while (old_node_id != out_objd->in_node_id[j]) 
+        {
+            j++;
+        }
         out_objd->in_node_id[j] = out_objd->in_node_id[out_objd->num_in_nodes - 1U];
         out_objd->num_in_nodes--;
         /* add all in nodes of old_node to out_node */
