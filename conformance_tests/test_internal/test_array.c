@@ -94,7 +94,78 @@ TEST(tivxInternalArray, negativeTestUnmapArrayRange)
     VX_CALL(vxReleaseArray(&array));
 }
 
+TEST(tivxInternalArray, negativeTestTruncateArrayAndCopyArrayRange)
+{
+    vx_context context = context_->vx_context_;
+    vx_enum item_type = VX_TYPE_INVALID;
+    vx_array array = NULL;
+    vx_size capacity = 2;
+    vx_size new_num_items = 0u;
+    int64_t host_ptr = 0;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
+    vx_bool is_accessible = (vx_bool)vx_false_e;
+
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, VX_TYPE_KEYPOINT, capacity), VX_TYPE_ARRAY);
+
+    capacity = ((tivx_obj_desc_array_t *)array->base.obj_desc)->capacity;
+    ((tivx_obj_desc_array_t *)array->base.obj_desc)->capacity = 0u;
+
+    host_ptr = ((tivx_obj_desc_array_t *)array->base.obj_desc)->mem_ptr.host_ptr;
+    ((tivx_obj_desc_array_t *)array->base.obj_desc)->mem_ptr.host_ptr = 1;
+
+    is_virtual = array->base.is_virtual;
+    array->base.is_virtual = (vx_bool)vx_true_e;
+
+    is_accessible = array->base.is_accessible;
+    array->base.is_accessible = (vx_bool)vx_false_e;
+
+    EXPECT_EQ_VX_STATUS(vxTruncateArray(array, new_num_items), VX_ERROR_INVALID_PARAMETERS);
+
+    EXPECT_EQ_VX_STATUS(vxCopyArrayRange(array, 0u , 0u, 0u, NULL, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_NONE), VX_ERROR_INVALID_PARAMETERS);
+
+    ((tivx_obj_desc_array_t *)array->base.obj_desc)->capacity = capacity;
+    ((tivx_obj_desc_array_t *)array->base.obj_desc)->mem_ptr.host_ptr = host_ptr;
+    array->base.is_virtual = is_virtual;
+    array->base.is_accessible = is_accessible;
+
+    VX_CALL(vxReleaseArray(&array));
+}
+
+TEST(tivxInternalArray, negativeMapArrayRangeAndUnmapArrayRange)
+{
+    vx_context context = context_->vx_context_;
+    vx_enum item_type = VX_TYPE_INVALID;
+    vx_array array = NULL;
+    vx_size capacity = 2;
+    vx_size new_num_items = 0u;
+    int64_t host_ptr = 0;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
+    vx_bool is_accessible = (vx_bool)vx_false_e;
+
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, VX_TYPE_KEYPOINT, capacity), VX_TYPE_ARRAY);
+
+    host_ptr = ((tivx_obj_desc_array_t *)array->base.obj_desc)->mem_ptr.host_ptr;
+    ((tivx_obj_desc_array_t *)array->base.obj_desc)->mem_ptr.host_ptr = 1;
+
+    is_virtual = array->base.is_virtual;
+    array->base.is_virtual = (vx_bool)vx_true_e;
+
+    is_accessible = array->base.is_accessible;
+    array->base.is_accessible = (vx_bool)vx_false_e;
+
+    EXPECT_EQ_VX_STATUS(vxMapArrayRange(array, 0u, 0u, NULL, NULL, NULL, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_NONE, 0u), VX_ERROR_INVALID_PARAMETERS);
+    EXPECT_EQ_VX_STATUS(vxUnmapArrayRange(array, TIVX_ARRAY_MAX_MAPS), VX_ERROR_INVALID_PARAMETERS);
+
+    ((tivx_obj_desc_array_t *)array->base.obj_desc)->mem_ptr.host_ptr = host_ptr;
+    array->base.is_virtual = is_virtual;
+    array->base.is_accessible = is_accessible;
+
+    VX_CALL(vxReleaseArray(&array));
+}
+
 TESTCASE_TESTS(tivxInternalArray,
     negativeTestInitVirtualArray,
-    negativeTestUnmapArrayRange
+    negativeTestUnmapArrayRange,
+    negativeTestTruncateArrayAndCopyArrayRange,
+    negativeMapArrayRangeAndUnmapArrayRange
 )

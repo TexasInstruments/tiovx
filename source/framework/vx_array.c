@@ -379,14 +379,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num
     }
     else
     {
-#ifdef LDRA_UNTESTABLE_CODE
         if (obj_desc->capacity == 0U)
         {
             /* Array is still not allocated */
             VX_PRINT(VX_ZONE_ERROR,"Array is still not allocated\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
-#endif
 
         if (new_num_items > obj_desc->num_items)
         {
@@ -433,14 +431,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyArrayRange(
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
-#ifdef LDRA_UNTESTABLE_CODE
         if (obj_desc->capacity == 0U)
         {
             /* Array is still not allocated */
             VX_PRINT(VX_ZONE_ERROR,"Array is still not allocated; capacity is 0\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
-#endif
 
         if ((stride < obj_desc->item_size) ||
             (stride == 0U))
@@ -459,7 +455,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyArrayRange(
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
-#ifdef LDRA_UNTESTABLE_CODE
         if ( (arr->base.is_virtual == (vx_bool)vx_true_e)
             &&
             (arr->base.is_accessible == (vx_bool)vx_false_e)
@@ -469,7 +464,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyArrayRange(
             VX_PRINT(VX_ZONE_ERROR,"Array cannot be accessed by application\n");
             status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
         }
-#endif
 
         if ((vx_enum)(vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
         {
@@ -546,7 +540,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapArrayRange(
     }
     else
     {
-#ifdef LDRA_UNTESTABLE_CODE
         if ( (arr->base.is_virtual == (vx_bool)vx_true_e)
             &&
             (arr->base.is_accessible == (vx_bool)vx_false_e)
@@ -556,7 +549,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapArrayRange(
             VX_PRINT(VX_ZONE_ERROR,"Array cannot be accessed by application\n");
             status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
         }
-#endif
 
         /* Not of condition */
         if (!((range_end > range_start) &&
@@ -636,7 +628,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map
     }
     else
     {
-#ifdef LDRA_UNTESTABLE_CODE
         if ( (arr->base.is_virtual == (vx_bool)vx_true_e)
             &&
             (arr->base.is_accessible == (vx_bool)vx_false_e)
@@ -646,7 +637,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map
             VX_PRINT(VX_ZONE_ERROR,"Array cannot be accessed by application\n");
             status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
         }
-#endif
 
         if ((map_id >= TIVX_ARRAY_MAX_MAPS) ||
             (arr->maps[map_id].map_addr == NULL) ||
