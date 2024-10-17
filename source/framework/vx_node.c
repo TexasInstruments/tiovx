@@ -837,7 +837,7 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
 
     if ((NULL != node) && (ownIsValidSpecificReference(vxCastRefFromNode(node), (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e))
     {
-        if((NULL != node->kernel) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR021 */
+        if((NULL != node->kernel)
         && (node->is_kernel_created == (vx_bool)vx_true_e))
         {
             if((NULL != node->kernel->function) &&
@@ -2357,7 +2357,7 @@ vx_node ownNodeGetNextNode(vx_node node, vx_uint32 idx)
             (tivx_obj_desc_node_t *)
                 ownObjDescGet( node->obj_desc[0]->out_node_id[idx] );
 
-        if(next_node_obj_desc != NULL) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR032 */
+        if(next_node_obj_desc != NULL)
         {
             next_node = (vx_node)(uintptr_t)next_node_obj_desc->base.host_ref;
         }
@@ -2377,7 +2377,7 @@ vx_node ownNodeGetNextInNode(vx_node node, vx_uint32 idx)
             (tivx_obj_desc_node_t *)
                 ownObjDescGet( node->obj_desc[0]->in_node_id[idx] );
 
-        if(next_node_obj_desc != NULL) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR033 */
+        if(next_node_obj_desc != NULL)
         {
             next_node = (vx_node)(uintptr_t)next_node_obj_desc->base.host_ref;
         }

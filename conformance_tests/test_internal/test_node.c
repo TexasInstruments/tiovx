@@ -816,6 +816,46 @@ TEST(tivxInternalNode, negativeTestKernelDeinit)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+TEST(tivxInternalNode, TestBranchownNodeGetNextNode)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+    node->obj_desc[0]->num_out_nodes = 3;
+    node->obj_desc[0]->out_node_id[0] =  TIVX_OBJ_DESC_INVALID;
+    ASSERT(NULL == ownNodeGetNextNode(node, 0));
+
+    node->obj_desc[0]->num_in_nodes = 3;
+    node->obj_desc[0]->in_node_id[0] =  TIVX_OBJ_DESC_INVALID;
+    ASSERT(NULL == ownNodeGetNextInNode(node, 0));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalNode, TestBranchownNodeUserKernelExecute)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+
+    node->kernel = NULL;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownNodeUserKernelExecute(node, NULL));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxInternalNode,
     negativeTestSetNodeParameterNumBufByIndex,
     negativeTestNodeGetParameterNumBuf,
@@ -838,5 +878,7 @@ TESTCASE_TESTS(tivxInternalNode,
     negativeTestNodeSendCommand,
     negativeTestNodeReplicate,
     negativeTestKernelInit,
-    negativeTestKernelDeinit
+    negativeTestKernelDeinit,
+    TestBranchownNodeGetNextNode,
+    TestBranchownNodeUserKernelExecute
     )
