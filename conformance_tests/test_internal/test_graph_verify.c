@@ -170,7 +170,7 @@ TEST(tivxInternalGraphVerify, negativeBoundaryTestVerifyGraph)
     ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
     for (uint16_t i = 0; i < numberOfnodes; i++)
     {
-        ASSERT_VX_OBJECT(imageOut[i] = vxCreateImage(context, width, height, VX_DF_IMAGE_UYVY), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(imageOut[i] = vxCreateImage(context, width, height, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(node[i]= vxColorConvertNode(graph, input, imageOut[i]), VX_TYPE_NODE);
     }
     p = vxGetParameterByIndex(node[0], 0);
