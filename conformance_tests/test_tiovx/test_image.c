@@ -28,6 +28,7 @@
 #include "test_engine/test.h"
 
 TESTCASE(tivxImage, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxImage2, CT_VXContext, ct_setup_vx_context, 0)
 
 TEST(tivxImage, negativeTestCreateImage)
 {
@@ -771,6 +772,40 @@ TEST(tivxImage, testOwnSwapSubImageChannel)
     VX_CALL(vxReleaseImage(&image));
 }
 
+TEST(tivxImage2, negativeTestBranchQueryImage)
+{
+    vx_context context = context_->vx_context_;
+    vx_image img = NULL;
+    vx_uint8* base_ptr = NULL;
+
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, (vx_enum)TIVX_IMAGE_IMAGEPATCH_ADDRESSING,(void *)&base_ptr, 0));
+
+    VX_CALL(vxReleaseImage(&img));
+}
+
+TEST(tivxImage2, negativeTestBranchCreateImageFromHandle)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image = NULL;
+    vx_imagepatch_addressing_t addr[10];
+
+    addr[0].dim_x = 1;
+    addr[0].dim_y = 1;
+    ASSERT(NULL == vxCreateImageFromHandle(NULL, VX_DF_IMAGE_RGB, addr,NULL,VX_MEMORY_TYPE_HOST));
+}
+
+TEST(tivxImage2, negativeTestBranchOwnValidDimensions)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image = NULL;
+    vx_image img = NULL;
+    vx_imagepatch_addressing_t addr[10];
+
+    EXPECT_VX_ERROR(image = vxCreateImage(context, 1,1,(vx_df_image)VX_DF_IMAGE_UYVY),VX_ERROR_INVALID_DIMENSION);
+    EXPECT_VX_ERROR(img = vxCreateImage(context, 1,1,(vx_df_image)VX_DF_IMAGE_NV12),VX_ERROR_INVALID_DIMENSION);
+}
+
 TESTCASE_TESTS(
     tivxImage,
     negativeTestCreateImage,
@@ -804,4 +839,12 @@ TESTCASE_TESTS(
     testCreateImage,
     testSetImageAttribute,
     negativeTestCreateImageFromChannelROIBoundary,
-    testOwnSwapSubImageChannel)
+    testOwnSwapSubImageChannel
+    )
+
+TESTCASE_TESTS(
+    tivxImage2,
+    negativeTestBranchQueryImage,
+    negativeTestBranchCreateImageFromHandle,
+    negativeTestBranchOwnValidDimensions
+    )

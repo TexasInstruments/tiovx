@@ -126,10 +126,46 @@ TEST(tivxInternalImage, negativeTestCopyAndMapCheckParam)
     VX_CALL(vxReleaseImage(&img));
 }
 
+TEST(tivxInternalImage, negativeTestBranchOwnSizeofChannel)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image = NULL;
+    vx_graph graph = NULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(image = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownInitVirtualImage(image,16,16,0));
+
+    VX_CALL(vxReleaseImage(&image));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxInternalImage, TestBranchownCopyAndMapCheckParams)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image = NULL;
+    vx_map_id map_id = 0;
+    vx_rectangle_t rect = {0, 0, 1, 1};
+    vx_imagepatch_addressing_t addr = { 0 };
+    vx_uint8* base_ptr = NULL;
+    vx_pixel_value_t pvalue;
+
+    ASSERT_VX_OBJECT(image = vxCreateUniformImage(context,640 , 480, VX_DF_IMAGE_YUYV, &pvalue), VX_TYPE_IMAGE);
+    image->base.is_virtual = (vx_bool)vx_false_e;
+    image->base.is_accessible = (vx_bool)vx_true_e;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void**)&base_ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxUnmapImagePatch(image, map_id));
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
 TESTCASE_TESTS(
     tivxInternalImage,
     negativeTestGetValidRegionImage,
     negativeTestUnmapImagePatch,
     negativeTestOwnInitVirtualImage,
-    negativeTestCopyAndMapCheckParam
+    negativeTestCopyAndMapCheckParam,
+    negativeTestBranchOwnSizeofChannel,
+    TestBranchownCopyAndMapCheckParams
 )
