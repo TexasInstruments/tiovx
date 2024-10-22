@@ -747,6 +747,8 @@ enum vx_reference_attribute_e {
     VX_REFERENCE_TYPE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_REFERENCE) + 0x1,
     /*! \brief Used to query the reference for its name. Read-write. Use a <tt>\ref *vx_char</tt> parameter. */
     VX_REFERENCE_NAME = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_REFERENCE) + 0x2,
+    /*! \brief Used to query the reference for its graph enqueue count. Read-only. Use a <tt>\ref *vx_char</tt> parameter. */
+    VX_REFERENCE_ENQUEUE_COUNT = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_REFERENCE) + 0x3,
 };
 
 /*! \brief A list of context attributes.
