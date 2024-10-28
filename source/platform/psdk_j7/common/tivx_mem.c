@@ -297,29 +297,17 @@ vx_status tivxMemBufferUnmap(
 uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
 {
     uint32_t heap_id;
-    vx_status status = (vx_status)VX_SUCCESS;
     uint64_t phys = 0;
 
-    if((vx_bool)vx_true_e == tivxMemRegionQuery(mem_heap_region))
+    if((vx_status)VX_SUCCESS == tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id))
     {
-        status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
-        if(status == (vx_status)VX_SUCCESS) /* TIOVX-1950- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_MEM_UBR002 */
-        {
-            phys = appMemGetVirt2PhyBufPtr(host_ptr, heap_id);
-        }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1793: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MEM_UM001 */
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Invalid memory block\n");
-        }
-/* END: TIOVX_CODE_COVERAGE_MEM_UM001 */
-#endif
+        phys = appMemGetVirt2PhyBufPtr(host_ptr, heap_id);
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Invalid mem_heap_region %d\n", mem_heap_region);
     }
+
     return phys;
 }
 
@@ -335,24 +323,11 @@ void* tivxMemShared2TargetPtr(const tivx_shared_mem_ptr_t *shared_ptr)
 uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
     uint32_t heap_id;
-    vx_status status = (vx_status)VX_SUCCESS;
     uint64_t phys = 0;
 
-    if((vx_bool)vx_true_e == tivxMemRegionQuery(mem_heap_region))
+    if((vx_status)VX_SUCCESS == tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id))
     {
-        status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
-        if(status == (vx_status)VX_SUCCESS) /* TIOVX-1950- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_MEM_UBR003 */
-        {
-            phys = appMemShared2PhysPtr(shared_ptr, heap_id);
-        }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1793: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MEM_UM002 */
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Invalid memory block\n");
-        }
-/* END: TIOVX_CODE_COVERAGE_MEM_UM002 */
-#endif
+        phys = appMemShared2PhysPtr(shared_ptr, heap_id);
     }
     else
     {

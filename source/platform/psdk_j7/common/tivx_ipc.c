@@ -194,10 +194,7 @@ uint16_t ownIpcGetHostPortId(uint16_t cpu_id)
     {
         vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
 
-        if(vsdk_cpu_id != APP_IPC_CPU_INVALID ) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR003 */
-        {
-            host_port_id = appIpcGetHostPortId((uint16_t)vsdk_cpu_id);
-        }
+        host_port_id = appIpcGetHostPortId((uint16_t)vsdk_cpu_id);
     }
 
     /* host port ID is 16b max to this type conversion is ok */
