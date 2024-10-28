@@ -304,10 +304,14 @@ static void ownTargetNodeDescReleaseParameter(
 
     *is_prm_released = (vx_bool)vx_false_e;
     blocked_nodes.num_nodes = 0;
-    blocked_nodes.node_id[0] = 0;
     do_release_ref = (vx_bool)vx_false_e;
     do_release_ref_to_queue = (vx_bool)vx_false_e;
     obj_desc = ownObjDescGet(ref_obj_desc_id);
+
+    for (node_id = 0; node_id < TIVX_OBJ_DESC_QUEUE_MAX_BLOCKED_NODES; node_id++)
+    {
+        blocked_nodes.node_id[node_id] = 0;
+    }
 
     ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
