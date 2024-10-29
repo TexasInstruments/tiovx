@@ -623,6 +623,18 @@ VX_API_ENTRY vx_node VX_API_CALL vxRemapNode(vx_graph graph,
  */
 VX_API_ENTRY vx_node VX_API_CALL vxHalfScaleGaussianNode(vx_graph graph, vx_image input, vx_image output, vx_int32 kernel_size);
 
+/*! \brief Copy data from one object to another.
+ * \note An implementation may optimize away the copy when virtual data objects are used.
+ * \param [in] graph The reference to the graph.
+ * \param [in] input The input data object.
+ * \param [out] output The output data object with meta-data identical to the input data object.
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation
+ * should be checked using <tt>\ref vxGetStatus</tt>
+ * \ingroup group_vision_function_copy
+ */
+VX_API_ENTRY vx_node VX_API_CALL vxCopyNode(vx_graph graph, vx_reference input, vx_reference output);
+
 #ifdef __cplusplus
 }
 #endif

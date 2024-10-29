@@ -22,6 +22,126 @@ static void ownInitArrayObject(
     vx_array arr, vx_enum item_type, vx_size capacity, vx_bool is_virtual);
 static vx_size ownGetArrayItemSize(vx_context context, vx_enum item_type);
 static vx_bool ownIsValidArrayItemType(vx_context context, vx_enum item_type);
+static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output);
+static vx_status isArrayCopyable(vx_array input, vx_array output);
+static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
+
+/*! \brief checks that the input and output references are not the same, and that both are valid arrays
+*/
+static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output)
+{
+    vx_bool res = (vx_bool)vx_false_e;
+    if ((input != output) &&
+        (ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e) &&
+        (input->base.obj_desc != NULL) &&
+        (ownIsValidSpecificReference(&output->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e) &&
+        (output->base.obj_desc != NULL)
+        )
+    {
+        res = (vx_bool)vx_true_e;
+    }
+    return res;
+}
+
+/*! \brief This function is called to find out if it is OK to copy the input to the output.
+ * If the output is virtual, a zero capacity or invalid item type is OK
+ * Will also copy metadata from input to output.
+ * \returns VX_SUCCESS if it is, otherwise another error code.
+ *
+ */
+static vx_status isArrayCopyable(vx_array input, vx_array output)
+{
+    /* generic functions cannot be used here as the conditions are a bit different 
+       to the checks done in the tivxIsReferenceMetaFormatEqual function:
+     - capacity of the output has to be >= than the input
+     - in case of virtual object the input and output have to have the same size and different than 0 */    
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->base.obj_desc;
+    tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->base.obj_desc;
+    if ((vx_bool)vx_false_e == ownIsValidInputAndOutputArrays(input, output))
+    {
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if ((vx_bool)vx_true_e == output->base.is_virtual)
+    {
+        /* Either output type must be invalid or types must match*/
+        if (((vx_enum)VX_TYPE_INVALID != op_obj_desc->item_type) &&
+            (ip_obj_desc->item_type != op_obj_desc->item_type))
+        {
+            status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+        /* Either output capacity must be zero or at least as large as input capacity */
+        if ((0U != op_obj_desc->capacity) &&
+             (ip_obj_desc->capacity != op_obj_desc->capacity))
+        {
+            status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+    }
+    else if (op_obj_desc->item_type != ip_obj_desc->item_type)
+    {
+        /* Types must match */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else if (op_obj_desc->capacity < ip_obj_desc->capacity)
+    {
+        /* Output must have sufficient capacity to hold input */
+        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+    }
+    else
+    {
+        op_obj_desc->item_type = ip_obj_desc->item_type;
+        op_obj_desc->item_size = ip_obj_desc->item_size;
+        op_obj_desc->capacity = ip_obj_desc->capacity;
+    }
+    return status;
+}
+
+/* Call back function that handles the copy, swap and move kernels */
+static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
+{
+    vx_status res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+
+    /* do not check the res, as we know they are arrays at that point*/
+    switch (kernel_enum)
+    {
+        case (vx_enum)VX_KERNEL_COPY:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                res =  isArrayCopyable(vxCastRefAsArray(input, &res), vxCastRefAsArray(output, &res));
+            }
+            else
+            {
+                res = ownCopyReferenceGeneric(input, output);
+            }
+            break;
+        case (vx_enum)VX_KERNEL_SWAP:
+        case (vx_enum)VX_KERNEL_MOVE:
+            if ((vx_bool)vx_true_e == validate_only)
+            {
+                if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(input, output))
+                {
+                    res = (vx_status)VX_SUCCESS;
+                }
+                else
+                {
+                    res = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+                }
+            }
+            else
+            {
+                res = ownSwapReferenceGeneric(input, output);
+            }
+            break;
+#ifdef LDRA_UNTESTABLE_CODE
+/* the interface for copy, move and swap is done via the direct adressing mode (vxu_...-) or when creating the corresponding specific node
+   so this is not possible to reach this code because the kernel type is specified by the private functions */
+        default:
+            res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+            break;
+#endif
+    }
+    return(res);
+}
 
 /* Function to get the size of user defined structure */
 static vx_size ownGetArrayItemSize(vx_context context, vx_enum item_type)
@@ -137,7 +257,7 @@ VX_API_ENTRY vx_array VX_API_CALL vxCreateArray(
                 arr->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 arr->base.release_callback =
                     &ownReleaseReferenceBufferGeneric;
-
+                arr->base.kernel_callback = &arrayKernelCallback;
                 arr->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_ARRAY, vxCastRefFromArray(arr));
                 if(arr->base.obj_desc==NULL)
@@ -187,7 +307,7 @@ VX_API_ENTRY vx_array VX_API_CALL vxCreateVirtualArray(
             arr->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
             arr->base.release_callback =
                 &ownReleaseReferenceBufferGeneric;
-
+            arr->base.kernel_callback = &arrayKernelCallback;
             arr->base.obj_desc = (tivx_obj_desc_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_ARRAY, vxCastRefFromArray(arr));
             if(arr->base.obj_desc==NULL)

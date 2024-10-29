@@ -52,6 +52,10 @@ TEST(tivxInternalObjArray, negativeTestGetObjectArrayItem1)
     vx_image image;
     vx_graph graph;
     vx_image img;
+    vx_rectangle_t rect = {.start_x = 0, .start_y = 0, .end_x = 1, .end_y = 2};
+    vx_map_id map_id;
+    vx_imagepatch_addressing_t addr;
+    void *ptr;
     image = (vx_image)ownCreateReference(context, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, &context->base);
     EXPECT_VX_ERROR(vxoa = vxCreateObjectArray(context, (vx_reference)image, 2),VX_ERROR_NO_RESOURCES);
     VX_CALL(ownReleaseReferenceInt((vx_reference*)&image, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL));
@@ -59,7 +63,9 @@ TEST(tivxInternalObjArray, negativeTestGetObjectArrayItem1)
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(img = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(vxoa = vxCreateVirtualObjectArray(graph, (vx_reference)img, 32),VX_TYPE_OBJECT_ARRAY);
-    ASSERT(NULL == (ref = vxGetObjectArrayItem(vxoa, index)));
+    ASSERT_VX_OBJECT(ref = vxGetObjectArrayItem(vxoa, index), VX_TYPE_IMAGE);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxMapImagePatch((vx_image)ref, &rect, 0, &map_id, &addr, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+    VX_CALL(vxReleaseReference(&ref));
     VX_CALL(vxReleaseObjectArray(&vxoa));
     VX_CALL(vxReleaseImage(&img));
     VX_CALL(vxReleaseGraph(&graph));
