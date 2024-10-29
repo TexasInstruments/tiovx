@@ -33,6 +33,122 @@ static vx_status ownCopyAndMapCheckParams(
     vx_enum usage,
     vx_uint32 buffer_select);
 
+static vx_status isRawImageCopyable(tivx_raw_image input, tivx_raw_image output);
+static vx_status copyRawImage(tivx_raw_image input, tivx_raw_image output);
+static vx_status swapRawImage(tivx_raw_image input, tivx_raw_image output);
+static vx_status VX_CALLBACK rawImageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
+
+/* Raw images must agree in the size and format for each exposure. */
+static vx_status isRawImageCopyable(tivx_raw_image input, tivx_raw_image output)
+{
+    vx_status status = VX_SUCCESS;
+    if ((input == output) ||
+        (vx_false_e == ownIsValidRawImage(input)) ||
+        (vx_false_e == ownIsValidRawImage(output)) ||
+        (NULL == input->base.obj_desc) ||
+        (NULL == output->base.obj_desc))
+    {
+        status = VX_ERROR_NOT_COMPATIBLE;
+    }
+    else
+    {
+        tivx_obj_desc_raw_image_t *ip_obj_desc = (tivx_obj_desc_raw_image_t *)input->base.obj_desc;
+        tivx_obj_desc_raw_image_t *op_obj_desc = (tivx_obj_desc_raw_image_t *)output->base.obj_desc;
+        if ((ip_obj_desc->params.width == op_obj_desc->params.width) &&
+            (ip_obj_desc->params.height == op_obj_desc->params.height) &&
+            (ip_obj_desc->params.num_exposures == op_obj_desc->params.num_exposures)
+        )
+        {
+            vx_uint32 i;
+            for (i = 0; i < ip_obj_desc->params.num_exposures; i++)
+            {
+                if ((ip_obj_desc->params.format[i].msb != op_obj_desc->params.format[i].msb) ||
+                    (ip_obj_desc->params.format[i].pixel_container != op_obj_desc->params.format[i].pixel_container))
+                {
+                    status = VX_ERROR_NOT_COMPATIBLE;
+                    break;
+                }
+            }
+        }
+    }
+    return status;
+}
+
+/* Note that raw images cannot currently be created from ROI or channel, this simplifies
+ * Copy and particularly Swap and Move as compared to standard OpenVX images.
+ * We also ignore the valid region stuff.
+ */
+static vx_status copyRawImage(tivx_raw_image input, tivx_raw_image output)
+{
+    tivx_obj_desc_raw_image_t *ip_obj_desc = (tivx_obj_desc_raw_image_t *)input->base.obj_desc;
+    tivx_obj_desc_raw_image_t *op_obj_desc = (tivx_obj_desc_raw_image_t *)output->base.obj_desc;
+    vx_status status = ownReferenceLock(&output->base);
+    if (VX_SUCCESS == status)
+    {
+        vx_uint32 i;
+        for (i = 0; i < ip_obj_desc->params.num_exposures; ++i)
+        {
+            /* For each exposure we copy the entire image and meta data buffer in one go with no breaks */
+            status = tivxMemBufferMap((void *)(uintptr_t)ip_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            if (VX_SUCCESS == status)
+            {
+                status = tivxMemBufferMap((void *)(uintptr_t)op_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                if (VX_SUCCESS == status)
+                {
+                    tivx_obj_desc_memcpy((void *)(uintptr_t)op_obj_desc->mem_ptr[i].host_ptr, (void *)(uintptr_t)ip_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i]);
+                }
+                tivxMemBufferUnmap((void *)(uintptr_t)op_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            }
+            tivxMemBufferUnmap((void *)(uintptr_t)ip_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        }
+    }
+    ownReferenceUnlock(&output->base);
+    return status;
+}
+
+static vx_status swapRawImage(tivx_raw_image input, tivx_raw_image output)
+{
+    tivx_obj_desc_raw_image_t *ip_obj_desc = (tivx_obj_desc_raw_image_t *)input->base.obj_desc;
+    tivx_obj_desc_raw_image_t *op_obj_desc = (tivx_obj_desc_raw_image_t *)output->base.obj_desc;
+    vx_status status = ownReferenceLock(&output->base);
+    if (VX_SUCCESS == status)
+    {
+        vx_uint32 i;
+        tivx_obj_desc_raw_image_t obj_desc;
+        for (i = 0; i < ip_obj_desc->params.num_exposures; ++i)
+        {
+            /* Just swap all the pointers we can find! */
+            obj_desc.img_ptr[i] = op_obj_desc->img_ptr[i];
+            obj_desc.mem_ptr[i] = op_obj_desc->mem_ptr[i];
+            obj_desc.meta_after_ptr[i] = op_obj_desc->meta_after_ptr[i];
+            obj_desc.meta_before_ptr[i] = op_obj_desc->meta_before_ptr[i];
+            op_obj_desc->img_ptr[i] = ip_obj_desc->img_ptr[i];
+            op_obj_desc->mem_ptr[i] = ip_obj_desc->mem_ptr[i];
+            op_obj_desc->meta_after_ptr[i] = ip_obj_desc->meta_after_ptr[i];
+            op_obj_desc->meta_before_ptr[i] = ip_obj_desc->meta_before_ptr[i];
+            ip_obj_desc->img_ptr[i] = obj_desc.img_ptr[i];
+            ip_obj_desc->mem_ptr[i] = obj_desc.mem_ptr[i];
+            ip_obj_desc->meta_after_ptr[i] = obj_desc.meta_after_ptr[i];
+            ip_obj_desc->meta_before_ptr[i] = obj_desc.meta_before_ptr[i];
+        }
+    }
+    ownReferenceUnlock(&output->base);
+    return status;
+}
+
+static vx_status VX_CALLBACK rawImageKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
+{
+    tivx_raw_image input_img = (tivx_raw_image)input;
+    tivx_raw_image output_img = (tivx_raw_image)output;
+    switch (kernel_enum)
+    {
+        case VX_KERNEL_COPY:    return validate_only ? isRawImageCopyable(input_img, output_img) : copyRawImage(input_img, output_img);
+        case VX_KERNEL_SWAP:
+        case VX_KERNEL_MOVE: return validate_only ? isRawImageCopyable(input_img, output_img) : swapRawImage(input_img, output_img);
+        default:                return VX_ERROR_NOT_SUPPORTED;
+    }
+}
+
 static vx_bool ownIsValidCreateParams(const tivx_raw_image_create_params_t *params)
 {
     vx_bool is_valid = (vx_bool)vx_true_e;
@@ -492,6 +608,7 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
                 raw_image->base.destructor_callback = &ownDestructRawImage;
                 raw_image->base.mem_alloc_callback = &ownAllocRawImageBuffer;
                 raw_image->base.release_callback = &ownReleaseReferenceBufferGeneric;
+                raw_image->base.kernel_callback = &rawImageKernelCallback;
 
                 obj_desc = (tivx_obj_desc_raw_image_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE, (vx_reference)raw_image);
 

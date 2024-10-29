@@ -87,7 +87,8 @@ static const vx_enum type_ids[] =
     VX_TYPE_SCALAR,
     VX_TYPE_TENSOR,
     VX_TYPE_THRESHOLD,
-    VX_TYPE_USER_DATA_OBJECT
+    VX_TYPE_USER_DATA_OBJECT, 
+    TIVX_TYPE_RAW_IMAGE
     };
 
 #define NUM_TYPES (sizeof(type_ids) / sizeof(vx_enum))
@@ -155,6 +156,24 @@ vx_reference createReference(vx_context context, vx_enum type)
         case VX_TYPE_THRESHOLD:
             ref = (vx_reference)vxCreateThreshold(context, VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8); /* This will need updating!!)*/
             break;
+        case TIVX_TYPE_RAW_IMAGE:
+            {
+                tivx_raw_image_create_params_t params = {
+                    .width = 16,
+                    .height = 16,
+                    .line_interleaved = vx_false_e,
+                    .meta_height_before = 1,
+                    .meta_height_after = 1,
+                    .num_exposures = 2,
+                    .format = {
+                        {.msb = 7, .pixel_container = TIVX_RAW_IMAGE_8_BIT},
+                        {.msb = 7, .pixel_container = TIVX_RAW_IMAGE_8_BIT},
+                        {.msb = 7, .pixel_container = TIVX_RAW_IMAGE_8_BIT}
+                    }
+                };
+                ref = (vx_reference)tivxCreateRawImage(context, &params);
+                break;
+            }
         default:
             /* Should not reach here. ERROR in TEST! Found unknown type */
             break;
@@ -316,6 +335,24 @@ static vx_status writeValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
         {
             user_data_t user_data = {.numbers = {a, b, b, a}};
             status = vxCopyUserDataObject((vx_user_data_object)ref, 0, sizeof(user_data_t), &user_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+            break;
+        }
+        case TIVX_TYPE_RAW_IMAGE:
+        {
+            vx_rectangle_t rect = {.start_x = 0, .end_x = 16, .start_y = 0, .end_y = 16};
+            vx_imagepatch_addressing_t addr;
+            vx_uint8 *exp0, *exp1;
+            vx_map_id id0, id1;
+            vx_uint32 i;
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, tivxMapRawImagePatch((tivx_raw_image)ref, &rect, 0, &id0, &addr, (void **)&exp0, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, tivxMapRawImagePatch((tivx_raw_image)ref, &rect, 1, &id1, &addr, (void **)&exp1, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+            for (i = 0; i < 256; ++i)
+            {
+                exp0[i] = (i>128) ? b : a;
+                exp1[i] = (i>128) ? a : b;
+            }
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, tivxUnmapRawImagePatch((tivx_raw_image)ref, id0));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, tivxUnmapRawImagePatch((tivx_raw_image)ref, id1));
             break;
         }
         default:
@@ -533,6 +570,28 @@ static vx_status checkValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
             }
             break;
         }
+        case TIVX_TYPE_RAW_IMAGE:
+        {
+            vx_rectangle_t rect = {.start_x = 0, .end_x = 16, .start_y = 0, .end_y = 16};
+            vx_imagepatch_addressing_t addr;
+            vx_uint8 *exp0, *exp1;
+            vx_map_id id0, id1;
+            vx_uint32 i;
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, tivxMapRawImagePatch((tivx_raw_image)ref, &rect, 0, &id0, &addr, (void **)&exp0, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, tivxMapRawImagePatch((tivx_raw_image)ref, &rect, 1, &id1, &addr, (void **)&exp1, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+            for (i = 0; i < 256; ++i)
+            {
+                if ((exp0[i] != ((i>128) ? b : a)) ||
+                    (exp1[i] != ((i>128) ? a : b)))
+                {
+                    status = VX_FAILURE;
+                    break;
+                }
+            }
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, tivxUnmapRawImagePatch((tivx_raw_image)ref, id0));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, tivxUnmapRawImagePatch((tivx_raw_image)ref, id1));
+            break;
+        }
         default:
             /* Should not reach here. ERROR in TEST! Found unknown type */
         break;
@@ -553,6 +612,7 @@ static vx_bool is_supported(vx_enum type)
         case VX_TYPE_MATRIX:
         case VX_TYPE_OBJECT_ARRAY:
         case VX_TYPE_PYRAMID:
+        case TIVX_TYPE_RAW_IMAGE:
         case VX_TYPE_SCALAR:
         case VX_TYPE_TENSOR:
         case VX_TYPE_USER_DATA_OBJECT:
