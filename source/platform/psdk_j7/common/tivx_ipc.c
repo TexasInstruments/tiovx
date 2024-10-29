@@ -90,7 +90,8 @@ uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     APP_IPC_CPU_MCU3_0,
     APP_IPC_CPU_MCU3_1,
     APP_IPC_CPU_MCU4_0,
-    APP_IPC_CPU_MCU4_1
+    APP_IPC_CPU_MCU4_1,
+    APP_IPC_CPU_C7x_3
 };
 #endif
 
