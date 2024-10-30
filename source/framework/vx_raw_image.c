@@ -89,17 +89,21 @@ static vx_status copyRawImage(tivx_raw_image input, tivx_raw_image output)
         for (i = 0; i < ip_obj_desc->params.num_exposures; ++i)
         {
             /* For each exposure we copy the entire image and meta data buffer in one go with no breaks */
-            status = tivxMemBufferMap((void *)(uintptr_t)ip_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)ip_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
             if (VX_SUCCESS == status)
             {
-                status = tivxMemBufferMap((void *)(uintptr_t)op_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)op_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
                 if (VX_SUCCESS == status)
                 {
                     tivx_obj_desc_memcpy((void *)(uintptr_t)op_obj_desc->mem_ptr[i].host_ptr, (void *)(uintptr_t)ip_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i]);
                 }
-                tivxMemBufferUnmap((void *)(uintptr_t)op_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)op_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
             }
-            tivxMemBufferUnmap((void *)(uintptr_t)ip_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)ip_obj_desc->mem_ptr[i].host_ptr, ip_obj_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                break;
+            }
         }
     }
     ownReferenceUnlock(&output->base);
