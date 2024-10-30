@@ -296,8 +296,8 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
         {
             status = status1;
         }
-    }
 #endif
+    }
 
     return status;
 }
