@@ -2144,7 +2144,7 @@ static vx_status tivxNegativeAppMemFree(uint8_t id)
     uint32_t heap_id = APP_MEM_HEAP_MAX;
     void *ptr = NULL;
     uint32_t size = 0u;
-    uint32_t mem_size = 4;
+    uint32_t mem_size = 4, alignment = 16;
 
     if ((vx_status)VX_FAILURE != appMemFree(heap_id, ptr, size))
     {
@@ -2159,10 +2159,10 @@ static vx_status tivxNegativeAppMemFree(uint8_t id)
         status = (vx_status)VX_FAILURE;
     }
 
-    ptr = appMemAlloc(heap_id, mem_size, 4);
+    ptr = appMemAlloc(heap_id, mem_size, alignment);
     if(NULL == ptr)
     {
-        VX_PRINT(VX_ZONE_ERROR,"REMOTE_SERVICE_TEST: Test failed!!!\n");
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for appMemAlloc\n");
         status = (vx_status)VX_FAILURE;
     }
     if ((vx_status)VX_FAILURE != appMemFree(heap_id, ptr, size))
@@ -2171,7 +2171,11 @@ static vx_status tivxNegativeAppMemFree(uint8_t id)
         status = (vx_status)VX_FAILURE;
     }
 
-    appMemFree(heap_id, ptr, mem_size);
+    if ((vx_status)VX_SUCCESS != appMemFree(heap_id, ptr, mem_size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Freeing memory was unsuccessful\n");
+        status = (vx_status)VX_FAILURE;
+    }
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
