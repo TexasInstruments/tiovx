@@ -37,7 +37,6 @@ vx_status tivxQueueCreate(
     uint32_t flags)
 {
     vx_status status = (vx_status)VX_FAILURE;
-    vx_status ret_status = (vx_status)VX_FAILURE;
 
     if ((NULL != queue) && (NULL != queue_memory) && (0U != max_elements))
     {
@@ -87,12 +86,7 @@ vx_status tivxQueueCreate(
         }
         else
         {
-            ret_status = tivxQueueDelete(queue);
-            if (ret_status != (vx_status)VX_SUCCESS)/* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_QUEUE_UBR001*/
-            {
-                VX_PRINT(VX_ZONE_ERROR, "tivxQueueDelete() failed.\n");
-                status = ret_status;
-            }
+            (void)tivxQueueDelete(queue);
         }
     }
 
