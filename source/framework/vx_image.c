@@ -538,7 +538,7 @@ static vx_status copyImage(vx_image input, vx_image output)
                                                       (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 #ifdef LDRA_UNTESTABLE_CODE
              /* not possible to reach unless you can simulate a problem with the unmap 
-                beak the loop is necessay in case there are several planes */
+                breaking the loop is necessary in case there are several planes */
             if ((vx_status)VX_SUCCESS != status)
             {
                 break;

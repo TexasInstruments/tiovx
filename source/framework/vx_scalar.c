@@ -33,13 +33,13 @@ static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool v
  */
 static vx_status copyScalar(vx_reference input, vx_reference output)
 {
-    tivx_obj_desc_scalar_t *ip_obj_desc = (tivx_obj_desc_scalar_t *)input->obj_desc;
-    tivx_obj_desc_scalar_t *op_obj_desc = (tivx_obj_desc_scalar_t *)output->obj_desc;
     vx_status status = ownReferenceLock(output);
     if ((vx_status)VX_SUCCESS == status)
     {
         /* Just copy the entire union from input to output
            use the extra memcopy for volatile struct */
+        tivx_obj_desc_scalar_t *ip_obj_desc = (tivx_obj_desc_scalar_t *)input->obj_desc;
+        tivx_obj_desc_scalar_t *op_obj_desc = (tivx_obj_desc_scalar_t *)output->obj_desc;
         tivx_obj_desc_memcpy(&op_obj_desc->data, &ip_obj_desc->data, (uint32_t)sizeof(op_obj_desc->data));
         (void)ownReferenceUnlock(output);
     }

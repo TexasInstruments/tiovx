@@ -452,7 +452,8 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
                                                             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
             }
         }
-#ifdef LDRA_UNTESTABLE_CODE        
+#ifdef LDRA_UNTESTABLE_CODE
+        /* see corresponding if statement above */
         else
         {
             status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
