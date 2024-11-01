@@ -677,11 +677,11 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
         {
             node = graph->nodes[i];
 
-            if(node && /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR017 */
-            node->kernel) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR018 */
+            if((node != NULL) && /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR017 */
+               (node->kernel != NULL)) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR018 */
             {
                 status = ownNodeKernelInit(node);
-                VX_PRINT(VX_ZONE_INFO, "kernel init for node %d, kernel %s ...\n", i, node->kernel->name);
+                VX_PRINT(VX_ZONE_INFO, "calling kernel init for node %d, kernel %s ...\n", i, node->kernel->name);
             }
 
             if(status != (vx_status)VX_SUCCESS )
@@ -690,8 +690,8 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
                 break;
             }
 
-            if(node && /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR019 */
-            node->kernel) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR020 */
+            if((node != NULL) && /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR019 */
+               (node->kernel != NULL)) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR020 */
             {
                 VX_PRINT(VX_ZONE_INFO, "kernel init for node %d, kernel %s ... done !!!\n", i, node->kernel->name);
             }
@@ -1325,8 +1325,8 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
         for(buf_id=0; buf_id<graph->data_ref_q_list[i].num_buf; buf_id++)
         {
             ref = graph->data_ref_q_list[i].refs_list[buf_id];
-            if(ref && /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR027 */
-            ref->obj_desc) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR028 */
+            if( (ref != NULL) && /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR027 */
+                (ref->obj_desc != NULL) ) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR028 */
             {
                 ref_obj_desc_id = ref->obj_desc->obj_desc_id;
 
@@ -1358,8 +1358,8 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
         if(graph->delay_data_ref_q_list[i].node != NULL) 
         {
             ref = ownNodeGetParameterRef(graph->delay_data_ref_q_list[i].node, graph->delay_data_ref_q_list[i].index);
-            if(ref && /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR029 */
-            ref->obj_desc) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR030 */
+            if( (ref != NULL) && /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR029 */
+                (ref->obj_desc != NULL) ) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR030 */
             {
                 ref_obj_desc_id = ref->obj_desc->obj_desc_id;
 
@@ -1387,8 +1387,8 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
 
             /* data reference queue with no node as input */
             ref = delay->refs[delay_slot_index];
-            if(ref && /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR031 */
-            ref->obj_desc) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR032 */
+            if( (ref != NULL) && /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR031 */
+                (ref->obj_desc != NULL) ) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR032 */
             {
                 ref_obj_desc_id = ref->obj_desc->obj_desc_id;
 
