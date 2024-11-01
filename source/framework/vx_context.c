@@ -1340,7 +1340,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 {
                     if(context->reftable[r] != NULL)
                     {
-                            VX_PRINT(VX_ZONE_ERROR,"Reference %d not removed\n", r);
+                        VX_PRINT(VX_ZONE_ERROR,"Reference %d not removed\n", r);
                     }
                 }
 #endif
