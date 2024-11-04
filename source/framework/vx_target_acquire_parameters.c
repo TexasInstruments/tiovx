@@ -192,7 +192,7 @@ static void ownTargetNodeDescAcquireParameter(
             obj_desc = ownObjDescGet(ref_obj_desc_id);
             if(obj_desc != NULL)
             {
-                obj_desc->in_node_done_cnt = 0;
+                obj_desc->in_node_done_cnt[node_obj_desc->pipeline_id] = 0;
             }
 
             *prm_obj_desc_id = ref_obj_desc_id;
@@ -316,7 +316,7 @@ static void ownTargetNodeDescReleaseParameter(
         }
         if(obj_desc!=NULL)
         {
-            obj_desc->in_node_done_cnt++;
+            obj_desc->in_node_done_cnt[node_obj_desc->pipeline_id]++;
 
             /* In order to fix TIOVX-956 and TIOVX-1151, the bracketed logic was added to handle multiple obj arr
              * situations. The bug found that when a replicated node output was consumed by both another
@@ -331,11 +331,11 @@ static void ownTargetNodeDescReleaseParameter(
 
                 if(parent_obj_desc!=NULL)
                 {
-                    num_in_nodes = obj_desc->in_node_done_cnt + parent_obj_desc->in_node_done_cnt;
+                    num_in_nodes = obj_desc->in_node_done_cnt[node_obj_desc->pipeline_id] + parent_obj_desc->in_node_done_cnt[node_obj_desc->pipeline_id];
                 }
                 else
                 {
-                    num_in_nodes = obj_desc->in_node_done_cnt;
+                    num_in_nodes = obj_desc->in_node_done_cnt[node_obj_desc->pipeline_id];
                 }
             }
 
@@ -344,7 +344,7 @@ static void ownTargetNodeDescReleaseParameter(
                 do_release_ref_to_queue = (vx_bool)vx_true_e;
                 /* Note: This is needed because the delay obj_desc does not get re-acquired for each slot.
                  *       Therefore, each in_node_done_cnt must be reset for each delay slot. */
-                obj_desc->in_node_done_cnt = 0;
+                obj_desc->in_node_done_cnt[node_obj_desc->pipeline_id] = 0;
             }
         }
     }
@@ -426,7 +426,7 @@ static void ownTargetNodeDescReleaseParameter(
                              node_obj_desc->pipeline_id,
                              data_ref_q_obj_desc->base.obj_desc_id,
                              ref_obj_desc_id,
-                             data_ref_q_obj_desc->num_in_nodes - obj_desc->in_node_done_cnt
+                             data_ref_q_obj_desc->num_in_nodes - obj_desc->in_node_done_cnt[node_obj_desc->pipeline_id]
                        );
         }
         else

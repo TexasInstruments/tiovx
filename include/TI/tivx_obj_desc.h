@@ -335,7 +335,7 @@ typedef struct _tivx_obj_desc_t {
     volatile uint16_t scope_obj_desc_id;
 
     /*! \brief number of input nodes that have consumed this obj_desc, used in pipelining mode only for data references */
-    volatile uint16_t in_node_done_cnt;
+    volatile uint16_t in_node_done_cnt[TIVX_GRAPH_MAX_PIPELINE_DEPTH - 1U];
 
     /*! \brief Host reference, accessible only on HOST side */
     volatile uint64_t host_ref;
