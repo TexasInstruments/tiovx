@@ -6908,6 +6908,192 @@ TEST(tivxGraphPipeline, testGraphEvent)
     vxReleaseImage(&images[1]);
 }
 
+/* Test what happens when enqueueing the same reference on two nodes several times
+ *
+ * images     node1  temp_img       
+ * IMG ------ NOT -- IMG 
+ *  |                 |
+ *  |                 |     
+ *  ---------------  AND -- IMG
+ *                  node2   images
+ * 
+ * Background: 
+ * It was exhibited that due to pipelinig, in_node_done_count was overwritten when the same reference is acquired for the next
+ * pipeline id while the first has not finished yet. This resulted in receiving one too few reference consumed events when dequeuing. 
+*/                   
+TEST(tivxGraphPipeline, testMultipleEnqueueOnSameNodeOnlyTwoGraphParams)
+{
+    /* We should be able to enqueue the same reference on two separate inputs on the same graph 
+      and also on another graph at the same time */
+    vx_status status;    
+    vx_context context = context_->vx_context_;
+    tivx_set_debug_zone(VX_ZONE_INFO); 
+    printf("\nTest special multiple enqueuing\n");
+    vx_graph graph = vxCreateGraph(context);
+    vx_image images[10] =
+    {
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8)
+    };
+    vx_image temp_img = vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8);
+    vx_node node1 = vxNotNode(graph, images[0], temp_img);
+    vx_node node2 = vxAndNode(graph, images[0], temp_img, images[1]); 
+
+    // vx_node node2 = vxAndNode(graph2, images[0], images[1], images[2]);
+    addParameterToGraph(graph, node1, 0); /* Input */
+    addParameterToGraph(graph, node2, 2); /* images[2] output */
+
+    vx_graph_parameter_queue_params_t graph_params[2] = 
+    {
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)images, .refs_list_size = 10},
+        {.graph_parameter_index = 1, .refs_list = (vx_reference *)images, .refs_list_size = 10},
+    };
+    tivxSetGraphPipelineDepth(graph, 2);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 2, graph_params));
+
+    VX_CALL(vxVerifyGraph(graph)); 
+
+    // enqueue lots of images at the output
+    for (int i = 0; i < 8; i++)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference *)&images[i+1], 1));
+    }
+
+    // enqueue same input several times
+    for (int i = 0; i < 4; i++)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&images[0], 1));  
+    }
+    vx_reference dequeueinput1;
+    vx_reference dequeueoutput; 
+    vx_uint16 num_dequeued_refs; 
+
+    // try dequeueing inputs/outputs
+    for (int i = 0; i < 4; i++)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 0, &dequeueinput1, 1, &num_dequeued_refs)); 
+
+        // dequeue same amount of outputs
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 1, &dequeueinput1, 1, &num_dequeued_refs)); 
+    }
+
+    for (int i = 0; i < 10; ++i)
+    {
+        vxReleaseImage(&images[i]);
+    }
+    vxReleaseNode(&node1);
+    vxReleaseNode(&node2);
+    vxReleaseGraph(&graph);
+    vxReleaseImage(&temp_img); 
+}
+
+TEST(tivxGraphPipeline, testMultipleEnqueueOnSameNodeOnlyThreeGraphParams)
+{
+    // HERE WE ADD A GRAPH EVENT ALSO FOR THE INPUT OF THE AND NODE
+    /* We should be able to enqueue the same reference on two separate inputs on the same graph 
+      and also on another graph at the same time */
+    vx_status status;    
+    vx_context context = context_->vx_context_;
+    tivx_set_debug_zone(VX_ZONE_INFO); 
+    printf("\nTest special multiple enqueuing\n");
+    vx_graph graph = vxCreateGraph(context);
+    vx_image images[30] =
+    {
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8),
+    };
+    vx_image intermediate_image = vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8);
+    vx_node node1 = vxNotNode(graph, images[0], intermediate_image);
+    vx_node node2 = vxAndNode(graph, images[0], intermediate_image, images[1]); 
+
+    // vx_node node2 = vxAndNode(graph2, images[0], images[1], images[2]);
+    addParameterToGraph(graph, node1, 0); /* Images[0] input */
+    addParameterToGraph(graph, node2, 1); /* images[0] input */
+    addParameterToGraph(graph, node2, 2); /* images[2] output */
+    
+    vx_graph_parameter_queue_params_t graph_params[3] = 
+    {
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)images, .refs_list_size = 30},
+        {.graph_parameter_index = 1, .refs_list = (vx_reference *)images, .refs_list_size = 30},
+        {.graph_parameter_index = 2, .refs_list = (vx_reference *)images, .refs_list_size = 30}
+    };
+    tivxSetGraphPipelineDepth(graph, 2);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+
+    VX_CALL(vxVerifyGraph(graph)); 
+    
+    // enqueue lots ouf images on the output
+    for (int i = 0; i < 8; i++)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference *)&images[i+1], 1));
+    }
+    
+    for (int i = 0; i < 4; i++)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&images[0], 1));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference *)&images[0], 1));
+    }
+
+    vx_reference dequeueinput1;
+    vx_reference dequeueoutput;
+    vx_uint16 num_dequeued_refs; 
+
+    for (int i = 0; i < 4; i++)
+    {
+        // dequeue input graph param for not node and and node
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 0, &dequeueinput1, 1, &num_dequeued_refs)); 
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 1, &dequeueinput1, 1, &num_dequeued_refs)); 
+
+        // dequeue output graph param for and node
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 2, &dequeueoutput, 1, &num_dequeued_refs)); 
+    }
+
+    for (int i = 0; i < 30; ++i)
+    {
+        vxReleaseImage(&images[i]);
+    }
+    vxReleaseNode(&node1);
+    vxReleaseNode(&node2);
+    vxReleaseGraph(&graph);
+    vxReleaseImage(&intermediate_image); 
+}
+
 TEST(tivxGraphPipelineLdra, negativeTestSetGraphScheduleConfig)
 {
     #define VX_GRAPH_SCHEDULE_MODE_DEFAULT 0
@@ -7044,7 +7230,9 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testBufferDepthDetection2,
     testDoubleInputEnqueue,
     testIllegelDoubleEnqueuing,
-    testGraphEvent
+    testGraphEvent, 
+    testMultipleEnqueueOnSameNodeOnlyTwoGraphParams,
+    testMultipleEnqueueOnSameNodeOnlyThreeGraphParams
 )
 
 TESTCASE_TESTS(
