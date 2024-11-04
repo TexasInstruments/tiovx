@@ -536,8 +536,7 @@ static vx_status copyImage(vx_image input, vx_image output)
             tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)ip_objd->mem_ptr[i].host_ptr, ip_objd->mem_size[i],
                                                       (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 #ifdef LDRA_UNTESTABLE_CODE
-             /* not possible to reach unless you can simulate a problem with the unmap 
-                breaking the loop is necessary in case there are several planes */
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM011 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 break;
@@ -591,7 +590,7 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
             }
         }
 #ifdef LDRA_UNTESTABLE_CODE
-        /* Only virtual image have a plane = 0 but for now TI has no virtual implementation*/
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM012 */
         else
         {
             obj_desc->mem_ptr[0U].host_ptr = obj_desc->mem_ptr[0].host_ptr + offset[local_img->channel_plane];
@@ -603,7 +602,7 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
             if (NULL != subimages[i])
             {
 #ifdef LDRA_UNTESTABLE_CODE
-                /* this should not happen as the max depth for subimages is fixed */
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM013 */
                 if (TIVX_SUBIMAGE_STACK_SIZE < stack_pointer)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Too many sub-images, may need to increase the value of TIVX_SUBIMAGE_STACK_SIZE\n");
@@ -709,6 +708,7 @@ static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool va
                 }
                 break;
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM014 */
 /* the interface for copy, move and swap is done via the direct adressing mode (vxu_...-) or when creating the corresponding specific node
    so this is not possible to reach this code because the kernel type is specified by the private functions */      
             default:

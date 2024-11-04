@@ -411,11 +411,7 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
     if ((vx_status)VX_SUCCESS == status)
     {
 #ifdef LDRA_UNTESTABLE_CODE
-        /* internal memory footprint could be different if the object is allocated via a component external to OVX
-           and that is imported with a create from handle function.
-           there are currently two functions to do that, one for images vxCreateImageFromHandle and vxCreateTensorFromHandle
-           the vxCreateImageFromHandle is covered by another test and vxCreateTensorFromHandle is not implemented in the TI 
-           ovx implementation. This exception can be removed as soon as the vxCreateTensorFromHandle function is available */
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM009 */
         if (ip_mem_size <= op_mem_size)
 #endif
         {
@@ -453,7 +449,7 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
             }
         }
 #ifdef LDRA_UNTESTABLE_CODE
-        /* see corresponding if statement above */
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM010 */
         else
         {
             status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
@@ -529,8 +525,7 @@ vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool vali
                 res = ownSwapReferenceGeneric(input, output);
                 break;
 #ifdef LDRA_UNTESTABLE_CODE
-/* the interface for copy, move and swap is done via the direct adressing mode (vxu_...-) or when creating the corresponding specific node
-   so this is not possible to reach this code because the kernel type is specified by the private functions */       
+/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM011 */
             default:
                 res = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;

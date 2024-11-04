@@ -93,6 +93,7 @@ static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool v
                 res = swapScalar(input, output);
                 break;
 #ifdef LDRA_UNTESTABLE_CODE
+/* TIOVX-1701- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_SCALAR_UM003 */
 /* the interface for copy, move and swap is done via the direct adressing mode (vxu_...-) or when creating the corresponding specific node
    so this is not possible to reach this code because the kernel type is specified by the private functions */
             default:

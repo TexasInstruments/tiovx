@@ -54,8 +54,7 @@ static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_b
                 status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
             }
 #ifdef LDRA_UNTESTABLE_CODE
-/*  this code cannot be reached because the callback applies only on objArray, so the cast must be successfull.
-    The kernel callback is also set during the object creation so it cannot be NULL*/    
+/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM006 */
             else
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;

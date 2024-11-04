@@ -133,8 +133,7 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
             }
             break;
 #ifdef LDRA_UNTESTABLE_CODE
-/* the interface for copy, move and swap is done via the direct adressing mode (vxu_...-) or when creating the corresponding specific node
-   so this is not possible to reach this code because the kernel type is specified by the private functions */
+/* TIOVX-2004- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_ARRAY_UM001 */
         default:
             res = (vx_status)VX_ERROR_NOT_SUPPORTED;
             break;
