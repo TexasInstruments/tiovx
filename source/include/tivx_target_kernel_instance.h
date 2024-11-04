@@ -71,7 +71,7 @@
 extern "C" {
 #endif
 
-#include <VX/vx.h>
+#include <TI/tivx.h>
 
 /*!
  * \file

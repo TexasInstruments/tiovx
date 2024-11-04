@@ -64,7 +64,7 @@
 #ifndef TIVX_KERNELS_COMMON_UTILS_
 #define TIVX_KERNELS_COMMON_UTILS_
 
-#include <TI/tivx_debug.h>
+#include <VX/vx.h>
 
 #ifdef __cplusplus
 extern "C" {
