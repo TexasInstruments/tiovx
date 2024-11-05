@@ -241,7 +241,7 @@ extern "C" {
 /*! \brief Max number image objects supported
  * \ingroup group_vx_image_cfg
  */
-#define TIVX_IMAGE_MAX_OBJECTS             (512u + 1u)
+#define TIVX_IMAGE_MAX_OBJECTS             (576u + 1u)
 
 
 /*
