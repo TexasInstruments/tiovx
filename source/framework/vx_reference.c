@@ -455,7 +455,7 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
             status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
         }
 #endif
-        status = ownReferenceUnlock(output);
+        (void)ownReferenceUnlock(output);
     }
 
     return status;

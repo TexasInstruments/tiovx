@@ -107,7 +107,7 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
         case (vx_enum)VX_KERNEL_COPY:
             if ((vx_bool)vx_true_e == validate_only)
             {
-                res =  isArrayCopyable(vxCastRefAsArray(input, &res), vxCastRefAsArray(output, &res));
+                res = isArrayCopyable(vxCastRefAsArray(input, NULL), vxCastRefAsArray(output, NULL));
             }
             else
             {

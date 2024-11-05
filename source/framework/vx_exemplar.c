@@ -361,7 +361,7 @@ static vx_reference ownCreateObjectArrayFromExemplar(
     vx_reference objarr_item_exemplar;
     vx_object_array objarr = NULL;
 
-    vxQueryObjectArray(exemplar, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &count, sizeof(count));
+    (void)vxQueryObjectArray(exemplar, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &count, sizeof(count));
 
     objarr_item_exemplar = vxGetObjectArrayItem(exemplar, 0);
 #ifdef LDRA_UNTESTABLE_CODE
@@ -406,8 +406,8 @@ static vx_reference ownCreateUserDataObjectFromExemplar(
     vx_size size;
     vx_user_data_object user_data_object = NULL;
 
-    vxQueryUserDataObject(exemplar, (vx_enum)VX_USER_DATA_OBJECT_NAME, &type_name, sizeof(type_name));
-    vxQueryUserDataObject(exemplar, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &size, sizeof(size));
+    (void)vxQueryUserDataObject(exemplar, (vx_enum)VX_USER_DATA_OBJECT_NAME, &type_name, sizeof(type_name));
+    (void)vxQueryUserDataObject(exemplar, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &size, sizeof(size));
 
     user_data_object = vxCreateUserDataObject(context, type_name, size, NULL);
 
@@ -420,13 +420,13 @@ static vx_reference ownCreateRawImageFromExemplar(
     tivx_raw_image img = NULL;
     tivx_raw_image_create_params_t params;
 
-    tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_WIDTH, &params.width, sizeof(params.width));
-    tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_HEIGHT, &params.height, sizeof(params.height));
-    tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_NUM_EXPOSURES, &params.num_exposures, sizeof(params.num_exposures));
-    tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_LINE_INTERLEAVED, &params.line_interleaved, sizeof(params.line_interleaved));
-    tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_FORMAT, &params.format, sizeof(params.format));
-    tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &params.meta_height_before, sizeof(params.meta_height_before));
-    tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &params.meta_height_after, sizeof(params.meta_height_after));
+    (void)tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_WIDTH, &params.width, sizeof(params.width));
+    (void)tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_HEIGHT, &params.height, sizeof(params.height));
+    (void)tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_NUM_EXPOSURES, &params.num_exposures, sizeof(params.num_exposures));
+    (void)tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_LINE_INTERLEAVED, &params.line_interleaved, sizeof(params.line_interleaved));
+    (void)tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_FORMAT, &params.format, sizeof(params.format));
+    (void)tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &params.meta_height_before, sizeof(params.meta_height_before));
+    (void)tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &params.meta_height_after, sizeof(params.meta_height_after));
 
     img = tivxCreateRawImage(context, &params);
 

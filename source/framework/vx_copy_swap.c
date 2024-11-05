@@ -52,7 +52,7 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
             {
                 if (node->parameters[j] == old_reference)
                 {
-                    status |= ownReleaseReferenceInt(&node->parameters[j], node->parameters[j]->type, (vx_enum)VX_INTERNAL, NULL);
+                    status |= ownReleaseReferenceInt(&node->parameters[j], (vx_enum)node->parameters[j]->type, (vx_enum)VX_INTERNAL, NULL);
                     /* Setting it as void since return value 'count' is not used further */
                     (void)ownIncrementReference(new_reference, (vx_enum)VX_INTERNAL);
                     /* Assign parameter descriptor id in the node */
@@ -375,7 +375,7 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                 if ((vx_enum)VX_KERNEL_COPY == node->kernel->enumeration)
                 {
                     vx_uint32 j;
-                    for (j = 0; j < graph->num_nodes && removable; ++j)
+                    for (j = 0; (j < graph->num_nodes) && (removable == (vx_bool)(vx_true_e)); ++j)
                     {
                         if (copy_move_indices[i] != j)
                         {
@@ -434,7 +434,7 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                 if ((vx_enum)VX_KERNEL_COPY == node->kernel->enumeration)
                 {
                     vx_uint32 j;
-                    for (j = 0; j < num_copy_move_nodes && removable; ++j)
+                    for (j = 0; (j < num_copy_move_nodes) && (removable == (vx_bool)(vx_true_e)); ++j)
                     {
                         if (i != j)
                         {
@@ -445,24 +445,24 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                         }
                     }
                     tivx_obj_desc_node_t * obj_desc = (tivx_obj_desc_node_t *)(node->obj_desc[0]);
-                    for (j = 0; j < obj_desc->num_in_nodes && removable; j++)
+                    for (j = 0; (j < obj_desc->num_in_nodes) && (removable == (vx_bool)(vx_true_e)); j++)
                     {
-                        vx_node in_node = (vx_node)ownReferenceGetHandleFromObjDescId(obj_desc->in_node_id[j]);
-                        if (((tivx_obj_desc_node_t *)(in_node->obj_desc[0]))->num_out_nodes > 1)
+                        vx_node in_node = vxCastRefAsNode(ownReferenceGetHandleFromObjDescId(obj_desc->in_node_id[j]), NULL);
+                        if (((tivx_obj_desc_node_t *)(in_node->obj_desc[0]))->num_out_nodes > 1U)
                         {
                             vx_uint32 k;
-                            for (k = 0; k < graph->num_nodes && removable; ++k)
+                            for (k = 0; (k < graph->num_nodes) && (removable == (vx_bool)(vx_true_e)); ++k)
                             {
                                 if (copy_move_indices[i] != k)
                                 {
                                     vx_node othernode = graph->nodes[k];
                                     vx_uint32 l;
-                                    for (l = 0; l < othernode->kernel->signature.num_parameters && removable; ++l)
+                                    for (l = 0; (l < othernode->kernel->signature.num_parameters) && removable; ++l)
                                     {
                                         if ((othernode->parameters[l] == second) &&
                                             ((vx_enum)VX_BIDIRECTIONAL == othernode->kernel->signature.directions[l]))
                                         {
-                                            removable = vx_false_e;
+                                            removable = (vx_bool)vx_false_e;
                                         }
                                     }
                                 }

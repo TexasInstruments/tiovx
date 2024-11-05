@@ -639,9 +639,9 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
     for (i = 0; i < obj_desc->num_levels; i++)
     {
         /* If this is a virtual pyramid, the images must be virtual images */
-        if (prmd->base.is_virtual)
+        if (prmd->base.is_virtual == (vx_bool)vx_true_e)
         {
-            img = vxCreateVirtualImage((vx_graph)(prmd->base.scope), w, h,
+            img = vxCreateVirtualImage(vxCastRefAsGraph(prmd->base.scope, NULL), w, h,
                 obj_desc->format);
         }
         else
