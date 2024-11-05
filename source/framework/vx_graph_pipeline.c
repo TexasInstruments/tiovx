@@ -623,7 +623,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         }
                     }
-#endif
                 }
                 else if (0 == l_num_refs)
                 {

@@ -423,8 +423,8 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
         * ownReferenceGetMemAttrsFromObjDesc will always be true if
         * the previous condition is true
         */
-        (void)ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
-        (void)ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
+        (void)ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, (uint32_t *)&ip_mem_size);
+        (void)ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, (uint32_t *)&op_mem_size);
         status = ownReferenceLock(output);
         if (((vx_status)VX_SUCCESS == status) &&
             (ip_mem_size <= op_mem_size))

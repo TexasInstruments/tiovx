@@ -19,6 +19,7 @@
 #define OPENVX_KHR_SAFE_CASTS  "vx_khr_safe_casts"
 
 #include <VX/vx.h>
+#include <TI/tivx_tensor.h>
 
 #ifdef  __cplusplus
 extern "C" {

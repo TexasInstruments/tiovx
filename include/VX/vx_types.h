@@ -263,13 +263,6 @@ typedef struct _vx_array *vx_array;
  */
 typedef struct _vx_object_array *vx_object_array;
 
-/*! \brief The multidimensional data object (Tensor).
- * \see vxCreateTensor
- * \ingroup group_object_tensor
- * \extends vx_reference
- */
-typedef struct _vx_tensor * vx_tensor;
-
 /*! \brief A Boolean value.
  * This allows 0 to be FALSE, as it is in C, and any non-zero to be TRUE.
  * \code
