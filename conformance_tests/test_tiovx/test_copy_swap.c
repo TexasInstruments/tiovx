@@ -1264,18 +1264,18 @@ TEST (copySwap, testSubObjectsMaxOfSubImages )
     vx_image yuv_image[TIVX_IMAGE_MAX_SUBIMAGE_DEPTH+1U];
 
     vx_rectangle_t rect0 = {.start_x = 0, .start_y = 0, .end_x = 10, .end_y = 10};
-    vx_rectangle_t rect1 = {.start_x = 0, .start_y = 0, .end_x = 8, .end_y = 8};    
+    vx_rectangle_t rect1 = {.start_x = 0, .start_y = 0, .end_x = 8, .end_y = 8};
 
     ASSERT_VX_OBJECT(parent_image_1 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(parent_image_2 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     writeImage(parent_image_1, 0x33, 0x9c);
-    writeImage(parent_image_2, 0x42, 0xab);  
+    writeImage(parent_image_2, 0x42, 0xab);
 
     vx_uint32 i;
     for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; ++i)
     {
-        sub_images_1[i] = vxCreateImageFromROI(parent_image_1, &rect0);
-        sub_images_2[i] = vxCreateImageFromROI(parent_image_2, &rect0);
+        ASSERT_VX_OBJECT(sub_images_1[i] = vxCreateImageFromROI(parent_image_1, &rect0), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(sub_images_2[i] = vxCreateImageFromROI(parent_image_2, &rect0), VX_TYPE_IMAGE);
     }
     
     /* max out the number of possible subimages */
@@ -1284,8 +1284,8 @@ TEST (copySwap, testSubObjectsMaxOfSubImages )
     {
         for (j = 0; j < TIVX_IMAGE_MAX_SUBIMAGES; j++)
         {
-            sub_sub_images_1[i][j] = vxCreateImageFromROI(sub_images_1[i], &rect1);
-            sub_sub_images_2[i][j] = vxCreateImageFromROI(sub_images_2[i], &rect1);
+            ASSERT_VX_OBJECT(sub_sub_images_1[i][j] = vxCreateImageFromROI(sub_images_1[i], &rect1), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(sub_sub_images_2[i][j] = vxCreateImageFromROI(sub_images_2[i], &rect1), VX_TYPE_IMAGE);
         }
     }
 
@@ -1339,11 +1339,11 @@ TEST (copySwap, testSubObjectsMaxOfSubImages )
     VX_CALL(vxReleaseImage(&parent_image_2));
 
     /* add a negative test for creating image from channel*/
-    parent_image_1 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_IYUV);
-    yuv_image[0U] = vxCreateImageFromChannel(parent_image_1, VX_CHANNEL_Y);
+    ASSERT_VX_OBJECT(parent_image_1 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_IYUV), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(yuv_image[0U] = vxCreateImageFromChannel(parent_image_1, VX_CHANNEL_Y), VX_TYPE_IMAGE);
     for (i = 1; i < TIVX_IMAGE_MAX_SUBIMAGE_DEPTH; ++i)
     {
-        yuv_image[i] = vxCreateImageFromROI(yuv_image[i-1], &rect0);
+        ASSERT_VX_OBJECT(yuv_image[i] = vxCreateImageFromROI(yuv_image[i-1], &rect0), VX_TYPE_IMAGE);
     }
     /* last level cannot be created */
     yuv_image[TIVX_IMAGE_MAX_SUBIMAGE_DEPTH] = vxCreateImageFromROI(yuv_image[TIVX_IMAGE_MAX_SUBIMAGE_DEPTH-1], &rect0);
@@ -1588,7 +1588,7 @@ TEST(copySwap, testNoCopyRemovalSubObjects)
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     /* Test copy not removed when one image is from a channel */
-    parent = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_NV21);
+    ASSERT_VX_OBJECT(parent = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_NV21), VX_TYPE_IMAGE);
     vx_image images2[] =
     {
         vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),
@@ -1843,11 +1843,11 @@ TEST(copySwap, testMaxNodes)
     int i;
     for (i = 0; i < 16; ++i)
     {
-        images[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+        ASSERT_VX_OBJECT(images[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     }
     for (i = 0; i < 2; ++i)
     {
-        virtual_images[i] = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_U8);
+        ASSERT_VX_OBJECT(virtual_images[i] = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     }
     vx_node nodes[] = 
     {
@@ -1872,17 +1872,17 @@ TEST(copySwap, testMaxNodes)
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
     for (i = 0; i < 16; ++i)
     {
-        vxReleaseImage(&images[i]);
+        VX_CALL(vxReleaseImage(&images[i]));
     }
     for (i = 0; i < 2; ++i)
     {
-        vxReleaseImage(&virtual_images[i]);
+        VX_CALL(vxReleaseImage(&virtual_images[i]));
     }
     for (i = 0; i < dimof(nodes); ++i)
     {
-        vxReleaseNode(&nodes[i]);
+        VX_CALL(vxReleaseNode(&nodes[i]));
     }
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseGraph(&graph));
 }
 /* Test move node optimisation
     An input move node (with virtual output) should be removed
@@ -2197,7 +2197,7 @@ TEST(copySwap, testDelays)
     vx_object_array array_out = (vx_object_array)createReference(context, VX_TYPE_OBJECT_ARRAY);
     image_in = (vx_image)vxGetObjectArrayItem(array_in, 0);
     image_out = (vx_image)vxGetObjectArrayItem(array_out, 0);
-    delay = vxCreateDelay(context, (vx_reference)array_in, 2);
+    ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)array_in, 2), VX_TYPE_DELAY);
     image_0 = (vx_image)vxGetObjectArrayItem((vx_object_array)vxGetReferenceFromDelay(delay, 0), 0);
     image_1 = (vx_image)vxGetObjectArrayItem((vx_object_array)vxGetReferenceFromDelay(delay, -1), 0);
     nodes[0] = vxMoveNode(graph, (vx_reference)image_in, (vx_reference)image_0);
@@ -2238,7 +2238,7 @@ TEST(copySwap, testDelays)
     array_out = (vx_object_array)createReference(context, VX_TYPE_OBJECT_ARRAY);
     image_in = (vx_image)vxGetObjectArrayItem(array_in, 0);
     image_out = (vx_image)vxGetObjectArrayItem(array_out, 0);
-    delay = vxCreateDelay(context, (vx_reference)array_in, 2);
+    ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)array_in, 2), VX_TYPE_DELAY);
 
     image_0 = (vx_image)vxGetObjectArrayItem((vx_object_array)vxGetReferenceFromDelay(delay, 0), 0);
     image_1 = (vx_image)vxGetObjectArrayItem((vx_object_array)vxGetReferenceFromDelay(delay, -1), 0);
@@ -2382,7 +2382,7 @@ TEST(copySwap, testImportFromHandle)
     /* init memory */
     ct_memset(ptrs, 0xff, plane_size);    
 
-    image = vxCreateImageFromHandle(context, format, &addr, &ptrs, (vx_enum)VX_MEMORY_TYPE_HOST);    
+    image = vxCreateImageFromHandle(context, format, &addr, &ptrs, (vx_enum)VX_MEMORY_TYPE_HOST);
     ASSERT_VX_OBJECT(image, VX_TYPE_IMAGE);
     vx_rectangle_t rect = {.start_x = 0, .start_y = 0, .end_x = 24, .end_y = 24};
     /* create a vx_image with the same format and dimensions */
