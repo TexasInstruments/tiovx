@@ -6974,7 +6974,7 @@ TEST(tivxGraphPipeline, testMultipleEnqueueOnSameNodeOnlyTwoGraphParams)
     }
     vx_reference dequeueinput1;
     vx_reference dequeueoutput; 
-    vx_uint16 num_dequeued_refs; 
+    vx_uint32 num_dequeued_refs; 
 
     // try dequeueing inputs/outputs
     for (int i = 0; i < 4; i++)
