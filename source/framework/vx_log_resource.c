@@ -220,6 +220,12 @@ tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                                    (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
+        TIVX_GRAPH_MAX_PARAM_REFS, 0, 0, 1, "TIVX_GRAPH_MAX_PARAM_REFS", { {(uint32_t)VX_TYPE_UINT32, (uint32_t)TIVX_TYPE_UINTPTR}, \
+                                                                           {TIVX_GRAPH_MAX_PARAMS+TIVX_GRAPH_MAX_OBJECTS, \
+                                                                            TIVX_GRAPH_MAX_PARAMS+TIVX_GRAPH_MAX_OBJECTS} }, \
+                                                                         (vx_bool)vx_false_e, (vx_bool)vx_false_e
+    },
+    {
         TIVX_NODE_MAX_OUT_NODES, 0, 0, 2, "TIVX_NODE_MAX_OUT_NODES", { {(uint32_t)VX_TYPE_UINT16}, \
                                                                        {TIVX_NODE_MAX_OBJECTS} }, \
                                                                      (vx_bool)vx_false_e, (vx_bool)vx_false_e

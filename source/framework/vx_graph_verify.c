@@ -160,6 +160,7 @@ static vx_status ownGraphLinkParameters(vx_graph graph)
                             graph->parameters[p_index].params_list[graph->parameters[p_index].num_other].node = this_node;
                             graph->parameters[p_index].params_list[graph->parameters[p_index].num_other].index = this_index;
                             graph->parameters[p_index].num_other++;
+                            ownLogResourceAlloc("TIVX_GRAPH_MAX_PARAM_REFS", 1);
                         }
                     }
                 }
