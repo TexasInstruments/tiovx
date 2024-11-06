@@ -849,9 +849,10 @@ TEST(tivxInternalNode, TestBranchownNodeUserKernelExecute)
     ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
     ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
 
+    kernel = node->kernel;
     node->kernel = NULL;
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownNodeUserKernelExecute(node, NULL));
-
+    node->kernel = kernel;
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
 }

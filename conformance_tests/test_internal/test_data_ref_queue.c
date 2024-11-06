@@ -48,15 +48,21 @@ TEST(tivxInternalDataRefQueue, negativeTestOwnDataRefQueueSendRefConsumedEvent)
     vx_graph graph = NULL;
     tivx_data_ref_queue_create_params_t prms;
     prms.pipeline_depth = 1;
+    tivx_event wait_done_ref_available_event_local;
+    vx_bool is_enable_send_ref_consumed_event_local;
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownDataRefQueueSendRefConsumedEvent(NULL, 0));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(ref = tivxDataRefQueueCreate(graph, &prms), (vx_enum)TIVX_TYPE_DATA_REF_Q);
 
+    wait_done_ref_available_event_local = ref->wait_done_ref_available_event;
+    is_enable_send_ref_consumed_event_local = ref->is_enable_send_ref_consumed_event;
     ref->wait_done_ref_available_event = NULL;
     ref->is_enable_send_ref_consumed_event = 0;
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownDataRefQueueSendRefConsumedEvent(ref, 0));
+    ref->wait_done_ref_available_event = wait_done_ref_available_event_local;
+    ref->is_enable_send_ref_consumed_event = is_enable_send_ref_consumed_event_local;
 
     VX_CALL(vxReleaseGraph(&graph));
     VX_CALL(ownDataRefQueueRelease(&ref));
