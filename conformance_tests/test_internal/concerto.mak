@@ -32,6 +32,12 @@ IDIRS       += $(HOST_ROOT)/conformance_tests/test_tiovx/utils
 IDIRS       += $(HOST_ROOT)/conformance_tests/test_tiovx
 IDIRS       += $(PSDK_PATH)/app_utils
 
+ifeq ($(TARGET_OS),QNX)
+IDIRS       += $(PSDK_PATH)/app_utils/utils/mem/src
+IDIRS       += $(PSDK_QNX_PATH)/qnx/sharedmemallocator/usr/public
+IDIRS       += $(PSDK_QNX_PATH)/qnx/sharedmemallocator/resmgr/public
+endif
+
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number
 CFLAGS += --diag_suppress=179

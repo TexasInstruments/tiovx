@@ -26,6 +26,10 @@
 #include <VX/vx_types.h>
 #include <utils/mem/include/app_mem.h>
 
+#if defined(QNX)
+#include <SharedMemoryAllocatorUsr.h>
+#endif
+
 #define INVALID_ARG -1
 
 TESTCASE(tivxDmaHeap, CT_VXContext, ct_setup_vx_context, 0)
@@ -95,6 +99,40 @@ TEST(tivxDmaHeap, testappMemShared2TargetPtr)
     ASSERT(shared_ptr == appMemShared2TargetPtr(shared_ptr));
 }
 
+#if defined(QNX)
+TEST(tivxDmaHeap, testAppMemAlloc)
+{
+    void *ptr = NULL;
+    uint32_t size = 1024;
+    uint32_t region = 0;
+
+    ptr = appMemAlloc(region, size, 0);
+
+    ASSERT(ptr != NULL);
+
+    VX_CALL(appMemFree(region, ptr, size));
+}
+
+TEST(tivxDmaHeap, testAppMemTranslateQnx)
+{
+    shm_buf buf;
+    uint32_t size = 1024;
+    uint32_t align = 1024;
+    uint32_t region = 0;
+    void     *phyAddr;
+    void     *virtAddr;
+
+    SHM_alloc_aligned((int)size, align, &buf);
+
+    ASSERT(buf.vir_addr != 0);
+
+    VX_CALL(tivxMemTranslateFd(buf.phy_addr, size, &virtAddr, &phyAddr));
+
+    VX_CALL(appMemFree(region, (void *)buf.vir_addr, size));
+}
+
+#endif
+
 TESTCASE_TESTS(
     tivxDmaHeap,
     testappMemTranslateDmaBufFd,
@@ -102,6 +140,10 @@ TESTCASE_TESTS(
 #ifndef PC
     testappMemStats,
     testappMemCacheWbInv,
+#endif
+#if defined(QNX)
+    testAppMemAlloc,
+    testAppMemTranslateQnx,
 #endif
     testappMemAddTupleToList,
     testappMemShared2PhysPtr,
