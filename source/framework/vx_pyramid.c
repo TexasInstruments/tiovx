@@ -55,47 +55,53 @@ static const vx_float32 gOrbScaleFactor
 static vx_status isPyramidCopyable(vx_reference input, vx_reference output)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_pyramid_t *in_objd = (tivx_obj_desc_pyramid_t *)input->obj_desc;
-    tivx_obj_desc_pyramid_t *out_objd = (tivx_obj_desc_pyramid_t *)output->obj_desc;
+
     if (((vx_bool)vx_false_e == ownIsValidSpecificReference(input, (vx_enum)VX_TYPE_PYRAMID)) ||
         ((vx_bool)vx_false_e == ownIsValidSpecificReference(output, (vx_enum)VX_TYPE_PYRAMID)) ||
         (input == output))
     {
         status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
     }
-    else if ((in_objd->num_levels != out_objd->num_levels) ||
-             (in_objd->scale != out_objd->scale))
-    {
-        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-    }
-    else if ((in_objd->width != out_objd->width) &&
-        ((0U != out_objd->width) ||
-         ((vx_bool)vx_false_e == output->is_virtual)))
-    {
-        /* output width must be the same as input width unless output is virtual with width zero */
-        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-    }
-    else if ((in_objd->height != out_objd->height) &&
-             ((0U != out_objd->height) ||
-              ((vx_bool)vx_false_e == output->is_virtual)))
-    {
-        /* output height must be the same as input height unless output is virtual with height zero */
-        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-    }
-    else if ((in_objd->format != out_objd->format) &&
-             (((vx_df_image)VX_DF_IMAGE_VIRT != out_objd->format) ||
-              ((vx_bool)vx_false_e == output->is_virtual)))
-    {
-        /* Output format must be the same as input format unless output is virtual with virtual format */
-        status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
-    }
     else
     {
-        /* All OK, so we propagate metadata */
-        out_objd->format = in_objd->format;
-        out_objd->height = in_objd->height;
-        out_objd->width = in_objd->width;
+        tivx_obj_desc_pyramid_t *in_objd = (tivx_obj_desc_pyramid_t *)input->obj_desc;
+        tivx_obj_desc_pyramid_t *out_objd = (tivx_obj_desc_pyramid_t *)output->obj_desc;
+
+        if ((in_objd->num_levels != out_objd->num_levels) ||
+             (in_objd->scale != out_objd->scale))
+        {
+            status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+        else if ((in_objd->width != out_objd->width) &&
+            ((0U != out_objd->width) ||
+             ((vx_bool)vx_false_e == output->is_virtual)))
+        {
+            /* output width must be the same as input width unless output is virtual with width zero */
+            status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+        else if ((in_objd->height != out_objd->height) &&
+                 ((0U != out_objd->height) ||
+                  ((vx_bool)vx_false_e == output->is_virtual)))
+        {
+            /* output height must be the same as input height unless output is virtual with height zero */
+            status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+        else if ((in_objd->format != out_objd->format) &&
+                 (((vx_df_image)VX_DF_IMAGE_VIRT != out_objd->format) ||
+                  ((vx_bool)vx_false_e == output->is_virtual)))
+        {
+            /* Output format must be the same as input format unless output is virtual with virtual format */
+            status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+        else
+        {
+            /* All OK, so we propagate metadata */
+            out_objd->format = in_objd->format;
+            out_objd->height = in_objd->height;
+            out_objd->width = in_objd->width;
+        }
     }
+
     return status;
 }
 

@@ -52,7 +52,11 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
             {
                 if (node->parameters[j] == old_reference)
                 {
-                    status |= ownReleaseReferenceInt(&node->parameters[j], (vx_enum)node->parameters[j]->type, (vx_enum)VX_INTERNAL, NULL);
+                    status = ownReleaseReferenceInt(&node->parameters[j], (vx_enum)node->parameters[j]->type, (vx_enum)VX_INTERNAL, NULL);
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        break;
+                    }
                     /* Setting it as void since return value 'count' is not used further */
                     (void)ownIncrementReference(new_reference, (vx_enum)VX_INTERNAL);
                     /* Assign parameter descriptor id in the node */
@@ -102,7 +106,10 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
         tivx_obj_desc_node_t *in_objd = in_node->obj_desc[0];
         vx_uint32 j = 0;
         /* remove old node from out nodes of the in node */
-        while (old_node_id != in_objd->out_node_id[j]) j++;
+        while (old_node_id != in_objd->out_node_id[j])
+        {
+            j++;
+        }
         in_objd->out_node_id[j] = in_objd->out_node_id[in_objd->num_out_nodes - 1U];
         in_objd->num_out_nodes--;
         /* add all out nodes of old_node to in_node */
@@ -457,7 +464,7 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                                 {
                                     vx_node othernode = graph->nodes[k];
                                     vx_uint32 l;
-                                    for (l = 0; (l < othernode->kernel->signature.num_parameters) && removable; ++l)
+                                    for (l = 0; (l < othernode->kernel->signature.num_parameters) && (removable == (vx_bool)(vx_true_e)); ++l)
                                     {
                                         if ((othernode->parameters[l] == second) &&
                                             ((vx_enum)VX_BIDIRECTIONAL == othernode->kernel->signature.directions[l]))
