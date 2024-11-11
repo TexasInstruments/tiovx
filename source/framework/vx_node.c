@@ -2041,15 +2041,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
     if(status == (vx_status)VX_SUCCESS)
     {
         /* validate replicated params */
-        status = vxQueryNode(first_node, (vx_enum)VX_NODE_PARAMETERS, &numParams, sizeof(numParams));
-        if ((vx_status)VX_SUCCESS == status)/* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR030 */
-        {
+        (void)vxQueryNode(first_node, (vx_enum)VX_NODE_PARAMETERS, &numParams, sizeof(numParams));
             if (numParams != number_of_parameters)
             {
                 VX_PRINT(VX_ZONE_ERROR, "numParams does not equal number_of_parameters\n");
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
-        }
     }
 
     if(status == (vx_status)VX_SUCCESS)
