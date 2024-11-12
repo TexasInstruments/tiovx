@@ -965,7 +965,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCtrlCmdFail, TestArg, TEST_PARAMS)
     objCntxt.vxContext           = context_->vx_context_;
     cfgParams->createCmdTimeout  = 0;
     cfgParams->deleteCmdTimeout  = 0;
-    cfgParams->controlCmdTimeout = 2;
+    cfgParams->controlCmdTimeout = 3;
     cfgParams->processCmdTimeout = 0;
 
     /* Create objects. */
