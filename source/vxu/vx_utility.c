@@ -30,6 +30,7 @@
 static vx_status setNodeTarget(vx_node node);
 static vx_status vx_isBorderModeSupported(vx_enum mode_to_check, const vx_enum supported_modes[], vx_size num_modes);
 static vx_status vx_useImmediateBorderMode(vx_context context, vx_node node, const vx_enum supported_modes[], vx_size num_modes);
+static vx_status ownCallKernelFunc(vx_reference input, vx_reference output, vx_enum kernel);
 
 static vx_status setNodeTarget(vx_node node)
 {
