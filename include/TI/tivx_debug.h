@@ -129,7 +129,7 @@ void tivx_print_global(vx_enum zone, const char *format, ...);
 
 /*! \brief Internal printing function for a framework object with a set debug zone bitmask
  * \param [in] zone The debug zone from \ref tivx_debug_zone_e required to print the given message.
- * \param [in] set_zone The debug zone bitmask of a framework object
+ * \param [in] debug_zonemask The debug zone bitmask of a framework object
  * \param [in] format The format string to print.
  * \param [in] ... The variable list of arguments.
  * \ingroup group_vx_debug

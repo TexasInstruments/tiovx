@@ -70,7 +70,7 @@ extern "C" {
 #define ZONE_BIT(zone) ((vx_uint32)1U << (zone))
 
 /*! \brief Internal function - returns the global debug zone bitmask
- * \param [out] vx_uint32 The global debug zone bitmask
+ *
  * \ingroup group_vx_debug
  */
 vx_uint32 ownGetGlobalZonemask(void);
