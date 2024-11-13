@@ -100,7 +100,7 @@ extern "C" {
  *
  * \ingroup group_tivx_log_resource
  */
-#define TIVX_RESOURCE_STATS_TABLE_SIZE (57u)
+#define TIVX_RESOURCE_STATS_TABLE_SIZE (58u)
 
 
 /*! \brief Struct containing config parameters of given static resource. Allows
