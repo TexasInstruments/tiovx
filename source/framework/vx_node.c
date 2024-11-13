@@ -2042,11 +2042,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
     {
         /* validate replicated params */
         (void)vxQueryNode(first_node, (vx_enum)VX_NODE_PARAMETERS, &numParams, sizeof(numParams));
-            if (numParams != number_of_parameters)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "numParams does not equal number_of_parameters\n");
-                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            }
+
+        if (numParams != number_of_parameters)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "numParams does not equal number_of_parameters\n");
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        }
     }
 
     if(status == (vx_status)VX_SUCCESS)
