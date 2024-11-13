@@ -131,7 +131,7 @@ void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name,
         else
         {
             ownPlatformGetTargetName(target_id, target_name);
-            VX_PRINT(VX_ZONE_INIT, "Added target %s \n", target_name);
+            VX_PRINT(VX_ZONE_INFO, "Added target %s \n", target_name);
         }
     }
 }

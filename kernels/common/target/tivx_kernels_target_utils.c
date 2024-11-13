@@ -374,7 +374,7 @@ void tivxReserveC66xL2MEM(void)
     ibuf_ptr = tivxMemAlloc(ibuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
     wbuf_ptr = tivxMemAlloc(wbuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
 
-    VX_PRINT(VX_ZONE_INIT,
+    VX_PRINT(VX_ZONE_INFO,
         "BAM memory config: IBUF %d bytes @ 0x%08x, WBUF %d bytes @ 0x%08x !!! \n",
         ibuf_size, ibuf_ptr, wbuf_size, wbuf_ptr);
 

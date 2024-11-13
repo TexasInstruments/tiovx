@@ -101,7 +101,7 @@ void tivxInit(void)
 
     if (0U == g_init_status)
     {
-        tivx_set_debug_zone(VX_ZONE_INIT);
+        tivx_set_debug_zone(VX_ZONE_INFO);
         tivx_set_debug_zone(VX_ZONE_ERROR);
         tivx_set_debug_zone(VX_ZONE_WARNING);
 
@@ -193,9 +193,7 @@ void tivxInit(void)
 
         ownPlatformCreateTargets();
 
-        VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
-
-        tivx_clr_debug_zone(VX_ZONE_INIT);
+        VX_PRINT(VX_ZONE_INFO, "Initialization Done !!!\n");
     }
 
     g_init_status++;

@@ -1099,8 +1099,8 @@ static uint32_t ownGraphGetOptimalNumBuf(vx_graph graph, vx_reference ref)
 /* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT008 */
     if (num_bufs >= TIVX_OBJ_DESC_QUEUE_MAX_DEPTH)
     {
-        VX_PRINT(VX_ZONE_OPTIMIZATION, "Required number of buffers = %d but max buffer depth = %d\n", num_bufs, (int32_t)TIVX_OBJ_DESC_QUEUE_MAX_DEPTH-1);
-        VX_PRINT(VX_ZONE_OPTIMIZATION, "Will need to increase the value of TIVX_OBJ_DESC_QUEUE_MAX_DEPTH in tiovx/include/TI/tivx_config.h to get full performance\n");
+        VX_PRINT(VX_ZONE_INFO, "Required number of buffers = %d but max buffer depth = %d\n", num_bufs, (int32_t)TIVX_OBJ_DESC_QUEUE_MAX_DEPTH-1);
+        VX_PRINT(VX_ZONE_INFO, "Will need to increase the value of TIVX_OBJ_DESC_QUEUE_MAX_DEPTH in tiovx/include/TI/tivx_config.h to get full performance\n");
         num_bufs = (int32_t)TIVX_OBJ_DESC_QUEUE_MAX_DEPTH-1;
     }
 /* END: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT008 */
@@ -1179,14 +1179,14 @@ void ownGraphDetectAndSetNumBuf(vx_graph graph)
                             if (0U == node_cur->parameter_index_num_buf[prm_cur_idx])
                             {
                                 node_cur->parameter_index_num_buf[prm_cur_idx] = optimal_num_buf;
-                                VX_PRINT(VX_ZONE_OPTIMIZATION, "Buffer depth not set by user at node %s parameter %s\n", node_ref->name, ref->name);
-                                VX_PRINT(VX_ZONE_OPTIMIZATION, "Setting number of buffers to %d\n", node_cur->parameter_index_num_buf[prm_cur_idx]);
+                                VX_PRINT(VX_ZONE_INFO, "Buffer depth not set by user at node %s parameter %s\n", node_ref->name, ref->name);
+                                VX_PRINT(VX_ZONE_INFO, "Setting number of buffers to %d\n", node_cur->parameter_index_num_buf[prm_cur_idx]);
                             }
                             else if (optimal_num_buf > node_cur->parameter_index_num_buf[prm_cur_idx])
                             {
                                 /* Flagging to user if the number of buffers set is less than optimal */
-                                VX_PRINT(VX_ZONE_OPTIMIZATION, "Internally computed buffer value greater than buffers set at node %s parameter %s\n", node_ref->name, ref->name);
-                                VX_PRINT(VX_ZONE_OPTIMIZATION, "Computed number of buffers = %d, set number of buffers = %d\n", optimal_num_buf, node_cur->parameter_index_num_buf[prm_cur_idx]);
+                                VX_PRINT(VX_ZONE_INFO, "Internally computed buffer value greater than buffers set at node %s parameter %s\n", node_ref->name, ref->name);
+                                VX_PRINT(VX_ZONE_INFO, "Computed number of buffers = %d, set number of buffers = %d\n", optimal_num_buf, node_cur->parameter_index_num_buf[prm_cur_idx]);
                             }
                             else
                             {
@@ -1224,8 +1224,8 @@ vx_uint32 ownGraphGetPipeDepth(vx_graph graph)
     if ( (pipe_depth >= TIVX_GRAPH_MAX_PIPELINE_DEPTH) &&
          ((vx_bool)vx_false_e == graph->is_pipeline_depth_set) )
     {
-        VX_PRINT(VX_ZONE_OPTIMIZATION, "Required pipe depth = %d but max pipe depth = %d\n", pipe_depth, (int32_t)TIVX_GRAPH_MAX_PIPELINE_DEPTH-1);
-        VX_PRINT(VX_ZONE_OPTIMIZATION, "Will need to increase the value of TIVX_GRAPH_MAX_PIPELINE_DEPTH in tiovx/include/TI/tivx_config.h to get full performance\n");
+        VX_PRINT(VX_ZONE_INFO, "Required pipe depth = %d but max pipe depth = %d\n", pipe_depth, (int32_t)TIVX_GRAPH_MAX_PIPELINE_DEPTH-1);
+        VX_PRINT(VX_ZONE_INFO, "Will need to increase the value of TIVX_GRAPH_MAX_PIPELINE_DEPTH in tiovx/include/TI/tivx_config.h to get full performance\n");
         pipe_depth = (int32_t)TIVX_GRAPH_MAX_PIPELINE_DEPTH-1;
     }
 

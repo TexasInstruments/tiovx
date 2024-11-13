@@ -31,24 +31,7 @@ struct vx_string_and_enum_e {
 static struct vx_string_and_enum_e g_debug_enumnames[] = {
     STR2(VX_ZONE_ERROR),
     STR2(VX_ZONE_WARNING),
-    STR2(VX_ZONE_API),
     STR2(VX_ZONE_INFO),
-    STR2(VX_ZONE_PERF),
-    STR2(VX_ZONE_CONTEXT),
-    STR2(VX_ZONE_OSAL),
-    STR2(VX_ZONE_REFERENCE),
-    STR2(VX_ZONE_ARRAY),
-    STR2(VX_ZONE_IMAGE),
-    STR2(VX_ZONE_SCALAR),
-    STR2(VX_ZONE_KERNEL),
-    STR2(VX_ZONE_GRAPH),
-    STR2(VX_ZONE_NODE),
-    STR2(VX_ZONE_PARAMETER),
-    STR2(VX_ZONE_DELAY),
-    STR2(VX_ZONE_TARGET),
-    STR2(VX_ZONE_LOG),
-    STR2(VX_ZONE_INIT),
-    STR2(VX_ZONE_OPTIMIZATION),
     {"UNKNOWN", -1} /* if the zone is not found, this will be returned. */
 };
 

@@ -103,7 +103,7 @@ static void tivxHostInitLocal(void)
         }
 #endif
 
-        VX_PRINT(VX_ZONE_INIT, "Initialization Done for HOST !!!\n");
+        VX_PRINT(VX_ZONE_INFO, "Initialization Done for HOST !!!\n");
     }
 
     gInitCount++;
@@ -117,7 +117,7 @@ static void tivxHostDeInitLocal(void)
 
         if (0U == gInitCount)
         {
-            VX_PRINT(VX_ZONE_INIT, "De-Initialization Done for HOST !!!\n");
+            VX_PRINT(VX_ZONE_INFO, "De-Initialization Done for HOST !!!\n");
             (void)ownObjectDeInit();
             tivxUnRegisterOpenVXExtKernels();
             tivxUnRegisterOpenVXCoreKernels();

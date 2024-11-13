@@ -72,7 +72,6 @@ static void tivxInitLocal(void)
 {
     if (0U == gInitCount)
     {
-        tivx_set_debug_zone((int32_t)VX_ZONE_INIT);
         tivx_set_debug_zone((int32_t)VX_ZONE_ERROR);
         tivx_set_debug_zone((int32_t)VX_ZONE_WARNING);
         tivx_clr_debug_zone((int32_t)VX_ZONE_INFO);
@@ -124,7 +123,7 @@ static void tivxInitLocal(void)
 
         ownPlatformCreateTargets();
 
-        VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
+        VX_PRINT(VX_ZONE_INFO, "Initialization Done !!!\n");
     }
 
     gInitCount++;
@@ -187,7 +186,7 @@ static void tivxDeInitLocal(void)
             (void)ownPosixObjectDeInit();
 #endif
 
-            VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");
+            VX_PRINT(VX_ZONE_INFO, "De-Initialization Done !!!\n");
         }
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
 /*LDRA_ANALYSIS*/

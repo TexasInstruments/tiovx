@@ -2106,8 +2106,8 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
         {
             if (calculated_pipe_depth > graph->pipeline_depth)
             {
-                VX_PRINT(VX_ZONE_OPTIMIZATION, "Pipe depth value of %d set via tivxSetGraphPipelineDepth may not be optimal\n", graph->pipeline_depth);
-                VX_PRINT(VX_ZONE_OPTIMIZATION, "The calculated pipe depth value is %d\n", calculated_pipe_depth);
+                VX_PRINT(VX_ZONE_INFO, "Pipe depth value of %d set via tivxSetGraphPipelineDepth may not be optimal\n", graph->pipeline_depth);
+                VX_PRINT(VX_ZONE_INFO, "The calculated pipe depth value is %d\n", calculated_pipe_depth);
             }
         }
     }

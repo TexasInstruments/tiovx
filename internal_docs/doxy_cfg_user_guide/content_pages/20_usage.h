@@ -914,7 +914,7 @@
     In order to further fine tune and potentially optimize the OpenVX graph, the application developer has the option to set the pipeline depth
     directly via the \ref tivxSetGraphPipelineDepth API.  In this case, the framework will use the value provided by the application rather than
     the calculated value. However, if this value is less than the optimal value as calculated by the framework, a message will be printed to
-    the console using the \ref VX_ZONE_OPTIMIZATION logging level indicating to the user that this value may not be optimal.  By using the
+    the console using the \ref VX_ZONE_WARNING logging level indicating to the user that this value may not be optimal.  By using the
     \ref tivxSetGraphPipelineDepth API, the application developer can potentially reduce the memory footprint of the graph in the case that
     real time performance can be achieved by using a smaller pipeline depth value than detected by the framework.  In order to know the value
     the framework is using for pipeline depth, the user can call the \ref vxQueryGraph API using the \ref TIVX_GRAPH_PIPELINE_DEPTH macro
@@ -954,7 +954,7 @@
     directly via the \ref tivxSetNodeParameterNumBufByIndex API.  (The parameter being set to use multiple buffers using this API must not already
     be created as a graph parameter.  Otherwise, an error will be thrown during \ref vxVerifyGraph.)  If the \ref tivxSetNodeParameterNumBufByIndex API
     is used, the framework will use the value provided by the application rather than the calculated value.  However, if this value is less
-    than the optimal value as calculated by the framework, a message will be printed to the console using the \ref VX_ZONE_OPTIMIZATION
+    than the optimal value as calculated by the framework, a message will be printed to the console using the \ref VX_ZONE_WARNING
     logging level indicating to the user that this value may not be optimal.  By using the \ref tivxSetNodeParameterNumBufByIndex API,
     the application developer can potentially reduce the memory footprint of the graph in the case that real time performance can be
     achieved by using a smaller buffer depth value than detected by the framework.  In order to know the value the framework is using

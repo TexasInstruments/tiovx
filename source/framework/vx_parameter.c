@@ -212,7 +212,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 
     if(status == (vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_PARAMETER, "Attempting to set parameter[%u] on %s (enum:%d) to "VX_FMT_REF"\n",
+        VX_PRINT(VX_ZONE_INFO, "Attempting to set parameter[%u] on %s (enum:%d) to "VX_FMT_REF"\n",
                     index,
                     node->kernel->name,
                     node->kernel->enumeration,
@@ -254,7 +254,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                     /* if it was a valid reference then get the type from it */
                     if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type))) /* TIOVX-1927- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PARAMETER_UBR004 */
                     {
-                        VX_PRINT(VX_ZONE_PARAMETER, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
+                        VX_PRINT(VX_ZONE_INFO, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
                     }
                     /* Check that signature type matches reference type*/
                     if (node->kernel->signature.types[index] != type)
@@ -361,7 +361,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 
         if (status == (vx_status)VX_SUCCESS)
         {
-            VX_PRINT(VX_ZONE_PARAMETER, "Assigned Node[%u] %p type:%08x ref="VX_FMT_REF"\n",
+            VX_PRINT(VX_ZONE_INFO, "Assigned Node[%u] %p type:%08x ref="VX_FMT_REF"\n",
                      index, node, type, value);
         }
         else
