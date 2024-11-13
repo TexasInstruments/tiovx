@@ -1616,14 +1616,16 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
  * - Same input going to multiple nodes
  * - Outputs from multiple nodes going to a single node
  * - Node taking input from another node as well as from user
+ * - Graph / node level debugging options at each level of the pipeline
  *
  */
 TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_image d0[MAX_NUM_BUF] = {NULL}, d1, d2, d3, d4[MAX_NUM_BUF] = {NULL}, d5[MAX_NUM_BUF] = {NULL};
-    vx_node  n0, n1, n2, n3;
+    vx_uint32 gLevel = (vx_enum)VX_ZONE_INFO, nLevel = (vx_enum)VX_ZONE_WARNING, new_level = 0, num_nodes=4, num_images=3, i;
+    vx_image d0[MAX_NUM_BUF] = {NULL}, virtImg[num_images], d4[MAX_NUM_BUF] = {NULL}, d5[MAX_NUM_BUF] = {NULL};
+    vx_node node[num_nodes];
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
 
     CT_Image ref_src[MAX_NUM_BUF] = {NULL}, vxdst;
@@ -1660,33 +1662,37 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
         ASSERT_VX_OBJECT(d4[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(d5[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     }
-    ASSERT_VX_OBJECT(d1    = vxCreateVirtualImage(graph, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(d2    = vxCreateVirtualImage(graph, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(d3    = vxCreateVirtualImage(graph, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
-    ASSERT_VX_OBJECT(n0    = vxNotNode(graph, d0[0], d1), VX_TYPE_NODE);
-    ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1, d2), VX_TYPE_NODE);
-    ASSERT_VX_OBJECT(n2    = vxOrNode(graph, d1, d2, d3), VX_TYPE_NODE);
-    ASSERT_VX_OBJECT(n3    = vxAndNode(graph, d3, d4[0], d5[0]), VX_TYPE_NODE);
+    for (i = 0; i < num_images; i++)
+    {
+        ASSERT_VX_OBJECT(virtImg[i]    = vxCreateVirtualImage(graph, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+
+    ASSERT_VX_OBJECT(node[0]    = vxNotNode(graph, d0[0], virtImg[0]), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node[1]    = vxNotNode(graph, virtImg[0], virtImg[1]), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node[2]    = vxOrNode(graph, virtImg[0], virtImg[1], virtImg[2]), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node[3]    = vxAndNode(graph, virtImg[2], d4[0], d5[0]), VX_TYPE_NODE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxGraphSetDebugZone(graph, gLevel, vx_true_e));
 
     #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(node[0], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(node[1], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(node[2], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(node[3], VX_TARGET_STRING, TIVX_TARGET_DSP1));
     #else
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    VX_CALL(vxSetNodeTarget(node[0], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(node[1], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(node[2], VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    VX_CALL(vxSetNodeTarget(node[3], VX_TARGET_STRING, TIVX_TARGET_DSP2));
     #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
-    add_graph_parameter_by_node_index(graph, n0, 0);
+    add_graph_parameter_by_node_index(graph, node[0], 0);
     /* input @ n3 index 1, becomes graph parameter 1 */
-    add_graph_parameter_by_node_index(graph, n3, 1);
+    add_graph_parameter_by_node_index(graph, node[3], 1);
     /* output @ n3 index 2, becomes graph parameter 2 */
-    add_graph_parameter_by_node_index(graph, n3, 2);
+    add_graph_parameter_by_node_index(graph, node[3], 2);
 
     /* set graph schedule config such that graph parameter @ index 0, 1, 2 are enqueuable */
     graph_parameters_queue_params_list[0].graph_parameter_index = 0;
@@ -1725,24 +1731,24 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
     }
 
     /* Validating tivxGetNodeParameterNumBufByIndex API */
-    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf));
+    VX_CALL(tivxGetNodeParameterNumBufByIndex(node[0], 1, &get_num_buf));
 
     ASSERT(get_num_buf==0);
 
-    VX_CALL(set_num_buf_by_node_index(n0, 1, tmp_num_buf));
+    VX_CALL(set_num_buf_by_node_index(node[0], 1, tmp_num_buf));
 
     /* Validating tivxGetNodeParameterNumBufByIndex API */
-    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf));
+    VX_CALL(tivxGetNodeParameterNumBufByIndex(node[0], 1, &get_num_buf));
 
     ASSERT(get_num_buf==tmp_num_buf);
 
     /* n1 and n2 run on different targets hence set output of n1 to have multiple buffers so
      * that n1 and n2 can run in a pipeline
      */
-    VX_CALL(set_num_buf_by_node_index(n1, 1, num_buf));
+    VX_CALL(set_num_buf_by_node_index(node[1], 1, num_buf));
 
     tmp_num_buf = 1;
-    VX_CALL(set_num_buf_by_node_index(n2, 2, tmp_num_buf));
+    VX_CALL(set_num_buf_by_node_index(node[2], 2, tmp_num_buf));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -1826,25 +1832,26 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
 
     if(arg_->measure_perf==1)
     {
-        vx_node nodes[] = { n0, n1, n2, n3 };
+        vx_node nodes[] = { node[0], node[1], node[2], node[3] };
 
         printGraphPipelinePerformance(graph, nodes, 4, exe_time, loop_cnt+num_buf, arg_->width*arg_->height);
     }
     #endif
 
-    VX_CALL(vxReleaseNode(&n0));
-    VX_CALL(vxReleaseNode(&n1));
-    VX_CALL(vxReleaseNode(&n2));
-    VX_CALL(vxReleaseNode(&n3));
+    for (i = 0; i < num_nodes; i++)
+    {
+        VX_CALL(vxReleaseNode(&node[i]));
+    }
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
         VX_CALL(vxReleaseImage(&d0[buf_id]));
         VX_CALL(vxReleaseImage(&d4[buf_id]));
         VX_CALL(vxReleaseImage(&d5[buf_id]));
     }
-    VX_CALL(vxReleaseImage(&d1));
-    VX_CALL(vxReleaseImage(&d2));
-    VX_CALL(vxReleaseImage(&d3));
+    for (i = 0; i < num_images; i++)
+    {
+        VX_CALL(vxReleaseImage(&virtImg[i]));
+    }
     VX_CALL(log_graph_rt_trace_disable(graph, filename));
     VX_CALL(vxReleaseGraph(&graph));
 

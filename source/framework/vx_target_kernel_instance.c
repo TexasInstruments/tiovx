@@ -253,6 +253,10 @@ tivx_target_kernel_instance ownTargetKernelInstanceGet(uint16_t target_kernel_in
     return target_kernel_instance;
 }
 
+vx_uint32 tivxGetTargetKernelInstanceDebugZonemask(tivx_target_kernel_instance kernel)
+{
+    return kernel->node_obj_desc->debug_zonemask;
+}
 
 VX_API_ENTRY vx_status VX_API_CALL tivxSetTargetKernelInstanceContext(
             tivx_target_kernel_instance target_kernel_instance,

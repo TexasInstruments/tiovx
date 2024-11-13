@@ -66,6 +66,7 @@
 
 #include <TI/tivx_debug.h>
 #include <tivx_kernels_common_utils.h>
+#include <TI/tivx_target_kernel.h>
 
 #ifdef __cplusplus
 extern "C" {

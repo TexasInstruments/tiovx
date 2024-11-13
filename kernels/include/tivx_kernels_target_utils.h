@@ -66,10 +66,15 @@
 #include <ti/vxlib/src/common/VXLIB_bufParams.h>
 #include <tivx_kernels_common_utils.h>
 #include <TI/tivx_obj_desc.h>
+#include <TI/tivx_debug.h>
+#include <TI/tivx_target_kernel.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#undef VX_PRINT
+#define VX_PRINT(zone, message, ...) VX_PRINT_LOCAL(zone, tivxGetTargetKernelInstanceDebugZonemask(kernel), message, ## __VA_ARGS__)
 
 #define MAX2(a, b) (((a) > (b)) ? (a) : (b))
 #define MAX3(a, b, c) (MAX2((MAX2((a), (b))), (c)))

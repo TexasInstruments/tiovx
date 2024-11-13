@@ -46,6 +46,7 @@
 #include <tivx_obj_desc_queue.h>
 #include <tivx_event_queue.h>
 #include <TI/tivx_log_stats.h>
+#include <tivx_debug.h>
 
 #include <vx_reference.h>
 #include <tivx_data_ref_queue.h>
