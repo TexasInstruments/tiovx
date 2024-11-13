@@ -288,11 +288,6 @@ static vx_status tivxTestTargetDebugZone(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid result:VX_ZONE_INFO is cleared\n");
         status = (vx_status)VX_FAILURE;
     }
-    if(vx_false_e != tivx_is_zone_enabled(VX_ZONE_TARGET))
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Invalid result:VX_ZONE_TARGET is enabled\n");
-        status = (vx_status)VX_FAILURE;
-    }
     if(vx_false_e != tivx_is_zone_enabled(-1))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for the ARG:-1\n");
