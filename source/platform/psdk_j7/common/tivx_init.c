@@ -74,7 +74,7 @@ static void tivxInitLocal(void)
     {
         tivx_set_debug_zone((int32_t)VX_ZONE_ERROR);
         tivx_set_debug_zone((int32_t)VX_ZONE_WARNING);
-        tivx_clr_debug_zone((int32_t)VX_ZONE_INFO);
+        tivx_set_debug_zone((int32_t)VX_ZONE_INFO);
 
 #if defined(LINUX) || defined(QNX)
         /* Initialize the POSIX objects */
@@ -123,6 +123,7 @@ static void tivxInitLocal(void)
 
         ownPlatformCreateTargets();
 
+        tivx_clr_debug_zone(VX_ZONE_INFO);
         VX_PRINT(VX_ZONE_INFO, "Initialization Done !!!\n");
     }
 
