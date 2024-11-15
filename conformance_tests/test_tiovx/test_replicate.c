@@ -1003,8 +1003,9 @@ static void tst_userkernel_replicate_op(vx_context context, vx_reference input, 
     vx_graph graph = 0;
     vx_node node;
     vx_object_array object_array = 0;
-    vx_image src = 0;
+    vx_image src = 0, src2 = 0;
     vx_image dst = 0;
+    vx_image neg_img = 0;
     vx_enum policy = VX_CONVERT_POLICY_SATURATE;
     vx_float32 scale_val = 1.0f;
     vx_scalar scale = 0;
@@ -1019,7 +1020,9 @@ static void tst_userkernel_replicate_op(vx_context context, vx_reference input, 
     if (type == VX_TYPE_PYRAMID)
     {
         ASSERT_VX_OBJECT(src = vxGetPyramidLevel((vx_pyramid)input, 0), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(src2 = vxGetPyramidLevel((vx_pyramid)input, 1), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(dst = vxGetPyramidLevel((vx_pyramid)output, 0), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(neg_img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
         VX_CALL(vxQueryPyramid((vx_pyramid)input, VX_PYRAMID_LEVELS, &levels, sizeof(levels)));
 
@@ -1029,11 +1032,18 @@ static void tst_userkernel_replicate_op(vx_context context, vx_reference input, 
         VX_CALL(vxSetParameterByIndex(node, 0, (vx_reference)src));
         VX_CALL(vxSetParameterByIndex(node, 1, (vx_reference)dst));
         VX_CALL(vxReplicateNode(graph, node, replicate, 2));
+
+        /* Negative vxSetParameterByIndex tests */
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 0, (vx_reference)src));
+        ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_SCOPE, vxSetParameterByIndex(node, 0, (vx_reference)src2));
+        ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_SCOPE, vxSetParameterByIndex(node, 0, (vx_reference)neg_img));
     }
     else if (type == VX_TYPE_OBJECT_ARRAY)
     {
         ASSERT_VX_OBJECT(src = (vx_image)vxGetObjectArrayItem((vx_object_array)input, 0), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(src2 = (vx_image)vxGetObjectArrayItem((vx_object_array)input, 1), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(dst = (vx_image)vxGetObjectArrayItem((vx_object_array)output, 0), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(neg_img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
         VX_CALL(vxQueryObjectArray((vx_object_array)input, VX_OBJECT_ARRAY_NUMITEMS, &levels, sizeof(levels)));
 
@@ -1043,6 +1053,11 @@ static void tst_userkernel_replicate_op(vx_context context, vx_reference input, 
         VX_CALL(vxSetParameterByIndex(node, 0, (vx_reference)src));
         VX_CALL(vxSetParameterByIndex(node, 1, (vx_reference)dst));
         VX_CALL(vxReplicateNode(graph, node, replicate, 2));
+
+        /* Negative vxSetParameterByIndex tests */
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 0, (vx_reference)src));
+        ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_SCOPE, vxSetParameterByIndex(node, 0, (vx_reference)src2));
+        ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_SCOPE, vxSetParameterByIndex(node, 0, (vx_reference)neg_img));
     }
     else
         ASSERT(0);
@@ -1051,7 +1066,9 @@ static void tst_userkernel_replicate_op(vx_context context, vx_reference input, 
     VX_CALL(vxProcessGraph(graph));
 
     VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseImage(&src2));
     VX_CALL(vxReleaseImage(&dst));
+    VX_CALL(vxReleaseImage(&neg_img));
 
     if (object_array)
         VX_CALL(vxReleaseObjectArray(&object_array));
