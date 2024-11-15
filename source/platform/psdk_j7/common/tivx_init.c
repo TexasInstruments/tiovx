@@ -123,8 +123,8 @@ static void tivxInitLocal(void)
 
         ownPlatformCreateTargets();
 
-        tivx_clr_debug_zone(VX_ZONE_INFO);
         VX_PRINT(VX_ZONE_INFO, "Initialization Done !!!\n");
+        tivx_clr_debug_zone(VX_ZONE_INFO);
     }
 
     gInitCount++;
