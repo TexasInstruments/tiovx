@@ -2100,6 +2100,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
 
                             for (idx = 0U; idx < obj_desc->planes; idx++)
                             {
+                                uint32_t mem_size;
                                 imagepatch_addr = &obj_desc->imagepatch_addr[idx];
 
                                 if ( imagepatch_addr->stride_x != 0 )
@@ -2117,6 +2118,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
                                     imagepatch_addr->stride_y = (vx_int32)temp_else;
                                 }
 
+                                mem_size = ((vx_uint32)imagepatch_addr->stride_y*imagepatch_addr->dim_y)/imagepatch_addr->step_y;
+
+                                obj_desc->mem_size[idx] = mem_size;
                             }
                         }
                         else

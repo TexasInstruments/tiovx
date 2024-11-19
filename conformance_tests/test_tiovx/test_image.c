@@ -407,6 +407,7 @@ TEST(tivxImage, testSetImageStride)
     vx_image image = NULL;
     vx_imagepatch_addressing_t image_addr;
     vx_uint32 stride_y_alignment, set_stride_y_alignment = TEST1_STRIDE_Y_ALIGNMENT;
+    vx_size img_size;
 
     ASSERT_VX_OBJECT(image = vxCreateImage(context, 648, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_IMAGEPATCH_ADDRESSING,  &image_addr,  sizeof(image_addr)));
@@ -416,9 +417,10 @@ TEST(tivxImage, testSetImageStride)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &set_stride_y_alignment, sizeof(set_stride_y_alignment)));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_IMAGEPATCH_ADDRESSING,  &image_addr,  sizeof(image_addr)));
-
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, VX_IMAGE_SIZE,  &img_size,  sizeof(img_size)));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT,  &stride_y_alignment,  sizeof(stride_y_alignment)));
 
+    ASSERT_EQ_INT(704*480, img_size);
     ASSERT_EQ_INT(TEST1_STRIDE_Y_ALIGNMENT, stride_y_alignment);
     ASSERT_EQ_INT(704, image_addr.stride_y);
 
@@ -427,9 +429,10 @@ TEST(tivxImage, testSetImageStride)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &set_stride_y_alignment, sizeof(set_stride_y_alignment)));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_IMAGEPATCH_ADDRESSING,  &image_addr,  sizeof(image_addr)));
-
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, VX_IMAGE_SIZE,  &img_size,  sizeof(img_size)));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT,  &stride_y_alignment,  sizeof(stride_y_alignment)));
 
+    ASSERT_EQ_INT(648*480, img_size);
     ASSERT_EQ_INT(TEST2_STRIDE_Y_ALIGNMENT, stride_y_alignment);
     ASSERT_EQ_INT(648, image_addr.stride_y);
 
