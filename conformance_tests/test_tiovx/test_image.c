@@ -457,6 +457,8 @@ TEST(tivxImage, testSetObjArrImageStride)
     {
         ASSERT_VX_OBJECT(img = (vx_image)vxGetObjectArrayItem(obj_arr, i), VX_TYPE_IMAGE);
 
+        ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetImageAttribute(img,TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &set_stride_y_alignment, sizeof(set_stride_y_alignment)));
+
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(img, TIVX_IMAGE_STRIDE_Y_ALIGNMENT,  &stride_y_alignment,  sizeof(stride_y_alignment)));
 
         ASSERT(stride_y_alignment==set_stride_y_alignment);
@@ -524,6 +526,7 @@ TEST(tivxImage, negativeTestSubmage)
     vx_image img1=NULL;
     vx_image img[TIVX_IMAGE_MAX_SUBIMAGES+1]; // Added  an extra subimage to create overflow condition
     int i;
+    vx_uint32 set_stride_y_alignment = TEST_STRIDE_Y_ALIGNMENT;
     
     ASSERT_VX_OBJECT(image = vxCreateImage(context, 640, 480, VX_DF_IMAGE_YUV4), VX_TYPE_IMAGE);
 
@@ -540,6 +543,9 @@ TEST(tivxImage, negativeTestSubmage)
         }
         
     }
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetImageAttribute(image, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &set_stride_y_alignment, sizeof(set_stride_y_alignment)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetImageAttribute(img[0], TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &set_stride_y_alignment, sizeof(set_stride_y_alignment)));
 
     for (int j = 0; j < i; j++)
     { // Max out the SubImage allocation space

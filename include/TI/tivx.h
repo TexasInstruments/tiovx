@@ -313,7 +313,9 @@ typedef enum _tivx_image_attribute_extensions_e {
      * hardware. (For instance, the default value was originally chosen since this is a
      * requirement of codec used on TI Jacinto devices)
      * Read-Write. Can be read at any time, but only written to prior to the allocation
-     * of the buffer.
+     * of the buffer.  Cannot be applied to subimages or images with subimages.  If attempting
+     * to modify as a part of an object array, the exemplar itself shall be set rather than
+     * the elements of the object array
      * Use a <tt>\ref vx_uint32</tt> parameter.
      */
     TIVX_IMAGE_STRIDE_Y_ALIGNMENT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_IMAGE) + 0x1

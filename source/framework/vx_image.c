@@ -2083,7 +2083,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
 
                     ref = vxCastRefFromImage(image);
 
-                    if ((vx_bool)vx_false_e == ref->is_allocated)
+                    if ( ((vx_bool)vx_false_e == ref->is_allocated) &&
+                         (0U == ownGetNumParentSubimages(image)) &&
+                         (NULL == image->parent) &&
+                         ((vx_bool)vx_false_e == image->base.is_array_element) )
                     {
                         vx_uint32 tmp_stride_y_alignment = (vx_uint32)*(const vx_uint32 *)ptr;
 
@@ -2131,7 +2134,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "image has been allocated, thus the alignment cannot be set\n");
+                        VX_PRINT(VX_ZONE_ERROR, "image cannot be allocated and cannot be a subimage, contain subimages, or exist as an element of pyramid or object array\n");
                         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     }
                 }
