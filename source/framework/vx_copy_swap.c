@@ -53,10 +53,14 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
                 if (node->parameters[j] == old_reference)
                 {
                     status = ownReleaseReferenceInt(&node->parameters[j], (vx_enum)node->parameters[j]->type, (vx_enum)VX_INTERNAL, NULL);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-2049- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT001 */
                     if ((vx_status)VX_SUCCESS != status)
                     {
                         break;
                     }
+/* END: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT001 */
+/*LDRA_ANALYSIS*/
                     /* Setting it as void since return value 'count' is not used further */
                     (void)ownIncrementReference(new_reference, (vx_enum)VX_INTERNAL);
                     /* Assign parameter descriptor id in the node */
@@ -91,11 +95,15 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
                 out_objd->in_node_id[out_objd->num_in_nodes] = old_obj->in_node_id[j];
                 out_objd->num_in_nodes++;
             }
+/*LDRA_NOANALYSIS*/
+/* TIOVX-2049- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT002 */
             else
             {
                 status = notifyTiovxMaxNodes("IN");
                 break;
             }
+/* END: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT002 */
+/*LDRA_ANALYSIS*/
         }
 
     }
@@ -356,7 +364,11 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                         /* Re-start the loop */
                         break;
                     }
+/*LDRA_NOANALYSIS*/
+/* TIOVX-2049- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT003 */
                 }
+/* END: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT003 */
+/*LDRA_ANALYSIS*/
             }
         }
     } while ((vx_bool)vx_true_e == node_removed);
