@@ -95,7 +95,7 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
                 out_objd->in_node_id[out_objd->num_in_nodes] = old_obj->in_node_id[j];
                 out_objd->num_in_nodes++;
             }
-/*LDRA_NOANALYSIS*/
+#ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-2049- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT002 */
             else
             {
@@ -103,7 +103,7 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
                 break;
             }
 /* END: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT002 */
-/*LDRA_ANALYSIS*/
+#endif
         }
 
     }
@@ -364,11 +364,9 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                         /* Re-start the loop */
                         break;
                     }
-/*LDRA_NOANALYSIS*/
 /* TIOVX-2049- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT003 */
                 }
 /* END: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT003 */
-/*LDRA_ANALYSIS*/
             }
         }
     } while ((vx_bool)vx_true_e == node_removed);
@@ -504,7 +502,9 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                             /* restart the loop */
                             break;
                         }
+/* TIOVX-2049- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT004 */
                     }
+/* END: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT004 */
                 }
             }
         }
