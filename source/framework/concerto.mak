@@ -20,6 +20,10 @@ TARGET      := vx_framework
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/source/include
+IDIRS       += $(HOST_ROOT)/utils/include
+IDIRS       += $(IPPC_PATH)
+IDIRS       += $(APP_UTILS_PATH)
+
 DEFS        += LDRA_UNTESTABLE_CODE
 # This is used to signify which sections of code is only applicable
 # for the host for code coverage purposes. It has been left defined
@@ -33,6 +37,17 @@ endif
 
 ifeq ($(HOST_COMPILER), $(filter $(HOST_COMPILER), GCC_LINUX_ARM GCC_QNX_ARM))
 CFLAGS += -Wno-sizeof-pointer-memaccess
+endif
+
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), R5F C66 C71 C7120 C7504 C7524))
+CSOURCES_EXCLUDE := vx_producer.c vx_consumer.c
+CSOURCES := $(filter-out $(CSOURCES_EXCLUDE), $(CSOURCES))
+endif
+
+ifeq ($(CONNECTOR_TP), IPPC_SHEM)
+DEFS += IPPC_SHEM_ENABLED
+else
+DEFS += SOCKET_ENABLED
 endif
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 C66))

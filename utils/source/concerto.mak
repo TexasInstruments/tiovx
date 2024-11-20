@@ -28,6 +28,8 @@ endif
 
 IDIRS += $(TIOVX_PATH)/utils/include
 IDIRS += $(TIOVX_PATH)/source/include
+IDIRS += $(IPPC_PATH)
+IDIRS += $(APP_UTILS_PATH)
 
 include $(FINALE)
 

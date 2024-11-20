@@ -12,6 +12,9 @@ IDIRS       += $(TIOVX_PATH)/source/include
 IDIRS       += $(TIOVX_PATH)/source/platform/psdk_j7/common
 IDIRS       += $(PSDK_PATH)/app_utils
 IDIRS       += $(RB_VISION_APPS)
+IDIRS       += ${TIOVX_PATH}/utils/include
+IDIRS       += $(IPPC_PATH)
+IDIRS       += $(APP_UTILS_PATH)
 
 include $(FINALE)
 
