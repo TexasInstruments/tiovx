@@ -740,11 +740,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
             {
                 /* all checks have been done, we can just assign any other parameters */
                 status = ownNodeSetParameter(graph->parameters[index].params_list[ref_index].node, graph->parameters[index].params_list[ref_index].index, value);
+/*LDRA_NOANALYSIS*/
+/* TIOVX-1812- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UTJT002 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "could not set graph parameter\n");
                     break;
                 }
+/* END: TIOVX_CODE_COVERAGE_GRAPH_UTJT002 */
+/*LDRA_ANALYSIS*/
             }
             if ((vx_status)VX_SUCCESS == status) {
                 status = ownGraphAllocateDataObject(graph->parameters[index].node,
