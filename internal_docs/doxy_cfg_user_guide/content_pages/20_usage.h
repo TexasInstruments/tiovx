@@ -360,6 +360,155 @@
 
     For a list of default targets that TI provides as part of TIOVX for this SDK, refer to \ref group_tivx_ext_targets
 
+    \section TIOVX_CORE_TARGETS Available Targets on Each Core
+
+    The available targets on each core vary depending on the architecture of its SoC. They are listed as follows:
+*/
+#if SOC == J721E
+/*!
+    \page TIOVX_ADD_TARGET Adding New Targets to TIOVX
+
+    \subsection J721E_R5F_CORES R5F Cores
+    |             MCU2_0              |         MCU2_1           |        MCU3_0         |        MCU3_1         |
+    |:-------------------------------:|:------------------------:|:---------------------:|:---------------------:|
+    |      TIVX_TARGET_ID_MCU2_0      |  TIVX_TARGET_ID_MCU2_1   | TIVX_TARGET_ID_MCU3_0 | TIVX_TARGET_ID_MCU3_1 |
+    |     TIVX_TARGET_ID_VPAC_NF      | TIVX_TARGET_ID_DMPAC_SDE |           -           |           -           |
+    |    TIVX_TARGET_ID_VPAC_LDC1     | TIVX_TARGET_ID_DMPAC_DOF |           -           |           -           |
+    | TIVX_TARGET_ID_VPAC_MSC[1 - 2]  |            -             |           -           |           -           |
+    |    TIVX_TARGET_ID_VPAC_VISS1    |            -             |           -           |           -           |
+    |  TIVX_TARGET_ID_CAPTURE[1 - 8]  |            -             |           -           |           -           |
+    |  TIVX_TARGET_ID_DISPLAY[1 - 2]  |            -             |           -           |           -           |
+    |      TIVX_TARGET_ID_CSITX       |            -             |           -           |           -           |
+    | TIVX_TARGET_ID_DISPLAY_M2M[1-4] |            -             |           -           |           -           |
+
+    \subsection J721E_A72_C66_C7X_CORES A72, C66x, and C7x Cores
+    |         A72 MPU          |              C66x_1                 |              C66x_2                 |               C7x_1                 |
+    |:------------------------:|:-----------------------------------:|:-----------------------------------:|:-----------------------------------:|
+    | TIVX_TARGET_ID_MPU_[0-3] |         TIVX_TARGET_ID_DSP1         |         TIVX_TARGET_ID_DSP2         | TIVX_TARGET_ID_DSP_C7_1\n(TIVX_TARGET_ID_DSP_C7_1_PRI_1) |
+    |            -             |                  -                  |                  -                  | TIVX_TARGET_ID_DSP_C7_1_PRI_[2 - 8] |
+
+*/
+#endif
+#if SOC == J784S4
+/*!
+    \page TIOVX_ADD_TARGET Adding New Targets to TIOVX
+
+    \subsection J784S4_R5F_CORES R5F Cores
+    |             MCU2_0              |         MCU2_1           |        MCU3_0         |        MCU3_1         |            MCU4_0             |        MCU4_1         |
+    |:-------------------------------:|:------------------------:|:---------------------:|:---------------------:|:-----------------------------:|:---------------------:|
+    |      TIVX_TARGET_ID_MCU2_0      |  TIVX_TARGET_ID_MCU2_1   | TIVX_TARGET_ID_MCU3_0 | TIVX_TARGET_ID_MCU3_1 |     TIVX_TARGET_ID_MCU4_0     | TIVX_TARGET_ID_MCU4_1 |
+    |     TIVX_TARGET_ID_VPAC_NF      | TIVX_TARGET_ID_DMPAC_SDE |           -           |           -           |    TIVX_TARGET_ID_VPAC2_NF    |           -           |
+    |    TIVX_TARGET_ID_VPAC_LDC1     | TIVX_TARGET_ID_DMPAC_DOF |           -           |           -           |   TIVX_TARGET_ID_VPAC2_LDC1   |           -           |
+    | TIVX_TARGET_ID_VPAC_MSC[1 - 2]  |            -             |           -           |           -           | TIVX_TARGET_ID_VPAC2_MSC[1-2] |           -           |
+    |    TIVX_TARGET_ID_VPAC_VISS1    |            -             |           -           |           -           |  TIVX_TARGET_ID_VPAC2_VISS1   |           -           |
+    | TIVX_TARGET_ID_CAPTURE[1 - 12]  |            -             |           -           |           -           |               -               |           -           |
+    |  TIVX_TARGET_ID_DISPLAY[1 - 2]  |            -             |           -           |           -           |               -               |           -           |
+    |     TIVX_TARGET_ID_CSITX[2]     |            -             |           -           |           -           |               -               |           -           |
+    | TIVX_TARGET_ID_DISPLAY_M2M[1-4] |            -             |           -           |           -           |               -               |           -           |
+
+    \subsection J784S4_A72_C7X_CORES A72 and C7x Cores
+    |         A72 MPU          |               C7x_1                 |               C7x_2                 |               C7x_3                 |               C7x_4                 |
+    |:------------------------:|:-----------------------------------:|:-----------------------------------:|:-----------------------------------:|:-----------------------------------:|
+    | TIVX_TARGET_ID_MPU_[0-3] |       TIVX_TARGET_ID_DSP_C7_1\n(TIVX_TARGET_ID_DSP_C7_1_PRI_1) | TIVX_TARGET_ID_DSP_C7_2\n(TIVX_TARGET_ID_DSP1)\n(TIVX_TARGET_ID_DSP_C7_2_PRI_1) | TIVX_TARGET_ID_DSP_C7_3\n(TIVX_TARGET_ID_DSP_C7_3_PRI_1) | TIVX_TARGET_ID_DSP_C7_4\n(TIVX_TARGET_ID_DSP_C7_4_PRI_1) |
+    |            -             | TIVX_TARGET_ID_DSP_C7_1_PRI_[2 - 8] | TIVX_TARGET_ID_DSP_C7_2_PRI_[2 - 8] | TIVX_TARGET_ID_DSP_C7_3_PRI_[2 - 8] | TIVX_TARGET_ID_DSP_C7_4_PRI_[2 - 8] |
+*/
+#endif
+#if SOC == J742S2
+/*!
+    \page TIOVX_ADD_TARGET Adding New Targets to TIOVX
+
+    \subsection CORE_TARGETS_J742S2 J742S2
+    |             MCU2_0              |         MCU2_1           |        MCU3_0         |        MCU3_1         |            MCU4_0             |        MCU4_1         |
+    |:-------------------------------:|:------------------------:|:---------------------:|:---------------------:|:-----------------------------:|:---------------------:|
+    |      TIVX_TARGET_ID_MCU2_0      |  TIVX_TARGET_ID_MCU2_1   | TIVX_TARGET_ID_MCU3_0 | TIVX_TARGET_ID_MCU3_1 |     TIVX_TARGET_ID_MCU4_0     | TIVX_TARGET_ID_MCU4_1 |
+    |     TIVX_TARGET_ID_VPAC_NF      | TIVX_TARGET_ID_DMPAC_SDE |           -           |           -           |    TIVX_TARGET_ID_VPAC2_NF    |           -           |
+    |    TIVX_TARGET_ID_VPAC_LDC1     | TIVX_TARGET_ID_DMPAC_DOF |           -           |           -           |   TIVX_TARGET_ID_VPAC2_LDC1   |           -           |
+    | TIVX_TARGET_ID_VPAC_MSC[1 - 2]  |            -             |           -           |           -           | TIVX_TARGET_ID_VPAC2_MSC[1-2] |           -           |
+    |    TIVX_TARGET_ID_VPAC_VISS1    |            -             |           -           |           -           |  TIVX_TARGET_ID_VPAC2_VISS1   |           -           |
+    | TIVX_TARGET_ID_CAPTURE[1 - 12]  |            -             |           -           |           -           |               -               |           -           |
+    |  TIVX_TARGET_ID_DISPLAY[1 - 2]  |            -             |           -           |           -           |               -               |           -           |
+    |     TIVX_TARGET_ID_CSITX[2]     |            -             |           -           |           -           |               -               |           -           |
+    | TIVX_TARGET_ID_DISPLAY_M2M[1-4] |            -             |           -           |           -           |               -               |           -           |
+
+    \subsection J742S2_A72_C7X_CORES A72 and C7x Cores
+    |         A72 MPU          |               C7x_1                 |               C7x_2                 |               C7x_3                 |
+    |:------------------------:|:-----------------------------------:|:-----------------------------------:|:-----------------------------------:|
+    | TIVX_TARGET_ID_MPU_[0-3] |       TIVX_TARGET_ID_DSP_C7_1\n(TIVX_TARGET_ID_DSP_C7_1_PRI_1) | TIVX_TARGET_ID_DSP_C7_2\n(TIVX_TARGET_ID_DSP1)\n(TIVX_TARGET_ID_DSP_C7_2_PRI_1) | TIVX_TARGET_ID_DSP_C7_3\n(TIVX_TARGET_ID_DSP_C7_3_PRI_1) |
+    |            -             | TIVX_TARGET_ID_DSP_C7_1_PRI_[2 - 8] | TIVX_TARGET_ID_DSP_C7_2_PRI_[2 - 8] | TIVX_TARGET_ID_DSP_C7_3_PRI_[2 - 8] |
+*/
+#endif
+#if SOC == J721S2
+/*!
+    \page TIOVX_ADD_TARGET Adding New Targets to TIOVX
+
+    \subsection J721S2_R5F_CORES R5F Cores
+    |             MCU2_0              |         MCU2_1           |        MCU3_0         |        MCU3_1         |
+    |:-------------------------------:|:------------------------:|:---------------------:|:---------------------:|
+    |      TIVX_TARGET_ID_MCU2_0      |  TIVX_TARGET_ID_MCU2_1   | TIVX_TARGET_ID_MCU3_0 | TIVX_TARGET_ID_MCU3_1 |
+    |     TIVX_TARGET_ID_VPAC_NF      | TIVX_TARGET_ID_DMPAC_SDE |           -           |           -           |
+    |    TIVX_TARGET_ID_VPAC_LDC1     | TIVX_TARGET_ID_DMPAC_DOF |           -           |           -           |
+    | TIVX_TARGET_ID_VPAC_MSC[1 - 2]  |            -             |           -           |           -           |
+    |    TIVX_TARGET_ID_VPAC_VISS1    |            -             |           -           |           -           |
+    |  TIVX_TARGET_ID_CAPTURE[1 - 8]  |            -             |           -           |           -           |
+    |  TIVX_TARGET_ID_DISPLAY[1 - 2]  |            -             |           -           |           -           |
+    |     TIVX_TARGET_ID_CSITX[2]     |            -             |           -           |           -           |
+    | TIVX_TARGET_ID_DISPLAY_M2M[1-4] |            -             |           -           |           -           |
+
+    \subsection J721S2_A72_C7X_CORES A72 and C7x Cores
+    |         A72 MPU          |               C7x_1                 |               C7x_2                 |
+    |:------------------------:|:-----------------------------------:|:-----------------------------------:|
+    | TIVX_TARGET_ID_MPU_[0-3] | TIVX_TARGET_ID_DSP_C7_1\n(TIVX_TARGET_ID_DSP_C7_1_PRI_1) | TIVX_TARGET_ID_DSP1 |
+    |            -             | TIVX_TARGET_ID_DSP_C7_1_PRI_[2 - 8] |                  -                  |
+*/
+#endif
+#if SOC == J722S
+/*!
+    \page TIOVX_ADD_TARGET Adding New Targets to TIOVX
+
+    \subsection J722S_R5F_CORES R5F Cores
+    |             MCU2_0              |         MCU1_0           |
+    |:-------------------------------:|:------------------------:|
+    |      TIVX_TARGET_ID_MCU2_0      |  TIVX_TARGET_ID_MCU1_0   |
+    |    TIVX_TARGET_ID_VPAC_LDC1     |            -             |
+    | TIVX_TARGET_ID_VPAC_MSC[1 - 2]  |            -             |
+    |    TIVX_TARGET_ID_VPAC_VISS1    |            -             |
+    |  TIVX_TARGET_ID_CAPTURE[1 - 4]  |            -             |
+    |  TIVX_TARGET_ID_DISPLAY[1 - 2]  |            -             |
+    |     TIVX_TARGET_ID_CSITX[2]     |            -             |
+    | TIVX_TARGET_ID_DISPLAY_M2M[1-4] |            -             |
+    |    TIVX_TARGET_ID_DMPAC_SDE     |            -             |
+    |    TIVX_TARGET_ID_DMPAC_DOF     |            -             |
+
+    \subsection J722S_A53_C7X_CORES A53 and C7x Cores
+    |         A53 MPU          |               C7x_1                 |               C7x_2                 |
+    |:------------------------:|:-----------------------------------:|:-----------------------------------:|
+    | TIVX_TARGET_ID_MPU_[0-3] | TIVX_TARGET_ID_DSP_C7_1\n(TIVX_TARGET_ID_DSP_C7_1_PRI_1) | TIVX_TARGET_ID_DSP_C7_1\n(TIVX_TARGET_ID_DSP1)\n(TIVX_TARGET_ID_DSP_C7_1_PRI_1) |
+    |            -             | TIVX_TARGET_ID_DSP_C7_1_PRI_[2 - 8] | TIVX_TARGET_ID_DSP_C7_2_PRI_[2 - 8] |
+
+*/
+#endif
+#if SOC == AM62A
+/*!
+    \page TIOVX_ADD_TARGET Adding New Targets to TIOVX
+
+    \subsection AM62A_R5F_CORES R5F Cores
+    |             MCU1_0              |
+    |:-------------------------------:|
+    |      TIVX_TARGET_ID_MCU1_0      |
+    |    TIVX_TARGET_ID_VPAC_LDC1     |
+    | TIVX_TARGET_ID_VPAC_MSC[1 - 2]  |
+    |    TIVX_TARGET_ID_VPAC_VISS1    |
+
+    \subsection AM62A_A53_C7X_CORES A53 and C7x Cores
+    |         A53 MPU          |               C7x_1                 |
+    |:------------------------:|:-----------------------------------:|
+    | TIVX_TARGET_ID_MPU_[0-3] | TIVX_TARGET_ID_DSP_C7_1\n(TIVX_TARGET_ID_DSP1)\n(TIVX_TARGET_ID_DSP_C7_1_PRI_1) |
+    |            -             | TIVX_TARGET_ID_DSP_C7_1_PRI_[2 - 8] |
+    */
+#endif
+/*!
+    \page TIOVX_ADD_TARGET Adding New Targets to TIOVX
+
     \section TIOVX_TARGET_CODE_CHANGES Code Changes to Enable More Targets
 
     In certain situations, multiple target threads may need to be added to a given CPU beyond the single target provided by TIOVX.  (For exapmle, in the case of
