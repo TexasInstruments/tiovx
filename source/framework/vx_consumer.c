@@ -46,7 +46,7 @@ static int32_t send_buffer_release_message(vx_consumer consumer, void* message_b
 {
     int32_t status = 0U;
 #ifdef IPPC_SHEM_ENABLED
-    SConsumerContent* msg   = (SConsumerContent*)message_buffer;
+    vx_cons_msg_content_t* msg   = (vx_cons_msg_content_t*)message_buffer;
     msg->consumer_id        = consumer->consumer_id;
 #elif SOCKET_ENABLED
     vx_gw_buff_id_msg* msg = (vx_gw_buff_id_msg*)message_buffer;
@@ -71,18 +71,18 @@ static int32_t send_buffer_release_message(vx_consumer consumer, void* message_b
     status = ippc_shem_send(&consumer->m_sender_ctx);
 #elif SOCKET_ENABLED
     status = socket_write(consumer->socket_fd, message_buffer, NULL, 0);
+#endif
     if (status < 0)
     {
         VX_PRINT(VX_ZONE_ERROR, "CONSUMER: buffer ID %d message could not be sent%s", buffer_id, "\n");
     }
-#endif
 
     return status;
 }
 
 #ifdef IPPC_SHEM_ENABLED
 static vx_status
-import_ref_from_producer(vx_consumer consumer, SProducerContent* buff_desc_msg)
+import_ref_from_producer(vx_consumer consumer, vx_prod_msg_content_t* buff_desc_msg)
 {
     vx_status  status = VX_SUCCESS;
     consumer->num_refs = buff_desc_msg->num_refs;
@@ -93,20 +93,20 @@ import_ref_from_producer(vx_consumer consumer, SProducerContent* buff_desc_msg)
         {
             for(vx_uint32 jdx = 0U; jdx < (buff_desc_msg->num_items + 1U); jdx++)
             {
-                tivx_utils_ref_ipc_msg_t* ipc_msg          = &buff_desc_msg->ipc_msg[idx][jdx];
+                tivx_utils_ref_ipc_msg_t* ref_export_handle          = &buff_desc_msg->ref_export_handle[idx][jdx];
                 // determine if receiving object array metadata (last message after object array items)
-                if (ipc_msg->refDesc.meta.type == VX_TYPE_OBJECT_ARRAY)
+                if (ref_export_handle->refDesc.meta.type == VX_TYPE_OBJECT_ARRAY)
                 {
                     VX_PRINT(
                         VX_ZONE_INFO,
                         "CONSUMER: Importing object array with %d, items of type %d\n",
                         buff_desc_msg->num_items,
-                        ipc_msg->refDesc.meta.type);
+                        ref_export_handle->refDesc.meta.type);
 
                     // finish reception of object array
                     vx_reference objarray_ref = NULL;
                     status = rbvx_utils_import_ref_from_ipc_xfer_objarray(
-                        consumer->context, ipc_msg, (tivx_utils_ref_ipc_msg_t*)&consumer->ipcMessageArray, &objarray_ref);
+                        consumer->context, ref_export_handle, (tivx_utils_ref_ipc_msg_t*)&consumer->ipcMessageArray, &objarray_ref);
                     if ((status != VX_SUCCESS) && (vxGetStatus(objarray_ref) != VX_SUCCESS))
                     {
                         VX_PRINT(
@@ -127,28 +127,25 @@ import_ref_from_producer(vx_consumer consumer, SProducerContent* buff_desc_msg)
                         VX_ZONE_INFO,
                         "CONSUMER: Receiving object array item %d, of type %d\n",
                         jdx,
-                        ipc_msg->refDesc.meta.type);
+                        ref_export_handle->refDesc.meta.type);
 
-                    for (uint32_t i = 0; i < ipc_msg->numFd; i++)
+                    for (uint32_t i = 0; i < ref_export_handle->numFd; i++)
                     {
-                        consumer->ipcMessageArray[consumer->ipcMessageCount].fd[i] = ipc_msg->fd[i];
+                        consumer->ipcMessageArray[consumer->ipcMessageCount].fd[i] = ref_export_handle->fd[i];
                     }
-                    memcpy(
-                        (void*)&consumer->ipcMessageArray[consumer->ipcMessageCount].refDesc,
-                        &ipc_msg->refDesc,
-                        sizeof(tivx_utils_ref_desc_t));
-                    consumer->ipcMessageArray[consumer->ipcMessageCount].numFd = ipc_msg->numFd;
+                    consumer->ipcMessageArray[consumer->ipcMessageCount].refDesc = ref_export_handle->refDesc;
+                    consumer->ipcMessageArray[consumer->ipcMessageCount].numFd = ref_export_handle->numFd;
                     consumer->ipcMessageCount++;
                 }
             }
         }
         else if (buff_desc_msg->num_items == 0)
         {
-            VX_PRINT(VX_ZONE_INFO, "CONSUMER: Importing single reference of type %d\n", buff_desc_msg->ipc_msg[idx][0].refDesc.meta.type);
+            VX_PRINT(VX_ZONE_INFO, "CONSUMER: Importing single reference of type %d\n", buff_desc_msg->ref_export_handle[idx][0].refDesc.meta.type);
 
             // receiving non-object array single reference
             vx_reference single_ref = NULL;
-            status = tivx_utils_import_ref_from_ipc_xfer(consumer->context, &buff_desc_msg->ipc_msg[idx][0], &single_ref);
+            status = tivx_utils_import_ref_from_ipc_xfer(consumer->context, &buff_desc_msg->ref_export_handle[idx][0], &single_ref);
             if ((status == VX_SUCCESS) && (vxGetStatus(single_ref) == VX_SUCCESS))
             {
                 consumer->refs[consumer->num_refs] = single_ref;
@@ -163,7 +160,7 @@ import_ref_from_producer(vx_consumer consumer, SProducerContent* buff_desc_msg)
         }
         else
         {
-            // error
+            status = (vx_status)VX_FAILURE;
         }
     }
 
@@ -173,7 +170,7 @@ import_ref_from_producer(vx_consumer consumer, SProducerContent* buff_desc_msg)
 void *consumer_backchannel(void* arg)
 {
     vx_consumer consumer = (vx_consumer) arg;
-    vx_reference dequeued_refs[VX_MAX_NUM_REFERENCES] = {0};
+    vx_reference dequeued_refs[VX_GW_MAX_NUM_REFS] = {0};
 
     VX_PRINT(VX_ZONE_INFO, "CONSUMER: Starting backchannel %s", "\n");
 
@@ -205,8 +202,8 @@ void *consumer_backchannel(void* arg)
             {
                 // we have something dequeued and the graph is finished processing
                 EIppcStatus ippc_status;
-                SConsumerContent* l_send_msg;
-                l_send_msg = ippc_shem_payload_pointer(&consumer->m_sender_ctx, sizeof(SConsumerContent), &ippc_status);
+                vx_cons_msg_content_t* l_send_msg;
+                l_send_msg = ippc_shem_payload_pointer(&consumer->m_sender_ctx, sizeof(vx_cons_msg_content_t), &ippc_status);
                 if (ippc_status == E_IPPC_OK)
                 {
                      VX_PRINT(
@@ -234,15 +231,15 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p)
     int32_t  status = 0;
     EIppcStatus l_status = (EIppcStatus)E_IPPC_OK;
     vx_consumer consumer = (vx_consumer) consumer_p;
-    SProducerContent* const l_received_message = (SProducerContent*)data_p;
+    vx_prod_msg_content_t* const l_received_message = (vx_prod_msg_content_t*)data_p;
     
     //if the consumer is ready to communicate, send the back channel port id to the producer
-    if ((l_received_message->buffer_meta == 0x12345678) && ((vx_bool)vx_false_e == consumer->init_done))
+    if ((vx_bool)vx_false_e == consumer->init_done)
     {
         VX_PRINT(VX_ZONE_INFO, "CONSUMER: %u attaching to backhannel, port id %u\n", l_received_message->consumer_id, l_received_message->backchannel_port);
         consumer->consumer_id = l_received_message->consumer_id;
         /* feed the data for the sender */
-        consumer->m_sender_ctx.m_msg_size = sizeof(SConsumerContent);
+        consumer->m_sender_ctx.m_msg_size = sizeof(vx_cons_msg_content_t);
         const SIppcPortMap *l_port = ippc_get_port_by_id_2(consumer->ippc_port, l_received_message->backchannel_port);
         consumer->m_sender_ctx.m_port_map.m_port_id        = l_port->m_port_id;
         consumer->m_sender_ctx.m_port_map.m_port_type      = l_port->m_port_type;
@@ -252,7 +249,7 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p)
                                                 consumer->m_sender_ctx.m_port_map.m_port_id, consumer->m_sender_ctx.m_msg_size);
         // sender is on 1->1 port, attach to a single sync; offset by number of syncs for broadcast
         l_status = ippc_registry_sync_attach(&consumer->m_registry, &consumer->m_sender_ctx.m_sync[0], 
-                                                consumer->m_sender_ctx.m_port_map.m_receiver_index + OVXGW_NUM_CLIENTS);
+                                                consumer->m_sender_ctx.m_port_map.m_receiver_index + VX_GW_NUM_CLIENTS);
 
         if (l_status != E_IPPC_OK)
         {
@@ -270,7 +267,7 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p)
 
         if (VX_SUCCESS == status)
         {
-            status = consumer->subscriber_cb.createGraphCallback(consumer->graph_obj, consumer->refs, consumer->num_refs);
+            status = consumer->subscriber_cb.createCallback(consumer->graph_obj, consumer->refs, consumer->num_refs);
             if (status != VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "CONSUMER: application create graph failed%s", "\n");
@@ -327,13 +324,13 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p)
         {
             VX_PRINT(VX_ZONE_ERROR, "CONSUMER: MSG RECEIVE STATUS: FAILED.%s", "\n");
         }
-        else if (status == VXGW_STATUS_CONSUMER_REF_DROP)
+        else if (status == VX_GW_STATUS_CONSUMER_REF_DROP)
         {
             // buffer was not enqueued, transmit the buffer back to the producer immediately
             consumer->last_buffer_dropped = 1;
 
-            SConsumerContent* l_send_msg;
-            l_send_msg = ippc_shem_payload_pointer(&consumer->m_sender_ctx, sizeof(SConsumerContent), &l_status);
+            vx_cons_msg_content_t* l_send_msg;
+            l_send_msg = ippc_shem_payload_pointer(&consumer->m_sender_ctx, sizeof(vx_cons_msg_content_t), &l_status);
 
             if(E_IPPC_OK == l_status)
             {
@@ -392,7 +389,7 @@ static void* consumer_receiver_thread(void* arg)
                 consumer->m_receiver_ctx.m_port_map.m_port_id        = consumer->ippc_port[0].m_port_id;
                 consumer->m_receiver_ctx.m_port_map.m_port_type      = consumer->ippc_port[0].m_port_type;
                 /* we should avoid this kind of thing: consumer->m_receiver_ctx.m_receiver_ctx*/
-                consumer->m_receiver_ctx.m_msg_size = sizeof(SProducerContent);
+                consumer->m_receiver_ctx.m_msg_size = sizeof(vx_prod_msg_content_t);
                 status  = ippc_registry_receiver_attach(&consumer->m_registry,
                                                         &consumer->m_receiver_ctx.m_receiver,
                                                         consumer->m_receiver_ctx.m_port_map.m_port_id,
@@ -432,12 +429,8 @@ static void* consumer_receiver_thread(void* arg)
 
             case VX_CONS_STATE_WAIT:
             {
-#ifdef x86_64
-                tivxTaskWaitMsecs(50000);
-#else
                 tivxTaskWaitMsecs(2000);
-#endif
-                VX_PRINT(VX_ZONE_INFO, "CONSUMER: wait finished%s", "\n");
+                VX_PRINT(VX_ZONE_INFO, "CONSUMER: going to flush state%s", "\n");
                 consumer->state = VX_CONS_STATE_FLUSH;
             }
             break;
@@ -489,35 +482,30 @@ static void* buffer_id_thread(void* ctxPtr);
 static int32_t
 import_ref_from_producer(vx_consumer consumer, vx_gw_buff_desc_msg* buff_desc_msg, int32_t* fd, uint32_t numFd)
 {
-    int32_t                   status           = VXGW_STATUS_FAILURE;
+    int32_t                   status           = VX_GW_STATUS_FAILURE;
     vx_status                 framework_status = VX_FAILURE;
-    tivx_utils_ref_ipc_msg_t* ipc_msg          = &buff_desc_msg->ipc_msg;
+    tivx_utils_ref_ipc_msg_t* ref_export_handle          = &buff_desc_msg->ref_export_handle;
 
-#if defined(QNX)
-    (void)fd;
-    (void)numFd;
-#elif defined(LINUX)
     // for linux platforms switch to FDs received over CMSG
-    ipc_msg->numFd = numFd;
-    ipc_msg->fd[0] = fd[0];
-#endif
+    ref_export_handle->numFd = numFd;
+    ref_export_handle->fd[0] = fd[0];
 
     // number of items message field must be set if references sent are members of an object array
     if (buff_desc_msg->num_items > 0)
     {
         // determine if receiving object array metadata (last message after object array items)
-        if (ipc_msg->refDesc.meta.type == VX_TYPE_OBJECT_ARRAY)
+        if (ref_export_handle->refDesc.meta.type == VX_TYPE_OBJECT_ARRAY)
         {
             VX_PRINT(
                 VX_ZONE_INFO,
                 "CONSUMER: Importing object array with %d, items of type %d\n",
                 buff_desc_msg->num_items,
-                ipc_msg->refDesc.meta.type);
+                ref_export_handle->refDesc.meta.type);
 
             // finish reception of object array
             vx_reference objarray_ref = NULL;
             framework_status          = rbvx_utils_import_ref_from_ipc_xfer_objarray(
-                consumer->context, ipc_msg, (tivx_utils_ref_ipc_msg_t*)&consumer->ipcMessageArray, &objarray_ref);
+                consumer->context, ref_export_handle, (tivx_utils_ref_ipc_msg_t*)&consumer->ipcMessageArray, &objarray_ref);
             if ((framework_status != VX_SUCCESS) && (vxGetStatus(objarray_ref) != VX_SUCCESS))
             {
                 VX_PRINT(
@@ -530,7 +518,7 @@ import_ref_from_producer(vx_consumer consumer, vx_gw_buff_desc_msg* buff_desc_ms
                 consumer->refs[consumer->num_refs] = objarray_ref;
                 consumer->num_refs++;
                 consumer->ipcMessageCount = 0; // Wrap the intermediate reference counter
-                status                    = VXGW_STATUS_SUCCESS;
+                status                    = VX_GW_STATUS_SUCCESS;
             }
         }
         else
@@ -540,33 +528,33 @@ import_ref_from_producer(vx_consumer consumer, vx_gw_buff_desc_msg* buff_desc_ms
                 VX_ZONE_INFO,
                 "CONSUMER: Receiving object array item %d, of type %d\n",
                 buff_desc_msg->item_index,
-                ipc_msg->refDesc.meta.type);
+                ref_export_handle->refDesc.meta.type);
 
-            for (uint32_t i = 0; i < ipc_msg->numFd; i++)
+            for (uint32_t i = 0; i < ref_export_handle->numFd; i++)
             {
-                consumer->ipcMessageArray[consumer->ipcMessageCount].fd[i] = ipc_msg->fd[i];
+                consumer->ipcMessageArray[consumer->ipcMessageCount].fd[i] = ref_export_handle->fd[i];
             }
             memcpy(
                 (void*)&consumer->ipcMessageArray[consumer->ipcMessageCount].refDesc,
-                &ipc_msg->refDesc,
+                &ref_export_handle->refDesc,
                 sizeof(tivx_utils_ref_desc_t));
-            consumer->ipcMessageArray[consumer->ipcMessageCount].numFd = ipc_msg->numFd;
+            consumer->ipcMessageArray[consumer->ipcMessageCount].numFd = ref_export_handle->numFd;
             consumer->ipcMessageCount++;
-            status = VXGW_STATUS_SUCCESS;
+            status = VX_GW_STATUS_SUCCESS;
         }
     }
     else if (buff_desc_msg->num_items == 0)
     {
-        VX_PRINT(VX_ZONE_INFO, "CONSUMER: Importing single reference of type %d\n", ipc_msg->refDesc.meta.type);
+        VX_PRINT(VX_ZONE_INFO, "CONSUMER: Importing single reference of type %d\n", ref_export_handle->refDesc.meta.type);
 
         // receiving non-object array single reference
         vx_reference single_ref = NULL;
-        framework_status        = tivx_utils_import_ref_from_ipc_xfer(consumer->context, ipc_msg, &single_ref);
+        framework_status        = tivx_utils_import_ref_from_ipc_xfer(consumer->context, ref_export_handle, &single_ref);
         if ((framework_status == VX_SUCCESS) && (vxGetStatus(single_ref) == VX_SUCCESS))
         {
             consumer->refs[consumer->num_refs] = single_ref;
             consumer->num_refs++;
-            status = VXGW_STATUS_SUCCESS;
+            status = VX_GW_STATUS_SUCCESS;
         }
         else
         {
@@ -605,12 +593,12 @@ static vx_gw_status_t start_sync_with_producer(vx_consumer consumer, char* acces
         }
         else if (consumer->state == VX_CONS_STATE_FAILED)
         {
-            return VXGW_STATUS_FAILURE;
+            return VX_GW_STATUS_FAILURE;
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "CONSUMER: Fatal error when creating client socket!%s", "\n");
-            return VXGW_STATUS_FAILURE;
+            return VX_GW_STATUS_FAILURE;
         }
 
         if (consumer->state == VX_CONS_STATE_FLUSH)
@@ -639,7 +627,7 @@ static vx_gw_status_t start_sync_with_producer(vx_consumer consumer, char* acces
 
     consumer->socket_fd = socket_fd;
 
-    return VXGW_STATUS_SUCCESS;
+    return VX_GW_STATUS_SUCCESS;
 }
 
 static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, uint8_t* message_buffer)
@@ -685,7 +673,7 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
         VX_PRINT(VX_ZONE_INFO, "CONSUMER: Received [VX_MSGTYPE_REF_BUF], creating tiovx reference%s", "\n");
 
         status = import_ref_from_producer(consumer, msg, fd, num_fd);
-        if (status != VXGW_STATUS_SUCCESS)
+        if (status != VX_GW_STATUS_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "CONSUMER: import_ref_from_producer() failed.%s", "\n");
             break;
@@ -693,8 +681,8 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
         if (msg->last_reference == 1)
         {
             // Create the consumer graph by jumping into application defined callback
-            status = consumer->subscriber_cb.createGraphCallback(consumer->graph_obj, consumer->refs, consumer->num_refs);
-            if (status != VXGW_STATUS_SUCCESS)
+            status = consumer->subscriber_cb.createCallback(consumer->graph_obj, consumer->refs, consumer->num_refs);
+            if (status != VX_GW_STATUS_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "CONSUMER: application create graph failed%s", "\n");
                 break;
@@ -708,8 +696,8 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
 
             // create the buffer ID client thread; from there switch to reading buffer ID messages and enqueueing
             // into the consumer graph input
-            status = pthread_create(&consumer->bufferid_thread, NULL, buffer_id_thread, (void*)consumer);
-            if (status != VXGW_STATUS_SUCCESS)
+            status = pthread_create(&consumer->backchannel_thread, NULL, buffer_id_thread, (void*)consumer);
+            if (status != VX_GW_STATUS_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "CONSUMER: failed to create buffer ID client thread%s", "\n");
                 break;
@@ -722,7 +710,7 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
 
     case VX_MSGTYPE_BUFID_CMD:
     {
-        status                  = VXGW_STATUS_SUCCESS;
+        status                  = VX_GW_STATUS_SUCCESS;
         vx_gw_buff_id_msg* msg = (vx_gw_buff_id_msg*)message_buffer;
 
         VX_PRINT(
@@ -768,7 +756,7 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
     {
         VX_PRINT(VX_ZONE_ERROR, "CONSUMER: MSG RECEIVE STATUS: FAILED.%s", "\n");
     }
-    else if (status == VXGW_STATUS_CONSUMER_REF_DROP)
+    else if (status == VX_GW_STATUS_CONSUMER_REF_DROP)
     {
         // buffer was not enqueued, transmit the buffer back to the producer immediately
         consumer->last_buffer_dropped = 1;
@@ -803,10 +791,6 @@ static void* buffer_id_thread(void* arg)
         VX_PRINT(VX_ZONE_ERROR, "CONSUMER: Bad argument, shutting down thread%s", "\n");
         return NULL;
     }
-
-#ifdef defined(QNX)
-    pthread_setname_np(pthread_self(), "ovxgw_buffer_id_thread");
-#endif
 
     while (consumer->state != VX_CONS_STATE_FLUSH)
     {
@@ -844,25 +828,21 @@ static void* consumer_receiver_thread(void* arg)
     int32_t           status                = 0;
     int32_t           first_buffer_released = 0;
 
-#ifdef defined(QNX)
-    pthread_setname_np(pthread_self(), "consumer_receiver_thread");
-#endif
-
     while (!done)
     {
         switch (consumer->state)
         {
         case VX_CONS_STATE_DISCONNECTED:
         {
-            vx_gw_status_t gw_status = VXGW_STATUS_SUCCESS;
+            vx_gw_status_t gw_status = VX_GW_STATUS_SUCCESS;
             // Wait for a socket connection with the producer
             gw_status = start_sync_with_producer(consumer, consumer->access_point_name, msg);
-            if (VXGW_STATUS_FAILURE == gw_status)
+            if (VX_GW_STATUS_FAILURE == gw_status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "CONSUMER: cannot start sync with producer on master channel%s", "\n");
                 consumer->state = VX_CONS_STATE_FAILED;
             }
-            else if (VXGW_STATUS_SUCCESS == gw_status)
+            else if (VX_GW_STATUS_SUCCESS == gw_status)
             {
                 VX_PRINT(VX_ZONE_PERF, " [UPT] First Time Connected to producer!%s", "\n");
                 VX_PRINT(VX_ZONE_INFO, "CONSUMER: connected to producer with socket %d\n", consumer->socket_fd);
@@ -895,7 +875,7 @@ static void* consumer_receiver_thread(void* arg)
         case VX_CONS_STATE_RUN:
         {
             int32_t      buffer_id                         = 0;
-            vx_reference dequeued_refs[OVXGW_MAX_NUM_REFS] = {0};
+            vx_reference dequeued_refs[VX_GW_MAX_NUM_REFS] = {0};
             vx_uint32    current_ref_num                   = 0;
             vx_uint32    num_dequeued_refs                 = 0;
 
@@ -951,11 +931,7 @@ static void* consumer_receiver_thread(void* arg)
 
         case VX_CONS_STATE_WAIT:
         {
-#ifdef x86_64
             tivxTaskWaitMsecs(50000);
-#else
-            tivxTaskWaitMsecs(2000);
-#endif
             VX_PRINT(VX_ZONE_INFO, "CONSUMER: wait finished%s", "\n");
             consumer->last_buffer_transmitted = 1;
             consumer->state                   = VX_CONS_STATE_FLUSH;
@@ -1048,6 +1024,9 @@ static vx_status ownDestructConsumer(vx_reference ref)
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseConsumer(vx_consumer* consumer)
 {
+    vx_consumer this_consumer = consumer[0];
+    pthread_join(this_consumer->receiver_thread, NULL);
+    pthread_join(this_consumer->backchannel_thread, NULL);
     return (ownReleaseReferenceInt(
         vxCastRefFromConsumerP(consumer), VX_TYPE_CONSUMER, (vx_enum)VX_EXTERNAL, NULL));
 }

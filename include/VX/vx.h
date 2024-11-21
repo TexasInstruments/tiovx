@@ -43,10 +43,6 @@
  */
 #define VX_MAX_REFERENCE_NAME (64)
 
-#define VX_MAX_NUM_REFERENCES   (32U)
-
-#define VX_MAX_BUFFER_POOL_SIZE (5U)
-
 #include <VX/vx_vendors.h>
 #include <VX/vx_types.h>
 #include <VX/vx_kernels.h>

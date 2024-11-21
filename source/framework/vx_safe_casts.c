@@ -124,8 +124,12 @@ DEFINE_SAFE_CASTS(threshold, Threshold, THRESHOLD)
 #ifdef VX_TYPE_USER_DATA_OBJECT
 DEFINE_SAFE_CASTS(user_data_object, UserDataObject, USER_DATA_OBJECT)
 #endif
-#if defined(LINUX) || defined(QNX)
+
+#ifdef VX_PRODUCER
 DEFINE_SAFE_CASTS(producer, Producer, PRODUCER)
+#endif
+
+#ifdef VX_CONSUMER
 DEFINE_SAFE_CASTS(consumer, Consumer, CONSUMER)
 #endif
 

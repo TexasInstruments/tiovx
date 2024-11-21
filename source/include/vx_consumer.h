@@ -24,51 +24,83 @@
 extern "C" {
 #endif
 
-    typedef enum
-    {
-        VX_CONS_STATE_DISCONNECTED = 0x0,
-        VX_CONS_STATE_INIT         = 0x1,
-        VX_CONS_STATE_RUN          = 0x2,
-        VX_CONS_STATE_WAIT         = 0x3,
-        VX_CONS_STATE_FLUSH        = 0x4,
-        VX_CONS_STATE_FAILED       = 0x5
-    } vx_consumer_state;
+/*! \brief The Consumer state enumeration 
+ * \ingroup group_vx_consumer
+ */
+typedef enum
+{
+    VX_CONS_STATE_DISCONNECTED = 0x0,
+    VX_CONS_STATE_INIT         = 0x1,
+    VX_CONS_STATE_RUN          = 0x2,
+    VX_CONS_STATE_WAIT         = 0x3,
+    VX_CONS_STATE_FLUSH        = 0x4,
+    VX_CONS_STATE_FAILED       = 0x5
+} vx_consumer_state;
 
-    typedef struct _vx_consumer{
-        tivx_reference_t        base;
-        vx_context              context;
-        vx_uint32               num_failures;
-        vx_bool                 init_done;
+/*! \brief Consumer object internal state
+ * \ingroup group_vx_consumer
+ */
+typedef struct _vx_consumer
+{
+    /*! \brief reference object */
+    tivx_reference_t        base;
+    /*! \brief reference to implementation context */
+    vx_context              context;
 
-        vx_char                 name[VX_MAX_CONSUMER_NAME];
-        vx_char                 access_point_name[VX_MAX_ACCESS_POINT_NAME];
-        void*                   graph_obj;
-        vx_uint32               num_refs;
-        vx_reference            refs[OVXGW_MAX_NUM_REFS];
-        vx_uint16               consumer_id;
+    /*! \brief Contains number of failures in producer-consumer communication */
+    vx_uint32               num_failures;
+    /*! \brief Flag to indicate that the consumer client initialization is done */
+    vx_bool                 init_done;
 
-        pthread_t               receiver_thread;
-        vx_consumer_state       state;
-        pthread_t               backchannel_thread;
-        vx_subscriber_cb_t      subscriber_cb;
+    /*! \brief name of the consumer client */
+    vx_char                 name[VX_MAX_CONSUMER_NAME];
+    /*! \brief name of the access point b/w producer and consumer */
+    vx_char                 access_point_name[VX_MAX_ACCESS_POINT_NAME];
+    /*! \brief pointer to the consumer graph object */
+    void*                   graph_obj;
+    /*! \brief number of references imported from producer */
+    vx_uint32               num_refs;
+    /*! \brief Consumer references */
+    vx_reference            refs[VX_GW_MAX_NUM_REFS];
+
+    /*! \brief Contains the id of the consumer for which the data will be exchanged */
+    vx_uint16               consumer_id;
+    /*! \brief Thread to receive broadcasted information from producer */
+    pthread_t               receiver_thread;
+    /*! \brief Indicates the consumer state */
+    vx_consumer_state       state;
+    /*! \brief Thread to send backchannel information to producer */
+    pthread_t               backchannel_thread;
+    /*! \brief pointer to store consumer function callbacks */
+    vx_subscriber_cb_t      subscriber_cb;
+
+    /*! \brief flag to indicate that the last reference has been processed */
+    vx_uint32               last_buffer;
+    /*! \brief Contains the last reference buffer id */
+    vx_uint8                last_buffer_id;
+    /*! \brief flag to indicate that the last buffer has been transmitted */
+    vx_uint8                last_buffer_transmitted;
+    /*! \brief flag to inform consumer whether previous frame has been dropped by producer */
+    vx_uint8                last_buffer_dropped;
+
+    /*! \brief Array used to store intermediate IPC messages */
+    tivx_utils_ref_ipc_msg_t ipcMessageArray[VX_GW_MAX_NUM_REFS];
+    /*! \brief Indicates the number of IPC message sent */
+    vx_uint32                ipcMessageCount;
 #ifdef IPPC_SHEM_ENABLED
-        SIppcRegistry           m_registry;
-        SIppcReceiverContext  m_receiver_ctx;    
-        SIppcSenderContext      m_sender_ctx;
-        SIppcPortMap            ippc_port[IPPC_PORT_COUNT];
+    /*! \brief Contains registry information */
+    SIppcRegistry           m_registry;
+    /*! \brief Contains receiver context */
+    SIppcReceiverContext    m_receiver_ctx;
+    /*! \brief Contains sender context */
+    SIppcSenderContext      m_sender_ctx;
+    /*! \brief Contains ippc port configuration */
+    SIppcPortMap            ippc_port[IPPC_PORT_COUNT];
 #elif SOCKET_ENABLED
-        int32_t                 socket_fd;
-        pthread_t               bufferid_thread;
+    /*! \brief Socket file descriptor */
+    int32_t                 socket_fd;
 #endif
-        vx_uint32               last_buffer;
-        vx_uint8                last_buffer_id;
-        vx_uint8                last_buffer_transmitted;
-        vx_uint8                last_buffer_dropped;
-
-        // Array used to store intermediate IPC messages
-        tivx_utils_ref_ipc_msg_t ipcMessageArray[OVXGW_MAX_NUM_REFS];
-        vx_uint32                ipcMessageCount;
-    }tivx_consumer_t;
+}tivx_consumer_t;
 
 #ifdef __cplusplus
 }

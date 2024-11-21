@@ -24,98 +24,152 @@
 extern "C" {
 #endif
 
-    typedef enum
-    {
-        VX_PROD_STATE_INIT  = 0x0,
-        VX_PROD_STATE_RUN   = 0x1,
-        VX_PROD_STATE_WAIT  = 0x2,
-        VX_PROD_STATE_FLUSH = 0x3,
-    } vx_producer_state;
+/*! \brief The Producer state enumeration 
+ * \ingroup group_vx_producer
+ */
+typedef enum
+{
+    VX_PROD_STATE_INIT  = 0x0,
+    VX_PROD_STATE_RUN   = 0x1,
+    VX_PROD_STATE_WAIT  = 0x2,
+    VX_PROD_STATE_FLUSH = 0x3,
+} vx_producer_state;
 
-    typedef enum
-    {
-        PROD_STATE_CLI_NOT_CONNECTED  = 0x0,
-        PROD_STATE_CLI_CONNECTED      = 0x1,
-        PROD_STATE_CLI_RUNNING        = 0x2,
-        PROD_STATE_CLI_FLUSHED        = 0x3,
-        PROD_STATE_CLI_FAILED         = 0x4
-    } producer_client_state_t;
+/*! \brief The Producer-Consumer connection state enumeration 
+ * \ingroup group_vx_producer
+ */
+typedef enum
+{
+    PROD_STATE_CLI_NOT_CONNECTED  = 0x0,
+    PROD_STATE_CLI_CONNECTED      = 0x1,
+    PROD_STATE_CLI_RUNNING        = 0x2,
+    PROD_STATE_CLI_FLUSHED        = 0x3,
+    PROD_STATE_CLI_FAILED         = 0x4
+} producer_client_state_t;
 
-    typedef enum
-    {
-        IN_GRAPH = 0x00,
-        LOCKED   = 0x01,
-        FREE     = 0x02
-    } producer_buffer_status;
+/*! \brief The Producer buffer status enumeration 
+ * \ingroup group_vx_producer
+ */
+typedef enum
+{
+    IN_GRAPH = 0x00,
+    LOCKED   = 0x01,
+    FREE     = 0x02
+} producer_buffer_status;
 
-    typedef struct
-    {
-        producer_buffer_status buffer_status;
-        vx_reference           ovx_ref;
-        vx_int32               refcount;
-        vx_uint8               attached_to_client[OVXGW_NUM_CLIENTS];
-        vx_uint64              state_timestamp;
-    } buffer_info_t;
+/*! \brief The Producer buffer information
+ * \ingroup group_vx_producer
+ */
+typedef struct
+{
+    /*! \brief Producer reference */
+    vx_reference           ovx_ref;
+    /*! \brief Number of consumers locking the reference */
+    vx_int32               refcount;
 
-    typedef struct 
-    {
-        producer_client_state_t state;
-        uint64_t                consumer_id;
+    /*! \brief Status of reference in producer */
+    producer_buffer_status buffer_status;
+    /*! \brief flag to indicate whether the producer is connected to the consumer */
+    vx_uint8               attached_to_client[VX_GW_NUM_CLIENTS];
+
+    /*! \brief Indicates the time at which buffer status was set */
+    vx_uint64              state_timestamp;
+} buffer_info_t;
+
+/*! \brief Backchannel information from consumer
+ * \ingroup group_vx_producer
+ */
+typedef struct 
+{
+    /*! \brief Indicates the producer-consumer connection status */
+    producer_client_state_t state;
+
+    /*! \brief consumer id, used to distinguish consumers on app level */
+    uint64_t                consumer_id;
+
+    /*! \brief Thread to receive backchannel information from consumer */
+    pthread_t               bck_thread;
+
 #ifdef IPPC_SHEM_ENABLED
-        SIppcReceiverContext  m_receiver_ctx;
+    /*! \brief Contains receiver context */
+    SIppcReceiverContext    m_receiver_ctx;
 #elif SOCKET_ENABLED
-        int32_t                 socket_fd;
+    /*! \brief Socket file descriptor */
+    int32_t                 socket_fd;
+
+    /*! \brief Indicates that the first buffer is released */
+    int32_t                 first_buffer_released;
 #endif
-        vx_int32                first_buffer_released;
-        pthread_t               bck_thread;
-    } producer_bckchannel_t;
-    
-    typedef struct
-    {
+} producer_bckchannel_t;
 
-        pthread_t              broadcast_thread;
-        vx_uint32              sequence_num;
-        vx_uint32              total_sequences;
-    } prod_internal_data_t;
+/*! \brief Producer object internal state
+ * \ingroup group_vx_producer
+ */
+typedef struct _vx_producer
+{
+    /*! \brief reference object */
+    tivx_reference_t       base;
+    /*! \brief Indicates the producer state */
+    vx_producer_state      graph_state
 
-    typedef struct _vx_producer{
-        tivx_reference_t       base;
-        vx_producer_state      graph_state;
-        vx_uint32              nb_consumers;
-        producer_bckchannel_t  consumers_list[OVXGW_NUM_CLIENTS];
+    /*! \brief Contains number of consumers connected */;
+    vx_uint32              nb_consumers;
+    /*! \brief Stores consumers backchannel information */;
+    producer_bckchannel_t  consumers_list[VX_GW_NUM_CLIENTS];
+    /*! \brief Thread to send broadcast information to all consumers */
+    pthread_t              broadcast_thread;
 
-        pthread_t              broadcast_thread;
-        vx_bool                ref_export_done;
+    /*! \brief Contains the number of frames that has been enqueued */
+    vx_uint32              nbEnqueueFrames;
+    /*! \brief Contains the number of frames that has been dequeued */
+    vx_uint32              nbDequeueFrames;
+    /*! \brief Contains the number of frames that has been dropped */
+    vx_uint32              nbDroppedFrames;
+    /*! \brief flag to indicate whether the reference can be enqueued or dropped  */
+    vx_uint32              enqueuecount;
 
-        vx_uint32              nbEnqueueFrames;
-        vx_uint32              nbDequeueFrames;
-        vx_uint32              nbDroppedFrames;
-        vx_uint32              enqueuecount;
+    /*! \brief Stores the buffer reference status of the producer */
+    buffer_info_t          refs[VX_GW_MAX_NUM_REFS];
+    /*! \brief Mutex to prevent conflict during setting of buffer status of multiple consumers */
+    pthread_mutex_t        buffer_mutex;
+    /*! \brief number of producer buffers */
+    vx_uint32              numBuffers;
+    /*! \brief number of references to be exported to consumer */
+    vx_uint32              numBufferRefsExport;
+    /*! \brief Flag to indicates that the reference has been exported */
+    vx_bool                ref_export_done;
 
-        vx_uint32              numBufferRefs;
-        vx_uint32              numBufferRefsExport;
+    /*! \brief flag to indicate if this is the last reference to be exchanged with the consumer */
+    vx_uint32              last_buffer;
+    /*! \brief flag to inform consumer whether previous frame has been dropped by producer */
+    vx_uint8               last_frame_dropped;
 
-        buffer_info_t          refs[OVXGW_MAX_NUM_REFS];
-        vx_uint32              last_buffer;
-        pthread_mutex_t        buffer_mutex;
+    /*! \brief name of the producer server */
+    vx_char                name[VX_MAX_PRODUCER_NAME];
+    /*! \brief name of the access point b/w producer and consumer */
+    vx_char                access_point_name[VX_MAX_ACCESS_POINT_NAME];
 
-        vx_char                name[VX_MAX_PRODUCER_NAME];
-        vx_char                access_point_name[VX_MAX_ACCESS_POINT_NAME];
-        void*                  graph_obj;
-        vx_uint8               last_frame_dropped;
-
-        vx_streaming_cb_t      streaming_cb;
+    /*! \brief pointer to the producer graph object */
+    void*                  graph_obj;
+    /*! \brief pointer to store producer function callbacks */
+    vx_streaming_cb_t      streaming_cb;
 #ifdef IPPC_SHEM_ENABLED
-        SIppcShmemContext      m_shmem_ctx;
-        SIppcSenderContext     m_sender_ctx;
-        SIppcPortMap           ippc_port[IPPC_PORT_COUNT];
+    /*! \brief Contains shmem context */
+    SIppcShmemContext      m_shmem_ctx;
+    /*! \brief Contains sender context */
+    SIppcSenderContext     m_sender_ctx;
+    /*! \brief Contains ippc port configuration */
+    SIppcPortMap           ippc_port[IPPC_PORT_COUNT];
 #elif SOCKET_ENABLED
-        pthread_mutex_t client_mutex;
-        server_context         server;
-        // reference metadata buffer
-        uint8_t metadata_buffer[SOCKET_MAX_MSG_SIZE];
+    /*! \brief Contains server context */
+    server_context         server;
+    /*! \brief Mutex to prevent conflict during setting of multiple client status */
+    pthread_mutex_t        client_mutex;
+
+    /*! \brief Contains producer metadata */
+    uint8_t metadata_buffer[SOCKET_MAX_MSG_SIZE];
 #endif
-    } tivx_producer_t;
+} tivx_producer_t;
 
 #ifdef __cplusplus
 }

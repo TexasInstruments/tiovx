@@ -1,27 +1,18 @@
-//=============================================================================
-//  C O P Y R I G H T
-//-----------------------------------------------------------------------------
-/// @copyright (c) 2024 by Robert Bosch GmbH. All rights reserved.
-//
-//  The reproduction, distribution and utilization of this file as
-//  well as the communication of its contents to others without express
-//  authorization is prohibited. Offenders will be held liable for the
-//  payment of damages. All rights reserved in the event of the grant
-//  of a patent, utility model or design.
-//=============================================================================
-//  P R O J E C T   I N F O R M A T I O N
-//-----------------------------------------------------------------------------
-//     Projectname: IPPC
-//  Target systems: cross platform
-//       Compilers: ISO C compliant or higher
-//=============================================================================
-//  I N I T I A L   A U T H O R   I D E N T I T Y
-//-----------------------------------------------------------------------------
-//        Name:
-//  Department: XC-AS/EPO3
-//=============================================================================
-/// @file  vx_gw_common.h
-//=============================================================================
+/*
+ * Copyright (c) 2024 The Khronos Group Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http:! \briefwww.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #ifndef __VX_GW_COMMON_H
 #define __VX_GW_COMMON_H
@@ -34,59 +25,81 @@
 
 #include <tivx_utils_ipc_ref_xfer.h>
 
-#define OVXGW_MAX_NUM_REFS (10u)
-#define OVXGW_MAX_NUM_ITEMS (10u)
-#define OVXGW_MAX_META_SIZE (4096u)
+/*! \brief max number of references*/
+#define VX_GW_MAX_NUM_REFS (10u)
+/*! \brief max number of items in the object array*/
+#define VX_GW_MAX_NUM_ITEMS (10u)
+/*! \brief max size of meta data (supplementary data)*/
+#define VX_GW_MAX_META_SIZE (4096u)
 
+/*! \brief max number of consumer for socket or IPPC*/
+#define VX_GW_NUM_CLIENTS (4U)
+
+#ifdef IPPC_SHEM_ENABLED
+/*! \brief max number of port configuration for IPPC conatining 1 sender and N receiver*/
+  #define IPPC_PORT_COUNT (VX_GW_NUM_CLIENTS + 1U)
+#endif
+
+/*! \brief The gateway connector status
+ * \ingroup group_vx_gw_common
+ */
 typedef enum
 {
-    VXGW_STATUS_SUCCESS           = 0U,
-    VXGW_STATUS_FAILURE           = 1U,
-    VXGW_STATUS_CONSUMER_REF_DROP = 2U,
-    VXGW_STATUS_CONSUMER_FLUSHED  = 3U,
+    VX_GW_STATUS_SUCCESS           = 0U,
+    VX_GW_STATUS_FAILURE           = 1U,
+    VX_GW_STATUS_CONSUMER_REF_DROP = 2U,
+    VX_GW_STATUS_CONSUMER_FLUSHED  = 3U,
 } vx_gw_status_t;
 
-//producer->consumers message (1->N)
+/*! \brief The producer message content via IPPC
+ * \ingroup group_vx_gw_common
+ */
 typedef struct
 {
-    // used at runtime, release
+    /*! \brief Indicates id of the buffer to be exchanged with the consumer */
     int32_t  buffer_id;
-    uint32_t supplementary_data;
+    /*! \brief flag to indicate if this is the last reference to be exchanged with the consumer */
     uint32_t last_buffer;
-
-    // used at init - meta is toggled, consumer num is checked against our case
-    uint32_t backchannel_port; // use SIppcPortMap
-    uint32_t consumer_id;
-    uint32_t buffer_meta;
-
-    // number of total object array items; set to zero if reference is not object array
-    uint8_t num_items;
-
-    // flag to indicate if this is the last reference to be exchanged with the consumer
-    uint8_t num_refs;
-
-    tivx_utils_ref_ipc_msg_t ipc_msg[OVXGW_MAX_NUM_REFS][OVXGW_MAX_NUM_ITEMS];
-
-    uint8_t metadata_buffer[OVXGW_MAX_META_SIZE];
-
-    // flag set when metadata can be read by consumer
-    uint8_t metadata_valid;
-
-    // flag to inform consumer whether previous frame has been dropped by producer
+    /*! \brief flag to inform consumer whether previous frame has been dropped by producer */
     uint8_t last_frame_dropped;
 
-    // size of metadata, copied after this struct in the buffer ID message
+    /*! \brief flag set when metadata can be read by consumer */
+    uint8_t metadata_valid;
+    /*! \brief size of metadata */
     size_t metadata_size;
-} SProducerContent;
+    /*! \brief Contains producer metadata */
+    uint8_t metadata_buffer[VX_GW_MAX_META_SIZE];    
 
-//consumer->producer message (1->1)
+    /*! \brief Used for ippc communication */
+    uint32_t backchannel_port;
+    /*! \brief Contains the id of the consumer for which the data will be exchanged */
+    uint32_t consumer_id;
+
+    /*! \brief number of total object array items; set to zero if reference is not object array */
+    uint8_t num_items;
+    /*! \brief number of producer references */
+    uint8_t num_refs;
+    /*! \brief Array used to store intermediate IPC messages */
+    tivx_utils_ref_ipc_msg_t ref_export_handle[VX_GW_MAX_NUM_REFS][VX_GW_MAX_NUM_ITEMS];
+
+} vx_prod_msg_content_t;
+
+/*! \brief The consumer message content via IPPC
+ * \ingroup group_vx_gw_common
+ */
 typedef struct
 {
+    /*! \brief Indicate the id of the buffer to be exchanged with the producer */
     uint32_t buffer_id;
+    /*! \brief flag to indicate that the last reference has been processed */
     uint32_t last_buffer;
+    /*! \brief Contains the id of the consumer for which the data has been exchanged */
     uint32_t consumer_id;
-} SConsumerContent;
+} vx_cons_msg_content_t;
 
+/*! \brief The message type exchanged b/w producer and consumer 
+ * \ingroup group_vx_gw_common
+ */
 typedef enum
 {
     VX_MSGTYPE_HELLO       = 1U,
@@ -96,58 +109,59 @@ typedef enum
     VX_MSGTYPE_COUNT       = 5U
 } vx_gw_message_type;
 
+/*! \brief The Structure to specify message type b/w producer and consumer
+ * \ingroup group_vx_gw_common
+ */
 typedef struct
 {
+    /*! \brief Indicates the type of message */
     vx_gw_message_type msg_type;
 
-    // process id, used to distinguish consumers on app level
+    /*! \brief consumer id, used to distinguish consumers on app level */
     uint64_t consumer_id;
 
 } vx_gw_hello_msg;
 
+/*! \brief The initial setup message b/w producer and consumer via SOCKET communication
+ * \ingroup group_vx_gw_common
+ */
 typedef struct
 {
+    /*! \brief Indicates the type of message */
     vx_gw_message_type msg_type;
 
-    // number of total object array items; set to zero if reference is not object array
-    uint8_t num_items;
-
-    // number representing the element index for object array; set to zero if reference is not an object array item
-    uint8_t item_index;
-
-    // flag to indicate if this is the last reference to be exchanged with the consumer
+    /*! \brief flag to indicate if this is the last reference to be exchanged with the consumer */
     uint8_t last_reference;
 
-    tivx_utils_ref_ipc_msg_t ipc_msg;
+    /*! \brief number representing the element index for object array; set to zero if reference is not an object array item */
+    uint8_t item_index;
+    /*! \brief number of total object array items; set to zero if reference is not object array */
+    uint8_t num_items;
+    /*! \brief IPC message containing references to be exported to consumer */
+    tivx_utils_ref_ipc_msg_t ref_export_handle;
 
 } vx_gw_buff_desc_msg;
 
+/*! \brief The runtime message b/w producer and consumer via SOCKET communication
+ * \ingroup group_vx_gw_common
+ */
 typedef struct
 {
+    /*! \brief Indicates the type of message */
     vx_gw_message_type msg_type;
 
-    // number representing the buffer ID
+    /*! \brief number representing the buffer ID */
     uint8_t buffer_id;
-
-    // last buffer transmitted
+    /*! \brief last buffer transmitted */
     uint8_t last_buffer;
-
-    // flag set when metadata can be read by consumer
-    uint8_t metadata_valid;
-
-    // flag to inform consumer whether previous frame has been dropped by producer
+    /*! \brief flag to inform consumer whether previous frame has been dropped by producer */
     uint8_t last_frame_dropped;
 
-    // size of metadata, copied after this struct in the buffer ID message
+    /*! \brief flag set when metadata can be read by consumer */
+    uint8_t metadata_valid;
+    /*! \brief size of metadata, copied after this struct in the buffer ID message */
     uint16_t metadata_size;
 
 } vx_gw_buff_id_msg;
-
-  /* may number of consumer for socket or IPP*/
-  #define OVXGW_NUM_CLIENTS (4U)
-
-#ifdef IPPC_SHEM_ENABLED
-  #define IPPC_PORT_COUNT (OVXGW_NUM_CLIENTS+1U)
-#endif
 
 #endif
