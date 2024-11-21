@@ -340,6 +340,7 @@ TEST(tivxNegativeBoundary, negativeTestHeadNodes)
     }
 
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 
     for (i = 0; i < TIVX_GRAPH_MAX_HEAD_NODES+1; i++)
     {

@@ -75,6 +75,10 @@ static vx_status VX_CALLBACK tivxAddKernelCmdTimeoutTestValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelCmdTimeoutTestInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
+static vx_status VX_CALLBACK tivxAddKernelCmdTimeoutTestDeinitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
+
 vx_status tivxAddKernelCmdTimeoutTest(vx_context context);
 vx_status tivxRemoveKernelCmdTimeoutTest(vx_context context);
 
@@ -181,6 +185,15 @@ static vx_status VX_CALLBACK tivxAddKernelCmdTimeoutTestInitialize(vx_node node,
     return status;
 }
 
+static vx_status VX_CALLBACK tivxAddKernelCmdTimeoutTestDeinitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    return status;
+}
+
 vx_status tivxAddKernelCmdTimeoutTest(vx_context context)
 {
     vx_kernel kernel;
@@ -204,7 +217,7 @@ vx_status tivxAddKernelCmdTimeoutTest(vx_context context)
                     TIVX_KERNEL_CMD_TIMEOUT_TEST_MAX_PARAMS,
                     tivxAddKernelCmdTimeoutTestValidate,
                     tivxAddKernelCmdTimeoutTestInitialize,
-                    NULL);
+                    tivxAddKernelCmdTimeoutTestDeinitialize);
 
         status = vxGetStatus((vx_reference)kernel);
     }

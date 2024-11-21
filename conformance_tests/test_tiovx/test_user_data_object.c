@@ -117,8 +117,9 @@ TEST(tivxUserDataObject, negativeTestCopyUserDataObject)
     vx_char tname[] = {'t', 'i', 'o', 'v', 'x'};
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxCopyUserDataObject(udobj, offset, size, &udata, usage, user_mem_type));
-    ASSERT_VX_OBJECT(udobj = vxCreateUserDataObject(context, tname, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_VX_OBJECT(udobj = vxCreateUserDataObject(context, tname, sizeof(vx_uint32), NULL), VX_TYPE_USER_DATA_OBJECT);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyUserDataObject(udobj, offset, size, NULL, usage, user_mem_type));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyUserDataObject(udobj, offset, size, NULL, usage, VX_MEMORY_TYPE_HOST));
     VX_CALL(vxReleaseUserDataObject(&udobj));
 }
 

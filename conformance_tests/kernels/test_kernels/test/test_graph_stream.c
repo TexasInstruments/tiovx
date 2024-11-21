@@ -511,7 +511,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testScalarCtrlCmd, Arg, STREAMING_PARAMETERS)
     vx_graph graph;
     vx_context context = context_->vx_context_;
     vx_uint8  scalar_val = 33;
-    vx_scalar scalar[1];
+    vx_scalar scalar[2];
     vx_node n1;
     int i;
 
@@ -534,8 +534,10 @@ TEST_WITH_ARG(tivxGraphStreaming, testScalarCtrlCmd, Arg, STREAMING_PARAMETERS)
 
     for (i = 1; i <= 5; i ++)
     {
+        /* Adding excess scalar to the control command.  This will not fail,
+         * as sufficient data was still supplied to submission of control command */
         status = tivxNodeSendCommand(n1, 0u, TIVX_SCALAR_SRC_NODE_INC_SCALAR,
-            (vx_reference *)scalar, 1u);
+            (vx_reference *)scalar, 2u);
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, status);
 
         ASSERT_EQ_VX_STATUS(ct_scalar_as_int(scalar[0]), scalar_val + i);
