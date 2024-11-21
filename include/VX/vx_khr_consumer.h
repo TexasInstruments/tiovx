@@ -53,6 +53,20 @@ typedef struct _vx_consumer *vx_consumer;
 #define VX_MAX_ACCESS_POINT_NAME 20
 
 /**
+ * \brief The error codes for the communication protocol between the producer and the consumer.
+ * each implementation should map the error code to the corresponding error message returned by the transport protocol used
+*/
+enum vx_comm_error_e {
+    no_error     =  (vx_int32)0,
+    comm_lost    = -(vx_int32)1,
+    comm_error   = -(vx_int32)2,
+    comm_timeout = -(vx_int32)3,
+    comm_closed  = -(vx_int32)4,
+};
+
+typedef vx_enum vx_comm_error;
+
+/**
  * \brief Custom callback function for creating consumer graph.
  *
  * This function is called by the consumer client thread to intialze the exported reference from producer.
@@ -193,6 +207,38 @@ typedef struct _vx_consumer_params_t
  * \ingroup group_vx_consumer
  */
 VX_API_ENTRY vx_consumer VX_API_CALL vxCreateConsumer(vx_context context, const vx_consumer_params_t* params);
+
+/**
+ * \brief Callback function for notifying when the consumer connects to the producer.
+ *
+ * \param [in] producerId The unique identifier(PID) of the producer.
+ * \param [in] producerName The name of the consumer.
+ * 
+ */
+typedef void (*producer_connect_notify)(const vx_uint32 producerId, const char* producerName);
+
+/**
+ * \brief Callback function for notifying when the consumer disconnects from the producer.
+ *
+ * \param [in] producerId The unique identifier(PID) of a valid producer.
+ * \param [in] producerName The name of the producer.
+ * \param [in] error_code The error code of the disconnection if any.
+ * 
+ */
+typedef void (*producer_disconnect_notify)(const vx_uint32 producerId, const char* producerName, vx_comm_error comm_error);
+
+/**
+ * \brief (optional) Registers a callback function called when the consumer connects to a producer.
+ *
+ * \param consumer The consumer object.
+ * \param notifyConnectionProducer The callback function called when a producer connects.
+ *                                 If NULL no callback will be called.
+ * \param notifyDisconnectProducer The callback function called when a producer disconnects.
+ *                                 If NULL no callback will be called.
+ *
+ */
+void vx_registerProducerConnectionNotifications(const vx_consumer consumer, producer_connect_notify notifyConnectionProducer,
+                                                producer_disconnect_notify notifyDisconnectProducer);
 
 /**
  * \brief Starts the consumer client.

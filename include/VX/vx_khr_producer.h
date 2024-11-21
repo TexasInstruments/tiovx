@@ -106,6 +106,47 @@ typedef vx_status (*vxProducerTransmitMetadataCallback)(
     void*    metadata,
     size_t*      size);
 
+/**
+ * \brief Custom callback function to notify the producer when a frame is dropped for a corresponding consumer.
+ *
+ * This function is called by the producer server thread when a frame is dropped for a corresponding consumer.
+ * i.e. the number of allowed locked buffers by the consumer is exceeded.
+ * example with two consumers running at different speed.
+ * this threshold is shared by the consumer when connected to the producer and should correspond to its normal
+ * behavior.
+ *
+ * \param [in] graph A pointer to the OpenVX graph object that the producer is using.
+ * \param [in] consumer_id The unique identifier (PID) of the consumer who is retaining too much buffers.
+ * \param [in] consumer_name The name of the consumer which is specified in the consumer parameters.
+ * \param [in] dequeued_refs An array of references that were dequeued by the consumer and won't be send to the
+ * corresponding consumer.
+ * \param [in] num_dequeued_refs The number of dequeued references.
+ *
+ */
+typedef void (*vxProducerFrameDropCallback)(
+    vx_graph        graph,
+    const vx_uint32 consumer_id,
+    const char*     consumer_name,
+    vx_reference    dequeued_refs[],
+    vx_uint32*      num_dequeued_refs);
+
+/**
+ * \brief Callback function for notifying when a consumer connects to the producer.
+ *
+ * \param consumer_id The unique identifier (PID) of the consumer.
+ * \param consumer_name The name of the consumer.
+ *
+ */
+typedef void (*vx_producer_connect_notify_f)(const vx_uint32 consumer_id, const char* consumer_name);
+
+/**
+ * \brief Callback function for notifying when a consumer disconnects from the producer.
+ *
+ * \param consumer_id The unique identifier (PID) of the consumer.
+ * \param consumer_name The name of the consumer.
+ */
+typedef void (*vx_producer_disconnect_notify_f)(const vx_uint32 consumer_id, const char* consumer_name);
+
 /*!
  * \brief Producer callbacks
  *
