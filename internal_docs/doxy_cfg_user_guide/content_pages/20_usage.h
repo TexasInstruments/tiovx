@@ -157,6 +157,15 @@
          OpenVX context.
        - The order in which the vx_object_array and the vx_object_array elements are to be released is not mandated by the framework
        - A \ref vx_object_array cannot have a \ref vx_object_array as an exemplar.  If this is attempted, the creation of the object array will return an error
+     \section TIOVX_VIRTUAL_OBJECTS Virtual Objects
+       - For TI's implementation of OpenVX 1.1, virtual objects are treated as regular objects in most cases. For example, creating a \ref vx_image
+         object by calling into \ref vxCreateVirtualImage and then passing it to \ref vxMapImagePatch would typically return an error as noted in
+         the OpenVX specification. However, this behavior is not enforced in TIOVX. Using a virtual image with \ref vxMapImagePatch functions the same
+         as an image created via \ref vxCreateImage.
+     \subsection OBJARRAY_PYRAMID_GET vxGetObjectArrayItem and vxGetPyramidLevel on Virtual Objects
+       - Similarly, objects created through calls to \ref vxCreateVirtualObjectArray and \ref vxCreateVirtualPyramid are accessible by the user
+         directly. Calling \ref vxGetObjectArrayItem and \ref vxGetPyramidLevel on these virtual objects will return a valid reference
+         regardless of whether they are virtual or not.
  */
 
 /*!
