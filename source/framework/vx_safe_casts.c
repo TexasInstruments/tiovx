@@ -125,6 +125,14 @@ DEFINE_SAFE_CASTS(threshold, Threshold, THRESHOLD)
 DEFINE_SAFE_CASTS(user_data_object, UserDataObject, USER_DATA_OBJECT)
 #endif
 
+#ifdef VX_TYPE_PRODUCER
+DEFINE_SAFE_CASTS(producer, Producer, PRODUCER)
+#endif
+
+#ifdef VX_TYPE_CONSUMER
+DEFINE_SAFE_CASTS(consumer, Consumer, CONSUMER)
+#endif
+
 static vx_reference getRefAs(vx_reference ref, vx_enum type, vx_status *status)
 {
     vx_status local_status = (vx_status)VX_SUCCESS;

@@ -72,6 +72,14 @@ __MAKE_SAFE_CASTS__(threshold, Threshold)
 __MAKE_SAFE_CASTS__(user_data_object, UserDataObject)
 #endif
 
+#ifdef VX_TYPE_PRODUCER
+__MAKE_SAFE_CASTS__(producer, Producer)
+#endif
+
+#ifdef VX_TYPE_CONSUMER
+__MAKE_SAFE_CASTS__(consumer, Consumer)
+#endif
+
 #ifdef  __cplusplus
 }
 #endif

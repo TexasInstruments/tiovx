@@ -99,6 +99,12 @@ vx_status ownObjectInit(void)
             TIVX_ARRAY_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isUserDataObjectUse,
             TIVX_USER_DATA_OBJECT_MAX_OBJECTS);
+#if defined(LINUX) || defined(QNX)
+        ownInitUseFlag(g_tivx_objects.isProducerUse,
+            TIVX_PRODUCER_MAX_OBJECTS);
+        ownInitUseFlag(g_tivx_objects.isConsumerUse,
+            TIVX_CONSUMER_MAX_OBJECTS);
+#endif
         ownInitUseFlag(g_tivx_objects.isRawImageUse,
             TIVX_RAW_IMAGE_MAX_OBJECTS);
         #if defined(BUILD_BAM)
@@ -192,6 +198,21 @@ vx_status ownObjectDeInit(void)
         {
             VX_PRINT(VX_ZONE_ERROR, "Is user data object use failed, index: %d\n", error_index);
         }
+#if defined(LINUX) || defined(QNX)
+        status = ownCheckUseFlag(g_tivx_objects.isProducerUse,
+            TIVX_PRODUCER_MAX_OBJECTS, &error_index);
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Is producer use failed, index: %d\n", error_index);
+        }
+
+        status = ownCheckUseFlag(g_tivx_objects.isConsumerUse,
+            TIVX_CONSUMER_MAX_OBJECTS, &error_index);
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Is consumer use failed, index: %d\n", error_index);
+        }
+#endif
         status = ownCheckUseFlag(g_tivx_objects.isRawImageUse,
             TIVX_RAW_IMAGE_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
@@ -344,6 +365,20 @@ vx_reference ownObjectAlloc(vx_enum type)
                     TIVX_USER_DATA_OBJECT_MAX_OBJECTS, (uint32_t)sizeof(tivx_user_data_object_t),
                     "TIVX_USER_DATA_OBJECT_MAX_OBJECTS");
                 break;
+#if defined(LINUX) || defined(QNX)
+            case VX_TYPE_PRODUCER:
+                ref = (vx_reference)ownAllocObject(
+                    (uint8_t *)g_tivx_objects.producer, g_tivx_objects.isProducerUse,
+                    TIVX_PRODUCER_MAX_OBJECTS, (uint32_t)sizeof(tivx_producer_t),
+                    "TIVX_PRODUCER_MAX_OBJECTS");
+                break;
+            case VX_TYPE_CONSUMER:
+                ref = (vx_reference)ownAllocObject(
+                    (uint8_t *)g_tivx_objects.consumer, g_tivx_objects.isConsumerUse,
+                    TIVX_CONSUMER_MAX_OBJECTS, (uint32_t)sizeof(tivx_consumer_t),
+                    "TIVX_CONSUMER_MAX_OBJECTS");
+                break;
+#endif
             case TIVX_TYPE_RAW_IMAGE:
                 ref = (vx_reference)ownAllocObject(
                     (uint8_t *)g_tivx_objects.raw_image, g_tivx_objects.isRawImageUse,
@@ -583,6 +618,32 @@ vx_status ownObjectFree(vx_reference ref)
                         VX_PRINT(VX_ZONE_ERROR, "Free user data object failed\n");
                     }
                     break;
+#if defined(LINUX) || defined(QNX)
+                case VX_TYPE_PRODUCER:
+                    status = ownFreeObject((uint8_t *)ref,
+                        (uint8_t *)g_tivx_objects.producer, g_tivx_objects.isProducerUse,
+                        TIVX_PRODUCER_MAX_OBJECTS, (uint32_t)sizeof(tivx_producer_t),
+                        "TIVX_PRODUCER_MAX_OBJECTS");
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Free producer failed\n");
+                    }
+                    break;
+
+                case VX_TYPE_CONSUMER:
+                    status = ownFreeObject((uint8_t *)ref,
+                        (uint8_t *)g_tivx_objects.consumer, g_tivx_objects.isConsumerUse,
+                        TIVX_CONSUMER_MAX_OBJECTS, (uint32_t)sizeof(tivx_consumer_t),
+                        "TIVX_CONSUMER_MAX_OBJECTS");
+
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Free consumer failed\n");
+                    }
+
+                    break;
+
+#endif
                 case TIVX_TYPE_RAW_IMAGE:
                     status = ownFreeObject((uint8_t *)ref,
                         (uint8_t *)g_tivx_objects.raw_image, g_tivx_objects.isRawImageUse,

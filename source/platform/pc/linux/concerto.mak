@@ -35,7 +35,7 @@ DEFS        += LDRA_UNTESTABLE_CODE
 # code coverage reports.
 DEFS        += HOST_ONLY
 
-IDIRS += $(TIOVX_PATH)/source/include $(COMMON_FILES_BASE_PATH)
+IDIRS += $(TIOVX_PATH)/source/include $(COMMON_FILES_BASE_PATH) $(TIOVX_PATH)/utils/include $(IPPC_PATH)
 IDIRS += $(APP_UTILS_PATH)
 IDIRS += $(VISION_APPS_PATH)/platform/$(SOC)/rtos
 IDIRS += $(TIOVX_PATH)/source/platform/os/posix

@@ -113,7 +113,17 @@ typedef struct _tivx_object_t
     /**< User Data Objects */
     vx_bool                 isUserDataObjectUse[TIVX_USER_DATA_OBJECT_MAX_OBJECTS];
     /**< Flag indicating if User data object is in use or not */
+#if defined(LINUX) || defined(QNX)
+    tivx_producer_t         producer[TIVX_PRODUCER_MAX_OBJECTS];
+    /**< Producer Objects */
+    vx_bool                 isProducerUse[TIVX_PRODUCER_MAX_OBJECTS];
+    /**< Flag indicating if Producer object is in use or not */
 
+    tivx_consumer_t         consumer[TIVX_CONSUMER_MAX_OBJECTS];
+    /**< Consumer Objects */
+    vx_bool                 isConsumerUse[TIVX_CONSUMER_MAX_OBJECTS];
+    /**< Flag indicating if Consumer object is in use or not */
+#endif
     tivx_raw_image_t raw_image[TIVX_RAW_IMAGE_MAX_OBJECTS];
     /**< Raw Image Objects */
     vx_bool                 isRawImageUse[TIVX_RAW_IMAGE_MAX_OBJECTS];

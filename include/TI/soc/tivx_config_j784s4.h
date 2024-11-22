@@ -243,6 +243,15 @@ extern "C" {
  */
 #define TIVX_IMAGE_MAX_OBJECTS             (1024u + 1u)
 
+/*! \brief Max number producer objects supported
+ * \ingroup group_vx_producer_cfg
+ */
+#define TIVX_PRODUCER_MAX_OBJECTS          (10u)
+
+/*! \brief Max number consumer objects supported
+ * \ingroup group_vx_consumer_cfg
+ */
+#define TIVX_CONSUMER_MAX_OBJECTS          (10u)
 
 /*
  * LUT data object configuration resources
