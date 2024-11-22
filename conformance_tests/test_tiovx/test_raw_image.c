@@ -808,6 +808,8 @@ TEST(tivxRawImage, test_tivxCreateRawImage)
         /* Initialize data using WRITE ONLY MAP */
         VX_CALL(tivxMapRawImagePatch(raw_image, &rect, 0, &map_id, &addr, (void **)&ptr,
                                      VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+        VX_CALL(tivxMapRawImagePatch(raw_image2, &rect, 0, &map_id, &addr, (void **)&ptr,
+                                     VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
         ASSERT(ptr != NULL);
 
         for (i = 0; i < 128 * 128; i++)
@@ -815,10 +817,13 @@ TEST(tivxRawImage, test_tivxCreateRawImage)
             ptr[i] = i;
         }
         VX_CALL(tivxUnmapRawImagePatch(raw_image, map_id));
+        VX_CALL(tivxUnmapRawImagePatch(raw_image2, map_id));
 
         /* 5. check data in raw image */
 
         VX_CALL(tivxMapRawImagePatch(raw_image, &rect, 0, &map_id, &addr, (void **)&ptr2,
+                                     VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+        VX_CALL(tivxMapRawImagePatch(raw_image2, &rect, 0, &map_id, &addr, (void **)&ptr2,
                                      VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
 
         for (i = 0; i < 128 * 128; i++)
@@ -826,6 +831,7 @@ TEST(tivxRawImage, test_tivxCreateRawImage)
             ASSERT(ptr[i] == i);
         }
         VX_CALL(tivxUnmapRawImagePatch(raw_image, map_id));
+        VX_CALL(tivxUnmapRawImagePatch(raw_image2, map_id));
     }
 
     VX_CALL(tivxReleaseRawImage(&raw_image));
