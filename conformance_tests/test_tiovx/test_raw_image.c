@@ -758,7 +758,7 @@ TEST(tivxRawImage, testOutDelay)
 TEST(tivxRawImage, test_tivxCreateRawImage)
 {
     vx_context context = context_->vx_context_;
-    tivx_raw_image raw_image = 0;
+    tivx_raw_image raw_image = 0, raw_image2;
     vx_uint32 actual_line_interleaved;
     vx_uint32 actual_width;
 
@@ -778,6 +778,10 @@ TEST(tivxRawImage, test_tivxCreateRawImage)
 
     /* 1. check if raw image can be created */
     ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+
+    /* Test entire ownDeriveRawImageBufferPointers() function */
+    params.meta_height_before = 0;
+    ASSERT_VX_OBJECT(raw_image2 = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
     /* 2. check if raw image can be queried */
     VX_CALL(tivxQueryRawImage(raw_image, TIVX_RAW_IMAGE_LINE_INTERLEAVED, &actual_line_interleaved, sizeof(vx_uint32)));
@@ -825,7 +829,9 @@ TEST(tivxRawImage, test_tivxCreateRawImage)
     }
 
     VX_CALL(tivxReleaseRawImage(&raw_image));
+    VX_CALL(tivxReleaseRawImage(&raw_image2));
     ASSERT(raw_image == 0);
+    ASSERT(raw_image2 == 0);
 }
 
 TEST(tivxRawImage, negativeTestivxCreateRawImage)
