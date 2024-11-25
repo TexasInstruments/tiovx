@@ -3707,6 +3707,59 @@ static vx_status tivxBranchTestMemBufferAllocFree(uint8_t id)
     return status;
 }
 
+static vx_status tivxTestTargetKernelInstanceDebug(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_target_kernel_instance target_kernel_instance = NULL;
+    vx_uint32 zonemask;
+
+    zonemask = tivxGetTargetKernelInstanceDebugZonemask(target_kernel_instance);
+    if (0U != zonemask)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxGetTargetKernelInstanceDebugZonemask failed with NULL target kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    zonemask = tivxGetTargetKernelInstanceDebugZonemask(test_kernel);
+    if (3U != zonemask)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxGetTargetKernelInstanceDebugZonemask returned incorrect zone bitmask\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+#ifndef PC
+static vx_status tivxTestCpuEnabled(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_bool enabled;
+    uint32_t cpu_id = APP_IPC_CPU_MAX;
+
+    enabled = ownIsCpuEnabled(cpu_id);
+    if ((vx_bool)vx_false_e != enabled)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "ownIsCpuEnabled returned true with invalid cpu id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    cpu_id = 0;
+    enabled = ownIsCpuEnabled(cpu_id);
+    if ((vx_bool)vx_true_e != enabled)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "ownIsCpuEnabled returned false with valid mpu1_0 cpu id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+#endif
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -3871,7 +3924,11 @@ FuncInfo arrOfFuncs[] = {
     {tivxBranchTestQueue,"",VX_SUCCESS},
     {tivxBranchTestMemCompareFd,"",VX_SUCCESS},
     {tivxBranchTestMemBufferUnmap,"",VX_SUCCESS},
-    {tivxBranchTestMemBufferAllocFree,"",VX_SUCCESS}
+    {tivxBranchTestMemBufferAllocFree,"",VX_SUCCESS},
+    #ifndef PC
+    {tivxTestCpuEnabled,"",VX_SUCCESS},
+    #endif
+    {tivxTestTargetKernelInstanceDebug,"",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
@@ -4054,5 +4111,3 @@ void tivxRemoveTargetKernelTestTarget(void)
         vx_test_target_target_kernel = NULL;
     }
 }
-
-
