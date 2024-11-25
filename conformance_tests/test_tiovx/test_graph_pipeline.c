@@ -1052,7 +1052,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
 
     #if defined(SOC_AM62A)
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));   
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
@@ -1413,7 +1413,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testInputMultipleEnqueue, Arg, PARAMETERS)
  * - Two nodes on two different targets
  * Note: a graph parameter is created from the d1 buffer queue in this application
  *       This is only necessary in the case that the application must access the data
- *       for this buffer.  In the case that this is not needed, please refer to 
+ *       for this buffer.  In the case that this is not needed, please refer to
  *       testTwoNodesBasic.
  *
  */
@@ -4471,6 +4471,115 @@ TEST_WITH_ARG(tivxGraphPipeline, testUserKernelReplicate, Arg, PARAMETERS)
 
 /*
  *  d0           n0           d1            n1         d2
+ * SCALAR -- USER_KERNEL -- SCALAR -- USER_KERNEL -- SCALAR
+ *              Repl          |         | Repl
+ *                            + --------+
+ *
+ * This test case test the below
+ * - User kernel nodes
+ * - Nodes with optional parameters
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testUserKernelReplicate2, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
+    vx_pyramid d0_arr[MAX_NUM_BUF] = {NULL}, d1_arr, d2_arr[MAX_NUM_BUF] = {NULL};
+    vx_node n0, n1;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    vx_bool prms_replicate_n0[] =
+        {vx_true_e, vx_true_e};
+    vx_bool prms_replicate_n1[] =
+        {vx_true_e, vx_true_e};
+
+    uint32_t pipeline_depth, num_buf;
+    uint32_t buf_id, loop_cnt;
+    char *filename="test_graph_pipeline_user_kernel_replicate";
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    test_user_kernel_register(context);
+
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0_arr[buf_id]    = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 4, 6, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+        ASSERT_VX_OBJECT(d0[buf_id]        = (vx_image)vxGetPyramidLevel(d0_arr[buf_id], 0), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(d2_arr[buf_id]    = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 4, 6, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+        ASSERT_VX_OBJECT(d2[buf_id]        = (vx_image)vxGetPyramidLevel(d2_arr[buf_id], 0), VX_TYPE_IMAGE);
+    }
+
+    ASSERT_VX_OBJECT(d1_arr  = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 4, 6, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    ASSERT_VX_OBJECT(d1        = (vx_image)vxGetPyramidLevel(d1_arr, 0), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(n0 = vxNotNode(graph, d0[0], d1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n1 = vxNotNode(graph, d1, d2[0]), VX_TYPE_NODE);
+
+    VX_CALL(vxReplicateNode(graph, n0, prms_replicate_n0, 2u));
+    VX_CALL(vxReplicateNode(graph, n1, prms_replicate_n1, 2u));
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ n1 index 1, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n1, 1);
+
+    /* set graph schedule config such that graph parameter @ index 0, 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
+
+    /* explicitly set graph pipeline depth */
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
+
+    VX_CALL(set_num_buf_by_node_index(n0, 1, num_buf));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleasePyramid(&d0_arr[buf_id]));
+        VX_CALL(vxReleaseImage(&d0[buf_id]));
+        VX_CALL(vxReleasePyramid(&d2_arr[buf_id]));
+        VX_CALL(vxReleaseImage(&d2[buf_id]));
+    }
+
+    VX_CALL(vxReleasePyramid(&d1_arr));
+    VX_CALL(vxReleaseImage(&d1));
+    VX_CALL(log_graph_rt_trace_disable(graph, filename));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    test_user_kernel_unregister(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
+ *  d0           n0           d1            n1         d2
  * SCALAR -- USER_KERNEL_OBJARR -- OBJARR -- USER_KERNEL -- SCALAR
  *                                   |         | Repl
  *                                   + --------+
@@ -7436,6 +7545,7 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testReplicateImage2,
     testUserKernel,
     testUserKernelReplicate,
+    testUserKernelReplicate2,
     testUserKernelReplicateObjArr,
     testManualSchedule,
     testDelay1,

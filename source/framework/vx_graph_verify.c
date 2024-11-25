@@ -155,7 +155,7 @@ static vx_status ownGraphLinkParameters(vx_graph graph)
                             break;
                         }
                         else
-                        {               
+                        {
                             /* we have another occurrence of the reference in the graph, record it */
                             graph->parameters[p_index].params_list[graph->parameters[p_index].num_other].node = this_node;
                             graph->parameters[p_index].params_list[graph->parameters[p_index].num_other].index = this_index;
@@ -1356,7 +1356,7 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
 
         data_ref_q = graph->delay_data_ref_q_list[i].data_ref_queue;
 
-        if(graph->delay_data_ref_q_list[i].node != NULL) 
+        if(graph->delay_data_ref_q_list[i].node != NULL)
         {
             ref = ownNodeGetParameterRef(graph->delay_data_ref_q_list[i].node, graph->delay_data_ref_q_list[i].index);
             if( (ref != NULL) && /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR029 */
@@ -2027,18 +2027,13 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
                     {
                         if(is_replicated != 0)
                         {
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1808- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT015 */
                             if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                             {
                                 /* status set to NULL due to preceding type check */
                                 vx_pyramid pyramid = vxCastRefAsPyramid(ref, NULL);
                                 ref = vxCastRefFromImage(pyramid->img[0]);
                             }
-                            else
-/* END: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT015 */
-#endif
-                            if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR064 */
+                            else if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR064 */
                             {
                                 /* status set to NULL due to preceding type check */
                                 vx_object_array object_array = vxCastRefAsObjectArray(ref, NULL);
