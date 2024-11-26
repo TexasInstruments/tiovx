@@ -151,7 +151,7 @@ TEST(tivxInternalReference, negativeTestOwnAllocReferenceBufferGeneric)
 {
     vx_context context = context_->vx_context_;
     tivx_obj_desc_t *base_obj_desc = NULL;
-    vx_reference ref;
+    vx_reference ref, ref1;
 
     ref = ownCreateReference(context, (vx_enum)VX_TYPE_ARRAY, (vx_enum)VX_EXTERNAL, &context->base);
     base_obj_desc = ref->obj_desc;
@@ -159,8 +159,11 @@ TEST(tivxInternalReference, negativeTestOwnAllocReferenceBufferGeneric)
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric(ref));
     ref->obj_desc = base_obj_desc;
-
     VX_CALL(ownReleaseReferenceInt(&ref, (vx_enum)VX_TYPE_ARRAY, (vx_enum)VX_EXTERNAL, NULL));
+
+    ref1 = ownCreateReference(context, (vx_enum)VX_TYPE_SCALAR, (vx_enum)VX_EXTERNAL, &context->base);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownAllocReferenceBufferGeneric(ref1));
+    VX_CALL(ownReleaseReferenceInt(&ref1, (vx_enum)VX_TYPE_SCALAR, (vx_enum)VX_EXTERNAL, NULL));
 }
 typedef struct
 {
