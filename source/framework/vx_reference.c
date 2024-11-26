@@ -408,20 +408,20 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
     (void)ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
     (void)ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
     status = ownReferenceLock(output);
-    if ((vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR007 */
     {
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM009 */
         if (ip_mem_size <= op_mem_size)
 #endif
         {
-            tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size, 
+            tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size,
                                                       (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
-            if ((vx_status)VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR008 */
             {
-                tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)op_mem_ptr->host_ptr, op_mem_size, 
+                tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)op_mem_ptr->host_ptr, op_mem_size,
                                                           (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
-                if ((vx_status)VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR009 */
                 {
                     (void)memcpy((void *)(uintptr_t)op_mem_ptr->host_ptr, (void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size);
                     /* copy specific fields*/
@@ -478,7 +478,7 @@ vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
 
     /*lock only one reference as this is locking the global vx context*/
     status = ownReferenceLock(output);
-    if ((vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR010 */
     {
         tivx_shared_mem_ptr_t mem_ptr;
         tivx_obj_desc_memcpy(&mem_ptr, op_mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
@@ -495,13 +495,13 @@ vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
         }
         (void)ownReferenceUnlock(output);
     }
-    return status;    
+    return status;
 }
 
 vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
     vx_status res= (vx_status)VX_ERROR_NOT_SUPPORTED;
-       
+
     if ((vx_bool)vx_true_e == validate_only)
     {
         if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(input, output))
@@ -515,7 +515,7 @@ vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool vali
     }
     else
     {
-        switch (kernel_enum)
+        switch (kernel_enum) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR011 */
         {
             case (vx_enum)VX_KERNEL_COPY:
                 res = ownCopyReferenceGeneric(input, output);
