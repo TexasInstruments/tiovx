@@ -73,7 +73,7 @@ static vx_status isTensorSwappable(vx_reference input, vx_reference output)
 static vx_status moveOrSwapTensor(vx_reference input, vx_reference output)
 {
     vx_status status =  ownReferenceLock(output);
-    if ((vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1938- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR003 */
     {
         /* swap destructors even if they are generic (identical) for the tensor objects.
            we do it for completeness and to ensure that in case 
@@ -98,7 +98,7 @@ static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool v
 {
     vx_status res = (vx_status)VX_ERROR_NOT_SUPPORTED;
     
-    switch (kernel_enum)
+    switch (kernel_enum) /* TIOVX-1938- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR004 */
     {
         case (vx_enum)VX_KERNEL_COPY:
             if ((vx_bool)vx_true_e == validate_only)
