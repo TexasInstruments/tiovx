@@ -750,7 +750,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
 /* END: TIOVX_CODE_COVERAGE_GRAPH_UTJT002 */
 /*LDRA_ANALYSIS*/
             }
-            if ((vx_status)VX_SUCCESS == status) {
+            if ((vx_status)VX_SUCCESS == status) { /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR008 */
                 status = ownGraphAllocateDataObject(graph->parameters[index].node,
                                                     graph->parameters[index].index,
                                                     value);
