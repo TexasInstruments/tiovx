@@ -34,7 +34,7 @@ static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool v
 static vx_status copyScalar(vx_reference input, vx_reference output)
 {
     vx_status status = ownReferenceLock(output);
-    if ((vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1931- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR003 */
     {
         /* Just copy the entire union from input to output
            use the extra memcopy for volatile struct */
@@ -52,7 +52,7 @@ static vx_status copyScalar(vx_reference input, vx_reference output)
 static vx_status swapScalar(vx_reference input, vx_reference output)
 {
     vx_status status =  ownReferenceLock(output);
-    if ((vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)/* TIOVX-1931- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR004 */
     {
         tivx_obj_desc_scalar_t *ip_obj_desc = (tivx_obj_desc_scalar_t *)input->obj_desc;
         tivx_obj_desc_scalar_t *op_obj_desc = (tivx_obj_desc_scalar_t *)output->obj_desc;
@@ -83,7 +83,7 @@ static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool v
     }
     else
     {
-        switch (kernel_enum)
+        switch (kernel_enum) /* TIOVX-1931- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR005 */
         {
             case (vx_enum)VX_KERNEL_COPY:
                 res = copyScalar(input, output);
