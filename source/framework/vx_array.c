@@ -31,9 +31,9 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
 static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output)
 {
     vx_bool res = (vx_bool)vx_false_e;
-    if ((input != output) &&
-        (ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e) &&
-        (input->base.obj_desc != NULL) &&
+    if ((input != output) && /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR006 */
+        (ownIsValidSpecificReference(&input->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e) && /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR007 */
+        (input->base.obj_desc != NULL) && /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR008 */
         (ownIsValidSpecificReference(&output->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e) &&
         (output->base.obj_desc != NULL)
         )
@@ -51,10 +51,10 @@ static vx_bool ownIsValidInputAndOutputArrays(vx_array input, vx_array output)
  */
 static vx_status isArrayCopyable(vx_array input, vx_array output)
 {
-    /* generic functions cannot be used here as the conditions are a bit different 
+    /* generic functions cannot be used here as the conditions are a bit different
        to the checks done in the tivxIsReferenceMetaFormatEqual function:
      - capacity of the output has to be >= than the input
-     - in case of virtual object the input and output have to have the same size and different than 0 */    
+     - in case of virtual object the input and output have to have the same size and different than 0 */
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_array_t *ip_obj_desc = (tivx_obj_desc_array_t *)input->base.obj_desc;
     tivx_obj_desc_array_t *op_obj_desc = (tivx_obj_desc_array_t *)output->base.obj_desc;
@@ -65,7 +65,7 @@ static vx_status isArrayCopyable(vx_array input, vx_array output)
     else if ((vx_bool)vx_true_e == output->base.is_virtual)
     {
         /* Either output type must be invalid or types must match*/
-        if (((vx_enum)VX_TYPE_INVALID != op_obj_desc->item_type) &&
+        if (((vx_enum)VX_TYPE_INVALID != op_obj_desc->item_type) && /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR009 */
             (ip_obj_desc->item_type != op_obj_desc->item_type))
         {
             status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
@@ -134,6 +134,7 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
             break;
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-2004- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_ARRAY_UM001 */
+/* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR010 */
         default:
             res = (vx_status)VX_ERROR_NOT_SUPPORTED;
             break;
