@@ -522,11 +522,11 @@ static vx_status copyImage(vx_image input, vx_image output)
         {
             tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)ip_objd->mem_ptr[i].host_ptr, ip_objd->mem_size[i], 
                                                       (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
-            if ((vx_status)VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR025 */
             {
                 tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)op_objd->mem_ptr[i].host_ptr, ip_objd->mem_size[i], 
                                                           (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
-                if ((vx_status)VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR026 */
                 {
                     (void)memcpy((void *)(uintptr_t)op_objd->mem_ptr[i].host_ptr, (void *)(uintptr_t)ip_objd->mem_ptr[i].host_ptr, ip_objd->mem_size[i]);
                 }
@@ -546,7 +546,7 @@ static vx_status copyImage(vx_image input, vx_image output)
         else
         {
             tivxCheckStatus(&status, vxMapImagePatch(input, &rect, i, &map_id, &addr, &ptr, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0));
-            if ((vx_status)VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR027 */
             {
                 status = vxCopyImagePatch(output, &rect, i, &addr, ptr, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
             }
@@ -581,7 +581,7 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
         local_img = stack[stack_pointer];
         subimages = local_img->subimages;
         tivx_obj_desc_image_t *obj_desc = (tivx_obj_desc_image_t *)local_img->base.obj_desc;
-        if (obj_desc->planes > 0U)
+        if (obj_desc->planes > 0U) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR028 */
         {
             for (i = 0; i < obj_desc->planes; ++i)
             {
@@ -629,7 +629,7 @@ static vx_status swapImage(const vx_image input, const vx_image output)
         lock only one reference as this is locking the global vx context
     */
     vx_status status = ownReferenceLock(&output->base);
-    if ((vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR029 */
     {
         tivx_obj_desc_image_t *ip_obj_desc = (tivx_obj_desc_image_t *)input->base.obj_desc;
         tivx_obj_desc_image_t *op_obj_desc = (tivx_obj_desc_image_t *)output->base.obj_desc;
@@ -660,7 +660,7 @@ static vx_status swapImage(const vx_image input, const vx_image output)
         }
         status = adjustMemoryPointer(input, offsets);
 
-        if ((vx_status)VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR030 */
         {
             /* One's complement to swap the addresses offsets between input and output images */
             for (i = 0; i < TIVX_IMAGE_MAX_PLANES; ++i)
@@ -688,7 +688,7 @@ static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool va
        otherwise the imageKernelCallback would not be called */
     if (((vx_status) VX_SUCCESS == res1))
     {
-        switch (kernel_enum)
+        switch (kernel_enum) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR031 */
         {
             case (vx_enum)VX_KERNEL_COPY:
                 if ((vx_bool)vx_true_e == validate_only)
@@ -2085,7 +2085,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
 
                     if ( ((vx_bool)vx_false_e == ref->is_allocated) &&
                          (0U == ownGetNumParentSubimages(image)) &&
-                         (NULL == image->parent) &&
+                         (NULL == image->parent) && /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR032 */
                          ((vx_bool)vx_false_e == image->base.is_array_element) )
                     {
                         vx_uint32 tmp_stride_y_alignment = (vx_uint32)*(const vx_uint32 *)ptr;
