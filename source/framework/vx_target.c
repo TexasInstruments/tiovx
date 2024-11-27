@@ -634,7 +634,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id
-                           );
+                           ); /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR042 */
 
             /* Note: not taking into account replicated node */
             target_kernel_instance = ownTargetKernelInstanceGet(
@@ -689,7 +689,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id
-                           );
+                           ); /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR043 */
 
                 beg_time = tivxPlatformGetTimeInUsecs();
 
@@ -705,7 +705,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id
-                           );
+                           ); /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR044 */
 
                 tivx_uint64_to_uint32(
                     beg_time,
@@ -729,7 +729,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
                     /* this will be same node in next pipeline to trigger it last */
                     VX_PRINT_OBJECT(VX_ZONE_INFO, node_obj_desc, "Re-triggering (node=%d)\n",
                              blocked_node_id
-                    );
+                    ); /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR045 */
                     ownTargetTriggerNode(blocked_node_id);
                 }
             }
@@ -739,7 +739,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id
-                           );
+                           ); /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR046 */
             }
         }
         else
@@ -748,7 +748,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
                     node_obj_desc->base.obj_desc_id,
                     node_obj_desc->pipeline_id,
                     node_obj_desc->prev_pipe_node_id
-            );
+            ); /* TIOVX-1967- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_TARGET_UBR047 */
         }
     }
 }
