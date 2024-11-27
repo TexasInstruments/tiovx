@@ -56,7 +56,7 @@ static vx_status isPyramidCopyable(vx_reference input, vx_reference output)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (((vx_bool)vx_false_e == ownIsValidSpecificReference(input, (vx_enum)VX_TYPE_PYRAMID)) ||
+    if (((vx_bool)vx_false_e == ownIsValidSpecificReference(input, (vx_enum)VX_TYPE_PYRAMID)) ||/* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR008 */
         ((vx_bool)vx_false_e == ownIsValidSpecificReference(output, (vx_enum)VX_TYPE_PYRAMID)) ||
         (input == output))
     {
@@ -119,7 +119,7 @@ static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool 
         {
             vx_reference p2[2] = {&(vxCastRefAsPyramid(input, &status)->img[lvl]->base), &(vxCastRefAsPyramid(output, &status)->img[lvl]->base)};
             vx_kernel_callback_f kf = p2[0]->kernel_callback;
-            if (NULL != kf)
+            if (NULL != kf) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR009 */
             {
                 status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
             }
