@@ -2687,7 +2687,7 @@ vx_status tivxSetNodeDebugZone(vx_node node, vx_uint32 debug_zone, vx_bool enabl
         {
             uint32_t i;
 
-            for (i = 0; i < TIVX_GRAPH_MAX_PIPELINE_DEPTH; i++)
+            for (i = 0; i < TIVX_GRAPH_MAX_PIPELINE_DEPTH; i++)  /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR034 */
             {
                 if (node->obj_desc[i] != NULL)
                 {
