@@ -277,7 +277,7 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
         VX_PRINT(VX_ZONE_ERROR,
                  "Context control command free queue deletion failed\n");
 
-        if (status == (vx_status)VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR025 */
         {
             status = status1;
         }
@@ -378,7 +378,7 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
     uint32_t ref_idx;
     vx_bool is_success = (vx_bool)vx_false_e;
 
-    if (ownIsValidContext(context)==(vx_bool)vx_true_e) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR023 */
+    if (ownIsValidContext(context)==(vx_bool)vx_true_e)
     {
         if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
@@ -492,7 +492,7 @@ vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref)
     uint32_t ref_idx;
     vx_bool is_success = (vx_bool)vx_false_e;
 
-    if (ownIsValidContext(context)==(vx_bool)vx_true_e) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR024 */
+    if (ownIsValidContext(context)==(vx_bool)vx_true_e)
     {
         if((vx_status)VX_SUCCESS != ownContextLock(context))
         {
