@@ -102,7 +102,7 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
     vx_status res = (vx_status)VX_ERROR_NOT_SUPPORTED;
 
     /* do not check the res, as we know they are arrays at that point*/
-    switch (kernel_enum)
+    switch (kernel_enum) /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR010 */
     {
         case (vx_enum)VX_KERNEL_COPY:
             if ((vx_bool)vx_true_e == validate_only)
@@ -134,7 +134,6 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
             break;
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-2004- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_ARRAY_UM001 */
-/* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR010 */
         default:
             res = (vx_status)VX_ERROR_NOT_SUPPORTED;
             break;
