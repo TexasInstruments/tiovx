@@ -702,7 +702,7 @@ static vx_int32 send_id_message_consumers(
         )
         {
             locked_cnt = getNumLockedFramesByClient(producer, i);
-            if (locked_cnt < producer->numMaxRefsLockedByClient)
+            if (locked_cnt < producer->maxRefsLockedByClient)
             {
                 mask |= (1U << i);
                 if (ref != NULL)
@@ -751,16 +751,24 @@ static vx_int32 send_id_message_consumers(
     }
 
 #ifdef IPPC_SHEM_ENABLED
-    status = ippc_shem_send(&producer->m_sender_ctx, mask);
-    if (status == E_IPPC_OK)
+    if (0U < mask) // trigger send in case atleast 1 consumer is able to receive the buffer 
     {
-        sent_to_consumer = VX_GW_NUM_CLIENTS;
-        VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: buffer ID sent to consumers %d\n", producer->name);
+        status = ippc_shem_send(&producer->m_sender_ctx, mask);
+        if (status == E_IPPC_OK)
+        {
+            sent_to_consumer = VX_GW_NUM_CLIENTS;
+            VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: buffer ID sent to consumers %d\n", producer->name);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "PRODUCER %s: buffer ID could not be sent to consumers \n", producer->name);
+        }        
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "PRODUCER %s: buffer ID could not be sent to consumers \n", producer->name);
+        sent_to_consumer = 0;
     }
+
 #elif SOCKET_ENABLED
     pthread_mutex_unlock(&producer->client_mutex);
 #endif
@@ -1190,7 +1198,7 @@ static vx_status ownInitProducerObject(vx_producer producer, const vx_producer_p
     producer->graph_obj            = params->graph_obj;
     producer->numBuffers        = params->num_buffers;
     producer->numBufferRefsExport  = params->num_buffer_refs_export;
-    producer->numMaxRefsLockedByClient = params->num_max_refs_locked_by_client;
+    producer->maxRefsLockedByClient = params->max_refs_locked_by_client;
     producer->streaming_cb         = params->streaming_cb;
 
 #ifdef IPPC_SHEM_ENABLED

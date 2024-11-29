@@ -137,7 +137,7 @@ typedef struct _vx_producer
     /*! \brief number of references to be exported to consumer */
     vx_uint32              numBufferRefsExport;
     /*! \brief maximum number of references allowed to be locked by client before new frame is dropped instead of being sent */
-    uint32_t               numMaxRefsLockedByClient;
+    uint32_t               maxRefsLockedByClient;
     /*! \brief Flag to indicates that the reference has been exported */
     vx_bool                ref_export_done;
 
