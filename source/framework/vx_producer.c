@@ -268,7 +268,6 @@ void producer_msg_handler(const void * producer_p, const void * data_p)
     if (received_msg->last_buffer == 1)
     {
         // this client graph is flushed, shut the current client thread down
-        producer->consumers_list[received_msg->consumer_id].state = PROD_STATE_CLI_FLUSHED;
         producer->refs[received_msg->buffer_id].attached_to_client[received_msg->consumer_id] = 0;
     }
     else
@@ -296,6 +295,10 @@ void producer_msg_handler(const void * producer_p, const void * data_p)
 void* producer_bck_thread(void* arg)
 {
     producer_bckchannel_t* l_consumer = (producer_bckchannel_t*) arg;
+
+    char threadname[280U];
+    snprintf(threadname, 280U, "producer_bck_thread_%u", l_consumer->consumer_id);
+    pthread_setname_np(pthread_self(), threadname);
 
     VX_PRINT(VX_ZONE_INFO, "PRODUCER : starting backchannel worker for consumer %u on port %u\n", l_consumer->consumer_id, 
                                                                        l_consumer->m_receiver_ctx.m_port_map.m_port_id);
@@ -757,7 +760,7 @@ static vx_int32 send_id_message_consumers(
         if (status == E_IPPC_OK)
         {
             sent_to_consumer = VX_GW_NUM_CLIENTS;
-            VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: buffer ID sent to consumers %d\n", producer->name);
+            VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: buffer ID sent to consumers\n", producer->name);
         }
         else
         {
@@ -782,6 +785,12 @@ static void* producer_broadcast_thread(void* arg)
     vx_reference dequeued_refs[VX_GW_MAX_NUM_REFS] = {0};
     vx_bool shutdown = (vx_bool)vx_false_e;
     vx_status status = (vx_status)VX_SUCCESS;
+
+#ifdef IPPC_SHEM_ENABLED
+    char threadname[280U];
+    snprintf(threadname, 280U, "%s_gw_broadcast_thread", producer->name);
+    pthread_setname_np(pthread_self(), threadname);
+#endif
 
     while((vx_bool)vx_true_e != shutdown)
     {
@@ -886,11 +895,6 @@ static void* producer_broadcast_thread(void* arg)
                         {
 #ifdef IPPC_SHEM_ENABLED
                             EIppcStatus l_status;
-                            vx_prod_msg_content_t* buffid_message = ippc_shem_payload_pointer(&producer->m_sender_ctx, sizeof(vx_prod_msg_content_t), &l_status);
-                            buffid_message->buffer_id        = buffer_id;
-                            buffid_message->metadata_valid   = 0;
-                            buffid_message->last_buffer      = producer->last_buffer;
-                            buffid_message->metadata_size    = VX_GW_MAX_META_SIZE;
 
                             size_t metadata_size             = VX_GW_MAX_META_SIZE;
 
@@ -903,17 +907,11 @@ static void* producer_broadcast_thread(void* arg)
                                         VX_ZONE_INFO,
                                         "PRODUCER %s: send buffer metadata for consumer %u \n", producer->name, i);
 
-                                    // send init message with backchannel port
-                                    SIppcPortMap * port_map = ippc_get_port_by_recv_index(&producer->m_shmem_ctx, i);//shm_context, i);
-
-                                    buffid_message->consumer_id = i; // index is enough to set up connection on the other side
-                                    buffid_message->backchannel_port = port_map->m_port_id; // offset by 1
-
                                     // set up backchannel context
-                                    producer->consumers_list[i].consumer_id = i;
-                                    producer->consumers_list[i].m_receiver_ctx.m_port_map = producer->ippc_port[i+1];
-                                    producer->consumers_list[i].m_receiver_ctx.m_application_ctx = producer;
+                                    producer->consumers_list[i].m_receiver_ctx.m_port_map = producer->ippc_port[i + 1U];
+                                    producer->consumers_list[i].m_receiver_ctx.m_msg_size = sizeof(vx_cons_msg_content_t);
                                     producer->consumers_list[i].m_receiver_ctx.m_client_handler = producer_msg_handler;
+                                    producer->consumers_list[i].m_receiver_ctx.m_application_ctx = producer;
                                     
                                     //create the backchannel connnector
                                     l_status  = ippc_registry_receiver_attach(&producer->m_shmem_ctx.m_registry,
@@ -923,18 +921,15 @@ static void* producer_broadcast_thread(void* arg)
                                                                             producer->consumers_list[i].m_receiver_ctx.m_msg_size,
                                                                             E_IPPC_RECEIVER_DISCARD_PAST);
 
-                                    l_status = ippc_registry_sync_attach(&producer->m_shmem_ctx.m_registry, &producer->consumers_list[i].m_receiver_ctx.m_sync, 
-                                                                        producer->consumers_list[i].m_receiver_ctx.m_port_map.m_receiver_index + 
-                                                                        VX_GW_NUM_CLIENTS);
-       
+                                    if(E_IPPC_OK == l_status)
+                                    {
+                                        l_status = ippc_registry_sync_attach(&producer->m_shmem_ctx.m_registry, &producer->consumers_list[i].m_receiver_ctx.m_sync, 
+                                            producer->consumers_list[i].m_receiver_ctx.m_port_map.m_receiver_index + 
+                                            VX_GW_NUM_CLIENTS);
+                                    }
+
                                     if (E_IPPC_OK == l_status)
                                     {
-                                        // Export the initial reference only once for creation of consumer graphs
-                                        if((vx_bool)vx_false_e == producer->ref_export_done)
-                                        {
-                                            fill_reference_info(producer, buffid_message);
-                                            producer->ref_export_done = (vx_bool)vx_true_e;
-                                        }
 
                                         // launch backchannel thread, where we attach to the receiver of backchannel port
                                         int thread_status = pthread_create(&producer->consumers_list[i].bck_thread, NULL, producer_bck_thread, (void*)&producer->consumers_list[i]);
@@ -986,6 +981,11 @@ static void* producer_broadcast_thread(void* arg)
                                     producer->name,
                                     producer->nbDequeueFrames);
 #ifdef IPPC_SHEM_ENABLED
+                                vx_prod_msg_content_t* buffid_message = ippc_shem_payload_pointer(&producer->m_sender_ctx, sizeof(vx_prod_msg_content_t), &l_status);
+                                buffid_message->buffer_id        = buffer_id;
+                                buffid_message->metadata_valid   = 0;
+                                buffid_message->last_buffer      = producer->last_buffer;
+                                buffid_message->metadata_size    = VX_GW_MAX_META_SIZE;
                                 vx_int32 num_messages = send_id_message_consumers(producer, NULL, NULL);
 #elif SOCKET_ENABLED
                                 vx_int32 num_messages = send_id_message_consumers(producer, &buffid_message, NULL);
@@ -1015,6 +1015,20 @@ static void* producer_broadcast_thread(void* arg)
                                 // if enqueue count higher 1 for producer, we can safely enqueue into consumer
                                 if (producer->enqueuecount > 0)
                                 {
+#ifdef IPPC_SHEM_ENABLED
+                                    vx_prod_msg_content_t* buffid_message = ippc_shem_payload_pointer(&producer->m_sender_ctx, sizeof(vx_prod_msg_content_t), &l_status);
+                                    buffid_message->buffer_id        = buffer_id;
+                                    buffid_message->metadata_valid   = 0;
+                                    buffid_message->last_buffer      = producer->last_buffer;
+                                    buffid_message->metadata_size    = VX_GW_MAX_META_SIZE;
+
+                                    // Export the initial reference only once for creation of consumer graphs
+                                    if((vx_bool)vx_false_e == producer->ref_export_done)
+                                    {
+                                        fill_reference_info(producer, buffid_message);
+                                        producer->ref_export_done = (vx_bool)vx_true_e;
+                                    }
+#endif
                                     // fetch metadata from producer reference and store
                                     if (NULL != producer->streaming_cb.getMetadataCallback)
                                     {

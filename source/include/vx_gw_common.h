@@ -57,28 +57,23 @@ typedef enum
 typedef struct
 {
     /*! \brief Indicates id of the buffer to be exchanged with the consumer */
-    int32_t  buffer_id;
+    vx_int32  buffer_id;
     /*! \brief flag to indicate if this is the last reference to be exchanged with the consumer */
-    uint32_t last_buffer;
+    vx_uint32 last_buffer;
     /*! \brief flag to inform consumer whether previous frame has been dropped by producer */
-    uint8_t last_frame_dropped;
+    vx_uint8 last_frame_dropped;
 
     /*! \brief flag set when metadata can be read by consumer */
-    uint8_t metadata_valid;
+    vx_uint8 metadata_valid;
     /*! \brief size of metadata */
     size_t metadata_size;
     /*! \brief Contains producer metadata */
-    uint8_t metadata_buffer[VX_GW_MAX_META_SIZE];    
-
-    /*! \brief Used for ippc communication */
-    uint32_t backchannel_port;
-    /*! \brief Contains the id of the consumer for which the data will be exchanged */
-    uint32_t consumer_id;
+    vx_uint8 metadata_buffer[VX_GW_MAX_META_SIZE];
 
     /*! \brief number of total object array items; set to zero if reference is not object array */
-    uint8_t num_items;
+    vx_uint8 num_items;
     /*! \brief number of producer references */
-    uint8_t num_refs;
+    vx_uint8 num_refs;
     /*! \brief Array used to store intermediate IPC messages */
     tivx_utils_ref_ipc_msg_t ref_export_handle[VX_GW_MAX_NUM_REFS][VX_GW_MAX_NUM_ITEMS];
 
@@ -90,11 +85,11 @@ typedef struct
 typedef struct
 {
     /*! \brief Indicate the id of the buffer to be exchanged with the producer */
-    uint32_t buffer_id;
+    vx_uint32 buffer_id;
     /*! \brief flag to indicate that the last reference has been processed */
-    uint32_t last_buffer;
+    vx_uint32 last_buffer;
     /*! \brief Contains the id of the consumer for which the data has been exchanged */
-    uint32_t consumer_id;
+    vx_uint32 consumer_id;
 } vx_cons_msg_content_t;
 
 /*! \brief The message type exchanged b/w producer and consumer 
@@ -118,7 +113,7 @@ typedef struct
     vx_gw_message_type msg_type;
 
     /*! \brief consumer id, used to distinguish consumers on app level */
-    uint64_t consumer_id;
+    vx_uint64 consumer_id;
 
 } vx_gw_hello_msg;
 
@@ -131,12 +126,12 @@ typedef struct
     vx_gw_message_type msg_type;
 
     /*! \brief flag to indicate if this is the last reference to be exchanged with the consumer */
-    uint8_t last_reference;
+    vx_uint8 last_reference;
 
     /*! \brief number representing the element index for object array; set to zero if reference is not an object array item */
-    uint8_t item_index;
+    vx_uint8 item_index;
     /*! \brief number of total object array items; set to zero if reference is not object array */
-    uint8_t num_items;
+    vx_uint8 num_items;
     /*! \brief IPC message containing references to be exported to consumer */
     tivx_utils_ref_ipc_msg_t ref_export_handle;
 
@@ -151,16 +146,16 @@ typedef struct
     vx_gw_message_type msg_type;
 
     /*! \brief number representing the buffer ID */
-    uint8_t buffer_id;
+    vx_uint8 buffer_id;
     /*! \brief last buffer transmitted */
-    uint8_t last_buffer;
+    vx_uint8 last_buffer;
     /*! \brief flag to inform consumer whether previous frame has been dropped by producer */
-    uint8_t last_frame_dropped;
+    vx_uint8 last_frame_dropped;
 
     /*! \brief flag set when metadata can be read by consumer */
-    uint8_t metadata_valid;
+    vx_uint8 metadata_valid;
     /*! \brief size of metadata, copied after this struct in the buffer ID message */
-    uint16_t metadata_size;
+    vx_uint16 metadata_size;
 
 } vx_gw_buff_id_msg;
 
