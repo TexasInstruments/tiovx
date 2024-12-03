@@ -565,6 +565,30 @@ TEST(tivxLUT, negativeTestUnmapLUT)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxUnmapLUT(lut, map_id));
 }
 
+TEST(tivxLUT, testQueryLUT)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_lut lut = NULL;
+    vx_uint32 udata = 0;
+
+    ASSERT(NULL != (lut = vxCreateLUT(context, VX_TYPE_INT8, 1)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryLUT(lut, VX_LUT_OFFSET, &udata, sizeof(vx_uint32)));
+    VX_CALL(vxReleaseLUT(&lut));
+    ASSERT(NULL != (lut = vxCreateLUT(context,  VX_TYPE_UINT16 , 1)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryLUT(lut, VX_LUT_OFFSET, &udata, sizeof(vx_uint32)));
+    VX_CALL(vxReleaseLUT(&lut));
+    ASSERT(NULL != (lut = vxCreateLUT(context,  VX_TYPE_UINT32 , 1)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryLUT(lut, VX_LUT_OFFSET, &udata, sizeof(vx_uint32)));
+    VX_CALL(vxReleaseLUT(&lut));
+    ASSERT(NULL != (lut = vxCreateLUT(context,  VX_TYPE_UINT64 , 1)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryLUT(lut, VX_LUT_OFFSET, &udata, sizeof(vx_uint32)));
+    VX_CALL(vxReleaseLUT(&lut));
+    ASSERT(NULL != (lut = vxCreateLUT(context, VX_TYPE_CHAR, 1)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryLUT(lut, VX_LUT_OFFSET, &udata, sizeof(vx_uint32)));
+    VX_CALL(vxReleaseLUT(&lut));
+}
+
 #ifdef BUILD_BAM
 #define testLutSupernode testLutSupernode
 #else
@@ -580,6 +604,7 @@ TESTCASE_TESTS(
     negativeTestCopyLUT,
     negativeTestMapLUT,
     negativeTestUnmapLUT,
-    testCopyLUT
+    testCopyLUT,
+    testQueryLUT
 )
 
