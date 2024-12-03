@@ -417,7 +417,7 @@
 /*!
     \page TIOVX_ADD_TARGET Adding New Targets to TIOVX
 
-    \subsection CORE_TARGETS_J742S2 J742S2
+    \subsection J742S2_R5F_CORES R5F Cores
     |             MCU2_0              |         MCU2_1           |        MCU3_0         |        MCU3_1         |            MCU4_0             |        MCU4_1         |
     |:-------------------------------:|:------------------------:|:---------------------:|:---------------------:|:-----------------------------:|:---------------------:|
     |      TIVX_TARGET_ID_MCU2_0      |  TIVX_TARGET_ID_MCU2_1   | TIVX_TARGET_ID_MCU3_0 | TIVX_TARGET_ID_MCU3_1 |     TIVX_TARGET_ID_MCU4_0     | TIVX_TARGET_ID_MCU4_1 |
