@@ -45,12 +45,12 @@ typedef struct _vx_producer *vx_producer;
 /*! \brief Defines the length of the producer name string, including the trailing zero.
  * \ingroup group_vx_producer
  */
-#define VX_MAX_PRODUCER_NAME 20
+#define VX_MAX_PRODUCER_NAME 32
 
 /*! \brief Defines the length of the access point name string, including the trailing zero.
  * \ingroup group_vx_producer
  */
-#define VX_MAX_ACCESS_POINT_NAME 20
+#define VX_MAX_ACCESS_POINT_NAME 32
 
 /**
  * \brief Custom callback function for dequeuing references from the producer graph.

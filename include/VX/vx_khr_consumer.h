@@ -45,12 +45,12 @@ typedef struct _vx_consumer *vx_consumer;
 /*! \brief Defines the length of the consumer name string, including the trailing zero.
  * \ingroup group_vx_consumer
  */
-#define VX_MAX_CONSUMER_NAME 20
+#define VX_MAX_CONSUMER_NAME 32
 
 /*! \brief Defines the length of the access point name string, including the trailing zero.
  * \ingroup group_vx_consumer
  */
-#define VX_MAX_ACCESS_POINT_NAME 20
+#define VX_MAX_ACCESS_POINT_NAME 32
 
 /**
  * \brief The error codes for the communication protocol between the producer and the consumer.
