@@ -791,10 +791,6 @@ static void* producer_broadcast_thread(void* arg)
             {
                 vx_uint32 num_ready = 0;
 
-#ifdef IPPC_SHEM_ENABLED
-                check_ippc_clients_connected(producer);
-#endif
-
                 // go to cleanup if there is no consumer and last buffer flag is set
                 if ((producer->nb_consumers == 0) && (producer->last_buffer == 1))
                 {
@@ -819,6 +815,9 @@ static void* producer_broadcast_thread(void* arg)
                     }
                 }
 
+#ifdef IPPC_SHEM_ENABLED
+                check_ippc_clients_connected(producer);
+#endif                
                 for (vx_uint32 current_ref_num = 0; current_ref_num < num_ready; current_ref_num++)
                 {
                     // Process one reference at a time
