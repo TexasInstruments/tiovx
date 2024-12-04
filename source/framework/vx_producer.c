@@ -660,17 +660,6 @@ static void handle_clients(void* clientPtr, void* data)
 
 #endif
 
-static uint32_t getNumLockedFramesByClient(vx_producer producer, vx_uint32 client)
-{
-    uint32_t locked_cnt = 0;
-    for (uint32_t i = 0; i < producer->numBuffers; i++)
-    {
-        if (producer->refs[i].attached_to_client[client] == 1)
-            locked_cnt++;
-    }
-    return locked_cnt;
-}
-
 static vx_int32 send_id_message_consumers(
                                             vx_producer producer,
 #ifdef IPPC_SHEM_ENABLED
@@ -682,8 +671,7 @@ static vx_int32 send_id_message_consumers(
 {
     int32_t status = 0;
     vx_int32 sent_to_consumer = 0;
-    uint32_t locked_cnt = 0U;
-    uint32_t mask = 0U;
+
 #ifdef SOCKET_ENABLED
     uint8_t message_buffer[SOCKET_MAX_MSG_SIZE];
 
@@ -704,74 +692,61 @@ static vx_int32 send_id_message_consumers(
             (producer->consumers_list[i].state == PROD_STATE_CLI_RUNNING)
         )
         {
-            locked_cnt = getNumLockedFramesByClient(producer, i);
-            if (locked_cnt < producer->maxRefsLockedByClient)
+            if (ref != NULL)
             {
-                mask |= (1U << i);
-                if (ref != NULL)
-                {
-                    // the position of this locking is critical, the refcount should be incremented based on the number of
-                    // successfull sends
-                    status = set_buffer_status(ref->ovx_ref, LOCKED, producer);
-                    if (status != VX_SUCCESS)
-                    {
-                        VX_PRINT(
-                            VX_ZONE_ERROR, "PRODUCER %s: Reference %u, could not be set to LOCKED \n", producer->name, i);
-                        break;
-                    }
-
-                    ref->attached_to_client[i] = 1;
-                }
-
-#ifdef SOCKET_ENABLED
-                status = socket_write(producer->consumers_list[i].socket_fd, message_buffer, NULL, 0);
-                if (status == SOCKET_STATUS_OK)
-                {
-                    // copy reference sent to the consumers
-                    sent_to_consumer++;
-                    if (ref != NULL)
-                    {
-                        VX_PRINT(
-                            VX_ZONE_INFO,
-                            "PRODUCER %s: buffer ID sent to consumer %d with consumer_id %d\n",
-                            producer->name,
-                            i,
-                            producer->consumers_list[i].consumer_id);
-                    }
-                }
-                else
+                // the position of this locking is critical, the refcount should be incremented based on the number of
+                // successfull sends
+                status = set_buffer_status(ref->ovx_ref, LOCKED, producer);
+                if (status != VX_SUCCESS)
                 {
                     VX_PRINT(
-                        VX_ZONE_ERROR, "PRODUCER %s: buffer ID could not be sent to consumer %d \n", producer->name, i);
-                    producer->consumers_list[i].state = PROD_STATE_CLI_FAILED;
-                    status = VX_FAILURE;
-                    // the failure here should result in a socket timeout/early close for the other thread
-                    // this is why no special error handling is needed in the graph thread
+                        VX_ZONE_ERROR, "PRODUCER %s: Reference %u, could not be set to LOCKED \n", producer->name, i);
+                    break;
                 }
-#endif                
+
+                ref->attached_to_client[i] = 1;
             }
+
+#ifdef SOCKET_ENABLED
+            status = socket_write(producer->consumers_list[i].socket_fd, message_buffer, NULL, 0);
+            if (status == SOCKET_STATUS_OK)
+            {
+                // copy reference sent to the consumers
+                sent_to_consumer++;
+                if (ref != NULL)
+                {
+                    VX_PRINT(
+                        VX_ZONE_INFO,
+                        "PRODUCER %s: buffer ID sent to consumer %d with consumer_id %d\n",
+                        producer->name,
+                        i,
+                        producer->consumers_list[i].consumer_id);
+                }
+            }
+            else
+            {
+                VX_PRINT(
+                    VX_ZONE_ERROR, "PRODUCER %s: buffer ID could not be sent to consumer %d \n", producer->name, i);
+                producer->consumers_list[i].state = PROD_STATE_CLI_FAILED;
+                status = VX_FAILURE;
+                // the failure here should result in a socket timeout/early close for the other thread
+                // this is why no special error handling is needed in the graph thread
+            }
+#endif
         }
     }
 
 #ifdef IPPC_SHEM_ENABLED
-    if (0U < mask) // trigger send in case atleast 1 consumer is able to receive the buffer 
+    status = ippc_shem_send(&producer->m_sender_ctx);
+    if (status == E_IPPC_OK)
     {
-        status = ippc_shem_send(&producer->m_sender_ctx, mask);
-        if (status == E_IPPC_OK)
-        {
-            sent_to_consumer = VX_GW_NUM_CLIENTS;
-            VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: buffer ID sent to consumers\n", producer->name);
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "PRODUCER %s: buffer ID could not be sent to consumers \n", producer->name);
-        }        
+        sent_to_consumer = VX_GW_NUM_CLIENTS;
+        VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: buffer ID sent to consumers %d\n", producer->name);
     }
     else
     {
-        sent_to_consumer = 0;
+        VX_PRINT(VX_ZONE_ERROR, "PRODUCER %s: buffer ID could not be sent to consumers \n", producer->name);
     }
-
 #elif SOCKET_ENABLED
     pthread_mutex_unlock(&producer->client_mutex);
 #endif
@@ -1212,7 +1187,6 @@ static vx_status ownInitProducerObject(vx_producer producer, const vx_producer_p
     producer->graph_obj            = params->graph_obj;
     producer->numBuffers        = params->num_buffers;
     producer->numBufferRefsExport  = params->num_buffer_refs_export;
-    producer->maxRefsLockedByClient = params->max_refs_locked_by_client;
     producer->streaming_cb         = params->streaming_cb;
 
 #ifdef IPPC_SHEM_ENABLED

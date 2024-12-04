@@ -178,9 +178,6 @@ typedef struct _vx_producer_params_t
     vx_uint32           num_buffers;
     /*! \brief number of references to be exported to consumer */
     vx_uint16           num_buffer_refs_export;
-    /*! \brief maximum number of references allowed to be locked by client before new frame is dropped instead of being sent */
-    uint32_t max_refs_locked_by_client;
-    
     /*! \brief references to be exported to producer */
     vx_reference*       ref_to_export;
 

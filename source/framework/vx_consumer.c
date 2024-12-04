@@ -68,8 +68,7 @@ static int32_t send_buffer_release_message(vx_consumer consumer, void* message_b
     }
 
 #ifdef IPPC_SHEM_ENABLED
-    uint32_t mask = 0xFFFFFFFFU; // send to all receivers
-    status = ippc_shem_send(&consumer->m_sender_ctx, mask);
+    status = ippc_shem_send(&consumer->m_sender_ctx);
 #elif SOCKET_ENABLED
     status = socket_write(consumer->socket_fd, message_buffer, NULL, 0);
 #endif
