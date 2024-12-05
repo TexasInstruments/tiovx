@@ -68,8 +68,7 @@ static int32_t send_buffer_release_message(vx_consumer consumer, void* message_b
     }
 
 #ifdef IPPC_SHEM_ENABLED
-    uint32_t mask = 0xFFFFFFFFU; // send to all receivers
-    status = ippc_shem_send(&consumer->m_sender_ctx, mask);
+    status = ippc_shem_send(&consumer->m_sender_ctx);
 #elif SOCKET_ENABLED
     status = socket_write(consumer->socket_fd, message_buffer, NULL, 0);
 #endif
@@ -87,6 +86,12 @@ import_ref_from_producer(vx_consumer consumer, vx_prod_msg_content_t* buff_desc_
 {
     vx_status  status = VX_SUCCESS;
     consumer->num_refs = buff_desc_msg->num_refs;
+
+    if(0U == consumer->num_refs)
+    {
+        status = (vx_status)VX_FAILURE;
+    }
+
     for(vx_uint32 idx = 0U; idx < buff_desc_msg->num_refs; idx++)
     {
         // number of items message field must be set if references sent are members of an object array
@@ -173,6 +178,10 @@ void *consumer_backchannel(void* arg)
     vx_consumer consumer = (vx_consumer) arg;
     vx_reference dequeued_refs[VX_GW_MAX_NUM_REFS] = {0};
 
+    char threadname[280U];
+    snprintf(threadname, 280U, "%s_bck_thread", consumer->name);
+    pthread_setname_np(pthread_self(), threadname);
+
     VX_PRINT(VX_ZONE_INFO, "CONSUMER: Starting backchannel %s", "\n");
 
     while(1U)
@@ -204,18 +213,19 @@ void *consumer_backchannel(void* arg)
                 // we have something dequeued and the graph is finished processing
                 EIppcStatus ippc_status;
                 vx_cons_msg_content_t* l_send_msg;
+                pthread_mutex_lock(&consumer->buffer_mutex);
                 l_send_msg = ippc_shem_payload_pointer(&consumer->m_sender_ctx, sizeof(vx_cons_msg_content_t), &ippc_status);
                 if (ippc_status == E_IPPC_OK)
                 {
                      VX_PRINT(
                         VX_ZONE_INFO,
-                        "CONSUMER: current buffer ID %d buffer ID %d dequeued, last buffer flag %d \n",
+                        "CONSUMER: current buffer ID %d last buffer ID %d dequeued, last buffer flag %d \n",
                         buffer_id,
                         consumer->last_buffer_id,
                         consumer->last_buffer);
                     send_buffer_release_message(consumer, l_send_msg, buffer_id);
                 }
-                
+                pthread_mutex_unlock(&consumer->buffer_mutex);
             }
         }
 
@@ -233,38 +243,44 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p)
     EIppcStatus l_status = (EIppcStatus)E_IPPC_OK;
     vx_consumer consumer = (vx_consumer) consumer_p;
     vx_prod_msg_content_t* const l_received_message = (vx_prod_msg_content_t*)data_p;
-    
+
     //if the consumer is ready to communicate, send the back channel port id to the producer
     if ((vx_bool)vx_false_e == consumer->init_done)
     {
-        VX_PRINT(VX_ZONE_INFO, "CONSUMER: %u attaching to backhannel, port id %u\n", l_received_message->consumer_id, l_received_message->backchannel_port);
-        consumer->consumer_id = l_received_message->consumer_id;
+        VX_PRINT(VX_ZONE_INFO, "CONSUMER %u: attaching to backhannel \n", consumer->consumer_id);
         /* feed the data for the sender */
         consumer->m_sender_ctx.m_msg_size = sizeof(vx_cons_msg_content_t);
-        const SIppcPortMap *l_port = ippc_get_port_by_id_2(consumer->ippc_port, l_received_message->backchannel_port);
+        const SIppcPortMap *l_port = ippc_get_port_by_recv_index(consumer->ippc_port, consumer->consumer_id);
         consumer->m_sender_ctx.m_port_map.m_port_id        = l_port->m_port_id;
         consumer->m_sender_ctx.m_port_map.m_port_type      = l_port->m_port_type;
         consumer->m_sender_ctx.m_port_map.m_receiver_index = l_port->m_receiver_index;
 
         l_status = ippc_registry_sender_attach(&consumer->m_registry, &consumer->m_sender_ctx.m_sender, 
                                                 consumer->m_sender_ctx.m_port_map.m_port_id, consumer->m_sender_ctx.m_msg_size);
-        // sender is on 1->1 port, attach to a single sync; offset by number of syncs for broadcast
-        l_status = ippc_registry_sync_attach(&consumer->m_registry, &consumer->m_sender_ctx.m_sync[0], 
-                                                consumer->m_sender_ctx.m_port_map.m_receiver_index + VX_GW_NUM_CLIENTS);
 
-        if (l_status != E_IPPC_OK)
+        if (E_IPPC_OK == l_status)
+        {
+            // sender is on 1->1 port, attach to a single sync; offset by number of syncs for broadcast
+            l_status = ippc_registry_sync_attach(&consumer->m_registry, &consumer->m_sender_ctx.m_sync[0], 
+                                                    consumer->m_sender_ctx.m_port_map.m_receiver_index + VX_GW_NUM_CLIENTS);
+        }
+
+        if (E_IPPC_OK != l_status)
         {
             status = VX_FAILURE;
             VX_PRINT(VX_ZONE_ERROR, "CONSUMER: Failed to attach to back channel port!%s", "\n");
         }
         else
         {
-            status = import_ref_from_producer(consumer, l_received_message);
-            if (status != VX_SUCCESS)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "CONSUMER: import_ref_from_producer() failed.%s", "\n");
-            }
+            consumer->init_done = (vx_bool)vx_true_e;
         }
+    }
+
+    // For multiple client scenario, the import of references doesnt happen in first receive
+    // Hence, wait until the data is available, then proceed
+    if (((vx_bool)vx_true_e == consumer->init_done) && ((vx_bool)vx_false_e == consumer->ref_import_done))
+    {
+        status = import_ref_from_producer(consumer, l_received_message);
 
         if (VX_SUCCESS == status)
         {
@@ -284,7 +300,7 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p)
                 }
                 else
                 {
-                    consumer->init_done = (vx_bool)vx_true_e;
+                    consumer->ref_import_done = (vx_bool)vx_true_e;
                 }
             }
         }
@@ -331,6 +347,7 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p)
             consumer->last_buffer_dropped = 1;
 
             vx_cons_msg_content_t* l_send_msg;
+            pthread_mutex_lock(&consumer->buffer_mutex);
             l_send_msg = ippc_shem_payload_pointer(&consumer->m_sender_ctx, sizeof(vx_cons_msg_content_t), &l_status);
 
             if(E_IPPC_OK == l_status)
@@ -338,6 +355,7 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p)
                 VX_PRINT(VX_ZONE_INFO, "CONSUMER: CONSUMER DROPS FRAME, BUFFER ID %d, %s.", l_received_message->buffer_id, "\n");
                 send_buffer_release_message(consumer, l_send_msg, l_received_message->buffer_id);
             }
+            pthread_mutex_unlock(&consumer->buffer_mutex);
         }
         else
         {
@@ -353,7 +371,11 @@ static void* consumer_receiver_thread(void* arg)
     vx_bool shutdown = (vx_bool)vx_false_e;
     EIppcStatus status = (EIppcStatus)E_IPPC_OK;
 
-    while((vx_bool)vx_true_e != shutdown)
+    char threadname[280U];
+    snprintf(threadname, 280U, "%s_receiver_thread", consumer->name);
+    pthread_setname_np(pthread_self(), threadname);
+
+    while((vx_bool)vx_false_e == shutdown)
     {
         switch(consumer->state)
         {
@@ -374,7 +396,7 @@ static void* consumer_receiver_thread(void* arg)
                 else
                 {
                     VX_PRINT(VX_ZONE_INFO, "CONSUMER: Waiting for connection with producer...%s", "\n");
-                    tivxTaskWaitMsecs(25U);
+                    tivxTaskWaitMsecs(consumer->timeout);
                 }
             }
             break;
@@ -386,7 +408,7 @@ static void* consumer_receiver_thread(void* arg)
                 consumer->m_receiver_ctx.m_client_handler = consumer_msg_handler;
 
                 /* feed the same information again into the receiver member, cleanup necessary */
-                consumer->m_receiver_ctx.m_port_map.m_receiver_index = 0U;
+                consumer->m_receiver_ctx.m_port_map.m_receiver_index = consumer->consumer_id;
                 consumer->m_receiver_ctx.m_port_map.m_port_id        = consumer->ippc_port[0].m_port_id;
                 consumer->m_receiver_ctx.m_port_map.m_port_type      = consumer->ippc_port[0].m_port_type;
                 /* we should avoid this kind of thing: consumer->m_receiver_ctx.m_receiver_ctx*/
@@ -397,10 +419,14 @@ static void* consumer_receiver_thread(void* arg)
                                                         consumer->m_receiver_ctx.m_port_map.m_receiver_index,
                                                         consumer->m_receiver_ctx.m_msg_size,
                                                         E_IPPC_RECEIVER_DISCARD_PAST);
-                /* init the receiver */
-                status = ippc_registry_sync_attach(&consumer->m_registry, 
-                                                    &consumer->m_receiver_ctx.m_sync, 
-                                                    consumer->m_receiver_ctx.m_port_map.m_receiver_index);               
+                if (E_IPPC_OK == status)
+                {
+                    /* init the receiver */
+                    status = ippc_registry_sync_attach(&consumer->m_registry, 
+                                                        &consumer->m_receiver_ctx.m_sync, 
+                                                        consumer->m_receiver_ctx.m_port_map.m_receiver_index);
+                }
+
                 if (E_IPPC_OK == status)
                 {
                     VX_PRINT(VX_ZONE_PERF, " [UPT] First Time Connected to producer!%s", "\n");
@@ -604,7 +630,7 @@ static vx_gw_status_t start_sync_with_producer(vx_consumer consumer, char* acces
 
         if (consumer->state == VX_CONS_STATE_FLUSH)
         {
-            return VX_CONS_STATE_FLUSH;
+            return VX_GW_STATUS_CONSUMER_FLUSHED;
         }
     }
 
@@ -849,7 +875,7 @@ static void* consumer_receiver_thread(void* arg)
                 VX_PRINT(VX_ZONE_INFO, "CONSUMER: connected to producer with socket %d\n", consumer->socket_fd);
                 consumer->state = VX_CONS_STATE_INIT;
             }
-            else if (VX_CONS_STATE_FLUSH == gw_status)
+            else if (VX_GW_STATUS_CONSUMER_FLUSHED == gw_status)
             {
                 consumer->state = VX_CONS_STATE_FLUSH;
             }
@@ -1008,7 +1034,20 @@ static vx_status ownInitConsumerObject(vx_consumer consumer, const vx_consumer_p
     consumer->graph_obj       = params->graph_obj;
     consumer->subscriber_cb   = params->subscriber_cb;
 
+    pthread_mutexattr_t buffInfoMutexAttr;
+    pthread_mutexattr_init(&buffInfoMutexAttr);
+
+    status = pthread_mutex_init(&consumer->buffer_mutex, &buffInfoMutexAttr);
+    if (status != VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "CONSUMER: pthread_mutex_init() failed for buffer info mutex\n");
+        return (vx_status)VX_FAILURE;
+    }
+
 #ifdef IPPC_SHEM_ENABLED
+    consumer->consumer_id     = params->consumer_id;
+    consumer->timeout         = params->timeout;
+
     for(vx_uint32 idx = 0U; idx < IPPC_PORT_COUNT; idx++)
     {
         consumer->ippc_port[idx] = params->ippc_port[idx];
@@ -1026,6 +1065,7 @@ static vx_status ownDestructConsumer(vx_reference ref)
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseConsumer(vx_consumer* consumer)
 {
     vx_consumer this_consumer = consumer[0];
+    this_consumer->state = VX_CONS_STATE_FLUSH;
     pthread_join(this_consumer->receiver_thread, NULL);
     pthread_join(this_consumer->backchannel_thread, NULL);
     return (ownReleaseReferenceInt(

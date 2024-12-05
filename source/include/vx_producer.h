@@ -85,7 +85,7 @@ typedef struct
     producer_client_state_t state;
 
     /*! \brief consumer id, used to distinguish consumers on app level */
-    uint64_t                consumer_id;
+    vx_uint8                consumer_id;
 
     /*! \brief Thread to receive backchannel information from consumer */
     pthread_t               bck_thread;
@@ -136,8 +136,6 @@ typedef struct _vx_producer
     vx_uint32              numBuffers;
     /*! \brief number of references to be exported to consumer */
     vx_uint32              numBufferRefsExport;
-    /*! \brief maximum number of references allowed to be locked by client before new frame is dropped instead of being sent */
-    uint32_t               maxRefsLockedByClient;
     /*! \brief Flag to indicates that the reference has been exported */
     vx_bool                ref_export_done;
 

@@ -51,6 +51,8 @@ typedef struct _vx_consumer
     vx_uint32               num_failures;
     /*! \brief Flag to indicate that the consumer client initialization is done */
     vx_bool                 init_done;
+    /*! \brief Flag to indicate that the consumer reference import is done */
+    vx_bool                 ref_import_done;
 
     /*! \brief name of the consumer client */
     vx_char                 name[VX_MAX_CONSUMER_NAME];
@@ -62,9 +64,11 @@ typedef struct _vx_consumer
     vx_uint32               num_refs;
     /*! \brief Consumer references */
     vx_reference            refs[VX_GW_MAX_NUM_REFS];
+    /*! \brief Mutex to prevent conflict during sending back of buffer */
+    pthread_mutex_t         buffer_mutex;
 
     /*! \brief Contains the id of the consumer for which the data will be exchanged */
-    vx_uint16               consumer_id;
+    vx_uint8                consumer_id;
     /*! \brief Thread to receive broadcasted information from producer */
     pthread_t               receiver_thread;
     /*! \brief Indicates the consumer state */
@@ -96,6 +100,8 @@ typedef struct _vx_consumer
     SIppcSenderContext      m_sender_ctx;
     /*! \brief Contains ippc port configuration */
     SIppcPortMap            ippc_port[IPPC_PORT_COUNT];
+    /*! \brief waiting time for producer */
+    vx_uint32               timeout;
 #elif SOCKET_ENABLED
     /*! \brief Socket file descriptor */
     int32_t                 socket_fd;
