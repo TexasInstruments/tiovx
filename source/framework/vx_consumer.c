@@ -396,7 +396,7 @@ static void* consumer_receiver_thread(void* arg)
                 else
                 {
                     VX_PRINT(VX_ZONE_INFO, "CONSUMER: Waiting for connection with producer...%s", "\n");
-                    tivxTaskWaitMsecs(25U);
+                    tivxTaskWaitMsecs(consumer->timeout);
                 }
             }
             break;
@@ -1046,6 +1046,7 @@ static vx_status ownInitConsumerObject(vx_consumer consumer, const vx_consumer_p
 
 #ifdef IPPC_SHEM_ENABLED
     consumer->consumer_id     = params->consumer_id;
+    consumer->timeout         = params->timeout;
 
     for(vx_uint32 idx = 0U; idx < IPPC_PORT_COUNT; idx++)
     {

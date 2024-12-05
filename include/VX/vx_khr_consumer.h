@@ -193,6 +193,8 @@ typedef struct _vx_consumer_params_t
     SIppcPortMap        ippc_port[IPPC_PORT_COUNT];
     /*! \brief Contains ippc receiver id */
     vx_uint32           consumer_id;
+    /*! \brief Time taken to wait for producer to connect in milliseconds */
+    vx_uint32           timeout;
 #endif
 } vx_consumer_params_t;
 
