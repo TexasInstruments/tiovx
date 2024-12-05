@@ -139,7 +139,7 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
  *  - OSAL_SAFERTOS_CONFIGNUM_TASK for PDK SafeRTOS
  *  - APP_RTOS_MAX_TASK_COUNT for MCU+ */
 #if defined(C7X_FAMILY)
-#define TARGET_TEST_MAX_TASKS            128U
+#define TARGET_TEST_MAX_TASKS            150U
 #else
 #define TARGET_TEST_MAX_TASKS            1024U
 #endif
@@ -195,6 +195,7 @@ static void VX_CALLBACK tivxTestTask(void *app_var)
 static vx_status tivxTestTargetTaskBoundary(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_status ret_status = (vx_status)VX_FAILURE;
     tivx_task taskHandle[TARGET_TEST_MAX_TASKS];
     tivx_task_create_params_t taskParams;
     uint32_t i, j;
@@ -220,6 +221,7 @@ static vx_status tivxTestTargetTaskBoundary(uint8_t id)
 
         if ((vx_status)VX_SUCCESS != status)
         {
+            ret_status = (vx_status)VX_SUCCESS;
             break;
         }
     }
@@ -239,7 +241,12 @@ static vx_status tivxTestTargetTaskBoundary(uint8_t id)
     }
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
-    return status;
+    if (ret_status == (vx_status)VX_SUCCESS)
+    {
+        ret_status = status;
+    }
+
+    return ret_status;
 }
 
 static vx_status tivxTestTargetObjDescCmpMemset(uint8_t id)
@@ -2111,6 +2118,16 @@ static vx_status tivxNegativeAppMemAlloc(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for heap_id\n");
         status = (vx_status)VX_FAILURE;
     }
+
+    #if defined(C7X_FAMILY)
+    heap_id = APP_MEM_HEAP_DDR_SCRATCH;
+    size = 0xFFFFFFFF;
+    if (NULL != appMemAlloc(heap_id, size, align))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for heap_id with max size\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    #endif
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
