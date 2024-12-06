@@ -175,7 +175,10 @@ vx_reference tivxCreateReferenceFromExemplar(
         default:
             break;
     }
-
+    if (NULL != exemplar->supplementary_data)
+    {
+        (void)vxSetSupplementaryUserDataObject(ref, exemplar->supplementary_data);
+    }
     return (ref);
 }
 
@@ -252,6 +255,18 @@ static vx_reference ownCreatePyramidFromExemplar(
     pmd = vxCreatePyramid(context, levels, scale, width, height,
             format);
 
+    if ((vx_status)VX_SUCCESS == vxGetStatus((vx_reference)pmd))
+    {
+        vx_uint32 i;
+        vx_status status = (vx_status)VX_SUCCESS;
+        for (i = 0U; (i < levels) && ((vx_status)VX_SUCCESS == status); ++i)
+        {
+            if (NULL != exemplar->img[i]->base.supplementary_data)
+            {
+                status = vxSetSupplementaryUserDataObject(&pmd->img[i]->base, exemplar->img[i]->base.supplementary_data);
+            }
+        }
+    }
     return vxCastRefFromPyramid(pmd);
 }
 

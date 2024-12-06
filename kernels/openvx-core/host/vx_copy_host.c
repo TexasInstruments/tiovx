@@ -85,6 +85,13 @@ static vx_status VX_CALLBACK vxAddKernelCopySwapMoveValidate(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
         status = call_kernel_func(node->kernel->enumeration, (vx_bool)vx_true_e, parameters);
+        if (((vx_status)VX_SUCCESS == status) && 
+            (NULL != parameters[0]->supplementary_data) && 
+            (NULL != parameters[1]->supplementary_data))
+        {
+            vx_reference supp_params[2] = {&parameters[0]->supplementary_data->base, &parameters[1]->supplementary_data->base};
+            status = call_kernel_func(node->kernel->enumeration, (vx_bool)vx_true_e, supp_params);
+        }
         if ((vx_status)VX_SUCCESS == status)
         {
             if ((vx_bool)vx_true_e == tivxIsReferenceVirtual(parameters[VX_KERNEL_COPY_OUTPUT_IDX]))
@@ -137,6 +144,11 @@ static vx_status VX_CALLBACK vxKernelCopySwapMoveProcess(vx_node node,
     else
     {
         status = call_kernel_func(node->kernel->enumeration, (vx_bool)vx_false_e, parameters);
+        if (((vx_status)VX_SUCCESS == status) && (NULL != parameters[0]->supplementary_data) && (NULL != parameters[1]->supplementary_data))
+        {
+            vx_reference supp_params[2] = {&parameters[0]->supplementary_data->base, &parameters[1]->supplementary_data->base};
+            status = call_kernel_func(node->kernel->enumeration, (vx_bool)vx_false_e, supp_params);
+        }
     }
     return status;
 }
