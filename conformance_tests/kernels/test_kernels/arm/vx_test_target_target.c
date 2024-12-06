@@ -3777,6 +3777,22 @@ static vx_status tivxTestCpuEnabled(uint8_t id)
 }
 #endif
 
+static vx_status tivxNegativeAppMemResetScratchHeapFlag(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t heap_id = 0;
+
+    if ((vx_status)VX_FAILURE != appMemResetScratchHeap(heap_id))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for heap_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
@@ -3945,7 +3961,8 @@ FuncInfo arrOfFuncs[] = {
     #ifndef PC
     {tivxTestCpuEnabled,"",VX_SUCCESS},
     #endif
-    {tivxTestTargetKernelInstanceDebug,"",VX_SUCCESS}
+    {tivxTestTargetKernelInstanceDebug,"",VX_SUCCESS},
+    {tivxNegativeAppMemResetScratchHeapFlag,"",VX_SUCCESS}
 };
 #endif /* FULL_CODE_COVERAGE */
 
