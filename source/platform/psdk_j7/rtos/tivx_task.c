@@ -37,6 +37,7 @@ static void tivxTaskDefHandle(void* arg0, void* arg1)
 
         task->task_func(task->app_var);
     }
+/* TIOVX-1761- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RTOS_TASK_UM002 */
 }
 
 void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params)
