@@ -59,6 +59,16 @@ void tivxDeInit(void)
 #else
 void tivxInit(void)
 {
+#if defined(REMOTE_COVERAGE)
+/* LDRA dynamic analysis (code coverage capture) entry point.
+ * The execution history capture will begin after this call for the
+ * selected and ldra instrumented files.
+ */
+#include "code_coverage.h"
+    appLogPrintf("################### DYNAMIC CODE COVERAGE INITIALIZATION STARTED ######################\n");
+    ldra_initialize();
+    appLogPrintf("################### DYNAMIC CODE COVERAGE INITIALIZATION FINISHED ######################\n");
+#endif /* #if defined REMOTE_COVERAGE */
     tivxInitLocal();
 }
 

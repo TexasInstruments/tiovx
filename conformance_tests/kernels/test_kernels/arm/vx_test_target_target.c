@@ -81,21 +81,20 @@
 #ifndef PC
 #include <tivx_platform_psdk.h>
 #include <utils/ipc/include/app_ipc.h>
-#endif
+#endif /* #ifndef PC */
 
-#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+#if defined(REMOTE_TARGET)
 #include <utils/rtos/include/app_rtos.h>
 #if defined(MCU_PLUS_SDK)
 #include <app_rtos_mcu_plus_priv.h>
 #else
 #include <osal_soc.h>
-#endif
-#endif
-#if defined(A72) || defined(A53) || defined(PC)
+#endif /* #if defined(MCU_PLUS_SDK) */
+#endif /* #if defined(REMOTE_TARGET) */
+#if defined(A72) || defined(A53)
 #include <tivx_platform_posix.h>
-#endif
+#endif /* #if defined(A72) || defined(A53) */
 
-/* #define FULL_CODE_COVERAGE */
 /* Maximum length of testcase function name */
 #define MAX_LENGTH 64
 #define INVALID_ARG -1
@@ -125,39 +124,37 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
 
-#if defined(FULL_CODE_COVERAGE)
-#if defined(C7X_FAMILY)
-#define TARGET_TEST_TASK_STACK_SIZE      64*1024U
-#else
-#define TARGET_TEST_TASK_STACK_SIZE      1024U
-#endif
-/* Note: there is probably a cleaner way of obtaining this value
+/* Note for TARGET_TEST_MAX_TASKS:
+ * there is probably a cleaner way of obtaining this value
  * with ifdefs, etc.
  * However, it should be greater than the below task values:
  *  - TIVX_TASK_MAX_OBJECTS for A72/A53
  *  - OSAL_FREERTOS_CONFIGNUM_TASK for PDK FreeRTOS
  *  - OSAL_SAFERTOS_CONFIGNUM_TASK for PDK SafeRTOS
  *  - APP_RTOS_MAX_TASK_COUNT for MCU+ */
+#if defined(LDRA_COVERAGE_ENABLED)
+#ifndef PC
 #if defined(C7X_FAMILY)
+#define TARGET_TEST_TASK_STACK_SIZE      64*1024U
 #define TARGET_TEST_MAX_TASKS            150U
 #else
+#define TARGET_TEST_TASK_STACK_SIZE      1024U
 #define TARGET_TEST_MAX_TASKS            1024U
-#endif
+#endif /* #if defined(C7X_FAMILY) */
 
-#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-
+#if defined(REMOTE_TARGET)
 #if defined(C7X_FAMILY)
 #define TARGET_TEST_TASK_STACK_ALIGNMENT 8*1024U
 #else
 #define TARGET_TEST_TASK_STACK_ALIGNMENT 1024U
-#endif
+#endif /* #if defined(C7X_FAMILY) */
 
 static uint8_t tivxTestTargetTaskStack[TARGET_TEST_MAX_TASKS][TARGET_TEST_TASK_STACK_SIZE]
 __attribute__ ((section(".bss:taskStackSection")))
 __attribute__ ((aligned(TARGET_TEST_TASK_STACK_ALIGNMENT)))
     ;
+#endif /* #if defined(REMOTE_TARGET) */
 
-#endif
 static tivx_target_kernel_instance test_kernel = NULL;
 static tivx_obj_desc_t *test_obj_desc = NULL;
 tivx_obj_desc_t *g_obj_desc[TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST] = {NULL};
@@ -212,11 +209,11 @@ static vx_status tivxTestTargetTaskBoundary(uint8_t id)
     for (i = 0; i < TARGET_TEST_MAX_TASKS; i++)
     {
         snprintf(taskParams.task_name, TIVX_MAX_TASK_NAME, "TEST_%d", i);
-        #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+        #if defined(REMOTE_TARGET)
         taskParams.stack_ptr = tivxTestTargetTaskStack[i];
         #else
         taskParams.stack_ptr = NULL;
-        #endif
+        #endif /* #if defined(REMOTE_TARGET) */
         status = tivxTaskCreate(&taskHandle[i], &taskParams);
 
         if ((vx_status)VX_SUCCESS != status)
@@ -230,13 +227,13 @@ static vx_status tivxTestTargetTaskBoundary(uint8_t id)
 
     for (i = 0; i < j; i++)
     {
-        #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+        #if defined(REMOTE_TARGET)
         /* Test case to cover "appRtosTaskIsTerminated" API */
         if (TASK_IS_NOT_TERMINATED != appRtosTaskIsTerminated((app_rtos_task_handle_t *)taskHandle[i].tsk_handle))
         {
             VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'tskHndl' \n");
         }
-        #endif
+        #endif /* #if defined(REMOTE_TARGET) */
         status = tivxTaskDelete(&taskHandle[i]);
     }
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
@@ -1237,7 +1234,6 @@ static vx_status tivxTestGetObjDescElement(uint8_t id)
     return status;
 }
 
-#ifndef PC
 static vx_status tivxNegativeTestTargetGetHandleAndDelete(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -1248,19 +1244,19 @@ static vx_status tivxNegativeTestTargetGetHandleAndDelete(uint8_t id)
     {
         #if defined(SOC_J721E)
         case TIVX_CPU_ID_DSP_C7_1:
-        #endif
+        #endif /* #if defined(SOC_J721E) */
         case TIVX_CPU_ID_DSP1:
             #if defined(AM62A)
             target_id = (vx_enum)TIVX_TARGET_ID_MCU1_0;
             #else
             target_id = (vx_enum)TIVX_TARGET_ID_MCU2_0;
-            #endif
+            #endif /* #if defined(AM62A) */
             break;
         #if defined(AM62A)
         case TIVX_CPU_ID_MCU1_0:
         #else
         case TIVX_CPU_ID_MCU2_0:
-        #endif
+        #endif /* #if defined(AM62A) */
             target_id = (vx_enum)TIVX_TARGET_ID_MPU_2;
             break;
         case TIVX_CPU_ID_MPU_0:
@@ -1270,7 +1266,7 @@ static vx_status tivxNegativeTestTargetGetHandleAndDelete(uint8_t id)
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_1;
             #else
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2;
-            #endif
+            #endif /* #if defined(SOC_)*/
             break;
     }
     if ((vx_status)VX_ERROR_INVALID_VALUE != ownTargetDelete((vx_enum)target_id))
@@ -1347,7 +1343,7 @@ static vx_status tivxNegativeTestObjDescAlloc(uint8_t id)
             target_id = (vx_enum)TIVX_TARGET_ID_DSP1;
             #else
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2;
-            #endif
+            #endif /* #if defined (SOC_J721E) || defined (SOC_J721S2) */
             break;
         #if defined(AM62A)
         case TIVX_CPU_ID_MCU1_0:
@@ -1357,7 +1353,7 @@ static vx_status tivxNegativeTestObjDescAlloc(uint8_t id)
         case TIVX_CPU_ID_MCU2_0:
             target_id = (vx_enum)TIVX_TARGET_ID_MCU2_0;
             break;
-        #endif
+        #endif /*  #if defined(AM62A) */
         case TIVX_CPU_ID_MPU_0:
             target_id = (vx_enum)TIVX_TARGET_ID_MPU_2;
             break;
@@ -1365,7 +1361,7 @@ static vx_status tivxNegativeTestObjDescAlloc(uint8_t id)
         case TIVX_CPU_ID_DSP_C7_1:
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_1;
             break;
-        #endif
+        #endif /* #if defined(SOC_J721E) */
     }
 
     if (VX_ERROR_NO_RESOURCES != ownTargetCreate(target_id, NULL))
@@ -1393,7 +1389,6 @@ static vx_status tivxNegativeTestTargetGetHandle(uint8_t id)
 
     return status;
 }
-#endif
 
 /*Test case to fail the condition 'if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q)'
  *inside the function ownTargetNodeDescAcquireAllParameters
@@ -1670,7 +1665,7 @@ static vx_status tivxNegativeTestObjDescAllocAndDescQueueCreate(uint8_t id)
     return status;
 }
 
-#if defined(A72) || defined(A53)
+#if defined(MPU_COVERAGE)
 static vx_status tivxTestTargetPlatformGetEnv(uint8_t id)
 {
     extern char *tivxPlatformGetEnv(char *env_var);
@@ -1747,9 +1742,8 @@ static vx_status tivxTestAppIpcGetCpuName(uint8_t id)
     return status;
 
 }
-#endif
+#endif /* #if defined(MPU_COVERAGE) */
 
-#ifndef PC
 static vx_status tivxNegativeTestTargetPlatformDeleteTargetId(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -1776,13 +1770,13 @@ static vx_status tivxNegativeTestTargetPlatformCreateTargetId(uint8_t id)
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_1;
             #else
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2;
-            #endif
+            #endif /* #if defined(SOC_)*/
             break;
         #if defined(AM62A)
         case TIVX_CPU_ID_MCU1_0:
         #else
         case TIVX_CPU_ID_MCU2_0:
-        #endif
+        #endif /* #if defined(AM62A) */
             target_id = (vx_enum)TIVX_TARGET_ID_MCU2_0;
             break;
         case TIVX_CPU_ID_MPU_0:
@@ -1792,7 +1786,7 @@ static vx_status tivxNegativeTestTargetPlatformCreateTargetId(uint8_t id)
         case TIVX_CPU_ID_DSP_C7_1:
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_1;
             break;
-        #endif
+        #endif /* #if defined(SOC_J721E) */
     }
 
     /* To fail ownTargetCreate() inside  tivxPlatformCreateTargetId API */
@@ -1822,7 +1816,6 @@ static vx_status tivxAppIpcIsCpuEnabled(uint8_t id)
 
     return status;
 }
-#endif
 
 static vx_status tivxNegativeTestTargetTaskSetDefaultCreateParams(uint8_t id)
 {
@@ -1878,7 +1871,7 @@ static vx_status tivxNegativeTestTargetTaskCreate(uint8_t id)
     return status;
 }
 
-#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+#if defined(REMOTE_TARGET)
 static vx_status tivxAppMemPrintMemAllocInfo(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -2119,7 +2112,7 @@ static vx_status tivxNegativeAppMemAlloc(uint8_t id)
         status = (vx_status)VX_FAILURE;
     }
 
-    #if defined(C7X_FAMILY)
+    #if defined(C7X_COVERAGE)
     heap_id = APP_MEM_HEAP_DDR_SCRATCH;
     size = 0xFFFFFFFF;
     if (NULL != appMemAlloc(heap_id, size, align))
@@ -2127,7 +2120,7 @@ static vx_status tivxNegativeAppMemAlloc(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for heap_id with max size\n");
         status = (vx_status)VX_FAILURE;
     }
-    #endif
+    #endif /* #if defined(C7X_COVERAGE) */
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -2399,7 +2392,7 @@ static vx_status tivxAppRtosTaskYield(uint8_t id)
 
     return status;
 }
-#endif
+#endif /* #if defined(REMOTE_TARGET) */
 
 static vx_status tivxNegativeTestTargetEventCreate(uint8_t id)
 {
@@ -2461,7 +2454,7 @@ static vx_status tivxTestTargetPlatformGetShmSize(uint8_t id)
 
     return status;
 }
-#ifndef PC
+
 static vx_status tivxTestTargetEnabled(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -2485,7 +2478,6 @@ static vx_status tivxTestTargetEnabled(uint8_t id)
 
     return status;
 }
-#endif
 
 static vx_status tivxNegativeTestTargetEvent(uint8_t id)
 {
@@ -2551,14 +2543,14 @@ static vx_status tivxTestTargetEventWait(uint8_t id)
         status = (vx_status)VX_FAILURE;
     }
 /* To hit micro >= 1000000LLU condition present inside linux tivx_event.c file*/
-#if defined (A72) || defined (A53) || defined PC
+#if defined (MPU_COVERAGE)
     VX_PRINT(VX_ZONE_INFO,"---Testing  tivxEventWait API for timeout=1000--- \n");
     if((vx_status)TIVX_ERROR_EVENT_TIMEOUT != tivxEventWait(event,1000))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for timeout value = 1000 \n");
         status = (vx_status)VX_FAILURE;
     }
-#endif
+#endif /* #if defined (MPU_COVERAGE) */
 
     if((vx_status)TIVX_ERROR_EVENT_TIMEOUT!= tivxEventWait(event,TIVX_EVENT_TIMEOUT_NO_WAIT))
     {
@@ -2581,7 +2573,6 @@ static vx_status tivxTestTargetEventWait(uint8_t id)
     return status;
 }
 
-#ifndef PC
 static vx_status tivxTestTargetPlatformSetHostTargetId(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -2592,7 +2583,6 @@ static vx_status tivxTestTargetPlatformSetHostTargetId(uint8_t id)
 
     return status;
 }
-#endif
 
 static vx_status tivxNegativeTestTargetPlatformRtos(uint8_t id)
 {
@@ -2657,17 +2647,17 @@ static vx_status tivxNegativeTestTargetInitHost(uint8_t id)
     tivxInit();
     tivxDeInit();
     /* To fail tivxHostInitLocal() and tivxHostDeinitLocal initial checks*/
-#if defined (A72) || defined (A53)
+#if defined (MPU_COVERAGE)
     tivxHostInit();
     tivxHostDeInit();
-#endif
+#endif /* #if defined (MPU_COVERAGE) */
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
     return status;
 }
 
-#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+#if defined(REMOTE_TARGET)
 static vx_status tivxNegativeAppRtosSemaphoreCreate(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -2713,9 +2703,8 @@ static vx_status tivxNegativeTestMemStats(uint8_t id)
 
     return status;
 }
-#endif
+#endif /* #if defined(REMOTE_TARGET) */
 
-#ifndef PC
 static vx_status tivxNegativeTestTargetIpcSendMsg(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -2734,7 +2723,6 @@ static vx_status tivxNegativeTestTargetIpcSendMsg(uint8_t id)
 
     return status;
 }
-#endif
 
 static vx_status tivxNegativeTaskMain(uint8_t id)
 {
@@ -2757,7 +2745,7 @@ static vx_status tivxNegativeTaskMain(uint8_t id)
 }
 
 /*To hit uncovered regions in /psdk_j7/rtos/tivx_queue.c*/
-#if defined(R5F) || defined(C7X_FAMILY) || defined(C66)
+#if defined(REMOTE_TARGET)
 static vx_status tivxTestQueueCreateDelete(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -2873,9 +2861,8 @@ static vx_status tivxTestQueuePutGetDelete(uint8_t id)
     return status;
 }
 
-#endif
+#endif /* #if defined(REMOTE_TARGET) */
 
-#ifndef PC
 #if defined(LINUX)
 static vx_status tivxNegativeTaskAppIpcGetHostPortId(uint8_t id)
 {
@@ -2895,7 +2882,7 @@ static vx_status tivxNegativeTaskAppIpcGetHostPortId(uint8_t id)
 
     return status;
 }
-#endif
+#endif /* #if defined(LINUX) */
 
 static vx_status tivxNegativeTaskAppIpcGetIpcCpuId(uint8_t id)
 {
@@ -3015,22 +3002,20 @@ static vx_status tivxNegativeTaskAppIpcSendNotify(uint8_t id)
 
     return status;
 }
-#endif
 
 static vx_status tivxNegativeTestMutexMaxOut(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     int i,j = 0;
-#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+#if defined(REMOTE_TARGET)
 #if defined(MCU_PLUS_SDK)
 #define MAX_MUTEX APP_RTOS_MAX_SEMAPHORE_COUNT
 #else
 #define MAX_MUTEX OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC
-#endif
-#endif
-#if defined(A72) || defined(A53) || defined(PC)
+#endif /* #if defined(MCU_PLUS_SDK) */
+#else
     #define MAX_MUTEX TIVX_MUTEX_MAX_OBJECTS
-#endif
+#endif /* #if defined(REMOTE_TARGET) */
     tivx_mutex mutex[MAX_MUTEX];
 
     for (i = 0; i < MAX_MUTEX; i++)
@@ -3144,9 +3129,8 @@ static vx_status tivxTestGetObjElement(uint8_t id)
     return status;
 }
 
-
 /*To hit uncovered regions in /psdk_j7/rtos/tivx_queue.c*/
-#if defined(R5F) || defined(C7X_FAMILY) || defined(C66)
+#if defined(REMOTE_TARGET)
 static vx_status tivxTestQueuePut(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -3234,19 +3218,18 @@ static vx_status tivxTestQueueGet(uint8_t id)
 
     return status;
 }
-#endif
+#endif /* #if defined(REMOTE_TARGET) */
 
-#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+#if defined(REMOTE_TARGET)
 #if defined(MCU_PLUS_SDK)
     #define MAX_QUEUE APP_RTOS_MAX_SEMAPHORE_COUNT
 /*Below macro is used as tivxQueueCreate() depends on tivxEventCreate() which calls appRtosSemaphoreCreate*/
 #else
     #define MAX_QUEUE OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC
-#endif
-#endif
-#if defined(A72) || defined(A53) || defined(PC)
+#endif /* #if defined(MCU_PLUS_SDK) */
+#else
     #define MAX_QUEUE TIVX_QUEUE_MAX_OBJECTS
-#endif
+#endif /* #if defined(REMOTE_TARGET) */
 
 static tivx_queue g_test_queue[MAX_QUEUE];
 static uintptr_t g_test_qu_mem[MAX_QUEUE];
@@ -3259,6 +3242,8 @@ static vx_status tivxTestQueueCreate(uint8_t id)
     tivx_queue *queue_t = &g_test_queue[0];
     uintptr_t *queue_mem_t=&g_test_qu_mem[0];
     uint32_t i,j;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
 
     for(i = 0; i < MAX_QUEUE; i++)
     {
@@ -3285,6 +3270,8 @@ static vx_status tivxTestQueueCreate(uint8_t id)
     }
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    tivx_set_debug_zone(VX_ZONE_INFO);
 
     return status;
 }
@@ -3749,7 +3736,6 @@ static vx_status tivxTestTargetKernelInstanceDebug(uint8_t id)
     return status;
 }
 
-#ifndef PC
 static vx_status tivxTestCpuEnabled(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -3775,7 +3761,6 @@ static vx_status tivxTestCpuEnabled(uint8_t id)
 
     return status;
 }
-#endif
 
 static vx_status tivxNegativeAppMemResetScratchHeapFlag(uint8_t id)
 {
@@ -3794,6 +3779,52 @@ static vx_status tivxNegativeAppMemResetScratchHeapFlag(uint8_t id)
 }
 
 FuncInfo arrOfFuncs[] = {
+    #if defined(LINUX)
+    {tivxNegativeTaskAppIpcGetHostPortId, "", VX_SUCCESS},
+    #endif /* #if defined(LINUX) */
+    #if defined(MPU_COVERAGE)
+    {tivxTestTargetPlatformGetEnv, "",VX_SUCCESS},
+    {tivxTestAppIpcGetIpcCpuId, "",VX_SUCCESS},
+    {tivxNegativeTestAppIpcGetAppCpuId, "",VX_SUCCESS},
+    {tivxTestAppIpcGetCpuName, "",VX_SUCCESS},
+    #endif /* #if defined(MPU_COVERAGE) */
+    #if defined(REMOTE_TARGET)
+#if !defined (MCU_PLUS_SDK)
+    {tivxAppIpcGetIpcCpuId, "", VX_SUCCESS},
+#endif /* #if !defined (MCU_PLUS_SDK) */
+    {tivxAppMemPrintMemAllocInfo, "", VX_SUCCESS},
+    {tivxAppMemGetNumAllocs, "", VX_SUCCESS},
+    {tivxAppMemUnMap, "", VX_SUCCESS},
+    {tivxAppIpcGetAppCpuId, "", VX_SUCCESS},
+    {tivxAppIpcGetCpuName, "", VX_SUCCESS},
+    {tivxNegativeAppIpcHwLockAcquire, "", VX_SUCCESS},
+    {tivxNegativeAppIpcHwLockRelease, "", VX_SUCCESS},
+    {tivxNegativeAppIpcGetIpcCpuId, "", VX_SUCCESS},
+    {tivxNegativeAppIpcGetAppCpuId, "", VX_SUCCESS},
+    {tivxNegativeAppIpcGetCpuName, "", VX_SUCCESS},
+    {tivxNegativeAppIpcSendNotifyPort, "", VX_SUCCESS},
+    {tivxNegativeAppIpcSendNotify, "", VX_SUCCESS},
+    {tivxNegativeAppMemAlloc, "", VX_SUCCESS},
+    {tivxNegativeAppMemResetScratchHeap, "", VX_SUCCESS},
+    {tivxNegativeAppMemFree, "", VX_SUCCESS},
+    {tivxNegativeAppMemStats, "", VX_SUCCESS},
+    {tivxNegativeAppRtosSemaphoreParamsInit, "", VX_SUCCESS},
+    {tivxNegativeAppRtosSemaphoreDelete, "", VX_SUCCESS},
+    {tivxNegativeAppRtosSemaphorePost, "", VX_SUCCESS},
+    {tivxNegativeAppRtosTaskParamsInit, "", VX_SUCCESS},
+    {tivxNegativeAppRtosTaskDelete, "", VX_SUCCESS},
+    {tivxNegativeappRtosSemaphorePend, "", VX_SUCCESS},
+    {tivxAppRtosSemaphoreReset, "", VX_SUCCESS},
+    {tivxNegativeappRtosTaskCreate, "", VX_SUCCESS},
+    {tivxAppRtosTaskSleep, "", VX_SUCCESS},
+    {tivxAppRtosTaskYield, "", VX_SUCCESS},
+    {tivxNegativeAppRtosSemaphoreCreate, "",VX_SUCCESS},
+    {tivxNegativeTestMemStats, "", VX_SUCCESS},
+    {tivxTestQueueCreateDelete, "", VX_SUCCESS},
+    {tivxTestQueuePutGetDelete, "", VX_SUCCESS},
+    {tivxTestQueuePut, "", VX_SUCCESS},
+    {tivxTestQueueGet, "", VX_SUCCESS},
+    #endif /* #if defined(REMOTE_TARGET) */
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
     {tivxTestTargetDebugZone, "",VX_SUCCESS},
@@ -3834,15 +3865,6 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestDescStrncmpDelim,"",VX_SUCCESS},
     {tivxTestObjDescSend,"",VX_SUCCESS},
     {tivxTestGetObjDescElement,"",VX_SUCCESS},
-
-    #ifndef PC
-    {tivxNegativeTestTargetGetHandleAndDelete,"",VX_SUCCESS},
-    {tivxTestTargetTriggerNode,"",VX_SUCCESS},
-    {tivxNegativeTestTargetQueueObjDesc,"",VX_SUCCESS},
-    {tivxNegativeTestObjDescAlloc,"",VX_SUCCESS},
-    {tivxNegativeTestTargetGetHandle,"",VX_SUCCESS},
-    #endif
-
     {tivxNegativeTestTargetNodeDescAcquireAllParameter, "", VX_SUCCESS},
     {tivxBranchTestTargetNodeDescAcquireParameter, "",VX_SUCCESS},
     {tivxBranchTestTargetNodeDescAcquireParam,"",VX_SUCCESS},
@@ -3850,99 +3872,23 @@ FuncInfo arrOfFuncs[] = {
     {tivxBranchTargetNodeDescReleaseParameter,"",VX_SUCCESS},
     {tivxBranchTargetNodeDescReleaseParam,"",VX_SUCCESS},
     {tivxNegativeTestObjDescAllocAndDescQueueCreate,"",VX_SUCCESS},
-
-    #if defined(A72) || defined(A53)
-    {tivxTestTargetPlatformGetEnv, "",VX_SUCCESS},
-    {tivxTestAppIpcGetIpcCpuId, "",VX_SUCCESS},
-    {tivxNegativeTestAppIpcGetAppCpuId, "",VX_SUCCESS},
-    {tivxTestAppIpcGetCpuName, "",VX_SUCCESS},
-    #endif
-    #ifndef PC
-    {tivxNegativeTestTargetPlatformDeleteTargetId, "", VX_SUCCESS},
-    {tivxNegativeTestTargetPlatformCreateTargetId, "", VX_SUCCESS},
-    {tivxAppIpcIsCpuEnabled, "", VX_SUCCESS},
-    #endif
     {tivxNegativeTestTargetTaskSetDefaultCreateParams, "", VX_SUCCESS},
     {tivxNegativeTestTargetTaskDelete, "", VX_SUCCESS},
     {tivxNegativeTestTargetTaskCreate, "", VX_SUCCESS},
-    #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-    {tivxAppMemPrintMemAllocInfo, "", VX_SUCCESS},
-    {tivxAppMemGetNumAllocs, "", VX_SUCCESS},
-    {tivxAppMemUnMap, "", VX_SUCCESS},
-#if !defined (MCU_PLUS_SDK)
-    {tivxAppIpcGetIpcCpuId, "", VX_SUCCESS},
-#endif
-    {tivxAppIpcGetAppCpuId, "", VX_SUCCESS},
-    {tivxAppIpcGetCpuName, "", VX_SUCCESS},
-    {tivxNegativeAppIpcHwLockAcquire, "", VX_SUCCESS},
-    {tivxNegativeAppIpcHwLockRelease, "", VX_SUCCESS},
-    {tivxNegativeAppIpcGetIpcCpuId, "", VX_SUCCESS},
-    {tivxNegativeAppIpcGetAppCpuId, "", VX_SUCCESS},
-    {tivxNegativeAppIpcGetCpuName, "", VX_SUCCESS},
-    {tivxNegativeAppIpcSendNotifyPort, "", VX_SUCCESS},
-    {tivxNegativeAppIpcSendNotify, "", VX_SUCCESS},
-    {tivxNegativeAppMemAlloc, "", VX_SUCCESS},
-    {tivxNegativeAppMemResetScratchHeap, "", VX_SUCCESS},
-    {tivxNegativeAppMemFree, "", VX_SUCCESS},
-    {tivxNegativeAppMemStats, "", VX_SUCCESS},
-    {tivxNegativeAppRtosSemaphoreParamsInit, "", VX_SUCCESS},
-    {tivxNegativeAppRtosSemaphoreDelete, "", VX_SUCCESS},
-    {tivxNegativeAppRtosSemaphorePost, "", VX_SUCCESS},
-    {tivxNegativeAppRtosTaskParamsInit, "", VX_SUCCESS},
-    {tivxNegativeAppRtosTaskDelete, "", VX_SUCCESS},
-    {tivxNegativeappRtosSemaphorePend, "", VX_SUCCESS},
-    {tivxAppRtosSemaphoreReset, "", VX_SUCCESS},
-    {tivxNegativeappRtosTaskCreate, "", VX_SUCCESS},
-    {tivxAppRtosTaskSleep, "", VX_SUCCESS},
-    {tivxAppRtosTaskYield, "", VX_SUCCESS},
-    #endif
     {tivxNegativeTestTargetEventCreate, "",VX_SUCCESS},
     {tivxNegativeTestTargetMutex, "",VX_SUCCESS},
     {tivxTestTargetPlatformGetShmSize, "",VX_SUCCESS},
-    #ifndef PC
-    {tivxTestTargetEnabled, "",VX_SUCCESS},
-    #endif
     {tivxNegativeTestTargetEvent, "",VX_SUCCESS},
     {tivxTestTargetEventClear, "",VX_SUCCESS},
     {tivxTestTargetEventWait, "",VX_SUCCESS},
-    #ifndef PC
-    {tivxTestTargetPlatformSetHostTargetId, "",VX_SUCCESS},
-    #endif
     {tivxNegativeTestTargetPlatformRtos, "",VX_SUCCESS},
     {tivxTestTargetPlatformSystemLock, "",VX_SUCCESS},
     {tivxNegativeTestTargetInitHost, "",VX_SUCCESS},
-    #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-    {tivxNegativeAppRtosSemaphoreCreate, "",VX_SUCCESS},
-    {tivxNegativeTestMemStats, "", VX_SUCCESS},
-    #endif
-    #ifndef PC
-    {tivxNegativeTestTargetIpcSendMsg, "",VX_SUCCESS},
-    #endif
     {tivxNegativeTaskMain, "",VX_SUCCESS},
-    #if defined(R5F) || defined(C7X_FAMILY) || defined(C66)
-    {tivxTestQueueCreateDelete, "", VX_SUCCESS},
-    {tivxTestQueuePutGetDelete, "", VX_SUCCESS},
-    #endif
-    #ifndef PC
-    #if defined(LINUX)
-    {tivxNegativeTaskAppIpcGetHostPortId, "", VX_SUCCESS},
-    #endif
-    {tivxNegativeTaskAppIpcGetIpcCpuId, "", VX_SUCCESS},
-    {tivxNegativeTaskAppIpcGetAppCpuId, "", VX_SUCCESS},
-    {tivxNegativeTaskAppIpcGetCpuName, "", VX_SUCCESS},
-    {tivxNegativeTaskAappIpcHwLockAcquire, "", VX_SUCCESS},
-    {tivxNegativeTaskAppIpcHwLockRelease, "", VX_SUCCESS},
-    {tivxNegativeTaskAppIpcSendNotifyPort, "", VX_SUCCESS},
-    {tivxNegativeTaskAppIpcSendNotify, "", VX_SUCCESS},
-    #endif
     {tivxNegativeTestMutexMaxOut, "",VX_SUCCESS},
     {tivxTestTargetGetTargetKernelInstanceState, "",VX_SUCCESS},
     {tivxTestTargetIsTargetKernelInstanceReplicated, "",VX_SUCCESS},
     {tivxTestGetObjElement, "",VX_SUCCESS},
-    #if defined(R5F) || defined(C7X_FAMILY) || defined(C66)
-    {tivxTestQueuePut, "", VX_SUCCESS},
-    {tivxTestQueueGet, "", VX_SUCCESS},
-    #endif
     {tivxTestQueueCreate, "",VX_SUCCESS},
     {tivxTestEnableLatch, "", VX_SUCCESS},
     {tivxTestMemResetScratchHeap, "",VX_SUCCESS},
@@ -3958,13 +3904,30 @@ FuncInfo arrOfFuncs[] = {
     {tivxBranchTestMemCompareFd,"",VX_SUCCESS},
     {tivxBranchTestMemBufferUnmap,"",VX_SUCCESS},
     {tivxBranchTestMemBufferAllocFree,"",VX_SUCCESS},
-    #ifndef PC
-    {tivxTestCpuEnabled,"",VX_SUCCESS},
-    #endif
     {tivxTestTargetKernelInstanceDebug,"",VX_SUCCESS},
-    {tivxNegativeAppMemResetScratchHeapFlag,"",VX_SUCCESS}
+    {tivxNegativeAppMemResetScratchHeapFlag,"",VX_SUCCESS},
+    {tivxTestCpuEnabled,"",VX_SUCCESS},
+    {tivxNegativeTaskAppIpcGetIpcCpuId, "", VX_SUCCESS},
+    {tivxNegativeTaskAppIpcGetAppCpuId, "", VX_SUCCESS},
+    {tivxNegativeTaskAppIpcGetCpuName, "", VX_SUCCESS},
+    {tivxNegativeTaskAappIpcHwLockAcquire, "", VX_SUCCESS},
+    {tivxNegativeTaskAppIpcHwLockRelease, "", VX_SUCCESS},
+    {tivxNegativeTaskAppIpcSendNotifyPort, "", VX_SUCCESS},
+    {tivxNegativeTaskAppIpcSendNotify, "", VX_SUCCESS},
+    {tivxNegativeTestTargetIpcSendMsg, "",VX_SUCCESS},
+    {tivxTestTargetPlatformSetHostTargetId, "",VX_SUCCESS},
+    {tivxTestTargetEnabled, "",VX_SUCCESS},
+    {tivxNegativeTestTargetPlatformDeleteTargetId, "", VX_SUCCESS},
+    {tivxNegativeTestTargetPlatformCreateTargetId, "", VX_SUCCESS},
+    {tivxAppIpcIsCpuEnabled, "", VX_SUCCESS},
+    {tivxNegativeTestTargetGetHandleAndDelete,"",VX_SUCCESS},
+    {tivxTestTargetTriggerNode,"",VX_SUCCESS},
+    {tivxNegativeTestTargetQueueObjDesc,"",VX_SUCCESS},
+    {tivxNegativeTestObjDescAlloc,"",VX_SUCCESS},
+    {tivxNegativeTestTargetGetHandle,"",VX_SUCCESS}
 };
-#endif /* FULL_CODE_COVERAGE */
+#endif /* #ifndef PC*/
+#endif /* #if defined(LDRA_COVERAGE_ENABLED) */
 
 static vx_status VX_CALLBACK tivxTestTargetProcess(
        tivx_target_kernel_instance kernel,
@@ -3999,7 +3962,7 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
 
     }
 
-#if defined(FULL_CODE_COVERAGE)
+#if defined(LDRA_COVERAGE_ENABLED)
     if((vx_status)VX_SUCCESS == status)
     {
         uint8_t i = 0;
@@ -4054,7 +4017,7 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
         tivx_clr_debug_zone(VX_ZONE_INFO);
     }
 
-#endif /* FULL_CODE_COVERAGE */
+#endif /* #if defined(LDRA_COVERAGE_ENABLED) */
 
     return status;
 }
@@ -4083,6 +4046,16 @@ static vx_status VX_CALLBACK tivxTestTargetDelete(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+#if defined REMOTE_COVERAGE
+/* LDRA dynamic analysis (code coverage capture) exit point invocation.
+ * The code coverage capture will end after this call and the captured
+ * execution history will be uploaded.
+ */
+#include "code_coverage.h"
+    appLogPrintf("################### DYNAMIC CODE COVERAGE TERMINATION STARTED ######################\n");
+    ldra_terminate();
+    appLogPrintf("################### DYNAMIC CODE COVERAGE TERMINATION FINISHED ######################\n");
+#endif /* #if defined REMOTE_COVERAGE */
 
     return status;
 }
@@ -4104,7 +4077,7 @@ void tivxAddTargetKernelTestTarget(void)
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
-    #endif
+    #endif /* #if defined(SOC_J721E) */
 
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) ||
@@ -4132,7 +4105,7 @@ void tivxAddTargetKernelTestTarget(void)
                             tivxTestTargetControl,
                             NULL);
     }
-    #endif
+    #endif /* #if defined(SOC_J721E) */
 }
 
 void tivxRemoveTargetKernelTestTarget(void)

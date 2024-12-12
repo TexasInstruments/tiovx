@@ -26,6 +26,10 @@ CFLAGS += --diag_suppress=112
 CFLAGS += --diag_suppress=552
 endif
 
+ifeq ($(LDRA_COVERAGE_ENABLED), yes)
+include $(TIOVX_PATH)/tiovx_dev/internal_docs/coverage_files/concerto_inc.mak
+endif
+
 include $(FINALE)
 
 endif
