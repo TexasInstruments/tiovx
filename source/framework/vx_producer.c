@@ -260,35 +260,65 @@ static void fill_reference_info(vx_producer producer, vx_prod_msg_content_t* buf
 
 }
 
-void producer_msg_handler(const void * producer_p, const void * data_p)
+void producer_msg_handler(const void * producer_p, const void * data_p, uint8_t last_buffer_from_series)
 {
     const vx_cons_msg_content_t* const received_msg = (const vx_cons_msg_content_t*)data_p;
     vx_producer producer = (vx_producer)producer_p;
+    switch (received_msg->msg_type)
+    {
+        case VX_MSGTYPE_HELLO:
+        case VX_MSGTYPE_REF_BUF:
+        case VX_MSGTYPE_BUFID_CMD:
+        case VX_MSGTYPE_COUNT:
+        {
+            // do nothing
+        }
+        break; 
 
-    if (received_msg->last_buffer == 1)
-    {
-        // this client graph is flushed, shut the current client thread down
-        producer->refs[received_msg->buffer_id].attached_to_client[received_msg->consumer_id] = 0;
-    }
-    else
-    {
-        VX_PRINT(
-            VX_ZONE_INFO,
-            "PRODUCER %s:Received release id: %d from consumer %d \n",
-            producer->name,
-            received_msg->buffer_id,
-            received_msg->consumer_id);
-        vx_reference next_out_ref = producer->refs[received_msg->buffer_id].ovx_ref;
-        if (next_out_ref != NULL)
+        case VX_MSGTYPE_BUF_RELEASE:
         {
-            // enqueue the new buffer in the handle producer thread, here the refcount is decreased
-            producer->refs[received_msg->buffer_id].attached_to_client[received_msg->consumer_id] = 0;
-            set_buffer_status(next_out_ref, FREE, producer);
+            if (received_msg->last_buffer == 1)
+            {
+                // this client graph is flushed, shut the current client thread down
+                producer->refs[received_msg->buffer_id].attached_to_client[received_msg->consumer_id] = 0;
+            }
+            else
+            {
+                VX_PRINT(
+                    VX_ZONE_INFO,
+                    "PRODUCER %s:Received release id: %d from consumer %d \n",
+                    producer->name,
+                    received_msg->buffer_id,
+                    received_msg->consumer_id);
+                vx_reference next_out_ref = producer->refs[received_msg->buffer_id].ovx_ref;
+                if (next_out_ref != NULL)
+                {
+                    // enqueue the new buffer in the handle producer thread, here the refcount is decreased
+                    producer->refs[received_msg->buffer_id].attached_to_client[received_msg->consumer_id] = 0;
+                    set_buffer_status(next_out_ref, FREE, producer);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "PRODUCER %s: buffer ID not valid.\n", producer->name);
+                }
+            }
         }
-        else
+        break;
+
+        case VX_GW_STATUS_CONSUMER_CREATE_DONE: // consumer notifys about graph creation being completed
         {
-            VX_PRINT(VX_ZONE_ERROR, "PRODUCER %s: buffer ID not valid.\n", producer->name);
+            VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: received VX_GW_STATUS_CONSUMER_CREATE_DONE state from consumer %d \n", producer->name, received_msg->consumer_id);
+            producer->consumers_list[received_msg->consumer_id].state       = PROD_STATE_CLI_GRAPH_VERIFIED; 
         }
+        break;
+
+        default:
+            VX_PRINT(
+                VX_ZONE_ERROR,
+                "PRODUCER %s: Received [UNKNOWN MESSAGE] %d\n",
+                producer->name,
+                received_msg->msg_type);
+        break;
     }
 }
 
@@ -320,7 +350,7 @@ static int32_t send_reference_info(vx_producer producer, client_context* client)
     if (sizeof(vx_gw_buff_desc_msg) >= SOCKET_MAX_MSG_SIZE)
     {
         VX_PRINT(
-            VX_ZONE_ERROR, "PRODUCER: Cannot transmitt TIVX object data, insufficient socket message size %s", "\n");
+            VX_ZONE_ERROR, "PRODUCER: Cannot transmit TIVX object data, insufficient socket message size %s", "\n");
         return status;
     }
 
@@ -632,6 +662,14 @@ static void handle_clients(void* clientPtr, void* data)
         }
         break;
 
+        case VX_GW_STATUS_CONSUMER_CREATE_DONE: // consumer notifys about graph creation being completed
+        {
+            VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: received VX_GW_STATUS_CONSUMER_CREATE_DONE state from consumer %d \n", producer->name, consumer_message->consumer_id);
+            producer->consumers_list[consumer_message->consumer_id].state       = PROD_STATE_CLI_GRAPH_VERIFIED; 
+            status = VX_GW_STATUS_SUCCESS;
+        }
+        break;
+
         default:
             VX_PRINT(
                 VX_ZONE_ERROR,
@@ -660,6 +698,17 @@ static void handle_clients(void* clientPtr, void* data)
 
 #endif
 
+static uint32_t getNumLockedFramesByClient(vx_producer producer, vx_uint32 client)
+{
+    uint32_t locked_cnt = 0;
+    for (uint32_t i = 0; i < producer->numBuffers; i++)
+    {
+        if (producer->refs[i].attached_to_client[client] == 1)
+            locked_cnt++;
+    }
+    return locked_cnt;
+}
+
 static vx_int32 send_id_message_consumers(
                                             vx_producer producer,
 #ifdef IPPC_SHEM_ENABLED
@@ -671,7 +720,8 @@ static vx_int32 send_id_message_consumers(
 {
     int32_t status = 0;
     vx_int32 sent_to_consumer = 0;
-
+    uint32_t locked_cnt = 0U;
+    uint32_t mask = 0U;
 #ifdef SOCKET_ENABLED
     uint8_t message_buffer[SOCKET_MAX_MSG_SIZE];
 
@@ -684,59 +734,77 @@ static vx_int32 send_id_message_consumers(
 #endif
 
     for (vx_uint32 i = 0; i < VX_GW_NUM_CLIENTS; i++)
-    {
+    {          
         if (
 #ifdef SOCKET_ENABLED
             (producer->consumers_list[i].socket_fd > 0) &&
 #endif
-            (producer->consumers_list[i].state == PROD_STATE_CLI_RUNNING)
+            (producer->consumers_list[i].state == PROD_STATE_CLI_GRAPH_VERIFIED)
         )
         {
-            if (ref != NULL)
+            locked_cnt = getNumLockedFramesByClient(producer, i);
+            if (locked_cnt < producer->maxRefsLockedByClient)
             {
-                // the position of this locking is critical, the refcount should be incremented based on the number of
-                // successfull sends
-                status = set_buffer_status(ref->ovx_ref, LOCKED, producer);
-                if (status != VX_SUCCESS)
-                {
-                    VX_PRINT(
-                        VX_ZONE_ERROR, "PRODUCER %s: Reference %u, could not be set to LOCKED \n", producer->name, i);
-                    break;
-                }
-
-                ref->attached_to_client[i] = 1;
-            }
-
-#ifdef SOCKET_ENABLED
-            status = socket_write(producer->consumers_list[i].socket_fd, message_buffer, NULL, 0);
-            if (status == SOCKET_STATUS_OK)
-            {
-                // copy reference sent to the consumers
-                sent_to_consumer++;
+                mask |= (1U << i);
                 if (ref != NULL)
                 {
-                    VX_PRINT(
-                        VX_ZONE_INFO,
-                        "PRODUCER %s: buffer ID sent to consumer %d with consumer_id %d\n",
-                        producer->name,
-                        i,
-                        producer->consumers_list[i].consumer_id);
+                    // the position of this locking is critical, the refcount should be incremented based on the number of
+                    // successfull sends
+                    status = set_buffer_status(ref->ovx_ref, LOCKED, producer);
+                    if (status != VX_SUCCESS)
+                    {
+                        VX_PRINT(
+                            VX_ZONE_ERROR, "PRODUCER %s: Reference %u, could not be set to LOCKED \n", producer->name, i);
+                        break;
+                    }
+
+                    ref->attached_to_client[i] = 1;
                 }
+
+#ifdef SOCKET_ENABLED
+                status = socket_write(producer->consumers_list[i].socket_fd, message_buffer, NULL, 0);
+                if (status == SOCKET_STATUS_OK)
+                {
+                    // copy reference sent to the consumers
+                    sent_to_consumer++;
+                    if (ref != NULL)
+                    {
+                        VX_PRINT(
+                            VX_ZONE_INFO,
+                            "PRODUCER %s: buffer ID sent to consumer %d with consumer_id %d\n",
+                            producer->name,
+                            i,
+                            producer->consumers_list[i].consumer_id);
+                    }
+                }
+                else
+                {
+                    VX_PRINT(
+                        VX_ZONE_ERROR, "PRODUCER %s: buffer ID could not be sent to consumer %d \n", producer->name, i);
+                    producer->consumers_list[i].state = PROD_STATE_CLI_FAILED;
+                    status = VX_FAILURE;
+                    // the failure here should result in a socket timeout/early close for the other thread
+                    // this is why no special error handling is needed in the graph thread
+                }
+#endif                
             }
-            else
-            {
-                VX_PRINT(
-                    VX_ZONE_ERROR, "PRODUCER %s: buffer ID could not be sent to consumer %d \n", producer->name, i);
-                producer->consumers_list[i].state = PROD_STATE_CLI_FAILED;
-                status = VX_FAILURE;
-                // the failure here should result in a socket timeout/early close for the other thread
-                // this is why no special error handling is needed in the graph thread
-            }
-#endif
         }
     }
 
 #ifdef IPPC_SHEM_ENABLED
+
+    // in case mask is 0, free reference from here so producer can find it as an available ref
+    if (0U == mask)
+    {
+        set_buffer_status(ref->ovx_ref, FREE, producer);
+    }
+    
+    if (msg != NULL)
+    {
+        msg->mask = mask;
+        VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: set mask in payload %d\n", producer->name, mask);
+    }   
+
     status = ippc_shem_send(&producer->m_sender_ctx);
     if (status == E_IPPC_OK)
     {
@@ -747,6 +815,7 @@ static vx_int32 send_id_message_consumers(
     {
         VX_PRINT(VX_ZONE_ERROR, "PRODUCER %s: buffer ID could not be sent to consumers \n", producer->name);
     }
+
 #elif SOCKET_ENABLED
     pthread_mutex_unlock(&producer->client_mutex);
 #endif
@@ -779,7 +848,6 @@ static void* producer_broadcast_thread(void* arg)
                 {
                     producer->streaming_cb.enqueueCallback(producer->graph_obj, producer->refs[idx].ovx_ref);
                     producer->nbEnqueueFrames++;
-                    producer->enqueuecount++;
                     set_buffer_status(producer->refs[idx].ovx_ref, IN_GRAPH, producer);
                 }
                 producer->graph_state = VX_PROD_STATE_RUN;
@@ -802,7 +870,6 @@ static void* producer_broadcast_thread(void* arg)
                     "\n");
                     break;
                 }
-
                 //  Graph is running in the background, check if output references can be released inside the blocking
                 //  dequeue callback
                 vx_reference l_inGraph = get_buffer_with_status(producer, IN_GRAPH);
@@ -823,7 +890,6 @@ static void* producer_broadcast_thread(void* arg)
                     // Process one reference at a time
                     vx_reference ref_from_graph = dequeued_refs[current_ref_num];
                     producer->nbDequeueFrames++;
-                    producer->enqueuecount = producer->enqueuecount - 1;
 
                     if (producer->nb_consumers == 0)
                     {
@@ -834,7 +900,6 @@ static void* producer_broadcast_thread(void* arg)
                             producer->name);
                         producer->streaming_cb.enqueueCallback(producer->graph_obj, ref_from_graph);
                         producer->nbEnqueueFrames++;
-                        producer->enqueuecount++;
                         if (producer->last_buffer)
                         {
                             // not connected and last buffer - exit
@@ -959,7 +1024,7 @@ static void* producer_broadcast_thread(void* arg)
                                     producer->name,
                                     producer->nbDequeueFrames);
 #ifdef IPPC_SHEM_ENABLED
-                                vx_int32 num_messages = send_id_message_consumers(producer, NULL, NULL);
+                                vx_int32 num_messages = send_id_message_consumers(producer, buffid_message, NULL);
 #elif SOCKET_ENABLED
                                 vx_int32 num_messages = send_id_message_consumers(producer, &buffid_message, NULL);
 #endif
@@ -982,11 +1047,10 @@ static void* producer_broadcast_thread(void* arg)
 
                                     producer->streaming_cb.enqueueCallback(producer->graph_obj, free_reference);
                                     producer->nbEnqueueFrames++;
-                                    producer->enqueuecount++;
                                 }
 
-                                // if enqueue count higher 1 for producer, we can safely enqueue into consumer
-                                if (producer->enqueuecount > 0)
+                                // atleast one buffer is occupied by graph, we can safely distribute the buffer to consumers
+                                if (NULL != get_buffer_with_status(producer, IN_GRAPH))
                                 {
                                     // fetch metadata from producer reference and store
                                     if (NULL != producer->streaming_cb.getMetadataCallback)
@@ -1042,7 +1106,7 @@ static void* producer_broadcast_thread(void* arg)
                                     // broadcast buffer to clients/consumers
 #ifdef IPPC_SHEM_ENABLED
                                     vx_int32 sent_messages =
-                                        send_id_message_consumers(producer, NULL, &producer->refs[buffer_id]);
+                                        send_id_message_consumers(producer, buffid_message, &producer->refs[buffer_id]);
 #elif SOCKET_ENABLED
                                     vx_int32 sent_messages =
                                         send_id_message_consumers(producer, &buffid_message, &producer->refs[buffer_id]);
@@ -1050,7 +1114,6 @@ static void* producer_broadcast_thread(void* arg)
                                     if (sent_messages == 0)
                                     {
                                         producer->streaming_cb.enqueueCallback(producer->graph_obj, ref_from_graph);
-                                        producer->enqueuecount++;
                                         producer->nbEnqueueFrames++;
                                         // ref_from_graph remains IN_GRAPH since it is enqueued back in the producer
                                         VX_PRINT(
@@ -1063,24 +1126,20 @@ static void* producer_broadcast_thread(void* arg)
                                         // it was sent to at least one consumer
                                         VX_PRINT(
                                             VX_ZONE_INFO,
-                                            "PRODUCER %s: objectbuffer ID %d sent to %d consumers, producer enqeueue count "
-                                            "%d\n",
+                                            "PRODUCER %s: objectbuffer ID %d sent to %d consumers, producer enqeueue count \n",
                                             producer->name,
                                             buffer_id,
-                                            sent_messages,
-                                            producer->enqueuecount);
+                                            sent_messages);
                                     }
                                 }
                                 else
                                 {
-                                    producer->enqueuecount++;
                                     // Frame dropped, since we want the producer to keep running
                                     VX_PRINT(
                                         VX_ZONE_WARNING,
                                         "PRODUCER %s: graph is running, no free buffer found, enqueue current buffer "
-                                        "directly, producer enqueue count %d, amount of last frames dropped %d\n",
+                                        "directly, amount of last frames dropped %d\n",
                                         producer->name,
-                                        producer->enqueuecount,
                                         producer->last_frame_dropped);
                                     producer->streaming_cb.enqueueCallback(producer->graph_obj, ref_from_graph);
                                     producer->nbEnqueueFrames++;
@@ -1116,7 +1175,6 @@ static void* producer_broadcast_thread(void* arg)
                         }
                         set_buffer_status(dequeued_refs[0], FREE, producer);
                         producer->nbDequeueFrames += num_deque_refs;
-                        producer->enqueuecount = producer->enqueuecount - num_deque_refs;
                     }
                 }
 
@@ -1171,6 +1229,7 @@ static vx_status ownInitProducerObject(vx_producer producer, const vx_producer_p
     producer->graph_obj            = params->graph_obj;
     producer->numBuffers        = params->num_buffers;
     producer->numBufferRefsExport  = params->num_buffer_refs_export;
+    producer->maxRefsLockedByClient = params->max_refs_locked_by_client;
     producer->streaming_cb         = params->streaming_cb;
 
 #ifdef IPPC_SHEM_ENABLED
