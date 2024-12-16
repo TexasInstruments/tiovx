@@ -112,7 +112,7 @@ typedef struct _vx_user_data_object
 
 /*! \brief internal creation function for user data object
 */
-vx_user_data_object ownCreateUserDataObject(vx_reference scope,
+vx_user_data_object ownCreateUserDataObject(vx_context context,
                                             const vx_char *type_name,
                                             vx_size size, const void *ptr);
 

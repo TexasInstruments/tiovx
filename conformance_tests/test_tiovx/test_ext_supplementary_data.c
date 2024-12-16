@@ -310,6 +310,8 @@ static vx_status VX_CALLBACK  myUserTestTargetFunction(tivx_target_kernel_instan
     ERROR_EXPECT_STATUS(tivxExtendSupplementaryDataObjDesc(obj_desc[3], NULL, NULL, sizeof(test_data)), VX_ERROR_INVALID_PARAMETERS, "tivxExtendSupplementaryDataObjDesc returns VX_ERROR_INVALID_REFERENCE when source and user_data are NULL");
     ERROR_EXPECT_STATUS(tivxExtendSupplementaryDataObjDesc(obj_desc[3], supp, &test_data, sizeof(test_data) + 1), VX_ERROR_INVALID_VALUE, "tivxExtendSupplementaryDataObjDesc returns VX_ERROR_INVALID_REFERENCE when size is too large");
     ERROR_EXPECT_STATUS(tivxExtendSupplementaryDataObjDesc(obj_desc[2], supp, &test_data, sizeof(test_data)), VX_FAILURE, "tivxExtendSupplementaryDataObjDesc returns VX_FAILURE when destination has no supplementary data");
+    
+    ERROR_EXPECT_STATUS(tivxExtendSupplementaryDataObjDesc(obj_desc[3], NULL, &test_data, sizeof(test_data)), VX_SUCCESS, "tivxExtendSupplementaryDataObjDesc returns VX_SUCCESS when source is NULL");
     ERROR_EXPECT_STATUS(tivxExtendSupplementaryDataObjDesc(obj_desc[3], supp, &test_data, 3 * sizeof(test_data) / 4), VX_SUCCESS, "tivxExtendSupplementaryDataObjDesc returns VX_SUCCESS with correct parameters");
     supp->valid_mem_size = sizeof(test_data);
     supp = tivxGetSupplementaryDataObjDesc(obj_desc[3], NULL);
@@ -662,13 +664,23 @@ TEST(supplementary_data, testAllGetSet)
     }
 }
 
+vx_node dumbCopyNode(vx_graph graph, vx_image in, vx_image out)
+{
+    vx_node node;
+    node = vxCreateGenericNode(graph, my_dumb_copy_kernel);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 0, (vx_reference)in));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 1, (vx_reference)out));
+    return node;
+}
+
 TEST(supplementary_data, testInvalidTypes)
 {
     /* This is a negative test for types that should never ever be supported: vx_context, vx_graph
        Basically it covers some error code in the implementation
     */
-   vx_user_data_object exemplar, supp;
+    vx_user_data_object exemplar, supp;
     vx_context context = context_->vx_context_;
+    testAddTargetKernelGeneral(context); 
     printf("\nNegative tests for disallowed types\n");
 
     vx_graph graph = vxCreateGraph(context);
@@ -700,10 +712,18 @@ TEST(supplementary_data, testInvalidTypes)
     if (status == (vx_status)VX_SUCCESS)
     {
         printf("it should no be possible to set supplementary data on graph\n");
-    }     
+    }
     EXPECT_NE_VX_STATUS(VX_SUCCESS, status);
+
+    vx_kernel kernel = vxGetKernelByEnum(context, MY_USER_TEST_KERNEL);
+    EXPECT_VX_OBJECT(kernel, VX_TYPE_KERNEL);
+    status = vxSetSupplementaryUserDataObject((vx_reference)kernel, exemplar);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, status);
+
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseKernel(&kernel));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseUserDataObject(&exemplar));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseGraph(&graph));
+    testRemoveTargetKernelGeneral(); 
 }
 
 /* test get and set error conditions */
@@ -890,15 +910,6 @@ TEST(supplementary_data, testChildren)
     VX_CALL(vxReleaseImage(&grandchildImageFromImage));
     VX_CALL(vxReleaseImage(&imageFromROI));
     VX_CALL(vxReleaseTensor(&tensor));
-}
-
-vx_node dumbCopyNode(vx_graph graph, vx_image in, vx_image out)
-{
-    vx_node node;
-    node = vxCreateGenericNode(graph, my_dumb_copy_kernel);
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 0, (vx_reference)in));
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 1, (vx_reference)out));
-    return node;
 }
 
 /* Test object arrays, delays, pipelined interstitial objects */
@@ -1162,7 +1173,7 @@ TEST(supplementary_data, testCopySwapMove)
 
     /* Now check object arrays of pyramids */
     vx_pyramid pyr_ex1;
-    ASSERT_VX_OBJECT(pyr_ex1 = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32, 32, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    ASSERT_VX_OBJECT(pyr_ex1 = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32, 32, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);  
     ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(pyr_ex1), exemplar1), NULL);
     for (int i = 0; i < 4; ++i)
     {
@@ -1170,11 +1181,23 @@ TEST(supplementary_data, testCopySwapMove)
         vxSetSupplementaryUserDataObject((vx_reference)(img), exemplar1);
         vxReleaseImage(&img);
     }
-    vx_object_array arr1;
+    /* "negative" testing one of the supplementary is null */
+    vx_pyramid pyr_ex3;
+    ASSERT_VX_OBJECT(pyr_ex3 = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32, 32, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    ERROR_CHECK_VX_SUCCESS(vxuSwap(context, (vx_reference)(pyr_ex1), (vx_reference)(pyr_ex3)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxuSwap(context, (vx_reference)(pyr_ex3), (vx_reference)(pyr_ex1)), NULL);
+    VX_CALL(vxReleasePyramid(&pyr_ex3));
+    vx_object_array arr1, arr2;
     ASSERT_VX_OBJECT(arr1 = vxCreateObjectArray(context, (vx_reference)(pyr_ex1), 4), VX_TYPE_OBJECT_ARRAY);
     ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(arr1), exemplar1), NULL);
     vx_pyramid pyr_ex2;
-    ASSERT_VX_OBJECT(pyr_ex2 = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32, 32, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    ASSERT_VX_OBJECT(pyr_ex2 = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32, 32, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);    
+    ASSERT_VX_OBJECT(arr2 = vxCreateObjectArray(context, (vx_reference)(pyr_ex2), 4), VX_TYPE_OBJECT_ARRAY);
+    /* "negative" testing one of the supplementary is null */
+    ERROR_CHECK_VX_SUCCESS(vxuSwap(context, (vx_reference)(arr1), (vx_reference)(arr2)), NULL);
+    ERROR_CHECK_VX_SUCCESS(vxuSwap(context, (vx_reference)(arr2), (vx_reference)(arr1)), NULL);
+    vxReleaseObjectArray(&arr2);
+    /* now create suppplementary data */
     ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(pyr_ex2), exemplar2), NULL);
     for (int i = 0; i < 4; ++i)
     {
@@ -1182,7 +1205,6 @@ TEST(supplementary_data, testCopySwapMove)
         vxSetSupplementaryUserDataObject((vx_reference)(img), exemplar2);
         vxReleaseImage(&img);
     }
-    vx_object_array arr2;
     ASSERT_VX_OBJECT(arr2 = vxCreateObjectArray(context, (vx_reference)(pyr_ex2), 4), VX_TYPE_OBJECT_ARRAY);
     ERROR_CHECK_VX_SUCCESS(vxSetSupplementaryUserDataObject((vx_reference)(arr2), exemplar2), NULL);
     supp1 = vxGetSupplementaryUserDataObject((vx_reference)(arr1), NULL, &status);
@@ -1203,7 +1225,7 @@ TEST(supplementary_data, testCopySwapMove)
             break;
         }
     }
-    ERROR_CHECK_VX_SUCCESS(status, "Supplementary data swapped when object arrays swapped");
+    ERROR_CHECK_VX_SUCCESS(status, "Supplementary data swapped when object arrays swapped");     
 
     /* now check the supplementary data of an object in the array */
     vx_reference ref1 = vxGetObjectArrayItem(arr1, 2);
@@ -1248,6 +1270,7 @@ TEST(supplementary_data, testCopySwapMove)
         }
     }
     ERROR_CHECK_VX_SUCCESS(status, "Supplementary data of pyramid level swapped when object arrays of pyramids swapped");
+
     ERROR_CHECK_VX_SUCCESS(vxReleaseReference(&ref1), NULL);
     ERROR_CHECK_VX_SUCCESS(vxReleaseReference(&ref2), NULL);
     ERROR_CHECK_VX_SUCCESS(vxReleaseReference(&ref3), NULL);

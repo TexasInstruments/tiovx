@@ -344,32 +344,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                 }
             }
 
-            /* Check for node replication; ref should be first element of an object array or pyramid */
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                if ((vx_bool)vx_true_e == node->replicated_flags[index])
-                {
-                    if ((vx_enum)VX_TYPE_OBJECT_ARRAY == value->scope->type)
-                    {
-                        if (vxCastRefAsObjectArray(value->scope, NULL)->ref[0] != value)
-                        {
-                            status = (vx_status)VX_ERROR_INVALID_SCOPE;
-                        }
-                    }
-                    else if ((vx_enum)VX_TYPE_PYRAMID == value->scope->type)
-                    {
-                        if (vxCastRefAsPyramid(value->scope, NULL)->img[0] != vxCastRefAsImage(value, NULL))
-                        {
-                            status = (vx_status)VX_ERROR_INVALID_SCOPE;
-                        }
-                    }
-                    else
-                    {
-                        status = (vx_status)VX_ERROR_INVALID_SCOPE;
-                    }
-                }
-            }
-
             if(status == (vx_status)VX_SUCCESS)
             {
 /*LDRA_NOANALYSIS*/

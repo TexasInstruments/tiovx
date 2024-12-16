@@ -128,10 +128,12 @@ static vx_status ownDestructUserDataObject(vx_reference ref)
                 if ((vx_status)VX_SUCCESS == status)
                 {
                     status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+#ifdef LDRA_UNTESTABLE_CODE                  
                     if ((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Object descriptor free failed!\n");
                     }
+#endif
                 }                
             }
         }
@@ -157,34 +159,18 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
     vx_size size,
     const void *ptr)
 {
-    return ownCreateUserDataObject(&context->base, type_name, size, ptr);
-}
-
-VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateVirtualUserDataObject(
-    vx_graph graph,
-    const vx_char *type_name,
-    vx_size size)
-{
-    return ownCreateUserDataObject(&graph->base, type_name, size, NULL);
+    return ownCreateUserDataObject(context, type_name, size, ptr);
 }
 
 vx_user_data_object ownCreateUserDataObject(
-    vx_reference scope,
+    vx_context context,
     const vx_char *type_name,
     vx_size size,
     const void *ptr)
 {
     vx_user_data_object user_data_object = NULL;
     vx_reference ref = NULL;
-    vx_context context;
-    if (ownIsValidSpecificReference(scope, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
-    {
-        context = vxGetContext(scope);
-    }
-    else
-    {
-        context = (vx_context)scope;
-    }
+
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if (size < 1U)
@@ -246,8 +232,7 @@ vx_user_data_object ownCreateReadOnlyUserDataObject(vx_user_data_object parent)
     vx_user_data_object user_data_object = NULL;
     user_data_object = (vx_user_data_object)ownCreateReference(parent->base.context, (vx_enum)VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, &parent->base.context->base);
 
-    if ((vxGetStatus((vx_reference)user_data_object) == (vx_status)VX_SUCCESS) &&
-        (user_data_object->base.type == (vx_enum)VX_TYPE_USER_DATA_OBJECT))
+    if (vxGetStatus((vx_reference)user_data_object) == (vx_status)VX_SUCCESS)
     {
         /* assign reference type specific callback's */
         ownInitUserDataObjectCallbacks(user_data_object);

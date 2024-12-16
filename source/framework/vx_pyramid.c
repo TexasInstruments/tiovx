@@ -133,6 +133,10 @@ static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool 
                         status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_false_e, supp_params[0], supp_params[1]);
                     }
                 }
+                else
+                {
+                    VX_PRINT(VX_ZONE_WARNING, "No Supplementary data available, no copy/swap possible.");
+                }
             }
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM007 */

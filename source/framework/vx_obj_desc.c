@@ -490,14 +490,14 @@ VX_API_ENTRY tivx_obj_desc_user_data_object_t * tivxGetSupplementaryDataObjDesc(
             if ((uint16_t)TIVX_OBJ_DESC_IMAGE == new_desc->type)
             {
                 parent = ownObjDescGet(((tivx_obj_desc_image_t *)new_desc)->parent_id);
-            }
-            if (NULL != parent)
-            {
-                new_desc = parent;
-            }
-            else
-            {
-                break;
+                if (NULL != parent)
+                {
+                    new_desc = parent;
+                }
+                else
+                {
+                    break;
+                }                
             }
         }
         rod = (tivx_obj_desc_user_data_object_t *)ownObjDescGet(new_desc->supp_data_id);
@@ -536,10 +536,6 @@ VX_API_ENTRY vx_status tivxExtendSupplementaryDataObjDesc(const tivx_obj_desc_t 
     {
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
-    else if ((uint16_t)TIVX_OBJ_DESC_INVALID == destination->supp_data_id)
-    {
-        status = (vx_status)VX_FAILURE;
-    }
     else if (source == user_data)
     {
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -559,7 +555,7 @@ VX_API_ENTRY vx_status tivxExtendSupplementaryDataObjDesc(const tivx_obj_desc_t 
             }
             else if ((NULL != source) &&
                     ((supp->mem_size != source->mem_size) ||
-                    (tivx_obj_desc_strncmp((void *)&supp->type_name[0], (void *)&source->type_name[0], sizeof(source->type_name)) != 0)))
+                    (tivx_obj_desc_strncmp((void *)&supp->type_name[0], (void *)&source->type_name[0], (uint32_t)sizeof(source->type_name)) != 0)))
             {
                 status = (vx_status)VX_ERROR_INVALID_TYPE;
             }
@@ -583,29 +579,26 @@ VX_API_ENTRY vx_status tivxExtendSupplementaryDataObjDesc(const tivx_obj_desc_t 
                 {
                     /* do nothing */
                 }
+                status = tivxMemBufferMap((void *)(uintptr_t)supp->mem_ptr.host_ptr, source_bytes + extra_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
                 if ((vx_status)VX_SUCCESS == status)
                 {
-                    status = tivxMemBufferMap((void *)(uintptr_t)supp->mem_ptr.host_ptr, source_bytes + extra_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-                    if ((vx_status)VX_SUCCESS == status)
+                    if (NULL != source)
                     {
-                        if (NULL != source)
-                        {
-                            status = tivxMemBufferMap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-                            if ((vx_status)VX_SUCCESS == status)
-                            {
-                                tivx_obj_desc_memcpy((void *)(uintptr_t)supp->mem_ptr.host_ptr, (void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes);
-                                tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
-                            }
-                        }
+                        status = tivxMemBufferMap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
                         if ((vx_status)VX_SUCCESS == status)
                         {
-                            if (extra_bytes > 0U)
-                            {
-                                tivx_obj_desc_memcpy((void *)(uintptr_t)(supp->mem_ptr.host_ptr + source_bytes), (void *)((uintptr_t)user_data + source_bytes), extra_bytes);
-                            }
-                            supp->valid_mem_size = source_bytes + extra_bytes;
-                            tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)supp->mem_ptr.host_ptr, supp->valid_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+                            tivx_obj_desc_memcpy((void *)(uintptr_t)supp->mem_ptr.host_ptr, (void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes);
+                            tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
                         }
+                    }
+                    if ((vx_status)VX_SUCCESS == status)
+                    {
+                        if (extra_bytes > 0U)
+                        {
+                            tivx_obj_desc_memcpy((void *)(uintptr_t)(supp->mem_ptr.host_ptr + source_bytes), (void *)((uintptr_t)user_data + source_bytes), extra_bytes);
+                        }
+                        supp->valid_mem_size = source_bytes + extra_bytes;
+                        tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)supp->mem_ptr.host_ptr, supp->valid_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
                     }
                 }
             }
