@@ -747,9 +747,9 @@ TEST(supplementary_data, testGetSetErrors)
 
     /* Now, check for virtual objects */
     vx_graph graph = vxCreateGraph(context);
-    ASSERT_VX_OBJECT(virtualImage = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virtualImage = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);   
     supp = vxGetSupplementaryUserDataObject((vx_reference)virtualImage, NULL, &status);
-    EXPECT_EQ_VX_STATUS(VX_ERROR_OPTIMIZED_AWAY, status);
+    EXPECT_EQ_VX_STATUS(VX_ERROR_OPTIMIZED_AWAY, status);   
 
     /* Check for VX_FAILURE if no supplementary data*/
     supp = vxGetSupplementaryUserDataObject((vx_reference)exemplar, NULL, &status);
@@ -1313,7 +1313,7 @@ TEST(supplementary_data, testExtend)
     ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data) + 1, sizeof(user_data)), VX_ERROR_INVALID_VALUE, "Correct error for source_bytes > size");
     ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data) / 2, sizeof(user_data)), "vxExtendSupplementaryUserDataObject with half source data");
     ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data) + 1, sizeof(user_data)), VX_ERROR_INVALID_VALUE, "Correct error for source_bytes > dest_bytes");
-    ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data), sizeof(user_data)+1), VX_ERROR_INVALID_VALUE, "Correct error for user byte > obj mem size"); 
+    ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data), sizeof(user_data)+1), VX_ERROR_INVALID_VALUE, "Correct error for user byte > obj mem size");
     vx_user_data_object supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
@@ -1510,6 +1510,29 @@ TEST(supplementary_data, testReadOnlyObjects)
     testRemoveTargetKernelGeneral();
 }
 
+TEST(supplementary_data, negativeSupplementaryBoundary)
+{
+    vx_context context = context_->vx_context_;
+    vx_user_data_object src_user_data[TIVX_USER_DATA_OBJECT_MAX_OBJECTS];
+    vx_uint32 udata = 0;
+    vx_status status = VX_SUCCESS;
+    vx_char test_name[] = {'t', 'e', 's', 't', 'i', 'n', 'g'};
+    int i;
+
+    for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(src_user_data[i] = vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
+    }
+    vx_image image = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+    status = vxSetSupplementaryUserDataObject((vx_reference)(image), src_user_data[0]);
+    EXPECT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, status);
+    for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseUserDataObject(&src_user_data[i]));
+    }
+    vxReleaseImage(&image);
+}
+
 TESTCASE_TESTS(supplementary_data,
                 testRefCount,
                 testAllGetSet,
@@ -1520,4 +1543,5 @@ TESTCASE_TESTS(supplementary_data,
                 testExtend,
                 testExemplars,
                 testReadOnlyObjects, 
-                testObjectDescriptors)
+                testObjectDescriptors,
+                negativeSupplementaryBoundary)

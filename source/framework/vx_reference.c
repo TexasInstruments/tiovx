@@ -2379,9 +2379,12 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
                         {
                             vx_user_data_object supp = ownCreateUserDataObject(destination->context, type_name, size, NULL);
                             status = vxGetStatus(&supp->base);
-                            destination->supplementary_data = supp;
-                            destination->obj_desc->supp_data_id = supp->base.obj_desc->obj_desc_id;
-                            supp->owner = destination;
+                            if ((vx_status)VX_SUCCESS == status)
+                            {
+                                destination->supplementary_data = supp;
+                                destination->obj_desc->supp_data_id = supp->base.obj_desc->obj_desc_id;
+                                supp->owner = destination;
+                            }
                         }
                         break;
                     }
@@ -2447,7 +2450,7 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
                     source_offset = 0;
                 }
 
-                status = ownReferenceLock(destination); /*status not success : LDRA unterstable code */
+                status = ownReferenceLock(destination); /*status not success : LDRA untestable code */
                 if ((vx_status)VX_SUCCESS == status)
                 {
                     tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)dst_obj_desc->mem_ptr.host_ptr, dest_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
@@ -2456,13 +2459,13 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
                         if ((NULL != src_obj_desc) && (0U != l_source_bytes))
                         {
                             tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)(src_obj_desc->mem_ptr.host_ptr + source_offset), l_source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
-                            if ((vx_status)VX_SUCCESS == status)  /*status not success : LDRA unterstable code */
+                            if ((vx_status)VX_SUCCESS == status)  /*status not success : LDRA untestable code */
                             {
                                 tivx_obj_desc_memcpy((void *)(uintptr_t)(dst_obj_desc->mem_ptr.host_ptr + source_offset), (void *)(uintptr_t)(src_obj_desc->mem_ptr.host_ptr + source_offset), l_source_bytes);
                                 tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)(src_obj_desc->mem_ptr.host_ptr + source_offset), l_source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
                             }
                         }
-                        if ((vx_status)VX_SUCCESS == status)  /*status not success : LDRA unterstable code */
+                        if ((vx_status)VX_SUCCESS == status)  /*status not success : LDRA untestable code */
                         {
                             if ((NULL != user_data) && (0U != l_user_bytes))
                             {

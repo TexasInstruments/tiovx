@@ -255,16 +255,14 @@ static vx_reference ownCreatePyramidFromExemplar(
     pmd = vxCreatePyramid(context, levels, scale, width, height,
             format);
 
-    if ((vx_status)VX_SUCCESS == vxGetStatus((vx_reference)pmd))
+    if ((vx_status)VX_SUCCESS == vxGetStatus((vx_reference)pmd) && (NULL != exemplar->base.supplementary_data))
     {
         vx_uint32 i;
         vx_status status = (vx_status)VX_SUCCESS;
+        status = vxSetSupplementaryUserDataObject(&pmd->base, exemplar->base.supplementary_data);
         for (i = 0U; (i < levels) && ((vx_status)VX_SUCCESS == status); ++i)
         {
-            if (NULL != exemplar->img[i]->base.supplementary_data)
-            {
-                status = vxSetSupplementaryUserDataObject(&pmd->img[i]->base, exemplar->img[i]->base.supplementary_data);
-            }
+            status = vxSetSupplementaryUserDataObject(&pmd->img[i]->base, exemplar->base.supplementary_data);
         }
     }
     return vxCastRefFromPyramid(pmd);
