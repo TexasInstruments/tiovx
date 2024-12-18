@@ -27,6 +27,7 @@ IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include
 IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/test_kernels/include
 IDIRS       += $(HOST_ROOT)/conformance_tests/test_tiovx/utils
 IDIRS       += $(HOST_ROOT)/utils/include
+IDIRS		+= $(HOST_ROOT)/include/TI
 
 CSOURCES    += utils/test_utils_file_bmp_rd_wr.c
 CSOURCES    += utils/test_utils_mem_operations.c
