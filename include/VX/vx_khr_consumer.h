@@ -188,14 +188,13 @@ typedef struct _vx_consumer_params_t
     /*! \brief pointer to store consumer function callbacks */
     vx_subscriber_cb_t  subscriber_cb;
     /*! \brief Contains relative receiver id */
-    vx_uint32           consumer_id;
-
+    vx_uint8            consumer_id;
+    /*! \brief Time taken to wait for producer to connect in milliseconds */
+    vx_uint32           connect_polling_time;
 #ifdef IPPC_SHEM_ENABLED
     /*! \brief Contains ippc port configuration */
     SIppcPortMap        ippc_port[IPPC_PORT_COUNT];
 #endif
-    /*! \brief Time taken to wait for producer to connect in milliseconds */
-    vx_uint32           timeout;
 } vx_consumer_params_t;
 
 /**

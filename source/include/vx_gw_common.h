@@ -87,12 +87,12 @@ typedef struct
  */
 typedef enum
 {
-    VX_MSGTYPE_HELLO       = 1U,
-    VX_MSGTYPE_REF_BUF     = 2U,
-    VX_MSGTYPE_BUFID_CMD   = 3U,
-    VX_MSGTYPE_BUF_RELEASE = 4U,
-    VX_GW_STATUS_CONSUMER_CREATE_DONE = 5U,
-    VX_MSGTYPE_COUNT       = 6U
+    VX_MSGTYPE_HELLO                = 1U,
+    VX_MSGTYPE_REF_BUF              = 2U,
+    VX_MSGTYPE_BUFID_CMD            = 3U,
+    VX_MSGTYPE_BUF_RELEASE          = 4U,
+    VX_MSGTYPE_CONSUMER_CREATE_DONE = 5U,
+    VX_MSGTYPE_COUNT                = 6U
 } vx_gw_message_type;
 
 /*! \brief The consumer message content via IPPC
@@ -107,7 +107,7 @@ typedef struct
     /*! \brief flag to indicate that the last reference has been processed */
     vx_uint32 last_buffer;
     /*! \brief Contains the id of the consumer for which the data has been exchanged */
-    vx_uint32 consumer_id;
+    vx_uint8  consumer_id;
 } vx_cons_msg_content_t;
 
 /*! \brief The Structure to specify message type b/w producer and consumer
@@ -119,7 +119,7 @@ typedef struct
     vx_gw_message_type msg_type;
 
     /*! \brief consumer id, used to distinguish consumers on app level */
-    vx_uint64 consumer_id;
+    vx_uint8 consumer_id;
 
 } vx_gw_hello_msg;
 
@@ -139,7 +139,7 @@ typedef struct
     /*! \brief number of total object array items; set to zero if reference is not object array */
     vx_uint8 num_items;
     /*! \brief consumer id, used to distinguish consumers on app level */
-    vx_uint64 consumer_id;
+    vx_uint8 consumer_id;
     /*! \brief IPC message containing references to be exported to consumer */
     tivx_utils_ref_ipc_msg_t ref_export_handle;
 
@@ -154,7 +154,7 @@ typedef struct
     vx_gw_message_type msg_type;
 
     /*! \brief consumer id, used to distinguish consumers on app level */
-    vx_uint64 consumer_id;
+    vx_uint8 consumer_id;
     /*! \brief number representing the buffer ID */
     vx_uint8 buffer_id;
     /*! \brief last buffer transmitted */

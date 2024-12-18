@@ -305,10 +305,10 @@ void producer_msg_handler(const void * producer_p, const void * data_p, uint8_t 
         }
         break;
 
-        case VX_GW_STATUS_CONSUMER_CREATE_DONE: // consumer notifys about graph creation being completed
+        case VX_MSGTYPE_CONSUMER_CREATE_DONE: // consumer notifys about graph creation being completed
         {
             VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: received VX_GW_STATUS_CONSUMER_CREATE_DONE state from consumer %d \n", producer->name, received_msg->consumer_id);
-            producer->consumers_list[received_msg->consumer_id].state       = PROD_STATE_CLI_GRAPH_VERIFIED; 
+            producer->consumers_list[received_msg->consumer_id].state = PROD_STATE_CLI_GRAPH_VERIFIED; 
         }
         break;
 
@@ -586,7 +586,7 @@ static void handle_clients(void* clientPtr, void* data)
                     VX_ZONE_INFO, "PRODUCER %s:Received [VX_MSGTYPE_HELLO] from client %d\n", producer->name, client_num);
                 VX_PRINT(
                     VX_ZONE_PERF,
-                    " [UPT] First Time Connected to Producer %s with PID %u \n ",
+                    " [UPT] First Time Connected to Producer %s with ID %u \n ",
                     producer->name,
                     consumer_message->consumer_id);
 
@@ -662,9 +662,9 @@ static void handle_clients(void* clientPtr, void* data)
         }
         break;
 
-        case VX_GW_STATUS_CONSUMER_CREATE_DONE: // consumer notifys about graph creation being completed
+        case VX_MSGTYPE_CONSUMER_CREATE_DONE: // consumer notifys about graph creation being completed
         {
-            VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: received VX_GW_STATUS_CONSUMER_CREATE_DONE state from consumer %d \n", producer->name, consumer_message->consumer_id);
+            VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: received VX_MSGTYPE_CONSUMER_CREATE_DONE state from consumer %d \n", producer->name, consumer_message->consumer_id);
             producer->consumers_list[consumer_message->consumer_id].state       = PROD_STATE_CLI_GRAPH_VERIFIED; 
             status = VX_GW_STATUS_SUCCESS;
         }
@@ -793,7 +793,8 @@ static vx_int32 send_id_message_consumers(
 
 #ifdef IPPC_SHEM_ENABLED
 
-    // in case mask is 0, free reference from here so producer can find it as an available ref
+    // in case mask is 0 (all consumers lock maximum amount of buffers allowed), 
+    // free reference from here so producer can find it as an available ref
     if (0U == mask)
     {
         set_buffer_status(ref->ovx_ref, FREE, producer);
@@ -1049,7 +1050,7 @@ static void* producer_broadcast_thread(void* arg)
                                     producer->nbEnqueueFrames++;
                                 }
 
-                                // atleast one buffer is occupied by graph, we can safely distribute the buffer to consumers
+                                // at least one buffer is occupied by graph, we can safely distribute the buffer to consumers
                                 if (NULL != get_buffer_with_status(producer, IN_GRAPH))
                                 {
                                     // fetch metadata from producer reference and store
@@ -1226,11 +1227,11 @@ static vx_status ownInitProducerObject(vx_producer producer, const vx_producer_p
 #endif
     }
 
-    producer->graph_obj            = params->graph_obj;
-    producer->numBuffers        = params->num_buffers;
-    producer->numBufferRefsExport  = params->num_buffer_refs_export;
+    producer->graph_obj             = params->graph_obj;
+    producer->numBuffers            = params->num_buffers;
+    producer->numBufferRefsExport   = params->num_buffer_refs_export;
     producer->maxRefsLockedByClient = params->max_refs_locked_by_client;
-    producer->streaming_cb         = params->streaming_cb;
+    producer->streaming_cb          = params->streaming_cb;
 
 #ifdef IPPC_SHEM_ENABLED
     for(vx_uint32 idx = 0U; idx < IPPC_PORT_COUNT; idx++)

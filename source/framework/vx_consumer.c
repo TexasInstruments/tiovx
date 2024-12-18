@@ -391,7 +391,7 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p, uint8_t 
         if(E_IPPC_OK == l_status)
         {
             VX_PRINT(VX_ZONE_INFO, "CONSUMER: send graph ready to producer, BUFFER ID %d, %s.", l_received_message->buffer_id, "\n");
-            send_buffer_release_message(consumer, l_send_msg, l_received_message->buffer_id, VX_GW_STATUS_CONSUMER_CREATE_DONE);
+            send_buffer_release_message(consumer, l_send_msg, l_received_message->buffer_id, VX_MSGTYPE_CONSUMER_CREATE_DONE);
         }
         pthread_mutex_unlock(&consumer->buffer_mutex);
     }
@@ -434,7 +434,7 @@ static void* consumer_receiver_thread(void* arg)
                 else
                 {
                     VX_PRINT(VX_ZONE_INFO, "CONSUMER: Waiting for connection with producer...%s", "\n");
-                    tivxTaskWaitMsecs(consumer->timeout);
+                    tivxTaskWaitMsecs(consumer->connect_polling_time);
                 }
             }
             break;
@@ -648,7 +648,7 @@ static vx_gw_status_t start_sync_with_producer(vx_consumer consumer, char* acces
         status = socket_client_connect(access_point_name, &socket_fd);
         if ((socket_fd < 0) && (status == SOCKET_STATUS_CONNECT_ERROR))
         {
-            tivxTaskWaitMsecs(SOCKET_TIMEOUT_MSECS_CONNECTION);
+            tivxTaskWaitMsecs(consumer->connect_polling_time);
             VX_PRINT(VX_ZONE_INFO, "CONSUMER: Waiting for connection with producer...%s", "\n");
         }
         else if ((socket_fd > 0) && (status == SOCKET_STATUS_OK))
@@ -673,7 +673,7 @@ static vx_gw_status_t start_sync_with_producer(vx_consumer consumer, char* acces
     }
 
     msg->msg_type = VX_MSGTYPE_HELLO;
-    msg->consumer_id      = consumer->consumer_id; //getpid();
+    msg->consumer_id = consumer->consumer_id;
 
     status = socket_write(socket_fd, (uint8_t*)msg, NULL, 0);
     if ((status < SOCKET_STATUS_OK) || (status == SOCKET_STATUS_PEER_CLOSED))
@@ -766,7 +766,7 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
             else
             {
                 VX_PRINT(VX_ZONE_INFO, "CONSUMER: application create graph success%s", "\n");  
-                            status = VX_GW_STATUS_CONSUMER_CREATE_DONE;
+                status = VX_MSGTYPE_CONSUMER_CREATE_DONE;
             }
             consumer->state = VX_CONS_STATE_RUN;
             consumer->ref_import_done = (vx_bool)vx_true_e;
@@ -822,26 +822,13 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
     {
         VX_PRINT(VX_ZONE_ERROR, "CONSUMER: MSG RECEIVE STATUS: FAILED.%s", "\n");
     }
-    else if (status == VX_GW_STATUS_CONSUMER_REF_DROP) // this is currently not in use check whether it can be removed
-    {
-        // buffer was not enqueued, transmit the buffer back to the producer immediately
-        consumer->last_buffer_dropped = 1;
-        vx_gw_buff_id_msg* msg       = (vx_gw_buff_id_msg*)message_buffer;
-
-        VX_PRINT(VX_ZONE_INFO, "CONSUMER: CONSUMER DROPS FRAME, BUFFER ID %d, %s.", msg->buffer_id, "\n");
-        status = send_buffer_release_message(consumer, message_buffer, msg->buffer_id, VX_MSGTYPE_BUF_RELEASE);
-        if (status < 0)
-        {
-            consumer->state = VX_CONS_STATE_FAILED;
-        }
-    }
-    else if (status == VX_GW_STATUS_CONSUMER_CREATE_DONE)
+    else if (status == VX_MSGTYPE_CONSUMER_CREATE_DONE)
     {
         // notify producer that create graph is now done and consumer is ready 
         vx_gw_buff_id_msg* msg       = (vx_gw_buff_id_msg*)message_buffer;
 
         VX_PRINT(VX_ZONE_INFO, "CONSUMER: Graph newly created, notify producer %s.", "\n");
-        status = send_buffer_release_message(consumer, message_buffer, msg->buffer_id, VX_GW_STATUS_CONSUMER_CREATE_DONE);
+        status = send_buffer_release_message(consumer, message_buffer, msg->buffer_id, VX_MSGTYPE_CONSUMER_CREATE_DONE);
         if (status < 0)
         {
             consumer->state = VX_CONS_STATE_FAILED;
@@ -1096,7 +1083,7 @@ static vx_status ownInitConsumerObject(vx_consumer consumer, const vx_consumer_p
     }
 
     consumer->consumer_id     = params->consumer_id;
-    consumer->timeout         = params->timeout;
+    consumer->connect_polling_time         = params->connect_polling_time;
 #ifdef IPPC_SHEM_ENABLED
     for(vx_uint32 idx = 0U; idx < IPPC_PORT_COUNT; idx++)
     {

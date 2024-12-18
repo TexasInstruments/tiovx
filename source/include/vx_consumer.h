@@ -91,6 +91,8 @@ typedef struct _vx_consumer
     tivx_utils_ref_ipc_msg_t ipcMessageArray[VX_GW_MAX_NUM_REFS];
     /*! \brief Indicates the number of IPC message sent */
     vx_uint32                ipcMessageCount;
+    /*! \brief waiting time for producer */
+    vx_uint32               connect_polling_time;        
 #ifdef IPPC_SHEM_ENABLED
     /*! \brief Contains registry information */
     SIppcRegistry           m_registry;
@@ -104,8 +106,6 @@ typedef struct _vx_consumer
     /*! \brief Socket file descriptor */
     int32_t                 socket_fd;
 #endif
-    /*! \brief waiting time for producer */
-    vx_uint32               timeout;
 }tivx_consumer_t;
 
 #ifdef __cplusplus
