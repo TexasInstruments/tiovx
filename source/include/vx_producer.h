@@ -42,9 +42,10 @@ typedef enum
 {
     PROD_STATE_CLI_NOT_CONNECTED  = 0x0,
     PROD_STATE_CLI_CONNECTED      = 0x1,
-    PROD_STATE_CLI_RUNNING        = 0x2,
-    PROD_STATE_CLI_FLUSHED        = 0x3,
-    PROD_STATE_CLI_FAILED         = 0x4
+    PROD_STATE_CLI_GRAPH_VERIFIED = 0x2,
+    PROD_STATE_CLI_RUNNING        = 0x3,
+    PROD_STATE_CLI_FLUSHED        = 0x4,
+    PROD_STATE_CLI_FAILED         = 0x5
 } producer_client_state_t;
 
 /*! \brief The Producer buffer status enumeration 
@@ -125,8 +126,6 @@ typedef struct _vx_producer
     vx_uint32              nbDequeueFrames;
     /*! \brief Contains the number of frames that has been dropped */
     vx_uint32              nbDroppedFrames;
-    /*! \brief flag to indicate whether the reference can be enqueued or dropped  */
-    vx_uint32              enqueuecount;
 
     /*! \brief Stores the buffer reference status of the producer */
     buffer_info_t          refs[VX_GW_MAX_NUM_REFS];
@@ -136,6 +135,8 @@ typedef struct _vx_producer
     vx_uint32              numBuffers;
     /*! \brief number of references to be exported to consumer */
     vx_uint32              numBufferRefsExport;
+    /*! \brief maximum number of references allowed to be locked by client before new frame is dropped instead of being sent */
+    vx_uint32              maxRefsLockedByClient;
     /*! \brief Flag to indicates that the reference has been exported */
     vx_bool                ref_export_done;
 

@@ -45,10 +45,11 @@
  */
 typedef enum
 {
-    VX_GW_STATUS_SUCCESS           = 0U,
-    VX_GW_STATUS_FAILURE           = 1U,
-    VX_GW_STATUS_CONSUMER_REF_DROP = 2U,
-    VX_GW_STATUS_CONSUMER_FLUSHED  = 3U,
+    VX_GW_STATUS_SUCCESS                = 0U,
+    VX_GW_STATUS_FAILURE                = 1U,
+    VX_GW_STATUS_CONSUMER_REF_DROP      = 2U,
+    VX_GW_STATUS_CONSUMER_GRAPH_READY   = 3U, 
+    VX_GW_STATUS_CONSUMER_FLUSHED       = 4U,
 } vx_gw_status_t;
 
 /*! \brief The producer message content via IPPC
@@ -58,6 +59,8 @@ typedef struct
 {
     /*! \brief Indicates id of the buffer to be exchanged with the consumer */
     vx_int32  buffer_id;
+    /*! \brief Indicates to receivers whether current frame shall be consumed or not */
+    vx_uint32  mask;
     /*! \brief flag to indicate if this is the last reference to be exchanged with the consumer */
     vx_uint32 last_buffer;
     /*! \brief flag to inform consumer whether previous frame has been dropped by producer */
@@ -79,30 +82,33 @@ typedef struct
 
 } vx_prod_msg_content_t;
 
-/*! \brief The consumer message content via IPPC
- * \ingroup group_vx_gw_common
- */
-typedef struct
-{
-    /*! \brief Indicate the id of the buffer to be exchanged with the producer */
-    vx_uint32 buffer_id;
-    /*! \brief flag to indicate that the last reference has been processed */
-    vx_uint32 last_buffer;
-    /*! \brief Contains the id of the consumer for which the data has been exchanged */
-    vx_uint32 consumer_id;
-} vx_cons_msg_content_t;
-
 /*! \brief The message type exchanged b/w producer and consumer 
  * \ingroup group_vx_gw_common
  */
 typedef enum
 {
-    VX_MSGTYPE_HELLO       = 1U,
-    VX_MSGTYPE_REF_BUF     = 2U,
-    VX_MSGTYPE_BUFID_CMD   = 3U,
-    VX_MSGTYPE_BUF_RELEASE = 4U,
-    VX_MSGTYPE_COUNT       = 5U
+    VX_MSGTYPE_HELLO                = 1U,
+    VX_MSGTYPE_REF_BUF              = 2U,
+    VX_MSGTYPE_BUFID_CMD            = 3U,
+    VX_MSGTYPE_BUF_RELEASE          = 4U,
+    VX_MSGTYPE_CONSUMER_CREATE_DONE = 5U,
+    VX_MSGTYPE_COUNT                = 6U
 } vx_gw_message_type;
+
+/*! \brief The consumer message content via IPPC
+ * \ingroup group_vx_gw_common
+ */
+typedef struct
+{
+    /*! \brief Indicates the type of message */
+    vx_gw_message_type msg_type;
+    /*! \brief Indicate the id of the buffer to be exchanged with the producer */
+    vx_uint32 buffer_id;
+    /*! \brief flag to indicate that the last reference has been processed */
+    vx_uint32 last_buffer;
+    /*! \brief Contains the id of the consumer for which the data has been exchanged */
+    vx_uint8  consumer_id;
+} vx_cons_msg_content_t;
 
 /*! \brief The Structure to specify message type b/w producer and consumer
  * \ingroup group_vx_gw_common
@@ -113,7 +119,7 @@ typedef struct
     vx_gw_message_type msg_type;
 
     /*! \brief consumer id, used to distinguish consumers on app level */
-    vx_uint64 consumer_id;
+    vx_uint8 consumer_id;
 
 } vx_gw_hello_msg;
 
@@ -132,6 +138,8 @@ typedef struct
     vx_uint8 item_index;
     /*! \brief number of total object array items; set to zero if reference is not object array */
     vx_uint8 num_items;
+    /*! \brief consumer id, used to distinguish consumers on app level */
+    vx_uint8 consumer_id;
     /*! \brief IPC message containing references to be exported to consumer */
     tivx_utils_ref_ipc_msg_t ref_export_handle;
 
@@ -145,6 +153,8 @@ typedef struct
     /*! \brief Indicates the type of message */
     vx_gw_message_type msg_type;
 
+    /*! \brief consumer id, used to distinguish consumers on app level */
+    vx_uint8 consumer_id;
     /*! \brief number representing the buffer ID */
     vx_uint8 buffer_id;
     /*! \brief last buffer transmitted */

@@ -42,15 +42,17 @@ static int32_t get_buffer_id(vx_reference buffer_ref, vx_reference* reference_ar
     return buffer_id;
 }
 
-static int32_t send_buffer_release_message(vx_consumer consumer, void* message_buffer, uint8_t buffer_id)
+static int32_t send_buffer_release_message(vx_consumer consumer, void* message_buffer, uint8_t buffer_id, vx_gw_message_type message_type)
 {
     int32_t status = 0U;
 #ifdef IPPC_SHEM_ENABLED
     vx_cons_msg_content_t* msg   = (vx_cons_msg_content_t*)message_buffer;
     msg->consumer_id        = consumer->consumer_id;
+    msg->msg_type           = message_type;
 #elif SOCKET_ENABLED
     vx_gw_buff_id_msg* msg = (vx_gw_buff_id_msg*)message_buffer;
-    msg->msg_type           = VX_MSGTYPE_BUF_RELEASE;
+    msg->msg_type           = message_type;
+    msg->consumer_id        = consumer->consumer_id;
 #endif
     msg->buffer_id          = buffer_id;
     msg->last_buffer        = 0;
@@ -223,7 +225,7 @@ void *consumer_backchannel(void* arg)
                         buffer_id,
                         consumer->last_buffer_id,
                         consumer->last_buffer);
-                    send_buffer_release_message(consumer, l_send_msg, buffer_id);
+                    send_buffer_release_message(consumer, l_send_msg, buffer_id, VX_MSGTYPE_BUF_RELEASE);
                 }
                 pthread_mutex_unlock(&consumer->buffer_mutex);
             }
@@ -237,7 +239,7 @@ void *consumer_backchannel(void* arg)
     return NULL;
 }
 
-void consumer_msg_handler(const void * consumer_p, const void * data_p)
+void consumer_msg_handler(const void * consumer_p, const void * data_p, uint8_t last_buffer_from_series)
 {
     int32_t  status = 0;
     EIppcStatus l_status = (EIppcStatus)E_IPPC_OK;
@@ -291,6 +293,7 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p)
             }
             else
             {
+                status = VX_GW_STATUS_CONSUMER_GRAPH_READY; 
                 VX_PRINT(VX_ZONE_INFO, "CONSUMER: application create graph success%s", "\n");
                 // open a new backchannel thread to dequeue stuff
                 int thread_status = pthread_create(&consumer->backchannel_thread, NULL, consumer_backchannel, (void*)(consumer));
@@ -306,63 +309,98 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p)
         }
     }
 
-    if ((l_received_message->buffer_id != -1) && (VX_SUCCESS == status))
+    if (-1 != l_received_message->buffer_id)
     {
-        VX_PRINT(
-            VX_ZONE_INFO,
-            "CONSUMER: Received buffer ID (%d), last buffer %d\n",
-            l_received_message->buffer_id,
-            l_received_message->last_buffer);
-        // check if metadata from IPC was received and apply it to consumer reference
-        if (l_received_message->metadata_valid == 1 && NULL != consumer->subscriber_cb.storeMetadataCallback)
+        if (1U == l_received_message->last_buffer)
         {
-            status = consumer->subscriber_cb.storeMetadataCallback(
-                consumer->graph_obj, consumer->refs[l_received_message->buffer_id], &l_received_message->metadata_buffer, l_received_message->metadata_size);
-        }
-        
-        VX_PRINT(
-            VX_ZONE_INFO,
-            "CONSUMER: enqueue the incoming buffer id: %d with ref: %p into the pipeline as input buffer, last "
-            "buffer %d \n",
-            l_received_message->buffer_id,
-            consumer->refs[l_received_message->buffer_id],
-            l_received_message->last_buffer);
-
-        status = consumer->subscriber_cb.enqueueCallback(consumer->graph_obj, (vx_reference)consumer->refs[l_received_message->buffer_id]);
-
-        if (l_received_message->last_buffer == 1)
-        {
+            // if last buffer was sent, producer needs to be notified by setting last buffer flag, response needs to be sent regardless of whether receiver was addressed via mask or not
             consumer->last_buffer = 1;
             consumer->last_buffer_id = l_received_message->buffer_id;
             VX_PRINT(VX_ZONE_INFO, "CONSUMER: Received last buffer id %d \n", consumer->last_buffer_id);
-        }
+        }            
 
-        if (status < 0)
+        if (l_received_message->mask & (1U << consumer->consumer_id)) // mask applies to consumer
         {
-            VX_PRINT(VX_ZONE_ERROR, "CONSUMER: MSG RECEIVE STATUS: FAILED.%s", "\n");
-        }
-        else if (status == VX_GW_STATUS_CONSUMER_REF_DROP)
-        {
-            // buffer was not enqueued, transmit the buffer back to the producer immediately
-            consumer->last_buffer_dropped = 1;
-
-            vx_cons_msg_content_t* l_send_msg;
-            pthread_mutex_lock(&consumer->buffer_mutex);
-            l_send_msg = ippc_shem_payload_pointer(&consumer->m_sender_ctx, sizeof(vx_cons_msg_content_t), &l_status);
-
-            if(E_IPPC_OK == l_status)
+            if((1U == last_buffer_from_series)) // pass reference to graph
             {
-                VX_PRINT(VX_ZONE_INFO, "CONSUMER: CONSUMER DROPS FRAME, BUFFER ID %d, %s.", l_received_message->buffer_id, "\n");
-                send_buffer_release_message(consumer, l_send_msg, l_received_message->buffer_id);
+                VX_PRINT(
+                    VX_ZONE_INFO,
+                    "CONSUMER: Received buffer ID (%d), last buffer %d mask %d, \n",
+                    l_received_message->buffer_id,
+                    l_received_message->last_buffer, l_received_message->mask);
+                // check if metadata from IPC was received and apply it to consumer reference
+                if ((1U == l_received_message->metadata_valid) && (NULL != consumer->subscriber_cb.storeMetadataCallback))
+                {
+                    status = consumer->subscriber_cb.storeMetadataCallback(
+                        consumer->graph_obj, consumer->refs[l_received_message->buffer_id], &l_received_message->metadata_buffer, l_received_message->metadata_size);
+                }
+                
+                VX_PRINT(
+                    VX_ZONE_INFO,
+                    "CONSUMER: enqueue the incoming buffer id: %d with ref: %p into the pipeline as input buffer, last "
+                    "buffer %d \n",
+                    l_received_message->buffer_id,
+                    consumer->refs[l_received_message->buffer_id],
+                    l_received_message->last_buffer);
+
+                status = consumer->subscriber_cb.enqueueCallback(consumer->graph_obj, (vx_reference)consumer->refs[l_received_message->buffer_id]);
             }
-            pthread_mutex_unlock(&consumer->buffer_mutex);
+            else // drop reference   
+            {
+                VX_PRINT(VX_ZONE_INFO, "CONSUMER: Received buffer ID (%d) mask %d set for this consumer, but not latest message, drop ref \n", l_received_message->buffer_id, l_received_message->mask);
+                status = VX_GW_STATUS_CONSUMER_REF_DROP;
+            }  
         }
-        else
+        else // mask not set, respond to producer only if it was last buffer sent by producer
         {
-            consumer->last_buffer_dropped = 0;
-            status                        = 0;
-        }
+            VX_PRINT(VX_ZONE_INFO, "CONSUMER: Received buffer ID (%d) mask %d not set for this consumer, return success without notifying Producer\n", l_received_message->buffer_id, l_received_message->mask);
+            if(1U == l_received_message->last_buffer) // only in case of last buffer, notify producer
+            {
+                status = VX_GW_STATUS_CONSUMER_REF_DROP;
+            }
+        } 
     }
+
+    if (0 > status)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "CONSUMER: MSG RECEIVE STATUS: FAILED.%s", "\n");
+    }
+    else if (VX_GW_STATUS_CONSUMER_REF_DROP == status)
+    {
+        // buffer was not enqueued, transmit the buffer back to the producer immediately
+        consumer->last_buffer_dropped = 1U;
+
+        vx_cons_msg_content_t* l_send_msg;
+        pthread_mutex_lock(&consumer->buffer_mutex);
+        l_send_msg = ippc_shem_payload_pointer(&consumer->m_sender_ctx, sizeof(vx_cons_msg_content_t), &l_status);
+
+        if(E_IPPC_OK == l_status)
+        {
+            VX_PRINT(VX_ZONE_INFO, "CONSUMER: CONSUMER DROPS FRAME, BUFFER ID %d, %s.", l_received_message->buffer_id, "\n");
+            send_buffer_release_message(consumer, l_send_msg, l_received_message->buffer_id, VX_MSGTYPE_BUF_RELEASE);
+        }
+        pthread_mutex_unlock(&consumer->buffer_mutex);
+    }
+    else if (VX_GW_STATUS_CONSUMER_GRAPH_READY == status)
+    {
+        // notify producer that consumer is ready to consume 
+        vx_cons_msg_content_t* l_send_msg;
+        pthread_mutex_lock(&consumer->buffer_mutex);
+        l_send_msg = ippc_shem_payload_pointer(&consumer->m_sender_ctx, sizeof(vx_cons_msg_content_t), &l_status);
+
+        if(E_IPPC_OK == l_status)
+        {
+            VX_PRINT(VX_ZONE_INFO, "CONSUMER: send graph ready to producer, BUFFER ID %d, %s.", l_received_message->buffer_id, "\n");
+            send_buffer_release_message(consumer, l_send_msg, l_received_message->buffer_id, VX_MSGTYPE_CONSUMER_CREATE_DONE);
+        }
+        pthread_mutex_unlock(&consumer->buffer_mutex);
+    }
+    else
+    {
+        consumer->last_buffer_dropped = 0;
+        status                        = 0;
+    }
+    
 }
 
 static void* consumer_receiver_thread(void* arg)
@@ -396,7 +434,7 @@ static void* consumer_receiver_thread(void* arg)
                 else
                 {
                     VX_PRINT(VX_ZONE_INFO, "CONSUMER: Waiting for connection with producer...%s", "\n");
-                    tivxTaskWaitMsecs(consumer->timeout);
+                    tivxTaskWaitMsecs(consumer->connect_polling_time);
                 }
             }
             break;
@@ -610,7 +648,7 @@ static vx_gw_status_t start_sync_with_producer(vx_consumer consumer, char* acces
         status = socket_client_connect(access_point_name, &socket_fd);
         if ((socket_fd < 0) && (status == SOCKET_STATUS_CONNECT_ERROR))
         {
-            tivxTaskWaitMsecs(SOCKET_TIMEOUT_MSECS_CONNECTION);
+            tivxTaskWaitMsecs(consumer->connect_polling_time);
             VX_PRINT(VX_ZONE_INFO, "CONSUMER: Waiting for connection with producer...%s", "\n");
         }
         else if ((socket_fd > 0) && (status == SOCKET_STATUS_OK))
@@ -635,7 +673,7 @@ static vx_gw_status_t start_sync_with_producer(vx_consumer consumer, char* acces
     }
 
     msg->msg_type = VX_MSGTYPE_HELLO;
-    msg->consumer_id      = getpid();
+    msg->consumer_id = consumer->consumer_id;
 
     status = socket_write(socket_fd, (uint8_t*)msg, NULL, 0);
     if ((status < SOCKET_STATUS_OK) || (status == SOCKET_STATUS_PEER_CLOSED))
@@ -707,19 +745,7 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
         }
         if (msg->last_reference == 1)
         {
-            // Create the consumer graph by jumping into application defined callback
-            status = consumer->subscriber_cb.createCallback(consumer->graph_obj, consumer->refs, consumer->num_refs);
-            if (status != VX_GW_STATUS_SUCCESS)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "CONSUMER: application create graph failed%s", "\n");
-                break;
-            }
-            else
-            {
-                VX_PRINT(VX_ZONE_INFO, "CONSUMER: application create graph success%s", "\n");
-            }
-
-            VX_PRINT(VX_ZONE_INFO, "CONSUMER: all buffers have been transmitted, start the buffer ID thread%s", "\n");
+            VX_PRINT(VX_ZONE_INFO, "CONSUMER: all buffers have been transmitted, start the buffer ID thread, create graph%s", "\n");
 
             // create the buffer ID client thread; from there switch to reading buffer ID messages and enqueueing
             // into the consumer graph input
@@ -730,7 +756,20 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
                 break;
             }
 
+            // Create the consumer graph by jumping into application defined callback
+            status = consumer->subscriber_cb.createCallback(consumer->graph_obj, consumer->refs, consumer->num_refs);
+            if (status != VX_GW_STATUS_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "CONSUMER: application create graph failed%s", "\n");
+                break;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_INFO, "CONSUMER: application create graph success%s", "\n");  
+                status = VX_MSGTYPE_CONSUMER_CREATE_DONE;
+            }
             consumer->state = VX_CONS_STATE_RUN;
+            consumer->ref_import_done = (vx_bool)vx_true_e;
         }
     }
     break;
@@ -783,14 +822,13 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
     {
         VX_PRINT(VX_ZONE_ERROR, "CONSUMER: MSG RECEIVE STATUS: FAILED.%s", "\n");
     }
-    else if (status == VX_GW_STATUS_CONSUMER_REF_DROP)
+    else if (status == VX_MSGTYPE_CONSUMER_CREATE_DONE)
     {
-        // buffer was not enqueued, transmit the buffer back to the producer immediately
-        consumer->last_buffer_dropped = 1;
+        // notify producer that create graph is now done and consumer is ready 
         vx_gw_buff_id_msg* msg       = (vx_gw_buff_id_msg*)message_buffer;
 
-        VX_PRINT(VX_ZONE_INFO, "CONSUMER: CONSUMER DROPS FRAME, BUFFER ID %d, %s.", msg->buffer_id, "\n");
-        status = send_buffer_release_message(consumer, message_buffer, msg->buffer_id);
+        VX_PRINT(VX_ZONE_INFO, "CONSUMER: Graph newly created, notify producer %s.", "\n");
+        status = send_buffer_release_message(consumer, message_buffer, msg->buffer_id, VX_MSGTYPE_CONSUMER_CREATE_DONE);
         if (status < 0)
         {
             consumer->state = VX_CONS_STATE_FAILED;
@@ -932,7 +970,7 @@ static void* consumer_receiver_thread(void* arg)
                         buffer_id,
                         consumer->last_buffer_id,
                         consumer->last_buffer);
-                    status = send_buffer_release_message(consumer, &message_buffer, buffer_id);
+                    status = send_buffer_release_message(consumer, &message_buffer, buffer_id, VX_MSGTYPE_BUF_RELEASE);
                     if (status < 0)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "CONSUMER: Error while sending back buffer %s", "\n");
@@ -1044,10 +1082,9 @@ static vx_status ownInitConsumerObject(vx_consumer consumer, const vx_consumer_p
         return (vx_status)VX_FAILURE;
     }
 
-#ifdef IPPC_SHEM_ENABLED
     consumer->consumer_id     = params->consumer_id;
-    consumer->timeout         = params->timeout;
-
+    consumer->connect_polling_time         = params->connect_polling_time;
+#ifdef IPPC_SHEM_ENABLED
     for(vx_uint32 idx = 0U; idx < IPPC_PORT_COUNT; idx++)
     {
         consumer->ippc_port[idx] = params->ippc_port[idx];
