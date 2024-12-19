@@ -2313,7 +2313,7 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
         /* Destination cannot be supplementary data of another object */
         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
-    /* the combination "is_accessible" and "is_virtual" beeing different is untestable */
+    /* the combination "is_accessible" and "is_virtual" being different is untestable */
     else if ((((vx_bool)vx_true_e == destination->is_virtual) &&
              ((vx_bool)vx_false_e == destination->is_accessible)) ||
              ((NULL != source) &&

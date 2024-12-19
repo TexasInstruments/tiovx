@@ -135,7 +135,7 @@ static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_WARNING, "No Supplementary data available, no copy/swap possible.");
+                    VX_PRINT(VX_ZONE_WARNING, "No Supplementary data available, no copy/swap possible.\n");
                 }
             }
 #ifdef LDRA_UNTESTABLE_CODE
