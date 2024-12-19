@@ -912,6 +912,46 @@ TEST(supplementary_data, testChildren)
     VX_CALL(vxReleaseTensor(&tensor));
 }
 
+TEST(supplementary_data, testExemplarObjArray)
+{ 
+    vx_context context = context_->vx_context_;
+    vx_reference obj_array;
+    /* default init  with exemplar*/
+    /* Create object array from object array exemplar */
+    vx_image exemplar_image = 0;
+    vx_object_array exemplar_object_array;
+    vx_user_data_object user_data_ob;
+    user_data_t user_data = {.numbers = {1, 2, 3, 4}};
+    ASSERT_VX_OBJECT(user_data_ob = vxCreateUserDataObject(context, "user_data_t", sizeof(user_data_t), &user_data), VX_TYPE_USER_DATA_OBJECT);
+
+    ASSERT_VX_OBJECT(exemplar_image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(exemplar_object_array = vxCreateObjectArray(context, (vx_reference)exemplar_image, 4), VX_TYPE_OBJECT_ARRAY);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)exemplar_object_array, user_data_ob));
+
+    ASSERT_VX_OBJECT(obj_array = tivxCreateReferenceFromExemplar(context, (vx_reference)exemplar_object_array), VX_TYPE_OBJECT_ARRAY);
+    vx_status status = VX_SUCCESS;
+    uint8_t i;
+    for (i = 0; (i < 4) && ((vx_status)VX_SUCCESS == status); ++i)
+    {
+        vx_user_data_object supp;
+        vx_reference object_array_item = vxGetObjectArrayItem((vx_object_array)obj_array, i);
+        ASSERT_VX_OBJECT(supp = vxGetSupplementaryUserDataObject(object_array_item, "user_data_t", &status), VX_TYPE_USER_DATA_OBJECT);
+        user_data_t read_data = {0};
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxCopyUserDataObject(supp, 0, sizeof(read_data), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        if (read_data.numbers[3] != user_data.numbers[3])
+        {
+            status = VX_ERROR_INVALID_VALUE;
+        }
+        VX_CALL(vxReleaseUserDataObject(&supp));
+        VX_CALL(vxReleaseReference(&object_array_item));
+    }
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
+    VX_CALL(vxReleaseUserDataObject(&user_data_ob));
+    VX_CALL(vxReleaseReference(&obj_array));
+    VX_CALL(vxReleaseObjectArray(&exemplar_object_array));
+    VX_CALL(vxReleaseImage(&exemplar_image));    
+}
+
 /* Test object arrays, delays, pipelined interstitial objects */
 TEST(supplementary_data, testExemplars)
 {
@@ -1277,12 +1317,12 @@ TEST(supplementary_data, testCopySwapMove)
     ERROR_CHECK_VX_SUCCESS(vxReleaseReference(&ref4), NULL);
     ERROR_CHECK_VX_SUCCESS(vxReleaseUserDataObject(&supp1), NULL);
     ERROR_CHECK_VX_SUCCESS(vxReleaseUserDataObject(&supp2), NULL);
-    vxReleasePyramid(&pyr_ex1);
-    vxReleasePyramid(&pyr_ex2);
-    vxReleaseObjectArray(&arr1);
-    vxReleaseObjectArray(&arr2);
-    vxReleaseUserDataObject(&exemplar1);
-    vxReleaseUserDataObject(&exemplar2);
+    VX_CALL(vxReleasePyramid(&pyr_ex1));
+    VX_CALL(vxReleasePyramid(&pyr_ex2));
+    VX_CALL(vxReleaseObjectArray(&arr1));
+    VX_CALL(vxReleaseObjectArray(&arr2));
+    VX_CALL(vxReleaseUserDataObject(&exemplar1));
+    VX_CALL(vxReleaseUserDataObject(&exemplar2));
 }
 
 /* Test vxExtendSupplementaryUserDataObject
@@ -1530,7 +1570,7 @@ TEST(supplementary_data, negativeSupplementaryBoundary)
     {
         VX_CALL(vxReleaseUserDataObject(&src_user_data[i]));
     }
-    vxReleaseImage(&image);
+    VX_CALL(vxReleaseImage(&image));
 }
 
 TESTCASE_TESTS(supplementary_data,
@@ -1538,6 +1578,7 @@ TESTCASE_TESTS(supplementary_data,
                 testAllGetSet,
                 testInvalidTypes,
                 testGetSetErrors,
+                testExemplarObjArray,
                 testChildren,
                 testCopySwapMove,
                 testExtend,

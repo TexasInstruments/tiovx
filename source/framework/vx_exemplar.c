@@ -259,7 +259,6 @@ static vx_reference ownCreatePyramidFromExemplar(
     {
         vx_uint32 i;
         vx_status status = (vx_status)VX_SUCCESS;
-        status = vxSetSupplementaryUserDataObject(&pmd->base, exemplar->base.supplementary_data);
         for (i = 0U; (i < levels) && ((vx_status)VX_SUCCESS == status); ++i)
         {
             status = vxSetSupplementaryUserDataObject(&pmd->img[i]->base, exemplar->base.supplementary_data);
@@ -371,7 +370,7 @@ static vx_reference ownCreateObjectArrayFromExemplar(
     vx_context context, vx_object_array exemplar)
 {
     vx_size count;
-    vx_reference objarr_item_exemplar;
+    vx_reference objarr_item_exemplar, objarr_item;
     vx_object_array objarr = NULL;
 
     (void)vxQueryObjectArray(exemplar, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &count, sizeof(count));
@@ -386,8 +385,19 @@ static vx_reference ownCreateObjectArrayFromExemplar(
     else
 #endif
     {
+        vx_uint32 i;
+        vx_status status = (vx_status)VX_SUCCESS;
         objarr = vxCreateObjectArray(context, objarr_item_exemplar, count);
         (void)vxReleaseReference(&objarr_item_exemplar);
+        if (NULL != exemplar->base.supplementary_data)
+        {
+            for (i = 0U; (i < count) && ((vx_status)VX_SUCCESS == status); ++i)
+            {
+                objarr_item = vxGetObjectArrayItem(objarr, i);
+                status = vxSetSupplementaryUserDataObject(objarr_item, exemplar->base.supplementary_data);
+                (void)vxReleaseReference(&objarr_item);
+            }
+        }
     }
 
     return vxCastRefFromObjectArray(objarr);
