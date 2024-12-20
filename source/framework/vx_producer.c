@@ -743,7 +743,7 @@ static vx_int32 send_id_message_consumers(
         )
         {
             locked_cnt = getNumLockedFramesByClient(producer, i);
-            if (locked_cnt < producer->maxRefsLockedByClient)
+            if ((locked_cnt < producer->maxRefsLockedByClient) || (1U == producer->last_buffer)) // in case of last buffer, transmission of that buffer is still necessary
             {
                 mask |= (1U << i);
                 if (ref != NULL)
