@@ -72,6 +72,7 @@ vx_status ownPlatformInit(void)
     uint32_t shmSize = 0;
     int32_t i = 0, retVal;
 
+#if defined(LDRA_UNTESTABLE_CODE)
     /* Build time check to see if the structure size is 8byte aligned and size of the elements is not more than  */
     BUILD_ASSERT(
     (((sizeof(tivx_obj_desc_shm_entry_t)) % (TIVX_PLATFORM_SHM_ENTRY_SIZE_ALIGN))
@@ -81,6 +82,7 @@ vx_status ownPlatformInit(void)
     /* This is required to be <= 32 per framework requirements since we are using a bitmask with a uint32_t type */
     BUILD_ASSERT(
     (TIVX_KERNEL_MAX_PARAMS <= 32U) ? 1U : 0U);
+#endif
 
     retVal = appIpcGetTiovxObjDescSharedMemInfo( (void **) &gTivxObjDescShmEntry, &shmSize);
 
