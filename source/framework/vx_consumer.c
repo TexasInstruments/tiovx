@@ -834,6 +834,19 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
             consumer->state = VX_CONS_STATE_FAILED;
         }
     }
+    else if (status == VX_GW_STATUS_CONSUMER_REF_DROP)
+    {
+        // buffer was not enqueued, transmit the buffer back to the producer immediately
+        consumer->last_buffer_dropped = 1;
+        vx_gw_buff_id_msg* msg       = (vx_gw_buff_id_msg*)message_buffer;
+
+        VX_PRINT(VX_ZONE_INFO, "CONSUMER: CONSUMER DROPS FRAME, BUFFER ID %d, %s.", msg->buffer_id, "\n");
+        status = send_buffer_release_message(consumer, message_buffer, msg->buffer_id, VX_MSGTYPE_BUF_RELEASE);
+        if (status < 0)
+        {
+            consumer->state = VX_CONS_STATE_FAILED;
+        }
+    }
     else
     {
         consumer->last_buffer_dropped = 0;
