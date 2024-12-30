@@ -19,8 +19,63 @@
  */
 
 #include "test_engine/test.h"
+#include <tivx.h>
 
 TESTCASE(tivxObjArray, CT_VXContext, ct_setup_vx_context, 0)
+
+TEST(tivxObjArray, testCreateObjectArrayFromExemplar)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_reference object_array = NULL, object_array_item = NULL, exemplar_object_array_item = NULL;
+    vx_object_array exemplar_object_array = 0;
+    vx_image exemplar_image = 0;
+    vx_size count = 10, object_array_size, exemplar_object_array_size;
+    vx_enum object_array_type, exemplar_object_array_type;
+    vx_uint32 i, ref_width, exemplar_width, ref_height, exemplar_height;
+    vx_df_image ref_format, exemplar_format;
+
+    /* Create object array from object array exemplar */
+    ASSERT_VX_OBJECT(exemplar_image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(exemplar_object_array = vxCreateObjectArray(context, (vx_reference)exemplar_image, count), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(object_array = tivxCreateReferenceFromExemplar(context, (vx_reference)exemplar_object_array), VX_TYPE_OBJECT_ARRAY);
+
+    /* Verify item types match between exemplar and object array created from exemplar */
+    VX_CALL(vxQueryObjectArray(exemplar_object_array, VX_OBJECT_ARRAY_ITEMTYPE, &exemplar_object_array_type, sizeof(exemplar_object_array_type)));
+    VX_CALL(vxQueryObjectArray((vx_object_array)object_array, VX_OBJECT_ARRAY_ITEMTYPE, &object_array_type, sizeof(object_array_type)));
+    ASSERT_EQ_INT(exemplar_object_array_type, object_array_type);
+
+    /* Verify item sizes match between exemplar and object array created from exemplar*/
+    VX_CALL(vxQueryObjectArray(exemplar_object_array, VX_OBJECT_ARRAY_NUMITEMS, &exemplar_object_array_size, sizeof(exemplar_object_array_size)));
+    VX_CALL(vxQueryObjectArray((vx_object_array)object_array, VX_OBJECT_ARRAY_NUMITEMS, &object_array_size, sizeof(object_array_size)));
+    ASSERT_EQ_INT(exemplar_object_array_size, object_array_size);
+
+    /* Verify meta format values match between exemplar and object array created from exemplar */
+    for (i = 0U; i < count; i++)
+    {
+        ASSERT_VX_OBJECT(exemplar_object_array_item = vxGetObjectArrayItem(exemplar_object_array, i), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(object_array_item = vxGetObjectArrayItem((vx_object_array)object_array, i), VX_TYPE_IMAGE);
+
+        VX_CALL(vxQueryImage((vx_image)exemplar_object_array_item, VX_IMAGE_WIDTH, &exemplar_width, sizeof(exemplar_width)));
+        VX_CALL(vxQueryImage((vx_image)exemplar_object_array_item, VX_IMAGE_HEIGHT, &exemplar_height, sizeof(exemplar_height)));
+        VX_CALL(vxQueryImage((vx_image)exemplar_object_array_item, VX_IMAGE_FORMAT, &exemplar_format, sizeof(exemplar_format)));
+
+        VX_CALL(vxQueryImage((vx_image)object_array_item, VX_IMAGE_WIDTH, &ref_width, sizeof(ref_width)));
+        VX_CALL(vxQueryImage((vx_image)object_array_item, VX_IMAGE_HEIGHT, &ref_height, sizeof(ref_height)));
+        VX_CALL(vxQueryImage((vx_image)object_array_item, VX_IMAGE_FORMAT, &ref_format, sizeof(ref_format)));
+
+        ASSERT(exemplar_width == ref_width);
+        ASSERT(exemplar_height == ref_height);
+        ASSERT(exemplar_format == ref_format);
+
+        VX_CALL(vxReleaseReference(&exemplar_object_array_item));
+        VX_CALL(vxReleaseReference(&object_array_item));
+    }
+
+    VX_CALL(vxReleaseReference(&object_array));
+    VX_CALL(vxReleaseObjectArray(&exemplar_object_array));
+    VX_CALL(vxReleaseImage(&exemplar_image));
+}
 
 TEST(tivxObjArray, negativeTestCreateObjectArray)
 {
@@ -92,6 +147,7 @@ TEST(tivxObjArray, negativeTestQueryObjectArray)
 
 TESTCASE_TESTS(
     tivxObjArray,
+    testCreateObjectArrayFromExemplar,
     negativeTestCreateObjectArray,
     negativeTestCreateVirtualObjectArray,
     negativeTestGetObjectArrayItem,

@@ -24,6 +24,7 @@
 #include "test_tiovx.h"
 #include <TI/tivx_event.h>
 #include <tivx_platform_posix.h>
+#include <pthread.h>
 
 #define INVALID_TYPE -1
 
@@ -63,9 +64,39 @@ TEST(tivxPosixObjects, negativeTestPosixObjectFree)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownPosixObjectFree(NULL, INVALID_TYPE));
 }
 
+static void VX_CALLBACK tivxDummyTask(void *app_var)
+{
+
+}
+
+TEST(tivxPosixObjects, testTaskGetStackSize)
+{
+    #define TEST_STACK_SIZE 16*1024*1024
+    #define TEST_TARGET_DEFAULT_TASK_PRIORITY   (8u)
+
+    tivx_task_create_params_t taskParams;
+    tivx_task taskHandle;
+
+    tivxTaskSetDefaultCreateParams(&taskParams);
+    taskParams.task_main = &tivxDummyTask;
+    taskParams.app_var = NULL;
+    taskParams.stack_ptr = NULL;
+    taskParams.stack_size = TEST_STACK_SIZE;
+    taskParams.core_affinity = TIVX_TASK_AFFINITY_ANY;
+    taskParams.priority = TEST_TARGET_DEFAULT_TASK_PRIORITY;
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle, &taskParams));
+
+    ASSERT(taskHandle.stack_size == TEST_STACK_SIZE);
+    printf("taskHandle.stack_size = %llx\n", taskHandle.stack_size);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle));
+}
+
 TESTCASE_TESTS(tivxPosixObjects,
                testPosixObjectFree,
                negativeTestPosixObjectAlloc,
-               negativeTestPosixObjectFree
+               negativeTestPosixObjectFree,
+               testTaskGetStackSize
 )
 #endif

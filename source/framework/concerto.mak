@@ -14,18 +14,18 @@
 # limitations under the License.
 #
 
-
 include $(PRELUDE)
 TARGET      := vx_framework
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/source/include
-DEFS        += LDRA_UNTESTABLE_CODE
-# This is used to signify which sections of code is only applicable
-# for the host for code coverage purposes. It has been left defined
-# for all cores, but can be wrapped in the appropriate CPU when generating
-# code coverage reports.
-DEFS        += HOST_ONLY
+
+ifeq ($(LDRA_COVERAGE_ENABLED), yes)
+include $(TIOVX_PATH)/tiovx_dev/internal_docs/coverage_files/concerto_inc.mak
+else
+DEFS += HOST_ONLY
+DEFS += LDRA_UNTESTABLE_CODE
+endif
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number

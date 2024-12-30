@@ -23,7 +23,8 @@
     What is in scope for TIOVX safety:
     - TI's implementation of the OpenVX framework (source/framework) with few exceptions listed in the "out of scope" section below.
     - The OS platform layer (source/platform)
-    - The dependent utils of TIOVX within app_utils.  The specific libraries within this component are listed below:
+    - The dependent utils of TIOVX within app_utils.  The specific libraries within this component are listed below. (Note: any test functionality
+      from the below libraries are also excluded.)
         - utils/ipc
         - utils/mem
         - utils/misc
@@ -38,7 +39,7 @@
     - HOST_ONLY
 
     Please note the following which are out of scope for safety of TIOVX:
-    - OpenVX standard kernels
+    - OpenVX standard kernels and extension kernels
     - Supernode extension (Note: this is not yet enabled on J7 platforms, but there are still references to it in the framework.
       These are wrapped under the BUILD_BAM macro.)
         - tiovx/source/framework/vx_graph_supernode.c

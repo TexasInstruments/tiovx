@@ -31,38 +31,27 @@
 
 TESTCASE(tivxTargetFinal,  CT_VXContext, ct_setup_vx_context, 0)
 
-typedef struct
-{
-    const char* testName;
-    CT_Image(*generator)(const char* fileName, int width, int height);
-    char *target_string;
-
-} SetTarget_Arg;
-
-#if defined(SOC_AM62A)
-#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU1_0", __VA_ARGS__, TIVX_TARGET_MCU1_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0))
-#elif defined(SOC_J721E)
-#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU2_0", __VA_ARGS__, TIVX_TARGET_MCU2_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_1))
+#if defined(C66_COVERAGE)
+#define NODE_TARGET TIVX_TARGET_DSP1
+#elif defined(C7X_COVERAGE)
+#if defined(SOC_J721E)
+#define NODE_TARGET TIVX_TARGET_DSP_C7_1
 #else
-#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU2_0", __VA_ARGS__, TIVX_TARGET_MCU2_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0))
-#endif
-
-#define SET_NODE_TARGET_PARAMETERS \
-    CT_GENERATE_PARAMETERS("target", ADD_SET_TARGET_PARAMETERS, ARG, NULL)
+#define NODE_TARGET TIVX_TARGET_DSP1
+#endif /* #if defined(SOC_J721E) */
+#elif defined(R5F_COVERAGE)
+#if defined(SOC_AM62A)
+#define NODE_TARGET TIVX_TARGET_MCU1_0
+#else
+#define NODE_TARGET TIVX_TARGET_MCU2_0
+#endif /* #if defined(SOC_AM62A) */
+#else
+#define NODE_TARGET TIVX_TARGET_MPU_0
+#endif /* #if defined(CORE_COVERAGE) */
 
 #define NODE_ERROR_EVENT     (1u)
 
-TEST_WITH_ARG(tivxTargetFinal, testTargetScalar, SetTarget_Arg, SET_NODE_TARGET_PARAMETERS)
+TEST(tivxTargetFinal, testTargetScalar)
 {
     vx_graph graph;
     vx_context context = context_->vx_context_;
@@ -72,7 +61,6 @@ TEST_WITH_ARG(tivxTargetFinal, testTargetScalar, SetTarget_Arg, SET_NODE_TARGET_
     vx_event_t event;
 
     tivxTestKernelsLoadKernels(context);
-
     VX_CALL(vxEnableEvents(context));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -86,7 +74,7 @@ TEST_WITH_ARG(tivxTargetFinal, testTargetScalar, SetTarget_Arg, SET_NODE_TARGET_
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n0, VX_EVENT_NODE_ERROR, 0, NODE_ERROR_EVENT));
 
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, NODE_TARGET));
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -106,4 +94,3 @@ TEST_WITH_ARG(tivxTargetFinal, testTargetScalar, SetTarget_Arg, SET_NODE_TARGET_
 
 TESTCASE_TESTS(tivxTargetFinal,
                testTargetScalar)
-

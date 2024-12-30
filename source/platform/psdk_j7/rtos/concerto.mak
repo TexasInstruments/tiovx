@@ -5,6 +5,13 @@ include $(PRELUDE)
 TARGET      := vx_platform_psdk_j7_rtos
 TARGETTYPE  := library
 
+ifeq ($(LDRA_COVERAGE_ENABLED), yes)
+include $(TIOVX_PATH)/tiovx_dev/internal_docs/coverage_files/concerto_inc.mak
+else
+DEFS += HOST_ONLY
+DEFS += LDRA_UNTESTABLE_CODE
+endif
+
 CSOURCES    := 	tivx_event.c \
 				tivx_queue.c \
 				tivx_task.c \
@@ -20,12 +27,6 @@ CSOURCES    := 	tivx_event.c \
 IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(HOST_ROOT)/source/platform/psdk_j7/common
 IDIRS       += $(CUSTOM_KERNEL_PATH)/include
-DEFS        += LDRA_UNTESTABLE_CODE
-# This is used to signify which sections of code is only applicable
-# for the host for code coverage purposes. It has been left defined
-# for all cores, but can be wrapped in the appropriate CPU when generating
-# code coverage reports.
-DEFS        += HOST_ONLY
 
 ifeq ($(RTOS_SDK), mcu_plus_sdk)
     IDIRS       += $(MCU_PLUS_SDK_PATH)/source

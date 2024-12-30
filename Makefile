@@ -39,6 +39,15 @@ ifeq ($(BUILD_CONFORMANCE_TEST),yes)
   DIRECTORIES += conformance_tests
 endif
 
+# If none of these flags are set, perform a normal build by including all possible cores.
+# Setting one of these flags to 1 in the make command will build that core only.
+ifeq ($(or $(BUILD_MPU),$(BUILD_R5F),$(BUILD_C7X),$(BUILD_C66)),)
+	BUILD_MPU = 1
+	BUILD_R5F = 1
+	BUILD_C7X = 1
+	BUILD_C66 = 1
+endif
+
 TARGET_COMBOS :=
 
 ifeq ($(BUILD_EMULATION_MODE),yes)
@@ -52,33 +61,49 @@ ifeq ($(BUILD_EMULATION_MODE),yes)
 endif
 
 ifeq ($(BUILD_TARGET_MODE),yes)
-    ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
-        TARGET_COMBOS += $(TARGET_SOC):$(RTOS):R5F:1:debug:TIARMCGT_LLVM
-        ifeq ($(TARGET_SOC),J721E)
-            TARGET_COMBOS += $(TARGET_SOC):$(RTOS):C66:1:debug:CGT6X
-        endif
-        TARGET_COMBOS += $(TARGET_SOC):$(RTOS):$(C7X_TARGET):1:debug:CGT7X
-        ifeq ($(BUILD_LINUX_MPU),yes)
-            TARGET_COMBOS += $(TARGET_SOC):LINUX:$(MPU_CPU):1:debug:GCC_LINUX_ARM
-        endif
-        ifeq ($(BUILD_QNX_MPU),yes)
-            TARGET_COMBOS += $(TARGET_SOC):QNX:$(MPU_CPU):1:debug:GCC_QNX_ARM
-        endif
-    endif
+	ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
+		ifeq ($(BUILD_MPU), 1)
+			ifeq ($(BUILD_LINUX_MPU),yes)
+				TARGET_COMBOS += $(TARGET_SOC):LINUX:$(MPU_CPU):1:debug:GCC_LINUX_ARM
+			endif
+			ifeq ($(BUILD_QNX_MPU),yes)
+				TARGET_COMBOS += $(TARGET_SOC):QNX:$(MPU_CPU):1:debug:GCC_QNX_ARM
+			endif
+		endif
+		ifeq ($(BUILD_R5F), 1)
+			TARGET_COMBOS += $(TARGET_SOC):$(RTOS):R5F:1:debug:TIARMCGT_LLVM
+		endif
+		ifeq ($(BUILD_C7X), 1)
+			TARGET_COMBOS += $(TARGET_SOC):$(RTOS):$(C7X_TARGET):1:debug:CGT7X
+		endif
+		ifeq ($(BUILD_C66), 1)
+			ifeq ($(TARGET_SOC),J721E)
+				TARGET_COMBOS += $(TARGET_SOC):$(RTOS):C66:1:debug:CGT6X
+			endif
+		endif
+	endif
 
-    ifeq ($(PROFILE), $(filter $(PROFILE), release all))
-        TARGET_COMBOS += $(TARGET_SOC):$(RTOS):R5F:1:release:TIARMCGT_LLVM
-        ifeq ($(TARGET_SOC),J721E)
-            TARGET_COMBOS += $(TARGET_SOC):$(RTOS):C66:1:release:CGT6X
-        endif
-        TARGET_COMBOS += $(TARGET_SOC):$(RTOS):$(C7X_TARGET):1:release:CGT7X
-        ifeq ($(BUILD_LINUX_MPU),yes)
-            TARGET_COMBOS += $(TARGET_SOC):LINUX:$(MPU_CPU):1:release:GCC_LINUX_ARM
-        endif
-        ifeq ($(BUILD_QNX_MPU),yes)
-            TARGET_COMBOS += $(TARGET_SOC):QNX:$(MPU_CPU):1:release:GCC_QNX_ARM
-        endif
-    endif
+	ifeq ($(PROFILE), $(filter $(PROFILE), release all))
+		ifeq ($(BUILD_MPU), 1)
+			ifeq ($(BUILD_LINUX_MPU),yes)
+				TARGET_COMBOS += $(TARGET_SOC):LINUX:$(MPU_CPU):1:release:GCC_LINUX_ARM
+			endif
+			ifeq ($(BUILD_QNX_MPU),yes)
+				TARGET_COMBOS += $(TARGET_SOC):QNX:$(MPU_CPU):1:release:GCC_QNX_ARM
+			endif
+		endif
+		ifeq ($(BUILD_R5F), 1)
+			TARGET_COMBOS += $(TARGET_SOC):$(RTOS):R5F:1:release:TIARMCGT_LLVM
+		endif
+		ifeq ($(BUILD_C7X), 1)
+			TARGET_COMBOS += $(TARGET_SOC):$(RTOS):$(C7X_TARGET):1:release:CGT7X
+		endif
+		ifeq ($(BUILD_C66), 1)
+			ifeq ($(TARGET_SOC),J721E)
+				TARGET_COMBOS += $(TARGET_SOC):$(RTOS):C66:1:release:CGT6X
+			endif
+		endif
+	endif
 endif
 
 CONCERTO_ROOT ?= $(PSDK_BUILDER_PATH)/concerto
@@ -102,7 +127,6 @@ vision_apps_utils:
 	BUILD_TARGET_MODE=no $(MAKE) -C $(APP_UTILS_PATH) cp_to_lib
 else
 vision_apps_utils:
-
 endif
 
 doxy_docs:
@@ -140,3 +164,15 @@ endif
 
 doxy_docs_design:
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_design/design_guide.cfg 2> tiovx_dev/internal_docs/doxy_cfg_design/doxy_warnings.txt
+
+clean_r5f:
+	-rm -rf $(TIOVX_PATH)/out/$(TARGET_SOC)/R5F/
+
+clean_c7x:
+	-rm -rf $(TIOVX_PATH)/out/$(TARGET_SOC)/C7*/
+
+clean_mpu:
+	-rm -rf $(TIOVX_PATH)/out/$(TARGET_SOC)/A*/
+
+clean_c66:
+	-rm -rf $(TIOVX_PATH)/out/$(TARGET_SOC)/C66/

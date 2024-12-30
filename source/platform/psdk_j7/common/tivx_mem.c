@@ -384,6 +384,7 @@ vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **ph
                                                             (vx_enum)TIVX_MEM_EXTERNAL);
 
         if ((*fd == (uint32_t)-1) || /* TIOVX-1959- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR003 */
+        /* TIOVX-1959- LDRA Uncovered Branch Id: TIOVX_CODE_COVERAGE_RTOS_MEM_UM001 */
         (*phyAddr == (void*)0)) /* TIOVX-1959- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR004 */
         {
             vxStatus = (vx_status)VX_FAILURE;

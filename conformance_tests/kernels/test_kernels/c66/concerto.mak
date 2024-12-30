@@ -20,6 +20,10 @@ ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 DEFS += _HOST_BUILD _TMS320C6600 TMS320C66X HOST_EMULATION
 endif
 
+ifeq ($(LDRA_COVERAGE_ENABLED), yes)
+include $(TIOVX_PATH)/tiovx_dev/internal_docs/coverage_files/concerto_inc.mak
+endif
+
 include $(FINALE)
 
 endif
@@ -55,6 +59,10 @@ DEFS += BUILD_BAM
 endif
 
 DEFS += C6X_MIGRATION _TMS320C6600
+
+ifeq ($(LDRA_COVERAGE_ENABLED), yes)
+include $(TIOVX_PATH)/tiovx_dev/internal_docs/coverage_files/concerto_inc.mak
+endif
 
 include $(FINALE)
 

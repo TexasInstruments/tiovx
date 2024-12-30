@@ -19,6 +19,10 @@ else
 IDIRS       += $(PDK_PATH)/packages/ti/osal/soc
 endif
 
+ifeq ($(LDRA_COVERAGE_ENABLED), yes)
+include $(TIOVX_PATH)/tiovx_dev/internal_docs/coverage_files/concerto_inc.mak
+endif
+
 include $(FINALE)
 
 endif

@@ -173,14 +173,20 @@ vx_enum tivxGetSelfCpuId(void)
 
     vsdk_cpu_id =  appIpcGetSelfCpuId();
 
-    for (i = 0; i < dimof(g_ipc_cpu_id_map); i ++) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR002 */
+    for (i = 0; 
+            i < dimof(g_ipc_cpu_id_map); /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR002 */
+/* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IPC_C7X_UM001 */
+            i ++)
+/* END: TIOVX_CODE_COVERAGE_IPC_C7X_UM001 */
     {
-        if (vsdk_cpu_id == g_ipc_cpu_id_map[i])
+        if (vsdk_cpu_id == g_ipc_cpu_id_map[i]) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_C7X_TIVX_IPC_UBR001 */
         {
             cpu_id = (vx_enum)i;
             break;
         }
+/* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IPC_C7X_UM001 */
     }
+/* END: TIOVX_CODE_COVERAGE_IPC_C7X_UM001 */
 
     return (cpu_id);
 }
