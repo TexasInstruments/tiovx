@@ -1336,10 +1336,13 @@ TEST(supplementary_data, testExtend)
     vx_context context = context_->vx_context_;
     printf("\nTesting vxExtendSupplementaryUserDataObject\n");
     user_data_t user_data = {.numbers = {1, 2, 3, 4}};
+    vx_graph graph;
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     vx_user_data_object exemplar;
     ASSERT_VX_OBJECT(exemplar = vxCreateUserDataObject(context, "user_data_t", sizeof(user_data_t), &user_data), VX_TYPE_USER_DATA_OBJECT);
-    vx_image image;
+    vx_image image, virt_image;
     ASSERT_VX_OBJECT(image = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt_image = vxCreateVirtualImage(graph, 10, 10, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     vx_rectangle_t rect = {.start_x = 0, .start_y = 0, .end_x = 9, .end_y = 9};
     vx_image subimage;
     ASSERT_VX_OBJECT(subimage = vxCreateImageFromROI(image, &rect), VX_TYPE_IMAGE);
@@ -1363,7 +1366,7 @@ TEST(supplementary_data, testExtend)
                            read_data.numbers[3] == 0, "Correctly initialised first half of the data from source");
     ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), NULL, &new_data, sizeof(user_data), sizeof(user_data)), "vxExtendSupplementaryUserDataObject nothing to copy ");
     ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), NULL, &new_data, sizeof(user_data), sizeof(user_data) / 2), "vxExtendSupplementaryUserDataObject with half user data");
-    vxReleaseUserDataObject(&supp);
+    VX_CALL(vxReleaseUserDataObject(&supp));
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
@@ -1372,7 +1375,7 @@ TEST(supplementary_data, testExtend)
                            read_data.numbers[2] == 0 &&
                            read_data.numbers[3] == 0, "Correctly initialised first half of the data from user_data");
     ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data), sizeof(user_data) / 2), "vxExtendSupplementaryUserDataObject with half user data then half source data");
-    vxReleaseUserDataObject(&supp);
+    VX_CALL(vxReleaseUserDataObject(&supp));
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
@@ -1381,7 +1384,7 @@ TEST(supplementary_data, testExtend)
                            read_data.numbers[2] == user_data.numbers[2] &&
                            read_data.numbers[3] == user_data.numbers[3], "Correctly initialised first half of the data from user_data, second from source");
     ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data) / 2, sizeof(user_data)), "vxExtendSupplementaryUserDataObject with half source data then half user data");
-    vxReleaseUserDataObject(&supp);
+    VX_CALL(vxReleaseUserDataObject(&supp));
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
@@ -1390,7 +1393,7 @@ TEST(supplementary_data, testExtend)
                            read_data.numbers[2] == new_data.numbers[2] &&
                            read_data.numbers[3] == new_data.numbers[3], "Correctly initialised first half of the data from source, second from user_data");
     ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data), 0), "vxExtendSupplementaryUserDataObject with source");
-    vxReleaseUserDataObject(&supp);
+    VX_CALL(vxReleaseUserDataObject(&supp));
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
@@ -1399,7 +1402,7 @@ TEST(supplementary_data, testExtend)
                            read_data.numbers[2] == user_data.numbers[2] &&
                            read_data.numbers[3] == user_data.numbers[3], "Correctly initialised data from source");
     ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, 0, sizeof(user_data)), "vxExtendSupplementaryUserDataObject with user data");
-    vxReleaseUserDataObject(&supp);
+    VX_CALL(vxReleaseUserDataObject(&supp));
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
@@ -1408,7 +1411,7 @@ TEST(supplementary_data, testExtend)
                            read_data.numbers[2] == new_data.numbers[2] &&
                            read_data.numbers[3] == new_data.numbers[3], "Correctly initialised data from user data");
     ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(subimage), supp, &user_data, sizeof(user_data) / 4, (sizeof(user_data) * 3)/ 4 ), "vxExtendSupplementaryUserDataObject of child with user data");
-    vxReleaseUserDataObject(&supp);
+    VX_CALL(vxReleaseUserDataObject(&supp));
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
@@ -1416,7 +1419,7 @@ TEST(supplementary_data, testExtend)
                            read_data.numbers[1] == new_data.numbers[1] &&
                            read_data.numbers[2] == new_data.numbers[2] &&
                            read_data.numbers[3] == new_data.numbers[3], "Setting child object supplementary data did not affect parent");
-    vxReleaseUserDataObject(&supp);
+    VX_CALL(vxReleaseUserDataObject(&supp));
     supp = vxGetSupplementaryUserDataObject((vx_reference)(subimage), NULL, &status);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     ERROR_CHECK_VX_SUCCESS(vxCopyUserDataObject(supp, 0, sizeof(user_data_t), &read_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), NULL);
@@ -1435,10 +1438,14 @@ TEST(supplementary_data, testExtend)
                            read_data.numbers[1] == 0 &&
                            read_data.numbers[2] == new_data.numbers[2] &&
                            read_data.numbers[3] == 0, "Correctly terminated copy when valid size was less than source bytes");
-    vxReleaseImage(&image);
-    vxReleaseImage(&subimage);
-    vxReleaseUserDataObject(&exemplar);
-    vxReleaseUserDataObject(&supp);
+    /* Test extending a virtual image outside of a graph will result in the VX_ERROR_OPTIMIZED_AWAY status */
+    ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(virt_image), exemplar, NULL, sizeof(user_data) / 2, sizeof(user_data)), VX_ERROR_OPTIMIZED_AWAY, "Correct error for virtual destination outside of a graph");
+    VX_CALL(vxReleaseImage(&image));
+    VX_CALL(vxReleaseImage(&subimage));
+    VX_CALL(vxReleaseUserDataObject(&exemplar));
+    VX_CALL(vxReleaseImage(&virt_image));
+    VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(vxReleaseUserDataObject(&supp));
 }
 
 /* Test object descriptor functions */
