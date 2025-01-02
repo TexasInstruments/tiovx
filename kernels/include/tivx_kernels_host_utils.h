@@ -95,10 +95,12 @@ vx_status tivxPublishKernels(vx_context context, const Tivx_Host_Kernel_List *ke
  */
 vx_status tivxUnPublishKernels(vx_context context, const Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels);
 
-
 /*!
  * \brief Maximum number of images (input/output) supported in
  *        calculating valid rectangles
+ * \note This value is excluded from config parameter logging as
+ *       it used only as a static input/output image array size
+ *       for valid rectangle parameters
  *
  * \ingroup group_tivx_ext_host_kernel
  */
