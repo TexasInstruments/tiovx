@@ -88,7 +88,6 @@ TEST(tivxPosixObjects, testTaskGetStackSize)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle, &taskParams));
 
     ASSERT(taskHandle.stack_size == TEST_STACK_SIZE);
-    printf("taskHandle.stack_size = %llx\n", taskHandle.stack_size);
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle));
 }
