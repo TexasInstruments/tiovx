@@ -78,6 +78,9 @@ typedef struct tivx_platform_info
         /*! \brief Name of the target, defined in tivx.h file
          */
         char target_name[TIVX_TARGET_MAX_NAME];
+        /*! \brief Name of the task
+         */
+        char task_name[TIVX_TARGET_MAX_TASK_NAME];
         /*! \brief Id of the target defined in #tivx_target_id_e in the
          *   file tivx_platform_vision_sdk.h
          */
@@ -201,6 +204,25 @@ void ownPlatformGetTargetName(vx_enum target_id, char *target_name)
             if (target_id == g_tivx_platform_info.target_info[i].target_id)
             {
                 snprintf(target_name, TIVX_TARGET_MAX_NAME, "%s", g_tivx_platform_info.target_info[i].target_name);
+                break;
+            }
+        }
+    }
+}
+
+void ownPlatformGetTaskName(vx_enum target_id, char *task_name)
+{
+    uint32_t i;
+
+    snprintf(task_name, TIVX_TARGET_MAX_TASK_NAME, "UNKNOWN");
+
+    if(target_id != (vx_enum)TIVX_TARGET_ID_INVALID)
+    {
+        for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
+        {
+            if (target_id == g_tivx_platform_info.target_info[i].target_id)
+            {
+                snprintf(task_name, TIVX_TARGET_MAX_TASK_NAME, "%s", g_tivx_platform_info.target_info[i].task_name);
                 break;
             }
         }

@@ -13,10 +13,10 @@ void ownPlatformCreateTargets(void)
 {
     /* MCU2-0 Targets */
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU2_0,     0u, "TIVX_CPU_0",  4u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_LDC1,  1u, "TIVX_V1LDC1", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC1,  2u, "TIVX_V1SC1",  8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC2,  3u, "TIVX_V1MSC2", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1, 4u, "TIVXVVISS1", 13u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_LDC1,  1u, "TIVX_VLDC1", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC1,  2u, "TIVX_VMSC1",  8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC2,  3u, "TIVX_VMSC2", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1, 4u, "TIVX_VVISS1", 13u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE1,   5u, "TIVX_CAPT1", 15u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE2,   6u, "TIVX_CAPT2", 15u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE3,   7u, "TIVX_CAPT3", 15u);
