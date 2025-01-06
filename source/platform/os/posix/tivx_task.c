@@ -133,9 +133,9 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
             if(status==0) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR003 */
             {
                 {
-                    if(task->stack_size>0)
+                    if(task->stack_size>0u)
                     {
-                        status |= pthread_attr_setstacksize(&thread_attr, task->stack_size);
+                        status = pthread_attr_setstacksize(&thread_attr, task->stack_size);
                     }
                     #if 0
                     struct sched_param schedprm;
