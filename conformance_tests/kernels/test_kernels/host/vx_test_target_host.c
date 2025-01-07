@@ -66,6 +66,7 @@
 #include "TI/tivx_test_kernels_kernels.h"
 #include "tivx_kernel_test_target.h"
 #include "TI/tivx_target_kernel.h"
+#include <stdio.h>
 
 static vx_kernel vx_test_target_kernel = NULL;
 
@@ -78,6 +79,325 @@ static vx_status VX_CALLBACK tivxAddKernelTestTargetInitialize(vx_node node,
             vx_uint32 num_params);
 vx_status tivxAddKernelTestTarget(vx_context context);
 vx_status tivxRemoveKernelTestTarget(vx_context context);
+
+#if defined(LDRA_COVERAGE_ENABLED)
+#ifndef PC
+#define MAX_LENGTH 64
+typedef struct {
+    vx_status (*funcPtr)(uint8_t);
+    char funcName[MAX_LENGTH];
+    vx_status status;
+} FuncInfo;
+
+FuncInfo funcArr[];
+
+static vx_status tivxTestKernelsHostUtilsAddKernelTargetDsp(uint8_t id)
+{
+    vx_context context;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_image img;
+    vx_kernel kernel;
+    vx_reference ref;
+
+    context = vxCreateContext();
+    img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    ref = (vx_reference)img;
+    kernel = (vx_kernel)ref;
+
+    if ((vx_status)VX_ERROR_INVALID_REFERENCE != tivxKernelsHostUtilsAddKernelTargetDsp(kernel))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelsHostUtilsAddKernelTargetMcu returned success with"\
+        " reference type set to image\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    vxReleaseImage(&img);
+
+    snprintf(funcArr[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestKernelsHostUtilsAddKernelTargetMcu(uint8_t id)
+{
+    vx_context context;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_image img;
+    vx_kernel kernel;
+    vx_reference ref;
+
+    context = vxCreateContext();
+    img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    ref = (vx_reference)img;
+    kernel = (vx_kernel)ref;
+
+    if ((vx_status)VX_ERROR_INVALID_REFERENCE != tivxKernelsHostUtilsAddKernelTargetMcu(kernel))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelsHostUtilsAddKernelTargetMcu returned success with"\
+        " reference type set to image\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    vxReleaseImage(&img);
+
+    snprintf(funcArr[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestCommonKernelConfigValidRect(uint8_t id)
+{
+    vx_context context;
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivxKernelValidRectParams prms, *prms_ptr=NULL;
+    vx_image img1;
+
+    vx_rectangle_t roi_rect1 = { 4, 4, 6, 6 };
+    vx_rectangle_t roi_rect2 = { 1, 1, 8, 8 };
+    vx_rectangle_t roi_rect3 = { 2, 2, 3, 3 };
+
+    context = vxCreateContext();
+    tivxKernelValidRectParams_init(&prms);
+
+    if ((vx_status)VX_FAILURE != tivxKernelConfigValidRect(prms_ptr))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelConfigValidRect returned success with NULL params\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    prms.num_input_images = TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE+1;
+    if ((vx_status)VX_FAILURE != tivxKernelConfigValidRect(&prms))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelConfigValidRect returned success with num_input_images "\
+        "greater than TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    prms.num_input_images = 1;
+    prms.num_output_images = TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE+1;
+    if ((vx_status)VX_FAILURE != tivxKernelConfigValidRect(&prms))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelConfigValidRect returned success with num_output_images "\
+        "greater than TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    prms.num_output_images = 1;
+    prms.in_img[0U] = NULL;
+    if ((vx_status)VX_FAILURE != tivxKernelConfigValidRect(&prms))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelConfigValidRect returned success with in_img 0 "\
+        "set to NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    prms.in_img[0U] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    prms.out_img[0U] = NULL;
+    if ((vx_status)VX_FAILURE != tivxKernelConfigValidRect(&prms))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelConfigValidRect returned success with out_img 0 "\
+        "set to NULL\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    vxReleaseImage(&prms.in_img[0U]);
+
+    #define VX_DF_IMAGE_DEFAULT VX_DF_IMAGE('D','E','F','A')
+    prms.in_img[0U] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_DEFAULT);
+    prms.out_img[0U] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    if ((vx_status)VX_ERROR_INVALID_REFERENCE != tivxKernelConfigValidRect(&prms))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelConfigValidRect returned success with invalid in_img 0 "\
+        "vx_df_image type\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    vxReleaseImage(&prms.in_img[0U]);
+    vxReleaseImage(&prms.out_img[0U]);
+
+    prms.in_img[0U] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    prms.out_img[0U] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_DEFAULT);
+    if ((vx_status)VX_ERROR_INVALID_REFERENCE != tivxKernelConfigValidRect(&prms))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelConfigValidRect returned success with invalid out_img 0 "\
+        "vx_df_image type\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    vxReleaseImage(&prms.in_img[0U]);
+    vxReleaseImage(&prms.out_img[0U]);
+
+    img1 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    prms.in_img[0U] = vxCreateImageFromROI(img1, &roi_rect2);
+    prms.out_img[0U] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    vxSetImageValidRectangle(prms.in_img[0U], &roi_rect3);
+    if ((vx_status)VX_SUCCESS != tivxKernelConfigValidRect(&prms))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelConfigValidRect returned failure with in_img 0 "\
+        "start x and y greater than out_img 0 start x and y - they should have been corrected\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    vxReleaseImage(&img1);
+    vxReleaseImage(&prms.in_img[0U]);
+    vxReleaseImage(&prms.out_img[0U]);
+
+    img1 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    prms.in_img[0U] = vxCreateImageFromROI(img1, &roi_rect2);
+    prms.out_img[0U] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    vxSetImageValidRectangle(prms.out_img[0U], &roi_rect3);
+    if ((vx_status)VX_SUCCESS != tivxKernelConfigValidRect(&prms))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelConfigValidRect returned failure with out_img 0 "\
+        "start x and y greater than out_img 0 start x and y - they should have been corrected\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    vxReleaseImage(&img1);
+    vxReleaseImage(&prms.in_img[0U]);
+    vxReleaseImage(&prms.out_img[0U]);
+
+    prms.border_mode = (vx_enum)VX_BORDER_CONSTANT;
+    prms.in_img[0U] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    prms.out_img[0U] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    if ((vx_status)VX_SUCCESS != tivxKernelConfigValidRect(&prms))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelConfigValidRect returned failure with valid in_img 0 "\
+        "and out_img 0 and border mode constant\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    vxReleaseImage(&prms.in_img[0U]);
+    vxReleaseImage(&prms.out_img[0U]);
+
+    prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
+    prms.left_pad = 258U;
+    prms.right_pad = 256U;
+    img1 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    prms.in_img[0U] = vxCreateImageFromROI(img1, &roi_rect1);
+    prms.out_img[0U] = vxCreateImageFromROI(img1, &roi_rect1);
+    if ((vx_status)VX_ERROR_INVALID_PARAMETERS != tivxKernelConfigValidRect(&prms))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelConfigValidRect returned success with invalid "\
+        "left and right padding set in params\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    vxReleaseImage(&img1);
+    vxReleaseImage(&prms.in_img[0U]);
+    vxReleaseImage(&prms.out_img[0U]);
+
+    snprintf(funcArr[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestKernelValidateParametersNotNull(uint8_t id)
+{
+    vx_context context;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint8 max_params = 5u;
+    vx_reference prms[max_params];
+    vx_uint32 i;
+
+    context = vxCreateContext();
+
+    for (i = 0U; i < max_params; i++)
+    {
+        prms[i] = NULL;
+    }
+
+    if ((vx_status)VX_ERROR_INVALID_PARAMETERS != tivxKernelValidateParametersNotNull(prms, max_params))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelValidateParametersNotNull returned success with NULL params\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    for (i = 0U; i < max_params; i++)
+    {
+        prms[i] = (vx_reference)vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    }
+
+    if ((vx_status)VX_SUCCESS != tivxKernelValidateParametersNotNull(prms, max_params))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxKernelValidateParametersNotNull returned failure with valid params\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    for (i = 0U; i < max_params; i++)
+    {
+        vxReleaseReference(&prms[i]);
+    }
+
+    snprintf(funcArr[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+vx_status dummy_add_kernel_fxn(vx_context context)
+{
+    return (vx_status)VX_FAILURE;
+}
+
+static vx_status tivxTestPublishKernels(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_context context;
+    vx_uint32 kernel_list_size = 1U;
+    Tivx_Host_Kernel_List  test_host_kernel_list[] = {
+        {NULL,dummy_add_kernel_fxn}
+    };
+
+    context = vxCreateContext();
+
+    tivxPublishKernels(context, test_host_kernel_list, kernel_list_size);
+
+    Tivx_Host_Kernel_List  test_host_kernel_list_null[] = {
+        {NULL,NULL}
+    };
+
+    tivxPublishKernels(context, test_host_kernel_list_null, kernel_list_size);
+
+    vxReleaseContext(&context);
+
+    snprintf(funcArr[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestUnPublishKernels(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_context context;
+    vx_uint32 kernel_list_size = 1U;
+    Tivx_Host_Kernel_List  test_host_kernel_list[] = {
+        {NULL,dummy_add_kernel_fxn}
+    };
+
+    context = vxCreateContext();
+
+    tivxUnPublishKernels(context, test_host_kernel_list, kernel_list_size);
+
+    Tivx_Host_Kernel_List  test_host_kernel_list_null[] = {
+        {NULL,NULL}
+    };
+    tivxUnPublishKernels(context, test_host_kernel_list_null, kernel_list_size);
+
+    snprintf(funcArr[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+FuncInfo funcArr[] = {
+    {tivxTestKernelsHostUtilsAddKernelTargetDsp,"",VX_SUCCESS},
+    {tivxTestKernelsHostUtilsAddKernelTargetMcu,"",VX_SUCCESS},
+    {tivxTestCommonKernelConfigValidRect,"",VX_SUCCESS},
+    {tivxTestKernelValidateParametersNotNull,"",VX_SUCCESS},
+    {tivxTestPublishKernels,"",VX_SUCCESS},
+    {tivxTestUnPublishKernels,"",VX_SUCCESS}
+};
+#endif /* #ifndef PC*/
+#endif /* #if defined(LDRA_COVERAGE_ENABLED) */
 
 static vx_status VX_CALLBACK tivxAddKernelTestTargetValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -112,6 +432,65 @@ static vx_status VX_CALLBACK tivxAddKernelTestTargetInitialize(vx_node node,
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
+
+#if defined(LDRA_COVERAGE_ENABLED)
+    if((vx_status)VX_SUCCESS == status)
+    {
+        uint8_t i = 0;
+        uint8_t pcount = 0;
+        uint8_t fcount = 0;
+        vx_status status1 = (vx_status)VX_SUCCESS;
+        uint32_t size= sizeof(funcArr)/sizeof(funcArr[0]);
+        tivx_set_debug_zone(VX_ZONE_INFO);
+
+        VX_PRINT(VX_ZONE_INFO,"------------------TEST KERNEL INITIALIZE CALLBACK TESTCASES-------------------------\n");
+        VX_PRINT(VX_ZONE_INFO,"[  TO DO  ] %d test(s) from 1 test case(s)\n",size);
+        VX_PRINT(VX_ZONE_INFO,"------------------TEST KERNEL INITIALIZE CALLBACK TESTCASES-------------------------\n");
+
+        if((vx_status)VX_SUCCESS == status)
+        {
+            for(i=0;i<size;i++)
+            {
+                status1 = funcArr[i].funcPtr(i);
+                if((vx_status)VX_SUCCESS != status1)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"[ !FAILED! ] TARGET TESTCASE: %s\n",funcArr[i].funcName);
+                    funcArr[i].status=status1;
+                    status = status1;
+                    fcount++;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_INFO,"[ PASSED ] TARGET TESTCASE: %s\n",funcArr[i].funcName);
+                    pcount++;
+                }
+            }
+        }
+        VX_PRINT(VX_ZONE_INFO,"------------------TEST KERNEL INITIALIZE CALLBACK TESTCASES-------------------------\n");
+        VX_PRINT(VX_ZONE_INFO,"[ ALL DONE ] %d test(s) from 1 test case(s) ran\n",i);
+        VX_PRINT(VX_ZONE_INFO,"[  PASSED  ] %d test(s)\n",pcount);
+        if(fcount>0)
+        {
+            i=0;
+            VX_PRINT(VX_ZONE_INFO,"[  FAILED  ] %d test(s), listed below:\n",fcount);
+            while(i<size)
+            {
+                if(funcArr[i].status!= VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_INFO,"[  FAILED  ] %s\n",funcArr[i].funcName);
+                }
+                i++;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO,"[  FAILED  ] %d test(s)\n",fcount);
+        }
+        VX_PRINT(VX_ZONE_INFO,"------------------------------------------------------------------------------------\n");
+        tivx_clr_debug_zone(VX_ZONE_INFO);
+    }
+#endif /* #if defined(LDRA_COVERAGE_ENABLED) */
+
     return status;
 }
 

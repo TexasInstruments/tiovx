@@ -130,110 +130,6 @@ vx_status tivxKernelValidateParametersNotNull(const vx_reference *parameters, vx
     return status;
 }
 
-vx_status tivxKernelValidateInputSize(vx_uint32 inputWidth0, vx_uint32 inputWidth1,
-                            vx_uint32 inputHeight0, vx_uint32 inputHeight1)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-
-    if ((inputWidth0 != inputWidth1) || (inputHeight0 != inputHeight1))
-    {
-        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-        VX_PRINT(VX_ZONE_ERROR, "Input image sizes do not match\n");
-        VX_PRINT(VX_ZONE_ERROR, "Input0 width = %d\n", inputWidth0);
-        VX_PRINT(VX_ZONE_ERROR, "Input0 height = %d\n", inputHeight0);
-        VX_PRINT(VX_ZONE_ERROR, "Input1 width = %d\n", inputWidth1);
-        VX_PRINT(VX_ZONE_ERROR, "Input1 height = %d\n", inputHeight1);
-    }
-
-    return status;
-}
-
-vx_status tivxKernelValidatePossibleFormat(vx_df_image inputFormat, vx_df_image possibleFormat)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-
-    if (inputFormat != possibleFormat)
-    {
-        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-    }
-
-    return status;
-}
-
-vx_status tivxKernelValidateScalarType(vx_enum scalarType, vx_enum expectedScalarType)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-
-    if (scalarType != expectedScalarType)
-    {
-        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-        VX_PRINT(VX_ZONE_ERROR, "Scalar types do not match\n");
-    }
-
-    return status;
-}
-
-vx_status tivxKernelValidateOutputSize(vx_uint32 expectedWidth, vx_uint32 outputWidth, vx_uint32 expectedHeight,
-                             vx_uint32 outputHeight, vx_image outputImage)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-
-    if ((vx_bool)vx_false_e == tivxIsReferenceVirtual(vxCastRefFromImage(outputImage)))
-    {
-        /* Check for frame sizes */
-        if ((expectedWidth != outputWidth) || (expectedHeight != outputHeight))
-        {
-            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Non-virtual output image size does not match expected image size\n");
-            VX_PRINT(VX_ZONE_ERROR, "Expected width = %d\n", expectedWidth);
-            VX_PRINT(VX_ZONE_ERROR, "Expected height = %d\n", expectedHeight);
-            VX_PRINT(VX_ZONE_ERROR, "Output width = %d\n", outputWidth);
-            VX_PRINT(VX_ZONE_ERROR, "Output height = %d\n", outputHeight);
-        }
-    }
-    else
-    {
-        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-
-        /* Check for valid frame sizes */
-        if ( ((expectedWidth == outputWidth) && (expectedHeight == outputHeight)) ||
-             ((0U == outputWidth)             && (0U == outputHeight)) ||
-             ((expectedWidth == outputWidth) && (0U == outputHeight)) ||
-             ((0U == outputWidth)             && (expectedHeight == outputHeight)) )
-        {
-            status = (vx_status)VX_SUCCESS;
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Virtual output image size does not match expected image size or is not zero\n");
-            VX_PRINT(VX_ZONE_ERROR, "Expected width = %d\n", expectedWidth);
-            VX_PRINT(VX_ZONE_ERROR, "Expected height = %d\n", expectedHeight);
-            VX_PRINT(VX_ZONE_ERROR, "Virtual output width = %d\n", outputWidth);
-            VX_PRINT(VX_ZONE_ERROR, "Virtual output height = %d\n", outputHeight);
-        }
-    }
-
-    return status;
-}
-
-void tivxKernelSetMetas(vx_meta_format *metas, vx_uint8 maxParams, vx_df_image fmt, vx_uint32 width, vx_uint32 height)
-{
-    vx_uint32 i;
-
-    for (i = 0U; i < maxParams; i ++)
-    {
-        if (NULL != metas[i])
-        {
-            (void)vxSetMetaFormatAttribute(metas[i], (vx_enum)VX_IMAGE_FORMAT, &fmt,
-                sizeof(fmt));
-            (void)vxSetMetaFormatAttribute(metas[i], (vx_enum)VX_IMAGE_WIDTH, &width,
-                sizeof(width));
-            (void)vxSetMetaFormatAttribute(metas[i], (vx_enum)VX_IMAGE_HEIGHT, &height,
-                sizeof(height));
-        }
-    }
-}
-
 vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -379,20 +275,20 @@ vx_status tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel)
 vx_status tivxKernelsHostUtilsAddKernelTargetMcu(vx_kernel kernel)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    #if defined(SOC_AM62A) || defined(SOC_J722S)
-    status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU1_0);
-    #endif
     #ifndef SOC_AM62A
-    if ((vx_status)VX_SUCCESS == status)
-    {
-        status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_0);
-    }
+    status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_0);
     #ifndef SOC_J722S
     if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_1);
     }
     #endif
+    #endif
+    #if defined(SOC_AM62A) || defined(SOC_J722S)
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU1_0);
+    }
     #endif
     return status;
 }

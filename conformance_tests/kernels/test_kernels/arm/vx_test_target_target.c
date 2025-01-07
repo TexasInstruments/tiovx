@@ -3785,6 +3785,95 @@ static vx_status tivxNegativeAppMemResetScratchHeapFlag(uint8_t id)
     return status;
 }
 
+static vx_status tivxTestRegisterTargetKernels(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32 kernel_list_size = 1U;
+    Tivx_Target_Kernel_List test_target_kernel_list[] = {
+        {NULL,NULL}
+    };
+
+    tivxRegisterTargetKernels(test_target_kernel_list, kernel_list_size);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+void dummy_kernel_fxn()
+{
+    /* do nothing */
+}
+
+static vx_status tivxTestUnRegisterTargetKernels(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32 kernel_list_size = 1U;
+    Tivx_Target_Kernel_List test_target_kernel_list_null[] = {
+        {NULL,NULL}
+    };
+
+    tivxUnRegisterTargetKernels(test_target_kernel_list_null, kernel_list_size);
+
+    Tivx_Target_Kernel_List test_target_kernel_list[] = {
+        {dummy_kernel_fxn,dummy_kernel_fxn}
+    };
+
+    tivxUnRegisterTargetKernels(test_target_kernel_list, kernel_list_size);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestKernelsAssignTargetNameC7x(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    char target_name[TIVX_TARGET_MAX_NAME];
+
+    tivxKernelsTargetUtilsAssignTargetNameC7x(target_name);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestKernelsAssignTargetNameDsp(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    char target_name[TIVX_TARGET_MAX_NAME];
+
+    tivxKernelsTargetUtilsAssignTargetNameDsp(target_name);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestKernelsAssignTargetNameMcu(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    char target_name[TIVX_TARGET_MAX_NAME];
+
+    tivxKernelsTargetUtilsAssignTargetNameMcu(target_name);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestKernelsAssignTargetNameMpu(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    char target_name[TIVX_TARGET_MAX_NAME];
+
+    tivxKernelsTargetUtilsAssignTargetNameMpu(target_name);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 FuncInfo arrOfFuncs[] = {
     #if defined(LINUX)
     {tivxNegativeTaskAppIpcGetHostPortId, "", VX_SUCCESS},
@@ -3931,7 +4020,13 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestTargetTriggerNode,"",VX_SUCCESS},
     {tivxNegativeTestTargetQueueObjDesc,"",VX_SUCCESS},
     {tivxNegativeTestObjDescAlloc,"",VX_SUCCESS},
-    {tivxNegativeTestTargetGetHandle,"",VX_SUCCESS}
+    {tivxNegativeTestTargetGetHandle,"",VX_SUCCESS},
+    {tivxTestRegisterTargetKernels,"",VX_SUCCESS},
+    {tivxTestUnRegisterTargetKernels,"",VX_SUCCESS},
+    {tivxTestKernelsAssignTargetNameC7x,"",VX_SUCCESS},
+    {tivxTestKernelsAssignTargetNameDsp,"",VX_SUCCESS},
+    {tivxTestKernelsAssignTargetNameMcu,"",VX_SUCCESS},
+    {tivxTestKernelsAssignTargetNameMpu,"",VX_SUCCESS}
 };
 #endif /* #ifndef PC*/
 #endif /* #if defined(LDRA_COVERAGE_ENABLED) */
@@ -3981,6 +4076,10 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
         test_obj_desc=obj_desc[0];
         tivx_set_debug_zone(VX_ZONE_INFO);
 
+        VX_PRINT(VX_ZONE_INFO,"------------------TEST KERNEL PROCESS CALLBACK TESTCASES-------------------------\n");
+        VX_PRINT(VX_ZONE_INFO,"[  TO DO  ] %d test(s) from 1 test case(s)\n",size);
+        VX_PRINT(VX_ZONE_INFO,"---------------------------------------------------------------------------------\n");
+
         if((vx_status)VX_SUCCESS == status)
         {
             for(i=0;i<size;i++)
@@ -4000,30 +4099,29 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
                 }
             }
         }
-        VX_PRINT(VX_ZONE_INFO,"------------------REMOTE-CORE TESTCASES SUMMARY-------------------------\n");
+        VX_PRINT(VX_ZONE_INFO,"------------------TEST KERNEL PROCESS CALLBACK TESTCASES-------------------------\n");
         VX_PRINT(VX_ZONE_INFO,"[ ALL DONE ] %d test(s) from 1 test case(s) ran\n",i);
-        VX_PRINT(VX_ZONE_INFO,"[ PASSED   ] %d test(s)\n",pcount);
+        VX_PRINT(VX_ZONE_INFO,"[  PASSED  ] %d test(s)\n",pcount);
         if(fcount>0)
         {
             i=0;
-            VX_PRINT(VX_ZONE_INFO,"[ FAILED   ] %d test(s), listed below:\n",fcount);
+            VX_PRINT(VX_ZONE_INFO,"[  FAILED  ] %d test(s), listed below:\n",fcount);
             while(i<size)
             {
                 if(arrOfFuncs[i].status!= VX_SUCCESS)
                 {
-                    VX_PRINT(VX_ZONE_INFO,"[ FAILED   ] %s\n",arrOfFuncs[i].funcName);
+                    VX_PRINT(VX_ZONE_INFO,"[  FAILED  ] %s\n",arrOfFuncs[i].funcName);
                 }
                 i++;
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO,"[ FAILED   ] %d test(s)\n",fcount);
+            VX_PRINT(VX_ZONE_INFO,"[  FAILED  ] %d test(s)\n",fcount);
         }
-        VX_PRINT(VX_ZONE_INFO,"------------------------------------------------------------------------\n");
+        VX_PRINT(VX_ZONE_INFO,"---------------------------------------------------------------------------------\n");
         tivx_clr_debug_zone(VX_ZONE_INFO);
     }
-
 #endif /* #if defined(LDRA_COVERAGE_ENABLED) */
 
     return status;

@@ -129,7 +129,8 @@ static vx_status VX_CALLBACK tivxAbsDiff(
         tivxSetTwoPointerLocation(src0_desc, src1_desc, &src0_desc_target_ptr, &src1_desc_target_ptr, &src0_addr, &src1_addr);
         tivxSetPointerLocation(dst_desc, &dst_desc_target_ptr, &dst_addr);
 
-        tivxInitTwoBufParams(src0_desc, src1_desc, &vxlib_src0, &vxlib_src1);
+        tivxInitBufParams(src0_desc, &vxlib_src0);
+        tivxInitBufParams(src1_desc, &vxlib_src1);
         tivxInitBufParams(dst_desc, &vxlib_dst);
 
         if ((uint32_t)VXLIB_UINT8 == vxlib_dst.data_type)

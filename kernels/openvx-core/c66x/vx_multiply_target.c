@@ -125,7 +125,8 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         tivxSetTwoPointerLocation(src0, src1, &src0_target_ptr, &src1_target_ptr, &src0_addr, &src1_addr);
         tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
-        tivxInitTwoBufParams(src0, src1, &vxlib_src0, &vxlib_src1);
+        tivxInitBufParams(src0, &vxlib_src0);
+        tivxInitBufParams(src1, &vxlib_src1);
         tivxInitBufParams(dst, &vxlib_dst);
 
         if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)

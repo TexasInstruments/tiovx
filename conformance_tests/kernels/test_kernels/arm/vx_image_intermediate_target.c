@@ -91,6 +91,78 @@ static vx_status VX_CALLBACK tivxImageIntermediateControl(
        tivx_target_kernel_instance kernel,
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
+static vx_status test_init_buf_params(
+       tivx_obj_desc_image_t *obj_desc);
+
+static vx_status test_init_buf_params(
+       tivx_obj_desc_image_t *obj_desc)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    VXLIB_bufParams2D_t buf_params;
+    vx_uint32 format_count = 15U, i, base_scale;
+    vx_enum base_format;
+    vx_enum format_list[] = {
+        VX_DF_IMAGE_NV12,
+        VX_DF_IMAGE_NV21,
+        VX_DF_IMAGE_IYUV,
+        VX_DF_IMAGE_YUV4,
+        VX_DF_IMAGE_U8,
+        VX_DF_IMAGE_U16,
+        VX_DF_IMAGE_S16,
+        VX_DF_IMAGE_RGBX,
+        TIVX_DF_IMAGE_BGRX,
+        VX_DF_IMAGE_U32,
+        VX_DF_IMAGE_S32,
+        VX_DF_IMAGE_RGB,
+        VX_DF_IMAGE_YUYV,
+        VX_DF_IMAGE_UYVY,
+        TIVX_DF_IMAGE_RGB565,
+        VX_DF_IMAGE_VIRT
+    };
+    uint32_t type_list[] = {
+        VXLIB_UINT8,
+        VXLIB_UINT8,
+        VXLIB_UINT8,
+        VXLIB_UINT8,
+        VXLIB_UINT8,
+        VXLIB_UINT16,
+        VXLIB_INT16,
+        VXLIB_UINT32,
+        VXLIB_UINT32,
+        VXLIB_UINT32,
+        VXLIB_INT32,
+        VXLIB_UINT24,
+        VXLIB_UINT16,
+        VXLIB_UINT16,
+        VXLIB_UINT16
+    };
+
+    base_scale = obj_desc->imagepatch_addr[0].scale_x;
+    base_format = obj_desc->format;
+
+    obj_desc->imagepatch_addr[0].scale_x = 512U;
+    for (i = 0U; i < format_count; i++)
+    {
+        obj_desc->format = format_list[i];
+        tivxInitBufParams(obj_desc, &buf_params);
+        if (buf_params.data_type != type_list[i])
+        {
+            status = (vx_status)VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR, "Buf params data type does not match obj desc format\n");
+        }
+    }
+
+    /* Set format of obj desc to invalid value*/
+    obj_desc->format = format_list[format_count];
+    tivxInitBufParams(obj_desc, &buf_params);
+
+    /* Reset format and scale_x of obj desc*/
+    obj_desc->format = base_format;
+    obj_desc->imagepatch_addr[0].scale_x = base_scale;
+    tivxInitBufParams(obj_desc, &buf_params);
+
+    return status;
+}
 
 static vx_status VX_CALLBACK tivxImageIntermediateProcess(
        tivx_target_kernel_instance kernel,
@@ -147,6 +219,8 @@ static vx_status VX_CALLBACK tivxImageIntermediateProcess(
         tivxCheckStatus(&status, tivxMemBufferUnmap(dst_desc_target_ptr,
            dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
            VX_WRITE_ONLY));
+        
+        status = test_init_buf_params(src_desc);
     }
 
     return status;

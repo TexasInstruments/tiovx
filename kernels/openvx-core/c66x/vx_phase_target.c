@@ -134,7 +134,8 @@ static vx_status VX_CALLBACK tivxKernelPhaseProcess(
         tivxSetTwoPointerLocation(src0, src1, &src0_target_ptr, &src1_target_ptr, (uint8_t**)&src0_addr, (uint8_t**)&src1_addr);
         tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
-        tivxInitTwoBufParams(src0, src1, &vxlib_src0, &vxlib_src1);
+        tivxInitBufParams(src0, &vxlib_src0);
+        tivxInitBufParams(src1, &vxlib_src1);
         tivxInitBufParams(dst, &vxlib_dst);
 
         status = (vx_status)VXLIB_phase_i16s_i16s_o8u(src0_addr, &vxlib_src0,

@@ -163,19 +163,6 @@ void tivxInitBufParams(
     VXLIB_bufParams2D_t buf_params[]);
 
 /*!
- * \brief A utility API to initialize two VXLIB bufparams for a kernel where
- *        width and height should be equal. The API sets both buf_params to
- *        the minimum of the valid rectangle
- *
- * \ingroup group_tivx_target_utils
- */
-void tivxInitTwoBufParams(
-    const tivx_obj_desc_image_t *obj_desc0,
-    const tivx_obj_desc_image_t *obj_desc1,
-    VXLIB_bufParams2D_t buf_params0[],
-    VXLIB_bufParams2D_t buf_params1[]);
-
-/*!
  * \brief A utility API that sets the pointer to the correct location based on
  *        the minimum of the valid rectangle.
  *
@@ -186,6 +173,16 @@ void tivxSetPointerLocation(
     void *target_ptr[],
     uint8_t *addr[]);
 
+#if defined(BUILD_BAM)
+/*!
+ * \brief Reserve L2MEM within C66x for usage with BAM framework
+ *
+ * \ingroup group_tivx_target_utils
+ */
+void tivxReserveC66xL2MEM(void);
+#endif
+
+#if defined(TARGET_DSP)
 /*!
  * \brief A utility API that sets the pointer to the correct location based on
  *        the minimum of the valid rectangle.
@@ -199,14 +196,7 @@ void tivxSetTwoPointerLocation(
     void *target_ptr1[],
     uint8_t *addr0[],
     uint8_t *addr1[]);
-
-/*!
- * \brief Reserve L2MEM within C66x for usage with BAM framework
- *
- * \ingroup group_tivx_target_utils
- */
-void tivxReserveC66xL2MEM(void);
-
+#endif /* #if defined(TARGET_DSP) */
 
 /*!
  * \brief Function to assign platform-specific DSP target name

@@ -92,7 +92,6 @@ void tivxUnRegisterTargetKernels(const Tivx_Target_Kernel_List *kernel_list, uin
     }
 }
 
-
 void tivxInitBufParams(
     const tivx_obj_desc_image_t *obj_desc,
     VXLIB_bufParams2D_t buf_params[])
@@ -153,139 +152,6 @@ void tivxInitBufParams(
     }
 }
 
-void tivxInitTwoBufParams(
-    const tivx_obj_desc_image_t *obj_desc0,
-    const tivx_obj_desc_image_t *obj_desc1,
-    VXLIB_bufParams2D_t buf_params0[],
-    VXLIB_bufParams2D_t buf_params1[])
-{
-    uint32_t i;
-    vx_rectangle_t rect;
-
-    rect = obj_desc0->valid_roi;
-
-    if (obj_desc1->valid_roi.start_x > rect.start_x)
-    {
-        rect.start_x = obj_desc1->valid_roi.start_x;
-    }
-    if (obj_desc1->valid_roi.start_y > rect.start_y)
-    {
-        rect.start_y = obj_desc1->valid_roi.start_y;
-    }
-
-    if (obj_desc1->valid_roi.end_x < rect.end_x)
-    {
-        rect.end_x = obj_desc1->valid_roi.end_x;
-    }
-    if (obj_desc1->valid_roi.end_y < rect.end_y)
-    {
-        rect.end_y = obj_desc1->valid_roi.end_y;
-    }
-
-    for (i = 0; i < obj_desc0->planes; i ++)
-    {
-        buf_params0[i].dim_x = rect.end_x - rect.start_x;
-        buf_params0[i].dim_y = rect.end_y - rect.start_y;
-        buf_params1[i].dim_x = rect.end_x - rect.start_x;
-        buf_params1[i].dim_y = rect.end_y - rect.start_y;
-
-        buf_params0[i].stride_y = obj_desc0->imagepatch_addr[i].stride_y;
-        buf_params1[i].stride_y = obj_desc1->imagepatch_addr[i].stride_y;
-
-        if (512U == obj_desc0->imagepatch_addr[i].scale_x)
-        {
-            buf_params0[i].dim_y = buf_params0[i].dim_y / 2U;
-
-            if ((vx_df_image)VX_DF_IMAGE_IYUV == obj_desc0->format)
-            {
-                buf_params0[i].dim_x = buf_params0[i].dim_x / 2U;
-            }
-        }
-
-        if (512U == obj_desc1->imagepatch_addr[i].scale_x)
-        {
-            buf_params1[i].dim_y = buf_params1[i].dim_y / 2U;
-
-            if ((vx_df_image)VX_DF_IMAGE_IYUV == obj_desc1->format)
-            {
-                buf_params1[i].dim_x = buf_params1[i].dim_x / 2U;
-            }
-        }
-
-        switch(obj_desc0->format)
-        {
-            case (vx_df_image)VX_DF_IMAGE_NV12:
-            case (vx_df_image)VX_DF_IMAGE_NV21:
-            case (vx_df_image)VX_DF_IMAGE_IYUV:
-            case (vx_df_image)VX_DF_IMAGE_YUV4:
-            case (vx_df_image)VX_DF_IMAGE_U8:
-                buf_params0[i].data_type = (uint32_t)VXLIB_UINT8;
-                break;
-            case (vx_df_image)VX_DF_IMAGE_U16:
-                buf_params0[i].data_type = (uint32_t)VXLIB_UINT16;
-                break;
-            case (vx_df_image)VX_DF_IMAGE_S16:
-                buf_params0[i].data_type = (uint32_t)VXLIB_INT16;
-                break;
-            case (vx_df_image)VX_DF_IMAGE_RGBX:
-            case (vx_df_image)TIVX_DF_IMAGE_BGRX:
-            case (vx_df_image)VX_DF_IMAGE_U32:
-                buf_params0[i].data_type = (uint32_t)VXLIB_UINT32;
-                break;
-            case (vx_df_image)VX_DF_IMAGE_S32:
-                buf_params0[i].data_type = (uint32_t)VXLIB_INT32;
-                break;
-            case (vx_df_image)VX_DF_IMAGE_RGB:
-                buf_params0[i].data_type = (uint32_t)VXLIB_UINT24;
-                break;
-            case (vx_df_image)VX_DF_IMAGE_YUYV:
-            case (vx_df_image)VX_DF_IMAGE_UYVY:
-            case (vx_df_image)TIVX_DF_IMAGE_RGB565:
-                buf_params0[i].data_type = (uint32_t)VXLIB_UINT16;
-                break;
-            default:
-                /* do nothing */
-                break;
-        }
-
-        switch(obj_desc1->format)
-        {
-            case (vx_df_image)VX_DF_IMAGE_NV12:
-            case (vx_df_image)VX_DF_IMAGE_NV21:
-            case (vx_df_image)VX_DF_IMAGE_IYUV:
-            case (vx_df_image)VX_DF_IMAGE_YUV4:
-            case (vx_df_image)VX_DF_IMAGE_U8:
-                buf_params1[i].data_type = (uint32_t)VXLIB_UINT8;
-                break;
-            case (vx_df_image)VX_DF_IMAGE_U16:
-                buf_params1[i].data_type = (uint32_t)VXLIB_UINT16;
-                break;
-            case (vx_df_image)VX_DF_IMAGE_S16:
-                buf_params1[i].data_type = (uint32_t)VXLIB_INT16;
-                break;
-            case (vx_df_image)VX_DF_IMAGE_RGBX:
-            case (vx_df_image)TIVX_DF_IMAGE_BGRX:
-            case (vx_df_image)VX_DF_IMAGE_U32:
-                buf_params1[i].data_type = (uint32_t)VXLIB_UINT32;
-                break;
-            case (vx_df_image)VX_DF_IMAGE_S32:
-                buf_params1[i].data_type = (uint32_t)VXLIB_INT32;
-                break;
-            case (vx_df_image)VX_DF_IMAGE_RGB:
-                buf_params1[i].data_type = (uint32_t)VXLIB_UINT24;
-                break;
-            case (vx_df_image)VX_DF_IMAGE_YUYV:
-            case (vx_df_image)VX_DF_IMAGE_UYVY:
-            case (vx_df_image)TIVX_DF_IMAGE_RGB565:
-                buf_params1[i].data_type = (uint32_t)VXLIB_UINT16;
-                break;
-            default:
-                /* do nothing */
-                break;
-        }
-    }
-}
-
 void tivxSetPointerLocation(
     const tivx_obj_desc_image_t *obj_desc,
     void *target_ptr[],
@@ -302,6 +168,50 @@ void tivxSetPointerLocation(
     }
 }
 
+#if defined(BUILD_BAM)
+void tivxReserveC66xL2MEM(void)
+{
+    vx_status tivxBamMemInit(void *ibuf_mem, uint32_t ibuf_size,
+                             void *wbuf_mem, uint32_t wbuf_size);
+
+    tivx_mem_stats mem_stats;
+    void *ibuf_ptr, *wbuf_ptr;
+    vx_uint32 ibuf_size, wbuf_size;
+    vx_uint32 buf_align = 4*1024;
+
+    /* find L2MEM size */
+    tivxMemStats(&mem_stats, (vx_enum)TIVX_MEM_INTERNAL_L2);
+
+    /* reserve L2MEM to BAM */
+    #if 1
+    wbuf_size = mem_stats.free_size / 5;
+    #else
+    wbuf_size = 32*1024;
+    #endif
+
+    /* floor to 'buf_align' bytes */
+    wbuf_size = (wbuf_size/buf_align)*buf_align;
+    ibuf_size = wbuf_size * 4;
+
+    ibuf_ptr = tivxMemAlloc(ibuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
+    wbuf_ptr = tivxMemAlloc(wbuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
+
+    VX_PRINT(VX_ZONE_INFO,
+        "BAM memory config: IBUF %d bytes @ 0x%08x, WBUF %d bytes @ 0x%08x !!! \n",
+        ibuf_size, ibuf_ptr, wbuf_size, wbuf_ptr);
+
+    tivxBamMemInit(ibuf_ptr, ibuf_size, wbuf_ptr, wbuf_size);
+
+    /* memory is allocated only to get a base address, otherwise
+     * this L2 memory is used as scratch, hence we free immediately afterwards
+     * so that some other algorithm can reuse the memory as scratch
+     */
+    tivxMemFree(ibuf_ptr, ibuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
+    tivxMemFree(wbuf_ptr, wbuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
+}
+#endif
+
+#if defined(TARGET_DSP)
 void tivxSetTwoPointerLocation(
     const tivx_obj_desc_image_t *obj_desc0,
     const tivx_obj_desc_image_t *obj_desc1,
@@ -345,58 +255,19 @@ void tivxSetTwoPointerLocation(
             &obj_desc1->imagepatch_addr[i]));
     }
 }
-
-void tivxReserveC66xL2MEM(void)
-{
-#if defined(BUILD_BAM)
-    vx_status tivxBamMemInit(void *ibuf_mem, uint32_t ibuf_size,
-                             void *wbuf_mem, uint32_t wbuf_size);
-
-    tivx_mem_stats mem_stats;
-    void *ibuf_ptr, *wbuf_ptr;
-    vx_uint32 ibuf_size, wbuf_size;
-    vx_uint32 buf_align = 4*1024;
-
-    /* find L2MEM size */
-    tivxMemStats(&mem_stats, (vx_enum)TIVX_MEM_INTERNAL_L2);
-
-    /* reserve L2MEM to BAM */
-    #if 1
-    wbuf_size = mem_stats.free_size / 5;
-    #else
-    wbuf_size = 32*1024;
-    #endif
-
-    /* floor to 'buf_align' bytes */
-    wbuf_size = (wbuf_size/buf_align)*buf_align;
-    ibuf_size = wbuf_size * 4;
-
-    ibuf_ptr = tivxMemAlloc(ibuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
-    wbuf_ptr = tivxMemAlloc(wbuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
-
-    VX_PRINT(VX_ZONE_INFO,
-        "BAM memory config: IBUF %d bytes @ 0x%08x, WBUF %d bytes @ 0x%08x !!! \n",
-        ibuf_size, ibuf_ptr, wbuf_size, wbuf_ptr);
-
-    tivxBamMemInit(ibuf_ptr, ibuf_size, wbuf_ptr, wbuf_size);
-
-    /* memory is allocated only to get a base address, otherwise
-     * this L2 memory is used as scratch, hence we free immediately afterwards
-     * so that some other algorithm can reuse the memory as scratch
-     */
-    tivxMemFree(ibuf_ptr, ibuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
-    tivxMemFree(wbuf_ptr, wbuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
-#endif
-
-}
+#endif /* #if defined(TARGET_DSP) */
 
 vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
 {
     vx_status status = (vx_status)VX_FAILURE;
+#if defined(TARGET_DSP)
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
 
+    /* LDRA_JUSTIFY_START
+    <metric start> statement branch <metric end>
+    <justification start> TIOVX_CODE_COVERAGE_TARGETUTILS_UBR001 <justification_end> */
     #if defined(SOC_J721E) || defined(SOC_J722S)
     if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
@@ -444,6 +315,8 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
         status = (vx_status)VX_FAILURE;
     }
     #endif
+    /* LDRA_JUSTIFY_END */
+#endif /* #if defined(TARGET_DSP) */
 
     return status;
 }
@@ -451,6 +324,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
 vx_status tivxKernelsTargetUtilsAssignTargetNameC7x(char *target_name)
 {
     vx_status status = (vx_status)VX_FAILURE;
+#if defined(C7X_FAMILY)
     #if defined(SOC_J721E)
     vx_enum self_cpu;
 
@@ -462,6 +336,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameC7x(char *target_name)
         status = (vx_status)VX_SUCCESS;
     }
     #endif
+#endif /* #if defined(C7X_FAMILY) */
 
     return status;
 }
@@ -469,10 +344,14 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameC7x(char *target_name)
 vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
 {
     vx_status status = (vx_status)VX_FAILURE;
+#if defined(R5F)
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
 
+    /* LDRA_JUSTIFY_START
+    <metric start> statement branch <metric end>
+    <justification start> TIOVX_CODE_COVERAGE_TARGETUTILS_UBR002 <justification_end> */
     #if defined(SOC_AM62A) || defined(SOC_J722S)
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
     {
@@ -503,6 +382,8 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
     {
         status = (vx_status)VX_FAILURE;
     }
+    /* LDRA_JUSTIFY_END */
+#endif /* #if defined(R5F) */
 
     return status;
 }
@@ -510,15 +391,21 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
 vx_status tivxKernelsTargetUtilsAssignTargetNameMpu(char *target_name)
 {
     vx_status status = (vx_status)VX_FAILURE;
+#if defined(A72) || defined(A53)
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
 
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TARGETUTILS_UBR003 <justification_end> */
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MPU_0)
     {
         (void)strncpy(target_name, TIVX_TARGET_MPU_0, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
+/* LDRA_JUSTIFY_END */
+#endif /* #if defined(A72) || defined(A53) */
 
     return status;
 }
