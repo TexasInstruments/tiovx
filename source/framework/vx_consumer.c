@@ -246,6 +246,39 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p, uint8_t 
     vx_consumer consumer = (vx_consumer) consumer_p;
     vx_prod_msg_content_t* const l_received_message = (vx_prod_msg_content_t*)data_p;
 
+    //if the consumer is ready to communicate, send the back channel port id to the producer
+    if ((vx_bool)vx_false_e == consumer->init_done)
+    {
+        VX_PRINT(VX_ZONE_INFO, "CONSUMER %u: attaching to backhannel \n", consumer->consumer_id);
+        /* feed the data for the sender */
+        consumer->m_sender_ctx.m_msg_size = sizeof(vx_cons_msg_content_t);
+        const SIppcPortMap *l_port = ippc_get_port_by_recv_index(consumer->ippc_port, consumer->consumer_id);
+        consumer->m_sender_ctx.m_port_map.m_port_id        = l_port->m_port_id;
+        consumer->m_sender_ctx.m_port_map.m_port_type      = l_port->m_port_type;
+        consumer->m_sender_ctx.m_port_map.m_receiver_index = l_port->m_receiver_index;
+
+        l_status = ippc_registry_sender_attach(&consumer->m_registry, &consumer->m_sender_ctx.m_sender, 
+                                                consumer->m_sender_ctx.m_port_map.m_port_id, consumer->m_sender_ctx.m_msg_size);
+
+        if (E_IPPC_OK == l_status)
+        {
+            // sender is on 1->1 port, attach to a single sync; offset by number of syncs for broadcast
+            l_status = ippc_registry_sync_attach(&consumer->m_registry, &consumer->m_sender_ctx.m_sync[0], 
+                                                    consumer->m_sender_ctx.m_port_map.m_receiver_index + VX_GW_NUM_CLIENTS);
+        }
+
+        if (E_IPPC_OK != l_status)
+        {
+            status = VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR, "CONSUMER: Failed to attach to back channel port!%s", "\n");
+        }
+        else
+        {
+            consumer->init_done = (vx_bool)vx_true_e;
+        }
+    }
+
+
     // For multiple client scenario, the import of references doesnt happen in first receive
     // Hence, wait until the data is available, then proceed
     if (((vx_bool)vx_true_e == consumer->init_done) && ((vx_bool)vx_false_e == consumer->ref_import_done))
@@ -437,33 +470,6 @@ static void* consumer_receiver_thread(void* arg)
                 {
                     VX_PRINT(VX_ZONE_PERF, " [UPT] First Time Connected to producer!%s", "\n");
                     VX_PRINT(VX_ZONE_INFO, "CONSUMER: attached to producer with SHM %s\n", consumer->access_point_name);
-                    EIppcStatus l_status = (EIppcStatus)E_IPPC_OK;
-                    //     /* feed the data for the sender */
-                    consumer->m_sender_ctx.m_msg_size = sizeof(vx_cons_msg_content_t);
-                    const SIppcPortMap *l_port = ippc_get_port_by_recv_index(consumer->ippc_port, consumer->consumer_id);
-                    consumer->m_sender_ctx.m_port_map.m_port_id        = l_port->m_port_id;
-                    consumer->m_sender_ctx.m_port_map.m_port_type      = l_port->m_port_type;
-                    consumer->m_sender_ctx.m_port_map.m_receiver_index = l_port->m_receiver_index;
-
-                    l_status = ippc_registry_sender_attach(&consumer->m_registry, &consumer->m_sender_ctx.m_sender, 
-                                                            consumer->m_sender_ctx.m_port_map.m_port_id, consumer->m_sender_ctx.m_msg_size);
-
-                    if (E_IPPC_OK == l_status)
-                    {
-                        // sender is on 1->1 port, attach to a single sync; offset by number of syncs for broadcast
-                        l_status = ippc_registry_sync_attach(&consumer->m_registry, &consumer->m_sender_ctx.m_sync[0], 
-                                                                consumer->m_sender_ctx.m_port_map.m_receiver_index + VX_GW_NUM_CLIENTS);
-                    }
-
-                    if (E_IPPC_OK != l_status)
-                    {
-                        status = VX_FAILURE;
-                        VX_PRINT(VX_ZONE_ERROR, "CONSUMER: Failed to attach to back channel port!%s", "\n");
-                    }
-                    else
-                    {
-                        consumer->init_done = (vx_bool)vx_true_e; 
-                    }
                     consumer->state = VX_CONS_STATE_RUN;
                 }
                 else

@@ -120,8 +120,6 @@ typedef struct _vx_producer
     /*! \brief Thread to send broadcast information to all consumers */
     pthread_t              broadcast_thread;
 
-    pthread_t              connection_check_thread;
-
     /*! \brief Contains the number of frames that has been enqueued */
     vx_uint32              nbEnqueueFrames;
     /*! \brief Contains the number of frames that has been dequeued */
@@ -159,6 +157,10 @@ typedef struct _vx_producer
     /*! \brief Mutex to prevent conflict during setting of multiple client status */
     pthread_mutex_t        client_mutex;    
 #ifdef IPPC_SHEM_ENABLED
+    /*! \brief Poll for new clients during startup */
+    pthread_t              connection_check_thread;
+    /*! \brief rate at which producer polls for new consumer during startup */
+    vx_uint32              connection_check_polling_time;
     /*! \brief Contains shmem context */
     SIppcShmemContext      m_shmem_ctx;
     /*! \brief Contains sender context */

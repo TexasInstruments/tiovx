@@ -54,6 +54,7 @@ static vx_status set_buffer_status(vx_reference current_ref, producer_buffer_sta
                     producer->refs[buffer_id].buffer_status = IN_GRAPH;
                     // enqueue reference into graph from here
                     producer->streaming_cb.enqueueCallback(producer->graph_obj, producer->refs[buffer_id].ovx_ref);
+                    producer->nbEnqueueFrames++;
                 }
             }
             else if ((old_status == FREE) && (status == IN_GRAPH))
@@ -66,6 +67,7 @@ static vx_status set_buffer_status(vx_reference current_ref, producer_buffer_sta
                 // IN_GRAPH -> FREE: dequeue from graph in wait state
                 // enqueue reference into graph from here, do not change its status
                 producer->streaming_cb.enqueueCallback(producer->graph_obj, producer->refs[buffer_id].ovx_ref);
+                producer->nbEnqueueFrames++;
             }
             else if ((old_status == FREE) && (status == LOCKED))
             {
@@ -537,12 +539,12 @@ void* producer_connection_check_thread(void* arg)
     pthread_setname_np(pthread_self(), threadname);
 
     VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: starting connection check thread \n", producer->name);
-    while(vx_false_e == new_client_connected) // we assume that after first new client has connected, purpose of this thread is fullfilled
+    while(vx_false_e == new_client_connected) // assume that after first new client has connected, purpose of this thread is fullfilled
     {
         pthread_mutex_lock(&producer->client_mutex);
         new_client_connected = check_ippc_clients_connected(producer);
         pthread_mutex_unlock(&producer->client_mutex);
-        tivxTaskWaitMsecs(10);
+        tivxTaskWaitMsecs(producer->connection_check_polling_time);
     }
     VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: exiting connection check thread \n", producer->name);
 
@@ -1097,8 +1099,7 @@ static void* producer_broadcast_thread(void* arg)
                                 //     producer->nbEnqueueFrames++;
                                 // }
 
-                                // at least one buffer is occupied by graph, we can safely distribute the buffer to consumers
-                                VX_PRINT(VX_ZONE_ERROR, "look for reference in graph \n"); 
+                                // if at least one buffer is occupied by graph, we can safely distribute the buffer to consumers
                                 if (NULL != get_buffer_with_status(producer, IN_GRAPH))
                                 {
                                     // fetch metadata from producer reference and store
@@ -1276,11 +1277,12 @@ static vx_status ownInitProducerObject(vx_producer producer, const vx_producer_p
 #endif
     }
 
-    producer->graph_obj             = params->graph_obj;
-    producer->numBuffers            = params->num_buffers;
-    producer->numBufferRefsExport   = params->num_buffer_refs_export;
-    producer->maxRefsLockedByClient = params->max_refs_locked_by_client;
-    producer->streaming_cb          = params->streaming_cb;
+    producer->graph_obj                     = params->graph_obj;
+    producer->numBuffers                    = params->num_buffers;
+    producer->numBufferRefsExport           = params->num_buffer_refs_export;
+    producer->maxRefsLockedByClient         = params->max_refs_locked_by_client;
+    producer->streaming_cb                  = params->streaming_cb;
+    producer->connection_check_polling_time = params->connection_check_polling_time;
 
 #ifdef IPPC_SHEM_ENABLED
     for(vx_uint32 idx = 0U; idx < IPPC_PORT_COUNT; idx++)
@@ -1359,7 +1361,7 @@ static vx_status ownInitProducerObject(vx_producer producer, const vx_producer_p
     status = pthread_mutex_init(&producer->client_mutex, &client_mutexAttr);
     if (status != VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR, "PRODUCER: pthread_mutex_init() failed for client drop mutex\n");
+        VX_PRINT(VX_ZONE_ERROR, "PRODUCER: pthread_mutex_init() failed for client handling mutex\n");
         return (vx_status)VX_FAILURE;
     }
 
@@ -1438,7 +1440,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxProducerStart(vx_producer producer)
 {
     /* start the ippc broadcasting thread */
     int thread_status = pthread_create(&producer->broadcast_thread, NULL, producer_broadcast_thread, (void*)producer);
-    thread_status = pthread_create(&producer->connection_check_thread, NULL, producer_connection_check_thread, (void*)producer);
+    if (0U != thread_status)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "error creating producer_broadcast_thread! \n");
+    }
+    else
+    {
+        thread_status = pthread_create(&producer->connection_check_thread, NULL, producer_connection_check_thread, (void*)producer);
+    }
+    
     return ((vx_status)thread_status);
 }
 
