@@ -1441,7 +1441,7 @@ TEST(supplementary_data, testExtend)
     /* Test extending a virtual image outside of a graph will result in the VX_ERROR_OPTIMIZED_AWAY status */
     ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(virt_image), exemplar, NULL, sizeof(user_data) / 2, sizeof(user_data)), VX_ERROR_OPTIMIZED_AWAY, "Correct error for virtual destination outside of a graph");
      VX_CALL(vxReleaseUserDataObject(&supp));
-    /*test to hit a different valid sie */ 
+    /*test to hit a different valid size */ 
     vx_size size = 3;
     ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data), sizeof(user_data)), "set valid supplementary");
     supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
