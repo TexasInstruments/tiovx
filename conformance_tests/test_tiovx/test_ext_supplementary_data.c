@@ -1354,7 +1354,7 @@ TEST(supplementary_data, testExtend)
     ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, exemplar, sizeof(user_data), sizeof(user_data)), VX_ERROR_INVALID_PARAMETERS, "source and user data cannot be same");
     ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data), sizeof(user_data) + 1), VX_ERROR_INVALID_VALUE, "Correct error for num_bytes > size");
     ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data) + 1, sizeof(user_data)), VX_ERROR_INVALID_VALUE, "Correct error for source_bytes > size");
-    ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data) / 2, sizeof(user_data)), "vxExtendSupplementaryUserDataObject with half source data");
+    ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data) / 2, sizeof(user_data)), "vxExtendSupplementaryUserDataObject with half source data");  
     ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data) + 1, sizeof(user_data)), VX_ERROR_INVALID_VALUE, "Correct error for source_bytes > dest_bytes");
     ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, &new_data, sizeof(user_data), sizeof(user_data)+1), VX_ERROR_INVALID_VALUE, "Correct error for user byte > obj mem size");
     vx_user_data_object supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
@@ -1440,6 +1440,13 @@ TEST(supplementary_data, testExtend)
                            read_data.numbers[3] == 0, "Correctly terminated copy when valid size was less than source bytes");
     /* Test extending a virtual image outside of a graph will result in the VX_ERROR_OPTIMIZED_AWAY status */
     ERROR_EXPECT_STATUS(vxExtendSupplementaryUserDataObject((vx_reference)(virt_image), exemplar, NULL, sizeof(user_data) / 2, sizeof(user_data)), VX_ERROR_OPTIMIZED_AWAY, "Correct error for virtual destination outside of a graph");
+     VX_CALL(vxReleaseUserDataObject(&supp));
+    /*test to hit a different valid sie */ 
+    vx_size size = 3;
+    ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data), sizeof(user_data)), "set valid supplementary");
+    supp = vxGetSupplementaryUserDataObject((vx_reference)(image), NULL, &status);
+    ERROR_CHECK_VX_SUCCESS(vxSetUserDataObjectAttribute(supp, VX_USER_DATA_OBJECT_VALID_SIZE, &size, sizeof(size)), "modify valid size of the supplementary");
+    ERROR_CHECK_VX_SUCCESS(vxExtendSupplementaryUserDataObject((vx_reference)(image), exemplar, NULL, sizeof(user_data), sizeof(user_data)), "valid size extended with valid supplementary");
     VX_CALL(vxReleaseImage(&image));
     VX_CALL(vxReleaseImage(&subimage));
     VX_CALL(vxReleaseUserDataObject(&exemplar));
