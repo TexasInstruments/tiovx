@@ -248,7 +248,10 @@ typedef enum _tivx_reference_attribute_extensions_e {
      * Read-Only. Can be read at initialization as well as at runtime.
      * Use a <tt>\ref vx_bool</tt> parameter.
      */
-    TIVX_REFERENCE_BUFFER_IS_ALLOCATED = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_REFERENCE) + 0x2
+    TIVX_REFERENCE_BUFFER_IS_ALLOCATED = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_REFERENCE) + 0x2,
+    
+    /*! \brief Used to query the reference for the current enqueue count. Read-write. Use a <tt>\ref vx_uint32</tt> parameter. */ 
+    TIVX_REFERENCE_ENQUEUE_COUNT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_REFERENCE) + 0x3
 
 } tivx_reference_attribute_extensions_e;
 

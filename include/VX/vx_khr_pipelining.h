@@ -561,6 +561,80 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32
  */
 VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref, enum vx_event_type_e type, vx_uint32 param, vx_uint32 app_value);
 
+/*!
+ * \brief Registers an event for a specific graph
+ *
+ * \param [in] graph        the graph for which the event will be registered
+ * \param [in] type         only VX_EVENT_GRAPH_PARAMETER is supported
+ * \param [in] param        Specifies the graph parameter index when *type* is VX_EVENT_GRAPH_PARAMETER_CONSUMED
+ * \param [in] app_value    Application-specified value that will be returned to user as part of vx_event_t.app_value field.
+ *                          Stored by the implementation but not used for any other purpose.
+ * \return a vx_status value.
+ * \retval VX_SUCCESS                   the event was registered
+ * \retval VX_ERROR_NOT_SUPPORTED       type not equal to VX_EVENT_GRAPH_PARAMETER or graph already verified
+ * \retval VX_ERROR_INVALID_PARAMETERS  param out of range
+ * \retval VX_ERROR_INVALID_REFERENCE   graph is not a valid graph reference
+ * 
+ * It is not an error to call this twice for the same graph parameter; in that case the stored app_value will be updated.
+ * Notice that there is only one app_value per graph parameter.
+ * 
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxRegisterGraphEvent(vx_graph graph, enum vx_event_type_e type, vx_uint32 param, vx_uint32 app_value);
+
+/*!
+ * \brief Waits for an event from a specific graph
+ *
+ * \param [in] graph        the graph from which events are expected
+ * \param [out] event       pointer to a data structure that will hold information about the received event
+ * \param [in] do_not_block When the value is vx_true_e tha API does not block and only checks for the condition
+ *
+ * \return a vx_status value.
+ * \retval VX_SUCCESS                   an event was received
+ * \retval VX_FAILURE                   no event was received
+ * \retval VX_ERROR_INVALID_REFERENCE   graph was not a valid graph reference or event was NULL
+ * 
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxWaitGraphEvent(vx_graph graph, vx_event_t * event, vx_bool do_not_block);
+
+/*!
+ * \brief Enables events from a specific graph
+ *
+ * \param [in] graph        the graph for which events are to be enabled
+ *
+ * \return a vx_status value.
+ * \retval VX_SUCCESS                   events were enabled
+ * \retval VX_ERROR_INVALID_REFERENCE   graph was not a valid graph reference
+ * 
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxEnableGraphEvents(vx_graph graph);
+
+/*!
+ * \brief Disables events from a specific graph
+ *
+ * \param [in] graph        the graph for which events are to be disabled
+ *
+ * \return a vx_status value.
+ * \retval VX_SUCCESS                   events were disabled
+ * \retval VX_ERROR_INVALID_REFERENCE   graph was not a valid graph reference
+ * 
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxDisableGraphEvents(vx_graph graph);
+
+/*! \brief Generate user defined graph event
+ *
+ * \param graph [in] Graph to whose queue the event will be sent
+ * \param app_value [in] Application-specified value that will be returned to user as part of vx_event_t.app_value
+ *                       NOT used by implementation.
+ * \param parameter [in] User defined event parameter. NOT used by implementation.
+ *                       Returned to user as part vx_event_t.event_info.user_event.user_event_parameter field
+ *
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors; any other value indicates failure.
+ *
+ * \ingroup group_event
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void *parameter);
+
 /*
  * STREAMING API
  */
