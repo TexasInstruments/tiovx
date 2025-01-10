@@ -728,6 +728,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].index = param->index;
             graph->parameters[graph->num_params].queue_enable = (vx_bool)vx_false_e;
             graph->parameters[graph->num_params].is_enable_send_ref_consumed_event = (vx_bool)vx_false_e;
+            graph->parameters[graph->num_params].is_enable_send_ref_consumed_graph_event = (vx_bool)vx_false_e;          
             graph->parameters[graph->num_params].graph_consumed_app_value = 0U;
             graph->parameters[graph->num_params].data_ref_queue = NULL;
             graph->parameters[graph->num_params].num_buf = 0;
@@ -1161,8 +1162,6 @@ vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_
         {
             if(graph_parameter_index < graph->num_params)
             {
-                graph->parameters[graph_parameter_index].is_enable_send_ref_consumed_event
-                    = (vx_bool)vx_true_e;
                 graph->parameters[graph_parameter_index].graph_consumed_app_value = app_value;
                 VX_PRINT(VX_ZONE_INFO, "Enabling parameter ref consumed event at graph [%s], param %d\n",
                     graph->base.name, graph_parameter_index);

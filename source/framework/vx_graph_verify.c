@@ -224,10 +224,15 @@ static vx_status ownGraphAddSingleDataReference(vx_graph graph, vx_reference ref
         /* 'ref' not present in 'data_ref' list so add it */
         graph->data_ref[i] = ref;
         graph->data_ref_num_in_nodes[i] = 0;
+        graph->data_ref_num_out_nodes[i] = 0;
         if((uint32_t)VX_OUTPUT != prm_dir)
         {
             /* input */
             graph->data_ref_num_in_nodes[i]++;
+        }
+        else
+        {
+            graph->data_ref_num_out_nodes[i]++;
         }
         graph->num_data_ref++;
         ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", (uint16_t)graph->num_data_ref);
@@ -1607,6 +1612,8 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
                         }
                         data_ref_create_prms.is_enable_send_ref_consumed_event =
                                         (vx_bool)vx_false_e;
+                        data_ref_create_prms.is_enable_send_ref_consumed_graph_event =
+                                        (vx_bool)vx_false_e;
                         data_ref_create_prms.graph_parameter_index = (uint32_t)-1;
 
                         graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].data_ref_queue =
@@ -1800,6 +1807,8 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
                             graph, graph->parameters[i].node, graph->parameters[i].index);
             data_ref_create_prms.is_enable_send_ref_consumed_event =
                             graph->parameters[i].is_enable_send_ref_consumed_event;
+            data_ref_create_prms.is_enable_send_ref_consumed_graph_event =
+                            graph->parameters[i].is_enable_send_ref_consumed_graph_event;
             data_ref_create_prms.graph_parameter_index = i;
 
             graph->parameters[i].data_ref_queue =
