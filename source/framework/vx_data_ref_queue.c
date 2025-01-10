@@ -64,118 +64,6 @@
 
 static vx_status ownDataRefQueueDestruct(vx_reference ref);
 
-vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_reference ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-
-    if((data_ref_q == NULL) || (ref == NULL))
-    {
-        VX_PRINT(VX_ZONE_ERROR,
-            "'data_ref_q' is invalid or 'ref' is invalid \n");
-        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-    }
-    else
-    {
-        uint16_t queue_obj_desc_id, ref_obj_desc_id;
-        tivx_obj_desc_queue_blocked_nodes_t blocked_nodes;
-
-        /* get queue object descriptor */
-        queue_obj_desc_id = data_ref_q->ready_q_obj_desc_id;
-        /* get reference object descriptor */
-        ref_obj_desc_id = ref->obj_desc->obj_desc_id;
-
-        VX_PRINT(VX_ZONE_INFO,"Q (queue=%d, ref=%d)\n",
-                            queue_obj_desc_id, ref_obj_desc_id
-                       );
-
-        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
-
-        status = ownObjDescQueueEnqueue(queue_obj_desc_id, ref_obj_desc_id);
-/* LDRA_JUSTIFY_START
-<metric start> branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR001
-<justification end> */
-        if(status==(vx_status)VX_SUCCESS)
-        {
-            blocked_nodes.num_nodes = 0;
-
-            /* if any node is blocked on ref enqueued to this queue, then get the list of blocked nodes */
-            status = ownObjDescQueueExtractBlockedNodes(queue_obj_desc_id,
-                &blocked_nodes);
-        }
-/* LDRA_JUSTIFY_END */
-
-        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
-
-/* LDRA_JUSTIFY_START
-<metric start> branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR002
-<justification end> */
-        if(status==(vx_status)VX_SUCCESS)
-        {
-            uint32_t node_id;
-
-            /* re-trigger blocked nodes */
-            for(node_id=0; node_id<blocked_nodes.num_nodes; node_id++)
-            {
-                VX_PRINT(VX_ZONE_INFO,"Re-triggering (node=%d)\n",
-                                 blocked_nodes.node_id[node_id]
-                           );
-
-                ownTargetTriggerNode(blocked_nodes.node_id[node_id]);
-            }
-        }
-/* LDRA_JUSTIFY_END */
-    }
-
-    return status;
-}
-
-vx_status ownDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_reference *ref)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-
-    if((data_ref_q == NULL) || (ref == NULL))
-    {
-        VX_PRINT(VX_ZONE_ERROR,
-            "'data_ref_q' is invalid or 'ref' is invalid \n");
-        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-    }
-    else
-    {
-        uint16_t queue_obj_desc_id, ref_obj_desc_id;
-
-        /* get queue object descriptor */
-        queue_obj_desc_id = data_ref_q->done_q_obj_desc_id;
-
-        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
-
-        status = ownObjDescQueueDequeue(queue_obj_desc_id, &ref_obj_desc_id);
-
-        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
-
-        if((status == (vx_status)VX_SUCCESS) && ((vx_enum)ref_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID))
-        {
-            VX_PRINT(VX_ZONE_INFO,"DQ (queue=%d, ref=%d)\n",
-                             queue_obj_desc_id,
-                             ref_obj_desc_id
-                       );
-
-            status = (vx_status)VX_SUCCESS;
-
-            *ref = ownReferenceGetHandleFromObjDescId(ref_obj_desc_id);
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_INFO,"DQ (queue=%d) .. NO BUFFER\n",
-                             queue_obj_desc_id
-                       );
-        }
-    }
-
-    return status;
-}
-
 vx_status ownDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 timeout)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -268,10 +156,11 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
             }
 /* LDRA_JUSTIFY_END */
         }
-        if(ref->is_enable_send_ref_consumed_event != 0)
+        if(  ((vx_bool)vx_true_e == ref->base.context->event_queue.enable) &&
+             ((vx_bool)vx_true_e == ref->is_enable_send_ref_consumed_event) )
         {
             status = ownEventQueueAddEvent(&ref->base.context->event_queue,
-                        (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
+                        (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_context_app_value,
                         (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -279,9 +168,23 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
 <justification end> */
             if((vx_status)VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
+                VX_PRINT(VX_ZONE_ERROR,"Failed to add event to context event queue\n");
             }
 /* LDRA_JUSTIFY_END */
+        }
+        if(  ((vx_bool)vx_true_e == ref->graph->event_queue.enable) &&
+             ((vx_bool)vx_true_e == ref->is_enable_send_ref_consumed_graph_event) )
+        {
+            status = ownEventQueueAddEvent(&ref->graph->event_queue,
+                        (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_graph_app_value,
+                        (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
+#ifdef LDRA_UNTESTABLE_CODE
+/* same deviation as above */
+            if((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Failed to add event to graph event queue\n");
+            }
+#endif
         }
     }
     else
@@ -409,6 +312,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
             ref->release_q_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
             ref->is_enable_send_ref_consumed_event = prms->is_enable_send_ref_consumed_event;
+            ref->is_enable_send_ref_consumed_graph_event = prms->is_enable_send_ref_consumed_graph_event;
             ref->enable_user_queueing = prms->enable_user_queueing;
             ref->graph = graph;
             ref->graph_parameter_index = prms->graph_parameter_index;

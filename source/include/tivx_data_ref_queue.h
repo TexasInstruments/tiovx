@@ -119,6 +119,8 @@ typedef struct _tivx_data_ref_queue {
     uint32_t pipeline_depth;
     /*! \brief send event to user when data ref is consumed */
     vx_bool is_enable_send_ref_consumed_event;
+    /*! \brief send event to user when data ref graph is consumed from graph */
+    vx_bool is_enable_send_ref_consumed_graph_event;
     /*! \brief will user do enqueueing/dequeueing or will graph rotate buffers internally */
     vx_bool enable_user_queueing;
     /*! \brief graph parameter index which is associated with this data ref */
@@ -143,6 +145,8 @@ typedef struct _tivx_data_ref_queue_create_params {
     vx_bool enable_user_queueing;
     /*! \brief send event to user when data ref is consumed */
     vx_bool is_enable_send_ref_consumed_event;
+    /*! \brief send event to user when data ref graph is consumed from graph*/
+    vx_bool is_enable_send_ref_consumed_graph_event;
     /*! \brief graph parameter index which is associated with this data ref */
     uint32_t graph_parameter_index;
 
@@ -169,29 +173,6 @@ vx_status ownDataRefQueueRelease(tivx_data_ref_queue *ref);
  * \ingroup group_tivx_data_ref_queue
  */
 uint16_t ownDataRefQueueGetObjDescId(tivx_data_ref_queue ref, uint32_t pipeline_id);
-
-/*!
- * \brief Enqueue 'ref' into 'READY' queue
- *
- * if queue is full, VX_FAILURE is returned.
- *
- * NOTE, this is a non-blocking API.
- *
- * \ingroup group_tivx_data_ref_queue
- */
-vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_reference ref);
-
-/*!
- * \brief Dequeue 'ref' from 'DONE' queue
- *
- * if queue is empty VX_FAILURE is returned and 'ref' is set to NULL
- *
- * NOTE, this is a non-blocking API.
- *
- * \ingroup group_tivx_data_ref_queue
- */
-vx_status ownDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_reference *ref);
-
 
 /*!
  * \brief Wait for 'DONE' queue to be non-empty

@@ -61,6 +61,8 @@
 */
 
 #include <tivx_platform_posix.h>
+#include <errno.h>
+#include <sys/time.h>
 
 void init_queue(tivx_queue ** const queue);
 
@@ -347,6 +349,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
     uint32_t temp_status;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
     tivx_queue_context context = NULL;
+    int32_t retVal;
 
     if(queue && queue->context)
     {
@@ -395,9 +398,57 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                         /* blocking on queue get enabled */
 
                         queue->blockedOnGet = (vx_bool)vx_true_e;
-                        (void)pthread_cond_wait(&context->condGet, &context->lock);
-                        queue->blockedOnGet = (vx_bool)vx_false_e;
-                        /* received semaphore, check queue again */
+                        /* block forever */
+                        if (TIVX_EVENT_TIMEOUT_WAIT_FOREVER == timeout)
+                        {
+                            (void)pthread_cond_wait(&context->condGet, &context->lock);
+                            queue->blockedOnGet = (vx_bool)vx_false_e;
+                            /* received semaphore, check queue again */
+                        }
+                        /* or use the timeout */
+                        else
+                        {
+                            struct timespec ts;
+                            struct timeval  tv;
+
+                            retVal = gettimeofday(&tv, NULL);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_QUEUE_UM005
+<justification end> */
+                            if (retVal == 0)
+                            {
+                                uint32_t        sec;
+                                unsigned long   micro;                        
+                                micro = (uint64_t)tv.tv_usec + ((uint64_t)timeout * 1000U);
+                                sec   = (uint32_t)tv.tv_sec;
+
+                                if (micro >= 1000000LLU)
+                                {
+                                    sec   += (uint32_t)micro/(uint32_t)1000000LLU;
+                                    micro %= (uint32_t)1000000LLU;
+                                }
+
+                                ts.tv_nsec = (int64_t)micro * 1000;
+                                ts.tv_sec  = (int64_t)sec;                        
+                                retVal = pthread_cond_timedwait(&context->condGet, 
+                                                            &context->lock,
+                                                            &ts);
+                                if (retVal == ETIMEDOUT)
+                                {
+                                    VX_PRINT(VX_ZONE_ERROR, "Event timed-out.\n");
+                                    status = (vx_status)VX_ERROR_TIMEOUT;
+                                    do_break = (vx_bool)vx_true_e;
+                                }
+                                else
+                                {
+                                    queue->blockedOnGet = (vx_bool)vx_false_e;
+                                    /* received semaphore, check queue again */
+                                }
+                            }
+/* LDRA_JUSTIFY_END */
+                        }
+
                     }
                     else
                     {

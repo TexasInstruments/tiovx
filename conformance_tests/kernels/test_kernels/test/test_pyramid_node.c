@@ -123,6 +123,7 @@ TEST_WITH_ARG(tivxPyramidNode, testIntermediateNodeCreation, Pyramid_Arg, PYRAMI
     vx_node n1;
     vx_pyramid pyr_in, pyr_out;
     uint32_t width, height;
+    vx_event_t graph_events, context_events;
 
     width = 16;
     height = 16;
@@ -139,9 +140,44 @@ TEST_WITH_ARG(tivxPyramidNode, testIntermediateNodeCreation, Pyramid_Arg, PYRAMI
 
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
 
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableEvents(context));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphEvents(graph));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent((vx_reference)graph, VX_EVENT_GRAPH_COMPLETED, 0, 221));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent((vx_reference)graph, VX_EVENT_GRAPH_COMPLETED, 0, 222));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_COMPLETED, 0, 223));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_COMPLETED, 0, 224));
+
     VX_CALL(vxVerifyGraph(graph));
 
     VX_CALL(vxProcessGraph(graph));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, &graph_events, vx_false_e));
+    ASSERT_EQ_INT(graph_events.type, VX_EVENT_GRAPH_COMPLETED);
+    ASSERT_EQ_INT(graph_events.app_value, 222);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, &context_events, vx_false_e));
+    ASSERT_EQ_INT(context_events.type, VX_EVENT_GRAPH_COMPLETED);
+    ASSERT_EQ_INT(context_events.app_value, 224);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDisableGraphEvents(graph));
+
+    VX_CALL(vxProcessGraph(graph));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, &context_events, vx_false_e));
+    ASSERT_EQ_INT(context_events.type, VX_EVENT_GRAPH_COMPLETED);
+    ASSERT_EQ_INT(context_events.app_value, 224);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphEvents(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDisableEvents(context));
+
+    VX_CALL(vxProcessGraph(graph));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, &graph_events, vx_false_e));
+    ASSERT_EQ_INT(graph_events.type, VX_EVENT_GRAPH_COMPLETED);
+    ASSERT_EQ_INT(graph_events.app_value, 222);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDisableGraphEvents(graph));
 
     VX_CALL(vxReleasePyramid(&pyr_in));
     VX_CALL(vxReleasePyramid(&pyr_out));

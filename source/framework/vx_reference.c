@@ -1101,6 +1101,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case (vx_enum)VX_REFERENCE_ENQUEUE_COUNT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    *(vx_uint32 *)ptr = ref->obj_desc->num_enqueues;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Query reference enqueue count failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             case (vx_enum)TIVX_REFERENCE_TIMESTAMP:
                 if ((VX_CHECK_PARAM(ptr, size, vx_uint64, 0x3U) && (NULL != ref->obj_desc)))
                 {

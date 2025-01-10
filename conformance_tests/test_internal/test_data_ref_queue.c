@@ -68,16 +68,6 @@ TEST(tivxInternalDataRefQueue, negativeTestOwnDataRefQueueSendRefConsumedEvent)
     VX_CALL(ownDataRefQueueRelease(&ref));
 }
 
-TEST(tivxInternalDataRefQueue, negativeTestOwnDataRefQueueDataRefQueueEnqueueReadyRef)
-{
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownDataRefQueueEnqueueReadyRef(NULL, NULL));
-}
-
-TEST(tivxInternalDataRefQueue, negativeTestOwnDataRefQueueDequeueDoneRef)
-{
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownDataRefQueueDequeueDoneRef(NULL, NULL));
-}
-
 TEST(tivxInternalDataRefQueue, negativeTestOwnDataRefQueueWaitDoneRef)
 {
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownDataRefQueueWaitDoneRef(NULL, 0));
@@ -115,8 +105,6 @@ TESTCASE_TESTS(
     negativeTestOwnDataRefQueueGetReadyQueueCount,
     negativeTestTivxDataRefQueueCreate,
     negativeTestOwnDataRefQueueSendRefConsumedEvent,
-    negativeTestOwnDataRefQueueDataRefQueueEnqueueReadyRef,
-    negativeTestOwnDataRefQueueDequeueDoneRef,
     negativeTestOwnDataRefQueueWaitDoneRef,
     negativeTestOwnDataRefQueueGetDoneQueueCount,
     negativeTestownDataRefQueueGetObjDescId

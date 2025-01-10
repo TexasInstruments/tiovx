@@ -330,11 +330,11 @@ typedef struct _tivx_obj_desc_t {
     /*! \brief holds the CPU ID of the OpenVX host for this object descriptor */
     volatile uint32_t host_cpu_id;
 
+    /*! \brief holds the count of the number of times this reference has been enqueued and not dequeued */
+    volatile uint16_t num_enqueues;    
+
     /*! \brief ID of supplementary data object descriptor in shared memory */
     volatile uint16_t supp_data_id;
-  
-    /*! \brief reserved to make 64b aligned */
-    volatile uint16_t rsv0;
 
     /*! \brief holds the index of the IPC port on OpenVX host for this object descriptor for each remote CPU
      *

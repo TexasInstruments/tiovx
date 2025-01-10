@@ -29,14 +29,6 @@ extern "C" {
  * \brief Implementation of Graph object
  */
 
- /*! \brief Default timeout value for graph level control event ACK waits.
- * This is the default timeout value used within the following APIs
- * - vxWaitGraph()
- * - vxGraphParameterDequeueDoneRef()
- * \ingroup group_vx_graph_cfg
- */
-#define TIVX_DEFAULT_GRAPH_TIMEOUT         (TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
-
 /*! \brief The list of graph parameters. */
 typedef struct {
     /*! \brief The reference to the node which has the parameter */
@@ -58,10 +50,14 @@ typedef struct {
         vx_node node;
         uint32_t index;
     } params_list[TIVX_GRAPH_MAX_PARAM_REFS];
-    /*! \brief flag to control event send enable/disable */
+    /*! \brief flags to control context event send enable/disable */
     vx_bool is_enable_send_ref_consumed_event;
-    /*! Value returned with graph parameter consumed event */
-    uint32_t graph_consumed_app_value;
+    /*! \brief flags to control graph event send enable/disable */
+    vx_bool is_enable_send_ref_consumed_graph_event;
+    /*! Value returned with graph parameter consumed event for context events */
+    uint32_t graph_consumed_context_app_value;
+    /*! Value returned with graph parameter consumed event for graph events */
+    uint32_t graph_consumed_graph_app_value;
     /*! \brief Set to an enum value in \ref vx_type_e. */
     vx_enum type;
 } tivx_parameters_t;
@@ -213,8 +209,11 @@ typedef struct _vx_graph {
     /*! \brief number of graph schedule's that are requested but not submitted i.e pending */
     uint32_t schedule_pending_count;
 
-    /*! \brief when true a event is sent when a graph execution is completed */
-    vx_bool is_enable_send_complete_event;
+    /*! \brief when true a context event is sent when a graph execution is completed */
+    vx_bool is_enable_send_context_complete_event;
+
+    /*! \brief when true a graph is sent when a graph execution is completed */
+    vx_bool is_enable_send_graph_complete_event;
 
     /*! \brief event to indicate all schedule graphs have finished execution
      *         and none are pending
@@ -236,14 +235,20 @@ typedef struct _vx_graph {
     /*! \brief number nodes that take this data reference as output */
     uint8_t data_ref_num_out_nodes[TIVX_GRAPH_MAX_DATA_REF];
 
-    /*! Event queue */
+    /*! Event queue use for streaming*/
     tivx_event_queue_t streaming_event_queue;
 
+    /*! Graph event queue used for graph parameters and user events */
+    tivx_event_queue_t event_queue;
+    
     /*! Streaming task handle */
     tivx_task streaming_task_handle;
 
-    /*! Value returned with graph completion event */
-    uint32_t graph_completed_app_value;
+    /*! Value returned with graph completion event for context events */
+    uint32_t graph_completed_context_app_value;
+
+    /*! Value returned with graph completion event for graph events */
+    uint32_t graph_completed_graph_app_value;
 
     /*! References to supernodes in the graph */
     tivx_super_node supernodes[TIVX_GRAPH_MAX_SUPER_NODES];
@@ -251,8 +256,11 @@ typedef struct _vx_graph {
     /*! Number of supernodes in the graph */
     uint32_t num_supernodes;
 
-    /*! \brief Control API processing Timeout value in milli-sec. */
+    /*! \brief Control API processing Timeout value in milli-sec for the graph. */
     vx_uint32 timeout_val;
+
+    /*! \brief Control API processing Timeout value in milli-sec for the graph events. */
+    vx_uint32 timeout_graph_event_val;    
 
     /*! \brief Debug zonemask of a given graph. */
     vx_uint32 debug_zonemask;
@@ -503,13 +511,13 @@ void ownSetGraphState(vx_graph graph, uint32_t pipeline_id, vx_enum state);
  *
  * \ingroup group_vx_graph
  */
-vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value);
+vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value, vx_bool is_context_event);
 
 /*! \brief Register event on graph parameter consumed
  *
  * \ingroup group_vx_graph
  */
-vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_parameter_index, vx_uint32 app_value);
+vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_parameter_index, vx_uint32 app_value, vx_bool is_context_event);
 
 
 /*! \brief Send graph completion event if enabled
@@ -517,16 +525,6 @@ vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_
  * \ingroup group_vx_graph
  */
 void ownSendGraphCompletedEvent(vx_graph graph);
-
-/*!
- * \brief Checks if 'ref' is valid ref that can be enqueued
- *
- *  'ref' is compared against pre-registered ref's that can be enqueued
- *  to confirm that ref can be enqueued.
- *
- * \ingroup group_vx_graph
- */
-vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_parameter_index, vx_reference ref);
 
 /*!
  * \brief Counts number of enqueued 'refs' and returns number of times graph can be scheduled successfully

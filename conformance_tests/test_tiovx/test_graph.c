@@ -1794,7 +1794,7 @@ TEST(tivxGraph, negativeTestSetGraphAttribute)
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetGraphAttribute(graph, attribute, &vxTimeoutVal, size));
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphAttribute(graph, TIVX_GRAPH_TIMEOUT, &vxTimeoutVal, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphAttribute(graph, VX_GRAPH_TIMEOUT, &vxTimeoutVal, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetGraphAttribute(graph, attribute, &vxTimeoutVal, size));
     VX_CALL(vxReleaseGraph(&graph));
 }
@@ -1816,8 +1816,8 @@ TEST(tivxGraph, negativeTestQueryGraph)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_NUMPARAMETERS, &vxGphAttr, size));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryGraph(graph, VX_GRAPH_NUMPARAMETERS, &vxGphAttr, sizeof(vx_uint32)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, TIVX_GRAPH_STREAM_EXECUTIONS, &vxGphAttr, size));
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, TIVX_GRAPH_TIMEOUT, &vxGphAttr, size));
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, TIVX_GRAPH_PIPELINE_DEPTH, &vxGphAttr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_TIMEOUT, &vxGphAttr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_PIPELINE_DEPTH, &vxGphAttr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryGraph(graph, attribute, &vxGphAttr, size));
     VX_CALL(vxReleaseGraph(&graph));
 }
@@ -1898,6 +1898,26 @@ TEST(tivxGraph, negativeTestIsGraphVerified)
     ASSERT(verified == vx_false_e);
 }
 
+TEST(tivxGraph, testGraphPipelineDepth)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_uint32 pipeline_depth = 2U, invalid_size_pipeline_depth = TIVX_GRAPH_MAX_PIPELINE_DEPTH, pipeline_depth_query;
+    vx_int8 invalid_pipeline_depth = 2U;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphAttribute(graph, VX_GRAPH_PIPELINE_DEPTH, &invalid_pipeline_depth, sizeof(vx_uint32)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetGraphAttribute(graph, VX_GRAPH_PIPELINE_DEPTH, &invalid_size_pipeline_depth, sizeof(vx_uint32)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphAttribute(graph, VX_GRAPH_PIPELINE_DEPTH, &pipeline_depth, sizeof(vx_uint32)));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryGraph(graph, VX_GRAPH_PIPELINE_DEPTH, &pipeline_depth_query, sizeof(pipeline_depth_query)));
+
+    ASSERT(pipeline_depth_query==pipeline_depth);
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxGraph,
         testParallelNodesDifferentTarget,
         testParallelNodesSameTarget,
@@ -1919,6 +1939,7 @@ TESTCASE_TESTS(tivxGraph,
         negativeTestAddParameterToGraph,
         negativeTestRegisterAutoAging,
         negativeTestCreateGraph,
-        negativeTestIsGraphVerified
+        negativeTestIsGraphVerified,
+        testGraphPipelineDepth
 )
 
