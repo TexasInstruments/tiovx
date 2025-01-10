@@ -603,7 +603,7 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
             {
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM013 */
-                if (TIVX_SUBIMAGE_STACK_SIZE < stack_pointer)
+                if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Too many sub-images, may need to increase the value of TIVX_SUBIMAGE_STACK_SIZE\n");
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
