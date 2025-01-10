@@ -488,7 +488,9 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->num_data_ref_q = 0;
             graph->num_delay_data_ref_q = 0;
             graph->num_supernodes = 0;
-            graph->timeout_val = TIVX_DEFAULT_GRAPH_TIMEOUT;
+            graph->timeout_val = VX_TIMEOUT_WAIT_FOREVER;
+            graph->timeout_graph_event_val = VX_TIMEOUT_WAIT_FOREVER;
+            graph->base.context->timeout_events_val = VX_TIMEOUT_WAIT_FOREVER;
             graph->debug_zonemask = ownGetGlobalZonemask();
 
             status = ownResetGraphPerf(graph);
@@ -564,7 +566,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
     {
         switch (attribute)
         {
-            case (vx_enum)TIVX_GRAPH_TIMEOUT:
+            case (vx_enum)VX_GRAPH_TIMEOUT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     const vx_uint32   timeout_val = *(const vx_uint32*)ptr;
@@ -584,10 +586,36 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "Set TIVX_GRAPH_TIMEOUT failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Set VX_GRAPH_TIMEOUT failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            
+            case (vx_enum)VX_GRAPH_EVENT_TIMEOUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    const vx_uint32   timeout_val = *(const vx_uint32*)ptr;
+
+                    /* Validate the timeout. It cannot be zero. */
+                    if (timeout_val == 0U)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                "Invalid timeout value specified: %d\n",
+                                timeout_val);
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    }
+                    else
+                    {
+                        graph->timeout_graph_event_val = timeout_val;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Set VX_GRAPH_EVENT_TIMEOUT failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
             default:
                 VX_PRINT(VX_ZONE_ERROR,"Invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
@@ -664,25 +692,36 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case (vx_enum)TIVX_GRAPH_TIMEOUT:
+            case (vx_enum)VX_GRAPH_TIMEOUT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = graph->timeout_val;
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Query TIVX_GRAPH_TIMEOUT failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query VX_GRAPH_TIMEOUT failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case (vx_enum)TIVX_GRAPH_PIPELINE_DEPTH:
+            case (vx_enum)VX_GRAPH_EVENT_TIMEOUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    *(vx_uint32 *)ptr = graph->timeout_graph_event_val;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Query VX_GRAPH_EVENT_TIMEOUT failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case (vx_enum)VX_GRAPH_PIPELINE_DEPTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = graph->pipeline_depth;
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Query TIVX_GRAPH_PIPELINE_DEPTH failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query VX_GRAPH_PIPELINE_DEPTH failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -717,6 +756,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].index = param->index;
             graph->parameters[graph->num_params].queue_enable = (vx_bool)vx_false_e;
             graph->parameters[graph->num_params].is_enable_send_ref_consumed_event = (vx_bool)vx_false_e;
+            graph->parameters[graph->num_params].is_enable_send_ref_consumed_graph_event = (vx_bool)vx_false_e;          
             graph->parameters[graph->num_params].graph_consumed_app_value = 0U;
             graph->parameters[graph->num_params].data_ref_queue = NULL;
             graph->parameters[graph->num_params].num_buf = 0;
@@ -1147,8 +1187,6 @@ vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_
         {
             if(graph_parameter_index < graph->num_params)
             {
-                graph->parameters[graph_parameter_index].is_enable_send_ref_consumed_event
-                    = (vx_bool)vx_true_e;
                 graph->parameters[graph_parameter_index].graph_consumed_app_value = app_value;
                 VX_PRINT(VX_ZONE_INFO, "Enabling parameter ref consumed event at graph [%s], param %d\n",
                     graph->base.name, graph_parameter_index);

@@ -150,9 +150,16 @@ static vx_status VX_CALLBACK tivxScalarSink2Process(
             }
         }
 
-        /* hold onto current obj_desc and release old obj desc */
-        obj_desc[TIVX_KERNEL_SCALAR_SINK_IN_IDX] = prms->old_obj_desc[0];
-        prms->old_obj_desc[0] = (tivx_obj_desc_t*)in_desc;
+        if (prms->old_obj_desc[0]==NULL) // for initial run use the current descriptor to return
+        {
+            VX_PRINT(VX_ZONE_INFO, "initial run, return the incoming descriptor to avoid invalidation\n");
+        }
+        else
+        {
+            /* hold onto current obj_desc and release old obj desc */
+            obj_desc[TIVX_KERNEL_SCALAR_SINK_IN_IDX] = prms->old_obj_desc[0];
+            prms->old_obj_desc[0] = (tivx_obj_desc_t*)in_desc;
+        }
 
         if (prms->local_val != in_value && prms->do_error_print)
         {

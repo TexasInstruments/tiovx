@@ -292,7 +292,7 @@
      \subsection TIOVX_SAFETY_FEATURES_TIMEOUT_GRAPH Graph Timeouts
 
      For the \ref vx_graph API, a timeout can be specified by calling the \ref vxSetGraphAttribute API with the attribute
-     \ref TIVX_GRAPH_TIMEOUT.  The timeout value can also be queried using the \ref vxQueryGraph API.
+     \ref VX_GRAPH_TIMEOUT.  The timeout value can also be queried using the \ref vxQueryGraph API.
 
      The following graph related API's may return the \ref TIVX_NODE_TIMEOUT error when enabling timeouts on the graph or
      nodes within the graph.

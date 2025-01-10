@@ -434,7 +434,7 @@ vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
 
     status = tivxNodeSendCommandTimed(node, replicated_node_idx,
                                       node_cmd_id, ref, num_refs,
-                                      TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+                                      VX_TIMEOUT_WAIT_FOREVER);
 
     return status;
 }
@@ -1550,6 +1550,16 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
                 }
             }
+
+            if ((vx_bool)vx_true_e == node->is_graph_event)
+            {
+                if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
+                            (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_app_value,
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0))
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
+                }
+            }
         }
     }
 }
@@ -1582,7 +1592,16 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to graph event queue \n");
+                }
+            }
+            if ((vx_bool)vx_true_e == node->is_graph_event)
+            {
+                if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
+                            (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to graph event queue \n");
                 }
             }
         }
@@ -1642,6 +1661,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                         node->local_data_set_allow = (vx_bool)vx_false_e;
                         node->pipeline_depth = 1;
                         node->is_context_event = (vx_bool)vx_false_e;
+                        node->is_graph_event = (vx_bool)vx_false_e;
                         node->is_graph_streaming_event = (vx_bool)vx_false_e;
                         node->node_completed_app_value = 0;
                         node->node_error_app_value = 0;
