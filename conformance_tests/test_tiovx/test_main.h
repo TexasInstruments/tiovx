@@ -190,6 +190,7 @@ TESTCASE(tivxNegativeBoundary2)
 
 TESTCASE(tivxGraphExportDot)
 TESTCASE(tivxGraphPipeline)
+TESTCASE(tivxGraphPipeline2)
 #endif /* #if defined(BUILD_DEV) */
 
 #endif /* #if defined(BUILD_CORE_KERNELS) */
@@ -205,6 +206,7 @@ TESTCASE(tivxObjArray)
 TESTCASE(tivxScalar)
 
 TESTCASE(tivxImage)
+
 TESTCASE(tivxImage2)
 
 #endif
