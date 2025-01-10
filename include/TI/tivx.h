@@ -195,25 +195,6 @@ typedef enum _tivx_graph_attribute_extensions_e {
     /*! \brief Returns the graph stream executions. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
     TIVX_GRAPH_STREAM_EXECUTIONS = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_GRAPH) + 0x0,
 
-    /*! \brief Set/Query the graph level timeout parameter.
-     * Read-Write. Can be written at initialization as well as at runtime.
-     * This timeout attribute affects the operation of the following APIs
-     * - vxWaitGraph()
-     * - vxGraphParameterDequeueDoneRef()
-     * - vxStopGraphStreaming()
-     * Use a <tt>\ref vx_uint32</tt> parameter.
-     * Refer to \ref TIVX_DEFAULT_GRAPH_TIMEOUT for details on the default
-     * value used for this attribute.
-     */
-    TIVX_GRAPH_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_GRAPH) + 0x1,
-
-    /*! \brief Query the graph pipeline depth.
-     * Read-Only. Can be read at initialization as well as at runtime.
-     * Use a <tt>\ref vx_uint32</tt> parameter.
-     * By default, this value is set to 1.
-     */
-    TIVX_GRAPH_PIPELINE_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_GRAPH) + 0x2
-
 } tivx_graph_attribute_extensions_e;
 
 /*! \brief TI attribute extensions for the node object
@@ -264,8 +245,7 @@ typedef enum _tivx_reference_attribute_extensions_e {
      * Read-Only. Can be read at initialization as well as at runtime.
      * Use a <tt>\ref vx_bool</tt> parameter.
      */
-    TIVX_REFERENCE_BUFFER_IS_ALLOCATED = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_REFERENCE) + 0x2
-
+    TIVX_REFERENCE_BUFFER_IS_ALLOCATED = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_REFERENCE) + 0x2,
 } tivx_reference_attribute_extensions_e;
 
 /*! \brief TI attribute extensions for the kernel object

@@ -374,7 +374,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testDefaultTimeout, TestArg, TEST_PARAMS)
     }
 
     /* Query the graph timeout and validate. */
-    vxStatus = vxQueryGraph(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxQueryGraph(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                             &vxTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_SUCCESS)
@@ -388,6 +388,34 @@ TEST_WITH_ARG(tivxCmdTimeout, testDefaultTimeout, TestArg, TEST_PARAMS)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "Expected default graph time out does not match");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Query the graph event timeout and validate. */
+    vxStatus = vxQueryGraph(objCntxt.vxGraph, VX_GRAPH_EVENT_TIMEOUT ,
+        &vxTimeoutVal, sizeof(vx_uint32));
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* The default timeout should be TIVX_EVENT_TIMEOUT_WAIT_FOREVER. */
+    if (vxTimeoutVal != TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+                "Expected default graph time out does not match");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* query of VX_GRAPH_EVENT_TIMEOUT should fail if wrong datatype is used */
+    vxStatus = vxQueryGraph(objCntxt.vxGraph, VX_GRAPH_EVENT_TIMEOUT ,
+        &vxTimeoutVal, sizeof(vx_uint16));
+
+    if (vxStatus != (vx_status)VX_ERROR_INVALID_PARAMETERS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph() didn't return the expected result.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -505,17 +533,17 @@ TEST_WITH_ARG(tivxCmdTimeout, testInvalidTimeoutSet, TestArg, TEST_PARAMS)
      * attribute should not be modified.
      */
     vxTimeoutVal = TIVX_TEST_INVALID_TIMEOUT;
-    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                                    &vxTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_ERROR_INVALID_PARAMETERS)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(TIVX_GRAPH_TIMEOUT) failed.\n");
+        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(VX_GRAPH_TIMEOUT) failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
     /* Query the graph timeout and validate. */
-    vxStatus = vxQueryGraph(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxQueryGraph(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                             &vxTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_SUCCESS)
@@ -532,7 +560,38 @@ TEST_WITH_ARG(tivxCmdTimeout, testInvalidTimeoutSet, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    /* Set an invalid timeout attribute. This API should fail and the default
+    /* Set an invalid timeout attribute to a graph event. This API should fail and the default
+     * attribute should not be modified.
+     */
+    vxTimeoutVal = TIVX_TEST_INVALID_TIMEOUT;
+    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, VX_GRAPH_EVENT_TIMEOUT,
+                                   &vxTimeoutVal, sizeof(vx_uint32));
+
+    if (vxStatus != (vx_status)VX_ERROR_INVALID_PARAMETERS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(VX_GRAPH_EVENT_TIMEOUT) failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Query the graph timeout and validate. */
+    vxStatus = vxQueryGraph(objCntxt.vxGraph, VX_GRAPH_EVENT_TIMEOUT,
+                            &vxTimeoutVal, sizeof(vx_uint32));
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* The default timeout should still be TIVX_EVENT_TIMEOUT_WAIT_FOREVER. */
+    if (vxTimeoutVal != TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+                 "Expected default graph time out does not match");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Set an invalid timeout attribute to a node. This API should fail and the default
      * attribute should not be modified.
      */
     vxTimeoutVal = TIVX_TEST_INVALID_TIMEOUT;
@@ -624,17 +683,17 @@ TEST_WITH_ARG(tivxCmdTimeout, testValidTimeoutSet, TestArg, TEST_PARAMS)
     }
 
     /* Set a valid timeout attribute. */
-    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                                    &vxSetTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(TIVX_GRAPH_TIMEOUT) failed.\n");
+        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(VX_GRAPH_TIMEOUT) failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
     /* Query the graph timeout and validate. */
-    vxStatus = vxQueryGraph(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxQueryGraph(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                             &vxTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_SUCCESS)
@@ -1097,12 +1156,12 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutGraph, TestArg, TEST_PARAMS)
     /* Change the timeout attribute of the graph. */
     vxSetTimeoutVal = 5;
 
-    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                                    &vxSetTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(TIVX_GRAPH_TIMEOUT) failed.\n");
+        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(VX_GRAPH_TIMEOUT) failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -1248,12 +1307,12 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutGraphStream, TestArg, TEST_PARAMS)
     /* Change the timeout attribute of the graph. */
     vxSetTimeoutVal = 5;
 
-    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                                    &vxSetTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(TIVX_GRAPH_TIMEOUT) failed.\n");
+        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(VX_GRAPH_TIMEOUT) failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 

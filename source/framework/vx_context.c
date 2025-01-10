@@ -771,7 +771,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
         uintptr_t   obj_id;
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
-        status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+        status = tivxQueueGet(&context->free_queue, &obj_id, VX_TIMEOUT_WAIT_FOREVER);
 
         if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR010 */
         {
@@ -941,7 +941,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
         uintptr_t   obj_id;
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
-        status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+        status = tivxQueueGet(&context->free_queue, &obj_id, VX_TIMEOUT_WAIT_FOREVER);
 
         if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR010 */
         {
@@ -1727,6 +1727,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case (vx_enum)VX_CONTEXT_EVENT_TIMEOUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    
+                    *(vx_uint32*)ptr = context->timeout_events_val;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "query context VX_CONTEXT_EVENT_TIMEOUT failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }            
+                break;                
             case (vx_enum)VX_CONTEXT_UNIQUE_KERNELS:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
@@ -1811,6 +1823,31 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetContextAttribute(vx_context context, vx_
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+
+            case (vx_enum)VX_CONTEXT_EVENT_TIMEOUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    const vx_uint32   timeout_val = *(const vx_uint32*)ptr;
+
+                    /* Validate the timeout. It cannot be zero. */
+                    if (timeout_val == 0U)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "Invalid timeout value specified for events: %d\n",
+                                 timeout_val);
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    }
+                    else
+                    {
+                        context->timeout_events_val = timeout_val;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Set VX_CONTEXT_EVENT_TIMEOUT failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }            
+                break;                
             default:
                 VX_PRINT(VX_ZONE_ERROR,"unsupported attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
