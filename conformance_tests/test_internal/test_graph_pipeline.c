@@ -74,10 +74,27 @@ TEST(tivxInternalGraphPipeline, negativeTestSetGraphScheduleConfig)
     graph->num_params = 1;
     graph_parameters_queue_params_list[0].graph_parameter_index = 1;
     graph_parameters_queue_params_list [ 0 ].refs_list = (vx_reference *)&graph;
+    graph_parameters_queue_params_list[0].refs_list_size = 1;
 
     /* To hit condition 'graph_parameters_queue_params_list.graph_parameter_index >= graph->num_params' */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphScheduleConfig(graph, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
-       
+    /* To hit the condition ref list size > TIVX_OBJ_DESC_QUEUE_MAX_DEPTH and graph num param*/
+    vx_image img[TIVX_OBJ_DESC_QUEUE_MAX_DEPTH+1];
+    for (uint32_t i = 0; i < TIVX_OBJ_DESC_QUEUE_MAX_DEPTH+1; i++)
+    {
+        img[i] = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        graph_parameters_queue_params_list[0].refs_list = (vx_reference *)&img[i];
+    }
+    graph_parameters_queue_params_list[0].refs_list_size = TIVX_OBJ_DESC_QUEUE_MAX_DEPTH+1;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphScheduleConfig(graph, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
+    /* To hit only the condition ref list size > TIVX_OBJ_DESC_QUEUE_MAX_DEPTH */
+    graph->num_params = 2;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphScheduleConfig(graph, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
+
+    for (uint32_t i = 0; i < TIVX_OBJ_DESC_QUEUE_MAX_DEPTH+1; i++)
+    {
+        VX_CALL(vxReleaseImage(&img[i]));
+    }
     graph->num_params = 0;
     VX_CALL(vxReleaseGraph(&graph));
 }
@@ -121,23 +138,6 @@ TEST(tivxInternalGraphPipeline, negativeTestownGraphGetNumSchedule)
     ASSERT(num_schedule == ownGraphGetNumSchedule(graph));
 
     graph->schedule_mode = (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL;
-    VX_CALL(vxReleaseGraph(&graph));
-}
-
-TEST(tivxInternalGraphPipeline, negativeTestownGraphParameterCheckValidEnqueueRef)
-{
-    vx_context context = context_->vx_context_;
-    vx_graph graph = NULL;
-
-    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownGraphParameterCheckValidEnqueueRef(NULL, 0, NULL));
-    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownGraphParameterCheckValidEnqueueRef(graph, 0, NULL));
-    graph->num_params = 1;
-    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownGraphParameterCheckValidEnqueueRef(graph, 0, NULL));
-
-    graph->num_params = 0;
-
     VX_CALL(vxReleaseGraph(&graph));
 }
 
@@ -207,7 +207,6 @@ TESTCASE_TESTS(tivxInternalGraphPipeline,
     negativeTestSetGraphScheduleConfig,
     negativeTestownGraphPipeDepthBoundary,
     negativeTestownGraphGetNumSchedule,
-    negativeTestownGraphParameterCheckValidEnqueueRef,
     negativeTestownCheckGraphCompleted1,
     negativeTestownGraphScheduleGraph,
     negativeTestownGraphDoScheduleGraphAfterEnqueue,

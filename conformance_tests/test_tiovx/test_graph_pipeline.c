@@ -17,6 +17,7 @@
 #include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <VX/vx_khr_safe_casts.h>
 #include <VX/vx_khr_pipelining.h>
 #include <TI/tivx.h>
 #include <TI/tivx_config.h>
@@ -26,6 +27,7 @@
 #include <TI/tivx_capture.h>
 
 TESTCASE(tivxGraphPipeline,  CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxGraphPipeline2,  CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tivxGraphPipelineLdra,  CT_VXContext, ct_setup_vx_context, 0)
 
 #define LOG_RT_TRACE_ENABLE       (1u)
@@ -781,6 +783,47 @@ static vx_node test_user_kernel_objarr_node(vx_graph graph,
                 );
 
     return node;
+}
+
+/* Function to get a parameter, add it to a graph and then release it */
+static void addParameterToGraph(vx_graph graph, vx_node node, vx_uint32 num)
+{
+    vx_parameter p = vxGetParameterByIndex(node, num);
+    vxAddParameterToGraph(graph, p);
+    vxReleaseParameter(&p);
+}
+
+/* Function to create a very simple graph using NOT nodes */
+static vx_graph simpleGraph(vx_context context)
+{
+    vx_graph graph = vxCreateGraph(context);
+    vx_image input = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+    vx_image output1 = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+    vx_image output2 = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+    vx_node node1 = vxNotNode(graph, input, output1);
+    vx_node node2 = vxNotNode(graph, output1, output2);
+    addParameterToGraph(graph, node1, 0);
+    addParameterToGraph(graph, node1, 1);
+    addParameterToGraph(graph, node2, 1);
+    vxReleaseImage(&input);
+    vxReleaseImage(&output1);
+    vxReleaseImage(&output2);
+    vxReleaseNode(&node1);
+    vxReleaseNode(&node2);
+    return graph;
+}
+
+/* Write some data on an image */
+static void writeImage(vx_image image, vx_uint8 a, vx_uint8 b)
+{
+    vx_map_id id;
+    vx_rectangle_t rect = {.start_x = 0, .end_x = 1, .start_y = 0, .end_y = 2};
+    vx_imagepatch_addressing_t ipa;
+    void *ptr;
+    vxMapImagePatch(image, &rect, 0, &id, &ipa, &ptr, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
+    *(vx_uint8 *)vxFormatImagePatchAddress2d(ptr, 0, 0, &ipa) = a;
+    *(vx_uint8 *)vxFormatImagePatchAddress2d(ptr, 0, 1, &ipa) = b;
+    vxUnmapImagePatch(image, id);
 }
 
 /*
@@ -7427,6 +7470,430 @@ TEST(tivxGraphPipeline, testBufferDepthDetection2)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+TEST(tivxGraphPipeline2, testDoubleInputEnqueue)
+{
+    /* We should be able to enqueue the same reference on two separate inputs on the same graph 
+      and also on another graph at the same time */
+    #define NB_IMAGES 3
+    vx_status status;
+    vx_graph graph1, graph2;
+    vx_node node1, node2;
+    vx_context context = context_->vx_context_;
+
+    ASSERT_VX_OBJECT(graph1 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(graph2 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    vx_image images[NB_IMAGES] =
+    {
+        vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8)
+    };
+    ASSERT_VX_OBJECT(node1 = vxAndNode(graph1, images[0], images[1], images[2]), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxAndNode(graph2, images[0], images[1], images[2]), VX_TYPE_NODE);
+    addParameterToGraph(graph1, node1, 0); /* Input */
+    addParameterToGraph(graph1, node1, 1); /* Input */
+    addParameterToGraph(graph1, node1, 2); /* Output */
+    addParameterToGraph(graph2, node2, 0); /* Input */
+    addParameterToGraph(graph2, node2, 1); /* Input */
+    addParameterToGraph(graph2, node2, 2); /* Output */
+    vx_graph_parameter_queue_params_t graph_params[NB_IMAGES] = 
+    {
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)images, .refs_list_size = 3},
+        {.graph_parameter_index = 1, .refs_list = (vx_reference *)images, .refs_list_size = 3},
+        {.graph_parameter_index = 2, .refs_list = (vx_reference *)images, .refs_list_size = 3}
+    };
+    tivxSetGraphPipelineDepth(graph1, 2);
+    tivxSetGraphPipelineDepth(graph2, 2);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph1, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph2, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+
+    VX_CALL(vxVerifyGraph(graph1)); 
+    VX_CALL(vxVerifyGraph(graph2)); 
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 0, (vx_reference *)&images[0], 1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, status = vxGraphParameterEnqueueReadyRef(graph1, 1, (vx_reference *)&images[0], 1));
+    if (VX_SUCCESS == status)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, status = vxGraphParameterEnqueueReadyRef(graph2, 0, (vx_reference *)&images[0], 1));
+        if (VX_SUCCESS == status)
+        {
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph2, 1, (vx_reference *)&images[0], 1));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph2, 2, (vx_reference *)&images[2], 1));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph2));
+        }
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 2, (vx_reference *)&images[1], 1));
+    }
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, status);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph1));
+
+    for (int i = 0; i < NB_IMAGES; ++i)
+    {
+        VX_CALL(vxReleaseImage(&images[i]));
+    }
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph1));
+    VX_CALL(vxReleaseGraph(&graph2));
+}
+
+/*
+ * graph 0 
+ *  d0     n0     d1  
+ * OBJ -- NOT -- OBJ 
+ * ARR           ARR   
+ * replicate     replicate
+ *
+ * graph 1
+ *  d1     n1     d2
+ * OBJ -- NOT -- OBJ
+ * 
+ * This test case test the below
+ * - object array as input for graph1 and one of the children being an output of a graph0
+ *
+ */
+TEST(tivxGraphPipeline2, testReplicateNegativeInputoutput)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph0, graph1;
+    vx_object_array d0[MAX_NUM_BUF] = {NULL}, d2[MAX_NUM_BUF] = {NULL};
+    vx_image img0[MAX_NUM_BUF] = {NULL}, img1[MAX_NUM_BUF] = {NULL};
+    vx_image img_input_output[MAX_NUM_BUF] = {NULL}, img2[MAX_NUM_BUF] = {NULL};
+    vx_image img_exemplar;
+    vx_node n0, n1;
+    vx_bool replicate[2] = { vx_true_e, vx_true_e };
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list0[2];
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list1[2];
+    uint32_t width, height, pipeline_depth, num_buf;
+    uint32_t idx, objarr_idx, objarr_elements, buf_id;
+
+    width = 64;
+    height = 48;
+    pipeline_depth = 2;
+    num_buf = 2;
+    objarr_elements = 2;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+    ASSERT(objarr_elements <= MAX_NUM_OBJ_ARR_ELEMENTS);
+
+    ASSERT_VX_OBJECT(graph0 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(graph1 = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(img_exemplar    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateObjectArray(context, (vx_reference)img_exemplar, objarr_elements), VX_TYPE_OBJECT_ARRAY);
+        ASSERT_VX_OBJECT(d2[buf_id]    = vxCreateObjectArray(context, (vx_reference)img_exemplar, objarr_elements), VX_TYPE_OBJECT_ARRAY);
+    }
+
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        img0[buf_id] = (vx_image)vxGetObjectArrayItem(d0[buf_id], 0);
+        img1[buf_id] = (vx_image)vxGetObjectArrayItem(d2[buf_id], 0);
+
+        img_input_output[buf_id] = (vx_image)vxGetObjectArrayItem(d2[buf_id], 1);
+        img2[buf_id] = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+
+    }
+
+    ASSERT_VX_OBJECT(n0    = vxNotNode(graph0, img0[0], img1[0]), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n1    = vxNotNode(graph1, img_input_output[0], img2[0]), VX_TYPE_NODE);
+
+    VX_CALL(vxReplicateNode(graph0, n0, replicate, 2));
+
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+
+    /* input @ node0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph0, n0, 0);
+    /* output @ node0 index 1, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph0, n0, 1);
+
+    /* input @ node1 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph1, n1, 0);
+    /* output @ node1 index 1, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph1, n1, 1);
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list0[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list0[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list0[0].refs_list = (vx_reference*)&img0[0];
+
+    graph_parameters_queue_params_list0[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list0[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list0[1].refs_list = (vx_reference*)&img1[0];
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list1[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list1[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list1[0].refs_list = (vx_reference*)&img_input_output[0];
+
+    graph_parameters_queue_params_list1[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list1[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list1[1].refs_list = (vx_reference*)&img2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    VX_CALL(vxSetGraphScheduleConfig(graph0,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list0
+                ));
+
+    VX_CALL(vxSetGraphScheduleConfig(graph1,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list1
+                ));
+
+    /* set pipeline depth explicitly */
+    VX_CALL(set_graph_pipeline_depth(graph0, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph1, pipeline_depth));
+
+    VX_CALL(vxVerifyGraph(graph0));
+    VX_CALL(vxVerifyGraph(graph1));
+
+    /* enqueue input and output references,
+     * if one of the output buffer of graph0 is input to graph1, then
+     * the reference cannot be euqueued to graph 0 in that case
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vx_image image;
+
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 0, (vx_reference*)&img_input_output[buf_id], 1));
+
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph1, 1, (vx_reference*)&img2[buf_id], 1));
+
+        image = (vx_image)vxGetObjectArrayItem(d0[buf_id], 0);
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph0, 0, (vx_reference*)&image, 1));
+        vxReleaseImage(&image);
+
+        image = (vx_image)vxGetObjectArrayItem(d2[buf_id], 0);
+        ASSERT_EQ_VX_STATUS(VX_FAILURE, vxGraphParameterEnqueueReadyRef(graph0, 1, (vx_reference*)&image, 1));
+        vxReleaseImage(&image);
+    }
+
+    /* only the graph1 will run as we could't enqueue in the graph0 */
+    VX_CALL(vxWaitGraph(graph1));
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseImage(&img0[buf_id]));
+        VX_CALL(vxReleaseImage(&img2[buf_id]));
+        VX_CALL(vxReleaseImage(&img1[buf_id]));
+        VX_CALL(vxReleaseImage(&img_input_output[buf_id]));
+    }
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseObjectArray(&d0[buf_id]));
+        VX_CALL(vxReleaseObjectArray(&d2[buf_id]));
+    }
+    VX_CALL(vxReleaseImage(&img_exemplar));
+    VX_CALL(vxReleaseGraph(&graph0));
+    VX_CALL(vxReleaseGraph(&graph1));
+}
+
+/* two rules for the "multiple" enqueueings:
+1) A reference may not be enqueued to an output or bidirectional parameter if it is already queued elsewhere
+2) A reference may not be enqueued to an input parameter if it is already queued for an output or bidirectional parameter.
+
+These rules allow a reference to be queued many times as an input, but only once as an output or modifiable parameter. 
+They also imply the use of a count for input enqueuing and dequeuing.
+*/
+TEST(tivxGraphPipeline2, testIllegelDoubleEnqueuing)
+{
+    #define NB_IMAGES 3
+    vx_context context = context_->vx_context_;
+    vx_graph graph = simpleGraph(context);
+    vx_image images[NB_IMAGES];
+    for (int i = 0; i < NB_IMAGES; ++i)
+    {
+        images[i] = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+        writeImage(images[i], 1, 2);
+    }
+    vx_graph_parameter_queue_params_t graph_params[3] = 
+    {
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)images, .refs_list_size = 3},
+        {.graph_parameter_index = 1, .refs_list = (vx_reference *)images, .refs_list_size = 3},
+        {.graph_parameter_index = 2, .refs_list = (vx_reference *)images, .refs_list_size = 3}
+    };
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxSetGraphPipelineDepth(graph, 2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&images[0], 1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference *)&images[1], 1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference *)&images[2], 1));
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&images[1], 1) ||
+                        vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference *)&images[2], 1) ||
+                        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference *)&images[0], 1));
+    VX_CALL(vxWaitGraph(graph));
+    
+    for (int i = 0; i < NB_IMAGES; ++i)
+    {
+        VX_CALL(vxReleaseImage(&images[i]));
+    }
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+/* Test the graph event extensions
+ *
+ * Test vxRegisterGraphEvent:
+ *  Call with unsupported type
+ *  Call with parameter out of range
+ *  Call with NULL for graph
+ *  Call with a reference that isn't a graph
+ *  Call for a verified graph
+ *  Call twice to change the app_value (checked later)
+ *  Call for an event registered on the context
+ * Test vxWaitGraphEvent:
+ *  Non-blocking and Blocking - check app_value on one parameter and changed app_value on another.
+ * Test vxSendUserGraphEvent:
+ *  Just check that it comes out the other side
+ * 
+ */
+TEST(tivxGraphPipeline2, testGraphEvent)
+{
+    #define NB_IMAGES 3
+    vx_context context = context_->vx_context_;
+    /* Check some basic error returns */
+    vx_graph graph = vxCreateGraph(context);
+    vx_image images[NB_IMAGES] = 
+    {
+        vxCreateImage(context, 32, 32, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 32, 32, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 32, 32, VX_DF_IMAGE_U8)
+    };
+    vx_node node = vxNotNode(graph, images[0], images[1]);
+    addParameterToGraph(graph, node, 0);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxRegisterGraphEvent(NULL, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, 0));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxRegisterGraphEvent(vxCastRefFromContext(context), VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, 0));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxRegisterGraphEvent(vxCastRefFromGraph(graph), VX_EVENT_GRAPH_PARAMETER_CONSUMED, 1, 0));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent(vxCastRefFromGraph(graph), VX_EVENT_GRAPH_COMPLETED, 0, 0));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxRegisterGraphEvent(vxCastRefFromGraph(graph), VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, 0));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(node = vxAndNode(graph, images[0], images[1], images[2]), VX_TYPE_NODE);
+    writeImage(images[0], 0x45, 0xD1);
+    writeImage(images[1], 0x70, 0x81);
+    addParameterToGraph(graph, node, 0);
+    addParameterToGraph(graph, node, 1);
+    addParameterToGraph(graph, node, 2);
+    vx_graph_parameter_queue_params_t graph_params[3] = 
+    {
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)&images[0], .refs_list_size = 1},
+        {.graph_parameter_index = 1, .refs_list = (vx_reference *)&images[1], .refs_list_size = 1},
+        {.graph_parameter_index = 2, .refs_list = (vx_reference *)&images[2], .refs_list_size = 1}
+    };
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent(vxCastRefFromGraph(graph), VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, 222));    
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent(vxCastRefFromGraph(graph), VX_EVENT_GRAPH_PARAMETER_CONSUMED, 1, 111));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxRegisterGraphEvent(vxCastRefFromNode(node), VX_EVENT_GRAPH_PARAMETER_CONSUMED, 2, 123));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent(vxCastRefFromGraph(graph), VX_EVENT_GRAPH_PARAMETER_CONSUMED, 2, 123));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent(vxCastRefFromGraph(graph), VX_EVENT_GRAPH_PARAMETER_CONSUMED, 2, 123));
+    vx_event_t context_events;
+    vx_event_t graph_events;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxEnableGraphEvents((vx_graph)node));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphEvents(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableEvents(context));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitGraphEvent(graph, &context_events, vx_true_e));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxWaitGraphEvent(graph, NULL, vx_true_e));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxWaitGraphEvent((vx_graph)node, &graph_events, vx_true_e));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitGraphEvent(graph, &graph_events, vx_true_e));
+    int i;
+    vx_uint32 num_refs = 0;
+    vx_image in_img;
+    for (i = 0; i < NB_IMAGES; ++i)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, i, (vx_reference *)&images[i], 1));
+    }
+    /* blocking !
+       parameter 0 is on graph queue and not on event queue
+       parameter 1 is on event queue and not graph queue
+       parameter 2 is on both */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, &context_events, vx_false_e));
+    ASSERT_EQ_INT(context_events.type, VX_EVENT_GRAPH_PARAMETER_CONSUMED);
+    ASSERT_EQ_INT(context_events.app_value, 111);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, &context_events, vx_false_e));
+    ASSERT_EQ_INT(context_events.type, VX_EVENT_GRAPH_PARAMETER_CONSUMED);
+    ASSERT_EQ_INT(context_events.app_value, 123);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, &graph_events, vx_false_e));
+    ASSERT_EQ_INT(graph_events.type, VX_EVENT_GRAPH_PARAMETER_CONSUMED);
+    ASSERT_EQ_INT(graph_events.app_value, 222);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, &graph_events, vx_false_e));
+    ASSERT_EQ_INT(graph_events.type, VX_EVENT_GRAPH_PARAMETER_CONSUMED);
+    ASSERT_EQ_INT(graph_events.app_value, 123);
+    /* both queues should be empty now */
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitGraphEvent(graph, &graph_events, vx_true_e));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitEvent(context, &context_events, vx_true_e));
+    for (i = 0; i < NB_IMAGES; ++i)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, i, (vx_reference *)&in_img, 1,  &num_refs));
+    }
+
+    /* test wrong enqueue */
+    vx_reference ref[2];
+    ref[0] = NULL;
+    ref[1] = NULL;
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxGraphParameterEnqueueReadyRef(graph,0,ref,1));
+    /* non blocking ! */
+    for (i = 0; i < NB_IMAGES; ++i)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, i, (vx_reference *)&images[i], 1));
+    }
+    /* wait for the graph to be ready and check the different queues */
+    VX_CALL(vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&in_img, 1, &num_refs));
+    /* parameter 0 is on graph queue and not on event queue
+       parameter 1 is on event queue and not graph queue
+       parameter 2 is on both */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, &context_events, vx_true_e));
+    ASSERT_EQ_INT(context_events.type, VX_EVENT_GRAPH_PARAMETER_CONSUMED);
+    ASSERT_EQ_INT(context_events.app_value, 111);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, &context_events, vx_true_e));
+    ASSERT_EQ_INT(context_events.type, VX_EVENT_GRAPH_PARAMETER_CONSUMED);
+    ASSERT_EQ_INT(context_events.app_value, 123);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, &graph_events, vx_true_e));
+    ASSERT_EQ_INT(graph_events.type, VX_EVENT_GRAPH_PARAMETER_CONSUMED);
+    ASSERT_EQ_INT(graph_events.app_value, 222);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, &graph_events, vx_true_e));
+    ASSERT_EQ_INT(graph_events.type, VX_EVENT_GRAPH_PARAMETER_CONSUMED);
+    ASSERT_EQ_INT(graph_events.app_value, 123);
+    /* both queues should be empty now */
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitGraphEvent(graph, &graph_events, vx_true_e));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitEvent(context, &context_events, vx_true_e));    
+
+    /* send user events */
+    vx_event_t user_events;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSendUserGraphEvent(NULL, 0, NULL));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSendUserGraphEvent((vx_graph)node, 0, NULL));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSendUserGraphEvent(graph, 550, (void *)987UL));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitEvent(context, &user_events, vx_true_e));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, &user_events, vx_false_e));
+    ASSERT_EQ_INT(user_events.type, VX_EVENT_USER);
+    ASSERT_EQ_INT(user_events.app_value, 550);
+    ASSERT_EQ_INT((int)(uintptr_t)user_events.event_info.user_event.user_event_parameter, 987);
+    vx_uint32 ref_count;
+    vx_uint64 wrong_ref_count;
+    ASSERT_EQ_VX_STATUS(vxQueryReference((vx_reference)images[0], VX_REFERENCE_ENQUEUE_COUNT, &wrong_ref_count, sizeof(wrong_ref_count)), VX_ERROR_INVALID_PARAMETERS);
+    ASSERT_EQ_VX_STATUS(vxQueryReference((vx_reference)images[0], VX_REFERENCE_ENQUEUE_COUNT, &ref_count, sizeof(ref_count)), VX_SUCCESS);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxDisableGraphEvents((vx_graph)node));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDisableGraphEvents(graph));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));   
+    VX_CALL(vxReleaseImage(&images[0]));
+    VX_CALL(vxReleaseImage(&images[1]));
+    VX_CALL(vxReleaseImage(&images[2]));    
+}
+
 TEST(tivxGraphPipelineLdra, negativeTestSetGraphScheduleConfig)
 {
     #define VX_GRAPH_SCHEDULE_MODE_DEFAULT 0
@@ -7560,6 +8027,13 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testGraphPipelineErrorDetection,
     testBufferDepthDetection1,
     testBufferDepthDetection2
+)
+
+TESTCASE_TESTS(tivxGraphPipeline2,
+    testDoubleInputEnqueue,
+    testReplicateNegativeInputoutput,
+    testIllegelDoubleEnqueuing,
+    testGraphEvent
 )
 
 TESTCASE_TESTS(

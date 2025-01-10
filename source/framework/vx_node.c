@@ -1592,7 +1592,7 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to graph event queue \n");
                 }
             }
         }
