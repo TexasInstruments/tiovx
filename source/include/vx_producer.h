@@ -154,7 +154,15 @@ typedef struct _vx_producer
     void*                  graph_obj;
     /*! \brief pointer to store producer function callbacks */
     vx_streaming_cb_t      streaming_cb;
+    /*! \brief Mutex to prevent conflict during setting of multiple client status */
+    pthread_mutex_t        client_mutex;    
 #ifdef IPPC_SHEM_ENABLED
+    /*! \brief Poll for new clients during startup */
+    pthread_t              connection_check_thread;
+    /*! \brief rate at which producer polls for new consumer during startup */
+    vx_uint32              connection_check_polling_time;
+    /*! \brief exit condition for polling connection check thread */
+    vx_bool                connection_check_polling_exit;
     /*! \brief Contains shmem context */
     SIppcShmemContext      m_shmem_ctx;
     /*! \brief Contains sender context */
@@ -164,9 +172,6 @@ typedef struct _vx_producer
 #elif SOCKET_ENABLED
     /*! \brief Contains server context */
     server_context         server;
-    /*! \brief Mutex to prevent conflict during setting of multiple client status */
-    pthread_mutex_t        client_mutex;
-
     /*! \brief Contains producer metadata */
     uint8_t metadata_buffer[SOCKET_MAX_MSG_SIZE];
 #endif

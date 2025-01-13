@@ -191,6 +191,8 @@ typedef struct _vx_producer_params_t
 #ifdef IPPC_SHEM_ENABLED
     /*! \brief Contains ippc port configuration */
     SIppcPortMap        ippc_port[IPPC_PORT_COUNT];
+    /*! \brief rate at which producer polls for new consumer during startup */
+    vx_uint32           connection_check_polling_time;
 #endif    
 } vx_producer_params_t; 
 
