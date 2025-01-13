@@ -122,6 +122,21 @@ static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool 
             if (NULL != kf) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR009 */
             {
                 status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
+                if (((vx_status)VX_SUCCESS == status) &&
+                    (NULL != p2[0]->supplementary_data) &&
+                    (NULL != p2[1]->supplementary_data) &&
+                    (NULL != p2[0]->supplementary_data->base.kernel_callback))
+                {
+                    vx_reference supp_params[2] = {&p2[0]->supplementary_data->base, &p2[1]->supplementary_data->base};
+                    if ((vx_status)VX_SUCCESS == p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_true_e, supp_params[0], supp_params[1]))
+                    {
+                        status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_false_e, supp_params[0], supp_params[1]);
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_WARNING, "No Supplementary data available, no copy/swap possible.\n");
+                }
             }
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM007 */
