@@ -161,6 +161,8 @@ typedef struct _vx_producer
     pthread_t              connection_check_thread;
     /*! \brief rate at which producer polls for new consumer during startup */
     vx_uint32              connection_check_polling_time;
+    /*! \brief exit condition for polling connection check thread */
+    vx_bool                connection_check_polling_exit;
     /*! \brief Contains shmem context */
     SIppcShmemContext      m_shmem_ctx;
     /*! \brief Contains sender context */

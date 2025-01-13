@@ -278,7 +278,6 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p, uint8_t 
         }
     }
 
-
     // For multiple client scenario, the import of references doesnt happen in first receive
     // Hence, wait until the data is available, then proceed
     if (((vx_bool)vx_true_e == consumer->init_done) && ((vx_bool)vx_false_e == consumer->ref_import_done))

@@ -533,16 +533,15 @@ static vx_bool check_ippc_clients_connected(vx_producer producer)
 void* producer_connection_check_thread(void* arg)
 {
     vx_producer producer = (vx_producer)arg;
-    vx_bool new_client_connected = vx_false_e;
     char threadname[280U];
     snprintf(threadname, 280U, "producer_conn_check_thread_%s", producer->name);
     pthread_setname_np(pthread_self(), threadname);
 
     VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: starting connection check thread \n", producer->name);
-    while(vx_false_e == new_client_connected) // assume that after first new client has connected, purpose of this thread is fullfilled
+    while(vx_false_e == producer->connection_check_polling_exit) // assume that after first dequeue, frequent polling for clients is no longer necessary
     {
         pthread_mutex_lock(&producer->client_mutex);
-        new_client_connected = check_ippc_clients_connected(producer);
+        (void)check_ippc_clients_connected(producer);
         pthread_mutex_unlock(&producer->client_mutex);
         tivxTaskWaitMsecs(producer->connection_check_polling_time);
     }
@@ -963,6 +962,7 @@ static void* producer_broadcast_thread(void* arg)
                 if (l_inGraph != NULL)
                 {
                     status = producer->streaming_cb.dequeueCallback(producer->graph_obj, dequeued_refs, &num_ready);
+                    producer->connection_check_polling_exit = vx_true_e; 
                     if (status != (vx_status)VX_SUCCESS)
                     {
                         break;
@@ -1087,18 +1087,6 @@ static void* producer_broadcast_thread(void* arg)
                             }
                             else
                             {
-                                // Look for a free reference to enqueue and send the buffer id we just dequeued, thus
-                                // locking it.
-                                // this is no longer necessary, remove it
-                                // vx_reference free_reference = get_buffer_with_status(producer, FREE);
-                                // if (free_reference != NULL)
-                                // {
-                                //     set_buffer_status(free_reference, IN_GRAPH, producer);
-
-                                //     producer->streaming_cb.enqueueCallback(producer->graph_obj, free_reference);
-                                //     producer->nbEnqueueFrames++;
-                                // }
-
                                 // if at least one buffer is occupied by graph, we can safely distribute the buffer to consumers
                                 if (NULL != get_buffer_with_status(producer, IN_GRAPH))
                                 {
@@ -1283,6 +1271,7 @@ static vx_status ownInitProducerObject(vx_producer producer, const vx_producer_p
     producer->maxRefsLockedByClient         = params->max_refs_locked_by_client;
     producer->streaming_cb                  = params->streaming_cb;
     producer->connection_check_polling_time = params->connection_check_polling_time;
+    producer->connection_check_polling_exit = vx_false_e; 
 
 #ifdef IPPC_SHEM_ENABLED
     for(vx_uint32 idx = 0U; idx < IPPC_PORT_COUNT; idx++)
