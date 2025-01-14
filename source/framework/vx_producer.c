@@ -516,7 +516,6 @@ static vx_bool check_ippc_clients_connected(vx_producer producer)
                 pthread_mutex_lock(&producer->client_mutex);
                 vx_prod_msg_content_t* buffid_message = ippc_shem_payload_pointer(&producer->m_sender_ctx, sizeof(vx_prod_msg_content_t), &l_status);
                 fill_reference_info(producer, buffid_message); 
-                VX_PRINT(VX_ZONE_ERROR, "done \n");
                 buffid_message->buffer_id        = -1;
                 buffid_message->metadata_valid   = 0;
                 buffid_message->last_buffer      = producer->last_buffer;
