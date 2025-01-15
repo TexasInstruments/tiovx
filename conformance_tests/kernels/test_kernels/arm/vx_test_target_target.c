@@ -83,14 +83,14 @@
 #include <utils/ipc/include/app_ipc.h>
 #endif /* #ifndef PC */
 
-#if defined(REMOTE_TARGET)
+#if defined(REMOTE_COVERAGE)
 #include <utils/rtos/include/app_rtos.h>
 #if defined(MCU_PLUS_SDK)
 #include <app_rtos_mcu_plus_priv.h>
 #else
 #include <osal_soc.h>
 #endif /* #if defined(MCU_PLUS_SDK) */
-#endif /* #if defined(REMOTE_TARGET) */
+#endif /* #if defined(REMOTE_COVERAGE) */
 #if defined(A72) || defined(A53)
 #include <tivx_platform_posix.h>
 #endif /* #if defined(A72) || defined(A53) */
@@ -142,7 +142,7 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
 #define TARGET_TEST_MAX_TASKS            1024U
 #endif /* #if defined(C7X_FAMILY) */
 
-#if defined(REMOTE_TARGET)
+#if defined(REMOTE_COVERAGE)
 #if defined(C7X_FAMILY)
 #define TARGET_TEST_TASK_STACK_ALIGNMENT 8*1024U
 #else
@@ -153,7 +153,7 @@ static uint8_t tivxTestTargetTaskStack[TARGET_TEST_MAX_TASKS][TARGET_TEST_TASK_S
 __attribute__ ((section(".bss:taskStackSection")))
 __attribute__ ((aligned(TARGET_TEST_TASK_STACK_ALIGNMENT)))
     ;
-#endif /* #if defined(REMOTE_TARGET) */
+#endif /* #if defined(REMOTE_COVERAGE) */
 
 static tivx_target_kernel_instance test_kernel = NULL;
 static tivx_obj_desc_t *test_obj_desc = NULL;
@@ -209,11 +209,11 @@ static vx_status tivxTestTargetTaskBoundary(uint8_t id)
     for (i = 0; i < TARGET_TEST_MAX_TASKS; i++)
     {
         snprintf(taskParams.task_name, TIVX_MAX_TASK_NAME, "TEST_%d", i);
-        #if defined(REMOTE_TARGET)
+        #if defined(REMOTE_COVERAGE)
         taskParams.stack_ptr = tivxTestTargetTaskStack[i];
         #else
         taskParams.stack_ptr = NULL;
-        #endif /* #if defined(REMOTE_TARGET) */
+        #endif /* #if defined(REMOTE_COVERAGE) */
         status = tivxTaskCreate(&taskHandle[i], &taskParams);
 
         if ((vx_status)VX_SUCCESS != status)
@@ -227,13 +227,13 @@ static vx_status tivxTestTargetTaskBoundary(uint8_t id)
 
     for (i = 0; i < j; i++)
     {
-        #if defined(REMOTE_TARGET)
+        #if defined(REMOTE_COVERAGE)
         /* Test case to cover "appRtosTaskIsTerminated" API */
         if (TASK_IS_NOT_TERMINATED != appRtosTaskIsTerminated((app_rtos_task_handle_t *)taskHandle[i].tsk_handle))
         {
             VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'tskHndl' \n");
         }
-        #endif /* #if defined(REMOTE_TARGET) */
+        #endif /* #if defined(REMOTE_COVERAGE) */
         status = tivxTaskDelete(&taskHandle[i]);
     }
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
@@ -1871,7 +1871,7 @@ static vx_status tivxNegativeTestTargetTaskCreate(uint8_t id)
     return status;
 }
 
-#if defined(REMOTE_TARGET)
+#if defined(REMOTE_COVERAGE)
 static vx_status tivxAppMemPrintMemAllocInfo(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -2392,7 +2392,7 @@ static vx_status tivxAppRtosTaskYield(uint8_t id)
 
     return status;
 }
-#endif /* #if defined(REMOTE_TARGET) */
+#endif /* #if defined(REMOTE_COVERAGE) */
 
 static vx_status tivxNegativeTestTargetEventCreate(uint8_t id)
 {
@@ -2657,7 +2657,7 @@ static vx_status tivxNegativeTestTargetInitHost(uint8_t id)
     return status;
 }
 
-#if defined(REMOTE_TARGET)
+#if defined(REMOTE_COVERAGE)
 static vx_status tivxNegativeAppRtosSemaphoreCreate(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -2703,7 +2703,7 @@ static vx_status tivxNegativeTestMemStats(uint8_t id)
 
     return status;
 }
-#endif /* #if defined(REMOTE_TARGET) */
+#endif /* #if defined(REMOTE_COVERAGE) */
 
 static vx_status tivxNegativeTestTargetIpcSendMsg(uint8_t id)
 {
@@ -2745,7 +2745,7 @@ static vx_status tivxNegativeTaskMain(uint8_t id)
 }
 
 /*To hit uncovered regions in /psdk_j7/rtos/tivx_queue.c*/
-#if defined(REMOTE_TARGET)
+#if defined(REMOTE_COVERAGE)
 static vx_status tivxTestQueueCreateDelete(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -2861,7 +2861,7 @@ static vx_status tivxTestQueuePutGetDelete(uint8_t id)
     return status;
 }
 
-#endif /* #if defined(REMOTE_TARGET) */
+#endif /* #if defined(REMOTE_COVERAGE) */
 
 #if defined(LINUX)
 static vx_status tivxNegativeTaskAppIpcGetHostPortId(uint8_t id)
@@ -3007,7 +3007,7 @@ static vx_status tivxNegativeTestMutexMaxOut(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     int i,j = 0;
-#if defined(REMOTE_TARGET)
+#if defined(REMOTE_COVERAGE)
 #if defined(MCU_PLUS_SDK)
 #define MAX_MUTEX APP_RTOS_MAX_SEMAPHORE_COUNT
 #else
@@ -3015,7 +3015,7 @@ static vx_status tivxNegativeTestMutexMaxOut(uint8_t id)
 #endif /* #if defined(MCU_PLUS_SDK) */
 #else
     #define MAX_MUTEX TIVX_MUTEX_MAX_OBJECTS
-#endif /* #if defined(REMOTE_TARGET) */
+#endif /* #if defined(REMOTE_COVERAGE) */
     tivx_mutex mutex[MAX_MUTEX];
 
     for (i = 0; i < MAX_MUTEX; i++)
@@ -3130,7 +3130,7 @@ static vx_status tivxTestGetObjElement(uint8_t id)
 }
 
 /*To hit uncovered regions in /psdk_j7/rtos/tivx_queue.c*/
-#if defined(REMOTE_TARGET)
+#if defined(REMOTE_COVERAGE)
 static vx_status tivxTestQueuePut(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -3218,9 +3218,9 @@ static vx_status tivxTestQueueGet(uint8_t id)
 
     return status;
 }
-#endif /* #if defined(REMOTE_TARGET) */
+#endif /* #if defined(REMOTE_COVERAGE) */
 
-#if defined(REMOTE_TARGET)
+#if defined(REMOTE_COVERAGE)
 #if defined(MCU_PLUS_SDK)
     #define MAX_QUEUE APP_RTOS_MAX_SEMAPHORE_COUNT
 /*Below macro is used as tivxQueueCreate() depends on tivxEventCreate() which calls appRtosSemaphoreCreate*/
@@ -3229,7 +3229,7 @@ static vx_status tivxTestQueueGet(uint8_t id)
 #endif /* #if defined(MCU_PLUS_SDK) */
 #else
     #define MAX_QUEUE TIVX_QUEUE_MAX_OBJECTS
-#endif /* #if defined(REMOTE_TARGET) */
+#endif /* #if defined(REMOTE_COVERAGE) */
 
 static tivx_queue g_test_queue[MAX_QUEUE];
 static uintptr_t g_test_qu_mem[MAX_QUEUE];
@@ -3788,7 +3788,7 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestAppIpcGetAppCpuId, "",VX_SUCCESS},
     {tivxTestAppIpcGetCpuName, "",VX_SUCCESS},
     #endif /* #if defined(MPU_COVERAGE) */
-    #if defined(REMOTE_TARGET)
+    #if defined(REMOTE_COVERAGE)
 #if !defined (MCU_PLUS_SDK)
     {tivxAppIpcGetIpcCpuId, "", VX_SUCCESS},
 #endif /* #if !defined (MCU_PLUS_SDK) */
@@ -3824,7 +3824,7 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestQueuePutGetDelete, "", VX_SUCCESS},
     {tivxTestQueuePut, "", VX_SUCCESS},
     {tivxTestQueueGet, "", VX_SUCCESS},
-    #endif /* #if defined(REMOTE_TARGET) */
+    #endif /* #if defined(REMOTE_COVERAGE) */
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
     {tivxTestTargetDebugZone, "",VX_SUCCESS},
