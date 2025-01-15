@@ -162,6 +162,10 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
                 {
                     status = pthread_create(&context->hndl, &thread_attr, tivxTaskMain, task);
                 }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Task creation failed.  Invalid stack_size provided\n");
+                }
                 (void)pthread_attr_destroy(&thread_attr);
             }
             if (status == 0) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR005 */
@@ -172,11 +176,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
 /* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM001 */
             else
             {
-                status = ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_TASK);
-                if ((vx_status)VX_SUCCESS != status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Task free failed\n");
-                }
+                (void)ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_TASK);
             }
 #endif
         }
