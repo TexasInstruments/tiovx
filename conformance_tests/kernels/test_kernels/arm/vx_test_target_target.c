@@ -138,8 +138,12 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
 #define TARGET_TEST_TASK_STACK_SIZE      64*1024U
 #define TARGET_TEST_MAX_TASKS            150U
 #else
-#define TARGET_TEST_TASK_STACK_SIZE      1024U
 #define TARGET_TEST_MAX_TASKS            1024U
+#if defined(A72) || defined(A53)
+#define TARGET_TEST_TASK_STACK_SIZE      16*1024U*1024U
+#else
+#define TARGET_TEST_TASK_STACK_SIZE      1024U
+#endif /* defined(A72) || defined(A53) */
 #endif /* #if defined(C7X_FAMILY) */
 
 #if defined(REMOTE_COVERAGE)
@@ -216,9 +220,12 @@ static vx_status tivxTestTargetTaskBoundary(uint8_t id)
         #endif /* #if defined(REMOTE_COVERAGE) */
         status = tivxTaskCreate(&taskHandle[i], &taskParams);
 
-        if ((vx_status)VX_SUCCESS != status)
+        if ( (vx_status)VX_SUCCESS != status)
         {
-            ret_status = (vx_status)VX_SUCCESS;
+            if (i != 0)
+            {
+                ret_status = (vx_status)VX_SUCCESS;
+            }
             break;
         }
     }
