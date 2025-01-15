@@ -119,6 +119,7 @@ typedef struct _tivx_data_ref_queue {
     uint32_t pipeline_depth;
     /*! \brief send event to user when data ref is consumed */
     vx_bool is_enable_send_ref_consumed_event;
+    vx_bool is_enable_send_ref_consumed_graph_event;
     /*! \brief will user do enqueueing/dequeueing or will graph rotate buffers internally */
     vx_bool enable_user_queueing;
     /*! \brief graph parameter index which is associated with this data ref */
@@ -143,6 +144,7 @@ typedef struct _tivx_data_ref_queue_create_params {
     vx_bool enable_user_queueing;
     /*! \brief send event to user when data ref is consumed */
     vx_bool is_enable_send_ref_consumed_event;
+    vx_bool is_enable_send_ref_consumed_graph_event;
     /*! \brief graph parameter index which is associated with this data ref */
     uint32_t graph_parameter_index;
 
