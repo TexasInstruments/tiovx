@@ -106,6 +106,27 @@ ifeq ($(BUILD_TARGET_MODE),yes)
 	endif
 endif
 
+ERROR_FLAG = 0
+ifeq ($(LDRA_COVERAGE_ENABLED), yes)
+	ifeq ($(INSTRUMENT_CORE), )
+$(info ERROR - INSTRUMENT_CORE flag missing (A72 A53 R5F C71 C7120 C7504 C7524 C66))
+		ERROR_FLAG = 1
+	endif
+else ifeq ($(INSTRUMENT_FRAMEWORK), yes)
+$(info ERROR - LDRA_COVERAGE_ENABLED flag missing)
+	ERROR_FLAG = 1
+else ifeq ($(INSTRUMENT_PLATFORM), yes)
+$(info ERROR - LDRA_COVERAGE_ENABLED flag missing)
+	ERROR_FLAG = 1
+else ifneq ($(INSTRUMENT_CORE), )
+$(info ERROR - LDRA_COVERAGE_ENABLED flag missing)
+	ERROR_FLAG = 1
+endif
+
+ifeq ($(ERROR_FLAG), 1)
+	TARGET_COMBOS =
+endif
+
 CONCERTO_ROOT ?= $(PSDK_BUILDER_PATH)/concerto
 BUILD_MULTI_PROJECT := 1
 BUILD_TARGET := target.mak
