@@ -43,7 +43,7 @@ IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/test_kernels/include
 IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(TIOVX_PATH)/source/include
-IDIRS       += $(TIOVX_PATH)/source/platform/psdk_j7/common
+IDIRS       += $(TIOVX_PATH)/source/platform/targets
 IDIRS       += $(PSDK_PATH)/app_utils
 
 ifeq ($(RTOS_SDK), mcu_plus_sdk)
