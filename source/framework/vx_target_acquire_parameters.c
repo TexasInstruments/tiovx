@@ -319,14 +319,14 @@ static void ownTargetNodeDescReleaseParameter(
 
     if((vx_bool)vx_true_e == is_prm_input)
     {
-        data_ref_q_obj_desc->in_node_done_cnt++;
+        data_ref_q_obj_desc->in_node_done_cnt =  data_ref_q_obj_desc->in_node_done_cnt + 1U;
         if(data_ref_q_obj_desc->in_node_done_cnt==data_ref_q_obj_desc->num_in_nodes)
         {
             do_release_ref = (vx_bool)vx_true_e;
         }
         if(obj_desc!=NULL)
         {
-            obj_desc->in_node_done_cnt++;
+            obj_desc->in_node_done_cnt = obj_desc->in_node_done_cnt + 1U;
 
             /* In order to fix TIOVX-956 and TIOVX-1151, the bracketed logic was added to handle multiple obj arr
              * situations. The bug found that when a replicated node output was consumed by both another

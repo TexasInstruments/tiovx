@@ -337,7 +337,7 @@ vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
                 /* if enqueing buffers for pipeup then dont schedule graph,
                  * just enqueue the buffers
                  */
-                graph->parameters[graph_parameter_index].node->obj_desc[0]->pipeup_buf_idx--;
+                graph->parameters[graph_parameter_index].node->obj_desc[0]->pipeup_buf_idx = graph->parameters[graph_parameter_index].node->obj_desc[0]->pipeup_buf_idx - 1U;
             }
             else
             {
@@ -700,7 +700,7 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
             vx_bool is_completed = (vx_bool)vx_false_e;
 
             /* a leaf node completed so increment 'complete_leaf_nodes' */
-            graph_obj_desc->complete_leaf_nodes++;
+            graph_obj_desc->complete_leaf_nodes = graph_obj_desc->complete_leaf_nodes + 1U;
 
             /* if all leaf nodes completed, then graph is completed */
             if(graph_obj_desc->complete_leaf_nodes==graph->num_leaf_nodes)

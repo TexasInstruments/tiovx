@@ -86,14 +86,14 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
             j++;
         }
         out_objd->in_node_id[j] = out_objd->in_node_id[out_objd->num_in_nodes - 1U];
-        out_objd->num_in_nodes--;
+        out_objd->num_in_nodes = out_objd->num_in_nodes - 1U;
         /* add all in nodes of old_node to out_node */
         for (j = 0; j < old_obj->num_in_nodes; ++j)
         {
             if (TIVX_NODE_MAX_IN_NODES > out_objd->num_in_nodes) /* TIOVX-2067- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_COPY_SWAP_UBR001 */
             {
                 out_objd->in_node_id[out_objd->num_in_nodes] = old_obj->in_node_id[j];
-                out_objd->num_in_nodes++;
+                out_objd->num_in_nodes = out_objd->num_in_nodes + 1U;
             }
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-2049- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT002 */
@@ -119,14 +119,14 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
             j++;
         }
         in_objd->out_node_id[j] = in_objd->out_node_id[in_objd->num_out_nodes - 1U];
-        in_objd->num_out_nodes--;
+        in_objd->num_out_nodes = in_objd->num_out_nodes - 1U;
         /* add all out nodes of old_node to in_node */
         for (j = 0; j < old_obj->num_out_nodes; ++j)
         {
             if (TIVX_NODE_MAX_OUT_NODES > in_objd->num_out_nodes)
             {
                 in_objd->out_node_id[in_objd->num_out_nodes] = old_obj->out_node_id[j];
-                in_objd->num_out_nodes++;
+                in_objd->num_out_nodes = in_objd->num_out_nodes + 1U;
             }
             else
             {

@@ -1197,7 +1197,7 @@ vx_status ownNodeReplaceOutNode(vx_node node, vx_node old_out_node, vx_node new_
                 {
                     node->obj_desc[0]->out_node_id[j] = node->obj_desc[0]->out_node_id[j+1U];
                 }
-                node->obj_desc[0]->num_out_nodes--;
+                node->obj_desc[0]->num_out_nodes = node->obj_desc[0]->num_out_nodes - 1U;
             }
             break;
         }
@@ -1278,7 +1278,7 @@ vx_status ownNodeReplaceInNode(vx_node node, vx_node old_in_node, vx_node new_in
                 {
                     node->obj_desc[0]->in_node_id[j] = node->obj_desc[0]->in_node_id[j+1U];
                 }
-                node->obj_desc[0]->num_in_nodes--;
+                node->obj_desc[0]->num_in_nodes = node->obj_desc[0]->num_in_nodes - 1U;
             }
             break;
         }
