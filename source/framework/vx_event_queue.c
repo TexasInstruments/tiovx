@@ -164,10 +164,15 @@ vx_status ownEventQueueAddEvent(tivx_event_queue_t *event_q,
 
             status = tivxQueuePut(&event_q->ready_queue, idx, TIVX_EVENT_TIMEOUT_NO_WAIT);
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR003
+<justification end> */
             if ((vx_status)VX_SUCCESS == status) /* TIOVX-1887- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR003 */
             {
                 ownLogSetResourceUsedValue("TIVX_EVENT_QUEUE_MAX_SIZE", (vx_uint16)idx+1U);
             }
+/* LDRA_JUSTIFY_END */
         }
         if(status != (vx_status)VX_SUCCESS)
         {
@@ -348,6 +353,10 @@ vx_status ownRegisterEvent(vx_reference ref,
 
     if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR005
+<justification end> */
         if( ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_COMPLETED) ||
             ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_ERROR) ) /* TIOVX-1887- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR005 */
         {
@@ -371,6 +380,7 @@ vx_status ownRegisterEvent(vx_reference ref,
                 VX_PRINT(VX_ZONE_ERROR, "Invalid queue type given\n");
             }
         }
+/* LDRA_JUSTIFY_END */
     }
     else
     if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)

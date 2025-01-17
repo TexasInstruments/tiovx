@@ -34,7 +34,10 @@ static vx_status ownAgeDelay(vx_delay delay);
 static vx_bool ownIsValidObject(vx_enum type)
 {
     vx_bool status = (vx_bool)vx_false_e;
-
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR008
+<justification end> */
     if (((vx_enum)VX_TYPE_IMAGE == type) ||
         ((vx_enum)VX_TYPE_ARRAY == type) ||
         ((vx_enum)VX_TYPE_SCALAR == type) ||
@@ -52,6 +55,7 @@ static vx_bool ownIsValidObject(vx_enum type)
     {
         status = (vx_bool)vx_true_e;
     }
+/* LDRA_JUSTIFY_END */
 
     return (status);
 }
@@ -84,13 +88,16 @@ static tivx_delay_param_t *ownAllocDelayPrm(vx_delay delay)
         }
     }
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DELAY_UM001
+<justification end> */
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM001 */
     if (prm == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_DELAY_MAX_PRM_OBJECT in tiovx/include/TI/tivx_config.h\n");
     }
-#endif
+/* LDRA_JUSTIFY_END */
     return prm;
 }
 
@@ -123,18 +130,26 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
             if (*ptr == NULL)
             {
                 *ptr = ownAllocDelayPrm(delay);
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR011
+<justification end> */
                 if (*ptr != NULL) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR011 */
+/* LDRA_JUSTIFY_END */
                 {
                     (*ptr)->node = n;
                     (*ptr)->index = i;
                 }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DELAY_UM002
+<justification end> */
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM002 */
                 else
                 {
                     status = (vx_bool)vx_false_e;
                 }
-#endif
+/* LDRA_JUSTIFY_END */
                 break;
             }
             else
@@ -144,11 +159,16 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
         } 
     }
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR012
+<justification end> */
     if(status == (vx_bool)vx_true_e) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR012 */
     {
         /* Increment a reference to the delay */
         (void)ownIncrementReference(vxCastRefFromDelay(delay), (vx_enum)VX_INTERNAL);
     }
+/* LDRA_JUSTIFY_END */
 
     return status;
 }
@@ -209,14 +229,17 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
     {
         vx_reference ref=vxCastRefFromDelay(delay);
         status = ownReleaseReferenceInt(&ref, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DELAY_UM005
+<justification end> */
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM005 */
         if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to destroy delay reference\n");
             check_status = (vx_bool)vx_false_e;
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
     return check_status;
 }
@@ -248,13 +271,16 @@ static vx_status ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
         for (i = 0; i < delay->pyr_num_levels; i++)
         {
             status = ownReleaseReferenceInt(vxCastRefFromDelayP(&(delay->pyr_delay[i])), (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DELAY_UM006
+<justification end> */
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM006 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to destroy pyramid delay reference\n");
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
         delay->pyr_num_levels = 0;
     }
@@ -266,13 +292,16 @@ static vx_status ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
         for (i = 0; i < delay->obj_arr_num_items; i++)
         {
             status = ownReleaseReferenceInt(vxCastRefFromDelayP(&(delay->obj_arr_delay[i])), (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_INTERNAL, NULL);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DELAY_UM007
+<justification end> */
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM007 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to destroy object array reference\n");
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
         delay->obj_arr_num_items = 0;
     }
@@ -297,10 +326,13 @@ static vx_status ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
 static vx_status ownDestructDelay(vx_reference ref)
 {
     vx_status status = (vx_status)VX_FAILURE;
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DELAY_UM009
+<justification end> */
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM009 */
     if(ref->type == (vx_enum)VX_TYPE_DELAY)
-#endif
+/* LDRA_JUSTIFY_END */
     {
         /*status set to NULL due to preceding type check*/
         vx_delay delay = vxCastRefAsDelay(ref, NULL);
@@ -315,10 +347,13 @@ static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
     vx_uint32 i=0;
     
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DELAY_UM010
+<justification end> */
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM010 */
     if(delay_ref->type == (vx_enum)VX_TYPE_DELAY)
-#endif
+/* LDRA_JUSTIFY_END */
     {
         /*status set to NULL due to preceding type check*/
         vx_delay delay = vxCastRefAsDelay(delay_ref, NULL);
@@ -327,10 +362,13 @@ static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
         {
             ref = delay->refs[i];
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DELAY_UM011
+<justification end>*/
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM011 */
             if (ref != NULL)
-#endif
+/* LDRA_JUSTIFY_END */
             {
                 status = (vx_status)VX_SUCCESS;
                 if(ref->mem_alloc_callback != NULL)
@@ -343,24 +381,30 @@ static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
                     break;
                 }
             }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DELAY_UM012
+<justification end>*/
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM012 */
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "delay reference %d is null\n", i);
                 status = (vx_status)VX_ERROR_INVALID_VALUE;
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
     }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DELAY_UM013
+<justification end>*/
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM013 */
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "reference type is not delay\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
-#endif
+/* LDRA_JUSTIFY_END */
 
     return status;
 }
@@ -460,11 +504,19 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                         /*status set to NULL due to preceding type check*/
                                         ref = (vx_reference)vxGetObjectArrayItem(vxCastRefAsObjectArray(delay->refs[i], NULL), (vx_uint32)item_idx);
 
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR022
+<justification end> */
                                         if (NULL != ref) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR022 */
+/* LDRA_JUSTIFY_END */
                                         {
                                             status = ownAddRefToDelay(objarrdelay, ref, i);
                                         }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DELAY_UM014
+<justification end> */
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM014 */
                                         /* removed the status check as the status would be 
                                         * always success from the above conditions 
@@ -474,7 +526,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                             VX_PRINT(VX_ZONE_ERROR, "reference was not added to delay\n");
                                             break;
                                         }
-#endif
+/* LDRA_JUSTIFY_END */
                                     }
                                 }
                                 delay->obj_arr_num_items++;
@@ -501,6 +553,10 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                 ownDelayInit(pyrdelay, count, (vx_enum)VX_TYPE_IMAGE);
                                 for (i = 0; i < count; i++)
                                 {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR026
+<justification end> */
                                     if(delay->refs[i]->type == (vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR026 */
                                     {
                                         /*status set to NULL due to preceding type check*/
@@ -508,6 +564,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                         /* removed status always returning success */
                                         (void)ownAddRefToDelay(pyrdelay, ref, i);
                                     }
+/* LDRA_JUSTIFY_END */
                                 }
                                 delay->pyr_num_levels++;
                             }
@@ -693,13 +750,16 @@ static vx_status ownAgeDelay(vx_delay delay)
                 if (param->node != NULL)
                 {
                     status = ownNodeSetParameter(param->node,param->index,delay->refs[j]);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DELAY_UM016
+<justification end> */
 /* TIOVX-1716- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DELAY_UM016 */
                     if ((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Failed to set parameter at node \n");
                     }
-#endif
+/* LDRA_JUSTIFY_END */
                     ownInitReferenceForDelay(delay->refs[j], delay, i);
                 }
                 param = param->next;

@@ -64,12 +64,17 @@ static vx_status isArrayCopyable(vx_array input, vx_array output)
     }
     else if ((vx_bool)vx_true_e == output->base.is_virtual)
     {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR009
+<justification end> */
         /* Either output type must be invalid or types must match*/
         if (((vx_enum)VX_TYPE_INVALID != op_obj_desc->item_type) && /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR009 */
             (ip_obj_desc->item_type != op_obj_desc->item_type))
         {
             status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
         }
+/* LDRA_JUSTIFY_END */
         /* Either output capacity must be zero or at least as large as input capacity */
         if ((0U != op_obj_desc->capacity) &&
              (ip_obj_desc->capacity != op_obj_desc->capacity))
@@ -211,10 +216,15 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
                 VX_PRINT(VX_ZONE_ERROR,"array item type is invalid\n");
             }
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR002
+<justification end> */
             if ((vx_bool)vx_true_e != (arr->base.is_virtual)) /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR002 */
             {
                 VX_PRINT(VX_ZONE_ERROR,"array is not virtual\n");
             }
+/* LDRA_JUSTIFY_END */
         }
     }
     else

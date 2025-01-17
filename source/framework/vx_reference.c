@@ -368,13 +368,16 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
             {
                 status = tivxMemBufferFree(
                     mem_ptr, mem_size);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM002
+<justification end> */
 /* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM002 */
                 if((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Buffer free failed!\n");
                 }
-#endif
+/* LDRA_JUSTIFY_END */
             }
         }
     }
@@ -382,13 +385,16 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
     if ((vx_status)VX_SUCCESS == status)
     {
         status = ownObjDescFree((tivx_obj_desc_t**)&base_obj_desc);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM003
+<justification end> */
 /* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM003 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Object descriptor free failed!\n");
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     return status;
@@ -410,10 +416,13 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
     status = ownReferenceLock(output);
     if ((vx_status)VX_SUCCESS == status) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR007 */
     {
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM009
+<justification end> */
 /* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM009 */
         if (ip_mem_size <= op_mem_size)
-#endif
+/* LDRA_JUSTIFY_END */
         {
             tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size,
                                                       (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
@@ -421,6 +430,10 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
             {
                 tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)op_mem_ptr->host_ptr, op_mem_size,
                                                           (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR009
+<justification end> */
                 if ((vx_status)VX_SUCCESS == status) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR009 */
                 {
                     (void)memcpy((void *)(uintptr_t)op_mem_ptr->host_ptr, (void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size);
@@ -444,17 +457,21 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
                     tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)op_mem_ptr->host_ptr, op_mem_size,
                                                                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
                 }
+/* LDRA_JUSTIFY_END */
                 tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size,
                                                             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
             }
         }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM010
+<justification end> */
 /* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM010 */
         else
         {
             status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
         }
-#endif
+/* LDRA_JUSTIFY_END */
         (void)ownReferenceUnlock(output);
     }
 
@@ -478,6 +495,10 @@ vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
 
     /*lock only one reference as this is locking the global vx context*/
     status = ownReferenceLock(output);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR010
+<justification end> */
     if ((vx_status)VX_SUCCESS == status) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR010 */
     {
         tivx_shared_mem_ptr_t mem_ptr;
@@ -495,6 +516,7 @@ vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
         }
         (void)ownReferenceUnlock(output);
     }
+/* LDRA_JUSTIFY_END */
     return status;
 }
 
@@ -765,6 +787,10 @@ vx_reference ownCreateReference(vx_context context, vx_enum ref_type, vx_enum re
     if (ref != NULL)
     {
         status = ownInitReference(ref, context, ref_type, scope);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR002
+<justification end> */
         if(status==(vx_status)VX_SUCCESS) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR002 */
         {
             /* Setting it as void since return value 'ref count' is not used further */
@@ -777,6 +803,7 @@ vx_reference ownCreateReference(vx_context context, vx_enum ref_type, vx_enum re
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
         }
+/* LDRA_JUSTIFY_END */
 
         if(status!=(vx_status)VX_SUCCESS)
         {
@@ -1294,21 +1321,27 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
     if (status == (vx_status)VX_SUCCESS)
     {
         mf2 = ownCreateMetaFormat(ref2->context);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM004
+<justification end> */
 /* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM004 */
         if (mf2 == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to create meta format object.\n");
             status = (vx_status)VX_FAILURE;
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     /* Set the ref1 in mf1. */
     if (status == (vx_status)VX_SUCCESS)
     {
         status = vxSetMetaFormatFromReference(mf1, ref1);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM005
+<justification end> */
 /* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM005 */
         if (status != (vx_status)VX_SUCCESS)
         {
@@ -1316,14 +1349,17 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
                      "vxSetMetaFormatFromReference(ref1) failed.\n");
             status = (vx_status)VX_FAILURE;
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     /* Set the ref2 in mf2. */
     if (status == (vx_status)VX_SUCCESS)
     {
         status = vxSetMetaFormatFromReference(mf2, ref2);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM006
+<justification end> */
 /* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM006 */
         if (status != (vx_status)VX_SUCCESS)
         {
@@ -1331,7 +1367,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
                      "vxSetMetaFormatFromReference(ref2) failed.\n");
             status = (vx_status)VX_FAILURE;
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     if (status == (vx_status)VX_SUCCESS)
@@ -1343,25 +1379,31 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
     if (mf1 != NULL)
     {
         status = ownReleaseMetaFormat(&mf1);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM007
+<justification end> */
 /* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM007 */
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to release a meta-format object.\n");
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     if (mf2 != NULL)
     {
         status =  ownReleaseMetaFormat(&mf2);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM008
+<justification end> */
 /* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM008 */
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to release a meta-format object.\n");
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     return boolStatus;
@@ -1747,6 +1789,10 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
             else
             {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR003
+<justification end> */
                 if (mem_size != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR003 */
                 {
                     for (i = 0; i < numMemElem; i++)
@@ -1762,6 +1808,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                         }
                     }
                 }
+/* LDRA_JUSTIFY_END */
             }
         }
 
@@ -1831,6 +1878,10 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
             else
             {
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR004
+<justification end> */
                 if (mem_ptr != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR004 */
                 {
                     for (i = 0; i < numMemElem; i++)
@@ -1874,6 +1925,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                         } /* for (i = 0; i < numMemElem; i++) */
                     }
                 }
+/* LDRA_JUSTIFY_END */
             }
         }
 

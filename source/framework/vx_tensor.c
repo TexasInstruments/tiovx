@@ -52,13 +52,16 @@ static vx_status isTensorSwappable(vx_reference input, vx_reference output)
     {
         tivx_obj_desc_tensor_t * ip_obj_desc = (tivx_obj_desc_tensor_t *)input->obj_desc;
         tivx_obj_desc_tensor_t * op_obj_desc = (tivx_obj_desc_tensor_t *)output->obj_desc;
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TENSOR_UM002
+<justification end> */
 /* TIOVX-1702- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TENSOR_UM002 */
         if (ip_obj_desc->mem_size != op_obj_desc->mem_size)
         {
            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
        }
-#endif       
+/* LDRA_JUSTIFY_END */
     }
     else
     {
@@ -73,6 +76,10 @@ static vx_status isTensorSwappable(vx_reference input, vx_reference output)
 static vx_status moveOrSwapTensor(vx_reference input, vx_reference output)
 {
     vx_status status =  ownReferenceLock(output);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR003
+<justification end> */
     if ((vx_status)VX_SUCCESS == status) /* TIOVX-1938- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR003 */
     {
         /* swap destructors even if they are generic (identical) for the tensor objects.
@@ -88,6 +95,7 @@ static vx_status moveOrSwapTensor(vx_reference input, vx_reference output)
         input->obj_desc  = op_obj_desc;
         (void)ownReferenceUnlock(output);
     }
+/* LDRA_JUSTIFY_END */
     return status;
 }
 
@@ -707,10 +715,15 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
         {
             for (i = 0; i < number_of_dims; i++)
             { 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR001
+<justification end> */
                 if (NULL != obj_desc) /* TIOVX-1938- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR001 */
                 {
                     view_end_map[i] = obj_desc->dimensions[i];
                 }
+/* LDRA_JUSTIFY_END */
             }
         }
         else
@@ -745,8 +758,12 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 
         map_addr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
         map_size = obj_desc->mem_size;
-
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR002
+<justification end>*/
         if (NULL != map_addr) /* TIOVX-1938- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR002 */
+/* LDRA_JUSTIFY_END */        
         {
             uint32_t offset;
 
@@ -795,14 +812,17 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
         }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TENSOR_UM001
+<justification end>*/
 /* TIOVX-1702- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TENSOR_UM001 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     return status;

@@ -116,13 +116,16 @@ static void ownObjDescIpcHandler(uint32_t payload)
     /* now this is local target hence call target API directly */
     status = ownTargetQueueObjDesc(dst_target_id, obj_desc_id);
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_OBJDESC_UM001
+<justification end> */
 /* TIOVX-1703- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJDESC_UM001 */
     if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR,"ownTargetQueueObjDesc failed\n");
     }
-#endif
+/* LDRA_JUSTIFY_END */
 }
 
 void ownObjDescInit(void)
@@ -283,13 +286,16 @@ vx_status ownObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
         /* target is on same CPU queue obj_desc using target APIs */
         status = ownTargetQueueObjDesc((int32_t)dst_target_id, obj_desc_id);
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_OBJDESC_UM002
+<justification end> */
 /* TIOVX-1703- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJDESC_UM002 */
         if(status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"ownTargetQueueObjDesc failed\n");
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
     else
     {
@@ -442,12 +448,17 @@ int32_t tivx_obj_desc_strncmp(volatile void *dst, volatile void *src, uint32_t s
 
     for(i=0; i<size; i++)
     {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_OBJ_DESC_UBR001
+<justification end> */
         if((d[i] != s[i]) || (d[i] == 0U)  /* TIOVX-1965- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_OBJ_DESC_UBR001 */
         || (s[i] == 0U))
         {
             ret = ((int32_t)d[i] - (int32_t)s[i]);
             break;
         }
+/* LDRA_JUSTIFY_END */
     }
     return ret;
 }
@@ -461,6 +472,10 @@ int32_t tivx_obj_desc_strncmp_delim(volatile void *dst, volatile void *src, uint
 
     for(i=0; i<size; i++)
     {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_OBJ_DESC_UBR003
+<justification end> */
         if((d[i] != s[i]) || (d[i] == 0U) || (s[i] == 0U) /* TIOVX-1921- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJ_DESC_UBR003 */
         || (d[i] == (uint8_t)delim) || (s[i] == (uint8_t)delim))
         {
@@ -470,6 +485,7 @@ int32_t tivx_obj_desc_strncmp_delim(volatile void *dst, volatile void *src, uint
             }
             break;
         }
+/* LDRA_JUSTIFY_END */
     }
     return ret;
 }

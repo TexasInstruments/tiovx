@@ -82,12 +82,17 @@ static inline vx_bool ownGraphSortStackPush(tivx_graph_sort_context *context, vx
 {
     vx_bool status = (vx_bool)vx_false_e;
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR001
+<justification end> */
     if(context->stack_top < context->stack_max_elems) /* TIOVX-1910- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR001 */
     {
         context->stack[context->stack_top] = elem;
         context->stack_top++;
         status = (vx_bool)vx_true_e;
     }
+/* LDRA_JUSTIFY_END */
     return status;
 }
 
@@ -123,13 +128,16 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
             if((cur_node->incounter==0U) && (cur_node->is_super_node == (vx_bool)vx_false_e))
             {
                 ret = ownGraphSortStackPush(context, cur_node);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_SORT_UM001
+<justification end> */
 /* TIOVX-1717- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_SORT_UM001 */
                 if((vx_bool)vx_true_e != ret)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to push to stack \n");
                 }
-#endif
+/* LDRA_JUSTIFY_END */
             }
         }
         cur_node_idx = 0;
@@ -144,6 +152,10 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
             for (in_node_idx=0; in_node_idx < num_in_nodes; in_node_idx++)
             {
                 prev_node = ownNodeGetNextInNode(cur_node, in_node_idx);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR002
+<justification end> */
                 if(prev_node != NULL) /* TIOVX-1910- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR002 */
                 {
                     if (cur_node->node_depth <= prev_node->node_depth)
@@ -151,6 +163,7 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
                         cur_node->node_depth = prev_node->node_depth + 1U;
                     }
                 }
+/* LDRA_JUSTIFY_END */
             }
 
             for(out_node_idx=0; out_node_idx < num_out_nodes; out_node_idx++)
@@ -162,13 +175,16 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
                     if(next_node->incounter==0U)
                     {
                         ret = ownGraphSortStackPush(context, next_node);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_SORT_UM002
+<justification end> */
 /* TIOVX-1717- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_SORT_UM002 */
                         if((vx_bool)vx_true_e != ret)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to push to stack\n");
                         }
-#endif
+/* LDRA_JUSTIFY_END */
                     }
                 }
             }

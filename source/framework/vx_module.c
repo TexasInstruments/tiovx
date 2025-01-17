@@ -93,6 +93,10 @@ uint32_t ownGetModuleCount(void)
 
     for(idx=0; idx<dimof(g_module_table); idx++)
     {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_MODULE_UBR001
+<justification end> */
         if( (g_module_table[idx].publish != NULL)
             &&
             (g_module_table[idx].unpublish != NULL) /* TIOVX-1912- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_MODULE_UBR001 */
@@ -102,6 +106,7 @@ uint32_t ownGetModuleCount(void)
         {
             count++;
         }
+/* LDRA_JUSTIFY_END */
     }
     return count;
 }
@@ -156,6 +161,10 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(const char *name)
 
     for(idx=0; idx<dimof(g_module_table); idx++)
     {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_MODULE_UBR002
+<justification end> */
         if( (g_module_table[idx].publish != NULL)
             &&
             (g_module_table[idx].unpublish != NULL) /* TIOVX-1912- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_MODULE_UBR002 */
@@ -169,6 +178,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(const char *name)
             ownLogResourceFree("TIVX_MODULE_MAX", 1);
             break;
         }
+/* LDRA_JUSTIFY_END */
     }
 
     if(status != (vx_status)VX_SUCCESS)
@@ -195,21 +205,27 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
           )
         {
             status = g_module_table[idx].publish(context);
-
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_MODULE_UTJT001
+<justification end> */
             if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
             {
                 g_module_table[idx].is_loaded = (vx_bool)vx_true_e;
                 kernels_loaded ++;
                 break;
             }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_MODULE_UTJT001
+<justification end> */
 /* TIOVX-1873- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MODULE_UTJT001 */
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "Publish function for module %s failed\n", module);
             }
-/* END: TIOVX_CODE_COVERAGE_MODULE_UTJT001 */
-#endif
+/* LDRA_JUSTIFY_END */
         }
     }
     if((idx>=dimof(g_module_table)) && (0U == kernels_loaded))
@@ -242,13 +258,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
           )
         {
             status = g_module_table[idx].unpublish(context);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_MODULE_UM001
+<justification end> */
 /* TIOVX-1718- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MODULE_UM001 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unpublish function for module %s failed\n", module);
             }
-#endif
+/* LDRA_JUSTIFY_END */
             g_module_table[idx].is_loaded = (vx_bool)vx_false_e;
             break;
         }

@@ -176,7 +176,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
         if ((vx_status)VX_SUCCESS == status)
         {
             obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;
-
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_REMAP_UBR001
+<justification end> */
             if(obj_desc->mem_ptr.host_ptr != (uint64_t)0) /* TIOVX-1882- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REMAP_UBR001 */
             {
                 if ((dst_x < obj_desc->dst_width) &&
@@ -217,6 +220,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
                     }
                 }
             }
+/* LDRA_JUSTIFY_END */  
         }
         else
         {

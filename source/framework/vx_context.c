@@ -61,15 +61,21 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
     vx_kernel kernel;
     uint32_t num_kernel_info = 0, idx;
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM015 <justification end>*/
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM015 */
     if( ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Context is invalid\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM015	<justification end>*/
     else
-#endif
+/* LDRA_JUSTIFY_END */
     {
         status = ownContextLock(context);
         if((vx_status)VX_SUCCESS != status)
@@ -114,6 +120,10 @@ static vx_status ownContextCreateCmdObj(vx_context context)
                              context->free_queue_memory,
                              TIVX_QUEUE_FLAG_BLOCK_ON_GET); /* blocking */
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR001.
+<justification end> */
     if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR001 */
     {
         status = tivxQueueCreate(&context->pend_queue,
@@ -129,6 +139,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
             (void)tivxQueueDelete(&context->free_queue);
         }
     }
+/* LDRA_JUSTIFY_END */
 
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -180,23 +191,28 @@ static vx_status ownContextCreateCmdObj(vx_context context)
                 if (context->obj_desc_cmd[i] != NULL)
                 {
                     status = ownObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TTIOVX_CODE_COVERAGE_CONTEXT_UM001.
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM001 */
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to free object descriptor\n");
                     }
-#endif
+/* LDRA_JUSTIFY_END */
                 }
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UTJT009.
+<justification end> */
 /* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT009 */
                 if (context->cmd_ack_event[i] != NULL)
                 {
                     /* Error status check is not done due to the previous check */
                     (void)tivxEventDelete(&context->cmd_ack_event[i]);
                 }
-/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT009 */
-/*LDRA_ANALYSIS*/
+/* LDRA_JUSTIFY_END */
             }
 
             /* Delete the queues. No error checks are being made since we know
@@ -237,7 +253,10 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
         {
             status1 = ownObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM016
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM016 */
             if (status1 != (vx_status)VX_SUCCESS)
             {
@@ -246,14 +265,17 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
                          i);
                 status = status1;
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
 
         if (context->cmd_ack_event[i] != NULL)
         {
             status1 = tivxEventDelete(&context->cmd_ack_event[i]);
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM017
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM017 */
             if (status1 != (vx_status)VX_SUCCESS)
             {
@@ -266,7 +288,7 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
                     status = status1;
                 }
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
     }
 
@@ -277,10 +299,15 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
         VX_PRINT(VX_ZONE_ERROR,
                  "Context control command free queue deletion failed\n");
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR025
+<justification end> */
         if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR025 */
         {
             status = status1;
         }
+/* LDRA_JUSTIFY_END */
     }
 
     status1 = tivxQueueDelete(&context->pend_queue);
@@ -290,13 +317,16 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
         VX_PRINT(VX_ZONE_ERROR,
                  "Context control command pend queue deletion failed\n");
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM019
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM019 */
         if (status == (vx_status)VX_SUCCESS)
         {
             status = status1;
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     return status;
@@ -310,7 +340,10 @@ static vx_status ownDeallocateUserKernelId(vx_context context, vx_kernel kernel)
          (ownIsValidSpecificReference(vxCastRefFromKernel(kernel), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) ) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR003 */
     {
         status = (vx_status)VX_SUCCESS;
-
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR004
+<justification end> */
         if ( (kernel->enumeration >= (int32_t)VX_KERNEL_BASE(VX_ID_USER, 0U)) && /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR004 */
              (kernel->enumeration <  (int32_t)(VX_KERNEL_BASE(VX_ID_USER, 0U) + (int32_t)TIVX_MAX_KERNEL_ID)) )
         {
@@ -320,8 +353,8 @@ static vx_status ownDeallocateUserKernelId(vx_context context, vx_kernel kernel)
             context->is_dynamic_user_kernel_id_used[dynamic_user_kernel_idx] = (vx_bool)vx_false_e;
             context->num_dynamic_user_kernel_id--;
         }
+/* LDRA_JUSTIFY_END */
     }
-
     return status;
 }
 
@@ -350,12 +383,17 @@ vx_status ownContextFlushCmdPendQueue(vx_context context)
                                        obj_id,
                                        TIVX_EVENT_TIMEOUT_NO_WAIT);
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR006
+<justification end> */
                 if (status1 != (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR006 */
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                              "tivxQueuePut(free_queue) failed\n");
                     status = status1;
                 }
+/* LDRA_JUSTIFY_END */
             }
         }
     }
@@ -500,7 +538,6 @@ vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref)
         }
         else
         {
-
             for(ref_idx=0; ref_idx < dimof(context->reftable);/* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR007 */ ref_idx++)
             {
                 if(context->reftable[ref_idx]==ref)
@@ -512,7 +549,6 @@ vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref)
                     break;
                 }
             }
-
             (void)ownContextUnlock(context);
         }
     }
@@ -556,7 +592,6 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
         }
         else
         {
-
             for(idx=0; idx<dimof(context->kerneltable);/* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR008 */ idx++)
             {
                 if ((NULL == context->kerneltable[idx]) && (context->num_unique_kernels < dimof(context->kerneltable)))
@@ -570,7 +605,10 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
                     break;
                 }
             }
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UTJT001
+<justification end> */
 /* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT001 */
             if(idx>=dimof(context->kerneltable))
             {
@@ -579,8 +617,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
                 VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_CONTEXT_MAX_KERNELS in tiovx/include/TI/tivx_config.h\n");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
-/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT001 */
-/*LDRA_ANALYSIS*/
+/* LDRA_JUSTIFY_END */
 
             (void)ownContextUnlock(context);
         }
@@ -621,20 +658,27 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
                     /* found kernel entry */
 
                     status = ownDeallocateUserKernelId(context, kernel);
-
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR009
+<justification end>*/
                     if ((vx_status)VX_SUCCESS == status) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR009 */
+/* LDRA_JUSTIFY_END */
                     {
                         context->kerneltable[idx] = NULL;
                         context->num_unique_kernels--;
                         ownLogResourceFree("TIVX_CONTEXT_MAX_KERNELS", 1);
                     }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM020
+<justification end>*/
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM020 */
                     else
                     {
                         VX_PRINT(VX_ZONE_ERROR,"deallocate user kernel id failed\n");
                     }
-#endif
+/* LDRA_JUSTIFY_END */
                     break;
                 }
             }
@@ -756,14 +800,22 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 
                 status = ownObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
 
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR011
+<justification end> */
                 if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR011 */
+/* LDRA_JUSTIFY_END */
                 {
                     status = tivxEventWait(cmd_ack_event, timeout);
 
                     if (status == (vx_status)VX_SUCCESS)
                     {
 
-    /*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UTJT002
+<justification end> */
     /* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT002 */
                         if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
                         {
@@ -772,15 +824,17 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                                     obj_desc_cmd->cmd_status);
                             status = (vx_status)VX_FAILURE;
                         }
-    /* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT002 */
-    /*LDRA_ANALYSIS*/
+/* LDRA_JUSTIFY_END */
 
                         /* Put the object back in the free queue. */
                         status1 = tivxQueuePut(&context->free_queue,
                                             obj_id,
                                             TIVX_EVENT_TIMEOUT_NO_WAIT);
 
-    #ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM021
+<justification end> */
     /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM021 */
                         if (status1 != (vx_status)VX_SUCCESS)
                         {
@@ -788,7 +842,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                                     "Failed to release the object desc id.\n");
                             status = (vx_status)VX_FAILURE;
                         }
-    #endif
+/* LDRA_JUSTIFY_END */
                     }
                     else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR012 */
                     {
@@ -799,7 +853,10 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                                             obj_id,
                                             TIVX_EVENT_TIMEOUT_NO_WAIT);
 
-    #ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM022
+<justification end> */
     /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM022 */
                         if (status1 != (vx_status)VX_SUCCESS)
                         {
@@ -807,7 +864,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                                     "Failed to queue the object desc in pend queue.\n");
                             status = (vx_status)VX_FAILURE;
                         }
-    #endif
+/* LDRA_JUSTIFY_END */
                     }
 
     #ifdef LDRA_UNTESTABLE_CODE
@@ -818,7 +875,10 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                     }
     #endif
                 }
-    #ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM006
+<justification end> */
     /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM006 */
                 else
                 {
@@ -829,7 +889,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                         status = (vx_status)VX_FAILURE;
                     }
                 }
-    #endif
+/* LDRA_JUSTIFY_END */
             }
             else
             {
@@ -901,7 +961,12 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
                 status = ownObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
 
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR014
+<justification end> */
                 if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR014 */
+/* LDRA_JUSTIFY_END */
                 {
                     status = tivxEventWait(cmd_ack_event, timeout);
 
@@ -920,7 +985,10 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                                             obj_id,
                                             TIVX_EVENT_TIMEOUT_NO_WAIT);
 
-    #ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM023
+<justification end> */
     /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM023 */
                         if (status1 != (vx_status)VX_SUCCESS)
                         {
@@ -928,7 +996,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                                     "Failed to release the object desc id.\n");
                             status = (vx_status)VX_FAILURE;
                         }
-    #endif
+/* LDRA_JUSTIFY_END */
                     }
                     else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR015 */
                     {
@@ -939,14 +1007,17 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                                             obj_id,
                                             TIVX_EVENT_TIMEOUT_NO_WAIT);
 
-    #ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM024
+<justification end> */
     /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM024 */
                         if (status1 != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR,
                                     "Failed to queue the object desc in pend queue.\n");
                         }
-    #endif
+/* LDRA_JUSTIFY_END */
                     }
 
     #ifdef LDRA_UNTESTABLE_CODE
@@ -957,7 +1028,10 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                     }
     #endif
                 }
-    #ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM008
+<justification end> */
     /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM008 */
                 else
                 {
@@ -968,7 +1042,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                         status = (vx_status)VX_FAILURE;
                     }
                 }
-    #endif
+/* LDRA_JUSTIFY_END */
             }
             else
             {
@@ -1058,14 +1132,24 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                 &ownReleaseReferenceBufferGeneric;
 
             status = tivxMutexCreate(&context->lock);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR016
+<justification end> */
             if(status==(vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR016 */
             {
                 status = tivxMutexCreate(&context->log_lock);
             }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR017
+<justification end> */
             if(status==(vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR017 */
             {
                 status = ownEventQueueCreate(&context->event_queue);
             }
+/* LDRA_JUSTIFY_END */
             if(status==(vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR018 */
             {
                 status = ownInitReference(&context->base, NULL, (vx_enum)VX_TYPE_CONTEXT, NULL);
@@ -1078,15 +1162,23 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                         /* Setting it as void since return value 'count' is not used further */
                         (void)ownIncrementReference(&context->base, (vx_enum)VX_EXTERNAL);
                         ret = ownCreateConstErrors(context);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM025
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM025 */
                         if ((vx_bool)vx_false_e==ret)
                         {
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
                             VX_PRINT(VX_ZONE_ERROR,"error object not created\n");
                         }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM025
+<justification end> */
                         else
-#endif
+/* LDRA_JUSTIFY_END */
                         {
                             g_context_handle = context;
                         }
@@ -1099,59 +1191,91 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
 
                     /* Added the delete to take care of the mutex created in previous ownInitReference() call */
                     status = ownDeleteReferenceLock(&context->base);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UTJT010
+<justification end> */
 /* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT010 */
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to deinitialize Reference\n");
                     }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UTJT010
+<justification end> */
                     else
-/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT010 */
-#endif
+/* LDRA_JUSTIFY_END */
                     {
                         status = ownEventQueueDelete(&context->event_queue);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UTJT008
+<justification end> */
 /* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT008 */
                         if((vx_status)VX_SUCCESS != status)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to delete Event Queue\n");
                         }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UTJT008
+<justification end> */
                         else
-/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT008 */
-#endif
+/* LDRA_JUSTIFY_END */
                         {
                             status = tivxMutexDelete(&context->log_lock);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM002
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM002 */
                             if((vx_status)VX_SUCCESS != status)
                             {
                                 VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
                             }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM002
+<justification end> */
                             else
-#endif
+/* LDRA_JUSTIFY_END */
                             {
                                 status = tivxMutexDelete(&context->lock);
-#ifdef LDRA_UNTESTABLE_CODE
-    /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM003 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM003
+<justification end> */
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM003 */
                                 if((vx_status)VX_SUCCESS != status)
                                 {
                                     VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
                                 }
-#endif
+/* LDRA_JUSTIFY_END */
                             }
                         }
                     }
                 }
             }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM009
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM009 */
             if(status!=(vx_status)VX_SUCCESS)
             {
                 /* some error context cannot be created */
                 context = NULL;
             }
-#endif
+/* LDRA_JUSTIFY_END */
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR020
+<justification end> */
             if(status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR020 */
             {
                 ownLogResourceAlloc("TIVX_CONTEXT_MAX_OBJECTS", 1);
@@ -1178,6 +1302,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                  */
                 ownContextSetKernelRemoveLock(context, (vx_bool)vx_false_e);
             }
+/* LDRA_JUSTIFY_END */
         }
         else
         {
@@ -1239,14 +1364,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             {
                 /* Unload kernels */
                 status = vxUnloadKernels(context, g_context_default_load_module[idx]);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM004
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM004 */
                 if((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to unload kernel\n");
                     break;
                 }
-#endif
+/* LDRA_JUSTIFY_END */
             }
             if((vx_status)VX_SUCCESS == status) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR021 */
             {
@@ -1281,7 +1409,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                     if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_ERROR) )
                     {
                         status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_INTERNAL, NULL);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM010
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM010 */
                         if((vx_status)VX_SUCCESS != status1)
                         {
@@ -1289,7 +1420,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                             status = status1;
                             do_break = (vx_bool)vx_true_e;
                         }
-#endif
+/* LDRA_JUSTIFY_END */
                     }
                     if((vx_status)VX_SUCCESS == status1) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR022 */
                     {
@@ -1300,20 +1431,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                             status = vxRemoveKernel(vxCastRefAsKernel(ref,NULL));
                         }
 
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UTJT004
+<justification end> */
 /* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT004 */
                         /* Warning above so user can fix release external objects, but close here anyway */
                         while ((NULL != ref)&& (ref->external_count > 1U) ) {
                             /* Setting it as void since return value 'count' is not used further */
                             (void)ownDecrementReference(ref, (vx_enum)VX_EXTERNAL);
                         }
-/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT004 */
-/*LDRA_ANALYSIS*/
+/* LDRA_JUSTIFY_END */
 
                         if ((NULL != ref) && (ref->external_count > 0U) )
                         {
                             status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_EXTERNAL, NULL);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM011
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM011 */
                             if((vx_status)VX_SUCCESS != status1)
                             {
@@ -1321,20 +1457,26 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                                 status = status1;
                                 do_break = (vx_bool)vx_true_e;
                             }
-#endif
+/* LDRA_JUSTIFY_END */
                         }
                     }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM012
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM012 */
                     if((vx_bool)vx_true_e == do_break)
                     {
                         break;
                     }
-#endif
+/* LDRA_JUSTIFY_END */
                 }
 
                 /* By now, all external and internal references should be removed */
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM026
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM026 */
                 for (r = 0; r < dimof(context->reftable); r++)
                 {
@@ -1343,27 +1485,33 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                         VX_PRINT(VX_ZONE_ERROR,"Reference %d not removed\n", r);
                     }
                 }
-#endif
+/* LDRA_JUSTIFY_END */
 
                 status1 = ownContextDeleteCmdObj(context);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM013
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM013 */
                 if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"ownContextDeleteCmdObj() failed\n");
                     status = status1;
                 }
-#endif
+/* LDRA_JUSTIFY_END */
 
                 status1 = ownEventQueueDelete(&context->event_queue);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM014
+<justification end> */
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM014 */
                 if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to delete event queue\n");
                     status = status1;
                 }
-#endif
+/* LDRA_JUSTIFY_END */
 
                 ownLogResourceFree("TIVX_CONTEXT_MAX_OBJECTS", 1);
 
@@ -1371,39 +1519,45 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 /* Normally destroy sem is part of release reference, but can't for context */
                 status1 = tivxMutexDelete(&context->base.lock);
 
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UTJT005
+<justification end> */
 /* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT005 */
                 if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
                     status = status1;
                 }
-/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT005 */
-/*LDRA_ANALYSIS*/
+/* LDRA_JUSTIFY_END */
 
                 status1 = tivxMutexDelete(&context->log_lock);
 
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UTJT006
+<justification end> */
 /* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT006 */
                 if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
                     status = status1;
                 }
-/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT006 */
-/*LDRA_ANALYSIS*/
+/* LDRA_JUSTIFY_END */
 
                 status1 = tivxMutexDelete(&context->lock);
 
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UTJT007
+<justification end> */
 /* TIOVX-1854: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UTJT007 */
                 if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
                     status = status1;
                 }
-/* END: TIOVX_CODE_COVERAGE_CONTEXT_UTJT007 */
-/*LDRA_ANALYSIS*/
+/* LDRA_JUSTIFY_END */
 
                 (void)memset(context, 0, sizeof(tivx_context_t));
 
@@ -1687,15 +1841,23 @@ VX_API_ENTRY vx_status VX_API_CALL vxDirective(vx_reference reference, vx_enum d
         {
             context = reference->context;
         }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM027
+<justification end>*/
 /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM027 */
         if (ownIsValidContext(context) == (vx_bool)vx_false_e)
         {
             VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
             status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM027
+<justification end>*/
         else
-#endif
+/* LDRA_JUSTIFY_END */
         {
             switch (directive)
             {

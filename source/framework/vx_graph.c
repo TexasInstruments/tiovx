@@ -35,15 +35,23 @@ static vx_status ownDestructGraph(vx_reference ref)
         if ((vx_bool)vx_true_e == graph->is_streaming_alloc)
         {
             status1 = ownGraphFreeStreaming(graph);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM001
+<justification end> */
 /* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM001 */
             if((vx_status)VX_SUCCESS != status1)
             {
                 status = status1;
                 VX_PRINT(VX_ZONE_ERROR,"Failed to free graph streaming objects\n");
             }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM001
+<justification end> */
             else
-#endif
+/* LDRA_JUSTIFY_END */
             {
                 graph->is_streaming_alloc = (vx_bool)vx_false_e;
             }
@@ -57,14 +65,17 @@ static vx_status ownDestructGraph(vx_reference ref)
                 if((graph->parameters[i].queue_enable != (vx_bool)vx_false_e) && (graph->parameters[i].data_ref_queue != NULL))
                 {
                     status1 = ownDataRefQueueRelease(&graph->parameters[i].data_ref_queue);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM002
+<justification end> */
 /* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM002 */
                     if((vx_status)VX_SUCCESS != status1)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
                         status = status1;
                     }
-#endif
+/* LDRA_JUSTIFY_END */
                 }
             }
             for(i=0; i<graph->num_data_ref_q; i++)
@@ -72,14 +83,17 @@ static vx_status ownDestructGraph(vx_reference ref)
                 if(graph->data_ref_q_list[i].data_ref_queue != NULL) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR002 */
                 {
                     status1 = ownDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM003
+<justification end> */
 /* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM003 */
                     if((vx_status)VX_SUCCESS != status1)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
                         status = status1;
                     }
-#endif
+/* LDRA_JUSTIFY_END */
                 }
                 if(graph->data_ref_q_list[i].num_buf > 1U)
                 {
@@ -98,14 +112,17 @@ static vx_status ownDestructGraph(vx_reference ref)
                         }
 
                         status1 = vxReleaseReference(&data_ref);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM004
+<justification end> */
 /* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM004 */
                         if((vx_status)VX_SUCCESS != status1)
                         {
                             status = status1;
                             VX_PRINT(VX_ZONE_ERROR,"Failed to release reference\n");
                         }
-#endif
+/* LDRA_JUSTIFY_END */
                         graph->data_ref_q_list[i].refs_list[buf_id] = NULL;
                     }
 
@@ -118,14 +135,17 @@ static vx_status ownDestructGraph(vx_reference ref)
                 if(graph->delay_data_ref_q_list[i].data_ref_queue != NULL) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR003 */
                 {
                     status1 = ownDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM005
+<justification end> */
 /* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM005 */
                     if((vx_status)VX_SUCCESS != status1)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
                         status = status1;
                     }
-#endif
+/* LDRA_JUSTIFY_END */
                 }
             }
 
@@ -165,34 +185,43 @@ static vx_status ownDestructGraph(vx_reference ref)
         }
 
         status1 = ownGraphDeleteQueues(graph);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM006
+<justification end> */
 /* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM006 */
         if((vx_status)VX_SUCCESS != status1)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to delete queues created during ownGraphCreateQueues \n");
             status = status1;
         }
-#endif
+/* LDRA_JUSTIFY_END */
         status1 = ownGraphFreeObjDesc(graph);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM007
+<justification end> */
 /* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM007 */
         if((vx_status)VX_SUCCESS != status1)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to free graph obj desc \n");
             status = status1;
         }
-#endif
+/* LDRA_JUSTIFY_END */
         if(NULL != graph->all_graph_completed_event) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR004 */
         {
             status1 = tivxEventDelete(&graph->all_graph_completed_event);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM008
+<justification end> */
 /* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM008 */
             if(status1 != (vx_status)VX_SUCCESS)
             {
                 status = status1;
                 VX_PRINT(VX_ZONE_ERROR,"Failed to delete event\n");
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
     }
     return status;
@@ -201,9 +230,13 @@ static vx_status ownDestructGraph(vx_reference ref)
 static vx_status ownResetGraphPerf(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR005
+<justification end>*/
     if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), 
     (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR005 */
+/* LDRA_JUSTIFY_END */
     {
         graph->perf.tmp = 0;
         graph->perf.beg = 0;
@@ -214,14 +247,17 @@ static vx_status ownResetGraphPerf(vx_graph graph)
         graph->perf.num = 0;
         graph->perf.max = 0;
     }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM009
+<justification end>*/
 /* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM009 */
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "invalid graph object\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
-#endif
+/* LDRA_JUSTIFY_END */
     return status;
 }
 
@@ -465,13 +501,16 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->debug_zonemask = ownGetGlobalZonemask();
 
             status = ownResetGraphPerf(graph);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM010
+<justification end> */
 /* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM010 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to reset graph \n");
             }
-#endif
+/* LDRA_JUSTIFY_END */
 
             for (idx = 0; idx < TIVX_GRAPH_MAX_DELAYS; idx++)
             {
@@ -495,11 +534,19 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->state = (vx_enum)VX_GRAPH_STATE_UNVERIFIED;
 
             status = tivxEventCreate(&graph->all_graph_completed_event);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR006
+<justification end> */
             if(status==(vx_status)VX_SUCCESS) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR006 */
             {
                 status = ownGraphCreateQueues(graph);
             }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM011
+<justification end> */
 /* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM011 */
             if(status!=(vx_status)VX_SUCCESS)
             {
@@ -514,7 +561,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
                 /* status set to NULL due to preceding type check */
                 graph = vxCastRefAsGraph(ref, NULL);
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
     }
 
@@ -740,21 +787,28 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
             {
                 /* all checks have been done, we can just assign any other parameters */
                 status = ownNodeSetParameter(graph->parameters[index].params_list[ref_index].node, graph->parameters[index].params_list[ref_index].index, value);
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UTJT002.
+<justification end> */
 /* TIOVX-1812- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UTJT002 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "could not set graph parameter\n");
                     break;
                 }
-/* END: TIOVX_CODE_COVERAGE_GRAPH_UTJT002 */
-/*LDRA_ANALYSIS*/
+/* LDRA_JUSTIFY_END */
             }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR008
+<justification end> */
             if ((vx_status)VX_SUCCESS == status) { /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR008 */
                 status = ownGraphAllocateDataObject(graph->parameters[index].node,
                                                     graph->parameters[index].index,
                                                     value);
             }
+/* LDRA_JUSTIFY_END */
         }
         else
         {
@@ -903,21 +957,26 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
         {
             /* schedule graph one time */
             status = ownGraphScheduleGraph(graph, 1);
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UTJT001
+<justification end> */
 /* TIOVX-1812- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UTJT001 */
             if((vx_status)VX_SUCCESS !=status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to schedule graph for execution \n");
             }
-/* END: TIOVX_CODE_COVERAGE_GRAPH_UTJT001 */
-/*LDRA_ANALYSIS*/
+/* LDRA_JUSTIFY_END */
         }
         else
         if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
             ((vx_bool)vx_false_e == graph->is_streaming_enabled) )
         {
             uint32_t num_schedule = ownGraphGetNumSchedule(graph);
-
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR007
+<justification end> */
             if(num_schedule>0U) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR007 */
             {
                 /* schedule graph 'num_schedule' times */
@@ -926,6 +985,7 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
                  */
                 (void)ownGraphScheduleGraph(graph, num_schedule);
             }
+/* LDRA_JUSTIFY_END */
         }
         else
         if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
@@ -1046,13 +1106,16 @@ void ownSendGraphCompletedEvent(vx_graph graph)
             status = ownEventQueueAddEvent(&graph->base.context->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
                         (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM013.
+<justification end> */
 /* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM013 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
     }
 }

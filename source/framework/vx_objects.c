@@ -82,7 +82,10 @@ vx_status ownObjectInit(void)
     vx_status status;
 
     status = tivxMutexCreate(&g_tivx_objects_lock);
-
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_OBJECTS_UBR001
+<justification end> */
     if ((vx_status)VX_SUCCESS == status) /* TIOVX-1923- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJECTS_UBR001 */
     {
         ownInitUseFlag(g_tivx_objects.isMfUse,
@@ -136,7 +139,7 @@ vx_status ownObjectInit(void)
         ownInitUseFlag(g_tivx_objects.isDataRefQUse,
             TIVX_DATA_REF_Q_MAX_OBJECTS);
     }
-
+/* LDRA_JUSTIFY_END */
     return (status);
 }
 

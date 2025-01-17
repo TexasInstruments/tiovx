@@ -92,14 +92,16 @@ vx_status ownTargetKernelInit(void)
     g_num_target_kernel = 0U;
 
     status = tivxMutexCreate(&g_target_kernel_lock);
-
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM001
+<justification end> */
 /* TIOVX-1707-LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM001 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to create mutex\n");
     }
-#endif
+/* LDRA_JUSTIFY_END */
 
     return status;
 }
@@ -113,13 +115,16 @@ void ownTargetKernelDeInit(void)
     vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxMutexDelete(&g_target_kernel_lock);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM002
+<justification end> */
 /* TIOVX-1707- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM002 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
     }
-#endif
+/* LDRA_JUSTIFY_END */
 }
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
 /* END: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_UM001 */
@@ -145,7 +150,10 @@ static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
         (process_func != NULL) && (create_func != NULL))
     {
         status = tivxMutexLock(g_target_kernel_lock);
-
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR001
+<justification end> */
         if ((vx_status)VX_SUCCESS == status) /* TIOVX-1932- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR001 */
         {
             for(i=0; i<dimof(g_target_kernel_table); i++)
@@ -188,6 +196,7 @@ static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
 
             (void)tivxMutexUnlock(g_target_kernel_lock);
         }
+/* LDRA_JUSTIFY_END */
     }
     else
     {
@@ -235,6 +244,10 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
     if (NULL != target_kernel)
     {
         mutex_status = tivxMutexLock(g_target_kernel_lock);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR002
+<justification end> */
         if ((vx_status)VX_SUCCESS == mutex_status) /* TIOVX-1932- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR002 */
         {
             for(i=0; i<dimof(g_target_kernel_table); i++)
@@ -262,6 +275,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
 
             (void)tivxMutexUnlock(g_target_kernel_lock);
         }
+/* LDRA_JUSTIFY_END */
     }
 
     return (status);
@@ -274,7 +288,10 @@ tivx_target_kernel ownTargetKernelGet(vx_enum kernel_id, volatile char *kernel_n
     vx_status status;
 
     status = tivxMutexLock(g_target_kernel_lock);
-
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR003
+<justification end> */
     if ((vx_status)VX_SUCCESS == status) /* TIOVX-1932- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR003 */
     {
         tivx_target_kernel tmp_knl = NULL;
@@ -320,6 +337,7 @@ tivx_target_kernel ownTargetKernelGet(vx_enum kernel_id, volatile char *kernel_n
 
         (void)tivxMutexUnlock(g_target_kernel_lock);
     }
+/* LDRA_JUSTIFY_END */
 
     return (knl);
 }

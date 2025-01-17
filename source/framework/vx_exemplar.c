@@ -377,14 +377,22 @@ static vx_reference ownCreateObjectArrayFromExemplar(
     (void)vxQueryObjectArray(exemplar, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &count, sizeof(count));
 
     objarr_item_exemplar = vxGetObjectArrayItem(exemplar, 0);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EXEMPLER_UM011
+<justification end>*/
 /* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM011 */
     if(objarr_item_exemplar==NULL)
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid object array reference\n");
     }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EXEMPLER_UM011
+<justification end>*/
     else
-#endif
+/* LDRA_JUSTIFY_END */
     {
         vx_uint32 i;
         vx_status status = (vx_status)VX_SUCCESS;

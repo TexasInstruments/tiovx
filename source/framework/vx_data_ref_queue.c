@@ -91,6 +91,10 @@ vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_refe
         ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
         status = ownObjDescQueueEnqueue(queue_obj_desc_id, ref_obj_desc_id);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR001
+<justification end> */
         if(status==(vx_status)VX_SUCCESS) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR001 */
         {
             blocked_nodes.num_nodes = 0;
@@ -99,9 +103,14 @@ vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_refe
             status = ownObjDescQueueExtractBlockedNodes(queue_obj_desc_id,
                 &blocked_nodes);
         }
+/* LDRA_JUSTIFY_END */
 
         ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR002
+<justification end> */
         if(status==(vx_status)VX_SUCCESS) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR002 */
         {
             uint32_t node_id;
@@ -116,6 +125,7 @@ vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_refe
                 ownTargetTriggerNode(blocked_nodes.node_id[node_id]);
             }
         }
+/* LDRA_JUSTIFY_END */
     }
 
     return status;
@@ -248,26 +258,32 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
         if(ref->wait_done_ref_available_event != NULL)
         {
             status = tivxEventPost(ref->wait_done_ref_available_event);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM001
+<justification end> */
 /* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM001 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to add post event\n");
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
         if(ref->is_enable_send_ref_consumed_event != 0)
         {
             status = ownEventQueueAddEvent(&ref->base.context->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
                         (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM002
+<justification end> */
 /* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM002 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
     }
     else
@@ -301,37 +317,46 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
             if(data_ref_q->obj_desc[i] != NULL)
             {
                 status = ownObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc[i]);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM003
+<justification end> */
 /* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM003 */
                 if((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor\n");
                     do_break = (vx_bool)vx_true_e;
                 }
-#endif
+/* LDRA_JUSTIFY_END */
             }
             if((vx_status)VX_SUCCESS == status) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR004 */
             {
                 if(data_ref_q->obj_desc_cmd[i] != NULL)
                 {
                     status = ownObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc_cmd[i]);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM004
+<justification end> */
 /* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM004 */
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor\n");
                         do_break = (vx_bool)vx_true_e;
                     }
-#endif
+/* LDRA_JUSTIFY_END */
                 }
             }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM005
+<justification end> */
 /* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM005 */
             if((vx_bool)vx_true_e == do_break)
             {
                 break;
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
         if(status == (vx_status)VX_SUCCESS) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR005 */
         {
@@ -339,6 +364,10 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
             {
                 status = ownObjDescQueueRelease(&data_ref_q->acquire_q_obj_desc_id);
             }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR006
+<justification end> */
             if(status == (vx_status)VX_SUCCESS) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR006 */
             {
                 if((vx_enum)data_ref_q->release_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
@@ -346,6 +375,7 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
                     status = ownObjDescQueueRelease(&data_ref_q->release_q_obj_desc_id);
                 }
             }
+/* LDRA_JUSTIFY_END */
         }
     }
     return status;
@@ -404,7 +434,10 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
                     if(prms->enable_user_queueing != 0)
                     {
                         ref->obj_desc_cmd[pipe_id] = (tivx_obj_desc_cmd_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_CMD, NULL);
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT001
+<justification end> */
 /* TIOVX-1868- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT001 */
                         if(ref->obj_desc_cmd[pipe_id]==NULL)
                         {
@@ -413,8 +446,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
                             VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
                             VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
                         }
-/* END: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT001 */
-/*LDRA_ANALYSIS*/
+/* LDRA_JUSTIFY_END */
                     }
                 }
             }

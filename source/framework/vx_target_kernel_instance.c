@@ -83,13 +83,16 @@ vx_status ownTargetKernelInstanceInit(void)
 
     status = tivxMutexCreate(&g_target_kernel_instance_lock);
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TARGET_KERNEL_INSTANCE_UM001
+<justification end> */
 /* TIOVX-1708- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_INSTANCE_UM001 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to create mutex\n");
     }
-#endif
+/* LDRA_JUSTIFY_END */
 
     return status;
 }
@@ -103,13 +106,16 @@ void ownTargetKernelInstanceDeInit(void)
     vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxMutexDelete(&g_target_kernel_instance_lock);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TARGET_KERNEL_INSTANCE_UM002
+<justification end> */
 /* TIOVX-1708- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_INSTANCE_UM002 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
     }
-#endif
+/* LDRA_JUSTIFY_END */
 }
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
 /* END: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_INSTANCE_UM001 */
