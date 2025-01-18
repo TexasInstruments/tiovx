@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -63,6 +63,126 @@
 
 
 #include <vx_internal.h>
+#include <tivx_platform_pc.h>
+#include <utils/ipc/include/app_ipc.h>
+#include <sys/prctl.h>
+#include <stdio.h>
+
+#if defined(MCU_PLUS_SDK)
+#include <drivers/soc.h>
+#endif
+
+#if defined (SOC_FAMILY_TDA5)
+#include <Ipc_Notify_Hal_Defaults.h>
+
+#if defined (SOC_TDA54)
+uint32_t g_csl_ipc_id_map[CSL_CORE_ID_MAX] = {
+    TIVX_CPU_ID_INVALID,
+    TIVX_CPU_ID_MCU0,
+    TIVX_CPU_ID_DSP_C7_1,
+    TIVX_CPU_ID_DSP_C7_2,
+    TIVX_CPU_ID_MPU_0,
+    TIVX_CPU_ID_RMCU0_0,
+    TIVX_CPU_ID_MCU1,
+    TIVX_CPU_ID_MCU2,
+    TIVX_CPU_ID_MCU3,
+    TIVX_CPU_ID_MCU4,
+    TIVX_CPU_ID_RMCU0_1,
+    TIVX_CPU_ID_RMCU1_0,
+    TIVX_CPU_ID_RMCU1_1,
+    TIVX_CPU_ID_RMCU2_0,
+    TIVX_CPU_ID_RMCU2_1,
+    TIVX_CPU_ID_DSP_C7_3,
+    TIVX_CPU_ID_DSP_C7_4
+};
+
+uint32_t g_ipc_csl_id_map[TIVX_CPU_ID_MAX] = {
+    CSL_CORE_ID_DSP0,
+    CSL_CORE_ID_DSP1,
+    CSL_CORE_ID_DSP2,
+    CSL_CORE_ID_DSP3,
+    CSL_CORE_ID_A720_0,
+    CSL_CORE_ID_RMCU0_0,
+    CSL_CORE_ID_RMCU0_1,
+    CSL_CORE_ID_RMCU1_0,
+    CSL_CORE_ID_RMCU1_1,
+    CSL_CORE_ID_RMCU2_0,
+    CSL_CORE_ID_RMCU2_1,
+    CSL_CORE_ID_MCU0,
+    CSL_CORE_ID_MCU1,
+    CSL_CORE_ID_MCU2,
+    CSL_CORE_ID_MCU3,
+    CSL_CORE_ID_MCU4
+};
+
+uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
+    APP_IPC_CPU_C7x_1,
+    APP_IPC_CPU_C7x_2,
+    APP_IPC_CPU_C7x_3,
+    APP_IPC_CPU_C7x_4,
+    APP_IPC_CPU_MPU1_0,
+    APP_IPC_CPU_RMCU0_0,
+    APP_IPC_CPU_RMCU0_1,
+    APP_IPC_CPU_RMCU1_0,
+    APP_IPC_CPU_RMCU1_1,
+    APP_IPC_CPU_RMCU2_0,
+    APP_IPC_CPU_RMCU2_1,
+    APP_IPC_CPU_MCU0_M55,
+    APP_IPC_CPU_MCU1_M55,
+    APP_IPC_CPU_MCU2_M55,
+    APP_IPC_CPU_MCU3_M55,
+    APP_IPC_CPU_MCU4_M55
+};
+
+static char* g_app_ipc_to_cpu_name[APP_IPC_CPU_MAX] =
+{
+    "INVALID\0",
+    "TIVX_MCU0\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "TIVX_C71\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+};
+
+static char* g_ipc_to_cpu_name[CSL_CORE_ID_MAX] =
+{
+    "INVALID\0",
+    "TIVX_MCU0\0",
+    "TIVX_C71\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+};
+#endif
+
+static tivx_vdk_ipc_send_mbox_f gVdkIpcSendMbox = NULL;
+
+void ownUpdateIpcSendMboxFunctionPtr(tivx_vdk_ipc_send_mbox_f ptr)
+{
+    gVdkIpcSendMbox = ptr;
+}
+#endif
 
 /*! \brief Pointer to the IPC notify event handler.
  *         It can be registered using #ownIpcRegisterHandler API
@@ -71,9 +191,47 @@
 static tivx_ipc_handler_f g_ipc_handler = NULL;
 static vx_enum g_cpu_id = (vx_enum)TIVX_CPU_ID_DSP1;
 
+#if defined (SOC_FAMILY_TDA5)
+static void tivxIpcHandler(uint32_t src_cpu_id, uint32_t payload)
+{
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR001
+<justification end> */
+    if (NULL != g_ipc_handler)
+    {
+        g_ipc_handler(payload);
+    }
+/* LDRA_JUSTIFY_END */
+}
+#endif
+
 void ownIpcRegisterHandler(tivx_ipc_handler_f notifyCb)
 {
     g_ipc_handler = notifyCb;
+}
+
+void ownIpcInit(void)
+{
+#if defined (SOC_FAMILY_TDA5)
+    /* Register IPC Handler */
+    (void)appIpcRegisterNotifyHandler(tivxIpcHandler);
+#endif
+}
+
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/* LDRA_JUSTIFY
+<metric start> statement <metric end>
+<function start> void ownIpcDeInit.* <function end>
+<justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_IPC_UM001
+<justification end> */
+#endif
+void ownIpcDeInit(void)
+{
+#if defined (SOC_FAMILY_TDA5)
+    /* Un-Register IPC Handler */
+    (void)appIpcRegisterNotifyHandler(NULL);
+#endif
 }
 
 vx_status ownIpcSendMsg(
@@ -83,7 +241,31 @@ vx_status ownIpcSendMsg(
 
     if( (cpu_id < (vx_enum)TIVX_CPU_ID_MAX) && (NULL != g_ipc_handler))
     {
-        g_ipc_handler(payload);
+#if defined (SOC_FAMILY_TDA5)
+        if(NULL == gVdkIpcSendMbox)
+        {
+            g_ipc_handler(payload);
+        }
+        else
+        {
+            uint32_t app_cpu_id = g_ipc_cpu_id_map[cpu_id];
+            if(cpu_id==(vx_enum)host_cpu_id)
+            {
+                status = appIpcSendNotifyPort(
+                    app_cpu_id,
+                    payload,
+                    host_port_id);
+            }
+            else
+            {
+                status = appIpcSendNotify(
+                    app_cpu_id,
+                    payload);
+            }
+        }
+#else
+            g_ipc_handler(payload);
+#endif
     }
     else
     {
@@ -125,15 +307,105 @@ void ownIpcGetCpuMap(uint32_t blank_map[TIVX_CPU_ID_MAX])
     }
 }
 
-void ownIpcInit(void)
-{
-}
-
-void ownIpcDeInit(void)
-{
-}
-
 vx_bool tivxIsTargetEnabled(const char target_name[])
 {
     return ((vx_bool)vx_true_e);
 }
+
+#if defined (SOC_FAMILY_TDA5)
+int16_t tivxVdkGetSelfOvxIpcCpuId(void)
+{
+    int16_t cpu_id;
+    char thread_name[16];
+
+    if (prctl(PR_GET_NAME, thread_name) != 0U)
+    {
+        printf("prctl(PR_GET_NAME) failed\n");
+        cpu_id = -1;
+    }
+    else
+    {
+        if (strncmp(thread_name, "TIVX_C7\0", 7) == 0U)
+        {
+            cpu_id = TIVX_CPU_ID_DSP1;
+        }
+        else
+        {
+            if (strncmp(thread_name, "ACK\0", 3) == 0U)
+            {
+                cpu_id = -1;
+            }
+            else
+            {
+                cpu_id = TIVX_CPU_ID_MCU0;
+            }
+        }
+    }
+
+    return cpu_id;
+}
+
+int16_t tivxVdkGetSelfAppIpcCpuId(void)
+{
+    int16_t cpu_id;
+    char thread_name[16];
+
+    if (prctl(PR_GET_NAME, thread_name) != 0U)
+    {
+        printf("prctl(PR_GET_NAME) failed\n");
+        cpu_id = -1;
+    }
+    else
+    {
+        if (strncmp(thread_name, "TIVX_C7\0", 7) == 0U)
+        {
+            cpu_id = g_ipc_cpu_id_map[TIVX_CPU_ID_DSP_C7_1];
+        }
+        else
+        {
+            if (strncmp(thread_name, "ACK\0", 3) == 0U)
+            {
+                cpu_id = -1;
+            }
+            else
+            {
+                cpu_id = g_ipc_cpu_id_map[TIVX_CPU_ID_MCU0];
+            }
+        }
+    }
+
+    return cpu_id;
+}
+
+int16_t tivxVdkGetSelfCslIpcCpuId(void)
+{
+    int16_t cpu_id;
+    char thread_name[16];
+
+    if (prctl(PR_GET_NAME, thread_name) != 0U)
+    {
+        printf("prctl(PR_GET_NAME) failed\n");
+        cpu_id = -1;
+    }
+    else
+    {
+        if (strncmp(thread_name, "TIVX_C7\0", 7) == 0U)
+        {
+            cpu_id = g_ipc_csl_id_map[TIVX_CPU_ID_DSP_C7_1];
+        }
+        else
+        {
+            if (strncmp(thread_name, "ACK\0", 3) == 0U)
+            {
+                cpu_id = -1;
+            }
+            else
+            {
+                cpu_id = g_ipc_csl_id_map[TIVX_CPU_ID_MCU0];
+            }
+        }
+    }
+
+    return cpu_id;
+}
+#endif

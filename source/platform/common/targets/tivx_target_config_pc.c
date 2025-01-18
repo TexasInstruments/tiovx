@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017-2025 Texas Instruments Incorporated
+* Copyright (c) 2017-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -61,22 +61,54 @@
 */
 
 #include "tivx_target_config.h"
+#include <TI/tivx_ext_vdk.h>
+#include <tivx_platform_pc.h>
 
 void ownPlatformCreateTargets(void)
 {
-    ownPlatformCreateTargetsMpu();
-    ownPlatformCreateTargetsC7();
-    ownPlatformCreateTargetsR5f();
-#if defined(SOC_J721E)
-    ownPlatformCreateTargetsC66();
+#if defined(SOC_FAMILY_TDA5)
+    if (tivxVdkIsEnabled() == 1U)
+    {
+        if (tivxVdkGetSelfOvxIpcCpuId() == TIVX_CPU_ID_DSP_C7_1)
+        {
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP_C7_1);
+            ownPlatformCreateTargetsC7();
+        }
+        else if (tivxVdkGetSelfOvxIpcCpuId() == TIVX_CPU_ID_MCU0)
+        {
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU0);
+            ownPlatformCreateTargetsM55();
+        }
+    }
+    else
 #endif
+    {
+        ownPlatformCreateTargetsMpu();
+        ownPlatformCreateTargetsC7();
+#if defined(SOC_FAMILY_TDA5)
+        ownPlatformCreateTargetsM55();
+        ownPlatformCreateTargetsR52P();
+#endif
+#if defined(SOC_FAMILY_J7) || defined(SOC_FAMILY_AM)
+        ownPlatformCreateTargetsR5f();
+#endif
+#if defined(SOC_J721E)
+        ownPlatformCreateTargetsC66();
+#endif
+    }
 }
 
 void ownPlatformDeleteTargets(void)
 {
     ownPlatformDeleteTargetsMpu();
     ownPlatformDeleteTargetsC7();
+#if defined(SOC_FAMILY_TDA5)
+    ownPlatformDeleteTargetsM55();
+    ownPlatformDeleteTargetsR52P();
+#endif
+#if defined(SOC_FAMILY_J7) || defined(SOC_FAMILY_AM)
     ownPlatformDeleteTargetsR5f();
+#endif
 #if defined(SOC_J721E)
     ownPlatformDeleteTargetsC66();
 #endif

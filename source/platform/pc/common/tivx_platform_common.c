@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -64,24 +64,163 @@
 #include <app_mem_map.h>
 #include <utils/perf_stats/include/app_perf_stats.h>
 #include <tivx_platform.h>
+#include <tivx_platform_pc.h>
+#include <tivx_platform_common.h>
+#include <semaphore.h>
 
-/*! \brief Structure for keeping track of platform locks
- * \ingroup group_tivx_platform
- */
+#if defined(SOC_FAMILY_TDA5)
+#include <utils/pc_osal/include/dpl_osal.h>
+#include <Ipc_Notify_Hostemu.h>
+#endif
+
+void *gVdkObj = NULL;
+
+uint32_t emulated_cores = 0u;
+
+static tivx_vdk_print_log_f gVdkPrintLog = NULL;
+static tivx_vdk_handle_spinlock_f gVdkHandleSpinlock = NULL;
+static tivx_vdk_get_host_ptr_from_symbol_f gVdkGetHostPtrFromSymbol = NULL;
+static tivx_vdk_get_host_ptr_from_phy_ptr_f gVdkGetHostPtrFromPhyPtr = NULL;
+
+#if defined(SOC_FAMILY_TDA5)
+extern IpcNotify_Hal_MailboxConfig IpcNotifyMailboxConfig[CSL_CORE_ID_MAX][CSL_CORE_ID_MAX];
+
+int32_t tivxVdkRegisterCallbacks(
+                             tivx_vdk_print_log_f print_log,
+                             tivx_vdk_get_host_ptr_from_symbol_f get_host_ptr_from_symbol,
+                             tivx_vdk_get_host_ptr_from_phy_ptr_f get_host_ptr_from_phy_ptr,
+                             tivx_vdk_ipc_send_mbox_f ipc_send_mbox,
+                             tivx_vdk_handle_spinlock_f handle_spinlock,
+                             void *obj)
+{
+    gVdkPrintLog = print_log;
+    gVdkGetHostPtrFromSymbol = get_host_ptr_from_symbol;
+    gVdkGetHostPtrFromPhyPtr = get_host_ptr_from_phy_ptr;
+    ownUpdateHostPtrFromPhyPtrFunctionPtr(get_host_ptr_from_phy_ptr);
+    ownUpdateIpcSendMboxFunctionPtr(ipc_send_mbox);
+    gVdkHandleSpinlock = handle_spinlock;
+
+    IpcNotify_Hal_VdkInit(ipc_send_mbox, get_host_ptr_from_phy_ptr, (IpcNotify_Hal_VdkGetCpuIdCallback)tivxVdkGetSelfCslIpcCpuId, obj);
+
+    IpcVdkPrintLogRegister(print_log);
+
+    gVdkObj = obj;
+
+    return VX_SUCCESS;
+}
+
+int32_t tivxVdkGetMboxConfiguration(uint32_t cpu_bitmask, tivx_mbox_config_t *mbox_config)
+{
+    uint32_t dst_core, i, src_core, cluster;
+    uint16_t fifo_bitmask, user_bitmask;
+
+    IpcNotify_Hal_MailboxConfig (*MailboxConfig)[CSL_CORE_ID_MAX] = IpcNotifyMailboxConfig;
+
+    for (i = 0; i < MAX_NUM_MBOX_CLUSTERS; i++)
+    {
+        mbox_config->user_idx_bitmask[i/4] = 0U;
+        mbox_config->fifo_id_bitmask[i] = 0U;
+    }
+
+    for (dst_core = 0; dst_core <= CSL_CORE_ID_MCU1; dst_core++)
+    {
+        if (cpu_bitmask & (1U << dst_core))
+        {
+            emulated_cores |= (1U << dst_core);
+            for (src_core = 0; src_core <= CSL_CORE_ID_MCU1; src_core++)
+            {
+                cluster = MailboxConfig[src_core][dst_core].MailboxId;
+                if (cluster != 0xFFU)
+                {
+                    fifo_bitmask = (1U << MailboxConfig[src_core][dst_core].HwFifoId);
+                    user_bitmask = ((1U << MailboxConfig[src_core][dst_core].UserId) << (4U * (cluster % 4U)));
+                    mbox_config->fifo_id_bitmask[cluster] |= fifo_bitmask;
+                    mbox_config->user_idx_bitmask[cluster/4] |= user_bitmask;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+int32_t tivxVdkIpcRecvMbox(uint32_t payload, uint32_t mailbox_fifo_id)
+{
+    int32_t status = 0;
+
+    status = IpcNotify_Hal_VdkRecvMsg(payload, mailbox_fifo_id);
+
+    return status;
+}
+
+void * tivxVdkGetHostPtrFromSymbol(const char * symbol)
+{
+    void *ptr = NULL;
+
+    if (gVdkGetHostPtrFromSymbol != NULL)
+    {
+        ptr = gVdkGetHostPtrFromSymbol(symbol, gVdkObj);
+    }
+
+    return ptr;
+}
+
+uint64_t tivxVdkGetHostPtrFromPhyPtr(uint64_t phy_ptr)
+{
+    uint64_t ptr = 0;
+
+    if (gVdkGetHostPtrFromPhyPtr != NULL)
+    {
+        ptr = gVdkGetHostPtrFromPhyPtr(phy_ptr, gVdkObj);
+    }
+
+    return ptr;
+}
+#endif /* #if defined(SOC_FAMILY_TDA5) */
+
+uint32_t tivxVdkIsEnabled(void)
+{
+    uint32_t ret = 0;
+
+    if (gVdkObj != NULL)
+    {
+        ret = 1;
+    }
+
+    return ret;
+}
+
+void * tivxGetVdkObj(void)
+{
+    return gVdkObj;
+}
+
+uint32_t tivxVdkGetEmulatedCores(void)
+{
+    return emulated_cores;
+}
+
 typedef struct tivx_platform_info
 {
     /*! \brief Platform locks to protect access to the descriptor id
      */
     tivx_mutex g_platform_lock[(vx_enum)TIVX_PLATFORM_LOCK_MAX];
+
+    /*! \brief POSIX semaphore to protect memory
+     */
+    sem_t semaphore;
+    /*! \brief POSIX semaphore to protect Data Reference
+     */
+    sem_t semaphore_data_ref;
+    /*! \brief POSIX semaphore to protect Log Memory
+     */
+    sem_t semaphore_log_mem;
 } tivx_platform_info_t;
 
 /*! \brief Global instance of platform information
  * \ingroup group_tivx_platform
  */
-static tivx_platform_info_t g_tivx_platform_info =
-{
-    {NULL}
-};
+static tivx_platform_info_t g_tivx_platform_info;
 
 tivx_obj_desc_shm_entry_t gTivxObjDescShmEntry
     [TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST];
@@ -112,6 +251,30 @@ vx_status ownPlatformInit(void)
     ownIpcInit();
     ownLogRtInit();
 
+#if defined(SOC_FAMILY_TDA5)
+    if (sem_init(&g_tivx_platform_info.semaphore, 0, 1) != 0)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "POSIX semaphore create failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        if (sem_init(&g_tivx_platform_info.semaphore_data_ref, 0, 1) != 0)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "POSIX semaphore_data_ref create failed\n");
+            status = (vx_status)VX_FAILURE;
+        }
+        else
+        {
+            if (sem_init(&g_tivx_platform_info.semaphore_log_mem, 0, 1) != 0)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "POSIX semaphore_log_mem create failed\n");
+                status = (vx_status)VX_FAILURE;
+            }
+        }
+    }
+#endif
+
     tivxPlatformGetTimeInUsecs();
 
     return (status);
@@ -121,6 +284,12 @@ vx_status ownPlatformInit(void)
 void ownPlatformDeInit(void)
 {
     uint32_t i;
+
+#if defined(SOC_FAMILY_TDA5)
+    (void)sem_destroy(&g_tivx_platform_info.semaphore);
+    (void)sem_destroy(&g_tivx_platform_info.semaphore_data_ref);
+    (void)sem_destroy(&g_tivx_platform_info.semaphore_log_mem);
+#endif
 
     ownIpcDeInit();
 
@@ -138,6 +307,34 @@ void ownPlatformSystemLock(vx_enum lock_id)
     if (lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
         (void)tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
+
+        if (NULL != gVdkHandleSpinlock)
+        {
+            if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
+            {
+                /* for data ref queue lock, need to take a multi processor lock,
+                * since multiple CPUs could be trying to queue/dequeue from the same
+                * data ref queue.
+                * This lock in this platform is implemented via HW spinlock
+                */
+                (void)sem_wait(&g_tivx_platform_info.semaphore_data_ref);
+                (void)gVdkHandleSpinlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, 1U, gVdkObj);
+            }
+            else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
+            {
+                (void)sem_wait(&g_tivx_platform_info.semaphore_log_mem);
+                (void)gVdkHandleSpinlock(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID, 1U, gVdkObj);
+            }
+            else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
+            {
+                (void)sem_wait(&g_tivx_platform_info.semaphore);
+                (void)gVdkHandleSpinlock(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID, 1U, gVdkObj);
+            }
+            else
+            {
+                /* do nothing */
+            }
+        }
     }
 }
 
@@ -145,6 +342,29 @@ void ownPlatformSystemUnlock(vx_enum lock_id)
 {
     if (lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
+        if (NULL != gVdkHandleSpinlock)
+        {
+            if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
+            {
+                /* release the lock taken during ownPlatformSystemLock */
+                (void)gVdkHandleSpinlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, 0U, gVdkObj);
+                (void)sem_post(&g_tivx_platform_info.semaphore_data_ref);
+            }
+            else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
+            {
+                (void)gVdkHandleSpinlock(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID, 0U, gVdkObj);
+                (void)sem_post(&g_tivx_platform_info.semaphore_log_mem);
+            }
+            else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
+            {
+                (void)gVdkHandleSpinlock(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID, 0U, gVdkObj);
+                (void)sem_post(&g_tivx_platform_info.semaphore);
+            }
+            else
+            {
+                /* do nothing */
+            }
+        }
         (void)tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
             (uint32_t)lock_id]);
     }
@@ -157,7 +377,15 @@ void ownPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
         tivx_obj_desc_t *tmp_obj_desc = NULL;
         uint32_t i;
 
-        table_info->table_base = gTivxObjDescShmEntry;
+        if(NULL ==gVdkGetHostPtrFromSymbol)
+        {
+            table_info->table_base = gTivxObjDescShmEntry;
+        }
+        else
+        {
+            void *table_base = gVdkGetHostPtrFromSymbol("g_tiovx_obj_desc_mem", gVdkObj);
+            table_info->table_base = (tivx_obj_desc_shm_entry_t *)table_base;
+        }
         table_info->num_entries = TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST;
 
         /* Change this according available entries*/
@@ -197,7 +425,14 @@ void ownPlatformPrintf(const char *format)
         (uint32_t)(cur_time/1000000U),
         (uint32_t)(cur_time%1000000U),
         format);
-    printf(buf);
+    if(NULL == gVdkPrintLog)
+    {
+        printf(buf);
+    }
+    else
+    {
+        gVdkPrintLog(buf, gVdkObj);
+    }
 }
 
 void ownPlatformActivate()
@@ -217,6 +452,3 @@ void ownPlatformGetTargetPerfStats(uint32_t app_cpu_id, uint32_t target_values[T
         target_values[i] = 0;
     }
 }
-
-
-

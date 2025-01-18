@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -67,6 +67,8 @@
 extern "C" {
 #endif
 
+#include <TI/tivx_ext_vdk.h>
+
 /*!
  * \file
  * \brief PC Platform APIs
@@ -90,6 +92,18 @@ void ownRegisterKernels();
  * \ingroup group_tivx_platform
  */
 void ownUnregisterKernels();
+
+/*! \brief Function to register an external get_host_ptr_from_phy_ptr function when building for VDK
+ *
+ * \ingroup group_tivx_platform
+ */
+void ownUpdateHostPtrFromPhyPtrFunctionPtr(tivx_vdk_get_host_ptr_from_phy_ptr_f ptr);
+
+/*! \brief Function to register an external ipc_send_mbox function when building for VDK
+ *
+ * \ingroup group_tivx_platform
+ */
+void ownUpdateIpcSendMboxFunctionPtr(tivx_vdk_ipc_send_mbox_f ptr);
 
 #ifdef __cplusplus
 }

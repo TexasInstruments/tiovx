@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -85,7 +85,10 @@ void ownRegisterKernels()
     /* trick target kernel used in DSP emulation mode to think
      * they are being invoked from a DSP
      */
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+    if (tivxVdkIsEnabled() == 0U)
+    {
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+    }
     tivxRegisterOpenVXCoreTargetKernels();
     #ifdef BUILD_TUTORIAL
     tivxRegisterTutorialTargetKernels();
@@ -121,23 +124,26 @@ void tivxInit(void)
 {
     pthread_mutex_lock(&g_mutex);
 
-    if (0U == g_init_status)
+    if (g_init_status <= 1U)
     {
         tivx_set_debug_zone(VX_ZONE_INFO);
         tivx_set_debug_zone(VX_ZONE_ERROR);
         tivx_set_debug_zone(VX_ZONE_WARNING);
 
-        /* Initialize the POSIX objects */
-        ownPosixObjectInit();
+        if (g_init_status == 0U)
+        {
+            /* Initialize the POSIX objects */
+            ownPosixObjectInit();
 
-        /* Initialize resource logging */
-        ownLogResourceInit();
+            /* Initialize resource logging */
+            ownLogResourceInit();
+
+            /* Initialize Target */
+            ownTargetInit();
+        }
 
         /* Initialize platform */
         ownPlatformInit();
-
-        /* Initialize Target */
-        ownTargetInit();
 
         /* Register Kernels */
         ownRegisterKernels();

@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017-2025 Texas Instruments Incorporated
+* Copyright (c) 2017-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -61,6 +61,7 @@
 */
 
 #include <vx_internal.h>
+#include <tivx_platform_pc.h>
 
 #ifndef DISABLE_APP_UTILS_DEP
 #include <utils/mem/include/app_mem.h>
@@ -94,8 +95,10 @@
 /*! \brief Psuedo L2RAM size for DSP
  * \ingroup group_tivx_mem
  */
-#if defined (SOC_J784S4)
+#if defined (SOC_J784S4) /* TIOVX-2177: Update to proper size for TDA5 */
 #define TIVX_MEM_L2RAM_SIZE (4*10*1024*1024 + 8*1024*1024) /* 4 * 10 MB for 4 cores (L2/MSMC-L1) + 8 MB for MSMC-L3 */
+#elif defined (SOC_TDA54)
+#define TIVX_MEM_L2RAM_SIZE (4*10*1024*1024)
 #else
 #define TIVX_MEM_L2RAM_SIZE (10*1024*1024)
 #endif
@@ -112,6 +115,13 @@ __attribute__ ((aligned(TIVX_MEM_L2RAM_ALIGN)))
  * \ingroup group_tivx_mem
  */
 static vx_uint32 gL2RAM_mem_offset = 0;
+
+tivx_vdk_get_host_ptr_from_phy_ptr_f gVdkGetHostPtrFromPhyPtr = NULL;
+
+void ownUpdateHostPtrFromPhyPtrFunctionPtr(tivx_vdk_get_host_ptr_from_phy_ptr_f ptr)
+{
+    gVdkGetHostPtrFromPhyPtr = ptr;
+}
 
 vx_status ownMemRegionTranslate (uint32_t mem_heap_region, uint32_t *heap_id)
 {
@@ -383,7 +393,14 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
 
 void* tivxMemShared2TargetPtr(const tivx_shared_mem_ptr_t *shared_ptr)
 {
-    return (void*)(uintptr_t)(shared_ptr->shared_ptr);
+    if(NULL == gVdkGetHostPtrFromPhyPtr)
+    {
+        return (void*)(uintptr_t)(shared_ptr->shared_ptr);
+    }
+    else
+    {
+        return (void*)(uintptr_t)gVdkGetHostPtrFromPhyPtr(shared_ptr->shared_ptr, tivxGetVdkObj());
+    }
 }
 
 #ifdef DISABLE_APP_UTILS_DEP
