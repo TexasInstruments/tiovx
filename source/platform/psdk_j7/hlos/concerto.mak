@@ -30,7 +30,8 @@ CSOURCES    := \
     $(COMMON_FILES_REL_PATH)/tivx_platform.c                       \
     $(COMMON_FILES_REL_PATH)/tivx_mem.c                            \
     tivx_platform_hlos.c                            \
-    $(COMMON_FILES_REL_PATH)/tivx_perf.c
+    $(COMMON_FILES_REL_PATH)/tivx_perf.c  \
+    $(TARGET_FILES_REL_PATH)/tivx_target_config.c
 
 IDIRS       += $(TIOVX_PATH)/source/include
 IDIRS       += $(TIOVX_PATH)/source/platform/targets

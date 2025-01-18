@@ -9,6 +9,7 @@ TARGETTYPE  := library
 
 OS_FILES_REL_PATH = ../../os/posix
 COMMON_FILES_REL_PATH = ../common
+TARGET_FILES_REL_PATH = ../../targets
 
 COMMON_FILES_BASE_PATH = $(TIOVX_PATH)/source/platform/pc/common
 
@@ -22,10 +23,15 @@ CSOURCES    := \
 	$(COMMON_FILES_REL_PATH)/tivx_mem.c \
 	$(COMMON_FILES_REL_PATH)/tivx_ipc.c \
 	$(COMMON_FILES_REL_PATH)/tivx_init.c \
-	$(COMMON_FILES_REL_PATH)/tivx_host.c \
-	$(COMMON_FILES_REL_PATH)/tivx_target_config_pc.c \
+	../../psdk_j7/common/tivx_host.c \
 	$(COMMON_FILES_REL_PATH)/tivx_platform_common.c \
-    tivx_platform.c
+	$(TARGET_FILES_REL_PATH)/tivx_target_config.c \
+	$(TARGET_FILES_REL_PATH)/tivx_target_config_pc.c \
+	$(TARGET_FILES_REL_PATH)/tivx_target_config_c66.c \
+	$(TARGET_FILES_REL_PATH)/tivx_target_config_c7.c \
+	$(TARGET_FILES_REL_PATH)/tivx_target_config_mpu1_0.c \
+	$(TARGET_FILES_REL_PATH)/r5f/tivx_target_config_r5f_$(SOC).c \
+	tivx_platform.c
 
 DEFS        += LDRA_UNTESTABLE_CODE
 # This is used to signify which sections of code is only applicable
@@ -38,6 +44,7 @@ IDIRS += $(TIOVX_PATH)/source/include $(COMMON_FILES_BASE_PATH)
 IDIRS += $(APP_UTILS_PATH)
 IDIRS += $(VISION_APPS_PATH)/platform/$(SOC)/rtos
 IDIRS += $(TIOVX_PATH)/source/platform/os/posix
+IDIRS += $(TIOVX_PATH)/source/platform/targets
 
 DEFS += _DISABLE_TIDL
 IDIRS += $(CUSTOM_KERNEL_PATH)/include

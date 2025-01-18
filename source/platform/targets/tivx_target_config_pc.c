@@ -60,60 +60,31 @@
 *
 */
 
-
-
 #include <vx_internal.h>
 #include <tivx_platform_pc.h>
 
-#define TIVX_TARGET_DEFAULT_STACK_SIZE      ((2U * 1024U) * 1024U)
-#define TIVX_TARGET_DEFAULT_TASK_PRIORITY   (8u)
+void ownPlatformCreateTargetsMpu(void);
+void ownPlatformCreateTargetsC7(void);
+void ownPlatformCreateTargetsR5f(void);
+void ownPlatformCreateTargetsC66(void);
 
-static void ownTargetCreateTargetId(vx_enum target_id)
-{
-    vx_status status;
-    tivx_target_create_params_t target_create_prms;
-    char task_name[TIVX_TARGET_MAX_TASK_NAME];
-
-    target_create_prms.task_stack_ptr = NULL;
-    target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
-    target_create_prms.task_core_affinity = TIVX_TASK_AFFINITY_ANY;
-    target_create_prms.task_priority = TIVX_TARGET_DEFAULT_TASK_PRIORITY;
-    ownPlatformGetTaskName(target_id, task_name);
-    (void)strncpy(target_create_prms.task_name, task_name, TIVX_TARGET_MAX_TASK_NAME);
-    target_create_prms.task_name[TIVX_TARGET_MAX_TASK_NAME-1U] = (char)0;
-
-    status = ownTargetCreate(target_id, &target_create_prms);
-    if ((vx_status)(vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
-    }
-}
-
-static void ownTargetDeleteTargetId(vx_enum target_id)
-{
-    vx_status status;
-
-    status = ownTargetDelete(target_id);
-    if ((vx_status)(vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Could not Delete Target\n");
-    }
-}
+void ownPlatformDeleteTargetsMpu(void);
+void ownPlatformDeleteTargetsC7(void);
+void ownPlatformDeleteTargetsR5f(void);
+void ownPlatformDeleteTargetsC66(void);
 
 void ownPlatformCreateTargets(void)
 {
-    uint32_t i;
-    for (i=0; i<TIVX_PLATFORM_MAX_TARGETS-1U; i++)
-    {
-        ownTargetCreateTargetId(i);
-    }
+    ownPlatformCreateTargetsMpu();
+    ownPlatformCreateTargetsC7();
+    ownPlatformCreateTargetsR5f();
+    ownPlatformCreateTargetsC66();
 }
 
 void ownPlatformDeleteTargets(void)
 {
-    uint32_t i;
-    for (i=0; i<TIVX_PLATFORM_MAX_TARGETS-1U; i++)
-    {
-        ownTargetDeleteTargetId(i);
-    }
+    ownPlatformDeleteTargetsMpu();
+    ownPlatformDeleteTargetsC7();
+    ownPlatformDeleteTargetsR5f();
+    ownPlatformDeleteTargetsC66();
 }

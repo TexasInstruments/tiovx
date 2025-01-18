@@ -10,7 +10,7 @@
 #include <vx_internal.h>
 #include <tivx_platform_psdk.h>
 
-void ownPlatformCreateTargets(void)
+void ownPlatformCreateTargetsMpu(void)
 {
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MPU_0, 0u, "TIVX_CPU0", 8U);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MPU_1, 1u, "TIVX_CPU1", 8U);
@@ -24,7 +24,7 @@ void ownPlatformCreateTargets(void)
     #endif
 }
 
-void ownPlatformDeleteTargets(void)
+void ownPlatformDeleteTargetsMpu(void)
 {
     #if defined(SOC_AM62A) && defined(QNX)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE1);
@@ -37,3 +37,15 @@ void ownPlatformDeleteTargets(void)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MPU_2);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MPU_3);
 }
+
+#ifndef PC
+void ownPlatformCreateTargets(void)
+{
+    ownPlatformCreateTargetsMpu();
+}
+
+void ownPlatformDeleteTargets(void)
+{
+    ownPlatformDeleteTargetsMpu();
+}
+#endif

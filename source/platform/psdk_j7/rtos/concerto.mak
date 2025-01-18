@@ -25,7 +25,8 @@ CSOURCES    := 	tivx_event.c \
 				$(COMMON_FILES_REL_PATH)/tivx_ipc.c \
 				$(COMMON_FILES_REL_PATH)/tivx_platform.c \
 				$(COMMON_FILES_REL_PATH)/tivx_host.c \
-				$(COMMON_FILES_REL_PATH)/tivx_perf.c
+				$(COMMON_FILES_REL_PATH)/tivx_perf.c \
+				$(TARGET_FILES_REL_PATH)/tivx_target_config.c
 
 IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(HOST_ROOT)/source/platform/targets

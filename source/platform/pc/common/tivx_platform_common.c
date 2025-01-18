@@ -63,6 +63,7 @@
 
 
 #include <vx_internal.h>
+#include <tivx_platform_psdk.h>
 #include <tivx_platform_pc.h>
 #include <app_mem_map.h>
 #include <utils/perf_stats/include/app_perf_stats.h>
@@ -78,9 +79,6 @@ typedef struct tivx_platform_info
         /*! \brief Name of the target, defined in tivx.h file
          */
         char target_name[TIVX_TARGET_MAX_NAME];
-        /*! \brief Name of the task
-         */
-        char task_name[TIVX_TARGET_MAX_TASK_NAME];
         /*! \brief Id of the target defined in #tivx_target_id_e in the
          *   file tivx_platform_vision_sdk.h
          */
@@ -210,25 +208,6 @@ void ownPlatformGetTargetName(vx_enum target_id, char *target_name)
     }
 }
 
-void ownPlatformGetTaskName(vx_enum target_id, char *task_name)
-{
-    uint32_t i;
-
-    snprintf(task_name, TIVX_TARGET_MAX_TASK_NAME, "UNKNOWN");
-
-    if(target_id != (vx_enum)TIVX_TARGET_ID_INVALID)
-    {
-        for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
-        {
-            if (target_id == g_tivx_platform_info.target_info[i].target_id)
-            {
-                snprintf(task_name, TIVX_TARGET_MAX_TASK_NAME, "%s", g_tivx_platform_info.target_info[i].task_name);
-                break;
-            }
-        }
-    }
-}
-
 void ownPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 {
     if (NULL != table_info)
@@ -294,5 +273,24 @@ void ownPlatformGetTargetPerfStats(uint32_t app_cpu_id, uint32_t target_values[T
     for (i = 0; i < TIVX_TARGET_RESOURCE_COUNT; i++)
     {
         target_values[i] = 0;
+    }
+}
+
+
+void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
+{
+    uint32_t i;
+
+    for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS;/* TIOVX-1957- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR002 */ i ++)
+    {
+        if (0 == strncmp(
+                g_tivx_platform_info.target_info[i].target_name,
+                TIVX_TARGET_HOST,
+                TIVX_TARGET_MAX_NAME))
+        {
+            /* update target_id for TIVX_TARGET_HOST */
+            g_tivx_platform_info.target_info[i].target_id = (vx_enum)host_target_id;
+            break;
+        }
     }
 }

@@ -81,7 +81,7 @@ vx_status ownIpcSendMsg(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if( (cpu_id < (vx_enum)(vx_enum)TIVX_CPU_ID_MAX) && (NULL != g_ipc_handler))
+    if( (cpu_id < (vx_enum)TIVX_CPU_ID_MAX) && (NULL != g_ipc_handler))
     {
         g_ipc_handler(payload);
     }

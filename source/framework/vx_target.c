@@ -64,7 +64,16 @@
 
 #define VX_PRINT_OBJECT(zone, object, message, ...) do { tivx_print_object(((vx_enum)zone), object->debug_zonemask, "[%s:%u] " message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (1 == 0)
 
-static tivx_target_t g_target_table[TIVX_TARGET_MAX_TARGETS_IN_CPU];
+#ifndef PC
+#define TIVX_TARGET_MAX_CPUS_IN_EXE (1u)
+#else
+#define TIVX_TARGET_MAX_CPUS_IN_EXE (TIVX_CPU_ID_MAX)
+#endif
+
+/* When building for PC, all targets in system need to be accounted for in a single table.
+   When building for SoC, each executable running on different CPUs will have their own individual target tables.
+   This design allows for both builds to use the same target_ids and target id creation functions. */
+static tivx_target_t g_target_table[TIVX_TARGET_MAX_CPUS_IN_EXE][TIVX_TARGET_MAX_TARGETS_IN_CPU];
 
 own_execute_user_kernel_f      g_executeUserKernel_f = (own_execute_user_kernel_f)NULL;
 own_target_cmd_desc_handler_f  g_target_cmd_desc_handler_for_host_f = (own_target_cmd_desc_handler_f)NULL;
@@ -100,15 +109,31 @@ static vx_bool ownTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node
 static void ownTargetNodeDescNodeMarkComplete(tivx_obj_desc_node_t *node_obj_desc, uint16_t *blocked_node_id);
 static vx_status ownTargetNodeSendCommand(const tivx_obj_desc_cmd_t *cmd_obj_desc,
     uint32_t node_id, const tivx_obj_desc_node_t *node_obj_desc);
+static uint16_t ownTargetGetSubTableId(vx_enum target_id);
+
+static uint16_t ownTargetGetSubTableId(vx_enum target_id)
+{
+    uint16_t id;
+
+    #ifndef PC
+        id = 0;
+    #else
+        id = TIVX_GET_CPU_ID(target_id);
+    #endif
+
+    return id;
+}
 
 static tivx_target ownTargetAllocHandle(vx_enum target_id)
 {
     uint16_t target_inst = TIVX_GET_TARGET_INST(target_id);
+    uint16_t sub_table_id = ownTargetGetSubTableId(target_id);
+
     tivx_target tmp_target = NULL, target = NULL;
 
     if(target_inst < TIVX_TARGET_MAX_TARGETS_IN_CPU)
     {
-        tmp_target = &g_target_table[target_inst];
+        tmp_target = &g_target_table[sub_table_id][target_inst];
 
         if(tmp_target->target_id == target_id)
         {
@@ -171,11 +196,12 @@ static vx_status ownTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc_
 static tivx_target ownTargetGetHandle(vx_enum target_id)
 {
     uint16_t target_inst = TIVX_GET_TARGET_INST(target_id);
+    uint16_t sub_table_id = ownTargetGetSubTableId(target_id);
     tivx_target tmp_target = NULL, target = NULL;
 
     if(target_inst < TIVX_TARGET_MAX_TARGETS_IN_CPU)
     {
-        tmp_target = &g_target_table[target_inst];
+        tmp_target = &g_target_table[sub_table_id][target_inst];
 
         /* Target initialized with NULL, no need to reassign Target to NULL */
         if(tmp_target->target_id == target_id)
@@ -1460,16 +1486,18 @@ vx_enum ownTargetGetCpuId(vx_enum target_id)
 void ownTargetInit(void)
 {
     uint16_t i;
+    tivx_target_t *tmp_target_table = &g_target_table[0][0];
 
     for(i=0; i<dimof(g_target_table); i++)
     {
-        g_target_table[i].target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
+        tmp_target_table->target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
+        tmp_target_table++;
     }
     /* error status check is not done
      * as the returned status value is not used
      * in ownTargetInit further
      */
-	(void)ownTargetKernelInit();
+    (void)ownTargetKernelInit();
     /* error status check is not done
      * as the returned status value is not used
      * in ownTargetInit further

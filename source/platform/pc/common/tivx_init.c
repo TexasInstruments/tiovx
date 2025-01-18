@@ -182,7 +182,7 @@ void tivxInit(void)
         #endif
 
         /* let rest of system think it is running on CPU 0 */
-        tivxSetSelfCpuId((vx_enum)0);
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
 
         tivxHostInit();
 

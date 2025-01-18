@@ -10,7 +10,7 @@
 #include <vx_internal.h>
 #include <tivx_platform_psdk.h>
 
-void ownPlatformCreateTargets(void)
+void ownPlatformCreateTargetsC7(void)
 {
     /*
      * Note: All CPU tasks should be at a lower priority than APP_IPC_RPMESSAGE_RX_TASK_PRI, otherwise
@@ -63,7 +63,7 @@ void ownPlatformCreateTargets(void)
 
 /*LDRA_NOANALYSIS*/
 /* TIOVX-1970- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_CONFIG_C7x_UM001 */
-void ownPlatformDeleteTargets(void)
+void ownPlatformDeleteTargetsC7(void)
 {
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_2);
@@ -108,3 +108,15 @@ void ownPlatformDeleteTargets(void)
     #endif /* defined(SOC_J784S4) || defined(SOC_J722S) || defined(SOC_J742S2) */
 }
 /*LDRA_ANALYSIS*/
+
+#ifndef PC
+void ownPlatformCreateTargets(void)
+{
+    ownPlatformCreateTargetsC7();
+}
+
+void ownPlatformDeleteTargets(void)
+{
+    ownPlatformDeleteTargetsC7();
+}
+#endif
