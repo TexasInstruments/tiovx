@@ -308,7 +308,6 @@ vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
             if(status==(vx_status)VX_SUCCESS) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR010 */
             {
                 status = ownDataRefQueueEnqueueReadyRef(data_ref_q, refs[ref_id]);
-#ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT001 */
                 if(status!=(vx_status)VX_SUCCESS) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR011 */
                 {
@@ -316,7 +315,6 @@ vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
                         "Unable to enqueue ref\n");
                 }
                 else /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR012 */
-#endif
                 {
                     num_enqueue++;
                 }
