@@ -230,14 +230,6 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_HOST, (vx_enum)TIVX_TARGET_ID_INVALID}                                 \
 }
 
-/*! \brief Set target ID for HOST.
- *
- *         Called during tivxHostInit()
- *
- * \ingroup group_tivx_platform
- */
-void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id);
-
 #ifdef __cplusplus
 }
 #endif

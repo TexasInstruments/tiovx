@@ -81,9 +81,25 @@
 #error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A, SOC_J722S, SOC_J742S2
 #endif
 
+/*! \brief Create target ID.
+ *
+ * \ingroup group_tivx_platform
+ */
 void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name, uint32_t task_pri);
 
+/*! \brief Delete target ID.
+ *
+ * \ingroup group_tivx_platform
+ */
 void tivxPlatformDeleteTargetId(vx_enum target_id);
+
+/*! \brief Set target ID for HOST.
+ *
+ *         Called during tivxHostInit()
+ *
+ * \ingroup group_tivx_platform
+ */
+void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id);
 
 #endif
 
