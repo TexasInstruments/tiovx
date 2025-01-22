@@ -81,6 +81,12 @@
        -  The intention behind the \ref tivxNodeSendCommand() is to send non-real time data to a node and/or to query for information from the node
        -  Particularly if using pipelining, this API shall not be used for sending/receiving data from a node for every execution of the node.  If that is the requirement of a
           given use case, the node API should be changed to encapsulate this parameter.
+     \section TIOVX_USAGE_SUPPL_DATA Supplementary Data with Composite Objects from Exemplar
+       -  For the specific scenario of creating a composite object (i.e., a vx_pyramid or a vx_object_array) from exemplar when the composite object used as the exemplar contains
+          supplementary data, the children objects of the resulting composite object will contain the same supplementary data as the base object (i.e., the vx_pyramid or vx_object_array).
+       -  As an example, in the case that a vx_object_array "ABC" is created with supplementary data "XYZ", if an exemplar of object ABC is created, then the resulting object array
+          elements will contain supplementary data "XYZ" as well.
+
  */
 
 /*!
