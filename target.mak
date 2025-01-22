@@ -62,7 +62,7 @@ else
         SYSLDIRS += $(ARP32CGT_ROOT)/lib
     endif
 
-    ifeq ($(TARGET_OS), $(filter $(TARGET_OS), FREERTOS SAFERTOS))
+    ifeq ($(TARGET_OS), $(filter $(TARGET_OS), FREERTOS SAFERTOS THREADX))
         ifeq ($(RTOS_SDK),pdk)
             SYSIDIRS += $(PDK_PATH)/packages
             SYSIDIRS += $(PDK_PATH)/packages/ti/osal

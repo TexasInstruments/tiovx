@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_OS), $(filter $(TARGET_OS), FREERTOS SAFERTOS))
+ifeq ($(TARGET_OS), $(filter $(TARGET_OS), FREERTOS SAFERTOS THREADX))
 
 include $(PRELUDE)
 TARGET      := vx_platform_psdk_j7_rtos

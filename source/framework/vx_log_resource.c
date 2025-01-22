@@ -809,7 +809,7 @@ static char *test_file_path(void)
 {
     char *tivxPlatformGetEnv(char *env_var);
 
-    #if defined(FREERTOS) || defined(SAFERTOS)
+    #if defined(FREERTOS) || defined(SAFERTOS) || defined(THREADX)
     return tivxPlatformGetEnv("VX_TEST_DATA_PATH");
     #else
     return getenv("VX_TEST_DATA_PATH");
