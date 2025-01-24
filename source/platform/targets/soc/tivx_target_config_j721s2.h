@@ -8,8 +8,8 @@
  */
 
 
-#ifndef TIVX_PLATFORM_VISION_SDK_H_
-#define TIVX_PLATFORM_VISION_SDK_H_
+#ifndef TIVX_TARGET_CONFIG_J721S2_H_
+#define TIVX_TARGET_CONFIG_J721S2_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,7 +17,7 @@ extern "C" {
 
 /*!
  * \file
- * \brief Vision SDK Platform APIs
+ * \brief Platform Specific Target Configurations
  */
 
 /*! \brief Maximum number of targets and thus targetid supported

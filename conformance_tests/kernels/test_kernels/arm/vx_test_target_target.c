@@ -79,7 +79,7 @@
 #include <utils/mem/include/app_mem.h>
 
 #ifndef PC
-#include <tivx_platform_psdk.h>
+#include <tivx_target_config.h>
 #include <utils/ipc/include/app_ipc.h>
 #endif /* #ifndef PC */
 

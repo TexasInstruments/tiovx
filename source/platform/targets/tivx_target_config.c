@@ -7,7 +7,7 @@
  *******************************************************************************
  */
 
-#include <tivx_platform_psdk.h>
+#include <tivx_target_config.h>
 
 #if defined(A72) || defined(A53)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (128U*1024U)

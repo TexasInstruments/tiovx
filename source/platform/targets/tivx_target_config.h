@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2021 - 2021 Texas Instruments Incorporated
+* Copyright (c) 2021 - 2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -60,48 +60,26 @@
 *
 */
 
-#ifndef TIVX_PLATFORM_SOC_H_
-#define TIVX_PLATFORM_SOC_H_
+#ifndef TIVX_TARGET_CONFIG_H_
+#define TIVX_TARGET_CONFIG_H_
 
 #include <vx_internal.h>
 
 #if defined(SOC_J721E)
-#include <soc/tivx_platform_psdk_j721e.h>
+#include <soc/tivx_target_config_j721e.h>
 #elif defined(SOC_J721S2)
-#include <soc/tivx_platform_psdk_j721s2.h>
+#include <soc/tivx_target_config_j721s2.h>
 #elif defined(SOC_J784S4)
-#include <soc/tivx_platform_psdk_j784s4.h>
+#include <soc/tivx_target_config_j784s4.h>
 #elif defined(SOC_AM62A)
-#include <soc/tivx_platform_psdk_am62a.h>
+#include <soc/tivx_target_config_am62a.h>
 #elif defined(SOC_J722S)
-#include <soc/tivx_platform_psdk_j722s.h>
+#include <soc/tivx_target_config_j722s.h>
 #elif defined(SOC_J742S2)
-#include <soc/tivx_platform_psdk_j742s2.h>
+#include <soc/tivx_target_config_j742s2.h>
 #else
 #error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A, SOC_J722S, SOC_J742S2
 #endif
-
-/*! \brief Macro to check the alignment of the size of
- *         the shared memory entry
- * \ingroup group_tivx_platform
- */
-#define TIVX_PLATFORM_SHM_ENTRY_SIZE_ALIGN      (8U)
-
-/*! \brief HW spinlock ID to use for locking run-time event logger
- * \ingroup group_tivx_platform
- */
-#define TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID    (253u)
-
-
-/*! \brief HW spinlock ID to use for locking object descriptor table
- * \ingroup group_tivx_platform
- */
-#define TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID    (254u)
-
-/*! \brief HW spinlock ID to use for locking data ref queue
- * \ingroup group_tivx_platform
- */
-#define TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID    (255u)
 
 /*! \brief Create target ID.
  *
@@ -124,4 +102,3 @@ void tivxPlatformDeleteTargetId(vx_enum target_id);
 void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id);
 
 #endif
-

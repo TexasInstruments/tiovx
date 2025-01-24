@@ -7,7 +7,7 @@
  *******************************************************************************
  */
 
-#include <tivx_platform_psdk.h>
+#include <tivx_target_config.h>
 #include <utils/console_io/include/app_log.h>
 #include <utils/timer/include/app_timer.h>
 

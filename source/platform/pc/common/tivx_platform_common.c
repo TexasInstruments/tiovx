@@ -63,8 +63,7 @@
 
 
 #include <vx_internal.h>
-#include <tivx_platform_psdk.h>
-#include <tivx_platform_pc.h>
+#include <tivx_target_config.h>
 #include <app_mem_map.h>
 #include <utils/perf_stats/include/app_perf_stats.h>
 #include <tivx_platform.h>

@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017-2025 Texas Instruments Incorporated
+* Copyright (c) 2021 - 2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -60,28 +60,31 @@
 *
 */
 
-void ownPlatformCreateTargetsMpu(void);
-void ownPlatformCreateTargetsC7(void);
-void ownPlatformCreateTargetsR5f(void);
-void ownPlatformCreateTargetsC66(void);
+#ifndef TIVX_PLATFORM_COMMON_H_
+#define TIVX_PLATFORM_COMMON_H_
 
-void ownPlatformDeleteTargetsMpu(void);
-void ownPlatformDeleteTargetsC7(void);
-void ownPlatformDeleteTargetsR5f(void);
-void ownPlatformDeleteTargetsC66(void);
+#include <vx_internal.h>
 
-void ownPlatformCreateTargets(void)
-{
-    ownPlatformCreateTargetsMpu();
-    ownPlatformCreateTargetsC7();
-    ownPlatformCreateTargetsR5f();
-    ownPlatformCreateTargetsC66();
-}
+/*! \brief Macro to check the alignment of the size of
+ *         the shared memory entry
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_SHM_ENTRY_SIZE_ALIGN      (8U)
 
-void ownPlatformDeleteTargets(void)
-{
-    ownPlatformDeleteTargetsMpu();
-    ownPlatformDeleteTargetsC7();
-    ownPlatformDeleteTargetsR5f();
-    ownPlatformDeleteTargetsC66();
-}
+/*! \brief HW spinlock ID to use for locking run-time event logger
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID    (253u)
+
+/*! \brief HW spinlock ID to use for locking object descriptor table
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID    (254u)
+
+/*! \brief HW spinlock ID to use for locking data ref queue
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID    (255u)
+
+#endif
+

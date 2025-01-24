@@ -1,15 +1,15 @@
 /*
  *******************************************************************************
  *
- * Copyright (C) 2022 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2024 Texas Instruments Incorporated - http://www.ti.com/
  * ALL RIGHTS RESERVED
  *
  *******************************************************************************
  */
 
 
-#ifndef TIVX_PLATFORM_VISION_SDK_H_
-#define TIVX_PLATFORM_VISION_SDK_H_
+#ifndef TIVX_TARGET_CONFIG_J742S2_H_
+#define TIVX_TARGET_CONFIG_J742S2_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,14 +17,14 @@ extern "C" {
 
 /*!
  * \file
- * \brief Vision SDK Platform APIs
+ * \brief Platform Specific Target Configurations
  */
 
 /*! \brief Maximum number of targets and thus targetid supported
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_TARGETS            (77u)
+#define TIVX_PLATFORM_MAX_TARGETS            (69u)
 
 /*! \brief Max number of targets on a given R5F
  * \ingroup group_tivx_platform
@@ -107,30 +107,6 @@ typedef enum _tivx_target_id_e {
 
     /*! \brief target ID for DSP_C7_3_PRI_8 */
     TIVX_TARGET_ID_DSP_C7_3_PRI_8 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP_C7_3, 7u),
-
-    /*! \brief target ID for DSP_C7_4 */
-    TIVX_TARGET_ID_DSP_C7_4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP_C7_4, 0u),
-
-    /*! \brief target ID for DSP_C7_4_PRI_2 */
-    TIVX_TARGET_ID_DSP_C7_4_PRI_2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP_C7_4, 1u),
-
-    /*! \brief target ID for DSP_C7_4_PRI_3 */
-    TIVX_TARGET_ID_DSP_C7_4_PRI_3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP_C7_4, 2u),
-
-    /*! \brief target ID for DSP_C7_4_PRI_4 */
-    TIVX_TARGET_ID_DSP_C7_4_PRI_4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP_C7_4, 3u),
-
-    /*! \brief target ID for DSP_C7_4_PRI_5 */
-    TIVX_TARGET_ID_DSP_C7_4_PRI_5 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP_C7_4, 4u),
-
-    /*! \brief target ID for DSP_C7_4_PRI_6 */
-    TIVX_TARGET_ID_DSP_C7_4_PRI_6 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP_C7_4, 5u),
-
-    /*! \brief target ID for DSP_C7_4_PRI_7 */
-    TIVX_TARGET_ID_DSP_C7_4_PRI_7 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP_C7_4, 6u),
-
-    /*! \brief target ID for DSP_C7_4_PRI_8 */
-    TIVX_TARGET_ID_DSP_C7_4_PRI_8 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP_C7_4, 7u),
 
     /*! \brief target ID for MPU-0 */
     TIVX_TARGET_ID_MPU_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 0u),
@@ -342,14 +318,6 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_DSP_C7_3_PRI_6, (vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_6},               \
     {TIVX_TARGET_DSP_C7_3_PRI_7, (vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_7},               \
     {TIVX_TARGET_DSP_C7_3_PRI_8, (vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_8},               \
-    {TIVX_TARGET_DSP_C7_4, (vx_enum)TIVX_TARGET_ID_DSP_C7_4},                           \
-    {TIVX_TARGET_DSP_C7_4_PRI_2, (vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_2},               \
-    {TIVX_TARGET_DSP_C7_4_PRI_3, (vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_3},               \
-    {TIVX_TARGET_DSP_C7_4_PRI_4, (vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_4},               \
-    {TIVX_TARGET_DSP_C7_4_PRI_5, (vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_5},               \
-    {TIVX_TARGET_DSP_C7_4_PRI_6, (vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_6},               \
-    {TIVX_TARGET_DSP_C7_4_PRI_7, (vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_7},               \
-    {TIVX_TARGET_DSP_C7_4_PRI_8, (vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_8},               \
     /* TIVX_TARGET_HOST will be filled later during tivxHostInit()             \
      * by calling function tivxPlatformSetHostTargetId                         \
      */                                                                        \

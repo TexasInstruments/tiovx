@@ -35,6 +35,7 @@ CSOURCES    := \
 
 IDIRS       += $(TIOVX_PATH)/source/include
 IDIRS       += $(TIOVX_PATH)/source/platform/targets
+IDIRS       += $(TIOVX_PATH)/source/platform/psdk_j7/common
 IDIRS       += $(TIOVX_PATH)/source/platform/os/posix
 IDIRS       += $(APP_UTILS_PATH)
 

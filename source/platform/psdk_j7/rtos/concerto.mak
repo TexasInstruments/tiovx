@@ -30,6 +30,7 @@ CSOURCES    := 	tivx_event.c \
 
 IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(HOST_ROOT)/source/platform/targets
+IDIRS       += $(HOST_ROOT)/source/platform/psdk_j7/common
 IDIRS       += $(CUSTOM_KERNEL_PATH)/include
 
 ifeq ($(RTOS_SDK), mcu_plus_sdk)

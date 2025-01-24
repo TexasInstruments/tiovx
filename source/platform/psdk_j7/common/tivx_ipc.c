@@ -8,7 +8,7 @@
  */
 
 #include <vx_internal.h>
-#include <tivx_platform_psdk.h>
+#include <tivx_target_config.h>
 
 #include <utils/ipc/include/app_ipc.h>
 

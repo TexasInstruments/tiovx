@@ -7,7 +7,7 @@
  *******************************************************************************
  */
 
-#include <tivx_platform_psdk.h>
+#include <tivx_target_config.h>
 #include <utils/perf_stats/include/app_perf_stats.h>
 #include <tivx_platform.h>
 
