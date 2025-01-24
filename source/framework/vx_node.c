@@ -23,6 +23,7 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pip
 static vx_status ownRemoveNodeInt(const vx_node *n);
 static void ownNodeUserKernelUpdateParamsFlags(vx_kernel kernel, vx_reference params[], vx_uint32 num_params, vx_bool is_accessible);
 static uint16_t ownNodeGetObjDescId(vx_node node, uint32_t pipeline_id);
+static void ownNodeSetAccessibility(vx_node node, uint32_t num_params, vx_bool is_accessible);
 
 static vx_status ownDestructNode(vx_reference ref)
 {
@@ -261,6 +262,20 @@ static void ownNodeUserKernelUpdateParamsFlags(vx_kernel kernel, vx_reference pa
     }
 }
 
+static void ownNodeSetAccessibility(vx_node node, uint32_t num_params, vx_bool is_accessible)
+{
+    uint32_t i;
+
+    for (i = 0; i < num_params; i ++)
+    {
+        if ((NULL != node->parameters[i]) &&
+            ((vx_bool)vx_true_e == node->parameters[i]->is_virtual))
+        {
+            node->parameters[i]->is_accessible = is_accessible;
+        }
+    }
+}
+
 vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[])
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -277,25 +292,16 @@ vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[])
             for (i = 0; i < num_params; i ++)
             {
                 meta[i]->type = node->kernel->signature.types[i];
-                if ((NULL != node->parameters[i]) &&
-                    ((vx_bool)vx_true_e == node->parameters[i]->is_virtual))
-                {
-                    node->parameters[i]->is_accessible = (vx_bool)vx_true_e;
-                }
             }
+
+            ownNodeSetAccessibility(node, num_params, (vx_bool)vx_true_e);
 
             VX_PRINT(VX_ZONE_INFO, "Validating kernel %s\n", node->kernel->name);
 
             status = node->kernel->validate(node, node->parameters,
                 num_params, meta);
-            for (i = 0; i < num_params; i ++)
-            {
-                if ((NULL != node->parameters[i]) &&
-                    ((vx_bool)vx_true_e == node->parameters[i]->is_virtual))
-                {
-                    node->parameters[i]->is_accessible = (vx_bool)vx_false_e;
-                }
-            }
+
+            ownNodeSetAccessibility(node, num_params, (vx_bool)vx_false_e);
         }
     }
     else
@@ -499,9 +505,13 @@ vx_status ownNodeKernelInit(vx_node node)
             {
                 node->local_data_set_allow = (vx_bool)vx_true_e;
 
+                ownNodeSetAccessibility(node, node->kernel->signature.num_parameters, (vx_bool)vx_true_e);
+
                 /* user has given initialize function so call it */
                 status = node->kernel->initialize(node, node->parameters,
                     node->kernel->signature.num_parameters);
+
+                ownNodeSetAccessibility(node, node->kernel->signature.num_parameters, (vx_bool)vx_false_e);
 
                 if(status!=(vx_status)VX_SUCCESS)
                 {
@@ -575,14 +585,22 @@ vx_status ownNodeKernelInit(vx_node node)
                             }
                         }
 
+                        ownNodeSetAccessibility(node, num_params, (vx_bool)vx_true_e);
+
                         tivxCheckStatus(&status, node->kernel->initialize(node, params, num_params));
+
+                        ownNodeSetAccessibility(node, num_params, (vx_bool)vx_false_e);
                     }
                 }
                 else
                 {
+                    ownNodeSetAccessibility(node, node->kernel->signature.num_parameters, (vx_bool)vx_true_e);
+
                     /* user has given initialize function so call it */
                     status = node->kernel->initialize(node, node->parameters,
                         node->kernel->signature.num_parameters);
+
+                    ownNodeSetAccessibility(node, node->kernel->signature.num_parameters, (vx_bool)vx_false_e);
                 }
 
                 if(status!=(vx_status)VX_SUCCESS)
@@ -678,8 +696,12 @@ vx_status ownNodeKernelDeinit(vx_node node)
             {
                 node->local_data_set_allow = (vx_bool)vx_true_e;
 
+                ownNodeSetAccessibility(node, node->kernel->signature.num_parameters, (vx_bool)vx_true_e);
+
                 /* user has given deinitialize function so call it */
                 status = node->kernel->deinitialize(node, node->parameters, node->kernel->signature.num_parameters);
+
+                ownNodeSetAccessibility(node, node->kernel->signature.num_parameters, (vx_bool)vx_false_e);
 
                 if ((vx_status)VX_SUCCESS==status)
                 {
@@ -778,14 +800,23 @@ vx_status ownNodeKernelDeinit(vx_node node)
 #endif
                         }
 
+                        ownNodeSetAccessibility(node, node->kernel->signature.num_parameters, (vx_bool)vx_true_e);
+
                         tivxCheckStatus(&status, node->kernel->deinitialize(node, params, num_params));
+
+                        ownNodeSetAccessibility(node, node->kernel->signature.num_parameters, (vx_bool)vx_false_e);
                     }
                 }
                 else
                 {
+                    ownNodeSetAccessibility(node, node->kernel->signature.num_parameters, (vx_bool)vx_true_e);
+
                     /* user has given deinitialize function so call it */
                     status = node->kernel->deinitialize(node, node->parameters,
                         node->kernel->signature.num_parameters);
+
+                    ownNodeSetAccessibility(node, node->kernel->signature.num_parameters, (vx_bool)vx_false_e);
+
 #ifdef LDRA_UNTESTABLE_CODE
 /* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT006 */
                     if(status!=(vx_status)VX_SUCCESS)

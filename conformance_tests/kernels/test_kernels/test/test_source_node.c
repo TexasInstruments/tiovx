@@ -2681,6 +2681,37 @@ TEST(tivxSourceNode, testContextRelease)
     tivxUnRegisterTestKernelsKernels();
 }
 
+TEST(tivxSourceNode, testVirtualImageInitDeinit)
+{
+    vx_context context = context_->vx_context_;
+    vx_image in, intermediate, out;
+    vx_node n1, n2;
+    vx_graph graph;
+    vx_uint32 width = 640, height = 480;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(in            = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(intermediate  = vxCreateVirtualImage(graph, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(out           = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(n1 = tivxImageIntermediateNode(graph, in, intermediate), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n2 = tivxImageIntermediateNode(graph, intermediate, out), VX_TYPE_NODE);
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    VX_CALL(vxReleaseImage(&in));
+    VX_CALL(vxReleaseImage(&intermediate));
+    VX_CALL(vxReleaseImage(&out));
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseGraph(&graph));
+    tivxTestKernelsUnLoadKernels(context);
+}
+
+
 TESTCASE_TESTS(tivxSourceNode,
                testSourceObjArray,
                testSourcePyramid,
@@ -2711,5 +2742,6 @@ TESTCASE_TESTS(tivxSourceNode,
                testIntermediateNodeErrorInject,
                testIntermediateNodePyramidReplicate,
                testSourceIntSinkPyramid,
-               testContextRelease)
+               testContextRelease,
+               testVirtualImageInitDeinit)
 

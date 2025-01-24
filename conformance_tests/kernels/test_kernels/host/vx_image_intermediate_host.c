@@ -75,6 +75,9 @@ static vx_status VX_CALLBACK tivxAddKernelImageIntermediateValidate(vx_node node
 static vx_status VX_CALLBACK tivxAddKernelImageIntermediateInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
+static vx_status VX_CALLBACK tivxAddKernelImageIntermediateDeinitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
 vx_status tivxAddKernelImageIntermediate(vx_context context);
 vx_status tivxRemoveKernelImageIntermediate(vx_context context);
 
@@ -84,6 +87,10 @@ static vx_status VX_CALLBACK tivxAddKernelImageIntermediateValidate(vx_node node
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
+    vx_image in = NULL;
+    vx_uint32 in_w;
+    vx_uint32 in_h;
+    vx_df_image in_fmt;
 
     if ( (num != TIVX_KERNEL_IMAGE_INTERMEDIATE_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_IMAGE_INTERMEDIATE_IN_IDX])
@@ -92,6 +99,24 @@ static vx_status VX_CALLBACK tivxAddKernelImageIntermediateValidate(vx_node node
     {
         status = VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
+    }
+    else
+    {
+        in = (vx_image)parameters[TIVX_KERNEL_IMAGE_INTERMEDIATE_IN_IDX];
+    }
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        tivxCheckStatus(&status, vxQueryImage(in, (vx_enum)VX_IMAGE_WIDTH, &in_w, sizeof(in_w)));
+        tivxCheckStatus(&status, vxQueryImage(in, (vx_enum)VX_IMAGE_HEIGHT, &in_h, sizeof(in_h)));
+        tivxCheckStatus(&status, vxQueryImage(in, (vx_enum)VX_IMAGE_FORMAT, &in_fmt, sizeof(in_fmt)));
+    }
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_IMAGE_INTERMEDIATE_OUT_IDX], (vx_enum)VX_IMAGE_FORMAT, &in_fmt, sizeof(in_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_IMAGE_INTERMEDIATE_OUT_IDX], (vx_enum)VX_IMAGE_WIDTH, &in_w, sizeof(in_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_IMAGE_INTERMEDIATE_OUT_IDX], (vx_enum)VX_IMAGE_HEIGHT, &in_h, sizeof(in_h));
     }
 
     return status;
@@ -102,6 +127,7 @@ static vx_status VX_CALLBACK tivxAddKernelImageIntermediateInitialize(vx_node no
             vx_uint32 num_params)
 {
     vx_status status = VX_SUCCESS;
+    vx_image in, out;
 
     if ( (num_params != TIVX_KERNEL_IMAGE_INTERMEDIATE_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_IMAGE_INTERMEDIATE_IN_IDX])
@@ -111,6 +137,87 @@ static vx_status VX_CALLBACK tivxAddKernelImageIntermediateInitialize(vx_node no
         status = VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
+    else
+    {
+        in  = (vx_image)parameters[TIVX_KERNEL_IMAGE_INTERMEDIATE_IN_IDX];
+        out = (vx_image)parameters[TIVX_KERNEL_IMAGE_INTERMEDIATE_OUT_IDX];
+        vx_imagepatch_addressing_t addr;
+        vx_uint8 *pdata = 0;
+        vx_rectangle_t rect = {0, 0, 1, 1};
+        vx_map_id map_id;
+
+        /* Note: test of mapping an image pointer, should not fail */
+        status = vxMapImagePatch(in, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+
+        if (status == VX_SUCCESS)
+        {
+            vxUnmapImagePatch(in, map_id);
+            status = vxMapImagePatch(out, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);;
+
+            if (status != VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Map of output parameter failed!\n");
+            }
+            else
+            {
+                vxUnmapImagePatch(out, map_id);
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Map of input parameter failed!\n");
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxAddKernelImageIntermediateDeinitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = VX_SUCCESS;
+    vx_image in, out;
+
+    if ( !((num_params != TIVX_KERNEL_IMAGE_INTERMEDIATE_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_IMAGE_INTERMEDIATE_IN_IDX])
+        || (NULL == parameters[TIVX_KERNEL_IMAGE_INTERMEDIATE_OUT_IDX]))
+    )
+    {
+        in  = (vx_image)parameters[TIVX_KERNEL_IMAGE_INTERMEDIATE_IN_IDX];
+        out = (vx_image)parameters[TIVX_KERNEL_IMAGE_INTERMEDIATE_OUT_IDX];
+        vx_imagepatch_addressing_t addr;
+        vx_uint8 *pdata = 0;
+        vx_rectangle_t rect = {0, 0, 1, 1};
+        vx_map_id map_id;
+
+        /* Note: test of mapping an image pointer, should not fail */
+        status = vxMapImagePatch(in, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+
+        if (status == VX_SUCCESS)
+        {
+            vxUnmapImagePatch(in, map_id);
+            status = vxMapImagePatch(out, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);;
+
+            if (status != VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Map of output parameter failed!\n");
+            }
+            else
+            {
+                vxUnmapImagePatch(out, map_id);
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Map of input parameter failed!\n");
+        }
+    }
+
     return status;
 }
 
@@ -137,7 +244,7 @@ vx_status tivxAddKernelImageIntermediate(vx_context context)
                     TIVX_KERNEL_IMAGE_INTERMEDIATE_MAX_PARAMS,
                     tivxAddKernelImageIntermediateValidate,
                     tivxAddKernelImageIntermediateInitialize,
-                    NULL);
+                    tivxAddKernelImageIntermediateDeinitialize);
 
         status = vxGetStatus((vx_reference)kernel);
     }
