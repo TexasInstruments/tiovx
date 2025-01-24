@@ -84,9 +84,6 @@ void tivxUnRegisterTestKernelsTargetDspKernels(void);
 void tivxRegisterTestKernelsTargetDspKernels(void);
 void tivxUnRegisterTestKernelsTargetDspKernels(void);
 
-void tivxRegisterTIDLTargetKernels(void);
-void tivxUnRegisterTIDLTargetKernels(void);
-
 /* Mutex for controlling access to Init/De-Init. */
 static pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 

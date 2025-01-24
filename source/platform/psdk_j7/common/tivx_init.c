@@ -11,8 +11,6 @@
 
 void tivxRegisterOpenVXCoreTargetKernels(void);
 void tivxUnRegisterOpenVXCoreTargetKernels(void);
-void tivxRegisterIVisionTargetKernels(void);
-void tivxUnRegisterIVisionTargetKernels(void);
 void tivxRegisterTutorialTargetKernels(void);
 void tivxUnRegisterTutorialTargetKernels(void);
 void tivxRegisterCaptureTargetArmKernels(void);
