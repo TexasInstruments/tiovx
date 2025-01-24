@@ -81,6 +81,28 @@
 #error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A, SOC_J722S, SOC_J742S2
 #endif
 
+/*! \brief Macro to check the alignment of the size of
+ *         the shared memory entry
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_SHM_ENTRY_SIZE_ALIGN      (8U)
+
+/*! \brief HW spinlock ID to use for locking run-time event logger
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID    (253u)
+
+
+/*! \brief HW spinlock ID to use for locking object descriptor table
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID    (254u)
+
+/*! \brief HW spinlock ID to use for locking data ref queue
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID    (255u)
+
 /*! \brief Create target ID.
  *
  * \ingroup group_tivx_platform
