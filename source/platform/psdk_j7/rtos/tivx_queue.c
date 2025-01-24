@@ -204,7 +204,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                 queue->blockedOnPut = (vx_bool)vx_true_e;
                 wait_status = tivxEventWait(queue->block_wr, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
                 queue->blockedOnPut = (vx_bool)vx_false_e;
-                if ((vx_status)VX_SUCCESS != wait_status)/* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_QUEUE_UBR002*/
+                if ((vx_status)VX_SUCCESS != wait_status)/* TIOVX-2134- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_QUEUE_UBR002*/
                 {
                     do_break = (vx_bool)vx_true_e;
                     /* error, exit with error */

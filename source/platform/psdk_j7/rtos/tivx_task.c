@@ -31,7 +31,7 @@ static void tivxTaskDefHandle(void* arg0, void* arg1)
 {
     tivx_task *task;
 
-    if (0U != (uintptr_t)arg0) /* TIOVX-1885- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR001 */
+    if (0U != (uintptr_t)arg0) /* TIOVX-2135- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR001 */
     {
         task = (tivx_task *)arg0;
 
