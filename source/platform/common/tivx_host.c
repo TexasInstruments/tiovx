@@ -132,4 +132,3 @@ static void tivxHostDeInitLocal(void)
     }
 #endif
 }
-

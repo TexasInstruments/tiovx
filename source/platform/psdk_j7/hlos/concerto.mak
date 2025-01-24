@@ -26,7 +26,7 @@ CSOURCES    := \
     $(TARGET_FILES_REL_PATH)/tivx_target_config_mpu1_0.c           \
     $(COMMON_FILES_REL_PATH)/tivx_ipc.c                            \
     $(COMMON_FILES_REL_PATH)/tivx_init.c                           \
-    $(COMMON_FILES_REL_PATH)/tivx_host.c                           \
+	../../common/tivx_host.c \
     $(COMMON_FILES_REL_PATH)/tivx_platform.c                       \
     $(COMMON_FILES_REL_PATH)/tivx_mem.c                            \
     tivx_platform_hlos.c                            \

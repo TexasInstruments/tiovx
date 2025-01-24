@@ -23,7 +23,7 @@ CSOURCES    := \
 	$(COMMON_FILES_REL_PATH)/tivx_mem.c \
 	$(COMMON_FILES_REL_PATH)/tivx_ipc.c \
 	$(COMMON_FILES_REL_PATH)/tivx_init.c \
-	../../psdk_j7/common/tivx_host.c \
+	../../common/tivx_host.c \
 	$(COMMON_FILES_REL_PATH)/tivx_platform_common.c \
 	$(TARGET_FILES_REL_PATH)/tivx_target_config.c \
 	$(TARGET_FILES_REL_PATH)/tivx_target_config_pc.c \
