@@ -530,13 +530,13 @@
 
     \subsection STEP2 Step 2
 
-    File to change: source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h
+    File to change: source/platform/targets/soc/tivx_target_config_<soc>.h
 
     Required Changes: The TIVX_PLATFORM_MAX_TARGETS must be increased by the number of new targets added.
 
     \subsection STEP3 Step 3
 
-    File to change: source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h
+    File to change: source/platform/targets/soc/tivx_target_config_<soc>.h
 
     Required Changes: The new enumeration value for the new target must be added to the tivx_target_id_e enumeration in the format TIVX_TARGET_ID_<New target name>.
     This must be set equal to TIVX_MAKE_TARGET_ID with the first argument being the CPU ID that this new target is to be run on and the second argument being the 1 plus the existing
@@ -544,7 +544,7 @@
 
     \subsection STEP4 Step 4
 
-    File to change: source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h
+    File to change: source/platform/targets/soc/tivx_target_config_<soc>.h
 
     Required Changes: The #define from \ref STEP1 and the enumeration from \ref STEP3 must be added to the TIVX_TARGET_INFO structure.  For example, the DSP1 target is added
     to this structure with the line {\ref TIVX_TARGET_DSP1, (vx_enum)TIVX_TARGET_ID_DSP1}.
@@ -552,21 +552,14 @@
     \subsection STEP5 Step 5
 
     File to change: Dependent on chosen CPU.  Available options:
-    - MPU Targets: source/platform/psdk_j7/common/tivx_target_config_mpu1_0.c
-    - R5F Targets: source/platform/psdk_j7/rtos/<soc>/tivx_target_config_r5f_<soc>.c
-    - C66X Targets: source/platform/psdk_j7/rtos/tivx_target_config_c66.c
-    - C7X Targets: source/platform/psdk_j7/rtos/tivx_target_config_c7.c
+    - MPU Targets: source/platform/targets/tivx_target_config_mpu1_0.c
+    - R5F Targets: source/platform/targets/r5f/tivx_target_config_r5f_<soc>.c
+    - C66X Targets: source/platform/targets/tivx_target_config_c66.c
+    - C7X Targets: source/platform/targets/tivx_target_config_c7.c
 
     Required Changes: The target thread must created in the appropriate file depending on the CPU that this new thread must be run on.  The API to create the new thread
     is tivxPlatformCreateTargetId().  Each of these files are slightly different in the way that they call this API.  Regardless of the file, the tivxPlatformCreateTargetId() must be called
     with the first argument being the target ID enumeration created in \ref STEP3.  The second parameter will be dependent on the desired parameters of the developer.
-
-    \subsection STEP6 Step 6
-
-    File to change: source/platform/pc/common/tivx_platform_pc.h
-
-    Optional Changes: In the case that PC emulation mode is needed, the #define from \ref STEP1 and the TIVX_TARGET_ID_CPU1 enumeration must be added to the TIVX_TARGET_INFO structure
-    in a similar way as \ref STEP4.  For example, the DSP1 target is added to this structure with the line { \ref TIVX_TARGET_DSP1, \ref TIVX_TARGET_ID_CPU1 }.
 
     \section TIOVX_TARGET_PRIORITY Disclaimer about "priority" argument for TIOVX targets
 

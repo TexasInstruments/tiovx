@@ -163,7 +163,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
                 VX_PRINT(VX_ZONE_ERROR, "context object descriptor [%d] allocation failed\n", i);
                 VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
+                VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
                 do_break = (vx_bool)vx_true_e;
             }
             if((vx_bool)vx_true_e == do_break)

@@ -396,7 +396,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
                     VX_PRINT(VX_ZONE_ERROR, "Could not allocate data reference queue object descriptor\n");
                     VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
                 }
                 if(status==(vx_status)VX_SUCCESS)
                 {
@@ -411,7 +411,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
                             VX_PRINT(VX_ZONE_ERROR, "Could not allocate object descriptor\n");
                             VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                            VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
+                            VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
                         }
 /* END: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT001 */
 /*LDRA_ANALYSIS*/

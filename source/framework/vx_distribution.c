@@ -54,7 +54,7 @@ VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(vx_context context
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
                     VX_PRINT(VX_ZONE_ERROR, "Could not allocate dist object descriptor\n");
                     VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
                 }
                 else
                 {
