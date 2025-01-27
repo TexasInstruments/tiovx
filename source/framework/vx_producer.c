@@ -926,8 +926,7 @@ static void* producer_broadcast_thread(void* arg)
         {
             case VX_PROD_STATE_INIT:
             {
-                // Enqueue (n-1) output buffer IDs so that graph can start processing
-                // One FREE buffer ID remains
+                // Enqueue all output buffer IDs so that graph can start processing
                 for (vx_uint32 idx = 0; idx < producer->numBuffers; idx++)
                 {
                     producer->streaming_cb.enqueueCallback(producer->graph_obj, producer->refs[idx].ovx_ref);
@@ -1200,7 +1199,7 @@ static void* producer_broadcast_thread(void* arg)
                 {
                     vx_uint32 num_deque_refs = 0;
 
-                    tivxTaskWaitMsecs(200);
+                    tivxTaskWaitMsecs(100);
 
                     // only dequeue if there is any reference in graph, to prevent forever blocking on dequeue
                     vx_reference l_inGraph = get_buffer_with_status(producer, IN_GRAPH);
@@ -1226,7 +1225,7 @@ static void* producer_broadcast_thread(void* arg)
                 if (producer->nb_consumers > 0)
                 {
                     VX_PRINT(VX_ZONE_INFO, "PRODUCER %s: waiting for consumers before shutdown \n", producer->name);
-                    tivxTaskWaitMsecs(2000);
+                    tivxTaskWaitMsecs(200);
                 }
             }
             break;

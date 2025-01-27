@@ -315,6 +315,7 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p, uint8_t 
         {
             // if last buffer was sent, producer needs to be notified by setting last buffer flag, response needs to be sent regardless of whether receiver was addressed via mask or not
             consumer->last_buffer = 1;
+            consumer->last_buffer_transmitted = 1;
             consumer->last_buffer_id = l_received_message->buffer_id;
             VX_PRINT(VX_ZONE_INFO, "CONSUMER: Received last buffer id %d \n", consumer->last_buffer_id);
         }            
@@ -494,7 +495,7 @@ static void* consumer_receiver_thread(void* arg)
 
             case VX_CONS_STATE_WAIT:
             {
-                tivxTaskWaitMsecs(2000);
+                tivxTaskWaitMsecs(100);
                 VX_PRINT(VX_ZONE_INFO, "CONSUMER: going to flush state%s", "\n");
                 consumer->state = VX_CONS_STATE_FLUSH;
             }
@@ -530,8 +531,6 @@ static void* consumer_receiver_thread(void* arg)
 
             case VX_CONS_STATE_FLUSH:
             {
-                consumer->last_buffer_transmitted = 1;
-
                 VX_PRINT(VX_ZONE_INFO, "CONSUMER: pipeline is flushed, reached normal shutdown%s", "\n");
                 shutdown = (vx_bool)vx_true_e;
             }
@@ -1079,11 +1078,17 @@ static vx_status ownInitConsumerObject(vx_consumer consumer, const vx_consumer_p
 
     (void)snprintf(consumer->name, VX_MAX_CONSUMER_NAME, params->name);
     (void)snprintf(consumer->access_point_name , VX_MAX_ACCESS_POINT_NAME, params->access_point_name);
-
-    consumer->last_buffer   = 0;
-
-    consumer->graph_obj       = params->graph_obj;
-    consumer->subscriber_cb   = params->subscriber_cb;
+    consumer->last_buffer               = 0;
+    consumer->last_buffer_dropped       = 0;
+    consumer->last_buffer_transmitted   = 0;
+    consumer->init_done                 = vx_false_e;
+    consumer->ref_import_done           = vx_false_e;
+    consumer->num_failures              = 0;
+    consumer->graph_obj                 = params->graph_obj;
+    consumer->subscriber_cb             = params->subscriber_cb;
+    consumer->consumer_id               = params->consumer_id;
+    consumer->connect_polling_time      = params->connect_polling_time;
+    consumer->state                     = VX_CONS_STATE_DISCONNECTED;    
 
     pthread_mutexattr_t buffInfoMutexAttr;
     pthread_mutexattr_init(&buffInfoMutexAttr);
@@ -1095,8 +1100,6 @@ static vx_status ownInitConsumerObject(vx_consumer consumer, const vx_consumer_p
         return (vx_status)VX_FAILURE;
     }
 
-    consumer->consumer_id     = params->consumer_id;
-    consumer->connect_polling_time         = params->connect_polling_time;
 #ifdef IPPC_SHEM_ENABLED
     for(vx_uint32 idx = 0U; idx < IPPC_PORT_COUNT; idx++)
     {
@@ -1115,7 +1118,6 @@ static vx_status ownDestructConsumer(vx_reference ref)
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseConsumer(vx_consumer* consumer)
 {
     vx_consumer this_consumer = consumer[0];
-    this_consumer->state = VX_CONS_STATE_FLUSH;
     pthread_join(this_consumer->receiver_thread, NULL);
     pthread_join(this_consumer->backchannel_thread, NULL);
     return (ownReleaseReferenceInt(
