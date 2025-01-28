@@ -84,7 +84,10 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
             status = (vx_status)temp_status;
             temp_status = (uint32_t)status | (uint32_t)pthread_mutex_init(&tmp_mutex->lock, &mutex_attr);
             status = (vx_status)temp_status;
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_MUTEX_UM001
+<justification end> */
 /* TIOVX-1742- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MUTEX_UM001 */
             if(status!=0)
             {
@@ -98,8 +101,13 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
                 VX_PRINT(VX_ZONE_ERROR, "Mutex initialization failed\n");
                 status = (vx_status)VX_ERROR_NO_MEMORY;
             }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_MUTEX_UM001
+<justification end> */
             else
-#endif
+/* LDRA_JUSTIFY_END */
             {
                 *mutex = tmp_mutex;
             }
@@ -137,14 +145,17 @@ vx_status tivxMutexLock(tivx_mutex mutex)
     if(mutex != NULL)
     {
         status = pthread_mutex_lock(&mutex->lock);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_MUTEX_UM002
+<justification end> */
 /* TIOVX-1742- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MUTEX_UM002 */
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "Mutex lock failed\n");
             status = (vx_status)VX_FAILURE;
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     return (status);
@@ -157,14 +168,17 @@ vx_status tivxMutexUnlock(tivx_mutex mutex)
     if(mutex != NULL)
     {
         status = pthread_mutex_unlock(&mutex->lock);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_MUTEX_UM003
+<justification end> */
 /* TIOVX-1742- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MUTEX_UM003 */
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "Mutex unlock failed\n");
             status = (vx_status)VX_FAILURE;
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     return (status);

@@ -140,12 +140,20 @@ static void tivxInitLocal(void)
 
 static void tivxDeInitLocal(void)
 {
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_INIT_UBR001
+<justification end> */
     if (0U != gInitCount) /* TIOVX-1949- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_INIT_UBR001 */
+/* LDRA_JUSTIFY_END */
     {
         gInitCount--;
 
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_INIT_UM001
+<justification end> */
 /* TIOVX-1759- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_ONLY_INIT_UM001 */
 #endif
         if (0U == gInitCount)
@@ -198,16 +206,18 @@ static void tivxDeInitLocal(void)
             VX_PRINT(VX_ZONE_INFO, "De-Initialization Done !!!\n");
         }
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-/*LDRA_ANALYSIS*/
-/* END: TIOVX_CODE_COVERAGE_HOST_ONLY_INIT_UM001 */
+/* LDRA_JUSTIFY_END */
 #endif
     }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_INIT_UM001
+<justification end> */
 /* TIOVX-1759- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_INIT_UM001 */
     else
     {
         /* ERROR. */
         VX_PRINT(VX_ZONE_ERROR, "De-Initialization Error !!!\n");
     }
-#endif
+/* LDRA_JUSTIFY_END */
 }

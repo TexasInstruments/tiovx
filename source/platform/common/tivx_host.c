@@ -111,7 +111,12 @@ static void tivxHostInitLocal(void)
 
 static void tivxHostDeInitLocal(void)
 {
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_HOST_UBR002
+<justification end> */
     if (0U != gInitCount) /* TIOVX-1946- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_HOST_UBR002 */
+/* LDRA_JUSTIFY_END */
     {
         gInitCount--;
 
@@ -123,12 +128,15 @@ static void tivxHostDeInitLocal(void)
             tivxUnRegisterOpenVXCoreKernels();
         }
     }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_HOST_UM003
+<justification end> */
 /* TIOVX-1732- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_UM003 */
     else
     {
         /* ERROR. */
         VX_PRINT(VX_ZONE_ERROR, "De-Initialization Error !!!\n");
     }
-#endif
+/* LDRA_JUSTIFY_END */
 }

@@ -97,8 +97,10 @@ vx_status tivxEventCreate(tivx_event *event)
 
             tmp_event->is_set = (uint16_t)0;
 
-    #ifdef LDRA_UNTESTABLE_CODE
-    /* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM001 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EVENT_UM001 <justification end> */
+/* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM001 */
             if(status!=0)
             {
                 (void)pthread_cond_destroy(&tmp_event->cond);
@@ -113,8 +115,12 @@ vx_status tivxEventCreate(tivx_event *event)
                 VX_PRINT(VX_ZONE_ERROR, "Mutex initialization failed\n");
                 status = (vx_status)VX_ERROR_NO_MEMORY;
             }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EVENT_UM001 <justification end> */
             else
-    #endif
+/* LDRA_JUSTIFY_END */
             {
                 *event = tmp_event;
             }
@@ -155,6 +161,11 @@ vx_status tivxEventPost(tivx_event event)
     if(event != NULL)
     {
         status = pthread_mutex_lock(&event->lock);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_EVENT_UBR001
+<justification end> */
+
         if(status == 0) /* TIOVX-1944- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_UBR001 */
         {
             event->is_set = 1;
@@ -165,14 +176,18 @@ vx_status tivxEventPost(tivx_event event)
             status = (vx_status)temp_status;
            
         }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EVENT_UM002
+<justification end> */
 /* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM002 */
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "Mutex post failed\n");
             status = (vx_status)VX_FAILURE;
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     return (status);
@@ -217,7 +232,12 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 
                     retVal = gettimeofday(&tv, NULL);
 
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_EVENT_UBR003
+<justification end> */
                     if (retVal == 0) /* TIOVX-1944- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_UBR003 */
+/* LDRA_JUSTIFY_END */
                     {
                         uint32_t        sec;
                         unsigned long   micro;
@@ -260,7 +280,10 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                             /*Do Nothing*/
                         }
                     }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EVENT_UM005
+<justification end> */
 /* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM005 */
                     else
                     {
@@ -269,13 +292,16 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                         status = (vx_status)VX_FAILURE;
                         done = (bool)vx_true_e;
                     }
-#endif
+/* LDRA_JUSTIFY_END */
                 }
                 else
                 {
                     /* timeout == TIVX_EVENT_TIMEOUT_WAIT_FOREVER */
                     retVal = pthread_cond_wait(&event->cond, &event->lock);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EVENT_UM007
+<justification end> */
 /* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM007 */
                     if ((int32_t)0 != retVal)
                     {
@@ -283,19 +309,22 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                         status = (vx_status)VX_FAILURE;
                         done = (bool)vx_true_e;
                     }
-#endif
+/* LDRA_JUSTIFY_END */
                 }
             }
 
             status1 = pthread_mutex_unlock(&event->lock);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EVENT_UM003
+<justification end> */
 /* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM003 */
             if(status1 != 0)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Mutex unlock failed\n");
                 status = (vx_status)VX_FAILURE;
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
     }
 
@@ -309,19 +338,27 @@ vx_status tivxEventClear(tivx_event event)
     if(event != NULL)
     {
         status = pthread_mutex_lock(&event->lock);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_EVENT_UBR004
+<justification end> */
         if(status == 0) /* TIOVX-1944- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_UBR004 */
         {
             event->is_set = 0;
             status = pthread_mutex_unlock(&event->lock);
         }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EVENT_UM004
+<justification end> */
 /* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM004 */
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "Mutex lock failed\n");
             status = (vx_status)VX_FAILURE;
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     return status;

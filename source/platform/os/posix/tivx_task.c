@@ -133,10 +133,15 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
             if(status==0) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR003 */
             {
                 {
-                    if(task->stack_size>0u)
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR006
+<justification end> */
+                    if(task->stack_size>0u) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR006 */
                     {
                         status = pthread_attr_setstacksize(&thread_attr, task->stack_size);
                     }
+/* LDRA_JUSTIFY_END */
                     #if 0
                     struct sched_param schedprm;
                     uint32_t pri;
@@ -158,27 +163,45 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
                     #endif
                 }
 
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR004
+<justification end> */
                 if(status==0) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR004 */
+/* LDRA_JUSTIFY_END */
                 {
                     status = pthread_create(&context->hndl, &thread_attr, tivxTaskMain, task);
                 }
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR004
+<justification end> */
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Task creation failed.  Invalid stack_size provided\n");
                 }
+/* LDRA_JUSTIFY_END */
                 (void)pthread_attr_destroy(&thread_attr);
             }
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR005
+<justification end> */
             if (status == 0) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR005 */
+/* LDRA_JUSTIFY_END */
             {
                 task->tsk_handle = (void *)context;
             }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TASK_UM001
+<justification end> */
 /* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM001 */
             else
             {
                 (void)ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_TASK);
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
     }
     else
@@ -205,13 +228,16 @@ vx_status tivxTaskDelete(tivx_task *task)
         (void)pthread_join(context->hndl, &ret_val);
 
         status = ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_TASK);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TASK_UM002
+<justification end> */
 /* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM002 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Task free failed\n");
         }
-#endif
+/* LDRA_JUSTIFY_END */
 
         task->tsk_handle = NULL;
     }

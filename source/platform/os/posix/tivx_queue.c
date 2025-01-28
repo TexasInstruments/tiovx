@@ -127,6 +127,10 @@ vx_status tivxQueueCreate(
 
             (void)pthread_mutexattr_destroy(&mutex_attr);
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_QUEUE_UBR001
+<justification end> */
             if(status==0) /* TIOVX-1947- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_QUEUE_UBR001 */
             {
                 if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != (uint32_t)0)
@@ -166,12 +170,21 @@ vx_status tivxQueueCreate(
                     (void)pthread_condattr_destroy(&cond_attr);
                 }
             }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_QUEUE_UBR002
+<justification end> */
             if ((vx_status)VX_SUCCESS == status) /* TIOVX-1947- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_QUEUE_UBR002 */
+/* LDRA_JUSTIFY_END */
             {
                 queue->blockedOnGet = (vx_bool)vx_false_e;
                 queue->blockedOnPut = (vx_bool)vx_false_e;
             }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TIVX_QUEUE_UM001
+<justification end> */
 /* TIOVX-1737- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TIVX_QUEUE_UM001 */
             else
             {
@@ -179,7 +192,7 @@ vx_status tivxQueueCreate(
                 (void)ownPosixObjectFree(queue->context, (vx_enum)TIVX_POSIX_TYPE_QUEUE);
                 queue->context = NULL;
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
     }
 
@@ -207,13 +220,16 @@ vx_status tivxQueueDelete(tivx_queue *queue)
         (void)pthread_mutex_destroy(&context->lock);
 
         status = ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_QUEUE);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TIVX_QUEUE_UM002
+<justification end> */
 /* TIOVX-1737- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TIVX_QUEUE_UM002 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to free Posix Object\n");
         }
-#endif
+/* LDRA_JUSTIFY_END */
         queue->context = NULL;
     }
 
@@ -409,6 +425,10 @@ vx_bool tivxQueueIsEmpty(const tivx_queue *queue)
         context = queue->context;
 
         status = pthread_mutex_lock(&context->lock);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_QUEUE_UBR006
+<justification end> */
         if(status==0) /* TIOVX-1947- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_QUEUE_UBR006 */
         {
             if (queue->count == 0U)
@@ -422,6 +442,7 @@ vx_bool tivxQueueIsEmpty(const tivx_queue *queue)
 
             (void)pthread_mutex_unlock(&context->lock);
         }
+/* LDRA_JUSTIFY_END */
     }
     return (is_empty);
 }

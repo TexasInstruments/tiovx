@@ -121,6 +121,10 @@ uint8_t *ownPosixObjectAlloc(vx_enum type)
 
     status = tivxMutexLock(g_tivx_objects_lock);
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_POSIX_OBJECTS_UBR001
+<justification end> */
     if ((vx_status)VX_SUCCESS == status) /* TIOVX-1954- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_POSIX_OBJECTS_UBR001 */
     {
         switch(type)
@@ -149,7 +153,7 @@ uint8_t *ownPosixObjectAlloc(vx_enum type)
                 obj = NULL;
                 break;
         }
-
+/* LDRA_JUSTIFY_END */
         (void)tivxMutexUnlock(g_tivx_objects_lock);
     }
 
@@ -164,6 +168,10 @@ vx_status ownPosixObjectFree(uint8_t *obj, vx_enum type)
     {
         status = tivxMutexLock(g_tivx_objects_lock);
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_POSIX_OBJECTS_UBR002
+<justification end> */
         if ((vx_status)VX_SUCCESS == status) /* TIOVX-1954- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_POSIX_OBJECTS_UBR002 */
         {
             switch(type)
@@ -220,6 +228,7 @@ vx_status ownPosixObjectFree(uint8_t *obj, vx_enum type)
 
             (void)tivxMutexUnlock(g_tivx_objects_lock);
         }
+/* LDRA_JUSTIFY_END */
     }
     else
     {
@@ -247,14 +256,17 @@ vx_status ownPosixObjectInit(void)
                     (uint8_t *)g_tivx_posix_objects.mutex, g_tivx_posix_objects.isMutexUse,
                     TIVX_MUTEX_MAX_OBJECTS, (uint32_t)sizeof(tivx_mutex_t), "TIVX_MUTEX_MAX_OBJECTS");
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM001
+<justification end> */
 /* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM001 */
     if (NULL == g_tivx_objects_lock)
     {
         status = (vx_status)VX_FAILURE;
         VX_PRINT(VX_ZONE_ERROR, "Error creating g_tivx_objects_lock\n");
     }
-#endif
+/* LDRA_JUSTIFY_END */
 
     return status;
 }
@@ -276,40 +288,52 @@ vx_status ownPosixObjectDeInit(void)
 
         status = ownCheckUseFlag(g_tivx_posix_objects.isEventUse,
             TIVX_EVENT_MAX_OBJECTS, &error_index);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM003
+<justification end> */
 /* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM003 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting event at index: %d failed\n", error_index);
         }
-#endif
+/* LDRA_JUSTIFY_END */
         status = ownCheckUseFlag(g_tivx_posix_objects.isQueueUse,
             TIVX_QUEUE_MAX_OBJECTS, &error_index);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM004
+<justification end> */
 /* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM004 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting queue at index: %d failed\n", error_index);
         }
-#endif
+/* LDRA_JUSTIFY_END */
         status = ownCheckUseFlag(g_tivx_posix_objects.isTaskUse,
             TIVX_TASK_MAX_OBJECTS, &error_index);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM002
+<justification end> */
 /* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM002 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting task at index: %d failed\n", error_index);
         }
-#endif
+/* LDRA_JUSTIFY_END */
         status = ownCheckUseFlag(g_tivx_posix_objects.isMutexUse,
             TIVX_MUTEX_MAX_OBJECTS, &error_index);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM005
+<justification end> */
 /* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM005 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting mutex at index: %d failed\n", error_index);
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     return status;

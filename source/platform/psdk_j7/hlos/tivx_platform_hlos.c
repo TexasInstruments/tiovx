@@ -62,10 +62,7 @@ int32_t tivxPlatformGetShmSize(uint32_t * shm_size)
     return appIpcGetTiovxObjDescSharedMemInfo((void**)&gTivxObjDescShmEntry, shm_size);
 }
 
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM006 */
 void tivxPlatformResetObjDescTableInfo(void);
-#endif
 
 vx_status ownPlatformInit(void)
 {
@@ -87,7 +84,10 @@ vx_status ownPlatformInit(void)
 
     retVal = appIpcGetTiovxObjDescSharedMemInfo( (void **) &gTivxObjDescShmEntry, &shmSize);
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM001
+<justification end> */
 /* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM001 */
     if( (0 != retVal) || (gTivxObjDescShmEntry == NULL)
         || ((uint32_t)shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*(uint32_t)sizeof(tivx_obj_desc_shm_entry_t))))
@@ -96,20 +96,23 @@ vx_status ownPlatformInit(void)
         VX_PRINT(VX_ZONE_ERROR, "insufficient shared memory size\n");
         status = (vx_status)VX_FAILURE;
     }
-#endif
+/* LDRA_JUSTIFY_END */
     if(status==(vx_status)VX_SUCCESS) /* TIOVX-1951- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR001 */
     {
         for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
         {
             status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM002
+<justification end> */
 /* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM002 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 ownPlatformDeInit();
                 break;
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
         ownIpcInit();
         ownLogRtInit();
@@ -127,38 +130,53 @@ vx_status ownPlatformInit(void)
 
         g_tivx_platform_info.semaphore = sem_open("/tiovxsem", (O_CREAT), (TIVX_SEM_OPEN_MODE), 1);
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM003 <justification end> */
 /* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM003 */
         if (SEM_FAILED == g_tivx_platform_info.semaphore)
         {
             VX_PRINT(VX_ZONE_ERROR, "POSIX semaphore create failed\n");
             status = (vx_status)VX_FAILURE;
         }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM003 <justification end> */
         else
-#endif
+/* LDRA_JUSTIFY_END */
         {
             g_tivx_platform_info.semaphore_data_ref = sem_open("/tiovxsem_data_ref", (O_CREAT), (TIVX_SEM_OPEN_MODE), 1);
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM004 <justification end> */
 /* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM004 */
             if (SEM_FAILED == g_tivx_platform_info.semaphore_data_ref)
             {
                 VX_PRINT(VX_ZONE_ERROR, "POSIX semaphore_data_ref create failed\n");
                 status = (vx_status)VX_FAILURE;
             }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM004 <justification end> */
             else
-#endif
+/* LDRA_JUSTIFY_END */
             {
                 g_tivx_platform_info.semaphore_log_mem = sem_open("/tiovxsem_log_mem", (O_CREAT), (TIVX_SEM_OPEN_MODE), 1);
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM005
+<justification end> */
 /* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM005 */
                 if (SEM_FAILED == g_tivx_platform_info.semaphore_log_mem)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "POSIX semaphore_log_mem create failed\n");
                     status = (vx_status)VX_FAILURE;
                 }
-#endif
+/* LDRA_JUSTIFY_END */
             }
         }
     }
@@ -179,10 +197,15 @@ void ownPlatformDeInit(void)
 
     for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
     {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR002
+<justification end> */
         if (NULL != g_tivx_platform_info.g_platform_lock[i]) /* TIOVX-1951- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR002 */
         {
             (void)tivxMutexDelete(&g_tivx_platform_info.g_platform_lock[i]);
         }
+/* LDRA_JUSTIFY_END */
     }
 }
 
@@ -271,7 +294,11 @@ vx_enum ownPlatformGetTargetId(const char *target_name)
     return (target_id);
 }
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY
+<metric start> statement branch <metric end>
+<function start> void tivxPlatformResetObjDescTableInfo.* <function end>
+<justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM006
+<justification end> */
 /* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM006 */
 void tivxPlatformResetObjDescTableInfo(void)
 {
@@ -284,7 +311,6 @@ void tivxPlatformResetObjDescTableInfo(void)
         tmp_obj_desc->type = (vx_enum)TIVX_OBJ_DESC_INVALID;
     }
 }
-#endif
 
 void ownPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 {

@@ -224,12 +224,16 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
         if ((vx_status)VX_SUCCESS == status)
         {
             ret_val = appMemStats(heap_id, &heap_stats);
-
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_MEM_UBR001
+<justification end> */
             if (0 == ret_val) /* TIOVX-1950- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_MEM_UBR001 */
             {
                 stats->mem_size = heap_stats.heap_size;
                 stats->free_size = heap_stats.free_size;
             }
+/* LDRA_JUSTIFY_END */
         }
     }
 }

@@ -107,10 +107,15 @@ static tivx_ipc_handler_f g_ipc_handler = NULL;
  */
 static void tivxIpcHandler(uint32_t src_cpu_id, uint32_t payload)
 {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR001
+<justification end> */
     if (NULL != g_ipc_handler) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR001 */
     {
         g_ipc_handler(payload);
     }
+/* LDRA_JUSTIFY_END */
 }
 
 void ownIpcRegisterHandler(tivx_ipc_handler_f notifyCb)
@@ -257,17 +262,25 @@ vx_bool tivxIsTargetEnabled(const char target_name[])
 
                 vsdk_isenabled = appIpcIsCpuEnabled(vsdk_cpu_id);
 
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR005
+<justification end> */
                 if (1U == vsdk_isenabled) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR005 */
+/* LDRA_JUSTIFY_END */
                 {
                     isEnabled = (vx_bool)vx_true_e;
                 }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_IPC_UM001
+<justification end> */
 /* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IPC_UM001 */
                 else
                 {
                     isEnabled = (vx_bool)vx_false_e;
                 }
-#endif
+/* LDRA_JUSTIFY_END */
             }
         }
     }
