@@ -63,19 +63,27 @@
 void ownPlatformCreateTargetsMpu(void);
 void ownPlatformCreateTargetsC7(void);
 void ownPlatformCreateTargetsR5f(void);
+
+#if defined(SOC_J721E)
 void ownPlatformCreateTargetsC66(void);
+#endif
 
 void ownPlatformDeleteTargetsMpu(void);
 void ownPlatformDeleteTargetsC7(void);
 void ownPlatformDeleteTargetsR5f(void);
+
+#if defined(SOC_J721E)
 void ownPlatformDeleteTargetsC66(void);
+#endif
 
 void ownPlatformCreateTargets(void)
 {
     ownPlatformCreateTargetsMpu();
     ownPlatformCreateTargetsC7();
     ownPlatformCreateTargetsR5f();
+#if defined(SOC_J721E)
     ownPlatformCreateTargetsC66();
+#endif
 }
 
 void ownPlatformDeleteTargets(void)
@@ -83,5 +91,7 @@ void ownPlatformDeleteTargets(void)
     ownPlatformDeleteTargetsMpu();
     ownPlatformDeleteTargetsC7();
     ownPlatformDeleteTargetsR5f();
+#if defined(SOC_J721E)
     ownPlatformDeleteTargetsC66();
+#endif
 }

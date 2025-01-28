@@ -27,11 +27,14 @@ CSOURCES    := \
 	$(COMMON_FILES_REL_PATH)/tivx_platform_common.c \
 	$(TARGET_FILES_REL_PATH)/tivx_target_config.c \
 	$(TARGET_FILES_REL_PATH)/tivx_target_config_pc.c \
-	$(TARGET_FILES_REL_PATH)/tivx_target_config_c66.c \
 	$(TARGET_FILES_REL_PATH)/tivx_target_config_c7.c \
 	$(TARGET_FILES_REL_PATH)/tivx_target_config_mpu1_0.c \
 	$(TARGET_FILES_REL_PATH)/r5f/tivx_target_config_r5f_$(SOC).c \
 	tivx_platform.c
+
+ifeq ($(SOC),j721e)
+CSOURCES    += $(TARGET_FILES_REL_PATH)/tivx_target_config_c66.c
+endif
 
 DEFS        += LDRA_UNTESTABLE_CODE
 # This is used to signify which sections of code is only applicable
