@@ -2681,7 +2681,7 @@ TEST(tivxSourceNode, testContextRelease)
     tivxUnRegisterTestKernelsKernels();
 }
 
-TEST(tivxSourceNode, testVirtualImageInitDeinit)
+TEST_WITH_ARG(tivxSourceNode, testVirtualImageInitDeinit, Arg, STREAMING_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_image in, intermediate, out;
@@ -2699,6 +2699,9 @@ TEST(tivxSourceNode, testVirtualImageInitDeinit)
 
     ASSERT_VX_OBJECT(n1 = tivxImageIntermediateNode(graph, in, intermediate), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n2 = tivxImageIntermediateNode(graph, intermediate, out), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     VX_CALL(vxVerifyGraph(graph));
 
