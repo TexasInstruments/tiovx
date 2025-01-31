@@ -9,9 +9,9 @@ IDIRS       += $(TIOVX_PATH)/conformance_tests/kernels/include
 IDIRS       += $(TIOVX_PATH)/conformance_tests/kernels/test_kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(TIOVX_PATH)/source/include
-IDIRS       += $(TIOVX_PATH)/source/platform/targets
+IDIRS       += $(TIOVX_PATH)/source/platform/common/targets
+IDIRS       += $(TIOVX_PATH)/source/platform/common/os/posix
 IDIRS       += $(PSDK_PATH)/app_utils
-IDIRS       += $(TIOVX_PATH)/source/platform/os/posix
 
 ifeq ($(RTOS_SDK), mcu_plus_sdk)
 IDIRS       += $(APP_UTILS_PATH)/utils/rtos/src

@@ -2,11 +2,11 @@
 ifeq ($(TARGET_OS), $(filter $(TARGET_OS), FREERTOS SAFERTOS THREADX))
 
 include $(PRELUDE)
-TARGET      := vx_platform_psdk_j7_rtos
+TARGET      := vx_platform_board_rtos
 TARGETTYPE  := library
 
 COMMON_FILES_REL_PATH = ../common
-TARGET_FILES_REL_PATH = ../../targets
+TARGET_FILES_REL_PATH = ../../common/targets
 
 ifeq ($(LDRA_COVERAGE_ENABLED), yes)
 include $(TIOVX_PATH)/tiovx_dev/internal_docs/coverage_files/concerto_inc.mak
@@ -29,8 +29,8 @@ CSOURCES    := 	tivx_event.c \
 				$(TARGET_FILES_REL_PATH)/tivx_target_config.c
 
 IDIRS       += $(HOST_ROOT)/source/include
-IDIRS       += $(HOST_ROOT)/source/platform/targets
-IDIRS       += $(HOST_ROOT)/source/platform/psdk_j7/common
+IDIRS       += $(HOST_ROOT)/source/platform/common/targets
+IDIRS       += $(HOST_ROOT)/source/platform/board/common
 IDIRS       += $(CUSTOM_KERNEL_PATH)/include
 
 ifeq ($(RTOS_SDK), mcu_plus_sdk)

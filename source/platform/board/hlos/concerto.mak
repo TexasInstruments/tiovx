@@ -3,12 +3,12 @@ ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53))
 ifeq ($(TARGET_OS),$(filter $(TARGET_OS), LINUX QNX))
 
 include $(PRELUDE)
-TARGET      := vx_platform_psdk_j7
+TARGET      := vx_platform_board_hlos
 TARGETTYPE  := library
 
-OS_FILES_REL_PATH = ../../os/posix
+OS_FILES_REL_PATH = ../../common/os/posix
 COMMON_FILES_REL_PATH = ../common
-TARGET_FILES_REL_PATH = ../../targets
+TARGET_FILES_REL_PATH = ../../common/targets
 
 ifeq ($(LDRA_COVERAGE_ENABLED), yes)
 include $(TIOVX_PATH)/tiovx_dev/internal_docs/coverage_files/concerto_inc.mak
@@ -34,9 +34,9 @@ CSOURCES    := \
     $(TARGET_FILES_REL_PATH)/tivx_target_config.c
 
 IDIRS       += $(TIOVX_PATH)/source/include
-IDIRS       += $(TIOVX_PATH)/source/platform/targets
-IDIRS       += $(TIOVX_PATH)/source/platform/psdk_j7/common
-IDIRS       += $(TIOVX_PATH)/source/platform/os/posix
+IDIRS       += $(TIOVX_PATH)/source/platform/common/targets
+IDIRS       += $(TIOVX_PATH)/source/platform/common/os/posix
+IDIRS       += $(TIOVX_PATH)/source/platform/board/common
 IDIRS       += $(APP_UTILS_PATH)
 
 DEFS += TARGET_HLOS

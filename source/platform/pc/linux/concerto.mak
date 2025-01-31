@@ -7,9 +7,9 @@ include $(PRELUDE)
 TARGET      := vx_platform_pc
 TARGETTYPE  := library
 
-OS_FILES_REL_PATH = ../../os/posix
+OS_FILES_REL_PATH = ../../common/os/posix
 COMMON_FILES_REL_PATH = ../common
-TARGET_FILES_REL_PATH = ../../targets
+TARGET_FILES_REL_PATH = ../../common/targets
 
 COMMON_FILES_BASE_PATH = $(TIOVX_PATH)/source/platform/pc/common
 
@@ -46,8 +46,8 @@ DEFS        += HOST_ONLY
 IDIRS += $(TIOVX_PATH)/source/include $(COMMON_FILES_BASE_PATH)
 IDIRS += $(APP_UTILS_PATH)
 IDIRS += $(VISION_APPS_PATH)/platform/$(SOC)/rtos
-IDIRS += $(TIOVX_PATH)/source/platform/os/posix
-IDIRS += $(TIOVX_PATH)/source/platform/targets
+IDIRS += $(TIOVX_PATH)/source/platform/common/os/posix
+IDIRS += $(TIOVX_PATH)/source/platform/common/targets
 
 DEFS += _DISABLE_TIDL
 IDIRS += $(CUSTOM_KERNEL_PATH)/include
