@@ -231,7 +231,7 @@ void *consumer_backchannel(void* arg)
             }
         }
 
-        if (consumer->last_buffer)
+        if (consumer->last_buffer || (VX_CONS_STATE_FLUSH == consumer->state))
         {
             break;
         }
@@ -1118,6 +1118,7 @@ static vx_status ownDestructConsumer(vx_reference ref)
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseConsumer(vx_consumer* consumer)
 {
     vx_consumer this_consumer = consumer[0];
+    this_consumer->state = VX_CONS_STATE_FLUSH;
     pthread_join(this_consumer->receiver_thread, NULL);
     pthread_join(this_consumer->backchannel_thread, NULL);
     return (ownReleaseReferenceInt(
