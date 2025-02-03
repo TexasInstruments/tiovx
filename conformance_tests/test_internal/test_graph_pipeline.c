@@ -44,19 +44,6 @@ TEST(tivxInternalGraphPipeline, negativeTestownCheckGraphCompleted)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
-TEST(tivxInternalGraphPipeline, negativeTestGraphParameterEnqueueReadyRef)
-{
-    vx_context context = context_->vx_context_;
-    vx_graph graph =NULL;
-
-    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-    /* To hit NULL data_ref_queue condition */
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxGraphParameterEnqueueReadyRef(NULL,0,NULL,0,0));
-
-    VX_CALL(vxReleaseGraph(&graph));
-}
-
 TEST(tivxInternalGraphPipeline, negativeTestownGraphAllocAndEnqueueObjDescForPipeline)
 {
     vx_context context = context_->vx_context_;
@@ -216,7 +203,6 @@ TEST(tivxInternalGraphPipeline, negativeTestownGraphGetNumSchedule1)
 
 TESTCASE_TESTS(tivxInternalGraphPipeline,
     negativeTestownCheckGraphCompleted,
-    negativeTestGraphParameterEnqueueReadyRef,
     negativeTestownGraphAllocAndEnqueueObjDescForPipeline,
     negativeTestSetGraphScheduleConfig,
     negativeTestownGraphPipeDepthBoundary,

@@ -69,6 +69,10 @@ static void ownGraphEnqueueFreeObjDesc(vx_graph graph,
 static tivx_obj_desc_graph_t *ownGraphGetObjDesc(vx_graph graph, uint32_t pipeline_id);
 static vx_status ownGraphPipelineValidateRefsList(
                      const vx_graph_parameter_queue_params_t graph_parameters_queue_param);
+static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
+                vx_uint32 graph_parameter_index,
+                vx_reference *refs,
+                vx_uint32 num_refs);
 
 static vx_status ownGraphPipelineValidateRefsList(
     const vx_graph_parameter_queue_params_t graph_parameters_queue_param)
@@ -268,11 +272,10 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
     return status;
 }
 
-vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
+static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                 vx_uint32 graph_parameter_index,
                 vx_reference *refs,
-                vx_uint32 num_refs,
-                vx_uint32 flags)
+                vx_uint32 num_refs)
 {
     tivx_data_ref_queue data_ref_q = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
@@ -368,9 +371,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterEnqueueReadyRef(vx_graph grap
                 vx_uint32 num_refs)
 {
     /* flags is set to 0, i.e no special handling during enqueue */
-    return tivxGraphParameterEnqueueReadyRef(
-                graph, graph_parameter_index, refs, num_refs, 0
-            );
+    return ownGraphParameterEnqueueReadyRef(
+                graph, graph_parameter_index, refs, num_refs);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph,

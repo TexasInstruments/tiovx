@@ -566,45 +566,6 @@ vx_status tivxWaitGraphEvent(
                     vx_graph graph, vx_event_t *event,
                     vx_bool do_not_block);
 
-/*! \brief Same as vxGraphParameterEnqueueReadyRef except that it take an
- *         additional TIOVX specific flag parameter
- *
- *  \details For valid values of flag see
- *  - \ref TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP
- *           The tivxGraphParameterEnqueueReadyRef API is needed if explicitly
- *           enqueueing and dequeueing from a capture node graph parameter
- *           that has set the VX_KERNEL_PIPEUP_OUTPUT_DEPTH using the
- *           vxSetKernelAttribute API.  The tivxGraphParameterEnqueueReadyRef
- *           must be called for the num_bufs given as the
- *           VX_KERNEL_PIPEUP_OUTPUT_DEPTH.  This API differs from
- *           vxGraphParameterEnqueueReadyRef in that it does not additionally
- *           schedule a graph execution.  In the case that this API is not used
- *           at the capture node graph parameter, the teardown of the graph will
- *           pend as it will be waiting on graph executions that have not completed.
- *
- *  For more detailed description of vxGraphParameterEnqueueReadyRef see
- *  \ref vxGraphParameterEnqueueReadyRef
- *
- * \param [in] graph Graph reference
- * \param [in] graph_parameter_index Graph parameter index
- * \param [in] refs The array of references to enqueue into the graph parameter
- * \param [in] num_refs Number of references to enqueue
- * \param [in] flags Flag to control behavior of the operation
- *
- * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS No errors.
- * \retval VX_ERROR_INVALID_REFERENCE graph is not a valid reference OR reference is not a valid reference
- * \retval VX_ERROR_INVALID_PARAMETERS graph_parameter_index is NOT a valid graph parameter index
- * \retval VX_FAILURE Reference could not be enqueued.
- *
- * \ingroup group_vx_graph_cfg
- */
-vx_status tivxGraphParameterEnqueueReadyRef(vx_graph graph,
-                vx_uint32 graph_parameter_index,
-                vx_reference *refs,
-                vx_uint32 num_refs,
-                vx_uint32 flags);
-
 /*! \brief Allocates data for an object during verification or graph parameter substitution
  *
  * \ingroup group_vx_graph
