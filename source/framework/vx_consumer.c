@@ -55,7 +55,6 @@ static int32_t send_buffer_release_message(vx_consumer consumer, void* message_b
     msg->consumer_id        = consumer->consumer_id;
 #endif
     msg->buffer_id          = buffer_id;
-    msg->last_buffer        = 0;
 
     // check if this is the last buffer which has been received - either dequeued or dropped
     if ((consumer->last_buffer == 1) &&
@@ -66,7 +65,7 @@ static int32_t send_buffer_release_message(vx_consumer consumer, void* message_b
             VX_ZONE_INFO,
             "CONSUMER: last buffer has been processed, wait before putting pipeline in flush mode%s",
             "\n");
-        msg->last_buffer = 1;
+        msg->last_buffer = 1U;
     }
 
 #ifdef IPPC_SHEM_ENABLED
@@ -225,6 +224,7 @@ void *consumer_backchannel(void* arg)
                         buffer_id,
                         consumer->last_buffer_id,
                         consumer->last_buffer);
+                    l_send_msg->last_buffer = consumer->last_buffer;
                     send_buffer_release_message(consumer, l_send_msg, buffer_id, VX_MSGTYPE_BUF_RELEASE);
                 }
                 pthread_mutex_unlock(&consumer->buffer_mutex);
@@ -314,7 +314,7 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p, uint8_t 
         if (1U == l_received_message->last_buffer)
         {
             // if last buffer was sent, producer needs to be notified by setting last buffer flag, response needs to be sent regardless of whether receiver was addressed via mask or not
-            consumer->last_buffer = 1;
+            consumer->last_buffer = 1U;
             consumer->last_buffer_transmitted = 1;
             consumer->last_buffer_id = l_received_message->buffer_id;
             VX_PRINT(VX_ZONE_INFO, "CONSUMER: Received last buffer id %d \n", consumer->last_buffer_id);
@@ -366,6 +366,22 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p, uint8_t 
     {
         VX_PRINT(VX_ZONE_ERROR, "CONSUMER: MSG RECEIVE STATUS: FAILED.%s", "\n");
     }
+    else if (consumer->state == VX_CONS_STATE_FLUSH)
+    {
+        // buffer was not enqueued, transmit the buffer back to the producer immediately and shutdown
+        consumer->last_buffer_dropped = 1U;
+
+        vx_cons_msg_content_t* l_send_msg;
+        pthread_mutex_lock(&consumer->buffer_mutex);
+        l_send_msg = ippc_shem_payload_pointer(&consumer->m_sender_ctx, sizeof(vx_cons_msg_content_t), &l_status);
+        l_send_msg->last_buffer = 1U;
+        if(E_IPPC_OK == l_status)
+        {
+            VX_PRINT(VX_ZONE_INFO, "CONSUMER: CONSUMER DROPS FRAME and sets last buffer flag, BUFFER ID %d, %s.", l_received_message->buffer_id, "\n");
+            send_buffer_release_message(consumer, l_send_msg, l_received_message->buffer_id, VX_MSGTYPE_BUF_RELEASE);
+        }
+        pthread_mutex_unlock(&consumer->buffer_mutex);
+    }
     else if (VX_GW_STATUS_CONSUMER_REF_DROP == status)
     {
         // buffer was not enqueued, transmit the buffer back to the producer immediately
@@ -374,7 +390,7 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p, uint8_t 
         vx_cons_msg_content_t* l_send_msg;
         pthread_mutex_lock(&consumer->buffer_mutex);
         l_send_msg = ippc_shem_payload_pointer(&consumer->m_sender_ctx, sizeof(vx_cons_msg_content_t), &l_status);
-
+        l_send_msg->last_buffer = 0U;
         if(E_IPPC_OK == l_status)
         {
             VX_PRINT(VX_ZONE_INFO, "CONSUMER: CONSUMER DROPS FRAME, BUFFER ID %d, %s.", l_received_message->buffer_id, "\n");
@@ -388,7 +404,7 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p, uint8_t 
         vx_cons_msg_content_t* l_send_msg;
         pthread_mutex_lock(&consumer->buffer_mutex);
         l_send_msg = ippc_shem_payload_pointer(&consumer->m_sender_ctx, sizeof(vx_cons_msg_content_t), &l_status);
-
+        l_send_msg->last_buffer = 0U;
         if(E_IPPC_OK == l_status)
         {
             VX_PRINT(VX_ZONE_INFO, "CONSUMER: send graph ready to producer, BUFFER ID %d, %s.", l_received_message->buffer_id, "\n");
@@ -827,6 +843,7 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
         vx_gw_buff_id_msg* msg       = (vx_gw_buff_id_msg*)message_buffer;
 
         VX_PRINT(VX_ZONE_INFO, "CONSUMER: Graph newly created, notify producer %s.", "\n");
+        msg->last_buffer = 0U;
         status = send_buffer_release_message(consumer, message_buffer, msg->buffer_id, VX_MSGTYPE_CONSUMER_CREATE_DONE);
         if (status < 0)
         {
@@ -838,7 +855,7 @@ static int32_t handle_receive_message(vx_consumer consumer, int32_t socket_fd, u
         // buffer was not enqueued, transmit the buffer back to the producer immediately
         consumer->last_buffer_dropped = 1;
         vx_gw_buff_id_msg* msg       = (vx_gw_buff_id_msg*)message_buffer;
-
+        msg->last_buffer = 0U;
         VX_PRINT(VX_ZONE_INFO, "CONSUMER: CONSUMER DROPS FRAME, BUFFER ID %d, %s.", msg->buffer_id, "\n");
         status = send_buffer_release_message(consumer, message_buffer, msg->buffer_id, VX_MSGTYPE_BUF_RELEASE);
         if (status < 0)
