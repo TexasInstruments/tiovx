@@ -265,7 +265,10 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                             status = (vx_status)TIVX_ERROR_EVENT_TIMEOUT;
                             done = (bool)vx_true_e;
                         }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EVENT_UM006
+<justification end> */
 /* TIOVX-1731- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_UM006 */
                         else if ((int32_t)0 != retVal)
                         {
@@ -274,8 +277,13 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                             status = (vx_status)VX_FAILURE;
                             done = (bool)vx_true_e;
                         }
-#endif
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EVENT_UM006
+<justification end> */
                         else
+/* LDRA_JUSTIFY_END */
                         {
                             /*Do Nothing*/
                         }

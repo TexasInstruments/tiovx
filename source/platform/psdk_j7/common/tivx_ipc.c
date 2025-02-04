@@ -178,8 +178,13 @@ vx_enum tivxGetSelfCpuId(void)
 
     vsdk_cpu_id =  appIpcGetSelfCpuId();
 
-    for (i = 0; 
+    for (i = 0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR002
+<justification end> */
             i < dimof(g_ipc_cpu_id_map); /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR002 */
+/* LDRA_JUSTIFY_END */
 /* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IPC_C7X_UM001 */
             i ++)
 /* END: TIOVX_CODE_COVERAGE_IPC_C7X_UM001 */

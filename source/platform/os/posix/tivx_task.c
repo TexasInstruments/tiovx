@@ -259,25 +259,41 @@ void tivxTaskWaitMsecs(uint32_t msec)
     delay_time.tv_sec  = (int64_t)msec/1000;
     delay_time.tv_nsec = ((int64_t)msec%1000)*1000000;
 
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM003 */
     do
     {
-#endif
         ret = nanosleep(&delay_time, &remain_time);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TASK_UM003
+<justification end> */
 /* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM003 */
         if((ret < 0) && (remain_time.tv_sec > 0) && (remain_time.tv_nsec > 0))
         {
             /* restart for remaining time */
             delay_time = remain_time;
         }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TASK_UM003
+<justification end> */
         else
+/* LDRA_JUSTIFY_END */
         {
             break;
         }
-    } while(true);
-#endif
+/* LDRA_JUSTIFY_START
+<metric start> statement <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TASK_UM003
+<justification end> */
+    }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TASK_UM003
+<justification end> */
+    while(true);
+/* LDRA_JUSTIFY_END */
 #else
     (void)usleep(msec * 1000U);
 #endif

@@ -328,7 +328,14 @@ void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
 {
     uint32_t i;
 
-    for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS;/* TIOVX-1951- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR003 */ i ++)
+    for (i = 0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR003
+<justification end> */
+    i < TIVX_PLATFORM_MAX_TARGETS;/* TIOVX-1951- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR003 */
+/* LDRA_JUSTIFY_END */
+    i ++)
     {
         if (0 == strncmp(
                 g_tivx_platform_info.target_info[i].target_name,
