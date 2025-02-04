@@ -101,4 +101,14 @@ void tivxPlatformDeleteTargetId(vx_enum target_id);
  */
 void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id);
 
+void ownPlatformCreateTargetsMpu(void);
+void ownPlatformCreateTargetsC7(void);
+void ownPlatformCreateTargetsR5f(void);
+void ownPlatformCreateTargetsC66(void);
+
+void ownPlatformDeleteTargetsMpu(void);
+void ownPlatformDeleteTargetsC7(void);
+void ownPlatformDeleteTargetsR5f(void);
+void ownPlatformDeleteTargetsC66(void);
+
 #endif

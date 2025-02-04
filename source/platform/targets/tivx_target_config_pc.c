@@ -60,21 +60,7 @@
 *
 */
 
-void ownPlatformCreateTargetsMpu(void);
-void ownPlatformCreateTargetsC7(void);
-void ownPlatformCreateTargetsR5f(void);
-
-#if defined(SOC_J721E)
-void ownPlatformCreateTargetsC66(void);
-#endif
-
-void ownPlatformDeleteTargetsMpu(void);
-void ownPlatformDeleteTargetsC7(void);
-void ownPlatformDeleteTargetsR5f(void);
-
-#if defined(SOC_J721E)
-void ownPlatformDeleteTargetsC66(void);
-#endif
+#include "tivx_target_config.h"
 
 void ownPlatformCreateTargets(void)
 {
