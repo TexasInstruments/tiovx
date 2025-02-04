@@ -233,14 +233,22 @@ static vx_status ownGraphAddSingleDataReference(vx_graph graph, vx_reference ref
         ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", (uint16_t)graph->num_data_ref);
         status = (vx_status)VX_SUCCESS;
     }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM001
+<justification end> */
 /* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM001 */
     else if (graph->num_data_ref >= TIVX_GRAPH_MAX_DATA_REF)
     {
         VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_GRAPH_MAX_DATA_REF in tiovx/include/TI/tivx_config.h\n");
     }
-#endif
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM001
+<justification end> */
     else
+/* LDRA_JUSTIFY_END */
     {
         /* do nothing */
     }
@@ -298,7 +306,14 @@ static uint32_t ownGraphGetNumInNodes(vx_graph graph, vx_node node, uint32_t nod
     ref = ownNodeGetParameterRef(node, node_prm_idx);
     if(ref != NULL) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR005 */
     {
-        for(i=0; i<graph->num_data_ref; i++) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR006 */
+        for(i=0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR006
+<justification end> */
+        i<graph->num_data_ref;
+/* LDRA_JUSTIFY_END */
+        i++) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR006 */
         {
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
@@ -531,7 +546,12 @@ static vx_status ownGraphInitVirtualNode(
                 if ((vx_status)VX_SUCCESS == status)
                 {
                     switch (mf->type) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR071 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR071
+<justification end> */
                     {
+/* LDRA_JUSTIFY_END */
                         case (vx_enum)VX_TYPE_SCALAR:
                             /* status set to NULL due to preceding type check */
                             status = vxQueryScalar(vxCastRefAsScalar(ref, NULL),
@@ -598,15 +618,23 @@ static vx_status ownGraphInitVirtualNode(
                                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                                     VX_PRINT(VX_ZONE_ERROR,"pyramid width equal to zero\n");
                                 }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM004
+<justification end> */
 /* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM004 */
                                 else if (0U == mf->pmd.height)
                                 {
                                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                                     VX_PRINT(VX_ZONE_ERROR,"pyramid height equal to zero\n");
                                 }
-#endif
+/* LDRA_JUSTIFY_END */ 
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM004
+<justification end> */
                                 else
+/* LDRA_JUSTIFY_END */ 
                                 {
                                     status = ownInitVirtualPyramid(pmd,
                                         mf->pmd.width, mf->pmd.height,
@@ -614,11 +642,14 @@ static vx_status ownGraphInitVirtualNode(
                                 }
                             }
                             break;
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM007
+<justification end> */
 /* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM007 */
                         default:
                             break;
-#endif
+/* LDRA_JUSTIFY_END */
                     }
                 }
 
@@ -2237,13 +2268,21 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
                                 vx_pyramid pyramid = vxCastRefAsPyramid(ref, NULL);
                                 ref = vxCastRefFromImage(pyramid->img[0]);
                             }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR064
+<justification end> */
                             else if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR064 */
+/* LDRA_JUSTIFY_END */
                             {
                                 /* status set to NULL due to preceding type check */
                                 vx_object_array object_array = vxCastRefAsObjectArray(ref, NULL);
                                 ref = object_array->ref[0];
                             }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM026
+<justification end> */
 /* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM026 */
                             else
                             {
@@ -2251,7 +2290,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
                                 status = (vx_status)VX_FAILURE;
                                 ref = NULL;
                             }
-#endif
+/* LDRA_JUSTIFY_END */
                         }
                         graph->data_ref_q_list[graph->num_data_ref_q].refs_list[buf_id] = ref;
                     }

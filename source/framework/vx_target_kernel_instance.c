@@ -98,7 +98,11 @@ vx_status ownTargetKernelInstanceInit(void)
 }
 
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY
+<metric start> statement <metric end>
+<function start> void CownTargetKernelInstanceDeInit.* <function end>
+<justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_INSTANCE_UM001
+<justification end> */
 /* TIOVX-1708-Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_INSTANCE_UM001 */
 #endif
 void ownTargetKernelInstanceDeInit(void)
@@ -106,21 +110,21 @@ void ownTargetKernelInstanceDeInit(void)
     vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxMutexDelete(&g_target_kernel_instance_lock);
+#if defined(A72) || defined(A53) 
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TARGET_KERNEL_INSTANCE_UM002
 <justification end> */
+#endif
 /* TIOVX-1708- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_INSTANCE_UM002 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
     }
+#if defined(A72) || defined(A53)
 /* LDRA_JUSTIFY_END */
-}
-#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-/* END: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_INSTANCE_UM001 */
-/*LDRA_ANALYSIS*/
 #endif
+}
 
 tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id)
 {
@@ -154,7 +158,14 @@ tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, vola
 
         if(status == (vx_status)VX_SUCCESS) /* TIOVX-1936- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_INSTANCE_UBR001 */
         {
-            for(i=0; i<dimof(g_target_kernel_instance_table); i++) /* TIOVX-1936- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_INSTANCE_UBR002 */
+            for(i=0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_INSTANCE_UBR002
+<justification end> */
+            i<dimof(g_target_kernel_instance_table)
+/* LDRA_JUSTIFY_END */
+            ; i++) /* TIOVX-1936- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_INSTANCE_UBR002 */
             {
                 tmp_kernel_instance = &g_target_kernel_instance_table[i];
                 if(tmp_kernel_instance->kernel_id == (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID)

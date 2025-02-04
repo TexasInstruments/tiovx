@@ -108,7 +108,12 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
 
     /* do not check the res, as we know they are arrays at that point*/
     switch (kernel_enum) /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR010 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR010
+<justification end> */
     {
+/* LDRA_JUSTIFY_END */
         case (vx_enum)VX_KERNEL_COPY:
             if ((vx_bool)vx_true_e == validate_only)
             {
@@ -137,12 +142,15 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
                 res = ownSwapReferenceGeneric(input, output);
             }
             break;
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_ARRAY_UM001
+<justification end> */
 /* TIOVX-2004- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_ARRAY_UM001 */
         default:
             res = (vx_status)VX_ERROR_NOT_SUPPORTED;
             break;
-#endif
+/* LDRA_JUSTIFY_END */
     }
     return(res);
 }

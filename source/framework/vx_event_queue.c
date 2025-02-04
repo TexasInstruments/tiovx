@@ -312,19 +312,27 @@ vx_status vxWaitEventQueue(
                 event->event_info.node_error.node = (vx_node)elem->param2;
                 event->event_info.node_error.status = (vx_status)elem->param3;
             }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR004
+<justification end> */
             else
             if(elem->event_id==(vx_enum)VX_EVENT_USER) /* TIOVX-1887- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR004 */
+/* LDRA_JUSTIFY_END */
             {
                 event->app_value = (uint32_t)elem->param1;
                 event->event_info.user_event.user_event_parameter = (void*)elem->param2;
             }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM003
+<justification end> */
 /* TIOVX-1722- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM003 */
             else
             {
                 /* do nothing */
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
 
         /* release index into free queue,

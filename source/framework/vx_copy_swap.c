@@ -83,7 +83,7 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
         tivx_obj_desc_node_t *out_objd = out_node->obj_desc[0];
         vx_uint32 j = 0;
         /* remove old node from in nodes of the out node */
-        while (old_node_id != out_objd->in_node_id[j]) 
+        while (old_node_id != out_objd->in_node_id[j])
         {
             j++;
         }
@@ -174,7 +174,14 @@ static void ownReassignGraphParameter(vx_graph graph, const vx_node node, const 
             for (ni = 0; ni < graph->num_nodes; ni++)
             {
                 vx_node this_node = graph->nodes[ni];
-                for (pi2 = 0; pi2 < this_node->kernel->signature.num_parameters; ++pi2) /* TIOVX-2067- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_COPY_SWAP_UBR004 */
+                for (pi2 = 0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_COPY_SWAP_UBR004
+<justification end> */
+                pi2 < this_node->kernel->signature.num_parameters;
+/* LDRA_JUSTIFY_END */
+                ++pi2) /* TIOVX-2067- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_COPY_SWAP_UBR004 */
                 {
                     if ((ref == this_node->parameters[pi2]) &&
                         (direction == this_node->kernel->signature.directions[pi2]))
@@ -242,7 +249,7 @@ static vx_bool ownCopyMoveReplaceOutputCompatible(vx_reference new_reference, vx
             }
 /* LDRA_JUSTIFY_END */
         }
-        else 
+        else
         {
             switch (old_reference->type)
             {
@@ -501,7 +508,14 @@ vx_status ownGraphProcessCopyMoveNodes(vx_graph graph)
                         if (((tivx_obj_desc_node_t *)(in_node->obj_desc[0]))->num_out_nodes > 1U)
                         {
                             vx_uint32 k;
-                            for (k = 0; (k < graph->num_nodes) && (removable == (vx_bool)(vx_true_e)); ++k)/* TIOVX-2067- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_COPY_SWAP_UBR009 */
+                            for (k = 0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_COPY_SWAP_UBR009
+<justification end> */
+                            (k < graph->num_nodes) && (removable == (vx_bool)(vx_true_e));
+/* LDRA_JUSTIFY_END */
+                            ++k)/* TIOVX-2067- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_COPY_SWAP_UBR009 */
                             {
                                 if (copy_move_indices[i] != k)
                                 {

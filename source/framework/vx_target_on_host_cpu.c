@@ -92,7 +92,12 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
     tivx_obj_desc_node_t *node_obj_desc;
 
     switch(cmd_obj_desc->cmd_id) /* TIOVX-1937- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR003 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR003
+<justification end>*/
     {
+/* LDRA_JUSTIFY_END */
         case (vx_enum)TIVX_CMD_NODE_USER_CALLBACK:
             node_obj_desc_id = cmd_obj_desc->obj_desc_id[0];
             node_obj_desc = (tivx_obj_desc_node_t*)ownObjDescGet(node_obj_desc_id);
@@ -119,7 +124,10 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
             tivx_data_ref_queue data_ref_q;
 
             data_ref_q = (tivx_data_ref_queue)ownReferenceGetHandleFromObjDescId(cmd_obj_desc->obj_desc_id[0]);
-
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR002
+<justification end>*/
             if( data_ref_q != NULL ) /* TIOVX-1937- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR002 */
             {
                 uint64_t timestamp;
@@ -128,14 +136,18 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
 
                 (void)ownDataRefQueueSendRefConsumedEvent(data_ref_q, timestamp);
             }
+/* LDRA_JUSTIFY_END */
             /* No ack for this command */
         }
             break;
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TARGET_ON_HOST_CPU_UM001
+<justification end>*/
 /* TIOVX-1746- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_ON_HOST_CPU_UM001 */
         default:
             break;
-#endif
+/* LDRA_JUSTIY_END */
     }
 }
 

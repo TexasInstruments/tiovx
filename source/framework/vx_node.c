@@ -399,18 +399,25 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
                     {
                         node->is_timed_out = (vx_bool)vx_true_e;
                     }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR005
+<justification end> */
                     else if ((vx_status)VX_SUCCESS==status) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR005 */
+/* LDRA_JUSTIFY_END */
                     {
                         node->is_timed_out = (vx_bool)vx_false_e;
                     }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_NODE_UTJT002
+<justification end> */
 /* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT002 */
                     else
                     {
                         /* do nothing */
                     }
-/* END: TIOVX_CODE_COVERAGE_NODE_UTJT002 */
-#endif
+/* LDRA_JUSTIFY_END */
                 }
             }
         }
@@ -808,19 +815,26 @@ vx_status ownNodeKernelDeinit(vx_node node)
                                         /*status set to NULL due to preceding type check*/
                                         params[i] = (vxCastRefAsObjectArray(parent_ref[i], NULL))->ref[n];
                                     }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR017
+<justification end>*/
                                     else if(parent_ref[i]->type==(vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR017 */
+/* LDRA_JUSTIFY_END */
                                     {
                                         /*status set to NULL due to preceding type check*/
                                         params[i] = vxCastRefFromImage((vxCastRefAsPyramid(parent_ref[i], NULL))->img[n]);
                                     }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_NODE_UTJT004
+<justification end>*/
 /* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT004 */
                                     else
                                     {
                                         params[i] = NULL;
                                     }
-/* END: TIOVX_CODE_COVERAGE_NODE_UTJT004 */
-#endif
+/* LDRA_JUSTIFY_END */
                                 }
                             }
 /* LDRA_JUSTIFY_START
@@ -998,19 +1012,26 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
                                         /*status set to NULL due to preceding type check*/
                                         params[i] = (vxCastRefAsObjectArray(parent_ref[i], NULL))->ref[n];
                                     }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR023
+<justification end>*/
                                     else if(parent_ref[i]->type==(vx_enum)VX_TYPE_PYRAMID)/* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR023 */
+/* LDRA_JUSTIFY_END */
                                     {
                                         /*status set to NULL due to preceding type check*/
                                         params[i] = vxCastRefFromImage((vxCastRefAsPyramid(parent_ref[i], NULL))->img[n]);
                                     }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_NODE_UTJT007
+<justification end>*/
 /* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT007 */
                                     else
                                     {
                                         params[i] = NULL;
                                     }
-/* END: TIOVX_CODE_COVERAGE_NODE_UTJT007 */
-#endif
+/* LDRA_JUSTIFY_END */
                                 }
                             }
                             else
@@ -1260,7 +1281,14 @@ vx_status ownNodeReplaceOutNode(vx_node node, vx_node old_out_node, vx_node new_
         }
     }
 
-    for(i=0; i<num_out_nodes; i++)/* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR024 */
+    for(i=0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR024
+<justification end> */
+    i<num_out_nodes
+/* LDRA_JUSTIFY_END */
+    ; i++)/* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR024 */
     {
         if(old_out_node_id == node->obj_desc[0]->out_node_id[i])
         {
@@ -1340,11 +1368,14 @@ vx_status ownNodeReplaceInNode(vx_node node, vx_node old_in_node, vx_node new_in
         }
     }
 
+    for(i=0;
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR025
 <justification end> */
-    for(i=0; i<num_in_nodes; i++) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR025 */
+    i<num_in_nodes
+/* LDRA_JUSTIFY_END */
+    ; i++) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR025 */
     {
         if(old_in_node_id == node->obj_desc[0]->in_node_id[i])
         {
@@ -1365,7 +1396,6 @@ vx_status ownNodeReplaceInNode(vx_node node, vx_node old_in_node, vx_node new_in
             break;
         }
     }
-/* LDRA_JUSTIFY_END */
 
     return status;
 }
@@ -2829,7 +2859,14 @@ vx_status tivxSetNodeDebugZone(vx_node node, vx_uint32 debug_zone, vx_bool enabl
         {
             uint32_t i;
 
-            for (i = 0; i < TIVX_GRAPH_MAX_PIPELINE_DEPTH; i++)  /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR034 */
+            for (i = 0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR034
+<justification end> */
+            i < TIVX_GRAPH_MAX_PIPELINE_DEPTH
+/* LDRA_JUSTIFY_END */
+            ; i++)  /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR034 */
             {
                 if (node->obj_desc[i] != NULL)
                 {

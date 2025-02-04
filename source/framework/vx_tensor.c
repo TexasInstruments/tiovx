@@ -107,7 +107,12 @@ static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool v
     vx_status res = (vx_status)VX_ERROR_NOT_SUPPORTED;
     
     switch (kernel_enum) /* TIOVX-1938- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR004 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR004
+<justification end> */
     {
+/* LDRA_JUSTIFY_END */
         case (vx_enum)VX_KERNEL_COPY:
             if ((vx_bool)vx_true_e == validate_only)
             {
@@ -136,12 +141,15 @@ static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool v
                 res = moveOrSwapTensor(input, output);
             }
             break;
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TENSOR_UM003
+<justification end> */
 /* TIOVX-1702- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TENSOR_UM003 */
         default:
             res =  (vx_status)VX_ERROR_NOT_SUPPORTED;
             break;
-#endif
+/* LDRA_JUSTIFY_END */
     }
     return (res);
 }

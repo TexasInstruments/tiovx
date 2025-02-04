@@ -510,31 +510,41 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
 
                     refs[ref_id] = obj_arr->ref[0];
                 }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR015
+<justification end> */
                 /* If the ref type is a pyramid that didn't match the graph parameter type, return img[0] of pyramid */
                 /* Note: this assumes it is replicated.  In the future, this assumption could be removed */
                 else if(ref->type==(vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR015 */
+/* LDRA_JUSTIFY_END */
                 {
                     /* status set to NULL due to preceding type check */
                     vx_pyramid pyr = vxCastRefAsPyramid(ref, NULL);
 
                     refs[ref_id] = vxCastRefFromImage(pyr->img[0]);
                 }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT009
+<justification end> */
 /* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT009 */
                 /* If the ref type is an array element that didn't match the graph parameter type, return parent of element */
                 else if((vx_bool)vx_true_e == ref->is_array_element)
                 {
                     refs[ref_id] = ref->scope;
                 }
-/* END: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT009 */
-#endif
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM007
+<justification end> */
 /* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM007 */
                 else
                 {
                     /* do nothing */
                 }
-#endif
+/* LDRA_JUSTIFY_END */
 
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -603,7 +613,14 @@ vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_p
     {
         uint32_t buf_id;
 
-        for(buf_id=0; buf_id<graph->parameters[graph_parameter_index].num_buf; buf_id++) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR016 */
+        for(buf_id=0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR016
+<justification end>*/
+        buf_id<graph->parameters[graph_parameter_index].num_buf;
+/* LDRA_JUSTIFY_END */
+        buf_id++) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR016 */
         {
             if(ref==graph->parameters[graph_parameter_index].refs_list[buf_id])
             {
@@ -813,7 +830,14 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
                 if(graph->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL)
                 {
                     /* delays need aging only if pipelining is not used */
-                    for(i=0; i<TIVX_GRAPH_MAX_DELAYS; i++) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR021 */
+                    for(i=0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR021
+<justification end>*/
+                    i<TIVX_GRAPH_MAX_DELAYS;
+/* LDRA_JUSTIFY_END */
+                    i++) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR021 */
                     {
                         if(graph->delays[i] != NULL)
                         {
@@ -1171,7 +1195,14 @@ static uint32_t ownGraphGetOptimalNumBuf(vx_graph graph, vx_reference ref)
     uint32_t num_bufs = 1U;
     uint32_t i;
 
-    for(i=0; i<graph->num_data_ref; i++) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR023 */
+    for(i=0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR023
+<justification end>*/
+    i<graph->num_data_ref;
+/* LDRA_JUSTIFY_END */
+    i++) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR023 */
     {
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>

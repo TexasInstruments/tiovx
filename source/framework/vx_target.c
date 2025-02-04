@@ -439,20 +439,28 @@ static void ownTargetNodeDescNodeExecuteTargetKernel(
                             ((tivx_obj_desc_object_array_t*)parent_obj_desc[i])->
                                 obj_desc_id[cnt]);
                     }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR012
+<justification end> */
                     else
                     if((vx_enum)parent_obj_desc[i]->type==(vx_enum)TIVX_OBJ_DESC_PYRAMID) /* TIOVX-1930- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR012 */
+/* LDRA_JUSTIFY_END */
                     {
                         params[i] = ownObjDescGet(
                             ((tivx_obj_desc_pyramid_t*)parent_obj_desc[i])->
                                 obj_desc_id[cnt]);
                     }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TARGET_UM016
+<justification end> */
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM016 */
                     else
                     {
                         params[i] = NULL;
                     }
-#endif
+/* LDRA_JUSTIFY_END */
                 }
             }
             else if((is_prm_array_element & ((uint32_t)1U << i)) != 0U)
@@ -675,19 +683,27 @@ static vx_bool ownTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node
                 is_prev_node_blocked = (vx_bool)vx_true_e;
             }
         }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR020
+<justification end> */
         else
         if(node_obj_desc->state == TIVX_NODE_OBJ_DESC_STATE_BLOCKED) /* TIOVX-1930- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR020 */
+/* LDRA_JUSTIFY_END */
         {
             /* this is trigger from prev node or due to resource being released so proceed with execution */
             node_obj_desc->state = TIVX_NODE_OBJ_DESC_STATE_IDLE;
         }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TARGET_UM006
+<justification end> */
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM006 */
         else
         {
             /* do nothing */
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
     return is_prev_node_blocked;
 }
@@ -991,20 +1007,28 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
                                 ((tivx_obj_desc_object_array_t*)parent_obj_desc[i])->
                                     obj_desc_id[cnt]);
                         }
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR026
+<justification end> */
                         else
                         if((vx_enum)parent_obj_desc[i]->type==(vx_enum)TIVX_OBJ_DESC_PYRAMID) /* TIOVX-1930- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR026 */
+/* LDRA_JUSTIFY_END */
                         {
                             params[i] = ownObjDescGet(
                                 ((tivx_obj_desc_pyramid_t*)parent_obj_desc[i])->
                                     obj_desc_id[cnt]);
                         }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TARGET_UM012
+<justification end> */
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM012 */
                         else
                         {
                             params[i] = NULL;
                         }
-#endif
+/* LDRA_JUSTIFY_END */
                     }
                 }
                 else
@@ -1326,7 +1350,12 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
     vx_status status = (vx_status)VX_SUCCESS;
 
     switch(cmd_obj_desc->cmd_id) /* TIOVX-1930- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR030 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR030
+<justification end> */
     {
+/* LDRA_JUSTIFY_END */
         case (vx_enum)TIVX_CMD_NODE_CREATE:
         case (vx_enum)TIVX_CMD_NODE_DELETE:
         case (vx_enum)TIVX_CMD_NODE_CONTROL:
@@ -1352,18 +1381,26 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                         {
                             status = ownTargetNodeDescNodeDelete(node_obj_desc);
                         }
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR033
+<justification end> */
                         else
                         if((vx_enum)cmd_obj_desc->cmd_id == (vx_enum)TIVX_CMD_NODE_CONTROL) /* TIOVX-1930- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR033 */
+/* LDRA_JUSTIFY_END */
                         {
                             status = ownTargetNodeDescNodeControl(cmd_obj_desc, node_obj_desc);
                         }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TARGET_UM008
+<justification end> */
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM008 */
                         else
                         {
                             /* do nothing */
                         }
-#endif
+/* LDRA_JUSTIFY_END */
                     }
                 }
 /* LDRA_JUSTIFY_START
@@ -1421,11 +1458,14 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
 #endif
             break;
 #endif
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TARGET_UM015
+<justification end> */
 /* TIOVX-1671- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_UM015 */
         default:
             break;
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
 }

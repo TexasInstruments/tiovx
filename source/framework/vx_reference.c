@@ -193,7 +193,12 @@ static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_share
     /* Note: the obj_desc is not checked for NULL here because
      * it is checked in the previous logic */
     switch (ref->type) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR001 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR001
+<justification end> */
     {
+/* LDRA_JUSTIFY_END */
         case (vx_enum)VX_TYPE_ARRAY:
         {
             tivx_obj_desc_array_t *obj_desc = NULL;
@@ -266,14 +271,17 @@ static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_share
             *mem_size   = obj_desc->mem_size;
             break;
         }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM001
+<justification end> */
 /* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM001 */
         default:
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             break;
         }
-#endif
+/* LDRA_JUSTIFY_END */
     }
 
     return status;
@@ -538,7 +546,12 @@ vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool vali
     else
     {
         switch (kernel_enum) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR011 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR011
+<justification end> */
         {
+/* LDRA_JUSTIFY_END */
             case (vx_enum)VX_KERNEL_COPY:
                 res = ownCopyReferenceGeneric(input, output);
                 break;
@@ -546,12 +559,15 @@ vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool vali
             case (vx_enum)VX_KERNEL_MOVE:
                 res = ownSwapReferenceGeneric(input, output);
                 break;
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM011
+<justification end> */
 /* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM011 */
             default:
                 res = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
-#endif
+/* LDRA_JUSTIFY_END */
         }
     }
     return (res);

@@ -107,7 +107,11 @@ vx_status ownTargetKernelInit(void)
 }
 
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY
+<metric start> statement branch <metric end>
+<function start> void ownTargetKernelDeInit.* <function end>
+<justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_UM001
+<justification end> */
 /* TIOVX-1707- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_UM001 */
 #endif
 void ownTargetKernelDeInit(void)
@@ -115,21 +119,21 @@ void ownTargetKernelDeInit(void)
     vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxMutexDelete(&g_target_kernel_lock);
+#if defined(A72) || defined(A53)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM002
 <justification end> */
+#endif
 /* TIOVX-1707- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM002 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
     }
+#if defined(A72) || defined(A53)
 /* LDRA_JUSTIFY_END */
-}
-#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-/* END: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_UM001 */
-/*LDRA_ANALYSIS*/
 #endif
+}
 
 static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
                              vx_enum kernel_id,

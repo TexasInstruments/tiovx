@@ -538,7 +538,14 @@ vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref)
         }
         else
         {
-            for(ref_idx=0; ref_idx < dimof(context->reftable);/* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR007 */ ref_idx++)
+            for(ref_idx=0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR007
+<justification end> */ 
+            ref_idx < dimof(context->reftable);/* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR007 */ 
+/* LDRA_JUSTIFY_END */
+            ref_idx++)
             {
                 if(context->reftable[ref_idx]==ref)
                 {
@@ -592,7 +599,14 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
         }
         else
         {
-            for(idx=0; idx<dimof(context->kerneltable);/* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR008 */ idx++)
+            for(idx=0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR008
+<justification end> */  
+            idx<dimof(context->kerneltable);/* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR008 */
+/* LDRA_JUSTIFY_END */
+            idx++)
             {
                 if ((NULL == context->kerneltable[idx]) && (context->num_unique_kernels < dimof(context->kerneltable)))
                 {
@@ -844,7 +858,12 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                         }
 /* LDRA_JUSTIFY_END */
                     }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR012
+<justification end> */
                     else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR012 */
+/* LDRA_JUSTIFY_END */
                     {
                         /* Queue the object into the pend queue for later
                         * action.
@@ -857,7 +876,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM022
 <justification end> */
-    /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM022 */
+/* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM022 */
                         if (status1 != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR,
@@ -867,13 +886,16 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 /* LDRA_JUSTIFY_END */
                     }
 
-    #ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM005
+<justification end> */
     /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM005 */
                     else
                     {
                         VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
                     }
-    #endif
+/* LDRA_JUSTIFY_END */
                 }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -998,7 +1020,12 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                         }
 /* LDRA_JUSTIFY_END */
                     }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR015
+<justification end> */
                     else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR015 */
+/* LDRA_JUSTIFY_END */              
                     {
                         /* Queue the object into the pend queue for later
                         * action.
@@ -1020,13 +1047,16 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 /* LDRA_JUSTIFY_END */
                     }
 
-    #ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_CONTEXT_UM007
+<justification end> */
     /* TIOVX-1691: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_CONTEXT_UM007 */
                     else
                     {
                         VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
                     }
-    #endif
+/* LDRA_JUSTIFY_END */
                 }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>

@@ -49,7 +49,12 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
         if((vx_status)VX_SUCCESS == tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e)) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR001 */
         {
             switch (state) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR002 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR002
+<justification end> */
             {
+/* LDRA_JUSTIFY_END */
                 case IDLE:
                     if(START == event.app_value)
                     {
@@ -193,11 +198,14 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
                     }
 
                     break;
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM007
+<justification end> */
 /* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM007 */
                 default :
                     break;
-#endif
+/* LDRA_JUSTIFY_END */
             }
         }
     }
@@ -227,7 +235,12 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
         if((vx_status)VX_SUCCESS == tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e)) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR003 */
         {
             switch (state) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR004 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR004
+<justification end> */
             {
+/* LDRA_JUSTIFY_END */
                 case IDLE:
                     if(START == event.app_value)
                     {
@@ -372,11 +385,14 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
                     }
 
                     break;
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM014
+<justification end> */
 /* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM014 */
                 default :
                     break;
-#endif
+/* LDRA_JUSTIFY_END */
             }
         }
     }

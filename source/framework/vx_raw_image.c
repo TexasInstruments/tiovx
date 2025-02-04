@@ -351,6 +351,10 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
         if(obj_desc != NULL) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR006 */
 /* LDRA_JUSTIFY_END */
         {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR007
+<justification end>*/
             if ( (vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_NORMAL ) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR007 */
             {
                 for(exp_idx=0; exp_idx < obj_desc->params.num_exposures; exp_idx++)
@@ -386,6 +390,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                     }
                 }
             }
+/* LDRA_JUSTIFY_END */
         }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>

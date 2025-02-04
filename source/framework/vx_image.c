@@ -220,7 +220,14 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
     subimage->base.is_virtual = parent->base.is_virtual;
     ((tivx_obj_desc_image_t *)subimage->base.obj_desc)->parent_id = parent->base.obj_desc->obj_desc_id;
     /* it will find free space for subimage since this was checked before */
-    for (p = 0; p < TIVX_IMAGE_MAX_SUBIMAGES; p++) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR004 */
+    for (p = 0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR004
+<justification end> */
+    p < TIVX_IMAGE_MAX_SUBIMAGES; /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR004 */
+/* LDRA_JUSTIFY_END */
+    p++)
     {
         if (parent->subimages[p] == NULL)
         {
@@ -743,7 +750,12 @@ static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool va
     if (((vx_status) VX_SUCCESS == res1))
     {
         switch (kernel_enum) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR031 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR031
+<justification end>*/
         {
+/* LDRA_JUSTIFY_END */
             case (vx_enum)VX_KERNEL_COPY:
                 if ((vx_bool)vx_true_e == validate_only)
                 {
@@ -765,14 +777,17 @@ static vx_status VX_CALLBACK imageKernelCallback(vx_enum kernel_enum, vx_bool va
                     res = swapImage(input_img, output_img);
                 }
                 break;
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_IMAGE_UM014
+<justification end>*/
 /* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM014 */
 /* the interface for copy, move and swap is done via the direct adressing mode (vxu_...-) or when creating the corresponding specific node
    so this is not possible to reach this code because the kernel type is specified by the private functions */      
             default:
                 res = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
-#endif
+/* LDRA_JUSTIFY_END */
         }
     }
     else
@@ -947,7 +962,10 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
             ownInitPlane(image, 0, 0, 1, obj_desc->width, obj_desc->height, 1, 1, 12);
             ownInitPlane(image, 1, 0, 2, obj_desc->width, obj_desc->height, 2, 2, 12);
             break;
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_IMAGE_UM004
+<justification end>*/
 /* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM004 */
         default:
             /*! should not get here unless there's a bug in the
@@ -955,7 +973,7 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
              */
             vxAddLogEntry(vxCastRefFromImage(image), (vx_status)VX_ERROR_INVALID_PARAMETERS, "FourCC format is invalid!\n");
             break;
-#endif
+/* LDRA_JUSTIFY_END */
     }
 }
 
@@ -1330,7 +1348,12 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                     height = 0;
 
                     switch (obj_desc->format) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR010 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR010
+<justification end>*/
                     {
+/* LDRA_JUSTIFY_END */
                         case (vx_df_image)VX_DF_IMAGE_YUV4:
                         {
                             width = imagepatch_addr->dim_x;
@@ -1378,11 +1401,14 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
 /* LDRA_JUSTIFY_END */
                             break;
                         }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_IMAGE_UM007
+<justification end>*/
 /* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM007 */
                         default:
                             break;
-#endif
+/* LDRA_JUSTIFY_END */
                     }
 
                     subimage = (vx_image)ownCreateImageInt(context, width, height, (uint32_t)subimage_format, TIVX_IMAGE_FROM_CHANNEL);
@@ -1717,7 +1743,12 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                                         ptr[1] = pixel[0];
                                     }
                                 }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR016
+<justification end>*/
                                 else if (format == (vx_df_image)VX_DF_IMAGE_YUYV) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR016 */
+/* LDRA_JUSTIFY_END */
                                 {
                                     vx_uint8 *pixel = (vx_uint8 *)&value->YUV;
                                     vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
@@ -1732,13 +1763,16 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                                         ptr[1] = pixel[2];
                                     }
                                 }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_IMAGE_UM005
+<justification end>*/
 /* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM005 */
                                 else
                                 {
                                     /* Do Nothing */
                                 }
-#endif
+/* LDRA_JUSTIFY_END */
                             }
                         }
                     }
