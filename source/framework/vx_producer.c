@@ -413,14 +413,14 @@ void producer_msg_handler(const void * producer_p, const void * data_p, uint8_t 
         {
             if (received_msg->last_buffer == 1)
             {
-                VX_PRINT(VX_ZONE_ERROR, "received last_buffer release from consumer %d \n", received_msg->consumer_id); 
+                VX_PRINT(VX_ZONE_INFO, "received last_buffer release from consumer %d \n", received_msg->consumer_id); 
                 // release all buffers in possession of this consumer
                 for (vx_uint32 buffId = 0; buffId < producer->numBuffers; buffId++)
                 {
                     if (1U == producer->refs[buffId].attached_to_client[received_msg->consumer_id])
                     {
                         producer->refs[buffId].attached_to_client[received_msg->consumer_id] = 0U;
-                        set_buffer_status(producer->refs[received_msg->buffer_id].ovx_ref, FREE, producer);
+                        set_buffer_status(producer->refs[buffId].ovx_ref, FREE, producer);
                     }
                 } 
                 producer->consumers_list[received_msg->consumer_id].state = PROD_STATE_CLI_FLUSHED;
