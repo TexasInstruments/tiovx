@@ -92,10 +92,33 @@ TEST(tivxPosixObjects, testTaskGetStackSize)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle));
 }
 
+TEST(tivxPosixObjects, testTaskSetZeroStackSize)
+{
+    #define TEST_TARGET_DEFAULT_TASK_PRIORITY   (8u)
+
+    tivx_task_create_params_t taskParams;
+    tivx_task taskHandle;
+
+    tivxTaskSetDefaultCreateParams(&taskParams);
+    taskParams.task_main = &tivxDummyTask;
+    taskParams.app_var = NULL;
+    taskParams.stack_ptr = NULL;
+    taskParams.stack_size = 0;
+    taskParams.core_affinity = TIVX_TASK_AFFINITY_ANY;
+    taskParams.priority = TEST_TARGET_DEFAULT_TASK_PRIORITY;
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle, &taskParams));
+
+    ASSERT(taskHandle.stack_size == 0);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle));
+}
+
 TESTCASE_TESTS(tivxPosixObjects,
                testPosixObjectFree,
                negativeTestPosixObjectAlloc,
                negativeTestPosixObjectFree,
-               testTaskGetStackSize
+               testTaskGetStackSize,
+               testTaskSetZeroStackSize
 )
 #endif
