@@ -251,12 +251,7 @@ static void ownTargetNodeDescReleaseParameterInDelay(
         if(next_data_ref_q!=NULL)
 /* LDRA_JUSTIFY_END */
         {
-#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-/* LDRA_JUSTIFY_START
-<metric start> branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_ACQUIRE_PARAMS_UM001
-<justification end> */
-#endif
+#ifdef HOST_ONLY
 /* TIOVX-1709-Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_ACQUIRE_PARAMS_UM001 */
             if(0 != tivxFlagIsBitSet(next_data_ref_q->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE))
             {
@@ -298,8 +293,6 @@ static void ownTargetNodeDescReleaseParameterInDelay(
 #endif
                 }
             }
-#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-/* LDRA_JUSTIFY_END */
 #endif
             cur_data_ref_q = next_data_ref_q;
         }

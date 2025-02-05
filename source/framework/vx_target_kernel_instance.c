@@ -97,11 +97,7 @@ vx_status ownTargetKernelInstanceInit(void)
 }
 
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-/* LDRA_JUSTIFY
-<metric start> statement <metric end>
-<function start> void CownTargetKernelInstanceDeInit.* <function end>
-<justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_INSTANCE_UM001
-<justification end> */
+/*LDRA_NOANALYSIS*/
 /* TIOVX-1708-Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_INSTANCE_UM001 */
 #endif
 void ownTargetKernelInstanceDeInit(void)
@@ -123,6 +119,10 @@ void ownTargetKernelInstanceDeInit(void)
 /* LDRA_JUSTIFY_END */
 #endif
 }
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/* END: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_INSTANCE_UM001 */
+/*LDRA_ANALYSIS*/
+#endif
 
 tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id)
 {
