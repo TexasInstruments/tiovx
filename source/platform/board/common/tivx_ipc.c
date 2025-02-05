@@ -179,24 +179,49 @@ vx_enum tivxGetSelfCpuId(void)
     vsdk_cpu_id =  appIpcGetSelfCpuId();
 
     for (i = 0;
+#if defined(C7X_FAMILY) || defined(C66)
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR002
 <justification end> */
+#endif
             i < dimof(g_ipc_cpu_id_map); /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR002 */
+#if defined(C7X_FAMILY) || defined(C66)
 /* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement <metric end>
+<justification start> TIOVX_CODE_COVERAGE_IPC_C7X_UM001
+<justification end> */
+#endif
 /* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IPC_C7X_UM001 */
             i ++)
-/* END: TIOVX_CODE_COVERAGE_IPC_C7X_UM001 */
+#if defined(C7X_FAMILY) || defined(C66)
+/* LDRA_JUSTIFY_END */
+#endif
     {
+#if defined(C7X_FAMILY) || defined(C66)
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_C7X_TIVX_IPC_UBR001
+<justification end> */
+#endif
         if (vsdk_cpu_id == g_ipc_cpu_id_map[i]) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_C7X_TIVX_IPC_UBR001 */
         {
             cpu_id = (vx_enum)i;
             break;
         }
+#if defined(C7X_FAMILY) || defined(C66)
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement <metric end>
+<justification start> TIOVX_CODE_COVERAGE_IPC_C7X_UM001
+<justification end> */
+#endif
 /* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IPC_C7X_UM001 */
     }
-/* END: TIOVX_CODE_COVERAGE_IPC_C7X_UM001 */
+#if defined(C7X_FAMILY) || defined(C66)
+/* LDRA_JUSTIFY_END */
+#endif
 
     return (cpu_id);
 }
@@ -225,7 +250,11 @@ void ownIpcInit(void)
 }
 
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY
+<metric start> statement <metric end>
+<function start> void ownIpcDeInit.* <function end>
+<justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_IPC_UM001
+<justification end> */
 /* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_ONLY_IPC_UM001 */
 #endif
 void ownIpcDeInit(void)
@@ -233,10 +262,6 @@ void ownIpcDeInit(void)
     /* Un-Register IPC Handler */
     (void)appIpcRegisterNotifyHandler(NULL);
 }
-#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
-/*LDRA_ANALYSIS*/
-/* END: TIOVX_CODE_COVERAGE_HOST_ONLY_IPC_UM001 */
-#endif
 
 vx_bool ownIsCpuEnabled(uint32_t app_cpu_id)
 {

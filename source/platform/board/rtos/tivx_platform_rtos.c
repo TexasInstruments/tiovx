@@ -67,7 +67,10 @@ vx_status ownPlatformInit(void)
 
     retVal = appIpcGetTiovxObjDescSharedMemInfo( (void **) &gTivxObjDescShmEntry, &shmSize);
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM001
+<justification end> */
 /* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM001 */
     if( (0 != retVal) || (gTivxObjDescShmEntry == NULL)
         || (shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*(uint32_t)sizeof(tivx_obj_desc_shm_entry_t))))
@@ -76,7 +79,7 @@ vx_status ownPlatformInit(void)
         VX_PRINT(VX_ZONE_ERROR, "insufficient shared memory size\n");
         status = (vx_status)VX_FAILURE;
     }
-#endif
+/* LDRA_JUSTIFY_END */
     if(status==(vx_status)VX_SUCCESS) /* TIOVX-1957- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR001 */
     {
         /* init obj desc on RTOS side, it is assumed that linux starts after RTOS, so linux need not init the object descriptors */
@@ -85,14 +88,17 @@ vx_status ownPlatformInit(void)
         for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
         {
             status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM002
+<justification end> */
 /* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM002 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 ownPlatformDeInit();
                 break;
             }
-#endif
+/* LDRA_JUSTIFY_END */
         }
         ownIpcInit();
         ownLogRtInit();
@@ -101,7 +107,11 @@ vx_status ownPlatformInit(void)
     return (status);
 }
 
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY
+<metric start> statement branch <metric end>
+<function start> void ownPlatformDeInit.* <function end>
+<justification start> TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM003
+<justification end> */
 /* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM003 */
 void ownPlatformDeInit(void)
 {
@@ -117,7 +127,6 @@ void ownPlatformDeInit(void)
         }
     }
 }
-/*LDRA_ANALYSIS*/
 
 void ownPlatformSystemLock(vx_enum lock_id)
 {
@@ -228,7 +237,14 @@ void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
 {
     uint32_t i;
 
-    for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS;/* TIOVX-1957- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR002 */ i ++)
+    for (i = 0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR002
+<justification end> */
+    i < TIVX_PLATFORM_MAX_TARGETS;/* TIOVX-1957- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR002 */
+/* LDRA_JUSTIFY_END */
+    i ++)
     {
         if (0 == strncmp(
                 g_tivx_platform_info.target_info[i].target_name,
@@ -274,11 +290,16 @@ void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
     if(shm_base && shm_size)
     {
         appIpcGetTiovxLogRtSharedMemInfo(shm_base, shm_size);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR003
+<justification end> */
         /* Needs to be called once by someone, size RTOS boots first, we call it in RTOS side */
         if(*shm_base != NULL) /* TIOVX-1957- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR003 */
         {
             ownLogRtResetShm(*shm_base);
         }
+/* LDRA_JUSTIFY_END */
     }
 }
 

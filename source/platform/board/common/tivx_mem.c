@@ -428,11 +428,20 @@ vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, 
                                          (uint64_t*)phyAddr);
         #endif
 
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR005
+<justification end> */
+#endif
         if (status < 0) /* TIOVX-1959- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR005 */
         {
             VX_PRINT(VX_ZONE_ERROR, "appMemTranslateDmaBufFd() failed.\n");
             vxStatus = (vx_status)VX_FAILURE;
         }
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/* LDRA_JUSTIFY_END */
+#endif
     }
 
     return vxStatus;
@@ -460,7 +469,12 @@ vx_bool tivxMemCompareFd(uint64_t dmaBufFd1, uint64_t dmaBufFd2, uint32_t size1,
         temp_status = (uint32_t)status | (uint32_t)tivxMemTranslateFd(dmaBufFd2, size2, &virtAddr2, &phyAddr2);
         status = (vx_status)temp_status;
 
-#ifdef HOST_ONLY
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_MEM_UM001
+<justification end> */
+#endif
 /* TIOVX-1793- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_MEM_UM001 */
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -473,7 +487,16 @@ vx_bool tivxMemCompareFd(uint64_t dmaBufFd1, uint64_t dmaBufFd2, uint32_t size1,
                 ret = (vx_bool)vx_false_e;
             }
         }
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_MEM_UM001
+<justification end> */
+#endif
         else
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+/* LDRA_JUSTIFY_END */
 #endif
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMemTranslateFd() failed.\n");

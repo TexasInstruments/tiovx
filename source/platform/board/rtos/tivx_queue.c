@@ -104,28 +104,32 @@ vx_status tivxQueueDelete(tivx_queue *queue)
             (NULL != queue->block_rd))
         {
             status = tivxEventDelete(&queue->block_rd);
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM001
+<justification end> */
 /* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM001 */
             if (status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
             }
-/* END: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM001 */
-/*LDRA_ANALYSIS*/
+/* LDRA_JUSTIFY_END */
         }
         if (((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) ==
                 TIVX_QUEUE_FLAG_BLOCK_ON_PUT) &&
             (NULL != queue->block_wr))
         {
             status = tivxEventDelete(&queue->block_wr);
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM002
+<justification end> */
 /* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM002 */
             if (status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
             }
-/* END: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM002 */
-/*LDRA_ANALYSIS*/
+/* LDRA_JUSTIFY_END */
         }
     }
 
@@ -139,11 +143,13 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
     uint32_t cookie;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004
+<justification end> */
 /* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004 */
     for(;;)
-/* END: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004 */
-#endif
+/* LDRA_JUSTIFY_END */
     {
         /* disable interrupts */
         cookie = (uint32_t)HwiP_disable();
@@ -204,19 +210,26 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                 queue->blockedOnPut = (vx_bool)vx_true_e;
                 wait_status = tivxEventWait(queue->block_wr, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
                 queue->blockedOnPut = (vx_bool)vx_false_e;
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_QUEUE_UBR002
+<justification end> */
                 if ((vx_status)VX_SUCCESS != wait_status)/* TIOVX-2134- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_QUEUE_UBR002*/
+/* LDRA_JUSTIFY_END */                             
                 {
                     do_break = (vx_bool)vx_true_e;
                     /* error, exit with error */
                 }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM003
+<justification end> */
 /* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM003 */
                 else
                 {
                     do_break = (vx_bool)vx_false_e;
                 }
-/* END: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM003 */
-#endif
+/* LDRA_JUSTIFY_END */
                 /* received semaphore, recheck for available space in the que */
             }
             else
@@ -228,15 +241,22 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
             }
         }
 
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004
+<justification end> */
 /* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004 */
         if ((vx_bool)vx_true_e == do_break)
         {
             break;
         }
-/* END: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004 */
-#endif
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004
+<justification end> */
     }
+/* LDRA_JUSTIFY_END */
 
     return (status);
 }

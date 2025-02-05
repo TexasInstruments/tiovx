@@ -61,7 +61,11 @@ void ownPlatformCreateTargetsC7(void)
     #endif /* defined(SOC_J784S4) || defined(SOC_J722S) || defined(SOC_J742S2) */
 }
 
-/*LDRA_NOANALYSIS*/
+/* LDRA_JUSTIFY
+<metric start> statement branch <metric end>
+<function start> void ownPlatformDeleteTargetsC7.* <function end>
+<justification start> TIOVX_CODE_COVERAGE_TARGET_CONFIG_C7x_UM001
+<justification end> */
 /* TIOVX-1970- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_CONFIG_C7x_UM001 */
 void ownPlatformDeleteTargetsC7(void)
 {
@@ -107,7 +111,6 @@ void ownPlatformDeleteTargetsC7(void)
     #endif /* defined(SOC_J784S4) */
     #endif /* defined(SOC_J784S4) || defined(SOC_J722S) || defined(SOC_J742S2) */
 }
-/*LDRA_ANALYSIS*/
 
 #ifndef PC
 void ownPlatformCreateTargets(void)
