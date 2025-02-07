@@ -1008,7 +1008,7 @@ static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc
                                     obj_desc_id[cnt]);
                         }
 /* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
+<metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR026
 <justification end> */
                         else
@@ -1382,7 +1382,7 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                             status = ownTargetNodeDescNodeDelete(node_obj_desc);
                         }
 /* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
+<metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR033
 <justification end> */
                         else

@@ -163,9 +163,9 @@ tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, vola
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_INSTANCE_UBR002
 <justification end> */
-            i<dimof(g_target_kernel_instance_table)
+            i<dimof(g_target_kernel_instance_table);
 /* LDRA_JUSTIFY_END */
-            ; i++) /* TIOVX-1936- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_INSTANCE_UBR002 */
+            i++) /* TIOVX-1936- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_INSTANCE_UBR002 */
             {
                 tmp_kernel_instance = &g_target_kernel_instance_table[i];
                 if(tmp_kernel_instance->kernel_id == (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID)

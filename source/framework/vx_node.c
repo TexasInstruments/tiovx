@@ -1286,9 +1286,9 @@ vx_status ownNodeReplaceOutNode(vx_node node, vx_node old_out_node, vx_node new_
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR024
 <justification end> */
-    i<num_out_nodes
+    i<num_out_nodes;
 /* LDRA_JUSTIFY_END */
-    ; i++)/* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR024 */
+    i++)/* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR024 */
     {
         if(old_out_node_id == node->obj_desc[0]->out_node_id[i])
         {
@@ -1373,9 +1373,9 @@ vx_status ownNodeReplaceInNode(vx_node node, vx_node old_in_node, vx_node new_in
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR025
 <justification end> */
-    i<num_in_nodes
+    i<num_in_nodes;
 /* LDRA_JUSTIFY_END */
-    ; i++) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR025 */
+    i++) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR025 */
     {
         if(old_in_node_id == node->obj_desc[0]->in_node_id[i])
         {
@@ -2864,9 +2864,9 @@ vx_status tivxSetNodeDebugZone(vx_node node, vx_uint32 debug_zone, vx_bool enabl
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR034
 <justification end> */
-            i < TIVX_GRAPH_MAX_PIPELINE_DEPTH
+            i < TIVX_GRAPH_MAX_PIPELINE_DEPTH;
 /* LDRA_JUSTIFY_END */
-            ; i++)  /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR034 */
+            i++)  /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR034 */
             {
                 if (node->obj_desc[i] != NULL)
                 {

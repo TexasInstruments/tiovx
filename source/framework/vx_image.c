@@ -908,7 +908,12 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
     }
 
     switch (format)
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_IMAGE_UM004
+<justification end>*/
     {
+/* LDRA_JUSTIFY_END */
         case (vx_df_image)VX_DF_IMAGE_VIRT:
             obj_desc->planes = 0;
             break;
