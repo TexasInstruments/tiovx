@@ -1551,7 +1551,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
                 }
             }
 
-            if ((vx_bool)vx_true_e == node->is_graph_event)
+            if ((vx_bool)vx_true_e == node->is_graph_streaming_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
                             (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_app_value,
@@ -1586,7 +1586,7 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
                 }
             }
 /* LDRA_JUSTIFY_END */
-            if ((vx_bool)vx_true_e == node->is_graph_event)
+            if ((vx_bool)vx_true_e == node->is_graph_streaming_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
@@ -1652,7 +1652,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                         node->local_data_set_allow = (vx_bool)vx_false_e;
                         node->pipeline_depth = 1;
                         node->is_context_event = (vx_bool)vx_false_e;
-                        node->is_graph_event = (vx_bool)vx_false_e;
+                        node->is_graph_streaming_event = (vx_bool)vx_false_e;
                         node->node_completed_app_value = 0;
                         node->node_error_app_value = 0;
                         node->is_enable_send_complete_event = (vx_bool)vx_false_e;

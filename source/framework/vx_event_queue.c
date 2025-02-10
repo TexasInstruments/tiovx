@@ -371,9 +371,9 @@ vx_status ownRegisterEvent(vx_reference ref,
             /*status set to NULL due to preceding type check*/
             vx_node node = vxCastRefAsNode(ref, NULL);
 
-            if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
+            if ((vx_enum)TIVX_EVENT_GRAPH_STREAMING_QUEUE == (vx_enum)queue_type)
             {
-                node->is_graph_event = (vx_bool)vx_true_e;
+                node->is_graph_streaming_event = (vx_bool)vx_true_e;
                 /*status set to NULL due to preceding type check*/
                 status = ownNodeRegisterEvent(vxCastRefAsNode(ref, NULL), (vx_enum)event_type, app_value);
             }
