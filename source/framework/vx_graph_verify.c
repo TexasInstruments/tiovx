@@ -1069,7 +1069,6 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
 /* LDRA_JUSTIFY_END */
                                         {
                                             status = ownNodeAddInNode(node_next, node_cur);
-                                            status = ownNodeAddInNode(node_next, node_cur);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT004
