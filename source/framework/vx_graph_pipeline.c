@@ -803,7 +803,8 @@ vx_status ownGraphCreateQueues(vx_graph graph)
 
 vx_status ownGraphDeleteQueues(vx_graph graph)
 {
-    vx_status status;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status1 = (vx_status)VX_SUCCESS;
     status = tivxQueueDelete(&graph->free_q);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>

@@ -218,6 +218,9 @@ typedef struct _vx_graph {
     /*! \brief when true a event is sent when a graph execution is completed */
     vx_bool is_enable_send_complete_event;
 
+    /*! \brief when true a event is sent when a graph execution timeouts */
+    vx_bool is_enable_send_graph_timeout_event;    
+
     /*! \brief event to indicate all schedule graphs have finished execution
      *         and none are pending
      */
@@ -256,8 +259,11 @@ typedef struct _vx_graph {
     /*! Number of supernodes in the graph */
     uint32_t num_supernodes;
 
-    /*! \brief Control API processing Timeout value in milli-sec. */
+    /*! \brief Control API processing Timeout value in milli-sec for the graph. */
     vx_uint32 timeout_val;
+
+    /*! \brief Control API processing Timeout value in milli-sec for the graph events. */
+    vx_uint32 timeout_events_val;
 
     /*! \brief Debug zonemask of a given graph. */
     vx_uint32 debug_zonemask;
