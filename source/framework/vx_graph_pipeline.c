@@ -795,7 +795,7 @@ vx_status ownGraphCreateQueues(vx_graph graph)
     status = tivxQueueCreate(&graph->free_q, TIVX_GRAPH_MAX_PIPELINE_DEPTH, graph->free_q_mem, 0);
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = ownEventQueueCreate(&graph->graph_event_queue);
+        status = ownEventQueueCreate(&graph->event_queue);
     }
     return status;
 }
@@ -816,7 +816,7 @@ vx_status ownGraphDeleteQueues(vx_graph graph)
         VX_PRINT(VX_ZONE_ERROR, "Failed to delete a queue\n");
     }
 /* LDRA_JUSTIFY_END */
-    status1 = ownEventQueueDelete(&graph->graph_event_queue);
+    status1 = ownEventQueueDelete(&graph->event_queue);
     if(status1 != (vx_status)VX_SUCCESS)
     {
         status = status1;

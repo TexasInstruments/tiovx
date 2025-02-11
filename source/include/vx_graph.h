@@ -245,7 +245,7 @@ typedef struct _vx_graph {
     tivx_event_queue_t streaming_event_queue;
 
     /*! Graph event queue used for graph parameters and user events */
-    tivx_event_queue_t graph_event_queue;
+    tivx_event_queue_t event_queue;
     
     /*! Streaming task handle */
     tivx_task streaming_task_handle;

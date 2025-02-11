@@ -287,7 +287,7 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
         }
         if ((vx_bool)vx_true_e == ref->is_enable_send_ref_consumed_graph_event)
         {
-            status = ownEventQueueAddEvent(&ref->graph->graph_event_queue,
+            status = ownEventQueueAddEvent(&ref->graph->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
                         (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
 #ifdef LDRA_UNTESTABLE_CODE
