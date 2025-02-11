@@ -237,7 +237,7 @@ typedef struct _vx_graph {
     uint8_t data_ref_num_out_nodes[TIVX_GRAPH_MAX_DATA_REF];
 
     /*! Event queue */
-    tivx_event_queue_t event_queue;
+    tivx_event_queue_t streaming_event_queue;
 
     /*! Streaming task handle */
     tivx_task streaming_task_handle;

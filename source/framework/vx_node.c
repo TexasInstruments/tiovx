@@ -1553,7 +1553,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
 
             if ((vx_bool)vx_true_e == node->is_graph_streaming_event)
             {
-                if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
+                if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->streaming_event_queue,
                             (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0))
                 {
@@ -1588,7 +1588,7 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
 /* LDRA_JUSTIFY_END */
             if ((vx_bool)vx_true_e == node->is_graph_streaming_event)
             {
-                if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
+                if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->streaming_event_queue,
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
                 {

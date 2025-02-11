@@ -500,7 +500,7 @@ vx_status tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void
     uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
     status = ownEventQueueAddEvent(
-                &graph->event_queue,
+                &graph->streaming_event_queue,
                 (vx_enum)VX_EVENT_USER,
                 timestamp, app_value,
                 (uintptr_t)app_value, (uintptr_t)parameter, (uintptr_t)0);
@@ -517,7 +517,7 @@ vx_status tivxWaitGraphEvent(
     if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
         /* Call general wait function */
-        status = vxWaitEventQueue(&graph->event_queue, event, do_not_block);
+        status = vxWaitEventQueue(&graph->streaming_event_queue, event, do_not_block);
     }
     else
     {
@@ -588,11 +588,11 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
             (void)strncpy(streamingTaskParams.task_name, "TIVX_STRM", TIVX_MAX_TASK_NAME);
             streamingTaskParams.task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
 
-            status = ownEventQueueCreate(&graph->event_queue);
+            status = ownEventQueueCreate(&graph->streaming_event_queue);
 
             if ((vx_status)VX_SUCCESS == status) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR006 */
             {
-                ownEventQueueEnableEvents(&graph->event_queue, (vx_bool)vx_true_e);
+                ownEventQueueEnableEvents(&graph->streaming_event_queue, (vx_bool)vx_true_e);
 
                 if (graph->pipeline_depth > 1U)
                 {
@@ -606,7 +606,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     {
                         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
                         VX_PRINT(VX_ZONE_ERROR, "trigger node is not set with pipelining\n");
-                        (void)ownEventQueueDelete(&graph->event_queue);
+                        (void)ownEventQueueDelete(&graph->streaming_event_queue);
                     }
 
                     if ((vx_status)VX_SUCCESS == status)
@@ -617,7 +617,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     {
                         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
                         VX_PRINT(VX_ZONE_ERROR, "event could not be registered\n");
-                        (void)ownEventQueueDelete(&graph->event_queue);
+                        (void)ownEventQueueDelete(&graph->streaming_event_queue);
                     }
                 }
                 else
@@ -777,7 +777,7 @@ vx_status ownGraphFreeStreaming(vx_graph graph)
 
     (void)tivxTaskDelete(&graph->streaming_task_handle);
 
-    tmp_status = ownEventQueueDelete(&graph->event_queue);
+    tmp_status = ownEventQueueDelete(&graph->streaming_event_queue);
     if (tmp_status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Failed to delete event queue.\n");
