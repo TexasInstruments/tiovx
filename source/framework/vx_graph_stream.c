@@ -513,11 +513,20 @@ vx_status tivxWaitGraphEvent(
                     vx_bool do_not_block)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32 timeout;
 
     if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
+        if((vx_bool)vx_true_e == do_not_block)
+        {
+            timeout = 0U;
+        }
+        else
+        {
+            timeout = graph->timeout_val;
+        }          
         /* Call general wait function */
-        status = vxWaitEventQueue(&graph->streaming_event_queue, event, do_not_block);
+        status = vxWaitEventQueue(&graph->streaming_event_queue, event, timeout);
     }
     else
     {

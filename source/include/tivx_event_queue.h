@@ -187,7 +187,7 @@ void ownEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable);
  */
 vx_status vxWaitEventQueue(
                     tivx_event_queue_t *event_q, vx_event_t *event,
-                    vx_bool do_not_block);
+                    vx_uint32 timeout);
 
 /*! \brief Registers an event to a given event queue
  *

@@ -486,6 +486,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->is_streaming_alloc = (vx_bool)vx_false_e;
             graph->trigger_node_set   = (vx_bool)vx_false_e;
             graph->is_enable_send_complete_event = (vx_bool)vx_false_e;
+            graph->is_enable_send_graph_timeout_event = (vx_bool)vx_false_e;
             graph->stop_done = NULL;
             graph->delete_done = NULL;
             graph->schedule_mode = (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL;
@@ -498,6 +499,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->num_delay_data_ref_q = 0;
             graph->num_supernodes = 0;
             graph->timeout_val = TIVX_DEFAULT_GRAPH_TIMEOUT;
+            graph->timeout_events_val = VX_TIMEOUT_WAIT_FOREVER;
             graph->debug_zonemask = ownGetGlobalZonemask();
 
             status = ownResetGraphPerf(graph);
@@ -599,6 +601,33 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case (vx_enum)VX_EVENT_GRAPH_TIMEOUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    const vx_uint32   timeout_val = *(const vx_uint32*)ptr;
+
+                    /* Validate the timeout. It cannot be zero. */
+                    if (timeout_val == 0U)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "Invalid timeout value specified for events: %d\n",
+                                 timeout_val);
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    }
+                    else
+                    {
+                        graph->timeout_events_val = timeout_val;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Set TIVX_GRAPH_TIMEOUT failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }            
+                break;
+
+
+
             default:
                 VX_PRINT(VX_ZONE_ERROR,"Invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;

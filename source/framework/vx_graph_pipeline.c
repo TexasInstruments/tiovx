@@ -803,7 +803,8 @@ vx_status ownGraphCreateQueues(vx_graph graph)
 
 vx_status ownGraphDeleteQueues(vx_graph graph)
 {
-    vx_status status;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status1 = (vx_status)VX_SUCCESS;
     status = tivxQueueDelete(&graph->free_q);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -815,8 +816,11 @@ vx_status ownGraphDeleteQueues(vx_graph graph)
         VX_PRINT(VX_ZONE_ERROR, "Failed to delete a queue\n");
     }
 /* LDRA_JUSTIFY_END */
-    tivxQueueDelete(&graph->graph_event_queue.free_queue);
-    tivxQueueDelete(&graph->graph_event_queue.ready_queue);
+    status1 = ownEventQueueDelete(&graph->graph_event_queue);
+    if(status1 != (vx_status)VX_SUCCESS)
+    {
+        status = status1;
+    }    
     return status;
 }
 

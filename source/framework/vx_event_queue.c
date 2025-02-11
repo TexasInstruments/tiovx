@@ -243,6 +243,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitEvent(
                     vx_bool do_not_block)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32 timeout;
 
     if (ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
@@ -251,8 +252,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitEvent(
     }
     else
     {
+        if((vx_bool)vx_true_e == do_not_block)
+        {
+            timeout = 0;
+        }
+        else
+        {
+            timeout = TIVX_EVENT_TIMEOUT_WAIT_FOREVER;
+        }        
         /* Call general wait function */
-        status = vxWaitEventQueue(&context->event_queue, event, do_not_block);
+        status = vxWaitEventQueue(&context->event_queue, event, timeout);
     }
 
     return status;
@@ -260,20 +269,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitEvent(
 
 vx_status vxWaitEventQueue(
                     tivx_event_queue_t *event_q, vx_event_t *event,
-                    vx_bool do_not_block)
+                    vx_uint32 timeout)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uintptr_t idx;
-    uint32_t timeout;
-
-    if((vx_bool)vx_true_e == do_not_block)
-    {
-        timeout = 0;
-    }
-    else
-    {
-        timeout = TIVX_EVENT_TIMEOUT_WAIT_FOREVER;
-    }
 
     status = tivxQueueGet(&event_q->ready_queue, &idx, timeout);
 
@@ -337,7 +336,7 @@ vx_status vxWaitEventQueue(
 
         /* release index into free queue,
          * this wont fail since the index was dequeued from free queue to begin with */
-        (void)tivxQueuePut(&event_q->free_queue, idx, TIVX_EVENT_TIMEOUT_NO_WAIT);
+        (void)tivxQueuePut(&event_q->free_queue, idx, timeout);
     }
 
     return status;
@@ -418,6 +417,18 @@ vx_status ownRegisterEvent(vx_reference ref,
                 {/* do nothing */}
             }
         }
+        else if ((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_TIMEOUT)
+        {
+            if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
+            {
+                /* enable the graph timeout event */
+                graph->is_enable_send_graph_timeout_event = (vx_bool)vx_true_e;
+                status = (vx_status)VX_SUCCESS;
+            }
+            else
+            {/* do nothing */}
+
+        }
         else
         {
             /* do nothing */
@@ -456,10 +467,27 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterGraphEvent(vx_reference graph_or_no
 VX_API_ENTRY vx_status VX_API_CALL vxWaitGraphEvent(vx_graph graph, vx_event_t * event, vx_bool do_not_block)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    vx_uint32 timeout;
     if (((vx_bool)vx_true_e == ownIsValidSpecificReference(vxCastRefFromGraph(graph),(vx_enum )VX_TYPE_GRAPH)) &&
         (NULL != event))
     {
-        status = vxWaitEventQueue(&graph->graph_event_queue, event, do_not_block);
+        if((vx_bool)vx_true_e == do_not_block)
+        {
+            timeout = 0U;
+        }
+        else
+        {
+            timeout = graph->timeout_events_val;
+        }        
+        status = vxWaitEventQueue(&graph->graph_event_queue, event, timeout);
+        if (status == (vx_status)VX_ERROR_TIMEOUT)
+        {
+            if (graph->is_enable_send_graph_timeout_event == (vx_bool)vx_true_e)
+            {
+                /* send graph timeout event */
+                event->type = (vx_enum)VX_EVENT_GRAPH_TIMEOUT;
+            }
+        }        
     }
     return status;
 }
