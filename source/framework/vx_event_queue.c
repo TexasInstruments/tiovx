@@ -382,6 +382,12 @@ vx_status ownRegisterEvent(vx_reference ref,
                 /*status set to NULL due to preceding type check*/
                 status = ownNodeRegisterEvent(vxCastRefAsNode(ref, NULL), (vx_enum)event_type, app_value);
             }
+            else if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
+            {
+                node->is_graph_event = (vx_bool)vx_true_e;
+                /*status set to NULL due to preceding type check*/
+                status = ownNodeRegisterEvent(vxCastRefAsNode(ref, NULL), (vx_enum)event_type, app_value);
+            }
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "Invalid queue type given\n");
@@ -459,7 +465,23 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraphEvent(vx_graph graph, vx_event_t *
     if (((vx_bool)vx_true_e == ownIsValidSpecificReference(vxCastRefFromGraph(graph),(vx_enum )VX_TYPE_GRAPH)) &&
         (NULL != event))
     {
-        status = vxWaitEventQueue(&graph->graph_event_queue, event, do_not_block);
+        if((vx_bool)vx_true_e == do_not_block)
+        {
+            timeout = 0U;
+        }
+        else
+        {
+            timeout = graph->timeout_events_val;
+        }        
+        status = ownWaitEventQueue(&graph->event_queue, event, timeout);
+        if (status == (vx_status)VX_ERROR_TIMEOUT)
+        {
+            if (graph->is_enable_send_graph_timeout_event == (vx_bool)vx_true_e)
+            {
+                /* send graph timeout event */
+                event->type = (vx_enum)VX_EVENT_GRAPH_TIMEOUT;
+            }
+        }        
     }
     return status;
 }
@@ -474,7 +496,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxEnableGraphEvents(vx_graph graph)
     }
     else
     {
-        graph->graph_event_queue.enable = (vx_bool)vx_true_e;
+        graph->event_queue.enable = (vx_bool)vx_true_e;
     }
     return status;
 }
@@ -489,7 +511,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxDisableGraphEvents(vx_graph graph)
     }
     else
     {
-        graph->graph_event_queue.enable = (vx_bool)vx_false_e;
+        graph->event_queue.enable = (vx_bool)vx_false_e;
     }
     return status;
 }
@@ -506,7 +528,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserGraphEvent(vx_graph graph, vx_uint3
     else
     {
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
-        status = ownEventQueueAddEvent(&graph->graph_event_queue, (vx_enum)VX_EVENT_USER, timestamp, 
+        status = ownEventQueueAddEvent(&graph->event_queue, (vx_enum)VX_EVENT_USER, timestamp, 
                                         app_value, (uintptr_t)app_value, (uintptr_t)parameter, (uintptr_t)0);
     }
     return status;
