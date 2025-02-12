@@ -176,7 +176,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
         if (APP_RTOS_STATUS_TIMEOUT == retVal)
         {
             VX_PRINT(VX_ZONE_INFO, "Semaphore wait timed out\n");
-            status = (app_rtos_status_t)TIVX_ERROR_EVENT_TIMEOUT;
+            status = (app_rtos_status_t)VX_ERROR_TIMEOUT;
         }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>

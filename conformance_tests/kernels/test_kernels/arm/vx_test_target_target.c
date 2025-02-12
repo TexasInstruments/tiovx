@@ -2552,20 +2552,20 @@ static vx_status tivxTestTargetEventWait(uint8_t id)
 /* To hit micro >= 1000000LLU condition present inside linux tivx_event.c file*/
 #if defined (MPU_COVERAGE)
     VX_PRINT(VX_ZONE_INFO,"---Testing  tivxEventWait API for timeout=1000--- \n");
-    if((vx_status)TIVX_ERROR_EVENT_TIMEOUT != tivxEventWait(event,1000))
+    if((vx_status)VX_ERROR_TIMEOUT != tivxEventWait(event,1000))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for timeout value = 1000 \n");
         status = (vx_status)VX_FAILURE;
     }
 #endif /* #if defined (MPU_COVERAGE) */
 
-    if((vx_status)TIVX_ERROR_EVENT_TIMEOUT!= tivxEventWait(event,TIVX_EVENT_TIMEOUT_NO_WAIT))
+    if((vx_status)VX_ERROR_TIMEOUT!= tivxEventWait(event,TIVX_EVENT_TIMEOUT_NO_WAIT))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for timeout value = TIVX_EVENT_TIMEOUT_NO_WAIT\n");
         status = (vx_status)VX_FAILURE;
     }
 /* To hit else condition inside rtos tivxEventWait() by passing different timeout value than TIVX_EVENT_TIMEOUT_WAIT_FOREVER or TIVX_EVENT_TIMEOUT_NO_WAIT */
-    if((vx_status)TIVX_ERROR_EVENT_TIMEOUT != tivxEventWait(event,2))
+    if((vx_status)VX_ERROR_TIMEOUT != tivxEventWait(event,2))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for timeout value = 2\n");
         status = (vx_status)VX_FAILURE;
