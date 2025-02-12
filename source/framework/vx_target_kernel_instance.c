@@ -87,7 +87,6 @@ vx_status ownTargetKernelInstanceInit(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TARGET_KERNEL_INSTANCE_UM001
 <justification end> */
-/* TIOVX-1708- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_INSTANCE_UM001 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to create mutex\n");
@@ -116,7 +115,6 @@ void ownTargetKernelInstanceDeInit(void)
 <justification start> TIOVX_CODE_COVERAGE_TARGET_KERNEL_INSTANCE_UM002
 <justification end> */
 #endif
-/* TIOVX-1708- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_INSTANCE_UM002 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
@@ -165,7 +163,7 @@ tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, vola
 <justification end> */
             i<dimof(g_target_kernel_instance_table);
 /* LDRA_JUSTIFY_END */
-            i++) /* TIOVX-1936- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_INSTANCE_UBR002 */
+            i++)
             {
                 tmp_kernel_instance = &g_target_kernel_instance_table[i];
                 if(tmp_kernel_instance->kernel_id == (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID)

@@ -57,7 +57,7 @@ VX_API_ENTRY void VX_API_CALL vxAddLogEntry(vx_reference ref, vx_status status, 
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_LOG_UBR001
 <justification end> */
-        if (ownIsValidContext((vx_context)ref) == (vx_bool)vx_false_e) /* TIOVX-1941- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_LOG_UBR001 */
+        if (ownIsValidContext((vx_context)ref) == (vx_bool)vx_false_e)
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid reference!\n");
             ret = (vx_status)VX_ERROR_INVALID_REFERENCE;

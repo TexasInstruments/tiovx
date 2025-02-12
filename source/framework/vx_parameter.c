@@ -36,7 +36,6 @@ static vx_status ownDestructParameter(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PARAMETER_UM001
 <justification end> */
-/* TIOVX-1747- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PARAMETER_UM001 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Release internal parameter node reference failed!\n");
@@ -51,7 +50,6 @@ static vx_status ownDestructParameter(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PARAMETER_UM002
 <justification end> */
-/* TIOVX-1747- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PARAMETER_UM002 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 status = status1;
@@ -262,7 +260,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_PARAMETER_UBR004
 <justification end> */
-                    if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type))) /* TIOVX-1927- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PARAMETER_UBR004 */
+                    if((vx_status)VX_SUCCESS == vxQueryReference(value, (vx_enum)VX_REFERENCE_TYPE, &type, sizeof(type)))
                     {
                         VX_PRINT(VX_ZONE_INFO, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
                     }
@@ -302,7 +300,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PARAMETER_UTJT001
 <justification end> */
-/* TIOVX-1862: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PARAMETER_UTJT001 */
                     if (node->parameters[index]->delay!=NULL) {
                         /* we already have a delay element here */
                         vx_bool res = ownRemoveAssociationToDelay(node->parameters[index], node, index);
@@ -324,7 +321,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PARAMETER_UTJT002
 <justification end> */
-/* TIOVX-1862: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PARAMETER_UTJT002 */
                     if (res == (vx_bool)vx_false_e) {
                         VX_PRINT(VX_ZONE_ERROR, "Internal error adding delay association\n");
                         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -365,7 +361,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PARAMETER_UTJT003
 <justification end> */
-/* TIOVX-1862: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PARAMETER_UTJT003 */
                 if((vx_status)VX_SUCCESS != ownNodeSetParameter(node, index, value))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to set node parameter\n");

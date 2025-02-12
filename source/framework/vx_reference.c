@@ -192,7 +192,7 @@ static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_share
 
     /* Note: the obj_desc is not checked for NULL here because
      * it is checked in the previous logic */
-    switch (ref->type) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR001 */
+    switch (ref->type)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR001
@@ -275,7 +275,6 @@ static vx_status ownReferenceGetMemAttrsFromObjDesc(vx_reference ref, tivx_share
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM001
 <justification end> */
-/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM001 */
         default:
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -380,7 +379,6 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM002
 <justification end> */
-/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM002 */
                 if((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Buffer free failed!\n");
@@ -397,7 +395,6 @@ vx_status ownDestructReferenceGeneric(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM003
 <justification end> */
-/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM003 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Object descriptor free failed!\n");
@@ -428,7 +425,6 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM009
 <justification end> */
-/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM009 */
         if (ip_mem_size <= op_mem_size)
 /* LDRA_JUSTIFY_END */
         {
@@ -442,7 +438,7 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR009
 <justification end> */
-                if ((vx_status)VX_SUCCESS == status) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR009 */
+                if ((vx_status)VX_SUCCESS == status)
                 {
                     (void)memcpy((void *)(uintptr_t)op_mem_ptr->host_ptr, (void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size);
                     /* copy specific fields*/
@@ -474,7 +470,6 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM010
 <justification end> */
-/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM010 */
         else
         {
             status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
@@ -507,7 +502,7 @@ vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR010
 <justification end> */
-    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR010 */
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_shared_mem_ptr_t mem_ptr;
         tivx_obj_desc_memcpy(&mem_ptr, op_mem_ptr, (uint32_t)sizeof(tivx_shared_mem_ptr_t));
@@ -545,7 +540,7 @@ vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool vali
     }
     else
     {
-        switch (kernel_enum) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR011 */
+        switch (kernel_enum)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR011
@@ -563,7 +558,6 @@ vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool vali
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM011
 <justification end> */
-/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM011 */
             default:
                 res = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
@@ -807,7 +801,7 @@ vx_reference ownCreateReference(vx_context context, vx_enum ref_type, vx_enum re
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR002
 <justification end> */
-        if(status==(vx_status)VX_SUCCESS) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR002 */
+        if(status==(vx_status)VX_SUCCESS)
         {
             /* Setting it as void since return value 'ref count' is not used further */
             (void)ownIncrementReference(ref, reftype);
@@ -1341,7 +1335,6 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM004
 <justification end> */
-/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM004 */
         if (mf2 == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to create meta format object.\n");
@@ -1358,7 +1351,6 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM005
 <justification end> */
-/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM005 */
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,
@@ -1376,7 +1368,6 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM006
 <justification end> */
-/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM006 */
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,
@@ -1399,7 +1390,6 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM007
 <justification end> */
-/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM007 */
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to release a meta-format object.\n");
@@ -1414,7 +1404,6 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM008
 <justification end> */
-/* TIOVX-1745- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_REFERENCE_UM008 */
         if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to release a meta-format object.\n");
@@ -1809,7 +1798,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR003
 <justification end> */
-                if (mem_size != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR003 */
+                if (mem_size != NULL)
                 {
                     for (i = 0; i < numMemElem; i++)
                     {
@@ -1898,7 +1887,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR004
 <justification end> */
-                if (mem_ptr != NULL) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR004 */
+                if (mem_ptr != NULL)
                 {
                     for (i = 0; i < numMemElem; i++)
                     {

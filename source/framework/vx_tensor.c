@@ -56,7 +56,6 @@ static vx_status isTensorSwappable(vx_reference input, vx_reference output)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TENSOR_UM002
 <justification end> */
-/* TIOVX-1702- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TENSOR_UM002 */
         if (ip_obj_desc->mem_size != op_obj_desc->mem_size)
         {
            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
@@ -80,7 +79,7 @@ static vx_status moveOrSwapTensor(vx_reference input, vx_reference output)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR003
 <justification end> */
-    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1938- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR003 */
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* swap destructors even if they are generic (identical) for the tensor objects.
            we do it for completeness and to ensure that in case 
@@ -106,7 +105,7 @@ static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool v
 {
     vx_status res = (vx_status)VX_ERROR_NOT_SUPPORTED;
     
-    switch (kernel_enum) /* TIOVX-1938- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR004 */
+    switch (kernel_enum)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR004
@@ -145,7 +144,6 @@ static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool v
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TENSOR_UM003
 <justification end> */
-/* TIOVX-1702- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TENSOR_UM003 */
         default:
             res =  (vx_status)VX_ERROR_NOT_SUPPORTED;
             break;
@@ -727,7 +725,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR001
 <justification end> */
-                if (NULL != obj_desc) /* TIOVX-1938- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR001 */
+                if (NULL != obj_desc)
                 {
                     view_end_map[i] = obj_desc->dimensions[i];
                 }
@@ -770,7 +768,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR002
 <justification end>*/
-        if (NULL != map_addr) /* TIOVX-1938- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR002 */
+        if (NULL != map_addr)
 /* LDRA_JUSTIFY_END */        
         {
             uint32_t offset;
@@ -824,7 +822,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TENSOR_UM001
 <justification end>*/
-/* TIOVX-1702- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TENSOR_UM001 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");

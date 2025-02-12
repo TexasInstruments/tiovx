@@ -38,7 +38,7 @@ static vx_status copyScalar(vx_reference input, vx_reference output)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR003
 <justification end> */
-    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1931- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR003 */
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Just copy the entire union from input to output
            use the extra memcopy for volatile struct */
@@ -61,7 +61,7 @@ static vx_status swapScalar(vx_reference input, vx_reference output)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR004
 <justification end> */
-    if ((vx_status)VX_SUCCESS == status)/* TIOVX-1931- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR004 */
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_scalar_t *ip_obj_desc = (tivx_obj_desc_scalar_t *)input->obj_desc;
         tivx_obj_desc_scalar_t *op_obj_desc = (tivx_obj_desc_scalar_t *)output->obj_desc;
@@ -93,7 +93,7 @@ static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool v
     }
     else
     {
-        switch (kernel_enum) /* TIOVX-1931- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR005 */
+        switch (kernel_enum)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR005
@@ -111,7 +111,6 @@ static vx_status VX_CALLBACK scalarKernelCallback(vx_enum kernel_enum, vx_bool v
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_SCALAR_UM003
 <justification end> */
-/* TIOVX-1701- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_SCALAR_UM003 */
 /* the interface for copy, move and swap is done via the direct adressing mode (vxu_...-) or when creating the corresponding specific node
    so this is not possible to reach this code because the kernel type is specified by the private functions */
             default:
@@ -136,7 +135,7 @@ static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
     else
     {
         obj_desc = (tivx_obj_desc_scalar_t *)scalar->base.obj_desc;
-        switch (obj_desc->data_type) /* TIOVX-1931- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR001 */
+        switch (obj_desc->data_type)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR001
@@ -166,7 +165,6 @@ static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_SCALAR_UM001
 <justification end> */
-/* TIOVX-1701- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_SCALAR_UM001 */
             default:
                 VX_PRINT(VX_ZONE_ERROR, "data type is not supported\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
@@ -192,7 +190,7 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
     else
     {
         obj_desc = (tivx_obj_desc_scalar_t *)scalar->base.obj_desc;
-        switch (obj_desc->data_type) /* TIOVX-1931- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR002 */
+        switch (obj_desc->data_type)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_SCALAR_UBR002
@@ -222,7 +220,6 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_SCALAR_UM002
 <justification end> */
-/* TIOVX-1701- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_SCALAR_UM002 */
             default:
                 VX_PRINT(VX_ZONE_ERROR, "data type is not supported\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;

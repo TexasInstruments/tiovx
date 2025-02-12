@@ -191,7 +191,6 @@ static vx_status ownDestructRawImage(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RAW_IMAGE_UM001
 <justification end> */
-/* TIOVX-1730- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RAW_IMAGE_UM001 */
                         if ((vx_status)VX_SUCCESS != status)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "Raw Image buffer free failed!\n");
@@ -208,7 +207,6 @@ static vx_status ownDestructRawImage(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RAW_IMAGE_UM008
 <justification end> */
-/* TIOVX-1730- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RAW_IMAGE_UM008 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Raw Image object descriptor free failed!\n");
@@ -340,7 +338,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR005
 <justification end>*/
-    if(ref->type == TIVX_TYPE_RAW_IMAGE) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR005 */
+    if(ref->type == TIVX_TYPE_RAW_IMAGE)
 /* LDRA_JUSTIFY_END */
     {
         obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
@@ -348,14 +346,14 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR006
 <justification end>*/
-        if(obj_desc != NULL) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR006 */
+        if(obj_desc != NULL)
 /* LDRA_JUSTIFY_END */
         {
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR007
 <justification end>*/
-            if ( (vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_NORMAL ) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR007 */
+            if ( (vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_NORMAL )
             {
                 for(exp_idx=0; exp_idx < obj_desc->params.num_exposures; exp_idx++)
                 {
@@ -396,7 +394,6 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RAW_IMAGE_UM002
 <justification end>*/
-/* TIOVX-1730- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RAW_IMAGE_UM002 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "object descriptor is NULL\n");
@@ -408,7 +405,6 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RAW_IMAGE_UM003
 <justification end>*/
-/* TIOVX-1730- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RAW_IMAGE_UM003 */
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "reference type is not a raw image\n");
@@ -941,7 +937,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RAW_IMAGE_UM004
 <justification end> */
-/* TIOVX-1730- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RAW_IMAGE_UM004 */
                 if (pImagePtr == NULL)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "User mem_ptr is null at exposure_index = %d\n", exposure_index);
@@ -955,7 +950,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RAW_IMAGE_UM005
 <justification end> */
-/* TIOVX-1730- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RAW_IMAGE_UM005 */
                 if (pImagePtr == NULL)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "User img_ptr is null at exposure_index = %d\n", exposure_index);
@@ -969,7 +963,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RAW_IMAGE_UM006
 <justification end> */
-/* TIOVX-1730- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RAW_IMAGE_UM006 */
                 if (pImagePtr == NULL)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "User meta_before_ptr is null at exposure_index = %d\n", exposure_index);
@@ -983,7 +976,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RAW_IMAGE_UM007
 <justification end> */
-/* TIOVX-1730- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RAW_IMAGE_UM007 */
                 if (pImagePtr == NULL)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "User meta_after_ptr is null at exposure_index = %d\n", exposure_index);

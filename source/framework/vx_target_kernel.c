@@ -96,7 +96,6 @@ vx_status ownTargetKernelInit(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM001
 <justification end> */
-/* TIOVX-1707-LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM001 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to create mutex\n");
@@ -125,7 +124,6 @@ void ownTargetKernelDeInit(void)
 <justification start> TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM002
 <justification end> */
 #endif
-/* TIOVX-1707- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM002 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
@@ -158,7 +156,7 @@ static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR001
 <justification end> */
-        if ((vx_status)VX_SUCCESS == status) /* TIOVX-1932- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR001 */
+        if ((vx_status)VX_SUCCESS == status)
         {
             for(i=0; i<dimof(g_target_kernel_table); i++)
             {
@@ -252,7 +250,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR002
 <justification end> */
-        if ((vx_status)VX_SUCCESS == mutex_status) /* TIOVX-1932- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR002 */
+        if ((vx_status)VX_SUCCESS == mutex_status)
         {
             for(i=0; i<dimof(g_target_kernel_table); i++)
             {
@@ -296,7 +294,7 @@ tivx_target_kernel ownTargetKernelGet(vx_enum kernel_id, volatile char *kernel_n
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR003
 <justification end> */
-    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1932- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR003 */
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_target_kernel tmp_knl = NULL;
 

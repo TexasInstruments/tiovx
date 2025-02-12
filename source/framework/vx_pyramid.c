@@ -59,7 +59,7 @@ static vx_status isPyramidCopyable(vx_reference input, vx_reference output)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR008
 <justification end> */
-    if (((vx_bool)vx_false_e == ownIsValidSpecificReference(input, (vx_enum)VX_TYPE_PYRAMID)) ||/* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR008 */
+    if (((vx_bool)vx_false_e == ownIsValidSpecificReference(input, (vx_enum)VX_TYPE_PYRAMID)) ||
         ((vx_bool)vx_false_e == ownIsValidSpecificReference(output, (vx_enum)VX_TYPE_PYRAMID)) ||
         (input == output))
     {
@@ -126,7 +126,7 @@ static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool 
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR009
 <justification end>*/
-            if (NULL != kf) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR009 */
+            if (NULL != kf)
 /* LDRA_JUSTIFY_END */
             {
                 status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
@@ -154,7 +154,6 @@ static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool 
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PYRAMID_UM007
 <justification end>*/
-/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM007 */
             else
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
@@ -316,7 +315,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 i
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR001
 <justification end> */
         if ((ownIsValidSpecificReference(vxCastRefFromPyramid(prmd),
-            (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e) && /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR001 */
+            (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e) &&
             (prmd->base.obj_desc != NULL) &&
             (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->num_levels) &&
             ((NULL != prmd->img[0]) ||
@@ -549,7 +548,7 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR002
 <justification end>*/
-    if(ref->type == (vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR002 */
+    if(ref->type == (vx_enum)VX_TYPE_PYRAMID)
 /* LDRA_JUSTIFY_END */
     {
         /* status set to NULL due to preceding type check */
@@ -558,7 +557,7 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR003
 <justification end>*/
-        if(prmd->base.obj_desc != NULL) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR003 */
+        if(prmd->base.obj_desc != NULL)
 /* LDRA_JUSTIFY_END */
         {
             obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
@@ -595,7 +594,6 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PYRAMID_UM001
 <justification end>*/
-/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM001 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Pyramid base object descriptor is NULL\n");
@@ -607,7 +605,6 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PYRAMID_UM002
 <justification end>*/
-/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM002 */
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Reference type is not pyramid\n");
@@ -653,7 +650,6 @@ static vx_status ownDestructPyramid(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PYRAMID_UM003
 <justification end> */
-/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM003 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Pyramid level %d release failed\n", i);
@@ -672,7 +668,6 @@ static vx_status ownDestructPyramid(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PYRAMID_UM006
 <justification end> */
-/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM006 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Pyramid object descriptor free failed\n");
@@ -758,7 +753,6 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PYRAMID_UM005
 <justification end> */
-/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM005 */
         for (j = 0; j < i; j ++)
         {
             if (NULL != prmd->img[j])

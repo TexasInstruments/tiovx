@@ -91,7 +91,7 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
     uint16_t node_obj_desc_id;
     tivx_obj_desc_node_t *node_obj_desc;
 
-    switch(cmd_obj_desc->cmd_id) /* TIOVX-1937- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR003 */
+    switch(cmd_obj_desc->cmd_id)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR003
@@ -128,7 +128,7 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR002
 <justification end>*/
-            if( data_ref_q != NULL ) /* TIOVX-1937- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR002 */
+            if( data_ref_q != NULL )
             {
                 uint64_t timestamp;
 
@@ -144,7 +144,6 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TARGET_ON_HOST_CPU_UM001
 <justification end>*/
-/* TIOVX-1746- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_ON_HOST_CPU_UM001 */
         default:
             break;
 /* LDRA_JUSTIY_END */

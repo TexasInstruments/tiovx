@@ -246,7 +246,6 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UTJT003
 <justification end> */
-/* TIOVX-1859- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT003 */
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         (void)vxReleaseObjectArray(&objarr);
@@ -304,7 +303,7 @@ VX_API_ENTRY vx_reference VX_API_CALL vxGetObjectArrayItem(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR002
 <justification end> */
-            if (NULL != ref) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR002 */
+            if (NULL != ref)
 /* LDRA_JUSTIFY_END */
             {
                 /* Setting it as void since the return value 'count' is not used further */
@@ -316,7 +315,6 @@ VX_API_ENTRY vx_reference VX_API_CALL vxGetObjectArrayItem(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UTJT004
 <justification end> */
-/* TIOVX-1859- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT004 */
             else
             {
                 vxAddLogEntry(&objarr->base.context->base, (vx_status)VX_ERROR_NO_RESOURCES,
@@ -420,7 +418,6 @@ static vx_status ownInitObjArrayFromObject(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UTJT005
 <justification end> */
-/* TIOVX-1859- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT005 */
         for (; i > 0u; i--)
         {
             status = ownReleaseRefFromObjArray(objarr, i);
@@ -443,7 +440,7 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR003
 <justification end>*/
-    if (vxGetStatus(ref) == (vx_status)VX_SUCCESS) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR003 */
+    if (vxGetStatus(ref) == (vx_status)VX_SUCCESS)
 /* LDRA_JUSTIFY_END */
     {
         tivx_obj_desc_object_array_t *obj_desc =
@@ -468,7 +465,6 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UM001
 <justification end>*/
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM001 */
     else
     {
         status = (vx_status)VX_FAILURE;
@@ -501,7 +497,6 @@ static vx_status ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t num_
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UM002
 <justification end> */
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM002 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Release object array element %d failed!\n", i);
@@ -534,7 +529,6 @@ static vx_status ownDestructObjArray(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UM005
 <justification end> */
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM005 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Object array object descriptor release failed!\n");
@@ -561,7 +555,7 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR006
 <justification end>*/
-    if(objarr_ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR006 */
+    if(objarr_ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
 /* LDRA_JUSTIFY_END */
     {
         /* status set to NULL due to preceding type check */
@@ -570,7 +564,7 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR007
 <justification end>*/
-        if(objarr->base.obj_desc != NULL) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR007 */
+        if(objarr->base.obj_desc != NULL)
 /* LDRA_JUSTIFY_END */
         {
             obj_desc = (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
@@ -581,7 +575,7 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR008
 <justification end>*/
-                if (ref != NULL) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR008 */
+                if (ref != NULL)
 /* LDRA_JUSTIFY_END */
                 {
                     status = (vx_status)VX_SUCCESS;
@@ -593,7 +587,6 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UTJT001
 <justification end> */
-/* TIOVX-1859- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT001 */
                     if ((vx_status)VX_SUCCESS != status)
                     {
                         break;
@@ -604,7 +597,6 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UTJT002
 <justification end>*/
-/* TIOVX-1859- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UTJT002 */
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Object array reference is NULL for %d num_item\n", i);
@@ -617,7 +609,7 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR009
 <justification end> */
-            if ((vx_status)VX_SUCCESS==status) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR009 */
+            if ((vx_status)VX_SUCCESS==status)
             {
                 objarr_ref->is_allocated = (vx_bool)vx_true_e;
             }
@@ -627,7 +619,6 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UM003
 <justification end>*/
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM003 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Object array object descriptor is NULL\n");
@@ -639,7 +630,6 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UM004
 <justification end>*/
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM004 */
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Data type is not Object Array\n");

@@ -45,7 +45,7 @@ static vx_status ownDestructKernel(vx_reference ref)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR003
 <justification end> */
-        if ( ((vx_status)VX_SUCCESS == status) && /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR003 */
+        if ( ((vx_status)VX_SUCCESS == status) &&
         (is_found == (vx_bool)vx_true_e) )
         {
             VX_PRINT(VX_ZONE_INFO, "Kernel %s destructor called (removed from context)\n", kernel->name);
@@ -69,7 +69,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_KERNEL_UM001
 <justification end> */
-/* TIOVX-1719- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UM001 */
         if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to destroy reference\n");
@@ -266,7 +265,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR009
 <justification end> */
             /* This is the first time vxRemoveKernel is called on this kernel */
-            if ( kernel->base.destructor_callback == NULL ) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR009 */
+            if ( kernel->base.destructor_callback == NULL )
             {
                 /* By default, we don't want to destruct user kernel unless user calls vxRemoveKernel,
                  * at which point we set the destructor callback so that it gets removed when all references
@@ -463,7 +462,6 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_KERNEL_UM002
 <justification end> */
-/* TIOVX-1719- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UM002 */
                         if((vx_status)VX_SUCCESS != status)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to add kernel to host target\n");
@@ -498,7 +496,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR007
 <justification end>*/
-        if(kernel->signature.num_parameters <= TIVX_KERNEL_MAX_PARAMS ) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR007 */
+        if(kernel->signature.num_parameters <= TIVX_KERNEL_MAX_PARAMS )
 /* LDRA_JUSTIFY_END */
         {
             for (p = 0; p < kernel->signature.num_parameters; p++)
@@ -507,7 +505,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_KERNEL_UTJT001
 <justification end> */
-/* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT001 */
                 if (kernel->signature.directions[p] < (vx_enum)VX_INPUT)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Kernel signature directions less than VX_INPUT\n");
@@ -518,7 +515,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_KERNEL_UTJT002
 <justification end> */
-/* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT002 */
                 if (kernel->signature.directions[p] > (vx_enum)VX_BIDIRECTIONAL)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Kernel signature directions greater than VX_BIDIRECTIONAL\n");
@@ -529,7 +525,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_KERNEL_UTJT003
 <justification end> */
-/* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT003 */
                 if (ownIsValidType(kernel->signature.types[p]) == (vx_bool)vx_false_e)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Invalid kernel signature type\n");
@@ -540,7 +535,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_KERNEL_UTJT006
 <justification end> */
-/* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT006 */
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     break;
@@ -551,7 +545,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR008
 <justification end> */
-            if (status == (vx_status)VX_SUCCESS) /* TIOVX-1893- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_KERNEL_UBR008 */
+            if (status == (vx_status)VX_SUCCESS)
             {
                 status = ownAddKernelToContext(kernel->base.context, kernel);
             }
@@ -561,7 +555,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_KERNEL_UTJT004
 <justification end>*/
-/* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT004 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Number of parameters greater than maximum allowable\n");
@@ -656,7 +649,6 @@ vx_enum ownKernelGetTarget(vx_kernel kernel, const char *target_string)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_KERNEL_UTJT005
 <justification end>*/
-/* TIOVX-1855- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_KERNEL_UTJT005 */
         if(kernel->num_targets==0U)
         {
             target_id = (vx_enum)TIVX_TARGET_ID_INVALID;

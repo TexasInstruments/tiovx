@@ -86,7 +86,7 @@ vx_status ownObjectInit(void)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_OBJECTS_UBR001
 <justification end> */
-    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1923- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJECTS_UBR001 */
+    if ((vx_status)VX_SUCCESS == status)
     {
         ownInitUseFlag(g_tivx_objects.isMfUse,
             TIVX_META_FORMAT_MAX_OBJECTS);

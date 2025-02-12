@@ -180,7 +180,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_REMAP_UBR001
 <justification end> */
-            if(obj_desc->mem_ptr.host_ptr != (uint64_t)0) /* TIOVX-1882- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REMAP_UBR001 */
+            if(obj_desc->mem_ptr.host_ptr != (uint64_t)0)
             {
                 if ((dst_x < obj_desc->dst_width) &&
                     (dst_y < obj_desc->dst_height))

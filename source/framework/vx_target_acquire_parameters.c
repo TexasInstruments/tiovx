@@ -103,7 +103,7 @@ static void ownTargetObjDescSendRefConsumed(
 <metric start> branch <metric end>
 <justification start>TIOVX_BRANCH_COVERAGE_TIVX_ACQUIRE_PARAMS_UBR002
 <justification end> */
-            if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)cmd_obj_desc, TIVX_OBJ_DESC_CMD)) /* TIOVX-1933- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ACQUIRE_PARAMS_UBR002 */
+            if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)cmd_obj_desc, TIVX_OBJ_DESC_CMD))
             {
                 uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
@@ -198,7 +198,7 @@ static void ownTargetNodeDescAcquireParameter(
 <metric start> branch <metric end>
 <justification start>TIOVX_BRANCH_COVERAGE_TIVX_ACQUIRE_PARAMS_UBR003
 <justification end> */
-            if(obj_desc != NULL) /* TIOVX-1933- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ACQUIRE_PARAMS_UBR003 */
+            if(obj_desc != NULL)
             {
                 obj_desc->in_node_done_cnt = 0;
             }
@@ -248,7 +248,7 @@ static void ownTargetNodeDescReleaseParameterInDelay(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_ACQUIRE_PARAMS_UBR004
 <justification end>*/
-        if(next_data_ref_q!=NULL) /* TIOVX-1933- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ACQUIRE_PARAMS_UBR004 */
+        if(next_data_ref_q!=NULL)
 /* LDRA_JUSTIFY_END */
         {
 #if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
@@ -277,7 +277,7 @@ static void ownTargetNodeDescReleaseParameterInDelay(
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_ACQUIRE_PARAMS_UBR005
 <justification end> */
 #endif
-                    if((vx_status)VX_SUCCESS == ownObjDescQueueEnqueue( /* TIOVX-1933- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ACQUIRE_PARAMS_UBR005 */
+                    if((vx_status)VX_SUCCESS == ownObjDescQueueEnqueue(
                         obj_desc_q_id,
                         ref_obj_desc_id
                         ))
@@ -307,7 +307,6 @@ static void ownTargetNodeDescReleaseParameterInDelay(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_ACQUIRE_PARAMS_UM001
 <justification end>*/
-/* TIOVX-1709- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_ACQUIRE_PARAMS_UM001 */
         else
         {
             /* invalid descriptor found */

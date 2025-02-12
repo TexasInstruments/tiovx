@@ -117,7 +117,7 @@ vx_status ownObjDescQueueRelease(uint16_t *obj_desc_id)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_OBJ_DESC_QUEUE_UBR001
 <justification end> */
-            if((vx_status)VX_SUCCESS == ownObjDescFree((tivx_obj_desc_t**)&obj_desc))/* TIOVX-1924- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_OBJ_DESC_QUEUE_UBR001 */
+            if((vx_status)VX_SUCCESS == ownObjDescFree((tivx_obj_desc_t**)&obj_desc))
             {
                 *obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 

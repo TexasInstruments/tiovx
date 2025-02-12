@@ -63,9 +63,8 @@ static vx_status ownDestructNode(vx_reference ref)
 
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_NODE_UM003
+<justification start> TIOVX_CODE_COVERAGE_NODE_UM001
 <justification end> */
-/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM001 */
                     if (status1 != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
@@ -87,7 +86,6 @@ static vx_status ownDestructNode(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UM002
 <justification end> */
-/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM002 */
             if (status1 != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
@@ -119,7 +117,6 @@ static vx_status ownDestructNode(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UM003
 <justification end> */
-/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM003 */
                     if ((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Node command object descriptor free failed!\n");
@@ -371,7 +368,6 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UTJT001
 <justification end> */
-/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT001 */
                         if((vx_status)VX_SUCCESS != status)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "Allocating reference %d failed\n", cnt);
@@ -403,7 +399,7 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR005
 <justification end> */
-                    else if ((vx_status)VX_SUCCESS==status) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR005 */
+                    else if ((vx_status)VX_SUCCESS==status)
 /* LDRA_JUSTIFY_END */
                     {
                         node->is_timed_out = (vx_bool)vx_false_e;
@@ -412,7 +408,6 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UTJT002
 <justification end> */
-/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT002 */
                     else
                     {
                         /* do nothing */
@@ -500,7 +495,6 @@ vx_status ownNodeKernelInit(vx_node node)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UTJT003
 <justification end>*/
-/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT003 */
             if(node->local_data_ptr==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR,"User kernel, local data memory alloc failed\n");
@@ -590,7 +584,7 @@ vx_status ownNodeKernelInit(vx_node node)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR007
 <justification end> */
-                                if(parent_ref[i] != NULL) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR007 */
+                                if(parent_ref[i] != NULL)
                                 {
                                     if(parent_ref[i]->type==(vx_enum)VX_TYPE_OBJECT_ARRAY)
                                     {
@@ -752,7 +746,7 @@ vx_status ownNodeKernelDeinit(vx_node node)
 <justification end> */
         if(((vx_bool)vx_true_e == node->local_data_ptr_is_alloc)
             &&
-            (NULL != node->local_data_ptr) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR012 */
+            (NULL != node->local_data_ptr)
             &&
             (0U != node->local_data_size)
             )
@@ -805,7 +799,7 @@ vx_status ownNodeKernelDeinit(vx_node node)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR015
 <justification end>*/
-                            if(node->replicated_flags[i] != 0) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR015 */
+                            if(node->replicated_flags[i] != 0)
 /* LDRA_JUSTIFY_END */
                             {
                                 if(parent_ref[i] != NULL) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR016 */
@@ -819,7 +813,7 @@ vx_status ownNodeKernelDeinit(vx_node node)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR017
 <justification end>*/
-                                    else if(parent_ref[i]->type==(vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR017 */
+                                    else if(parent_ref[i]->type==(vx_enum)VX_TYPE_PYRAMID)
 /* LDRA_JUSTIFY_END */
                                     {
                                         /*status set to NULL due to preceding type check*/
@@ -829,7 +823,6 @@ vx_status ownNodeKernelDeinit(vx_node node)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UTJT004
 <justification end>*/
-/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT004 */
                                     else
                                     {
                                         params[i] = NULL;
@@ -841,7 +834,6 @@ vx_status ownNodeKernelDeinit(vx_node node)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UTJT005
 <justification end>*/
-/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT005 */
                             else
                             {
                                 params[i] = node->parameters[i];
@@ -870,7 +862,6 @@ vx_status ownNodeKernelDeinit(vx_node node)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UTJT006
 <justification end>*/
-/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT006 */
                     if(status!=(vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"deinitialize callback failed\n");
@@ -907,7 +898,7 @@ vx_status ownNodeKernelDeinit(vx_node node)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR020
 <justification end>*/
-                if(status == (vx_status)VX_SUCCESS) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR020 */
+                if(status == (vx_status)VX_SUCCESS)
                 {
                     if(tmp_status == (vx_status)VX_SUCCESS)
                     {
@@ -1016,7 +1007,7 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR023
 <justification end>*/
-                                    else if(parent_ref[i]->type==(vx_enum)VX_TYPE_PYRAMID)/* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR023 */
+                                    else if(parent_ref[i]->type==(vx_enum)VX_TYPE_PYRAMID)
 /* LDRA_JUSTIFY_END */
                                     {
                                         /*status set to NULL due to preceding type check*/
@@ -1026,7 +1017,6 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UTJT007
 <justification end>*/
-/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT007 */
                                     else
                                     {
                                         params[i] = NULL;
@@ -1059,7 +1049,6 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UTJT010
 <justification end> */
-/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT010 */
                             if((node->parameters[i]->type) != (prm_ref[i]->type) )
                             {
                                 VX_PRINT(VX_ZONE_WARNING, "node %s param index %d not match, expect type %d, get %d \n", node->base.name, i, node->parameters[i]->type, prm_ref[i]->type );
@@ -1288,7 +1277,7 @@ vx_status ownNodeReplaceOutNode(vx_node node, vx_node old_out_node, vx_node new_
 <justification end> */
     i<num_out_nodes;
 /* LDRA_JUSTIFY_END */
-    i++)/* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR024 */
+    i++)
     {
         if(old_out_node_id == node->obj_desc[0]->out_node_id[i])
         {
@@ -1375,7 +1364,7 @@ vx_status ownNodeReplaceInNode(vx_node node, vx_node old_in_node, vx_node new_in
 <justification end> */
     i<num_in_nodes;
 /* LDRA_JUSTIFY_END */
-    i++) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR025 */
+    i++)
     {
         if(old_in_node_id == node->obj_desc[0]->in_node_id[i])
         {
@@ -1576,7 +1565,7 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR029
 <justification end> */
-            if ((vx_bool)vx_true_e == node->is_context_event)/* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR029 */
+            if ((vx_bool)vx_true_e == node->is_context_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->base.context->event_queue,
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
@@ -1708,7 +1697,6 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UM006
 <justification end> */
-/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM006 */
                                 if((vx_status)VX_SUCCESS != status)
                                 {
                                     VX_PRINT(VX_ZONE_ERROR,"Failed to add graph node\n");
@@ -2279,7 +2267,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UTJT008
 <justification end> */
-/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT008 */
                                     if ((num_of_replicas != 0U) && (items != num_of_replicas))
                                     {
                                         VX_PRINT(VX_ZONE_ERROR, "Number of replicas is not equal to zero and not equal to items\n");
@@ -2290,7 +2277,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UTJT009
 <justification end> */
-/* TIOVX-1864: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UTJT009 */
                                     if (num_of_replicas > TIVX_NODE_MAX_REPLICATE)
                                     {
                                         VX_PRINT(VX_ZONE_ERROR, "Number of replicas is greater than maximum allowed\n");
@@ -2324,7 +2310,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UM005
 <justification end> */
-/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM005 */
                     if((vx_status)VX_SUCCESS != temp_status)
                     {
                         status = (vx_status)VX_FAILURE;
@@ -2337,7 +2322,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UM004
 <justification end> */
-/* TIOVX-1741- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_NODE_UM004 */
                 if((vx_status)VX_SUCCESS != temp_status)
                 {
                     status = (vx_status)VX_FAILURE;
@@ -2866,7 +2850,7 @@ vx_status tivxSetNodeDebugZone(vx_node node, vx_uint32 debug_zone, vx_bool enabl
 <justification end> */
             i < TIVX_GRAPH_MAX_PIPELINE_DEPTH;
 /* LDRA_JUSTIFY_END */
-            i++)  /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR034 */
+            i++)
             {
                 if (node->obj_desc[i] != NULL)
                 {
