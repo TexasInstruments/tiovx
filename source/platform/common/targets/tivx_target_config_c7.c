@@ -66,7 +66,6 @@ void ownPlatformCreateTargetsC7(void)
 <function start> void ownPlatformDeleteTargetsC7.* <function end>
 <justification start> TIOVX_CODE_COVERAGE_TARGET_CONFIG_C7x_UM001
 <justification end> */
-/* TIOVX-1970- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_CONFIG_C7x_UM001 */
 void ownPlatformDeleteTargetsC7(void)
 {
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1);

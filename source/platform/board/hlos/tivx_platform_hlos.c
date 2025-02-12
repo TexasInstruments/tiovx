@@ -88,7 +88,6 @@ vx_status ownPlatformInit(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM001
 <justification end> */
-/* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM001 */
     if( (0 != retVal) || (gTivxObjDescShmEntry == NULL)
         || ((uint32_t)shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*(uint32_t)sizeof(tivx_obj_desc_shm_entry_t))))
     {
@@ -106,7 +105,6 @@ vx_status ownPlatformInit(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM002
 <justification end> */
-/* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM002 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 ownPlatformDeInit();
@@ -133,7 +131,6 @@ vx_status ownPlatformInit(void)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM003 <justification end> */
-/* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM003 */
         if (SEM_FAILED == g_tivx_platform_info.semaphore)
         {
             VX_PRINT(VX_ZONE_ERROR, "POSIX semaphore create failed\n");
@@ -151,7 +148,6 @@ vx_status ownPlatformInit(void)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM004 <justification end> */
-/* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM004 */
             if (SEM_FAILED == g_tivx_platform_info.semaphore_data_ref)
             {
                 VX_PRINT(VX_ZONE_ERROR, "POSIX semaphore_data_ref create failed\n");
@@ -170,7 +166,6 @@ vx_status ownPlatformInit(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM005
 <justification end> */
-/* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM005 */
                 if (SEM_FAILED == g_tivx_platform_info.semaphore_log_mem)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "POSIX semaphore_log_mem create failed\n");
@@ -201,7 +196,7 @@ void ownPlatformDeInit(void)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR002
 <justification end> */
-        if (NULL != g_tivx_platform_info.g_platform_lock[i]) /* TIOVX-1951- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR002 */
+        if (NULL != g_tivx_platform_info.g_platform_lock[i])
         {
             (void)tivxMutexDelete(&g_tivx_platform_info.g_platform_lock[i]);
         }
@@ -299,7 +294,6 @@ vx_enum ownPlatformGetTargetId(const char *target_name)
 <function start> void tivxPlatformResetObjDescTableInfo.* <function end>
 <justification start> TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM006
 <justification end> */
-/* TIOVX-1798- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_HLOS_UM006 */
 void tivxPlatformResetObjDescTableInfo(void)
 {
     tivx_obj_desc_t *tmp_obj_desc = NULL;
@@ -333,7 +327,7 @@ void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR003
 <justification end> */
-    i < TIVX_PLATFORM_MAX_TARGETS;/* TIOVX-1951- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR003 */
+    i < TIVX_PLATFORM_MAX_TARGETS;
 /* LDRA_JUSTIFY_END */
     i ++)
     {

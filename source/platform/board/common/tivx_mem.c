@@ -228,7 +228,7 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_MEM_UBR001
 <justification end> */
-            if (0 == ret_val) /* TIOVX-1950- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_MEM_UBR001 */
+            if (0 == ret_val)
             {
                 stats->mem_size = heap_stats.heap_size;
                 stats->free_size = heap_stats.free_size;
@@ -434,7 +434,7 @@ vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, 
 <justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR005
 <justification end> */
 #endif
-        if (status < 0) /* TIOVX-1959- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_MEM_UBR005 */
+        if (status < 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "appMemTranslateDmaBufFd() failed.\n");
             vxStatus = (vx_status)VX_FAILURE;
@@ -475,7 +475,6 @@ vx_bool tivxMemCompareFd(uint64_t dmaBufFd1, uint64_t dmaBufFd2, uint32_t size1,
 <justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_MEM_UM001
 <justification end> */
 #endif
-/* TIOVX-1793- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_MEM_UM001 */
         if ((vx_status)VX_SUCCESS == status)
         {
             if (phyAddr1 == phyAddr2)

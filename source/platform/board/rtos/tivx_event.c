@@ -57,7 +57,7 @@ vx_status tivxEventDelete(tivx_event *event)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_EVENT_UBR001
 <justification end> */
-        if ((app_rtos_status_t)APP_RTOS_STATUS_SUCCESS == ret_status) /* TIOVX-1955- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_EVENT_UBR001 */
+        if ((app_rtos_status_t)APP_RTOS_STATUS_SUCCESS == ret_status)
 /* LDRA_JUSTIFY_END */
         {
             *event = NULL;
@@ -66,7 +66,6 @@ vx_status tivxEventDelete(tivx_event *event)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RTOS_EVENT_UM001
 <justification end> */
-/* TIOVX-1760- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RTOS_EVENT_UM001 */
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Semaphore delete returned an error\n");
@@ -130,7 +129,6 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RTOS_EVENT_UM002
 <justification end> */
-/* TIOVX-1760- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RTOS_EVENT_UM002 */
         else if (APP_RTOS_STATUS_FAILURE == retVal)
         {
             VX_PRINT(VX_ZONE_ERROR, "Semaphore wait returned an error\n");

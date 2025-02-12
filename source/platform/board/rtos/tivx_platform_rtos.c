@@ -71,7 +71,6 @@ vx_status ownPlatformInit(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM001
 <justification end> */
-/* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM001 */
     if( (0 != retVal) || (gTivxObjDescShmEntry == NULL)
         || (shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*(uint32_t)sizeof(tivx_obj_desc_shm_entry_t))))
     {
@@ -92,7 +91,6 @@ vx_status ownPlatformInit(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM002
 <justification end> */
-/* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM002 */
             if ((vx_status)VX_SUCCESS != status)
             {
                 ownPlatformDeInit();
@@ -112,7 +110,6 @@ vx_status ownPlatformInit(void)
 <function start> void ownPlatformDeInit.* <function end>
 <justification start> TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM003
 <justification end> */
-/* TIOVX-1772- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PLATFORM_RTOS_UM003 */
 void ownPlatformDeInit(void)
 {
     int32_t i;
@@ -242,7 +239,7 @@ void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR002
 <justification end> */
-    i < TIVX_PLATFORM_MAX_TARGETS;/* TIOVX-1957- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR002 */
+    i < TIVX_PLATFORM_MAX_TARGETS;
 /* LDRA_JUSTIFY_END */
     i ++)
     {
@@ -295,7 +292,7 @@ void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
 <justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR003
 <justification end> */
         /* Needs to be called once by someone, size RTOS boots first, we call it in RTOS side */
-        if(*shm_base != NULL) /* TIOVX-1957- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR003 */
+        if(*shm_base != NULL)
         {
             ownLogRtResetShm(*shm_base);
         }

@@ -88,7 +88,6 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_MUTEX_UM001
 <justification end> */
-/* TIOVX-1742- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MUTEX_UM001 */
             if(status!=0)
             {
                 (void)pthread_mutex_destroy(&tmp_mutex->lock);
@@ -149,7 +148,6 @@ vx_status tivxMutexLock(tivx_mutex mutex)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_MUTEX_UM002
 <justification end> */
-/* TIOVX-1742- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MUTEX_UM002 */
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "Mutex lock failed\n");
@@ -172,7 +170,6 @@ vx_status tivxMutexUnlock(tivx_mutex mutex)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_MUTEX_UM003
 <justification end> */
-/* TIOVX-1742- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_MUTEX_UM003 */
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "Mutex unlock failed\n");

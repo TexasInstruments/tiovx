@@ -162,7 +162,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR004
 <justification end> */
-                if(status==0) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR004 */
+                if(status==0)
 /* LDRA_JUSTIFY_END */
                 {
                     status = pthread_create(&context->hndl, &thread_attr, tivxTaskMain, task);
@@ -182,7 +182,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR005
 <justification end> */
-            if (status == 0) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR005 */
+            if (status == 0)
 /* LDRA_JUSTIFY_END */
             {
                 task->tsk_handle = (void *)context;
@@ -191,7 +191,6 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TASK_UM001
 <justification end> */
-/* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM001 */
             else
             {
                 (void)ownPosixObjectFree((uint8_t*)context, (vx_enum)TIVX_POSIX_TYPE_TASK);
@@ -227,7 +226,6 @@ vx_status tivxTaskDelete(tivx_task *task)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TASK_UM002
 <justification end> */
-/* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM002 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Task free failed\n");
@@ -261,7 +259,6 @@ void tivxTaskWaitMsecs(uint32_t msec)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TASK_UM003
 <justification end> */
-/* TIOVX-1724- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TASK_UM003 */
         if((ret < 0) && (remain_time.tv_sec > 0) && (remain_time.tv_nsec > 0))
         {
             /* restart for remaining time */

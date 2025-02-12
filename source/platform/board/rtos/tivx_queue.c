@@ -108,7 +108,6 @@ vx_status tivxQueueDelete(tivx_queue *queue)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM001
 <justification end> */
-/* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM001 */
             if (status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
@@ -124,7 +123,6 @@ vx_status tivxQueueDelete(tivx_queue *queue)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM002
 <justification end> */
-/* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM002 */
             if (status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
@@ -147,7 +145,6 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004
 <justification end> */
-/* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004 */
     for(;;)
 /* LDRA_JUSTIFY_END */
     {
@@ -214,7 +211,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_QUEUE_UBR002
 <justification end> */
-                if ((vx_status)VX_SUCCESS != wait_status)/* TIOVX-2134- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_QUEUE_UBR002*/
+                if ((vx_status)VX_SUCCESS != wait_status)
 /* LDRA_JUSTIFY_END */                             
                 {
                     do_break = (vx_bool)vx_true_e;
@@ -224,7 +221,6 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM003
 <justification end> */
-/* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM003 */
                 else
                 {
                     do_break = (vx_bool)vx_false_e;
@@ -245,7 +241,6 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004
 <justification end> */
-/* TIOVX-1830: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004 */
         if ((vx_bool)vx_true_e == do_break)
         {
             break;

@@ -64,7 +64,6 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RTOS_MUTEX_UM001
 <justification end> */
-/* TIOVX-1773- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RTOS_MUTEX_UM001 */
         if (APP_RTOS_STATUS_SUCCESS != retVal)
         {
             VX_PRINT(VX_ZONE_ERROR, "Semaphore delete returned an error\n");
@@ -99,7 +98,6 @@ vx_status tivxMutexLock(tivx_mutex mutex)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RTOS_MUTEX_UM002
 <justification end> */
-/* TIOVX-1773- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RTOS_MUTEX_UM002 */
         if (APP_RTOS_STATUS_SUCCESS != retVal)
         {
             VX_PRINT(VX_ZONE_ERROR, "Semaphore wait failed\n");

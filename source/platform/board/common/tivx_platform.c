@@ -38,7 +38,6 @@ void ownPlatformDeactivate(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_PLATFORM_UM001
 <justification end> */
-/* TIOVX-1766- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_PLATFORM_UM001 */
 #endif
 const char *tivxPlatformGetEnv(const char *env_var)
 {

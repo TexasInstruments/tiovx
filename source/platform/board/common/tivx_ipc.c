@@ -111,7 +111,7 @@ static void tivxIpcHandler(uint32_t src_cpu_id, uint32_t payload)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR001
 <justification end> */
-    if (NULL != g_ipc_handler) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR001 */
+    if (NULL != g_ipc_handler)
     {
         g_ipc_handler(payload);
     }
@@ -185,7 +185,7 @@ vx_enum tivxGetSelfCpuId(void)
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR002
 <justification end> */
 #endif
-            i < dimof(g_ipc_cpu_id_map); /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR002 */
+            i < dimof(g_ipc_cpu_id_map);
 #if defined(C7X_FAMILY) || defined(C66)
 /* LDRA_JUSTIFY_END */
 /* LDRA_JUSTIFY_START
@@ -193,7 +193,6 @@ vx_enum tivxGetSelfCpuId(void)
 <justification start> TIOVX_CODE_COVERAGE_IPC_C7X_UM001
 <justification end> */
 #endif
-/* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IPC_C7X_UM001 */
             i ++)
 #if defined(C7X_FAMILY) || defined(C66)
 /* LDRA_JUSTIFY_END */
@@ -205,7 +204,7 @@ vx_enum tivxGetSelfCpuId(void)
 <justification start> TIOVX_BRANCH_COVERAGE_C7X_TIVX_IPC_UBR001
 <justification end> */
 #endif
-        if (vsdk_cpu_id == g_ipc_cpu_id_map[i]) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_C7X_TIVX_IPC_UBR001 */
+        if (vsdk_cpu_id == g_ipc_cpu_id_map[i])
         {
             cpu_id = (vx_enum)i;
             break;
@@ -217,7 +216,6 @@ vx_enum tivxGetSelfCpuId(void)
 <justification start> TIOVX_CODE_COVERAGE_IPC_C7X_UM001
 <justification end> */
 #endif
-/* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IPC_C7X_UM001 */
     }
 #if defined(C7X_FAMILY) || defined(C66)
 /* LDRA_JUSTIFY_END */
@@ -255,7 +253,6 @@ void ownIpcInit(void)
 <function start> void ownIpcDeInit.* <function end>
 <justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_IPC_UM001
 <justification end> */
-/* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_ONLY_IPC_UM001 */
 #endif
 void ownIpcDeInit(void)
 {
@@ -296,7 +293,7 @@ vx_bool tivxIsTargetEnabled(const char target_name[])
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR005
 <justification end> */
-                if (1U == vsdk_isenabled) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR005 */
+                if (1U == vsdk_isenabled)
 /* LDRA_JUSTIFY_END */
                 {
                     isEnabled = (vx_bool)vx_true_e;
@@ -305,7 +302,6 @@ vx_bool tivxIsTargetEnabled(const char target_name[])
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_IPC_UM001
 <justification end> */
-/* TIOVX-1771- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IPC_UM001 */
                 else
                 {
                     isEnabled = (vx_bool)vx_false_e;

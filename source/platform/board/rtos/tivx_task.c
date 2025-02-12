@@ -35,7 +35,7 @@ static void tivxTaskDefHandle(void* arg0, void* arg1)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR001
 <justification end> */
-    if (0U != (uintptr_t)arg0) /* TIOVX-2135- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR001 */
+    if (0U != (uintptr_t)arg0)
     {
         task = (tivx_task *)arg0;
 
@@ -46,7 +46,6 @@ static void tivxTaskDefHandle(void* arg0, void* arg1)
 <metric start> statement <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RTOS_TASK_UM002
 <justification end> */
-/* TIOVX-1761- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RTOS_TASK_UM002 */
 }
 /* LDRA_JUSTIFY_END */
 
@@ -127,7 +126,6 @@ vx_status tivxTaskDelete(tivx_task *task)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RTOS_TASK_UM001
 <justification end> */
-/* TIOVX-1761- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_RTOS_TASK_UM001 */
         if (ret_status != (app_rtos_status_t)0)
         {
             VX_PRINT(VX_ZONE_ERROR,"Task_Delete: Task deletion failed\n");

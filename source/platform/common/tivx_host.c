@@ -81,7 +81,7 @@ static void tivxHostInitLocal(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_HOST_UBR001
 <justification end> */
-        if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MPU_0) /* TIOVX-1946- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_HOST_UBR001 */
+        if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MPU_0)
 /* LDRA_JUSTIFY_END */
         {
             tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MPU_0);
@@ -96,7 +96,6 @@ static void tivxHostInitLocal(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_HOST_UM001
 <justification end> */
-/* TIOVX-1732- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_UM001 */
         else if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MCU2_0)
         {
             tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MCU2_0);
@@ -107,7 +106,6 @@ static void tivxHostInitLocal(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_HOST_UM002
 <justification end> */
-/* TIOVX-1732- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_UM002 */
         else
         {
             /* do nothing */
@@ -126,7 +124,7 @@ static void tivxHostDeInitLocal(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_HOST_UBR002
 <justification end> */
-    if (0U != gInitCount) /* TIOVX-1946- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_HOST_UBR002 */
+    if (0U != gInitCount)
 /* LDRA_JUSTIFY_END */
     {
         gInitCount--;
@@ -143,7 +141,6 @@ static void tivxHostDeInitLocal(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_HOST_UM003
 <justification end> */
-/* TIOVX-1732- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_UM003 */
     else
     {
         /* ERROR. */

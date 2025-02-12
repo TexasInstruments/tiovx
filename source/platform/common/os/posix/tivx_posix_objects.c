@@ -125,7 +125,7 @@ uint8_t *ownPosixObjectAlloc(vx_enum type)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_POSIX_OBJECTS_UBR001
 <justification end> */
-    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1954- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_POSIX_OBJECTS_UBR001 */
+    if ((vx_status)VX_SUCCESS == status)
     {
         switch(type)
         {
@@ -172,7 +172,7 @@ vx_status ownPosixObjectFree(uint8_t *obj, vx_enum type)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_POSIX_OBJECTS_UBR002
 <justification end> */
-        if ((vx_status)VX_SUCCESS == status) /* TIOVX-1954- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_POSIX_OBJECTS_UBR002 */
+        if ((vx_status)VX_SUCCESS == status)
         {
             switch(type)
             {
@@ -260,7 +260,6 @@ vx_status ownPosixObjectInit(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM001
 <justification end> */
-/* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM001 */
     if (NULL == g_tivx_objects_lock)
     {
         status = (vx_status)VX_FAILURE;
@@ -292,7 +291,6 @@ vx_status ownPosixObjectDeInit(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM003
 <justification end> */
-/* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM003 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting event at index: %d failed\n", error_index);
@@ -304,7 +302,6 @@ vx_status ownPosixObjectDeInit(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM004
 <justification end> */
-/* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM004 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting queue at index: %d failed\n", error_index);
@@ -316,7 +313,6 @@ vx_status ownPosixObjectDeInit(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM002
 <justification end> */
-/* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM002 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting task at index: %d failed\n", error_index);
@@ -328,7 +324,6 @@ vx_status ownPosixObjectDeInit(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM005
 <justification end> */
-/* TIOVX-1726- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_POSIX_OBJECTS_UM005 */
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Deiniting mutex at index: %d failed\n", error_index);

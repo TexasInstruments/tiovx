@@ -144,7 +144,7 @@ static void tivxDeInitLocal(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_INIT_UBR001
 <justification end> */
-    if (0U != gInitCount) /* TIOVX-1949- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_INIT_UBR001 */
+    if (0U != gInitCount)
 /* LDRA_JUSTIFY_END */
     {
         gInitCount--;
@@ -154,7 +154,6 @@ static void tivxDeInitLocal(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_INIT_UM001
 <justification end> */
-/* TIOVX-1759- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_HOST_ONLY_INIT_UM001 */
 #endif
         if (0U == gInitCount)
         {

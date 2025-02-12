@@ -37,7 +37,6 @@ void ownPlatformCreateTargetsR5f(void)
 <function start> void ownPlatformDeleteTargetsR5f.* <function end>
 <justification start> TIOVX_CODE_COVERAGE_TARGET_CONFIG_R5F_UM001
 <justification end> */
-/* TIOVX-1769- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_TARGET_CONFIG_R5F_UM001 */
 void ownPlatformDeleteTargetsR5f(void)
 {
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MCU2_0);
