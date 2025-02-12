@@ -556,13 +556,13 @@ void ownGraphDetectAndSetNumBuf(vx_graph graph);
  *
  * \ingroup group_vx_graph
  */
-vx_status tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void *parameter);
+vx_status ownSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void *parameter);
 
 /*! \brief Waits for user event from graph event queue
  *
  * \ingroup group_vx_graph
  */
-vx_status tivxWaitGraphEvent(
+vx_status ownWaitGraphEvent(
                     vx_graph graph, vx_event_t *event,
                     vx_bool do_not_block);
 

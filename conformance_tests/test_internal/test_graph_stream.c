@@ -33,7 +33,7 @@ TEST(tivxInternalGraphStream, negativeTestGraphEvent)
     vx_graph graph = NULL;
     vx_event_t event;
 
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownWaitGraphEvent(graph, &event, (vx_bool)vx_false_e));
 }
 
 TEST(tivxInternalGraphStream, negativeTestGraphVerfiyStreamingNode)
@@ -63,7 +63,7 @@ TEST(tivxInternalGraphStream, negativeTestGraphAllocForStreaming)
     ASSERT(VX_ERROR_INVALID_REFERENCE == ownGraphAllocForStreaming(graph));
 }
 
-/* Testcase to fail tivxEventClear(), tivxSendUserGraphEvent(), tivxEventWait() called within vxStopGraphStreaming() */
+/* Testcase to fail tivxEventClear(), ownSendUserGraphEvent(), tivxEventWait() called within vxStopGraphStreaming() */
 TEST(tivxInternalGraphStream, negativeTestStopGraphStreaming)
 {
     vx_context context = context_->vx_context_;

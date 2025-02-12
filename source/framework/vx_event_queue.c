@@ -252,13 +252,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitEvent(
     else
     {
         /* Call general wait function */
-        status = vxWaitEventQueue(&context->event_queue, event, do_not_block);
+        status = ownWaitEventQueue(&context->event_queue, event, do_not_block);
     }
 
     return status;
 }
 
-vx_status vxWaitEventQueue(
+vx_status ownWaitEventQueue(
                     tivx_event_queue_t *event_q, vx_event_t *event,
                     vx_bool do_not_block)
 {

@@ -185,7 +185,7 @@ void ownEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable);
  *
  * \ingroup group_tivx_event_queue
  */
-vx_status vxWaitEventQueue(
+vx_status ownWaitEventQueue(
                     tivx_event_queue_t *event_q, vx_event_t *event,
                     vx_bool do_not_block);
 

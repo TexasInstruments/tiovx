@@ -46,7 +46,7 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 
     while((vx_bool)vx_false_e == done)
     {
-        if((vx_status)VX_SUCCESS == tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e)) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR001 */
+        if((vx_status)VX_SUCCESS == ownWaitGraphEvent(graph, &event, (vx_bool)vx_false_e)) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR001 */
         {
             switch (state) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR002 */
 /* LDRA_JUSTIFY_START
@@ -60,7 +60,7 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
                     {
                         VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
                         state = RUNNING;
-                        status = tivxSendUserGraphEvent(graph, RUN, NULL);
+                        status = ownSendUserGraphEvent(graph, RUN, NULL);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM001
@@ -68,7 +68,7 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 /* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM001 */
                         if (status != (vx_status)VX_SUCCESS)
                         {
-                            VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+                            VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
                         }
 /* LDRA_JUSTIFY_END */
                     }
@@ -184,7 +184,7 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 /* LDRA_JUSTIFY_END */
 
                         graph->streaming_executions++;
-                        status = tivxSendUserGraphEvent(graph, RUN, NULL);
+                        status = ownSendUserGraphEvent(graph, RUN, NULL);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM006
@@ -192,7 +192,7 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 /* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM006 */
                         if (status != (vx_status)VX_SUCCESS)
                         {
-                            VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+                            VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
                         }
 /* LDRA_JUSTIFY_END */
                     }
@@ -232,7 +232,7 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 
     while((vx_bool)vx_false_e == done)
     {
-        if((vx_status)VX_SUCCESS == tivxWaitGraphEvent(graph, &event, (vx_bool)vx_false_e)) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR003 */
+        if((vx_status)VX_SUCCESS == ownWaitGraphEvent(graph, &event, (vx_bool)vx_false_e)) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR003 */
         {
             switch (state) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR004 */
 /* LDRA_JUSTIFY_START
@@ -422,11 +422,11 @@ VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph)
             {
                 graph->is_streaming  = (vx_bool)vx_true_e;
 
-                status = tivxSendUserGraphEvent(graph, START, NULL);
+                status = ownSendUserGraphEvent(graph, START, NULL);
 
                 if (status != (vx_status)VX_SUCCESS)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+                    VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
                 }
             }
             else
@@ -464,10 +464,10 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
                 VX_PRINT(VX_ZONE_ERROR, "tivxEventClear() failed.\n");
             }
 
-            status = tivxSendUserGraphEvent(graph, STOP, NULL);
+            status = ownSendUserGraphEvent(graph, STOP, NULL);
             if (status != (vx_status)VX_SUCCESS)
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+                VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
             }
             status = tivxEventWait(graph->stop_done, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
@@ -493,7 +493,7 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
     return status;
 }
 
-vx_status tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void *parameter)
+vx_status ownSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void *parameter)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -508,7 +508,7 @@ vx_status tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void
     return status;
 }
 
-vx_status tivxWaitGraphEvent(
+vx_status ownWaitGraphEvent(
                     vx_graph graph, vx_event_t *event,
                     vx_bool do_not_block)
 {
@@ -517,7 +517,7 @@ vx_status tivxWaitGraphEvent(
     if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
         /* Call general wait function */
-        status = vxWaitEventQueue(&graph->streaming_event_queue, event, do_not_block);
+        status = ownWaitEventQueue(&graph->streaming_event_queue, event, do_not_block);
     }
     else
     {
@@ -752,10 +752,10 @@ vx_status ownGraphFreeStreaming(vx_graph graph)
 /* LDRA_JUSTIFY_END */
     }
 
-    tmp_status = tivxSendUserGraphEvent(graph, DELETE, NULL);
+    tmp_status = ownSendUserGraphEvent(graph, DELETE, NULL);
     if (tmp_status != (vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+        VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
         status = tmp_status;
     }
 
