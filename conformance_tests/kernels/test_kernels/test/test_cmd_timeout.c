@@ -317,11 +317,11 @@ int32_t DeleteGraph(TestObjContext *objCntxt)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxReleaseGraph() failed.\n");
 
-            if (vxStatus != (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
+            if (vxStatus != (vx_status)VX_ERROR_TIMEOUT)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                          "vxReleaseGraph() failed. Expected an error code [%d] but "
-                         "received [%d]\n", TIVX_ERROR_EVENT_TIMEOUT, vxStatus);
+                         "received [%d]\n", VX_ERROR_TIMEOUT, vxStatus);
             }
 
             if (status == TIVX_TEST_SUCCESS)
@@ -830,11 +830,11 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCreateFail, TestArg, TEST_PARAMS)
     /* Verify the graph. */
     vxStatus = vxVerifyGraph(objCntxt.vxGraph);
 
-    if (vxStatus != (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
+    if (vxStatus != (vx_status)VX_ERROR_TIMEOUT)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "vxVerifyGraph() failed. Expected an error code [%d] but "
-                 "received [%d]\n", TIVX_ERROR_EVENT_TIMEOUT, vxStatus);
+                 "received [%d]\n", VX_ERROR_TIMEOUT, vxStatus);
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -1053,11 +1053,11 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCtrlCmdFail, TestArg, TEST_PARAMS)
     vxStatus = tivxNodeSendCommandTimed(objCntxt.vxCmdTestNode, 0, 0,
                                         (vx_reference*)&objCntxt.vxCfg, 1, 1);
 
-    if (vxStatus != (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
+    if (vxStatus != (vx_status)VX_ERROR_TIMEOUT)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "tivxNodeSendCommandTimed() failed. Expected an error code [%d] but "
-                 "received [%d]\n", TIVX_ERROR_EVENT_TIMEOUT, vxStatus);
+                 "received [%d]\n", VX_ERROR_TIMEOUT, vxStatus);
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -1192,11 +1192,11 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutGraph, TestArg, TEST_PARAMS)
 
     vxStatus = vxWaitGraph(objCntxt.vxGraph);
 
-    if (vxStatus != (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
+    if (vxStatus != (vx_status)VX_ERROR_TIMEOUT)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "vxWaitGraph() failed. Expected an error code [%d] but "
-                 "received [%d]\n", TIVX_ERROR_EVENT_TIMEOUT, vxStatus);
+                 "received [%d]\n", VX_ERROR_TIMEOUT, vxStatus);
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
