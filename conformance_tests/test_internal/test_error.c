@@ -58,7 +58,7 @@ TEST(tivxInternalError, negativeTestContextReftable)
     ref = (vx_reference)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
     ref1 = (vx_reference)ownGetErrorObject(
-                        context, (vx_status)VX_ERROR_REFERENCE_NONZERO);
+                        context, (vx_status)(VX_STATUS_MIN+1));
     context->reftable[0]=reft;
     context->reftable[1]=reft1;
     VX_CALL(vxReleaseImage(&image));
