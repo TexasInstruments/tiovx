@@ -216,7 +216,7 @@ static vx_status ownDecrementEnqueueCount(vx_reference ref)
     ref->obj_desc->flags &= ~TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED;
     if (ref->obj_desc->num_enqueues > 0U)
     {
-        ref->obj_desc->num_enqueues --;
+        ref->obj_desc->num_enqueues = ref->obj_desc->num_enqueues - 1U;
         status = (vx_status)VX_SUCCESS;
     }
     else if (NULL == ref->delay)
@@ -633,7 +633,7 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                                 /* if this parameter is on a replicated node, we need to increment the queue counter
                                    and set the enqueued flag for all elements of the corresponding container */
                                 /* Increment the queue counter */
-                                objd->num_enqueues ++;
+                                objd->num_enqueues = objd->num_enqueues + 1U;
                                 if ((vx_bool)vx_false_e == is_input)
                                 {
                                     /* not an input, it's output or bidirectional so set the exclusive use flag */
@@ -647,7 +647,7 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                                         /* loop over the replicated object descriptor */
                                         tivx_obj_desc_t *odi = ref_list[i]->obj_desc;
                                         /* Increment the queue counter */
-                                        odi->num_enqueues ++;
+                                        odi->num_enqueues = odi->num_enqueues + 1U;
                                         if ((vx_bool)vx_false_e == is_input)
                                         {
                                             /* not an input, it's output or bidirectional so set the exclusive use flag */

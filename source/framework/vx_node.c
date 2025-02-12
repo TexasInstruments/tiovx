@@ -391,7 +391,7 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
                         replicated_node_idx, node_cmd_id,
                         obj_desc_id, num_refs, timeout);
 
-                    if ((vx_status)TIVX_ERROR_EVENT_TIMEOUT==status)
+                    if ((vx_status)VX_ERROR_TIMEOUT==status)
                     {
                         node->is_timed_out = (vx_bool)vx_true_e;
                     }
@@ -658,7 +658,7 @@ vx_status ownNodeKernelInit(vx_node node)
                         node->obj_desc[0]->target_id, (vx_enum)TIVX_CMD_NODE_CREATE,
                         1, obj_desc_id, node->timeout_val);
 
-                    if ((vx_status)TIVX_ERROR_EVENT_TIMEOUT==status)
+                    if ((vx_status)VX_ERROR_TIMEOUT==status)
                     {
                         node->is_timed_out = (vx_bool)vx_true_e;
                         VX_PRINT(VX_ZONE_ERROR,"Message for TIVX_CMD_NODE_CREATE command has TIMED OUT\n");
@@ -916,7 +916,7 @@ vx_status ownNodeKernelDeinit(vx_node node)
                  * here given that if the create timeout failed, then this
                  * would override that status, even if it was only successful
                  * in the deletion of the node */
-                if ((vx_status)TIVX_ERROR_EVENT_TIMEOUT==status)
+                if ((vx_status)VX_ERROR_TIMEOUT==status)
                 {
                     node->is_timed_out = (vx_bool)vx_true_e;
                 }
