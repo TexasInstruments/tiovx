@@ -368,13 +368,9 @@ typedef enum _tivx_status_e {
     /*!< \brief Indicates the base for the TIVX error codes.
      * Used for bounds checks only.
      */
-    TIVX_STATUS_BASE         = -(vx_int32)100,
+    TIVX_STATUS_BASE         = -(vx_int32)100
 
     /* add new codes here */
-    /*!< \brief Indicates that the wait operation on an event
-     * timed-out
-     */
-    TIVX_ERROR_EVENT_TIMEOUT = (vx_int32)(TIVX_STATUS_BASE) + 1,
 
 } tivx_status_e;
 
