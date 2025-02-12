@@ -2926,14 +2926,22 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
 
                                     status = ownSwapSubImageCheckRemap(si_obj_desc, subimage, (void**)ptrs);
                                 }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR022
+<justification end>*/
                                 else
                                 if((vx_enum)si_obj_desc->create_type==(vx_enum)TIVX_IMAGE_FROM_CHANNEL) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR022 */
+/* LDRA_JUSTIFY_END */
                                 {
                                     ptrs[0] = next_new_ptrs[subimage->channel_plane];
 
                                     status = ownSwapSubImageCheckRemap(si_obj_desc, subimage, (void**)ptrs);
                                 }
-#ifdef LDRA_UNTESTABLE_CODE
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_IMAGE_UM010
+<justification end>*/
 /* TIOVX-1688- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_IMAGE_UM010 */
                                 else
                                 {
@@ -2941,7 +2949,7 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
                                     VX_PRINT(VX_ZONE_ERROR, "Invalid image create type\n");
                                     status = (vx_status)VX_FAILURE;
                                 }
-#endif
+/* LDRA_JUSTIFY_END */
                             }
 
                             /* This is a valid image and thus adding to the list and incrementing k */
