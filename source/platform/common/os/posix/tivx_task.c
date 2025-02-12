@@ -133,15 +133,10 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
             if(status==0) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR003 */
             {
                 {
-/* LDRA_JUSTIFY_START
-<metric start> branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR006
-<justification end> */
-                    if(task->stack_size>0u) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR006 */
+                    if(task->stack_size>0u)
                     {
                         status = pthread_attr_setstacksize(&thread_attr, task->stack_size);
                     }
-/* LDRA_JUSTIFY_END */
                     #if 0
                     struct sched_param schedprm;
                     uint32_t pri;
