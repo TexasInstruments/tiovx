@@ -50,15 +50,13 @@
 
 ---
 
-# Makefile build options (found in Makefile and/or sdk_builder/build_flags.mak) {#BUILD_OPTIONS}
-
-## Build Options
+# Build options (found in Makefile, build_flags.mak, or sdk_builder/build_flags.mak) {#BUILD_OPTIONS}
 
 Build Option                         | Description | Default Setting |
 -------------------------------------|-------------|-----------------|
-PROFILE                        | Determines which profile to build for <BR> Valid values are: <BR> release, debug, all  | all |
+PROFILE                        | Determines which profile to build for. Valid values are: release / debug / all  | all |
 BUILD_EMULATION_MODE           | Builds PC emulation mode | yes |
-BUILD_EMULATION_ARCH           | PC emulation architecture. <BR> Valid values are: X86 x86_64 all | x86_64 |
+BUILD_EMULATION_ARCH           | PC emulation architecture. Valid values are: X86 / x86_64 / all | x86_64 |
 BUILD_TARGET_MODE              | Builds for target SoC platform like TDAxx | yes |
 BUILD_CONFORMANCE_TEST  | Builds entire test suite executable  | yes |
 BUILD_IVISION_KERNELS   | Builds iVision kernels (EVE_SW_PATH required to be set for this build)  | no |
@@ -66,7 +64,7 @@ BUILD_BAM               | Builds DMA wrapper (DMAUTILS_PATH and ALGFRAMEWORK_PAT
 BUILD_TUTORIAL          | Builds OpenVX tutorial  | yes |
 BUILD_LINUX_MPU         | Builds for A72 Linux target (NOT used in PC HOST emulation mode | yes |
 BUILD_EVE               | Builds for EVE platform (ARP32CGT_ROOT and EVE_SW_PATH required to be set for this build)  | no |
-BUILD_SDK               | Builds for SDK SW platform <BR> Valid values are, <BR> psdkra for Processor SDK RTOS J7 platform | psdkra |
+BUILD_SDK               | Builds for SDK SW platform. Valid values are: psdkra (for Processor SDK RTOS J7) / platform | psdkra |
 BUILD_IGNORE_LIB_ORDER  | When set to yes, it ignores the static library order listed in makefiles when building on the PC. | yes |
 BUILD_CT_KHR  | Builds and includes the Khronos OpenVX 1.1 conformance tests suite.  | yes |
 BUILD_CT_TIOVX  | Builds and includes the TI-added tests suite (for TI extensions and additional rohbustness testing).  | yes |
@@ -78,13 +76,15 @@ BUILD_CT_TIOVX_HWA_NEGATIVE_TESTS | Builds and includes a large set of negative 
 BUILD_CT_TIOVX_HWA_DISPLAY_TESTS | Builds and includes display test cases <BR> Note: in order to run on J7 platform, a display must be connected | no |
 BUILD_CT_TIOVX_HWA_CAPTURE_TESTS | Builds and includes a large set of negative tests for HWA kernels <BR> Note: in order to run on J7 platform, 4 IMX390 cameras must be connected to a Fusion board which is connected to the EVM| no |
 BUILD_CT_TIOVX_HWA_CSITX_TESTS | Builds and includes csitx test cases <BR> Note: in order to run on J7 platform, the following setup is required: <ul><li> EVM Board Configuration: By default DPHY is connected to FPD Panel (DSI-TX), it has to be changed to DSI FPC(CSI-TX). </li><li> J7X LI(Leopard Imaging) Serial Capture Board </li><li> FPC Cable: Connect Csitx to Csirx. </li></ul> This test uses CSIRX to receive the data transmitted by CSITX, hence lane speed for both modules should be same. This tests confgiures the CSITX lane speed to 800 Mbps.| no |
+BUILD_TYPE              | Specifies the build configuration as development or production. Valid values are: dev / prod | dev |
+
 ---
 
 
 # Deleting all generated files {#BUILD_CLEAN}
 
- - To do a clean build, do "make clean"
- - To manually delete generated files do below
-    \code
-    Delete directory out/
-    \endcode
+ - To do a clean build, do \code make clean \endcode
+ - To delete both "out" and "lib" output directories, do \code make scrub \endcode
+ - To delete the "out" directory for a specific core, do the following and specify a core:
+   \code make clean_[core] \endcode
+   ex. \code make clean_r5f \endcode

@@ -22,3 +22,6 @@ BUILD_CT_TIOVX_TVM=yes
 
 # Applied to target mode only
 BUILD_VLAB?=no
+
+# Flag to enable development or production builds - valid values: dev / prod
+BUILD_TYPE?=dev

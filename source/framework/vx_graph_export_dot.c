@@ -62,6 +62,7 @@
 
 #include <vx_internal.h>
 
+#if defined(BUILD_DEV)
 /* set to 1 only if 'dot' tool can be invoke with "system" command */
 #ifdef PC /* PC host emulation mode */
 #define TIVX_EXPORT_GRAPH_AS_JPG    (1u)
@@ -1634,10 +1635,12 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
     }
     return status;
 }
+#endif /* #if defined(BUILD_DEV) */
 
 vx_status tivxExportGraphToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
 {
     vx_status status = (vx_status)VX_FAILURE;
+#if defined(BUILD_DEV)
 
     if (   (NULL != graph)
         && (output_file_path!=NULL)
@@ -1669,5 +1672,7 @@ vx_status tivxExportGraphToDot(vx_graph graph, const char *output_file_path, con
         VX_PRINT(VX_ZONE_ERROR, "Invalid parameters or graph node not verified");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
+#endif /* #if defined(BUILD_DEV) */
+
     return status;
 }

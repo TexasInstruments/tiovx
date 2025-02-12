@@ -62,6 +62,8 @@
 
 #include <vx_internal.h>
 
+
+#if defined(BUILD_DEV)
 #if defined(LINUX) || defined(QNX)
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -191,7 +193,6 @@ static void tivxLogRtTraceRemoveEventClass(uint64_t event_id, uint16_t event_cla
 }
 
 #if defined(LINUX) || defined(QNX)
-
 static vx_status ownLogRtFileWrite(int32_t fd, uint8_t *buf, uint32_t bytes_to_write, uint8_t *tmp_buf, uint32_t tmp_buf_size)
 {
     uint32_t write_size;
@@ -223,10 +224,143 @@ static vx_status ownLogRtFileWrite(int32_t fd, uint8_t *buf, uint32_t bytes_to_w
     }
     return status;
 }
+#endif
 
+static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
+{
+    uint32_t node_id, pipe_id, target_id;
+    #define TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH  (64u)
+    vx_enum targets[TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH];
+    vx_status status = (vx_status)VX_SUCCESS;
+    char target_name[TIVX_TARGET_MAX_NAME];
+
+    if (   (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+        && (graph->verified == (vx_bool)vx_true_e))
+    {
+        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
+
+        for(target_id=0; target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH; target_id++)
+        {
+            targets[target_id] = (vx_enum)TIVX_TARGET_ID_INVALID;
+        }
+        for(node_id=0; node_id<graph->num_nodes; node_id++)
+        {
+            vx_node node = graph->nodes[node_id];
+
+            if(node != NULL)
+            {
+                if(is_enable == (vx_bool)vx_true_e)
+                {
+                    ownLogRtTraceAddEventClass((uintptr_t)node, TIVX_LOG_RT_EVENT_CLASS_NODE, node->base.name);
+                }
+                else
+                {
+                    tivxLogRtTraceRemoveEventClass((uintptr_t)node, TIVX_LOG_RT_EVENT_CLASS_NODE);
+                }
+
+                for(pipe_id=0; pipe_id<node->pipeline_depth; pipe_id++)
+                {
+                    if(node->obj_desc[pipe_id] != NULL)
+                    {
+                        if(is_enable == (vx_bool)vx_true_e)
+                        {
+                            tivxFlagBitSet(
+                                &node->obj_desc[pipe_id]->base.flags,
+                                TIVX_REF_FLAG_LOG_RT_TRACE);
+                        }
+                        else
+                        {
+                            tivxFlagBitClear(
+                                &node->obj_desc[pipe_id]->base.flags,
+                                TIVX_REF_FLAG_LOG_RT_TRACE);
+                        }
+                    }
+                }
+                if(node->obj_desc[0] != NULL)
+                {
+                    vx_bool done = (vx_bool)vx_false_e;
+                    for(target_id=0;target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH;target_id++)
+                    {
+                        done = (vx_bool)vx_false_e;
+                        if((vx_enum)node->obj_desc[0]->target_id==targets[target_id])
+                        {
+                            done = (vx_bool)vx_true_e;
+                        }
+                        if(targets[target_id]==(vx_enum)TIVX_TARGET_ID_INVALID)
+                        {
+                            targets[target_id] = (vx_enum)node->obj_desc[0]->target_id;
+                            done = (vx_bool)vx_true_e;
+                        }
+                        if(done != 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(is_enable == (vx_bool)vx_true_e)
+        {
+            ownLogRtTraceAddEventClass(graph->obj_desc[0]->base.obj_desc_id, TIVX_LOG_RT_EVENT_CLASS_GRAPH, graph->base.name);
+        }
+        else
+        {
+            tivxLogRtTraceRemoveEventClass(graph->obj_desc[0]->base.obj_desc_id, TIVX_LOG_RT_EVENT_CLASS_GRAPH);
+        }
+
+        for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
+        {
+            if(graph->obj_desc[pipe_id] != NULL)
+            {
+                if(is_enable == (vx_bool)vx_true_e)
+                {
+                    tivxFlagBitSet(
+                        &graph->obj_desc[pipe_id]->base.flags,
+                        TIVX_REF_FLAG_LOG_RT_TRACE);
+                }
+                else
+                {
+                    tivxFlagBitClear(
+                        &graph->obj_desc[pipe_id]->base.flags,
+                        TIVX_REF_FLAG_LOG_RT_TRACE);
+                }
+            }
+        }
+        for(target_id=0;target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH;target_id++)
+        {
+            if(targets[target_id]==(vx_enum)TIVX_TARGET_ID_INVALID)
+            {
+                break;
+            }
+
+            ownPlatformGetTargetName(targets[target_id], target_name);
+
+            if(is_enable == (vx_bool)vx_true_e)
+            {
+                ownLogRtTraceAddEventClass((uint64_t)targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET, target_name);
+            }
+            else
+            {
+                tivxLogRtTraceRemoveEventClass((uint64_t)targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET);
+            }
+        }
+        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid parameters or graph node not verified");
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+    }
+    return status;
+}
+#endif /* #if defined(BUILD_DEV) */
+
+#if defined(LINUX) || defined(QNX)
 vx_status tivxLogRtTraceExportToFile(char *filename)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+#if defined(BUILD_DEV)
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
     tivx_log_rt_queue_t *queue = obj->queue;
 
@@ -357,6 +491,7 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
             }
         }
     }
+#endif /* #if defined(BUILD_DEV) */
 
     return status;
 }
@@ -364,6 +499,7 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
 
 void tivxLogRtTraceKernelInstanceAddEvent(vx_node node, uint16_t event_index, char *event_name)
 {
+#if defined(BUILD_DEV)
     char name[TIVX_LOG_RT_EVENT_NAME_MAX];
     #if defined(LINUX) || defined(QNX)
     #pragma GCC diagnostic push
@@ -378,148 +514,30 @@ void tivxLogRtTraceKernelInstanceAddEvent(vx_node node, uint16_t event_index, ch
     {
         ownLogRtTraceAddEventClass((uint64_t)(uintptr_t)node+event_index, (uint16_t)TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, name);
     }
+#endif /* #if defined(BUILD_DEV) */
 }
 
 void tivxLogRtTraceKernelInstanceRemoveEvent(vx_node node, uint16_t event_index)
 {
+#if defined(BUILD_DEV)
     tivxLogRtTraceRemoveEventClass((uint64_t)node+event_index, (uint16_t)TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE);
-}
-
-static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
-{
-    uint32_t node_id, pipe_id, target_id;
-    #define TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH  (64u)
-    vx_enum targets[TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH];
-    vx_status status = (vx_status)VX_SUCCESS;
-    char target_name[TIVX_TARGET_MAX_NAME];
-
-    if (   (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
-        && (graph->verified == (vx_bool)vx_true_e))
-    {
-        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
-
-        for(target_id=0; target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH; target_id++)
-        {
-            targets[target_id] = (vx_enum)TIVX_TARGET_ID_INVALID;
-        }
-        for(node_id=0; node_id<graph->num_nodes; node_id++)
-        {
-            vx_node node = graph->nodes[node_id];
-
-            if(node != NULL)
-            {
-                if(is_enable == (vx_bool)vx_true_e)
-                {
-                    ownLogRtTraceAddEventClass((uintptr_t)node, TIVX_LOG_RT_EVENT_CLASS_NODE, node->base.name);
-                }
-                else
-                {
-                    tivxLogRtTraceRemoveEventClass((uintptr_t)node, TIVX_LOG_RT_EVENT_CLASS_NODE);
-                }
-
-                for(pipe_id=0; pipe_id<node->pipeline_depth; pipe_id++)
-                {
-                    if(node->obj_desc[pipe_id] != NULL)
-                    {
-                        if(is_enable == (vx_bool)vx_true_e)
-                        {
-                            tivxFlagBitSet(
-                                &node->obj_desc[pipe_id]->base.flags,
-                                TIVX_REF_FLAG_LOG_RT_TRACE);
-                        }
-                        else
-                        {
-                            tivxFlagBitClear(
-                                &node->obj_desc[pipe_id]->base.flags,
-                                TIVX_REF_FLAG_LOG_RT_TRACE);
-                        }
-                    }
-                }
-                if(node->obj_desc[0] != NULL)
-                {
-                    vx_bool done = (vx_bool)vx_false_e;
-                    for(target_id=0;target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH;target_id++)
-                    {
-                        done = (vx_bool)vx_false_e;
-                        if((vx_enum)node->obj_desc[0]->target_id==targets[target_id])
-                        {
-                            done = (vx_bool)vx_true_e;
-                        }
-                        if(targets[target_id]==(vx_enum)TIVX_TARGET_ID_INVALID)
-                        {
-                            targets[target_id] = (vx_enum)node->obj_desc[0]->target_id;
-                            done = (vx_bool)vx_true_e;
-                        }
-                        if(done != 0)
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        if(is_enable == (vx_bool)vx_true_e)
-        {
-            ownLogRtTraceAddEventClass(graph->obj_desc[0]->base.obj_desc_id, TIVX_LOG_RT_EVENT_CLASS_GRAPH, graph->base.name);
-        }
-        else
-        {
-            tivxLogRtTraceRemoveEventClass(graph->obj_desc[0]->base.obj_desc_id, TIVX_LOG_RT_EVENT_CLASS_GRAPH);
-        }
-
-        for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
-        {
-            if(graph->obj_desc[pipe_id] != NULL)
-            {
-                if(is_enable == (vx_bool)vx_true_e)
-                {
-                    tivxFlagBitSet(
-                        &graph->obj_desc[pipe_id]->base.flags,
-                        TIVX_REF_FLAG_LOG_RT_TRACE);
-                }
-                else
-                {
-                    tivxFlagBitClear(
-                        &graph->obj_desc[pipe_id]->base.flags,
-                        TIVX_REF_FLAG_LOG_RT_TRACE);
-                }
-            }
-        }
-        for(target_id=0;target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH;target_id++)
-        {
-            if(targets[target_id]==(vx_enum)TIVX_TARGET_ID_INVALID)
-            {
-                break;
-            }
-
-            ownPlatformGetTargetName(targets[target_id], target_name);
-
-            if(is_enable == (vx_bool)vx_true_e)
-            {
-                ownLogRtTraceAddEventClass((uint64_t)targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET, target_name);
-            }
-            else
-            {
-                tivxLogRtTraceRemoveEventClass((uint64_t)targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET);
-            }
-        }
-        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Invalid parameters or graph node not verified");
-        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-    }
-    return status;
+#endif /* #if defined(BUILD_DEV) */
 }
 
 vx_status tivxLogRtTraceEnable(vx_graph graph)
 {
-    return ownLogRtTraceSetup(graph, (vx_bool)vx_true_e);
+    vx_status status = (vx_status)VX_FAILURE;
+#if defined(BUILD_DEV)
+    status = ownLogRtTraceSetup(graph, (vx_bool)vx_true_e);
+#endif /* #if defined(BUILD_DEV) */
+    return status;
 }
 
 vx_status tivxLogRtTraceDisable(vx_graph graph)
 {
-    return ownLogRtTraceSetup(graph, (vx_bool)vx_false_e);
+    vx_status status = (vx_status)VX_FAILURE;
+#if defined(BUILD_DEV)
+    status = ownLogRtTraceSetup(graph, (vx_bool)vx_false_e);
+#endif /* #if defined(BUILD_DEV) */
+    return status;
 }

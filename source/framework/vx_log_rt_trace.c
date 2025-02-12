@@ -62,6 +62,7 @@
 
 #include <vx_internal.h>
 
+#if defined(BUILD_DEV)
 /** \brief Event logger shared memory data structure header */
 typedef struct {
 
@@ -73,28 +74,6 @@ typedef struct {
 tivx_log_rt_obj_t g_tivx_log_rt_obj;
 
 static void ownLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_t event_value, uint16_t event_class, uint16_t event_type);
-
-void ownLogRtInit(void)
-{
-    tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
-
-    (void)memset(obj, 0, sizeof(tivx_log_rt_obj_t));
-
-    ownPlatformGetLogRtShmInfo(&obj->log_rt_shm_base, &obj->log_rt_shm_size);
-
-    if((obj->log_rt_shm_base != NULL) && (obj->log_rt_shm_size > sizeof(tivx_log_rt_shm_header_t)))
-    {
-        obj->is_valid = (vx_bool)vx_true_e;
-    }
-
-    if(obj->is_valid == (vx_bool)vx_true_e)
-    {
-        obj->queue          = (tivx_log_rt_queue_t*)( (uintptr_t)obj->log_rt_shm_base );
-        obj->index          = (tivx_log_rt_index_t*)( (uintptr_t)obj->log_rt_shm_base + sizeof(tivx_log_rt_queue_t)      );
-        obj->event_log_base = (tivx_log_rt_entry_t*)( (uintptr_t)obj->log_rt_shm_base + sizeof(tivx_log_rt_shm_header_t) );
-        obj->event_log_max_entries = (obj->log_rt_shm_size - (uint32_t)sizeof(tivx_log_rt_shm_header_t) ) / ( (uint32_t)sizeof(tivx_log_rt_entry_t) );
-    }
-}
 
 void ownLogRtResetShm(void *shm_base)
 {
@@ -148,79 +127,143 @@ static void ownLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_
         ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT);
     }
 }
+#endif /* #if defined(BUILD_DEV) */
+
+void ownLogRtInit(void)
+{
+#if defined(BUILD_DEV)
+    tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
+
+    (void)memset(obj, 0, sizeof(tivx_log_rt_obj_t));
+
+    ownPlatformGetLogRtShmInfo(&obj->log_rt_shm_base, &obj->log_rt_shm_size);
+
+    if((obj->log_rt_shm_base != NULL) && (obj->log_rt_shm_size > sizeof(tivx_log_rt_shm_header_t)))
+    {
+        obj->is_valid = (vx_bool)vx_true_e;
+    }
+
+    if(obj->is_valid == (vx_bool)vx_true_e)
+    {
+        obj->queue          = (tivx_log_rt_queue_t*)( (uintptr_t)obj->log_rt_shm_base );
+        obj->index          = (tivx_log_rt_index_t*)( (uintptr_t)obj->log_rt_shm_base + sizeof(tivx_log_rt_queue_t)      );
+        obj->event_log_base = (tivx_log_rt_entry_t*)( (uintptr_t)obj->log_rt_shm_base + sizeof(tivx_log_rt_shm_header_t) );
+        obj->event_log_max_entries = (obj->log_rt_shm_size - (uint32_t)sizeof(tivx_log_rt_shm_header_t) ) / ( (uint32_t)sizeof(tivx_log_rt_entry_t) );
+    }
+#endif /* #if defined(BUILD_DEV) */
+}
 
 void tivxLogRtTraceKernelInstanceExeStartTimestamp(tivx_target_kernel_instance kernel, uint16_t event_index, uint64_t timestamp)
 {
+#if defined(BUILD_DEV)
     if(tivxFlagIsBitSet(kernel->node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         ownLogRtTraceLogEvent(timestamp,
             kernel->node_obj_desc->base.host_ref+event_index, 0,
             TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, TIVX_LOG_RT_EVENT_TYPE_START);
     }
+#endif /* #if defined(BUILD_DEV) */
 }
 
 void tivxLogRtTraceKernelInstanceExeEndTimestamp(tivx_target_kernel_instance kernel, uint16_t event_index, uint64_t timestamp)
 {
+#if defined(BUILD_DEV)
     if(tivxFlagIsBitSet(kernel->node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         ownLogRtTraceLogEvent(timestamp,
             kernel->node_obj_desc->base.host_ref+event_index, 0,
             TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, TIVX_LOG_RT_EVENT_TYPE_END);
     }
+#endif /* #if defined(BUILD_DEV) */
 }
 
 void tivxLogRtTraceKernelInstanceExeStart(tivx_target_kernel_instance kernel, uint16_t event_index)
 {
+#if defined(BUILD_DEV)
     if(tivxFlagIsBitSet(kernel->node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         ownLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
             kernel->node_obj_desc->base.host_ref+event_index, 0,
             TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, TIVX_LOG_RT_EVENT_TYPE_START);
     }
+#endif /* #if defined(BUILD_DEV) */
 }
 
 void tivxLogRtTraceKernelInstanceExeEnd(tivx_target_kernel_instance kernel, uint16_t event_index)
 {
+#if defined(BUILD_DEV)
     if(tivxFlagIsBitSet(kernel->node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         ownLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
             kernel->node_obj_desc->base.host_ref+event_index, 0,
             TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, TIVX_LOG_RT_EVENT_TYPE_END);
     }
+#endif /* #if defined(BUILD_DEV) */
 }
 
 void ownLogRtTraceNodeExeStart(uint64_t timestamp, const tivx_obj_desc_node_t *node_obj_desc)
 {
+#if defined(BUILD_DEV)
     if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         ownLogRtTraceLogEvent(timestamp,
             node_obj_desc->base.host_ref, node_obj_desc->pipeline_id,
             TIVX_LOG_RT_EVENT_CLASS_NODE, TIVX_LOG_RT_EVENT_TYPE_START);
     }
+#endif /* #if defined(BUILD_DEV) */
 }
 
 void ownLogRtTraceNodeExeEnd(uint64_t timestamp, const tivx_obj_desc_node_t *node_obj_desc)
 {
+#if defined(BUILD_DEV)
     if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         ownLogRtTraceLogEvent(timestamp,
             node_obj_desc->base.host_ref, node_obj_desc->pipeline_id,
             TIVX_LOG_RT_EVENT_CLASS_NODE, TIVX_LOG_RT_EVENT_TYPE_END);
     }
+#endif /* #if defined(BUILD_DEV) */
+}
+
+void ownLogRtTraceTargetExeStart(tivx_target target, const tivx_obj_desc_t *obj_desc)
+{
+#if defined(BUILD_DEV)
+    if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
+    {
+        ownLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
+            (uint64_t)target->target_id, 0,
+            TIVX_LOG_RT_EVENT_CLASS_TARGET, TIVX_LOG_RT_EVENT_TYPE_START);
+    }
+#endif /* #if defined(BUILD_DEV) */
+}
+
+void ownLogRtTraceTargetExeEnd(tivx_target target, const tivx_obj_desc_t *obj_desc)
+{
+#if defined(BUILD_DEV)
+    if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
+    {
+        ownLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
+            (uint64_t)target->target_id, 0,
+            TIVX_LOG_RT_EVENT_CLASS_TARGET, TIVX_LOG_RT_EVENT_TYPE_END);
+    }
+#endif /* #if defined(BUILD_DEV) */
 }
 
 void ownLogRtTraceGraphExeStart(uint64_t timestamp, const tivx_obj_desc_graph_t *graph_obj_desc)
 {
+#if defined(BUILD_DEV)
     if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         ownLogRtTraceLogEvent(timestamp,
             graph_obj_desc->base.obj_desc_id, graph_obj_desc->pipeline_id,
             TIVX_LOG_RT_EVENT_CLASS_GRAPH, TIVX_LOG_RT_EVENT_TYPE_START);
     }
+#endif /* #if defined(BUILD_DEV) */
 }
 
 void ownLogRtTraceGraphExeEnd(uint64_t timestamp, const tivx_obj_desc_graph_t *graph_obj_desc)
 {
+#if defined(BUILD_DEV)
     if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         ownLogRtTraceLogEvent(timestamp,
@@ -228,24 +271,5 @@ void ownLogRtTraceGraphExeEnd(uint64_t timestamp, const tivx_obj_desc_graph_t *g
             graph_obj_desc->pipeline_id,
             TIVX_LOG_RT_EVENT_CLASS_GRAPH, TIVX_LOG_RT_EVENT_TYPE_END);
     }
-}
-
-void ownLogRtTraceTargetExeStart(tivx_target target, const tivx_obj_desc_t *obj_desc)
-{
-    if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
-    {
-        ownLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
-            (uint64_t)target->target_id, 0,
-            TIVX_LOG_RT_EVENT_CLASS_TARGET, TIVX_LOG_RT_EVENT_TYPE_START);
-    }
-}
-
-void ownLogRtTraceTargetExeEnd(tivx_target target, const tivx_obj_desc_t *obj_desc)
-{
-    if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
-    {
-        ownLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
-            (uint64_t)target->target_id, 0,
-            TIVX_LOG_RT_EVENT_CLASS_TARGET, TIVX_LOG_RT_EVENT_TYPE_END);
-    }
+#endif /* #if defined(BUILD_DEV) */
 }

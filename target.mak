@@ -38,8 +38,8 @@ else
     ifeq ($(TARGET_FAMILY),ARM)
         ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53))
               ifeq ($(TARGET_OS),QNX)
-                 SYSIDIRS += $(GCC_QNX_ARM_ROOT)/../usr/include
-                 SYSLDIRS += $(GCC_QNX_ARM_ROOT)/../usr/lib
+                SYSIDIRS += $(GCC_QNX_ARM_ROOT)/../usr/include
+                SYSLDIRS += $(GCC_QNX_ARM_ROOT)/../usr/lib
                 SYSDEFS  += QNX_OS
                 SYSDEFS  += BUILD_MPU1_0
                 SYSDEFS  += $(TARGET_PLATFORM)

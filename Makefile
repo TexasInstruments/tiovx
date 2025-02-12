@@ -15,6 +15,9 @@ endif
 ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 BUILD_DEFS += BUILD_CONFORMANCE_TEST
 endif
+ifeq ($(BUILD_TYPE),dev)
+BUILD_DEFS += BUILD_DEV
+endif
 
 BUILD_DEFS += $(SOC_DEF)
 

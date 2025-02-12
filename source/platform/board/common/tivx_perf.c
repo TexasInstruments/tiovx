@@ -11,14 +11,10 @@
 #include <utils/perf_stats/include/app_perf_stats.h>
 #include <tivx_platform.h>
 
-
-void tivxGetTiovxStats(app_perf_stats_tiovx_stats_t *tiovx_stats);
-
+#if defined(BUILD_DEV)
 extern tivx_resource_stats_t g_tivx_resource_stats_table[TIVX_RESOURCE_STATS_TABLE_SIZE];
 extern uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX];
 
-app_perf_registration_t get_tiovx_stats = {&tivxGetTiovxStats};
-app_perf_registration_t * perf_fxns_list = &get_tiovx_stats;
 
 void ownPlatformGetTargetPerfStats(uint32_t app_cpu_id, uint32_t target_values[TIVX_TARGET_RESOURCE_COUNT])
 {
@@ -36,8 +32,25 @@ void ownPlatformGetTargetPerfStats(uint32_t app_cpu_id, uint32_t target_values[T
     }
 }
 
+void ownIpcGetCpuMap(uint32_t cpu_id_map[TIVX_CPU_ID_MAX])
+{
+    uint32_t i;
+
+    for (i = 0; i < (uint32_t)TIVX_CPU_ID_MAX; i++)
+    {
+        cpu_id_map[i] = g_ipc_cpu_id_map[i];
+    }
+}
+#endif /* #if defined(BUILD_DEV) */
+
+void tivxGetTiovxStats(app_perf_stats_tiovx_stats_t *tiovx_stats);
+
+app_perf_registration_t get_tiovx_stats = {&tivxGetTiovxStats};
+app_perf_registration_t * perf_fxns_list = &get_tiovx_stats;
+
 void tivxGetTiovxStats(app_perf_stats_tiovx_stats_t *tiovx_stats)
 {
+#if defined(BUILD_DEV)
     if (NULL != tiovx_stats)
     {
         uint32_t i;
@@ -62,14 +75,5 @@ void tivxGetTiovxStats(app_perf_stats_tiovx_stats_t *tiovx_stats)
             }
         }
     }
-}
-
-void ownIpcGetCpuMap(uint32_t cpu_id_map[TIVX_CPU_ID_MAX])
-{
-    uint32_t i;
-
-    for (i = 0; i < (uint32_t)TIVX_CPU_ID_MAX; i++)
-    {
-        cpu_id_map[i] = g_ipc_cpu_id_map[i];
-    }
+#endif /* #if defined(BUILD_DEV) */
 }

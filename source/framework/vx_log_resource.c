@@ -62,6 +62,7 @@
 
 #include <vx_internal.h>
 
+#if defined(BUILD_DEV)
 #define TIVX_MEM_CHAR_WIDTH_DEFAULT (30)
 #define TIVX_MEM_CHAR_WIDTH_OBJECT_DESCRIPTOR (30)
 #define TIVX_MEM_CHAR_WIDTH_GLOBAL (38)
@@ -479,201 +480,6 @@ tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     }
 };
 
-void ownLogResourceInit(void)
-{
-    /*
-    * Compile time checks to ensure parameter cohesion in case they are configured
-    */
-    /* Head nodes can't exceed the defined graph node maximum */
-    BUILD_ASSERT(((TIVX_GRAPH_MAX_HEAD_NODES <= TIVX_GRAPH_MAX_NODES)? 1 : 0));
-
-    /* Leaf nodes can't exceed the defined graph node maximum */
-    BUILD_ASSERT(((TIVX_GRAPH_MAX_LEAF_NODES <= TIVX_GRAPH_MAX_NODES)? 1 : 0));
-
-    /* Graph parameters can't exceed the defined parameter maximum */
-    BUILD_ASSERT(((TIVX_GRAPH_MAX_PARAMS <= TIVX_PARAMETER_MAX_OBJECTS)? 1 : 0));
-
-    /* Graph data ref queues can't exceed the defined data ref queue maximum */
-    BUILD_ASSERT(((TIVX_GRAPH_MAX_DATA_REF_QUEUE <= TIVX_DATA_REF_Q_MAX_OBJECTS)? 1 : 0));
-
-    /* Graph nodes can't exceed the defined node maximum */
-    BUILD_ASSERT(((TIVX_GRAPH_MAX_NODES <= TIVX_NODE_MAX_OBJECTS)? 1 : 0));
-
-    /* Graph references can't exceed the defined context maximum */
-    BUILD_ASSERT(((TIVX_GRAPH_MAX_DATA_REF <= TIVX_CONTEXT_MAX_REFERENCES)? 1 : 0));
-
-    /* Out nodes can't exceed the defined node maximum */
-    BUILD_ASSERT(((TIVX_NODE_MAX_OUT_NODES <= TIVX_NODE_MAX_OBJECTS)? 1 : 0));
-
-    /* In nodes can't exceed the defined node maximum */
-    BUILD_ASSERT(((TIVX_NODE_MAX_IN_NODES <= TIVX_NODE_MAX_OBJECTS)? 1 : 0));
-
-    /* Subimages can't exceed the defined image object maximum */
-    BUILD_ASSERT(((TIVX_IMAGE_MAX_SUBIMAGES <= TIVX_IMAGE_MAX_OBJECTS)? 1 : 0));
-#ifdef TIVX_RESOURCE_LOG_ENABLE
-    if((vx_status)VX_SUCCESS != tivxMutexCreate(&g_tivx_log_resource_lock))
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to create a mutex\n");
-    }
-#endif
-}
-
-void ownLogResourceDeInit(void)
-{
-#ifdef TIVX_RESOURCE_LOG_ENABLE
-    if((vx_status)VX_SUCCESS != tivxMutexDelete(&g_tivx_log_resource_lock))
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
-    }
-#endif
-}
-
-void ownLogResourceAlloc(const char *resource_name, uint16_t num_allocs)
-{
-#ifdef TIVX_RESOURCE_LOG_ENABLE
-    int32_t i;
-    if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
-    {
-        for (i = 0; i < (int32_t)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
-        {
-            if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
-            {
-                g_tivx_resource_stats_table[i].cur_used_value += num_allocs;
-                if (g_tivx_resource_stats_table[i].cur_used_value > g_tivx_resource_stats_table[i].max_used_value)
-                {
-                    g_tivx_resource_stats_table[i].max_used_value = g_tivx_resource_stats_table[i].cur_used_value;
-                }
-                break;
-            }
-        }
-        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_log_resource_lock))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
-        }
-    }
-#endif
-}
-
-void ownLogResourceFree(const char *resource_name, uint16_t num_frees)
-{
-#ifdef TIVX_RESOURCE_LOG_ENABLE
-    int32_t i;
-    if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
-    {
-        for (i = 0; i < (int32_t)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
-        {
-            if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
-            {
-                g_tivx_resource_stats_table[i].cur_used_value -= num_frees;
-                break;
-            }
-        }
-        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_log_resource_lock))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
-        }
-    }
-#endif
-}
-
-void ownLogSetResourceUsedValue(const char *resource_name, uint16_t value)
-{
-#ifdef TIVX_RESOURCE_LOG_ENABLE
-    int32_t i;
-    if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
-    {
-        for (i = 0; i < (int32_t)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
-        {
-            if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
-            {
-                if (value > g_tivx_resource_stats_table[i].max_used_value)
-                {
-                    g_tivx_resource_stats_table[i].max_used_value = value;
-                }
-                break;
-            }
-        }
-        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_log_resource_lock))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
-        }
-    }
-#endif
-}
-
-void ownTableIncrementValue(vx_enum resource_name)
-{
-#ifdef TIVX_RESOURCE_LOG_ENABLE
-    uint32_t i;
-    if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
-    {
-        for (i = 0; i < TIVX_OBJ_DESC_SHM_TABLE_SIZE; i++)
-        {
-            if (g_tivx_obj_desc_shm_table[i].object_type == resource_name)
-            {
-                g_tivx_obj_desc_shm_table[i].value++;
-                if (g_tivx_obj_desc_shm_table[i].value > g_tivx_obj_desc_shm_table[i].max_value)
-                {
-                    g_tivx_obj_desc_shm_table[i].max_value = g_tivx_obj_desc_shm_table[i].value;
-                }
-                break;
-            }
-        }
-        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_log_resource_lock))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
-        }
-    }
-#endif
-}
-
-void ownTableDecrementValue(vx_enum resource_name)
-{
-#ifdef TIVX_RESOURCE_LOG_ENABLE
-    uint32_t i;
-    if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
-    {
-        for (i = 0; i < TIVX_OBJ_DESC_SHM_TABLE_SIZE; i++)
-        {
-            if (g_tivx_obj_desc_shm_table[i].object_type == resource_name)
-            {
-                g_tivx_obj_desc_shm_table[i].value--;
-                break;
-            }
-        }
-        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_log_resource_lock))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
-        }
-    }
-#endif
-}
-
-vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_t *stats)
-{
-    vx_status status = (vx_status)VX_FAILURE;
-#ifdef TIVX_RESOURCE_LOG_ENABLE
-    int32_t i;
-    if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
-    {
-        for (i = 0; i < (int32_t)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
-        {
-            if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
-            {
-                *stats = g_tivx_resource_stats_table[i];
-                status = (vx_status)VX_SUCCESS;
-                break;
-            }
-        }
-        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_log_resource_lock))
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
-        }
-    }
-#endif
-    return status;
-}
-
 static int32_t findMacroSize(const char *resource_name)
 {
     int32_t i, size = (int32_t)TIVX_RESOURCE_NAME_MAX;
@@ -738,8 +544,289 @@ static void ownLogUpdateTargetValues(void)
     }
 }
 
+static char *test_file_path(void)
+{
+    char *tivxPlatformGetEnv(char *env_var);
+
+    #if defined(FREERTOS) || defined(SAFERTOS) || defined(THREADX)
+    return tivxPlatformGetEnv("VX_TEST_DATA_PATH");
+    #else
+    return getenv("VX_TEST_DATA_PATH");
+    #endif
+}
+
+static char * applyMemoryUnit(vx_float64 * size_bytes, const char * unit)
+{
+    char * output = "B ";
+    if (strncmp(unit, "B", 1)==0)
+    {
+        output = "B ";
+    }
+    else if (strncmp(unit, "KB", 2)==0)
+    {
+        *size_bytes /= (vx_float64)1024;
+        output = "KB";
+    }
+    else if (strncmp(unit, "MB", 2)==0)
+    {
+        *size_bytes /= (vx_float64)(1024*1024);
+        output = "MB";
+    }
+    else
+    {
+        if (*size_bytes < (vx_float64)1024)
+        {
+            output = "B ";
+        }
+        else if (*size_bytes < (vx_float64)(1024*1024))
+        {
+            *size_bytes /= (vx_float64)1024;
+            output = "KB";
+        }
+        else if (*size_bytes < (vx_float64)(1024*1024*1024))
+        {
+            *size_bytes /= (vx_float64)(1024*1024);
+            output = "MB";
+        }
+        else
+        {
+            /* do nothing */
+        }
+    }
+    return output;
+}
+
+static void printOutput (FILE *ofp, const char* format, ...)
+{
+    va_list argptr = {0};
+    (void)va_start(argptr, format);
+    if (ofp == NULL)
+    {
+        (void)vfprintf(stderr, format, argptr);
+    }
+    else
+    {
+        (void)vfprintf(ofp, format, argptr);
+    }
+    (void)va_end(argptr);
+}
+#endif /* #if defined(BUILD_DEV) */
+
+void ownLogResourceInit(void)
+{
+#if defined(BUILD_DEV)
+    /*
+    * Compile time checks to ensure parameter cohesion in case they are configured
+    */
+    /* Head nodes can't exceed the defined graph node maximum */
+    BUILD_ASSERT(((TIVX_GRAPH_MAX_HEAD_NODES <= TIVX_GRAPH_MAX_NODES)? 1 : 0));
+
+    /* Leaf nodes can't exceed the defined graph node maximum */
+    BUILD_ASSERT(((TIVX_GRAPH_MAX_LEAF_NODES <= TIVX_GRAPH_MAX_NODES)? 1 : 0));
+
+    /* Graph parameters can't exceed the defined parameter maximum */
+    BUILD_ASSERT(((TIVX_GRAPH_MAX_PARAMS <= TIVX_PARAMETER_MAX_OBJECTS)? 1 : 0));
+
+    /* Graph data ref queues can't exceed the defined data ref queue maximum */
+    BUILD_ASSERT(((TIVX_GRAPH_MAX_DATA_REF_QUEUE <= TIVX_DATA_REF_Q_MAX_OBJECTS)? 1 : 0));
+
+    /* Graph nodes can't exceed the defined node maximum */
+    BUILD_ASSERT(((TIVX_GRAPH_MAX_NODES <= TIVX_NODE_MAX_OBJECTS)? 1 : 0));
+
+    /* Graph references can't exceed the defined context maximum */
+    BUILD_ASSERT(((TIVX_GRAPH_MAX_DATA_REF <= TIVX_CONTEXT_MAX_REFERENCES)? 1 : 0));
+
+    /* Out nodes can't exceed the defined node maximum */
+    BUILD_ASSERT(((TIVX_NODE_MAX_OUT_NODES <= TIVX_NODE_MAX_OBJECTS)? 1 : 0));
+
+    /* In nodes can't exceed the defined node maximum */
+    BUILD_ASSERT(((TIVX_NODE_MAX_IN_NODES <= TIVX_NODE_MAX_OBJECTS)? 1 : 0));
+
+    /* Subimages can't exceed the defined image object maximum */
+    BUILD_ASSERT(((TIVX_IMAGE_MAX_SUBIMAGES <= TIVX_IMAGE_MAX_OBJECTS)? 1 : 0));
+#ifdef TIVX_RESOURCE_LOG_ENABLE
+    if((vx_status)VX_SUCCESS != tivxMutexCreate(&g_tivx_log_resource_lock))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to create a mutex\n");
+    }
+#endif
+#endif /* #if defined(BUILD_DEV) */
+}
+
+void ownLogResourceDeInit(void)
+{
+#if defined(BUILD_DEV)
+#ifdef TIVX_RESOURCE_LOG_ENABLE
+    if((vx_status)VX_SUCCESS != tivxMutexDelete(&g_tivx_log_resource_lock))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
+    }
+#endif
+#endif /* #if defined(BUILD_DEV) */
+}
+
+void ownLogResourceAlloc(const char *resource_name, uint16_t num_allocs)
+{
+#if defined(BUILD_DEV)
+#ifdef TIVX_RESOURCE_LOG_ENABLE
+    int32_t i;
+    if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
+    {
+        for (i = 0; i < (int32_t)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
+        {
+            if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
+            {
+                g_tivx_resource_stats_table[i].cur_used_value += num_allocs;
+                if (g_tivx_resource_stats_table[i].cur_used_value > g_tivx_resource_stats_table[i].max_used_value)
+                {
+                    g_tivx_resource_stats_table[i].max_used_value = g_tivx_resource_stats_table[i].cur_used_value;
+                }
+                break;
+            }
+        }
+        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_log_resource_lock))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
+        }
+    }
+#endif
+#endif /* #if defined(BUILD_DEV) */
+}
+
+void ownLogResourceFree(const char *resource_name, uint16_t num_frees)
+{
+#if defined(BUILD_DEV)
+#ifdef TIVX_RESOURCE_LOG_ENABLE
+    int32_t i;
+    if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
+    {
+        for (i = 0; i < (int32_t)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
+        {
+            if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
+            {
+                g_tivx_resource_stats_table[i].cur_used_value -= num_frees;
+                break;
+            }
+        }
+        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_log_resource_lock))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
+        }
+    }
+#endif
+#endif /* #if defined(BUILD_DEV) */
+}
+
+void ownLogSetResourceUsedValue(const char *resource_name, uint16_t value)
+{
+#if defined(BUILD_DEV)
+#ifdef TIVX_RESOURCE_LOG_ENABLE
+    int32_t i;
+    if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
+    {
+        for (i = 0; i < (int32_t)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
+        {
+            if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
+            {
+                if (value > g_tivx_resource_stats_table[i].max_used_value)
+                {
+                    g_tivx_resource_stats_table[i].max_used_value = value;
+                }
+                break;
+            }
+        }
+        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_log_resource_lock))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
+        }
+    }
+#endif
+#endif /* #if defined(BUILD_DEV) */
+}
+
+void ownTableIncrementValue(vx_enum resource_name)
+{
+#if defined(BUILD_DEV)
+#ifdef TIVX_RESOURCE_LOG_ENABLE
+    uint32_t i;
+    if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
+    {
+        for (i = 0; i < TIVX_OBJ_DESC_SHM_TABLE_SIZE; i++)
+        {
+            if (g_tivx_obj_desc_shm_table[i].object_type == resource_name)
+            {
+                g_tivx_obj_desc_shm_table[i].value++;
+                if (g_tivx_obj_desc_shm_table[i].value > g_tivx_obj_desc_shm_table[i].max_value)
+                {
+                    g_tivx_obj_desc_shm_table[i].max_value = g_tivx_obj_desc_shm_table[i].value;
+                }
+                break;
+            }
+        }
+        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_log_resource_lock))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
+        }
+    }
+#endif
+#endif /* #if defined(BUILD_DEV) */
+}
+
+void ownTableDecrementValue(vx_enum resource_name)
+{
+#if defined(BUILD_DEV)
+#ifdef TIVX_RESOURCE_LOG_ENABLE
+    uint32_t i;
+    if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
+    {
+        for (i = 0; i < TIVX_OBJ_DESC_SHM_TABLE_SIZE; i++)
+        {
+            if (g_tivx_obj_desc_shm_table[i].object_type == resource_name)
+            {
+                g_tivx_obj_desc_shm_table[i].value--;
+                break;
+            }
+        }
+        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_log_resource_lock))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
+        }
+    }
+#endif
+#endif /* #if defined(BUILD_DEV) */
+}
+
+vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_t *stats)
+{
+    vx_status status = (vx_status)VX_FAILURE;
+#if defined(BUILD_DEV)
+#ifdef TIVX_RESOURCE_LOG_ENABLE
+    int32_t i;
+    if((vx_status)VX_SUCCESS == tivxMutexLock(g_tivx_log_resource_lock))
+    {
+        for (i = 0; i < (int32_t)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
+        {
+            if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
+            {
+                *stats = g_tivx_resource_stats_table[i];
+                status = (vx_status)VX_SUCCESS;
+                break;
+            }
+        }
+        if((vx_status)VX_SUCCESS != tivxMutexUnlock(g_tivx_log_resource_lock))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to unlock mutex\n");
+        }
+    }
+#endif
+#endif /* #if defined(BUILD_DEV) */
+
+    return status;
+}
+
 void tivxPrintAllResourceStats(void)
 {
+#if defined(BUILD_DEV)
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     ownLogUpdateTargetValues();
 
@@ -803,22 +890,13 @@ void tivxPrintAllResourceStats(void)
         }
     }
 #endif
-}
-
-static char *test_file_path(void)
-{
-    char *tivxPlatformGetEnv(char *env_var);
-
-    #if defined(FREERTOS) || defined(SAFERTOS) || defined(THREADX)
-    return tivxPlatformGetEnv("VX_TEST_DATA_PATH");
-    #else
-    return getenv("VX_TEST_DATA_PATH");
-    #endif
+#endif /* #if defined(BUILD_DEV) */
 }
 
 vx_status tivxExportAllResourceMaxUsedValueToFile(void)
 {
     vx_status status = (vx_status)VX_FAILURE;
+#if defined(BUILD_DEV)
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     ownLogUpdateTargetValues();
 
@@ -893,70 +971,15 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void)
         }
     }
 #endif
+#endif /* #if defined(BUILD_DEV) */
+
     return status;
 }
-
-
-static char * applyMemoryUnit(vx_float64 * size_bytes, const char * unit)
-{
-    char * output = "B ";
-    if (strncmp(unit, "B", 1)==0)
-    {
-        output = "B ";
-    }
-    else if (strncmp(unit, "KB", 2)==0)
-    {
-        *size_bytes /= (vx_float64)1024;
-        output = "KB";
-    }
-    else if (strncmp(unit, "MB", 2)==0)
-    {
-        *size_bytes /= (vx_float64)(1024*1024);
-        output = "MB";
-    }
-    else
-    {
-        if (*size_bytes < (vx_float64)1024)
-        {
-            output = "B ";
-        }
-        else if (*size_bytes < (vx_float64)(1024*1024))
-        {
-            *size_bytes /= (vx_float64)1024;
-            output = "KB";
-        }
-        else if (*size_bytes < (vx_float64)(1024*1024*1024))
-        {
-            *size_bytes /= (vx_float64)(1024*1024);
-            output = "MB";
-        }
-        else
-        {
-            /* do nothing */
-        }
-    }
-    return output;
-}
-
-static void printOutput (FILE *ofp, const char* format, ...)
-{
-    va_list argptr = {0};
-    (void)va_start(argptr, format);
-    if (ofp == NULL)
-    {
-        (void)vfprintf(stderr, format, argptr);
-    }
-    else
-    {
-        (void)vfprintf(ofp, format, argptr);
-    }
-    (void)va_end(argptr);
-}
-
 
 vx_status tivxExportMemoryConsumption(char * outputFile, const char * unit, vx_enum displayMode)
 {
     vx_status status = (vx_status)VX_FAILURE;
+#if defined(BUILD_DEV)
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     ownLogUpdateTargetValues();
     
@@ -1634,6 +1657,7 @@ vx_status tivxExportMemoryConsumption(char * outputFile, const char * unit, vx_e
     } /* if ((vx_status)VX_SUCCESS==status) */
 
 #endif
+#endif /* #if defined(BUILD_DEV) */
 
     return status;
 }

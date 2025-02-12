@@ -761,7 +761,9 @@ void checkGraphPipelining(vx_context context)
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 4, graph_params));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
     /* At this point we want to output the graph information */
+#if defined(BUILD_DEV)
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, tivxExportGraphToDot(graph, "./", "BP11"));
+#endif /* #if defined(BUILD_DEV) */
 
     /* Initial pixels values for all images are (1,2) here we calculate what they should be after execution */
     vx_uint8 pixels[4][2] =
