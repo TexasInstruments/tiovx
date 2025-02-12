@@ -852,7 +852,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR012
 <justification end> */
-                    else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
+                    else if (status == (vx_status)VX_ERROR_TIMEOUT)
 /* LDRA_JUSTIFY_END */
                     {
                         /* Queue the object into the pend queue for later
@@ -1010,7 +1010,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR015
 <justification end> */
-                    else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
+                    else if (status == (vx_status)VX_ERROR_TIMEOUT)
 /* LDRA_JUSTIFY_END */              
                     {
                         /* Queue the object into the pend queue for later
