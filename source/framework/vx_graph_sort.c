@@ -86,7 +86,7 @@ static inline vx_bool ownGraphSortStackPush(tivx_graph_sort_context *context, vx
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR001
 <justification end> */
-    if(context->stack_top < context->stack_max_elems) /* TIOVX-1910- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR001 */
+    if(context->stack_top < context->stack_max_elems)
     {
         context->stack[context->stack_top] = elem;
         context->stack_top++;
@@ -132,7 +132,6 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_SORT_UM001
 <justification end> */
-/* TIOVX-1717- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_SORT_UM001 */
                 if((vx_bool)vx_true_e != ret)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to push to stack \n");
@@ -156,7 +155,7 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR002
 <justification end> */
-                if(prev_node != NULL) /* TIOVX-1910- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_SORT_UBR002 */
+                if(prev_node != NULL)
                 {
                     if (cur_node->node_depth <= prev_node->node_depth)
                     {
@@ -179,7 +178,6 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_SORT_UM002
 <justification end> */
-/* TIOVX-1717- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_SORT_UM002 */
                         if((vx_bool)vx_true_e != ret)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"Failed to push to stack\n");

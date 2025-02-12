@@ -86,7 +86,7 @@ static vx_status ownGraphPipelineValidateRefsList(
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR001
 <justification end> */
-    if (NULL != graph_parameters_queue_param.refs_list[0]) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR001 */
+    if (NULL != graph_parameters_queue_param.refs_list[0])
     {
         meta_base = ownCreateMetaFormat(graph_parameters_queue_param.refs_list[0]->context);
         status = vxSetMetaFormatFromReference(meta_base, graph_parameters_queue_param.refs_list[0]);
@@ -102,7 +102,7 @@ static vx_status ownGraphPipelineValidateRefsList(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR004
 <justification end> */
-            if (NULL != graph_parameters_queue_param.refs_list[i]) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR004 */
+            if (NULL != graph_parameters_queue_param.refs_list[i])
 /* LDRA_JUSTIFY_END */
             {
                 meta = ownCreateMetaFormat(graph_parameters_queue_param.refs_list[i]->context);
@@ -111,7 +111,7 @@ static vx_status ownGraphPipelineValidateRefsList(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR005
 <justification end> */
-                if (NULL != meta) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR005 */
+                if (NULL != meta)
 /* LDRA_JUSTIFY_END */
                 {
                     status = vxSetMetaFormatFromReference(meta, graph_parameters_queue_param.refs_list[i]);
@@ -120,7 +120,6 @@ static vx_status ownGraphPipelineValidateRefsList(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM001
 <justification end> */
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM001 */
                 else
                 {
                     status = (vx_status)VX_FAILURE;
@@ -132,7 +131,7 @@ static vx_status ownGraphPipelineValidateRefsList(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR006
 <justification end> */
-                if ((vx_status)VX_SUCCESS == status) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR006 */
+                if ((vx_status)VX_SUCCESS == status)
 /* LDRA_JUSTIFY_END */
                 {
 /* LDRA_JUSTIFY_START
@@ -140,7 +139,7 @@ static vx_status ownGraphPipelineValidateRefsList(
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR007
 <justification end> */
                     if (graph_parameters_queue_param.refs_list[0]->type ==
-                        graph_parameters_queue_param.refs_list[i]->type) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR007 */
+                        graph_parameters_queue_param.refs_list[i]->type)
                     {
                         if ((vx_bool)vx_true_e != ownIsMetaFormatEqual(meta_base, meta, graph_parameters_queue_param.refs_list[0]->type))
                         {
@@ -154,7 +153,6 @@ static vx_status ownGraphPipelineValidateRefsList(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM002
 <justification end> */
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM002 */
                 else
                 {
                     break;
@@ -169,7 +167,6 @@ static vx_status ownGraphPipelineValidateRefsList(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM003
 <justification end> */
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM003 */
                     if((vx_status)VX_SUCCESS != status1)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Failed to release meta format object \n");
@@ -182,7 +179,6 @@ static vx_status ownGraphPipelineValidateRefsList(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM004
 <justification end> */
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM004 */
             else
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -200,7 +196,6 @@ static vx_status ownGraphPipelineValidateRefsList(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM005
 <justification end> */
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM005 */
         if((vx_status)VX_SUCCESS != status1)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to release meta format object \n");
@@ -343,7 +338,6 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT002
 <justification end> */
-/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT002 */
             if(status!=(vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,
@@ -357,7 +351,6 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT001
 <justification end> */
-/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT001 */
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,
@@ -378,7 +371,6 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT003
 <justification end> */
-/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT003 */
             if(status!=(vx_status)VX_SUCCESS)
             {
                 break;
@@ -408,7 +400,6 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT004
 <justification end> */
-/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT004 */
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to schedule graph \n");
@@ -480,7 +471,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM006
 <justification end> */
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM006 */
                     if(status!=(vx_status)VX_SUCCESS)
                     {
                         /* some error in waiting for event, break loop with error */
@@ -493,7 +483,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR014
 <justification end>*/
-            if(status==(vx_status)VX_SUCCESS) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR014 */
+            if(status==(vx_status)VX_SUCCESS)
 /* LDRA_JUSTIFY_END */
             {
                 /* If the ref type matches the graph parameter type, return graph parameter */
@@ -516,7 +506,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
 <justification end> */
                 /* If the ref type is a pyramid that didn't match the graph parameter type, return img[0] of pyramid */
                 /* Note: this assumes it is replicated.  In the future, this assumption could be removed */
-                else if(ref->type==(vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR015 */
+                else if(ref->type==(vx_enum)VX_TYPE_PYRAMID)
 /* LDRA_JUSTIFY_END */
                 {
                     /* status set to NULL due to preceding type check */
@@ -528,7 +518,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT009
 <justification end> */
-/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT009 */
                 /* If the ref type is an array element that didn't match the graph parameter type, return parent of element */
                 else if((vx_bool)vx_true_e == ref->is_array_element)
                 {
@@ -539,7 +528,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM007
 <justification end> */
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM007 */
                 else
                 {
                     /* do nothing */
@@ -550,7 +538,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT010
 <justification end> */
-/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT010 */
                 /* If the ref type doesn't match graph parameter type, throw an error */
                 if (refs[ref_id]->type != graph->parameters[graph_parameter_index].type)
                 {
@@ -564,7 +551,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM008
 <justification end>*/
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM008 */
             else
             {
                 /* some error in dequeue, dont try to dequeue further,
@@ -620,7 +606,7 @@ vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_p
 <justification end>*/
         buf_id<graph->parameters[graph_parameter_index].num_buf;
 /* LDRA_JUSTIFY_END */
-        buf_id++) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR016 */
+        buf_id++)
         {
             if(ref==graph->parameters[graph_parameter_index].refs_list[buf_id])
             {
@@ -691,7 +677,6 @@ vx_status ownGraphDeleteQueues(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT005
 <justification end> */
-/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT005 */
     if((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "Failed to delete a queue\n");
@@ -763,7 +748,6 @@ vx_status ownGraphFreeObjDesc(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM009
 <justification end>*/
-/* TIOVX-1720- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PIPELINE_UM009 */
             if(status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to free the object descriptor\n");
@@ -837,7 +821,7 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
 <justification end>*/
                     i<TIVX_GRAPH_MAX_DELAYS;
 /* LDRA_JUSTIFY_END */
-                    i++) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR021 */
+                    i++)
                     {
                         if(graph->delays[i] != NULL)
                         {
@@ -992,7 +976,6 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT006
 <justification end> */
-/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT006 */
                     if((vx_status)VX_SUCCESS != tmp_status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to schedule kernel\n");
@@ -1026,7 +1009,6 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT007
 <justification end> */
-/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT007 */
             if(schedule_id!=total_num_schedule)
             {
                 /* for normal modes if all reqired graph schedules did not succeed
@@ -1128,7 +1110,7 @@ uint32_t ownGraphGetNumSchedule(vx_graph graph)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR022
 <justification end> */
-                if(graph->parameters[i].queue_enable != 0) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR022 */
+                if(graph->parameters[i].queue_enable != 0)
                 {
                     count = 0;
 
@@ -1202,13 +1184,9 @@ static uint32_t ownGraphGetOptimalNumBuf(vx_graph graph, vx_reference ref)
 <justification end>*/
     i<graph->num_data_ref;
 /* LDRA_JUSTIFY_END */
-    i++) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR023 */
+    i++)
     {
-/* LDRA_JUSTIFY_START
-<metric start> branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR024
-<justification end> */
-        if (i < TIVX_GRAPH_MAX_DATA_REF) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR024 */
+        if (i < TIVX_GRAPH_MAX_DATA_REF)
         {
             if(ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref) != 0)
             {
@@ -1217,14 +1195,12 @@ static uint32_t ownGraphGetOptimalNumBuf(vx_graph graph, vx_reference ref)
                 break;
             }
         }
-/* LDRA_JUSTIFY_END */
     }
 
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT008
 <justification end> */
-/* TIOVX-1813- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT008 */
     if (num_bufs >= TIVX_OBJ_DESC_QUEUE_MAX_DEPTH)
     {
         VX_PRINT(VX_ZONE_INFO, "Required number of buffers = %d but max buffer depth = %d\n", num_bufs, (int32_t)TIVX_OBJ_DESC_QUEUE_MAX_DEPTH-1);

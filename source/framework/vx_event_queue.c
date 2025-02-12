@@ -168,7 +168,7 @@ vx_status ownEventQueueAddEvent(tivx_event_queue_t *event_q,
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR003
 <justification end> */
-            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1887- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR003 */
+            if ((vx_status)VX_SUCCESS == status)
             {
                 ownLogSetResourceUsedValue("TIVX_EVENT_QUEUE_MAX_SIZE", (vx_uint16)idx+1U);
             }
@@ -317,7 +317,7 @@ vx_status ownWaitEventQueue(
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR004
 <justification end> */
             else
-            if(elem->event_id==(vx_enum)VX_EVENT_USER) /* TIOVX-1887- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR004 */
+            if(elem->event_id==(vx_enum)VX_EVENT_USER)
 /* LDRA_JUSTIFY_END */
             {
                 event->app_value = (uint32_t)elem->param1;
@@ -327,7 +327,6 @@ vx_status ownWaitEventQueue(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM003
 <justification end> */
-/* TIOVX-1722- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EVENT_QUEUE_UM003 */
             else
             {
                 /* do nothing */
@@ -366,7 +365,7 @@ vx_status ownRegisterEvent(vx_reference ref,
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR005
 <justification end> */
         if( ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_COMPLETED) ||
-            ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_ERROR) ) /* TIOVX-1887- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_QUEUE_UBR005 */
+            ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_ERROR) )
         {
             /*status set to NULL due to preceding type check*/
             vx_node node = vxCastRefAsNode(ref, NULL);

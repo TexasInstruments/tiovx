@@ -69,7 +69,7 @@ static vx_status isArrayCopyable(vx_array input, vx_array output)
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR009
 <justification end> */
         /* Either output type must be invalid or types must match*/
-        if (((vx_enum)VX_TYPE_INVALID != op_obj_desc->item_type) && /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR009 */
+        if (((vx_enum)VX_TYPE_INVALID != op_obj_desc->item_type) &&
             (ip_obj_desc->item_type != op_obj_desc->item_type))
         {
             status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
@@ -107,7 +107,7 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
     vx_status res = (vx_status)VX_ERROR_NOT_SUPPORTED;
 
     /* do not check the res, as we know they are arrays at that point*/
-    switch (kernel_enum) /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR010 */
+    switch (kernel_enum)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR010
@@ -146,7 +146,6 @@ static vx_status VX_CALLBACK arrayKernelCallback(vx_enum kernel_enum, vx_bool va
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_ARRAY_UM001
 <justification end> */
-/* TIOVX-2004- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_ARRAY_UM001 */
         default:
             res = (vx_status)VX_ERROR_NOT_SUPPORTED;
             break;
@@ -228,7 +227,7 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR002
 <justification end> */
-            if ((vx_bool)vx_true_e != (arr->base.is_virtual)) /* TIOVX-1875- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ARRAY_UBR002 */
+            if ((vx_bool)vx_true_e != (arr->base.is_virtual))
             {
                 VX_PRINT(VX_ZONE_ERROR,"array is not virtual\n");
             }

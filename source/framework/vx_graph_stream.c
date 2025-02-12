@@ -48,7 +48,7 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
     {
         if((vx_status)VX_SUCCESS == ownWaitGraphEvent(graph, &event, (vx_bool)vx_false_e)) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR001 */
         {
-            switch (state) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR002 */
+            switch (state)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR002
@@ -65,7 +65,6 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM001
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM001 */
                         if (status != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
@@ -77,7 +76,6 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT001
 <justification end> */
-/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT001 */
                     if(STOP == event.app_value)
                     {
                         VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
@@ -108,7 +106,6 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM002
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM002 */
                     if(START == event.app_value)
                     {
                         /* Already running, ignore */
@@ -126,7 +123,6 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM003
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM003 */
                         if (status != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
@@ -138,7 +134,6 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT002
 <justification end> */
-/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT002 */
                     if(DELETE == event.app_value)
                     {
                         VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
@@ -164,7 +159,6 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM004
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM004 */
                         if (status != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraph() failed.\n");
@@ -176,7 +170,6 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM005
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM005 */
                         if (status != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
@@ -189,7 +182,6 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM006
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM006 */
                         if (status != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
@@ -202,7 +194,6 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM007
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM007 */
                 default :
                     break;
 /* LDRA_JUSTIFY_END */
@@ -214,7 +205,6 @@ static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM008
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM008 */
     if (status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
@@ -234,7 +224,7 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
     {
         if((vx_status)VX_SUCCESS == ownWaitGraphEvent(graph, &event, (vx_bool)vx_false_e)) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR003 */
         {
-            switch (state) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR004 */
+            switch (state)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR004
@@ -255,7 +245,6 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM009
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM009 */
                             if (status != (vx_status)VX_SUCCESS)
                             {
                                 VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraphWrapper() failed.\n");
@@ -268,7 +257,6 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT003
 <justification end> */
-/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT003 */
                     if(STOP == event.app_value)
                     {
                         VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
@@ -290,7 +278,6 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT004
 <justification end> */
-/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT004 */
                     if(RUN == event.app_value)
                     {
                         /* Do nothing, graph is stopped */
@@ -304,7 +291,6 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT005
 <justification end> */
-/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT005 */
                     if(START == event.app_value)
                     {
                         /* Already running, ignore */
@@ -323,7 +309,6 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM011
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM011 */
                         if (status != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
@@ -335,7 +320,6 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM012
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM012 */
                         if (status != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
@@ -347,7 +331,6 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT006
 <justification end> */
-/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT006 */
                     if(DELETE == event.app_value)
                     {
                         VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
@@ -360,7 +343,6 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT007
 <justification end> */
-/* TIOVX-1880: LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT007 */
                     if(RUN == event.app_value)
                     {
                         VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: RUN\n");
@@ -376,7 +358,6 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM013
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM013 */
                         if (status != (vx_status)VX_SUCCESS)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraph() failed.\n");
@@ -389,7 +370,6 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM014
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM014 */
                 default :
                     break;
 /* LDRA_JUSTIFY_END */
@@ -401,7 +381,6 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM015
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM015 */
     if (status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
@@ -632,7 +611,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR007
 <justification end>*/
-                    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR007 */
+                    if ((vx_status)VX_SUCCESS == status)
 /* LDRA_JUSTIFY_END */
                     {
                         status = tivxEventCreate(&graph->stop_done);
@@ -640,7 +619,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR008
 <justification end>*/
-                        if ((vx_status)VX_SUCCESS == status) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR008 */
+                        if ((vx_status)VX_SUCCESS == status)
 /* LDRA_JUSTIFY_END */
                         {
                             status = tivxTaskCreate(&graph->streaming_task_handle, &streamingTaskParams);
@@ -649,7 +628,6 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM016
 <justification end>*/
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM016 */
                             if ((vx_status)VX_SUCCESS != status)
                             {
                                 VX_PRINT(VX_ZONE_ERROR, "streaming task could not be created\n");
@@ -672,7 +650,6 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM017
 <justification end>*/
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM017 */
                         else
                         {
                             VX_PRINT(VX_ZONE_ERROR, "event could not be created\n");
@@ -684,7 +661,6 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM018
 <justification end>*/
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM018 */
                     else
                     {
                         VX_PRINT(VX_ZONE_ERROR, "event could not be created\n");
@@ -743,7 +719,6 @@ vx_status ownGraphFreeStreaming(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM019
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM019 */
         if (tmp_status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventClear() failed.\n");
@@ -766,7 +741,6 @@ vx_status ownGraphFreeStreaming(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM021
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM021 */
         if (tmp_status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
@@ -791,7 +765,6 @@ vx_status ownGraphFreeStreaming(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM022
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM022 */
         if (tmp_status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");
@@ -808,7 +781,6 @@ vx_status ownGraphFreeStreaming(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM023
 <justification end> */
-/* TIOVX-1714- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM023 */
         if (tmp_status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventDelete() failed.\n");

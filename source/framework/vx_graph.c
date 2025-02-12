@@ -39,7 +39,6 @@ static vx_status ownDestructGraph(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM001
 <justification end> */
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM001 */
             if((vx_status)VX_SUCCESS != status1)
             {
                 status = status1;
@@ -69,7 +68,6 @@ static vx_status ownDestructGraph(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM002
 <justification end> */
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM002 */
                     if((vx_status)VX_SUCCESS != status1)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
@@ -80,14 +78,13 @@ static vx_status ownDestructGraph(vx_reference ref)
             }
             for(i=0; i<graph->num_data_ref_q; i++)
             {
-                if(graph->data_ref_q_list[i].data_ref_queue != NULL) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR002 */
+                if(graph->data_ref_q_list[i].data_ref_queue != NULL)/* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR002 */
                 {
                     status1 = ownDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM003
 <justification end> */
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM003 */
                     if((vx_status)VX_SUCCESS != status1)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
@@ -116,7 +113,6 @@ static vx_status ownDestructGraph(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM004
 <justification end> */
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM004 */
                         if((vx_status)VX_SUCCESS != status1)
                         {
                             status = status1;
@@ -139,7 +135,6 @@ static vx_status ownDestructGraph(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM005
 <justification end> */
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM005 */
                     if((vx_status)VX_SUCCESS != status1)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release data reference queue\n");
@@ -189,7 +184,6 @@ static vx_status ownDestructGraph(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM006
 <justification end> */
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM006 */
         if((vx_status)VX_SUCCESS != status1)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to delete queues created during ownGraphCreateQueues \n");
@@ -201,7 +195,6 @@ static vx_status ownDestructGraph(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM007
 <justification end> */
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM007 */
         if((vx_status)VX_SUCCESS != status1)
         {
             VX_PRINT(VX_ZONE_ERROR,"Failed to free graph obj desc \n");
@@ -215,7 +208,6 @@ static vx_status ownDestructGraph(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM008
 <justification end> */
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM008 */
             if(status1 != (vx_status)VX_SUCCESS)
             {
                 status = status1;
@@ -235,7 +227,7 @@ static vx_status ownResetGraphPerf(vx_graph graph)
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR005
 <justification end>*/
     if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), 
-    (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR005 */
+    (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
 /* LDRA_JUSTIFY_END */
     {
         graph->perf.tmp = 0;
@@ -251,7 +243,6 @@ static vx_status ownResetGraphPerf(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM009
 <justification end>*/
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM009 */
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "invalid graph object\n");
@@ -505,7 +496,6 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM010
 <justification end> */
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM010 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to reset graph \n");
@@ -538,7 +528,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR006
 <justification end> */
-            if(status==(vx_status)VX_SUCCESS) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR006 */
+            if(status==(vx_status)VX_SUCCESS)
             {
                 status = ownGraphCreateQueues(graph);
             }
@@ -547,7 +537,6 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM011
 <justification end> */
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM011 */
             if(status!=(vx_status)VX_SUCCESS)
             {
                 status = vxReleaseGraph(&graph);
@@ -791,7 +780,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UTJT002.
 <justification end> */
-/* TIOVX-1812- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UTJT002 */
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "could not set graph parameter\n");
@@ -803,7 +791,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR008
 <justification end> */
-            if ((vx_status)VX_SUCCESS == status) { /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR008 */
+            if ((vx_status)VX_SUCCESS == status) {
                 status = ownGraphAllocateDataObject(graph->parameters[index].node,
                                                     graph->parameters[index].index,
                                                     value);
@@ -961,7 +949,6 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UTJT001
 <justification end> */
-/* TIOVX-1812- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UTJT001 */
             if((vx_status)VX_SUCCESS !=status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to schedule graph for execution \n");
@@ -977,7 +964,7 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR007
 <justification end> */
-            if(num_schedule>0U) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR007 */
+            if(num_schedule>0U)
             {
                 /* schedule graph 'num_schedule' times */
                 /* void is added as it returns always success for
@@ -1110,7 +1097,6 @@ void ownSendGraphCompletedEvent(vx_graph graph)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM013.
 <justification end> */
-/* TIOVX-1715- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_UM013 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");

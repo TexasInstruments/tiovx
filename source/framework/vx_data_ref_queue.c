@@ -95,7 +95,7 @@ vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_refe
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR001
 <justification end> */
-        if(status==(vx_status)VX_SUCCESS) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR001 */
+        if(status==(vx_status)VX_SUCCESS)
         {
             blocked_nodes.num_nodes = 0;
 
@@ -111,7 +111,7 @@ vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_refe
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR002
 <justification end> */
-        if(status==(vx_status)VX_SUCCESS) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR002 */
+        if(status==(vx_status)VX_SUCCESS)
         {
             uint32_t node_id;
 
@@ -262,7 +262,6 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM001
 <justification end> */
-/* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM001 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to add post event\n");
@@ -278,7 +277,6 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM002
 <justification end> */
-/* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM002 */
             if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
@@ -321,7 +319,6 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM003
 <justification end> */
-/* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM003 */
                 if((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor\n");
@@ -338,7 +335,6 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM004
 <justification end> */
-/* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM004 */
                     if((vx_status)VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Failed to release object descriptor\n");
@@ -351,7 +347,6 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM005
 <justification end> */
-/* TIOVX-1723- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM005 */
             if((vx_bool)vx_true_e == do_break)
             {
                 break;
@@ -368,7 +363,7 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR006
 <justification end> */
-            if(status == (vx_status)VX_SUCCESS) /* TIOVX-1934- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DATA_REF_QUEUE_UBR006 */
+            if(status == (vx_status)VX_SUCCESS)
             {
                 if((vx_enum)data_ref_q->release_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
@@ -438,7 +433,6 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT001
 <justification end> */
-/* TIOVX-1868- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT001 */
                         if(ref->obj_desc_cmd[pipe_id]==NULL)
                         {
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
