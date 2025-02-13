@@ -597,7 +597,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "Set TIVX_GRAPH_TIMEOUT failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Set VX_GRAPH_TIMEOUT failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -621,12 +621,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "Set TIVX_GRAPH_TIMEOUT failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Set VX_GRAPH_TIMEOUT failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }            
                 break;
-
-
 
             default:
                 VX_PRINT(VX_ZONE_ERROR,"Invalid attribute\n");
