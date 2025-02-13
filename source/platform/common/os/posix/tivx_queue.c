@@ -353,6 +353,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
     uint32_t temp_status;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
     tivx_queue_context context = NULL;
+    int32_t retVal;
 
     if(queue && queue->context)
     {
