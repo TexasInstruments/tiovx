@@ -443,7 +443,7 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                         {
                             ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
                             VX_PRINT(VX_ZONE_ERROR, "ref %p can't be queued. obj_desc_id=%d, param=%d(%s), #enqueues=%d\n",
-                                                    ref, ref->obj_desc->obj_desc_id, graph_parameter_index, is_input? "input":"output", objd->num_enqueues);
+                                                    ref, ref->obj_desc->obj_desc_id, graph_parameter_index, ((vx_bool)vx_true_e == is_input)? "input":"output", objd->num_enqueues);
                         }
                         else
                         {
@@ -587,16 +587,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
     {
         tivx_obj_desc_node_t const * nobj = graph->parameters[graph_parameter_index].node->obj_desc[0];
         vx_bool is_replicated = tivxFlagIsBitSet(nobj->is_prm_replicated, ((uint32_t)1U<<graph->parameters[graph_parameter_index].index));
-        vx_uint32 num_replicas = is_replicated ? nobj->num_of_replicas : 0U;
+        vx_uint32 num_replicas = ((vx_bool)vx_true_e == is_replicated) ? nobj->num_of_replicas : 0U;
         vx_uint32 ref_id;
-        vx_bool exit_loop = vx_false_e;
+        vx_bool exit_loop = (vx_bool)vx_false_e;
         for(ref_id = 0; ref_id < max_refs; ref_id++)
         {
             vx_reference ref;
             /* wait until a reference is dequeued */
             do
             {
-                ref = NULL;
                 uint16_t queue_obj_desc_id, ref_obj_desc_id;
                 /* get queue object descriptor */
                 queue_obj_desc_id = data_ref_q->done_q_obj_desc_id;

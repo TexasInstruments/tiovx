@@ -353,7 +353,6 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
     uint32_t temp_status;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
     tivx_queue_context context = NULL;
-    int32_t   retVal;
 
     if(queue && queue->context)
     {
@@ -381,7 +380,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                     if ((uint32_t)(queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != (uint32_t)0)
                     {
                         /* post cond to unblock, blocked tasks */
-                        retVal = pthread_cond_signal(&context->condPut);
+                        (void)pthread_cond_signal(&context->condPut);
                     }
 
                     /* exit with success */
