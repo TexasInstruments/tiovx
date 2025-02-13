@@ -130,9 +130,9 @@ typedef struct _tivx_event_queue_t
  */
 enum tivx_queue_type_e {
 
-    /*! \brief Graph event queue
+    /*! \brief Graph streaming event queue
      *
-     * The registered event will be used in the graph event queue
+     * The registered event will be used in the graph streaming event queue
      */
     TIVX_EVENT_GRAPH_STREAMING_QUEUE = VX_ATTRIBUTE_BASE(VX_ID_TI, (int32_t)0) + 0x1,
 
@@ -140,7 +140,13 @@ enum tivx_queue_type_e {
      *
      * The registered event will be used in the context event queue
      */
-    TIVX_EVENT_CONTEXT_QUEUE = VX_ATTRIBUTE_BASE(VX_ID_TI, (int32_t)0) + 0x2
+    TIVX_EVENT_CONTEXT_QUEUE = VX_ATTRIBUTE_BASE(VX_ID_TI, (int32_t)0) + 0x2,
+
+    /*! \brief Graph event queue
+     *
+     * The registered event will be used in the graph event queue
+     */
+    TIVX_EVENT_GRAPH_QUEUE = VX_ATTRIBUTE_BASE(VX_ID_TI, (int32_t)0) + 0x3
 };
 
 /*!
@@ -187,7 +193,7 @@ void ownEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable);
  */
 vx_status ownWaitEventQueue(
                     tivx_event_queue_t *event_q, vx_event_t *event,
-                    vx_bool do_not_block);
+                    vx_uint32 timeout);
 
 /*! \brief Registers an event to a given event queue
  *

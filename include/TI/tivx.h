@@ -196,7 +196,7 @@ typedef enum _tivx_graph_attribute_extensions_e {
      * Use a <tt>\ref vx_uint32</tt> parameter.
      * By default, this value is set to 1.
      */
-    TIVX_GRAPH_PIPELINE_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_GRAPH) + 0x2
+    VX_GRAPH_PIPELINE_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_GRAPH) + 0x2
 
 } tivx_graph_attribute_extensions_e;
 
@@ -248,8 +248,7 @@ typedef enum _tivx_reference_attribute_extensions_e {
      * Read-Only. Can be read at initialization as well as at runtime.
      * Use a <tt>\ref vx_bool</tt> parameter.
      */
-    TIVX_REFERENCE_BUFFER_IS_ALLOCATED = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_REFERENCE) + 0x2
-
+    TIVX_REFERENCE_BUFFER_IS_ALLOCATED = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_REFERENCE) + 0x2,
 } tivx_reference_attribute_extensions_e;
 
 /*! \brief TI attribute extensions for the kernel object
@@ -372,13 +371,7 @@ typedef enum _tivx_status_e {
     /*!< \brief Indicates the base for the TIVX error codes.
      * Used for bounds checks only.
      */
-    TIVX_STATUS_BASE         = -(vx_int32)100,
-
-    /* add new codes here */
-    /*!< \brief Indicates that the wait operation on an event
-     * timed-out
-     */
-    TIVX_ERROR_EVENT_TIMEOUT = (vx_int32)(TIVX_STATUS_BASE) + 1,
+    TIVX_STATUS_BASE         = -(vx_int32)100
 
 } tivx_status_e;
 
