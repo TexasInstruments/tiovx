@@ -149,6 +149,9 @@ typedef struct _vx_context {
 
     /*! Event queue */
     tivx_event_queue_t event_queue;
+
+    /*! \brief Control API processing Timeout value in milli-sec for the for the functions vxWaitEvent and vxWaitGraphEvent. */
+    vx_uint32 timeout_events_val;    
 } tivx_context_t;
 
 /**

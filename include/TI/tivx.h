@@ -196,7 +196,7 @@ typedef enum _tivx_graph_attribute_extensions_e {
      * Use a <tt>\ref vx_uint32</tt> parameter.
      * By default, this value is set to 1.
      */
-    TIVX_GRAPH_PIPELINE_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_GRAPH) + 0x2
+    VX_GRAPH_PIPELINE_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_GRAPH) + 0x2
 
 } tivx_graph_attribute_extensions_e;
 

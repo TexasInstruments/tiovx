@@ -262,9 +262,6 @@ typedef struct _vx_graph {
     /*! \brief Control API processing Timeout value in milli-sec for the graph. */
     vx_uint32 timeout_val;
 
-    /*! \brief Control API processing Timeout value in milli-sec for the graph events. */
-    vx_uint32 timeout_events_val;
-
     /*! \brief Debug zonemask of a given graph. */
     vx_uint32 debug_zonemask;
 

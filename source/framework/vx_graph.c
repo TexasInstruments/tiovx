@@ -499,7 +499,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->num_delay_data_ref_q = 0;
             graph->num_supernodes = 0;
             graph->timeout_val = TIVX_DEFAULT_GRAPH_TIMEOUT;
-            graph->timeout_events_val = VX_TIMEOUT_WAIT_FOREVER;
+            graph->base.context->timeout_events_val = VX_TIMEOUT_WAIT_FOREVER;
             graph->debug_zonemask = ownGetGlobalZonemask();
 
             status = ownResetGraphPerf(graph);
@@ -616,7 +616,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
                     }
                     else
                     {
-                        graph->timeout_events_val = timeout_val;
+                        graph->base.context->timeout_events_val = timeout_val;
                     }
                 }
                 else
@@ -715,14 +715,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case (vx_enum)TIVX_GRAPH_PIPELINE_DEPTH:
+            case (vx_enum)VX_GRAPH_PIPELINE_DEPTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = graph->pipeline_depth;
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Query TIVX_GRAPH_PIPELINE_DEPTH failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query VX_GRAPH_PIPELINE_DEPTH failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;

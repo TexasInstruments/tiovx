@@ -254,11 +254,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitEvent(
     {
         if((vx_bool)vx_true_e == do_not_block)
         {
-            timeout = 0;
+            timeout = 0U;
         }
         else
         {
-            timeout = TIVX_EVENT_TIMEOUT_WAIT_FOREVER;
+            timeout = context->timeout_events_val;
         }        
         /* Call general wait function */
         status = ownWaitEventQueue(&context->event_queue, event, timeout);
@@ -392,22 +392,25 @@ vx_status ownRegisterEvent(vx_reference ref,
                 VX_PRINT(VX_ZONE_ERROR, "Invalid queue type given\n");
             }
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Invalid event type given\n");
+        }        
 /* LDRA_JUSTIFY_END */
     }
     else
     if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {         
+        /*status set to NULL due to preceding type check*/
         vx_graph graph = vxCastRefAsGraph(ref, NULL);
 
         if((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_COMPLETED)
         {
-            /*status set to NULL due to preceding type check*/
             status = ownGraphRegisterCompletionEvent(graph, app_value);
         }
         else
         if((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED)
         {
-            /*status set to NULL due to preceding type check*/
             status = ownGraphRegisterParameterConsumedEvent(graph, param, app_value);
             if (status == (vx_status)VX_SUCCESS)
             {
@@ -431,18 +434,17 @@ vx_status ownRegisterEvent(vx_reference ref,
                 graph->is_enable_send_graph_timeout_event = (vx_bool)vx_true_e;
                 status = (vx_status)VX_SUCCESS;
             }
-            else
-            {/* do nothing */}
 
         }
         else
         {
-            /* do nothing */
+           VX_PRINT(VX_ZONE_ERROR, "Invalid event type given\n");
         }
     }
     else
     {
-        /* do nothing */
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -450,23 +452,9 @@ vx_status ownRegisterEvent(vx_reference ref,
 
 VX_API_ENTRY vx_status VX_API_CALL vxRegisterGraphEvent(vx_reference graph_or_node, enum vx_event_type_e type, vx_uint32 param, vx_uint32 app_value)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
-    if ((vx_bool)vx_true_e == ownIsValidSpecificReference(graph_or_node, (vx_enum)VX_TYPE_GRAPH))
-    {
-        status = ownRegisterEvent(graph_or_node, TIVX_EVENT_GRAPH_QUEUE, type, param, app_value);
-        VX_PRINT(VX_ZONE_INFO, "Registering graph event %d at graph [%s], param %d\n",
-                    type, ((vx_graph)graph_or_node)->base.name, param);
-    }
-    else if ((vx_bool)vx_true_e == ownIsValidSpecificReference(graph_or_node, (vx_enum)VX_TYPE_NODE))
-    {
-        status = ownRegisterEvent(graph_or_node, TIVX_EVENT_GRAPH_QUEUE, type, param, app_value);
-        VX_PRINT(VX_ZONE_INFO, "Registering node event %d at node [%s]\n", type, ((vx_node)graph_or_node)->base.name);
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
-        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    }
+    vx_status status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+    status = ownRegisterEvent(graph_or_node, TIVX_EVENT_GRAPH_QUEUE, type, param, app_value);
+
     return status;
 }
 
@@ -483,7 +471,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraphEvent(vx_graph graph, vx_event_t *
         }
         else
         {
-            timeout = graph->timeout_events_val;
+            timeout = graph->base.context->timeout_events_val;
         }
         status = ownWaitEventQueue(&graph->event_queue, event, timeout);
         if (status == (vx_status)VX_ERROR_TIMEOUT)

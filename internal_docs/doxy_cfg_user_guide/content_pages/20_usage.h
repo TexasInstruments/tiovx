@@ -1074,7 +1074,7 @@
     the console using the \ref VX_ZONE_WARNING logging level indicating to the user that this value may not be optimal.  By using the
     \ref tivxSetGraphPipelineDepth API, the application developer can potentially reduce the memory footprint of the graph in the case that
     real time performance can be achieved by using a smaller pipeline depth value than detected by the framework.  In order to know the value
-    the framework is using for pipeline depth, the user can call the \ref vxQueryGraph API using the \ref TIVX_GRAPH_PIPELINE_DEPTH macro
+    the framework is using for pipeline depth, the user can call the \ref vxQueryGraph API using the \ref VX_GRAPH_PIPELINE_DEPTH macro
     after calling \ref vxVerifyGraph.
 
     \subsection TIOVX_PIPELINING_PERFORMANCE_OPTIMIZATION_DELAY_PARAMETERS Pipelining with Delay Objects
