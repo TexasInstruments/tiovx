@@ -71,7 +71,7 @@ static vx_status ownGraphPipelineValidateRefsList(
                      const vx_graph_parameter_queue_params_t graph_parameters_queue_param);
 static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                 vx_uint32 graph_parameter_index,
-                vx_reference *refs,
+                const vx_reference *refs,
                 vx_uint32 num_refs);
 
 static vx_status ownDecrementEnqueueCount(vx_reference ref);
@@ -339,7 +339,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
 
 static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                 vx_uint32 graph_parameter_index,
-                vx_reference *refs,
+                const vx_reference *refs,
                 vx_uint32 num_refs)
 {
     tivx_data_ref_queue data_ref_q = NULL;
@@ -554,7 +554,7 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
 
 VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterEnqueueReadyRef(vx_graph graph,
                 vx_uint32 graph_parameter_index,
-                vx_reference *refs,
+                const vx_reference *refs,
                 vx_uint32 num_refs)
 {
     /* flags is set to 0, i.e no special handling during enqueue */

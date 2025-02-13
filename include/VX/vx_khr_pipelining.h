@@ -388,7 +388,7 @@ VX_API_ENTRY vx_status vxAddReferencesToGraphParameterList(
  */
 VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterEnqueueReadyRef(vx_graph graph,
                 vx_uint32 graph_parameter_index,
-                vx_reference *refs,
+                const vx_reference *refs,
                 vx_uint32 num_refs);
 
 /*! \brief Dequeues 'consumed' references from a graph parameter
@@ -714,7 +714,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxDisableEvents(vx_context context);
  *
  * \ingroup group_event
  */
-VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32 app_value, void *parameter);
+VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32 app_value, const void *parameter);
 
 
 /*! \brief Register an event to be generated
@@ -815,7 +815,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxDisableGraphEvents(vx_graph graph);
  *
  * \ingroup group_event
  */
-VX_API_ENTRY vx_status VX_API_CALL vxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, void *parameter);
+VX_API_ENTRY vx_status VX_API_CALL vxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void *parameter);
 
 /*
  * STREAMING API
