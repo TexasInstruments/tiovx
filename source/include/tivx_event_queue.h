@@ -79,6 +79,12 @@ extern "C" {
  *        to the user in a first-in first out manner
  */
 
+
+/*! \brief The enum type enumeration for event queues.
+ * \ingroup group_tivx_event_queue
+ */
+#define TIVX_ENUM_EVENT_QUEUE      (vx_enum)0x100   /*!< \brief A <tt>\ref tivx_queue_type_e</tt>. */
+
 /*! \brief Element inserted into event queue
  * \ingroup group_tivx_event_queue
  */
@@ -134,13 +140,13 @@ enum tivx_queue_type_e {
      *
      * The registered event will be used in the graph event queue
      */
-    TIVX_EVENT_GRAPH_STREAMING_QUEUE = VX_ATTRIBUTE_BASE(VX_ID_TI, (int32_t)0) + 0x1,
+    TIVX_EVENT_GRAPH_STREAMING_QUEUE = VX_ENUM_BASE(VX_ID_TI, TIVX_ENUM_EVENT_QUEUE) + 0x1,
 
     /*! \brief Context event queue
      *
      * The registered event will be used in the context event queue
      */
-    TIVX_EVENT_CONTEXT_QUEUE = VX_ATTRIBUTE_BASE(VX_ID_TI, (int32_t)0) + 0x2
+    TIVX_EVENT_CONTEXT_QUEUE = VX_ENUM_BASE(VX_ID_TI, TIVX_ENUM_EVENT_QUEUE) + 0x2
 };
 
 /*!
