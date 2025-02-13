@@ -7968,6 +7968,35 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout)
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
+
+    /* timeout but no event */
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);   
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphAttribute(graph, VX_CONTEXT_EVENT_TIMEOUT, &graph_event_timeout_val, sizeof(graph_event_timeout_val)));    
+    ASSERT_VX_OBJECT(node = vxAndNode(graph, images[0], images[1], images[2]), VX_TYPE_NODE);
+    addParameterToGraph(graph, node, 0);
+    addParameterToGraph(graph, node, 1);
+    addParameterToGraph(graph, node, 2);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+    graph_events.type = 0;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDisableGraphEvents(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDisableEvents(context));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    for (int i = 0; i < NB_IMAGES; ++i)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, i, (vx_reference *)&images[i], 1));
+    }
+    ASSERT_EQ_VX_STATUS(VX_ERROR_TIMEOUT, vxWaitGraphEvent(graph, &graph_events, vx_false_e));
+    ASSERT_EQ_INT(graph_events.type, 0);
+    /* flush the internal queues */
+    num_refs = 0;
+    for (int i = 0; i < NB_IMAGES; ++i)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, i, (vx_reference *)&out_img, 1, &num_refs));
+    }
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));    
     VX_CALL(vxReleaseImage(&images[0]));
     VX_CALL(vxReleaseImage(&images[1]));
     VX_CALL(vxReleaseImage(&images[2]));
