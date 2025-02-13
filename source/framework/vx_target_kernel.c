@@ -111,7 +111,6 @@ vx_status ownTargetKernelInit(void)
 <function start> void ownTargetKernelDeInit.* <function end>
 <justification start> TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_UM001
 <justification end> */
-/* TIOVX-1707- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_KERNEL_UM001 */
 #endif
 void ownTargetKernelDeInit(void)
 {

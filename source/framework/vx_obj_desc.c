@@ -450,7 +450,7 @@ int32_t tivx_obj_desc_strncmp(volatile void *dst, volatile void *src, uint32_t s
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_OBJ_DESC_UBR001
 <justification end> */
-        if((d[i] != s[i]) || (d[i] == 0U)  /* TIOVX-1965- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_OBJ_DESC_UBR001 */
+        if((d[i] != s[i]) || (d[i] == 0U)
         || (s[i] == 0U))
         {
             ret = ((int32_t)d[i] - (int32_t)s[i]);
