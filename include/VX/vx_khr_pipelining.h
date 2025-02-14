@@ -81,6 +81,37 @@ enum vx_graph_attribute_pipelining_e {
      * See <tt>\ref vx_graph_schedule_mode_type_e </tt> enum.
      */
     VX_GRAPH_SCHEDULE_MODE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x5,
+
+    /*! \brief Sets or returns the timeout value, in milliseconds, for the functions <tt>\ref vxWaitGraph</tt>,
+     * <tt>\ref vxGetGraphParameterDequeueDoneRef</tt> and <tt>\ref vxStopGraphStreaming</tt>. Read-write.
+     * Use a <tt>vx_uint32</tt> parameter, or the implementation-defined <tt>VX_TIMEOUT_WAIT_FOREVER</tt>.
+     * The implementation shall initially set this attribute to <tt>VX_TIMEOUT_WAIT_FOREVER</tt>.
+     *
+     * Note
+     *   Setting the timeout attribute <tt>\ref VX_GRAPH_TIMEOUT</tt> does not set any limit upon the
+     *   duration of graph execution, it merely prevents the above-mentioned functions from delaying more
+     *   than the time given. There are no other requirements upon what the framework should do; it is up
+     *   to the application to recognise the timeout and take appropriate action.
+     */
+    VX_GRAPH_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x6,
+
+    /*! \brief Set or return the graph pipeline depth; the depth used in the graph is known
+     * after graph verification. Read-write. Us a <tt>vx_uint32</tt> parameter.
+     *
+     * Note
+     *   The framework will calculate the maximum depth of pipeline that is sensible for any given graph.
+     *   It would be useful for the user to be able to obtain this data in a programmatic way and modify execution
+     *   accordingly, for example to know that result dequeuing is possible after queuing a certain number of inputs.
+     *   An additional attribute allows this data to be obtained from a verified graph.
+     *
+     *   The attribute is made read-write, so that an application may modify pipeline behaviour. Example use cases
+     *   are to save memory by restricting pipeline depth, or to effectively turn off pipelining by setting the depth
+     *   to 1 for debugging purposes.
+     *
+     *   If the attribute is set to a non-zero value before graph verification, the application-supplied value will
+     *   be used, otherwise the value will be calculated by the framework.
+     */
+    VX_GRAPH_PIPELINE_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x7,
 };
 
 /*! \brief The reference attributes added by this extension.
