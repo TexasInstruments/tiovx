@@ -1845,6 +1845,31 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetContextAttribute(vx_context context, vx_
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+
+            case (vx_enum)VX_CONTEXT_EVENT_TIMEOUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    const vx_uint32   timeout_val = *(const vx_uint32*)ptr;
+
+                    /* Validate the timeout. It cannot be zero. */
+                    if (timeout_val == 0U)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "Invalid timeout value specified for events: %d\n",
+                                 timeout_val);
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    }
+                    else
+                    {
+                        context->timeout_events_val = timeout_val;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Set VX_CONTEXT_EVENT_TIMEOUT failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }            
+                break;                
             default:
                 VX_PRINT(VX_ZONE_ERROR,"unsupported attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;

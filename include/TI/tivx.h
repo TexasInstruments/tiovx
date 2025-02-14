@@ -189,7 +189,7 @@ typedef enum _tivx_graph_attribute_extensions_e {
      * Refer to \ref TIVX_DEFAULT_GRAPH_TIMEOUT for details on the default
      * value used for this attribute.
      */
-    TIVX_GRAPH_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_GRAPH) + 0x1,
+    VX_GRAPH_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)VX_TYPE_GRAPH) + 0x1,
 
     /*! \brief Query the graph pipeline depth.
      * Read-Only. Can be read at initialization as well as at runtime.

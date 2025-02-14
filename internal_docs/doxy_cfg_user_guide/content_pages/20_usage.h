@@ -307,7 +307,7 @@
 
     While the above defines the default behavior of TIOVX with respect to the node callbacks, TIOVX has provided an extension to enable timeouts to avoid
     scenarios in which a remote core goes down and cannot be communicated with (amongst other things).  These timeouts can be set at the \ref vx_graph level
-    with the \ref vxSetGraphAttribute API and the \ref TIVX_GRAPH_TIMEOUT attribute or at the \ref vx_node level with the \ref vxSetNodeAttribute API and
+    with the \ref vxSetGraphAttribute API and the \ref VX_GRAPH_TIMEOUT attribute or at the \ref vx_node level with the \ref vxSetNodeAttribute API and
     the \ref TIVX_NODE_TIMEOUT attribute.
 
     When designing target kernels using the callback structure noted above, a particular scenario can occur due to the timeout of communication with remote cores

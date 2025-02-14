@@ -577,7 +577,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
     {
         switch (attribute)
         {
-            case (vx_enum)TIVX_GRAPH_TIMEOUT:
+            case (vx_enum)VX_GRAPH_TIMEOUT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     const vx_uint32   timeout_val = *(const vx_uint32*)ptr;
@@ -600,30 +600,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
                     VX_PRINT(VX_ZONE_ERROR, "Set VX_GRAPH_TIMEOUT failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
-                break;
-            case (vx_enum)VX_CONTEXT_EVENT_TIMEOUT:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
-                {
-                    const vx_uint32   timeout_val = *(const vx_uint32*)ptr;
-
-                    /* Validate the timeout. It cannot be zero. */
-                    if (timeout_val == 0U)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,
-                                 "Invalid timeout value specified for events: %d\n",
-                                 timeout_val);
-                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                    }
-                    else
-                    {
-                        graph->base.context->timeout_events_val = timeout_val;
-                    }
-                }
-                else
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Set VX_GRAPH_TIMEOUT failed\n");
-                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                }            
                 break;
 
             default:
@@ -702,14 +678,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case (vx_enum)TIVX_GRAPH_TIMEOUT:
+            case (vx_enum)VX_GRAPH_TIMEOUT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = graph->timeout_val;
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Query TIVX_GRAPH_TIMEOUT failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query VX_GRAPH_TIMEOUT failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;

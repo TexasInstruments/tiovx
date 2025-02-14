@@ -1794,7 +1794,7 @@ TEST(tivxGraph, negativeTestSetGraphAttribute)
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetGraphAttribute(graph, attribute, &vxTimeoutVal, size));
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphAttribute(graph, TIVX_GRAPH_TIMEOUT, &vxTimeoutVal, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphAttribute(graph, VX_GRAPH_TIMEOUT, &vxTimeoutVal, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetGraphAttribute(graph, attribute, &vxTimeoutVal, size));
     VX_CALL(vxReleaseGraph(&graph));
 }
@@ -1816,7 +1816,7 @@ TEST(tivxGraph, negativeTestQueryGraph)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_NUMPARAMETERS, &vxGphAttr, size));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryGraph(graph, VX_GRAPH_NUMPARAMETERS, &vxGphAttr, sizeof(vx_uint32)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, TIVX_GRAPH_STREAM_EXECUTIONS, &vxGphAttr, size));
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, TIVX_GRAPH_TIMEOUT, &vxGphAttr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_TIMEOUT, &vxGphAttr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_PIPELINE_DEPTH, &vxGphAttr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryGraph(graph, attribute, &vxGphAttr, size));
     VX_CALL(vxReleaseGraph(&graph));

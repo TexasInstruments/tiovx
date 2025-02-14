@@ -471,7 +471,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraphEvent(vx_graph graph, vx_event_t *
         }
         else
         {
-            timeout = graph->base.context->timeout_events_val;
+            timeout = graph->timeout_val;
         }
         status = ownWaitEventQueue(&graph->event_queue, event, timeout);
         if (status == (vx_status)VX_ERROR_TIMEOUT)
