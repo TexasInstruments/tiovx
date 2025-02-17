@@ -423,7 +423,9 @@ vx_status ownRegisterEvent(vx_reference ref,
                     graph->parameters[param].is_enable_send_ref_consumed_event = (vx_bool)vx_true_e;
                 }
                 else
-                {/* do nothing */}
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid event type given\n");
+                }
             }
         }
         else if ((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_TIMEOUT)

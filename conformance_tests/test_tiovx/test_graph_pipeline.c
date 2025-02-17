@@ -8181,6 +8181,11 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout2)
    vx_event_t context_events;
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetContextAttribute(context, VX_CONTEXT_EVENT_TIMEOUT, &context_event_timeout_val, sizeof(context_event_timeout_val)));
+    vx_uint32 timeout_val = 0U;
+    vx_uint16 timeout_val_wrong = 0U;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_EVENT_TIMEOUT, &timeout_val_wrong, sizeof(timeout_val_wrong)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryContext(context, VX_CONTEXT_EVENT_TIMEOUT, &timeout_val, sizeof(timeout_val)));
+    ASSERT_EQ_INT(timeout_val, 100);
     ASSERT_VX_OBJECT(node = tivxCreateNodeByKernelName(graph, "MY_DUMB_WAIT", (vx_reference*)images, 3), VX_TYPE_NODE);
     addParameterToGraph(graph, node, 0);
     addParameterToGraph(graph, node, 1);

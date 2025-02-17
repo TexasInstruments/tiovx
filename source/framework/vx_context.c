@@ -1761,6 +1761,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case (vx_enum)VX_CONTEXT_EVENT_TIMEOUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    
+                    *(vx_uint32*)ptr = context->timeout_events_val;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "query context VX_CONTEXT_EVENT_TIMEOUT failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }            
+                break;                
             case (vx_enum)VX_CONTEXT_UNIQUE_KERNELS:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
