@@ -8247,6 +8247,88 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout2)
     VX_CALL(vxReleaseKernel(&my_wait_kernel));
 }
 
+TEST(tivxGraphPipeline2, testGetGraphParameterRefsList)
+{
+    vx_context context = context_->vx_context_;
+    vx_status status = (vx_status)VX_SUCCESS;    
+    
+    vx_reference refs_list[2] = {};
+    
+    /* provide NULLPTR instead of graph object */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxGetGraphParameterRefsList(NULL, 1, 2, refs_list));
+    
+    void* ptr;
+    ptr = malloc(sizeof(vx_uint8));
+    /* provide pointer that is not a reference */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_TYPE, vxGetGraphParameterRefsList(ptr, 1, 2, refs_list));
+    if(NULL != ptr)
+    {
+        free(ptr);
+    }
+
+    vx_graph graph;
+    vx_node node;
+
+    vx_image images[4] = 
+    {
+        vxCreateImage(context, 32, 32, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 32, 32, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 32, 32, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 32, 32, VX_DF_IMAGE_U8)
+    };
+
+    vx_reference refs0[2] = {(vx_reference)images[0], (vx_reference)images[1]};
+    vx_reference refs1[2] = {(vx_reference)images[2], (vx_reference)images[3]};
+    vx_graph_parameter_queue_params_t graph_params[3] = 
+    {
+        {.graph_parameter_index = 0, .refs_list = refs0, .refs_list_size = 2},
+        {.graph_parameter_index = 1, .refs_list = (vx_reference *)&images[1], .refs_list_size = 1},
+        {.graph_parameter_index = 2, .refs_list = refs1, .refs_list_size = 2}
+    };
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH); 
+
+    /* provide non verified Graph */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_GRAPH, vxGetGraphParameterRefsList(graph, 1, 2, refs_list));
+
+    ASSERT_VX_OBJECT(node = vxAndNode(graph, images[0], images[1], images[2]), VX_TYPE_NODE);
+    addParameterToGraph(graph, node, 0);
+    addParameterToGraph(graph, node, 1);
+    addParameterToGraph(graph, node, 2);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    /* try to retrieve refs_list for a graph parameter that is out of range */ 
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_DIMENSION, vxGetGraphParameterRefsList(graph, 3, 2, refs_list)); 
+
+    /* this should retrieve a valid refs_list for a given graph Parameter */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetGraphParameterRefsList(graph, 0, 2, refs_list)); 
+
+    ASSERT_EQ_PTR(refs_list[0], images[0]);
+    ASSERT_EQ_PTR(refs_list[1], images[1]);
+
+    /* release the two references received by the API vxGetGraphParameterRefsList */
+    for (int i = 0; i < 2; ++i)
+    {
+        VX_CALL(vxReleaseReference(&refs_list[i]));
+    }    
+
+    /* this should retrieve a valid refs_list for a given graph Parameter but the list is smaller
+       we should get a warning */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetGraphParameterRefsList(graph, 2, 1, refs_list)); 
+
+    ASSERT_EQ_PTR(refs_list[0], images[2]);    
+    VX_CALL(vxReleaseReference(&refs_list[0]));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    VX_CALL(vxReleaseImage(&images[0]));
+    VX_CALL(vxReleaseImage(&images[1]));
+    VX_CALL(vxReleaseImage(&images[2]));
+    VX_CALL(vxReleaseImage(&images[3]));
+}
+
 TEST(tivxGraphPipelineLdra, negativeTestSetGraphScheduleConfig)
 {
     #define VX_GRAPH_SCHEDULE_MODE_DEFAULT 0
@@ -8388,7 +8470,8 @@ TESTCASE_TESTS(tivxGraphPipeline2,
     testIllegelDoubleEnqueuing,
     testGraphEvent,
     testGraphEventTimeout,
-    testGraphEventTimeout2
+    testGraphEventTimeout2, 
+    testGetGraphParameterRefsList
 )
 
 TESTCASE_TESTS(

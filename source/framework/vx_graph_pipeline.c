@@ -746,6 +746,60 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterCheckDoneRef(vx_graph graph,
     return status;
 }
 
+VX_API_ENTRY vx_status VX_API_CALL vxGetGraphParameterRefsList(vx_graph graph,
+            vx_uint32 graph_parameter_index,
+            vx_uint32 refs_list_size,
+            vx_reference refs_list[])
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    if (NULL != graph)
+    {
+        if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+        {
+            if ( (vx_bool)vx_true_e == graph->verified)
+            {   
+                if (graph->num_params > graph_parameter_index)
+                {
+                    vx_uint32 refIdx;
+                    for (refIdx = 0; refIdx < refs_list_size; refIdx++)
+                    {
+                        refs_list[refIdx] = graph->parameters[graph_parameter_index].refs_list[refIdx];
+                        /* Setting it as void since the return value 'count' is not used further */
+                        (void)ownIncrementReference(refs_list[refIdx], (vx_enum)VX_EXTERNAL);
+                    }
+
+                    if (graph->parameters[graph_parameter_index].num_buf > refs_list_size)
+                    {
+                        VX_PRINT(VX_ZONE_WARNING, "refs_list provided smaller than reference list assigned to this graph parameter \n");
+                    }                    
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Graph Parameter Index out of range \n");
+                    status = (vx_status)VX_ERROR_INVALID_DIMENSION;
+                }
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Graph has not been verified \n");
+                status = (vx_status)VX_ERROR_INVALID_GRAPH;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "no valid reference object given for graph object \n");
+            status = (vx_status)VX_ERROR_INVALID_TYPE;
+        }      
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Null Pointer given for graph object \n");
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    }
+
+    return status;
+}
+
 static tivx_obj_desc_graph_t *ownGraphDequeueFreeObjDesc(vx_graph graph)
 {
     vx_status status;
