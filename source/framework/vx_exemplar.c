@@ -381,7 +381,6 @@ static vx_reference ownCreateObjectArrayFromExemplar(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_EXEMPLER_UM011
 <justification end>*/
-/* TIOVX-1721- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_EXEMPLER_UM011 */
     if(objarr_item_exemplar==NULL)
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid object array reference\n");

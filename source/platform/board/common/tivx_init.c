@@ -212,7 +212,6 @@ static void tivxDeInitLocal(void)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_INIT_UM001
 <justification end> */
-/* TIOVX-1759- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_INIT_UM001 */
     else
     {
         /* ERROR. */
