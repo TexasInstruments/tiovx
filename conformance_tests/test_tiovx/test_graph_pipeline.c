@@ -8263,12 +8263,12 @@ TEST(tivxGraphPipeline2, testGetGraphParameterRefsList)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxGetGraphParameterRefsList(NULL, 1, 2, refs_list));
     
     void* ptr;
-    ptr = malloc(sizeof(vx_uint8));
+    ptr = ct_alloc_mem(sizeof(vx_uint8));
     /* provide pointer that is not a reference */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_TYPE, vxGetGraphParameterRefsList(ptr, 1, 2, refs_list));
     if(NULL != ptr)
     {
-        free(ptr);
+        ct_free_mem(ptr);
     }
 
     vx_graph graph;
