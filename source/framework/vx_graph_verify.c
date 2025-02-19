@@ -460,8 +460,13 @@ static vx_status ownGraphValidRectCallback(
                     }
 /* LDRA_JUSTIFY_END */
                 }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR011
+<justification end> */
                 else
-                if(ref->type == (vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR011 */
+                if(ref->type == (vx_enum)VX_TYPE_PYRAMID)
+/* LDRA_JUSTIFY_END */
                 {
                     vx_status tmp_status;
                     vx_size levels, k;
@@ -498,15 +503,17 @@ static vx_status ownGraphValidRectCallback(
 /* LDRA_JUSTIFY_END */
                     }
                 }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM003 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM003
+<justification end> */
                 else
                 {
                     /* not supported for other references */
                     status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR,"not supported for references other than image or pyramid\n");
                 }
-#endif
+/* LDRA_JUSTIFY_END */
             }
         }
     }

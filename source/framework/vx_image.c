@@ -2934,8 +2934,12 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
 /* LDRA_JUSTIFY_END */
                             }
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR023
+<justification end>*/
                             /* This is a valid image and thus adding to the list and incrementing k */
-                            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR023 */
+                            if ((vx_status)VX_SUCCESS == status)
                             {
                                 image_arr[stack_pointer] = subimage;
                                 for (p = 0; p < si_obj_desc->planes; p++)
@@ -2944,6 +2948,7 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
                                 }
                                 stack_pointer++;
                             }
+/* LDRA_JUSTIFY_END */
                         }
                     }
                 }

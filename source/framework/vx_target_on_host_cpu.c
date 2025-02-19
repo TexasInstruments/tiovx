@@ -102,7 +102,11 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
             node_obj_desc_id = cmd_obj_desc->obj_desc_id[0];
             node_obj_desc = (tivx_obj_desc_node_t*)ownObjDescGet(node_obj_desc_id);
 
-            if( ownObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) != 0) /* TIOVX-1937- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR001 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_ON_HOST_CPU_UBR001
+<justification end>*/
+            if( ownObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) != 0)
             {
                 uint64_t timestamp;
                 vx_action action;
@@ -116,6 +120,7 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
                     ownTargetSetGraphStateAbandon(node_obj_desc);
                 }
             }
+/* LDRA_JUSTIFY_END */
             /* No ack for user callback command */
             break;
 
@@ -146,7 +151,7 @@ static void ownTargetCmdDescHandlerHost(const tivx_obj_desc_cmd_t *cmd_obj_desc)
 <justification end>*/
         default:
             break;
-/* LDRA_JUSTIY_END */
+/* LDRA_JUSTIFY_END */
     }
 }
 
