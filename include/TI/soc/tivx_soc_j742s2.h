@@ -536,6 +536,21 @@ extern "C" {
  */
 #define TIVX_TARGET_VPAC2_VISS1   "VPAC2_VISS1"
 
+/*! \brief Target name for VPAC1 FC
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VPAC1_FC   "VPAC1_FC"
+
+/* This is a compatibility feature used to align
+ * the VPAC nodes across J721E/J721S2 and J784S4
+ */
+#define TIVX_TARGET_VPAC_FC        TIVX_TARGET_VPAC1_FC
+
+/*! \brief Target name for VPAC2 FC
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VPAC2_FC   "VPAC2_FC"
+
 /*! \brief CPU ID for supported CPUs
  *
  *         CPU ID is defined in platform module since

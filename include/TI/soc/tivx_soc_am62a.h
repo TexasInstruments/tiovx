@@ -225,6 +225,11 @@ extern "C" {
  */
 #define TIVX_TARGET_VPAC_VISS1   "VPAC_VISS1"
 
+/*! \brief Target name for VPAC1 FC
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VPAC_FC      "VPAC_FC"
+
 /*! \brief CPU ID for supported CPUs
  *
  *         CPU ID is defined in platform module since

@@ -185,6 +185,11 @@ static void getNodeColor(vx_node node, char *node_color_name)
             (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blanchedalmond");
         }
         else
+        if(strncmp(target_name, "VPAC_FC", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blanchedalmond");
+        }
+        else
         if(strncmp(target_name, "CAPTURE1", TIVX_TARGET_MAX_NAME) == 0)
         {
             (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blue");

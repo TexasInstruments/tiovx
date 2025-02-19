@@ -70,6 +70,8 @@ void ownPlatformCreateTargetsR5f(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC1, 2u, "TIVX_VMSC1", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC2, 3u, "TIVX_VMSC2", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1, 4u, "TIVX_VVISS1", 13u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_FC,    5u, "TIVX_V1FC",  13u);
+
 }
 
 /* LDRA_JUSTIFY
@@ -84,6 +86,7 @@ void ownPlatformDeleteTargetsR5f(void)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC1);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC2);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_FC);
 }
 
 #ifndef PC

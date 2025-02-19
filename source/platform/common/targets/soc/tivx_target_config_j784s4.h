@@ -76,7 +76,7 @@ extern "C" {
 /*! \brief Max number of targets on a given R5F
  * \ingroup group_tivx_platform
  */
-#define TIVX_TARGET_R5F_MAX            (26U)
+#define TIVX_TARGET_R5F_MAX            (27U)
 
 /*! \brief Target ID for supported targets
  *
@@ -274,6 +274,9 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for CSITX2 */
     TIVX_TARGET_ID_CSITX2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_0, 25u),
 
+    /*! \brief target ID for FC */
+    TIVX_TARGET_ID_VPAC_FC = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_0, 26u),
+
     /*! \brief target ID for MCU2-1 */
     TIVX_TARGET_ID_MCU2_1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_1, 0u),
 
@@ -306,6 +309,9 @@ typedef enum _tivx_target_id_e {
 
     /*! \brief target ID for VPAC2 VISS1 */
     TIVX_TARGET_ID_VPAC2_VISS1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU4_0, 5u),
+
+    /*! \brief target ID for VPAC2 FC */
+    TIVX_TARGET_ID_VPAC2_FC = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU4_0, 6u),
 
     /*! \brief target ID for MCU4_1 */
     TIVX_TARGET_ID_MCU4_1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU4_1, 0u),
@@ -394,6 +400,8 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_DSP_C7_4_PRI_6, (vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_6},               \
     {TIVX_TARGET_DSP_C7_4_PRI_7, (vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_7},               \
     {TIVX_TARGET_DSP_C7_4_PRI_8, (vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_8},               \
+    {TIVX_TARGET_VPAC_FC, (vx_enum)TIVX_TARGET_ID_VPAC_FC},                             \
+    {TIVX_TARGET_VPAC2_FC, (vx_enum)TIVX_TARGET_ID_VPAC2_FC},                           \
     /* TIVX_TARGET_HOST will be filled later during tivxHostInit()             \
      * by calling function tivxPlatformSetHostTargetId                         \
      */                                                                        \

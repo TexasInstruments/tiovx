@@ -91,6 +91,7 @@ void ownPlatformCreateTargetsR5f(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M2, 23u, "TIVX_DPM2M2", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M3, 24u, "TIVX_DPM2M3", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4, 25u, "TIVX_DPM2M4", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_FC,      26u, "TIVX_V1FC",  13u);
 
     /* MCU2-1 Targets */
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU2_1,    0u, "TIVX_CPU_1", 4u);
@@ -110,6 +111,7 @@ void ownPlatformCreateTargetsR5f(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_MSC1,  3u, "TIVX_V2MSC1", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_MSC2,  4u, "TIVX_V2MSC2", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_VISS1, 5u, "TIVX_V2VISS", 13u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_FC,    6u, "TIVX_V2FC",  13u);
 
     /* MCU4-1 Targets */
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU4_1, 0u, "TIVX_MCU4_1", 4u);
@@ -149,6 +151,7 @@ void ownPlatformDeleteTargetsR5f(void)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M2);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M3);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_FC);    
 
     /* MCU2-1 targets */
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MCU2_1);
@@ -168,6 +171,7 @@ void ownPlatformDeleteTargetsR5f(void)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_MSC1);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_MSC2);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_VISS1);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_FC);    
 
     /* MCU4-1 targets */
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MCU4_1);

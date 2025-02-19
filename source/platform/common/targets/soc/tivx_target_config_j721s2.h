@@ -77,7 +77,7 @@ extern "C" {
 /*! \brief Max number of targets on a given R5F
  * \ingroup group_tivx_platform
  */
-#define TIVX_TARGET_R5F_MAX            (22U)
+#define TIVX_TARGET_R5F_MAX            (23U)
 
 /*! \brief Target ID for supported targets
  *
@@ -194,6 +194,9 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for CSITX2 */
     TIVX_TARGET_ID_CSITX2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_0, 21u),
 
+    /*! \brief target ID for FC */
+    TIVX_TARGET_ID_VPAC_FC = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_0, 22u),
+
     /*! \brief target ID for MCU2-1 */
     TIVX_TARGET_ID_MCU2_1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_1, 0u),
 
@@ -259,6 +262,7 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_DMPAC_DOF, (vx_enum)TIVX_TARGET_ID_DMPAC_DOF},                         \
     {TIVX_TARGET_MCU3_0, (vx_enum)TIVX_TARGET_ID_MCU3_0},                               \
     {TIVX_TARGET_MCU3_1, (vx_enum)TIVX_TARGET_ID_MCU3_1},                               \
+    {TIVX_TARGET_VPAC_FC, (vx_enum)TIVX_TARGET_ID_VPAC_FC},                          \
     /* TIVX_TARGET_HOST will be filled later during tivxHostInit()             \
      * by calling function tivxPlatformSetHostTargetId                         \
      */                                                                        \
