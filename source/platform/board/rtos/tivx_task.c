@@ -32,7 +32,7 @@ static void tivxTaskDefHandle(void* arg0, void* arg1)
     tivx_task *task;
 
 /* LDRA_JUSTIFY_START
-<metric start> branch <metric end>
+<metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR001
 <justification end> */
     if (0U != (uintptr_t)arg0)
