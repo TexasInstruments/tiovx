@@ -410,7 +410,8 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
 <justification end> */
                     else
                     {
-                        /* do nothing */
+                        node->is_timed_out = (vx_bool)vx_false_e;
+                        VX_PRINT(VX_ZONE_ERROR, "Non-timeout error returned when sending command to the node\n");
                     }
 /* LDRA_JUSTIFY_END */
                 }
