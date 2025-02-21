@@ -750,6 +750,7 @@ TEST(tivxInternalNode, negativeTestKernelInit)
  */
 TEST(tivxInternalNode, negativeTestKernelDeinit)
 {
+#if defined(BUILD_CORE_KERNELS)
     vx_context context = context_->vx_context_;
     vx_reference src = 0, dst = 0;
     vx_graph graph = 0;
@@ -814,6 +815,7 @@ TEST(tivxInternalNode, negativeTestKernelDeinit)
     VX_CALL(vxReleaseReference(&dst));
     VX_CALL(vxReleaseReference(&src));
     VX_CALL(vxReleaseGraph(&graph));
+#endif /* #if defined(BUILD_CORE_KERNELS) */
 }
 
 TEST(tivxInternalNode, TestBranchownNodeGetNextNode)

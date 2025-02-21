@@ -14,32 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #if defined(BUILD_CT_KHR)
+#if defined(BUILD_CORE_KERNELS)
 TESTCASE(Graph)
 TESTCASE(GraphCallback)
 TESTCASE(GraphDelay)
 TESTCASE(GraphROI)
 
-TESTCASE(Array)
-TESTCASE(ObjectArray)
-TESTCASE(Image)
-
 TESTCASE(vxCreateImageFromChannel)
 
-TESTCASE(vxCopyImagePatch)
-TESTCASE(vxMapImagePatch)
-
+TESTCASE(UserNode)
+TESTCASE(SmokeTest)
+TESTCASE(Target)
 TESTCASE(vxuConvertDepth)
 TESTCASE(vxConvertDepth)
-
 TESTCASE(ChannelCombine)
 TESTCASE(ChannelExtract)
-
 TESTCASE(ColorConvert)
-
 TESTCASE(vxuAddSub)
 TESTCASE(vxAddSub)
-
 TESTCASE(vxuNot)
 TESTCASE(vxNot)
 
@@ -51,35 +45,27 @@ TESTCASE(vxBinOp16s)
 
 TESTCASE(vxuMultiply)
 TESTCASE(vxMultiply)
-
 TESTCASE(Histogram)
 TESTCASE(EqualizeHistogram)
 TESTCASE(MeanStdDev)
 TESTCASE(MinMaxLoc)
-TESTCASE(Threshold)
 
+TESTCASE(Threshold)
 TESTCASE(Box3x3)
 TESTCASE(Convolve)
 TESTCASE(Dilate3x3)
 TESTCASE(Erode3x3)
+
 TESTCASE(Gaussian3x3)
 TESTCASE(Median3x3)
 TESTCASE(Sobel3x3)
 TESTCASE(NonLinearFilter)
-
-TESTCASE(Accumulate)
-TESTCASE(AccumulateSquare)
-TESTCASE(AccumulateWeighted)
-
 TESTCASE(Integral)
-TESTCASE(LUT)
 
 TESTCASE(Magnitude)
 TESTCASE(Phase)
-
 TESTCASE(FastCorners)
 TESTCASE(HarrisCorners)
-
 TESTCASE(Scale)
 TESTCASE(WarpAffine)
 TESTCASE(WarpPerspective)
@@ -87,30 +73,36 @@ TESTCASE(Remap)
 
 TESTCASE(GaussianPyramid)
 TESTCASE(HalfScaleGaussian)
-
 TESTCASE(LaplacianPyramid)
 TESTCASE(LaplacianReconstruct)
-
 TESTCASE(vxuCanny)
 TESTCASE(vxCanny)
 TESTCASE(OptFlowPyrLK)
+TESTCASE(LUT)
 
-TESTCASE(UserNode)
+TESTCASE(Accumulate)
+TESTCASE(AccumulateSquare)
+TESTCASE(AccumulateWeighted)
+#endif /* #if defined(BUILD_CORE_KERNELS) */
+
+TESTCASE(Array)
+
+TESTCASE(Convolution)
 
 TESTCASE(Logging)
-TESTCASE(SmokeTest)
+
+TESTCASE(Matrix)
+
+TESTCASE(ObjectArray)
 
 TESTCASE(Scalar)
 
-TESTCASE(Target)
-
-TESTCASE(Convolution)
-TESTCASE(Matrix)
+TESTCASE(Image)
+TESTCASE(vxCopyImagePatch)
+TESTCASE(vxMapImagePatch)
 
 #ifdef OPENVX_USE_USER_DATA_OBJECT
 TESTCASE(UserDataObject)
 #endif
 
 #endif
-
-

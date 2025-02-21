@@ -59,19 +59,28 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#if defined(BUILD_CT_TIOVX_TEST_KERNELS)
+
+#if defined(BUILD_TEST_KERNELS)
+
+#if defined(BUILD_CORE_KERNELS)
 TESTCASE(tivxTestKernelsNotNot)
-TESTCASE(tivxGraphStreaming)
-TESTCASE(tivxSourceNode)
-TESTCASE(tivxTimestamp)
-TESTCASE(tivxTiovxOverhead)
+
+TESTCASE(tivxPyramidNode)
+
 #if !defined(SOC_AM62A)
 TESTCASE(tivxTestSinkNode)
 #endif
+
+TESTCASE(tivxSourceNode)
+#endif /* #if defined(BUILD_CORE_KERNELS) */
+
 TESTCASE(tivxCmdTimeout)
+
+TESTCASE(tivxGraphStreaming)
+
 TESTCASE(GraphStreaming)
-TESTCASE(tivxPyramidNode)
-#endif
 
+TESTCASE(tivxTimestamp)
 
-
+TESTCASE(tivxTiovxOverhead)
+#endif /* #if defined(BUILD_TEST_KERNELS) */

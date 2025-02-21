@@ -68,7 +68,6 @@ BUILD_SDK               | Builds for SDK SW platform. Valid values are: psdkra (
 BUILD_IGNORE_LIB_ORDER  | When set to yes, it ignores the static library order listed in makefiles when building on the PC. | yes |
 BUILD_CT_KHR  | Builds and includes the Khronos OpenVX 1.1 conformance tests suite.  | yes |
 BUILD_CT_TIOVX  | Builds and includes the TI-added tests suite (for TI extensions and additional rohbustness testing).  | yes |
-BUILD_CT_TIOVX_TEST_KERNELS  | Builds and includes the TI-added tests suite (for testing custom kernel interface). | yes |
 BUILD_CT_TIOVX_IVISION  | Builds and includes the tests for IVISION kernels test suite.       | no |
 BUILD_CT_TIOVX_TIDL  | Builds and includes the tests for TIDL kernel test suite.     | yes |
 BUILD_CT_TIOVX_HWA  | Builds and includes the tests for HWA kernels test suite.      | yes |
@@ -77,6 +76,9 @@ BUILD_CT_TIOVX_HWA_DISPLAY_TESTS | Builds and includes display test cases <BR> N
 BUILD_CT_TIOVX_HWA_CAPTURE_TESTS | Builds and includes a large set of negative tests for HWA kernels <BR> Note: in order to run on J7 platform, 4 IMX390 cameras must be connected to a Fusion board which is connected to the EVM| no |
 BUILD_CT_TIOVX_HWA_CSITX_TESTS | Builds and includes csitx test cases <BR> Note: in order to run on J7 platform, the following setup is required: <ul><li> EVM Board Configuration: By default DPHY is connected to FPD Panel (DSI-TX), it has to be changed to DSI FPC(CSI-TX). </li><li> J7X LI(Leopard Imaging) Serial Capture Board </li><li> FPC Cable: Connect Csitx to Csirx. </li></ul> This test uses CSIRX to receive the data transmitted by CSITX, hence lane speed for both modules should be same. This tests confgiures the CSITX lane speed to 800 Mbps.| no |
 BUILD_TYPE              | Specifies the build configuration as development or production. Valid values are: dev / prod | dev |
+BUILD_CORE_KERNELS      | Builds and loads all core kernels and associated test cases. This flag is enabled when BUILD_TYPE is "dev" and disabled when BUILD_TYPE is "prod". | yes |
+BUILD_EXT_KERNELS       | Builds and loads all extension kernels and associated test cases. This flag is enabled when BUILD_TYPE is "dev" and disabled when BUILD_TYPE is "prod". | yes |
+BUILD_TEST_KERNELS      | Builds and loads all test kernels and associated test cases. This flag is enabled when BUILD_TYPE is "dev" and disabled when BUILD_TYPE is "prod". | yes |
 
 ---
 

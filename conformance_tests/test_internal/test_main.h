@@ -17,46 +17,80 @@
 
 
 #if defined(BUILD_CT_TIOVX_INTERNAL)
-TESTCASE(tivxObjDescBoundary)
-TESTCASE(tivxInternalObjArray)
-TESTCASE(tivxInternalApis)
-TESTCASE(tivxInternalObjects)
-TESTCASE(tivxInternalContext)
-TESTCASE(tivxInternalUserDataObject)
-TESTCASE(tivxInternalRawImage)
-TESTCASE(tivxInternalError)
-TESTCASE(tivxReferenceLock)
-TESTCASE(tivxInternalPyramid)
-TESTCASE(tivxInternalParameter)
-TESTCASE(tivxInternalTensor)
-TESTCASE(tivxInternalGraph)
-TESTCASE(tivxInternalGraphStream)
-TESTCASE(tivxInternalGraphVerify)
+
+#if defined(BUILD_TEST_KERNELS)
+
 TESTCASE(tivxInternalNode)
-TESTCASE(tivxInternalImage)
+
+TESTCASE(tivxInternalGraphVerify)
+#endif /* #if defined(BUILD_TEST_KERNELS) */
+
 TESTCASE(tivxInternalArray)
-TESTCASE(tivxInternalLUT)
-TESTCASE(tivxInternalMatrix)
-TESTCASE(tivxInternalKernel)
+
+TESTCASE(tivxObjDescBoundary)
+
+TESTCASE(tivxInternalContext)
+
+TESTCASE(tivxInternalDataRefQueue)
+
 TESTCASE(tivxInternaldelay)
+
+TESTCASE(tivxInternalError)
+
+TESTCASE(tivxInternalEventQueue)
+
+TESTCASE(tivxInternalGraph)
+
+TESTCASE(tivxInternalGraphPipeline)
+
+TESTCASE(tivxInternalGraphSort)
+
+TESTCASE(tivxInternalGraphStream)
+
+TESTCASE(tivxInternalImage)
+
+TESTCASE(tivxInternalApis)
+
+TESTCASE(tivxInternalKernel)
+
+TESTCASE(tivxInternalLUT)
+
+TESTCASE(tivxInternalMatrix)
+
+TESTCASE(tivxInternalMetaFormat)
+
+TESTCASE(tivxInternalObjArray)
+
+TESTCASE(tivxInternalObjects)
+
+TESTCASE(tivxInternalParameter)
+
+TESTCASE(tivxInternalPyramid)
+
+TESTCASE(tivxInternalRawImage)
+
+TESTCASE(tivxInternalReference)
+
+TESTCASE(tivxReferenceLock)
+
+TESTCASE(tivxInternalSafeCasts)
+
+TESTCASE(tivxInternalTensor)
+
 #if defined(A72) || defined(A53) || defined(PC)
 TESTCASE(tivxPosixObjects)
 #endif
-TESTCASE(tivxInternalMetaFormat)
-TESTCASE(tivxInternalGraphPipeline)
-TESTCASE(tivxInternalDataRefQueue)
-TESTCASE(tivxInternalEventQueue)
-TESTCASE(tivxInternalReference)
 
-#if defined(A72) || defined(A53)
-TESTCASE(tivxDmaHeap)
-TESTCASE(tivxTimer)
-#endif
+TESTCASE(tivxInternalUserDataObject)
 
 #if defined(LINUX) && !defined(PC)
 TESTCASE(tivxRpmsgChar)
 #endif
-TESTCASE(tivxInternalGraphSort)
-TESTCASE(tivxInternalSafeCasts)
+
+#if defined(A72) || defined(A53)
+TESTCASE(tivxDmaHeap)
+
+TESTCASE(tivxTimer)
+#endif
 
 #endif

@@ -60,7 +60,12 @@
  *
  */
 
+#if defined(BUILD_EXT_KERNELS)
 TESTCASE(tivxObjArraySplit)
+#endif /* #if defined(BUILD_EXT_KERNELS) */
+
 #if !defined(SOC_J722S) && !defined(SOC_AM62A)
+#if defined(BUILD_TEST_KERNELS)
 TESTCASE(tivxTargetFinal)
+#endif /* #if defined(BUILD_TEST_KERNELS) */
 #endif

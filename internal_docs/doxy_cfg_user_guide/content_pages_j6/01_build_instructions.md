@@ -154,7 +154,6 @@ BUILD_SDK               | Builds for Vision SDK SW platform (TDA2x/3x/2Ex) or Pr
 BUILD_IGNORE_LIB_ORDER  | When set to yes, it ignores the static library order listed in makefiles when building on the PC. | yes |
 BUILD_CT_KHR  | Builds and includes the Khronos OpenVX 1.1 conformance tests suite.  | yes |
 BUILD_CT_TIOVX  | Builds and includes the TI-added tests suite (for TI extensions and additional rohbustness testing).  | yes |
-BUILD_CT_TIOVX_TEST_KERNELS  | Builds and includes the TI-added tests suite (for testing custom kernel interface). | yes |
 BUILD_CT_TIOVX_IVISION  | Builds and includes the tests for IVISION kernels test suite.       | yes |
 BUILD_CT_TIOVX_TIDL  | Builds and includes the tests for TIDL kernel test suite.     | yes |
 BUILD_CT_TIOVX_HWA  | Builds and includes the tests for HWA kernels test suite.      | no |

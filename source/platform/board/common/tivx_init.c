@@ -101,14 +101,18 @@ static void tivxInitLocal(void)
         /* Initialize Host */
     #if defined (SOC_J721E)
     #if defined (C66)
+        #if defined(BUILD_CORE_KERNELS)
         tivxRegisterOpenVXCoreTargetKernels();
+        #endif /* #if defined(BUILD_CORE_KERNELS) */
         #ifdef BUILD_TUTORIAL
         tivxRegisterTutorialTargetKernels();
         #endif
     #endif
     #else
     #if defined (C7X_FAMILY)
+        #if defined(BUILD_CORE_KERNELS)
         tivxRegisterOpenVXCoreTargetKernels();
+        #endif /* #if defined(BUILD_CORE_KERNELS) */
         #ifdef BUILD_TUTORIAL
         tivxRegisterTutorialTargetKernels();
         #endif
@@ -116,15 +120,17 @@ static void tivxInitLocal(void)
     #endif /* defined(SOC_J721E) */
 
     #ifdef BUILD_CONFORMANCE_TEST
+    #if defined(BUILD_TEST_KERNELS)
     #if defined (R5F)
-        tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetArmKernels();
     #endif
 
+    tivxRegisterCaptureTargetArmKernels();
+
     #if defined (C7X_FAMILY) || defined (C66)
-        tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetDspKernels();
     #endif
+    #endif /* #if defined(BUILD_TEST_KERNELS) */
     #endif  /* #ifdef BUILD_CONFORMANCE_TEST */
 
         ownObjDescInit();
@@ -162,14 +168,18 @@ static void tivxDeInitLocal(void)
             /* DeInitialize Host */
         #if defined (SOC_J721E)
         #if defined (C66)
-            tivxUnRegisterOpenVXCoreTargetKernels();
+            #if defined(BUILD_CORE_KERNELS)
+            tivxRegisterOpenVXCoreTargetKernels();
+            #endif /* #if defined(BUILD_CORE_KERNELS) */
             #ifdef BUILD_TUTORIAL
-            tivxUnRegisterTutorialTargetKernels();
+            tivxRegisterTutorialTargetKernels();
             #endif
         #endif
         #else
         #if defined (C7X_FAMILY)
+            #if defined(BUILD_CORE_KERNELS)
             tivxUnRegisterOpenVXCoreTargetKernels();
+            #endif /* #if defined(BUILD_CORE_KERNELS) */
             #ifdef BUILD_TUTORIAL
             tivxUnRegisterTutorialTargetKernels();
             #endif
@@ -177,15 +187,17 @@ static void tivxDeInitLocal(void)
         #endif /* defined(SOC_J721E) */
 
         #ifdef BUILD_CONFORMANCE_TEST
+        #if defined(BUILD_TEST_KERNELS)
         #if defined (R5F)
-            tivxUnRegisterCaptureTargetArmKernels();
             tivxUnRegisterTestKernelsTargetArmKernels();
         #endif
 
+        tivxUnRegisterCaptureTargetArmKernels();
+
         #if defined (C7X_FAMILY) || defined(C66)
-            tivxUnRegisterCaptureTargetArmKernels();
             tivxUnRegisterTestKernelsTargetDspKernels();
         #endif
+        #endif /* #if defined(BUILD_TEST_KERNELS) */
         #endif  /* #ifdef BUILD_CONFORMANCE_TEST */
 
             /* DeInitialize Target */
