@@ -170,6 +170,22 @@ extern "C" {
  */
 #define TIVX_MAX_LIBRARY_ID                (VX_LIBRARY(VX_LIBRARY_MASK))
 
+#if 0
+/* The below enums are provided here in a commented out location in order
+ * to track the value of the enums and ensure that there are no conflicting
+ * values.  The location of the actual definition of these values are also
+ * provided.
+ */
+/* This enum can be found in include/TI/tivx_ext_raw_image.h */
+#define TIVX_ENUM_RAW_IMAGE_BUFFER_ACCESS      (vx_enum)0x0
+
+/* This enum can be found in include/TI/tivx_ext_raw_image.h */
+#define TIVX_ENUM_RAW_IMAGE_PIXEL_CONTAINER    (vx_enum)0x1
+
+/* This enum can be found in source/include/tivx_event_queue.h */
+#define TIVX_ENUM_EVENT_QUEUE                  (vx_enum)0x2
+#endif
+
 /*! \brief TI attribute extensions for the graph object
  *
  * \ingroup group_tivx_ext_host

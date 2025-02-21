@@ -83,7 +83,7 @@ extern "C" {
 /*! \brief The enum type enumeration for event queues.
  * \ingroup group_tivx_event_queue
  */
-#define TIVX_ENUM_EVENT_QUEUE      (vx_enum)0x100   /*!< \brief A <tt>\ref tivx_queue_type_e</tt>. */
+#define TIVX_ENUM_EVENT_QUEUE      (vx_enum)0x2   /*!< \brief A <tt>\ref tivx_queue_type_e</tt>. */
 
 /*! \brief Element inserted into event queue
  * \ingroup group_tivx_event_queue
