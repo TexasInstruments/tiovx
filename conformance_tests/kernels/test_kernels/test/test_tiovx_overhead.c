@@ -73,6 +73,7 @@
 #define ITERATIONS      100u
 
 static FILE *file = NULL;
+static uint8_t g_core_counter = 0U;
 
 static void openFile()
 {
@@ -96,15 +97,18 @@ static void openFile()
         fprintf(file, "%s\n", "<html>");
         fprintf(file, "%s\n", "<head>");
         fprintf(file, "%s\n", "  <meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">");
-        fprintf(file, "%s\n", "  <title>TIOVX IPC Overhead Benchmark</title>");
+        fprintf(file, "%s\n", "  <title>TIOVX Framework Overhead Benchmark</title>");
         fprintf(file, "%s\n", "</head>");
 
-        fprintf(file, "<p>TIOVX IPC Overhead Benchmark<p>");
-        fprintf(file, "<p>%d iterations were performed on each target.<p>", ITERATIONS);
+        fprintf(file, "<p>TIOVX Framework Overhead Benchmark<p>");
+        fprintf(file, "<p>Average values are reported after performing %d iterations on each target. Framework overhead is calculated \
+                       by subtracting the execution time of a single node from the total execution time of its graph. Execution \
+                       time is measured by querying each graph and node after calling vxProcessGraph.<p>", ITERATIONS);
 
         fprintf(file, "%s\n", "<body>");
         fprintf(file, "%s\n", "  <table frame=\"box\" rules=\"all\" cellspacing=\"0\" width=\"75%\" border=\"1\" cellpadding=\"3\">");
         fprintf(file, "%s\n", "    <tr bgcolor=\"lightgrey\">");
+        fprintf(file, "%s\n", "<td width=\"10%\" align=\"center\"><b>Core</b></td>");
         fprintf(file, "%s\n", "<td width=\"10%\" align=\"center\"><b>Target</b></td>");
         fprintf(file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Average Graph Performance (msec) </b></td>");
         fprintf(file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Average Node Performance (msec) </b></td>");
@@ -115,7 +119,7 @@ static void openFile()
     }
 }
 
-static void printOverhead(float gMax[], float nMax[], const char* targetName)
+static void printOverhead(float gMax[], float nMax[], const char* targetName, const char* coreName)
 {
     float gAvg=0, nAvg=0, oAvg=0, oMin=999999, oMax=0, over;
     uint32_t i;
@@ -142,6 +146,7 @@ static void printOverhead(float gMax[], float nMax[], const char* targetName)
 
     printf("\n********************************************\n");
     printf("  TIOVX OVERHEAD PERFORMANCE TEST\n");
+    printf("  CORE: %s\n", coreName);
     printf("  TARGET: %s\n", targetName);
     printf("  ITERATIONS: %d\n", ITERATIONS);
     printf("  AVERAGE GRAPH PERFORMANCE (MSEC): %f\n", gAvg);
@@ -161,6 +166,7 @@ static void printOverhead(float gMax[], float nMax[], const char* targetName)
         ASSERT(file);
 
         fprintf(file, "%s\n", " <tr align=\"center\">");
+        fprintf(file, "%s%s%s\n", "<td>", coreName, "</td>");
         fprintf(file, "%s%s%s\n", "<td>", targetName, "</td>");
         fprintf(file, "%s%4.6f%s\n", "<td>", gAvg, "</td>");
         fprintf(file, "%s%4.6f%s\n", "<td>", nAvg, "</td>");
@@ -181,22 +187,25 @@ typedef struct
 
 } SetTarget_Arg;
 
-#if defined(SOC_AM62A)
+#if defined(SOC_AM62A) || defined(SOC_J722S)
 #define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU1_0", __VA_ARGS__, TIVX_TARGET_MCU1_0)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1))
+#define CORE_LIST ((char const*[]){"A53", "R5F", "C7x"})
 #elif defined(SOC_J721E)
 #define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU2_0", __VA_ARGS__, TIVX_TARGET_MCU2_0)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_1))
+#define CORE_LIST ((char const*[]){"A72", "R5F", "C66", "C7x"})
 #else
 #define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU2_0", __VA_ARGS__, TIVX_TARGET_MCU2_0)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1))
+#define CORE_LIST ((char const*[]){"A72", "R5F", "C7x"})
 #endif
 
 #define SET_NODE_TARGET_PARAMETERS \
@@ -254,7 +263,8 @@ TEST_WITH_ARG(tivxTiovxOverhead, testTiovxOverhead, SetTarget_Arg, SET_NODE_TARG
 
     tivxTestKernelsUnLoadKernels(context);
 
-    printOverhead(gMax, nMax, arg_->target_string);
+    printOverhead(gMax, nMax, arg_->target_string, CORE_LIST[g_core_counter]);
+    g_core_counter++;
 }
 
 TEST(tivxTiovxOverhead, testCloseFile)
