@@ -135,26 +135,25 @@ static vx_status set_buffer_status(vx_reference current_ref, producer_buffer_sta
     }
 }
 
-static vx_reference get_buffer_with_status(vx_producer producer, producer_buffer_status status)
+static vx_uint8 get_num_buffer_with_status(vx_producer producer, producer_buffer_status status)
 {
-    vx_reference found_ref = NULL;
     uint32_t     buffer_id;
+    vx_uint8     num_buffers_found = 0;
 
     for (buffer_id = 0; buffer_id < producer->numBuffers; buffer_id++)
     {
         if (status == producer->refs[buffer_id].buffer_status)
         {
-            found_ref = producer->refs[buffer_id].ovx_ref;
-            VX_PRINT(VX_ZONE_REFERENCE, "PRODUCER found a buffer ref %p with status %d \n", found_ref, status);
-            break;
+            VX_PRINT(VX_ZONE_REFERENCE, "PRODUCER found a buffer ref %p with status %d \n", producer->refs[buffer_id].ovx_ref, status);
+            num_buffers_found++;
         }
     }
-    if (NULL == found_ref)
+    if (0U == num_buffers_found)
     {
         VX_PRINT(VX_ZONE_INFO, "PRODUCER no buffer found with status %d \n", status);
     }
 
-    return found_ref;
+    return num_buffers_found;
 }
 
 static vx_int32 get_buffer_id(vx_reference current_ref, vx_producer producer)
@@ -962,19 +961,15 @@ static void* producer_broadcast_thread(void* arg)
                     "\n");
                     break;
                 }
-                //  Graph is running in the background, check if output references can be released inside the blocking
-                //  dequeue callback
-                vx_reference l_inGraph = get_buffer_with_status(producer, IN_GRAPH);
-                if (l_inGraph != NULL)
-                {
-                    status = producer->streaming_cb.dequeueCallback(producer->graph_obj, dequeued_refs, &num_ready);
+
+                // Dequeue from the Graph
+                status = producer->streaming_cb.dequeueCallback(producer->graph_obj, dequeued_refs, &num_ready);
 #ifdef IPPC_SHEM_ENABLED
-                    producer->connection_check_polling_exit = vx_true_e; 
+                producer->connection_check_polling_exit = vx_true_e; 
 #endif
-                    if (status != (vx_status)VX_SUCCESS)
-                    {
-                        break;
-                    }
+                if (status != (vx_status)VX_SUCCESS)
+                {
+                    break;
                 }
 
 #ifdef IPPC_SHEM_ENABLED
@@ -1095,8 +1090,9 @@ static void* producer_broadcast_thread(void* arg)
                             }
                             else
                             {
-                                // if at least one buffer is occupied by graph, we can safely distribute the buffer to consumers
-                                if (NULL != get_buffer_with_status(producer, IN_GRAPH))
+                                // if at least one buffer (excluding the recently dequeued one) are
+                                // occupied by graph, we can safely distribute the buffer to consumers                               
+                                if (1U < get_num_buffer_with_status(producer, IN_GRAPH))
                                 {
                                     // fetch metadata from producer reference and store
                                     if (NULL != producer->streaming_cb.getMetadataCallback)
@@ -1211,8 +1207,7 @@ static void* producer_broadcast_thread(void* arg)
                     tivxTaskWaitMsecs(100);
 
                     // only dequeue if there is any reference in graph, to prevent forever blocking on dequeue
-                    vx_reference l_inGraph = get_buffer_with_status(producer, IN_GRAPH);
-                    if (l_inGraph != NULL)
+                    if (1U < get_num_buffer_with_status(producer, IN_GRAPH))
                     {
                         status = producer->streaming_cb.dequeueCallback(producer->graph_obj, dequeued_refs, &num_deque_refs);
                         if (status != (vx_status)VX_SUCCESS)
