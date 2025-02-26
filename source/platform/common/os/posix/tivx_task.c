@@ -137,25 +137,6 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
                     {
                         status = pthread_attr_setstacksize(&thread_attr, task->stack_size);
                     }
-                    #if 0
-                    struct sched_param schedprm;
-                    uint32_t pri;
-                    status |= pthread_attr_setschedpolicy(&thread_attr, SCHED_RR);
-
-                    pri = PRI_MIN;
-                    if(task->priority==TIVX_TASK_PRI_HIGHEST)
-                    {
-                        pri = PRI_MAX;
-                    }
-                    else
-                    if(task->priority==TIVX_TASK_PRI_LOWEST)
-                    {
-                        pri = PRI_MIN;
-                    }
-
-                    schedprm.sched_priority = pri;
-                    status |= pthread_attr_setschedparam(&thread_attr, &schedprm);
-                    #endif
                 }
 
 /* LDRA_JUSTIFY_START
