@@ -157,7 +157,7 @@ TESTCASE(tivxSobel3x3)
 TESTCASE(supplementary_data)
 
 TESTCASE(tivxTgKnl)
-`
+
 TESTCASE(tivxTgKrnlInst)
 
 TESTCASE(tivxTensor)
