@@ -182,7 +182,7 @@ void tivxSetPointerLocation(
 void tivxReserveC66xL2MEM(void);
 #endif
 
-#if defined(TARGET_DSP)
+#if defined(TARGET_DSP) || defined(PC)
 /*!
  * \brief A utility API that sets the pointer to the correct location based on
  *        the minimum of the valid rectangle.
@@ -196,7 +196,7 @@ void tivxSetTwoPointerLocation(
     void *target_ptr1[],
     uint8_t *addr0[],
     uint8_t *addr1[]);
-#endif /* #if defined(TARGET_DSP) */
+#endif /* #if defined(TARGET_DSP) || defined(PC) */
 
 /*!
  * \brief Function to assign platform-specific DSP target name

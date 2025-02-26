@@ -211,7 +211,7 @@ void tivxReserveC66xL2MEM(void)
 }
 #endif
 
-#if defined(TARGET_DSP)
+#if defined(TARGET_DSP) || defined(PC)
 void tivxSetTwoPointerLocation(
     const tivx_obj_desc_image_t *obj_desc0,
     const tivx_obj_desc_image_t *obj_desc1,
@@ -255,12 +255,12 @@ void tivxSetTwoPointerLocation(
             &obj_desc1->imagepatch_addr[i]));
     }
 }
-#endif /* #if defined(TARGET_DSP) */
+#endif /* #if defined(TARGET_DSP) || defined(PC) */
 
 vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
 {
     vx_status status = (vx_status)VX_FAILURE;
-#if defined(TARGET_DSP)
+#if defined(TARGET_DSP) || defined(PC)
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
@@ -316,7 +316,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
     }
     #endif
     /* LDRA_JUSTIFY_END */
-#endif /* #if defined(TARGET_DSP) */
+#endif /* #if defined(TARGET_DSP) || defined(PC) */
 
     return status;
 }
