@@ -758,8 +758,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetGraphParameterRefsList(vx_graph graph,
         {
             if ( (vx_bool)vx_true_e == graph->verified)
             {   
-                if ((graph->num_params > graph_parameter_index) || 
-                    (graph->parameters[graph_parameter_index].num_buf > refs_list_size))
+                if ((graph->num_params > graph_parameter_index) && 
+                    (graph->parameters[graph_parameter_index].num_buf <= refs_list_size))
                 {
                     vx_uint32 refIdx;
                     for (refIdx = 0; refIdx < refs_list_size; refIdx++)

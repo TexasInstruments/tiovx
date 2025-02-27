@@ -8318,12 +8318,8 @@ TEST(tivxGraphPipeline2, testGetGraphParameterRefsList)
         VX_CALL(vxReleaseReference(&refs_list[i]));
     }    
 
-    /* this should retrieve a valid refs_list for a given graph Parameter but the list is smaller
-       we should get a warning */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetGraphParameterRefsList(graph, 2, 1, refs_list)); 
-
-    ASSERT_EQ_PTR(refs_list[0], images[2]);    
-    VX_CALL(vxReleaseReference(&refs_list[0]));
+    /* this should not retrieve a valid refs_list for a given graph Parameter because the list is smaller */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_DIMENSION, vxGetGraphParameterRefsList(graph, 2, 1, refs_list));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
