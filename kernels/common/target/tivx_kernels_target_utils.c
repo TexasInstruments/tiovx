@@ -324,7 +324,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
 vx_status tivxKernelsTargetUtilsAssignTargetNameC7x(char *target_name)
 {
     vx_status status = (vx_status)VX_FAILURE;
-#if defined(C7X_FAMILY)
+#if defined(C7X_FAMILY) || defined(PC)
     #if defined(SOC_J721E)
     vx_enum self_cpu;
 
@@ -336,7 +336,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameC7x(char *target_name)
         status = (vx_status)VX_SUCCESS;
     }
     #endif
-#endif /* #if defined(C7X_FAMILY) */
+#endif /* #if defined(C7X_FAMILY) || defined(PC) */
 
     return status;
 }
@@ -344,7 +344,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameC7x(char *target_name)
 vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
 {
     vx_status status = (vx_status)VX_FAILURE;
-#if defined(R5F)
+#if defined(R5F) || defined(PC)
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
@@ -383,7 +383,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
         status = (vx_status)VX_FAILURE;
     }
     /* LDRA_JUSTIFY_END */
-#endif /* #if defined(R5F) */
+#endif /* #if defined(R5F) || defined(PC) */
 
     return status;
 }
@@ -391,7 +391,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
 vx_status tivxKernelsTargetUtilsAssignTargetNameMpu(char *target_name)
 {
     vx_status status = (vx_status)VX_FAILURE;
-#if defined(A72) || defined(A53)
+#if defined(A72) || defined(A53) || defined(PC)
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
@@ -405,7 +405,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMpu(char *target_name)
         status = (vx_status)VX_SUCCESS;
     }
 /* LDRA_JUSTIFY_END */
-#endif /* #if defined(A72) || defined(A53) */
+#endif /* #if defined(A72) || defined(A53) || defined(PC) */
 
     return status;
 }

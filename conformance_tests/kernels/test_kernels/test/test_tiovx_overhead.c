@@ -187,7 +187,7 @@ typedef struct
 
 } SetTarget_Arg;
 
-#if defined(SOC_AM62A) || defined(SOC_J722S)
+#if defined(SOC_AM62A)
 #define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU1_0", __VA_ARGS__, TIVX_TARGET_MCU1_0)), \
