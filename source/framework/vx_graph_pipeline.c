@@ -395,7 +395,7 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                         if (is_replicated == (vx_bool)vx_true_e)
                         {
                             objd = ref->scope->obj_desc;
-                           if (ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
+                            if (ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                             {
                                 vx_object_array object_array = vxCastRefAsObjectArray(ref->scope, NULL);
                                 ref_list = object_array->ref;
@@ -407,9 +407,8 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                             }
                             else
                             {
-                                /* Coverage: Should not happen because replication is only possible with obj_arr,
-                                concerning the pyramid: This is the only possible in combination with obj_arr 
-                                but if it does, complain! */
+                                /* Coverage: Should not happen because replication is only possible with obj_arr
+                                and pyramid, but if it does, complain! */
                                 can_be_queued = (vx_bool)vx_false_e;
                                 VX_PRINT(VX_ZONE_ERROR, "Found a scope (%d) that was not object array or pyramid!\n", ref->scope->type);
                             }
@@ -475,7 +474,7 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                                     vx_uint32 i;
                                     for (i = 0; i < num_replicas; ++i)
                                     {
-                                        /* loop over the replicats object descriptor */
+                                        /* loop over the replicated object descriptor */
                                         tivx_obj_desc_t *odi = ref_list[i]->obj_desc;
                                         /* Increment the queue counter */
                                         odi->num_enqueues = odi->num_enqueues + 1U;
@@ -653,6 +652,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                             /* There is no other container, so this suggests we have the wrong type
                             of parameter, or that the container didn't have ref_list initialised */
                             status = (vx_status)VX_FAILURE;
+                            VX_PRINT(VX_ZONE_ERROR, "Invalid reference list for replicated object\n");
                         }
                     }
                     else
@@ -758,7 +758,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetGraphParameterRefsList(vx_graph graph,
         {
             if ( (vx_bool)vx_true_e == graph->verified)
             {   
-                if (graph->num_params > graph_parameter_index)
+                if ((graph->num_params > graph_parameter_index) || 
+                    (graph->parameters[graph_parameter_index].num_buf > refs_list_size))
                 {
                     vx_uint32 refIdx;
                     for (refIdx = 0; refIdx < refs_list_size; refIdx++)
@@ -766,12 +767,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetGraphParameterRefsList(vx_graph graph,
                         refs_list[refIdx] = graph->parameters[graph_parameter_index].refs_list[refIdx];
                         /* Setting it as void since the return value 'count' is not used further */
                         (void)ownIncrementReference(refs_list[refIdx], (vx_enum)VX_EXTERNAL);
-                    }
-
-                    if (graph->parameters[graph_parameter_index].num_buf > refs_list_size)
-                    {
-                        VX_PRINT(VX_ZONE_WARNING, "refs_list provided smaller than reference list assigned to this graph parameter \n");
-                    }                    
+                    }                 
                 }
                 else
                 {
@@ -873,6 +869,7 @@ vx_status ownGraphDeleteQueues(vx_graph graph)
     if(status1 != (vx_status)VX_SUCCESS)
     {
         status = status1;
+        VX_PRINT(VX_ZONE_ERROR,"Failed to delete event queue\n");
     }    
     return status;
 }
