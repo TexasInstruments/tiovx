@@ -125,7 +125,9 @@ static void tivxInitLocal(void)
         tivxRegisterTestKernelsTargetArmKernels();
     #endif
 
+    #if defined (C7X_FAMILY) || defined (C66) || defined (R5F)
     tivxRegisterCaptureTargetArmKernels();
+    #endif
 
     #if defined (C7X_FAMILY) || defined (C66)
         tivxRegisterTestKernelsTargetDspKernels();
@@ -192,7 +194,9 @@ static void tivxDeInitLocal(void)
             tivxUnRegisterTestKernelsTargetArmKernels();
         #endif
 
+        #if defined (C7X_FAMILY) || defined (C66) || defined (R5F)
         tivxUnRegisterCaptureTargetArmKernels();
+        #endif
 
         #if defined (C7X_FAMILY) || defined(C66)
             tivxUnRegisterTestKernelsTargetDspKernels();
