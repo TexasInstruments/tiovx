@@ -29,14 +29,6 @@ extern "C" {
  * \brief Implementation of Graph object
  */
 
- /*! \brief Default timeout value for graph level control event ACK waits.
- * This is the default timeout value used within the following APIs
- * - vxWaitGraph()
- * - vxGraphParameterDequeueDoneRef()
- * \ingroup group_vx_graph_cfg
- */
-#define TIVX_DEFAULT_GRAPH_TIMEOUT         (TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
-
 /*! \brief The list of graph parameters. */
 typedef struct {
     /*! \brief The reference to the node which has the parameter */
@@ -218,9 +210,6 @@ typedef struct _vx_graph {
     /*! \brief when true a event is sent when a graph execution is completed */
     vx_bool is_enable_send_complete_event;
 
-    /*! \brief when true a event is sent when a graph execution timeouts */
-    vx_bool is_enable_send_graph_timeout_event;    
-
     /*! \brief event to indicate all schedule graphs have finished execution
      *         and none are pending
      */
@@ -261,6 +250,9 @@ typedef struct _vx_graph {
 
     /*! \brief Control API processing Timeout value in milli-sec for the graph. */
     vx_uint32 timeout_val;
+
+    /*! \brief Control API processing Timeout value in milli-sec for the graph events. */
+    vx_uint32 timeout_graph_event_val;    
 
     /*! \brief Debug zonemask of a given graph. */
     vx_uint32 debug_zonemask;

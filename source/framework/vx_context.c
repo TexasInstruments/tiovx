@@ -779,7 +779,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
         uintptr_t   obj_id;
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
-        status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+        status = tivxQueueGet(&context->free_queue, &obj_id, VX_TIMEOUT_WAIT_FOREVER);
 
         if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR010 */
         {
@@ -954,7 +954,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
         uintptr_t   obj_id;
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
-        status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+        status = tivxQueueGet(&context->free_queue, &obj_id, VX_TIMEOUT_WAIT_FOREVER);
 
         if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR010 */
         {

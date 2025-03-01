@@ -428,16 +428,6 @@ vx_status ownRegisterEvent(vx_reference ref,
                 }
             }
         }
-        else if ((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_TIMEOUT)
-        {
-            if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
-            {
-                /* enable the graph timeout event */
-                graph->is_enable_send_graph_timeout_event = (vx_bool)vx_true_e;
-                status = (vx_status)VX_SUCCESS;
-            }
-
-        }
         else
         {
            VX_PRINT(VX_ZONE_ERROR, "Invalid event type given\n");
@@ -473,17 +463,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraphEvent(vx_graph graph, vx_event_t *
         }
         else
         {
-            timeout = graph->timeout_val;
+            timeout = graph->timeout_graph_event_val;
         }
-        status = ownWaitEventQueue(&graph->event_queue, event, timeout);
-        if (status == (vx_status)VX_ERROR_TIMEOUT)
-        {
-            if (graph->is_enable_send_graph_timeout_event == (vx_bool)vx_true_e)
-            {
-                /* send graph timeout event */
-                event->type = (vx_enum)VX_EVENT_GRAPH_TIMEOUT;
-            }
-        }        
+        status = ownWaitEventQueue(&graph->event_queue, event, timeout);      
     }
     return status;
 }

@@ -469,7 +469,7 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
             {
                 VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
             }
-            status = tivxEventWait(graph->stop_done, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+            status = tivxEventWait(graph->stop_done, VX_TIMEOUT_WAIT_FOREVER);
 
             if (status != (vx_status)VX_SUCCESS)
             {

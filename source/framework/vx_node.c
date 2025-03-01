@@ -433,7 +433,7 @@ vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
 
     status = tivxNodeSendCommandTimed(node, replicated_node_idx,
                                       node_cmd_id, ref, num_refs,
-                                      TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+                                      VX_TIMEOUT_WAIT_FOREVER);
 
     return status;
 }

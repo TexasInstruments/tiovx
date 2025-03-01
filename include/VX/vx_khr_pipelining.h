@@ -83,17 +83,28 @@ enum vx_graph_attribute_pipelining_e {
     VX_GRAPH_SCHEDULE_MODE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x5,
 
     /*! \brief Sets or returns the timeout value, in milliseconds, for the functions <tt>\ref vxWaitGraph</tt>,
-     * <tt>\ref vxGetGraphParameterDequeueDoneRef</tt> and <tt>\ref vxStopGraphStreaming</tt>. Read-write.
+     * <tt>\ref vxProcessGraph</tt>, <tt>\ref vxGraphParameterDequeueDoneRef</tt>, and
+     * <tt>\ref vxStopGraphStreaming</tt>. Read-write.
      * Use a <tt>vx_uint32</tt> parameter, or the implementation-defined <tt>VX_TIMEOUT_WAIT_FOREVER</tt>.
      * The implementation shall initially set this attribute to <tt>VX_TIMEOUT_WAIT_FOREVER</tt>.
      *
-     * Note
-     *   Setting the timeout attribute <tt>\ref VX_GRAPH_TIMEOUT</tt> does not set any limit upon the
-     *   duration of graph execution, it merely prevents the above-mentioned functions from delaying more
-     *   than the time given. There are no other requirements upon what the framework should do; it is up
-     *   to the application to recognise the timeout and take appropriate action.
+     * \note Setting the timeout attribute <tt>\ref VX_GRAPH_TIMEOUT</tt> does not set any limit upon the
+     * duration of graph execution, it merely prevents the above-mentioned functions from delaying more
+     * than the time given. There are no other requirements upon what the framework should do; it is up
+     * to the application to recognise the timeout and take appropriate action.
      */
     VX_GRAPH_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x6,
+
+    /*! \brief Sets or returns the timeout value, in milliseconds, for the function: <tt>\ref vxWaitGraphEvent</tt>.
+     * Read-write.
+     * Use a <tt>vx_uint32</tt> parameter, or the implementation-defined <tt>VX_TIMEOUT_WAIT_FOREVER</tt>.
+     * The implementation shall initially set this attribute to <tt>VX_TIMEOUT_WAIT_FOREVER</tt>.
+     *
+     * \note Setting timeout attributes does not in any way change the occurrence of events, it merely prevents the
+     * above-mentioned functions from delaying more than the time given. There are no other requirements upon what
+     * the framework should do; it is up to the application to recognise the timeout and take appropriate action.
+     */
+    VX_GRAPH_EVENT_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x7,
 
     /*! \brief Set or return the graph pipeline depth; the depth used in the graph is known
      * after graph verification. Read-write. Us a <tt>vx_uint32</tt> parameter.
@@ -111,7 +122,7 @@ enum vx_graph_attribute_pipelining_e {
      *   If the attribute is set to a non-zero value before graph verification, the application-supplied value will
      *   be used, otherwise the value will be calculated by the framework.
      */
-    VX_GRAPH_PIPELINE_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x7,
+    VX_GRAPH_PIPELINE_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x8,
 };
 
 /*! \brief The reference attributes added by this extension.
@@ -166,10 +177,10 @@ typedef struct _vx_graph_parameter_config_t {
     /*!< \brief VX_INPUT, VX_OUTPUT or VX_BIDIRECTIONAL */
 
     vx_enum      state;
-    /*<! \brief VX_PARAMETER_STATE_REQUIRED or VX_PARAMETER_STATE_OPTIONAL */
+    /*!< \brief VX_PARAMETER_STATE_REQUIRED or VX_PARAMETER_STATE_OPTIONAL */
 
     vx_uint32    refs_list_size;
-    /*<! \brief The number of different references that may be assigned to this parameter */
+    /*!< \brief The number of different references that may be assigned to this parameter */
 
 } vx_graph_parameter_config_t;
 
@@ -420,10 +431,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterEnqueueReadyRef(vx_graph grap
  * \param [out] num_refs Actual number of references dequeued.
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS No errors.
- * \retval VX_ERROR_INVALID_REFERENCE graph is not a valid reference
- * \retval VX_ERROR_INVALID_PARAMETERS graph_parameter_index is NOT a valid graph parameter index
- * \retval VX_FAILURE Reference could not be dequeued.
+ * \retval VX_SUCCESS                   No errors.
+ * \retval VX_ERROR_INVALID_REFERENCE   graph is not a valid reference
+ * \retval VX_ERROR_INVALID_PARAMETERS  graph_parameter_index is NOT a valid graph parameter index
+ * \retval VX_FAILURE                   Reference could not be dequeued.
+ * \retval VX_ERROR_TIMEOUT             The attribute VX_GRAPH_TIMEOUT was not set to VX_TIMEOUT_WAIT_FOREVER
+ *                                      and the function call has not returned after VX_GRAPH_TIMEOUT
+ *                                      milliseconds. No event is received.
  *
  * \ingroup group_pipelining
  */
@@ -473,7 +487,7 @@ enum vx_event_enum_e
  * \ingroup group_event
  */
 enum vx_context_attribute_event_e {
-/*! \brief Sets or returns the timeout value, in milliseconds, for the functions vxWaitEvent and vxWaitGraphEvent.
+/*! \brief Sets or returns the timeout value, in milliseconds, for the function: vxWaitEvent.
  * Read-write. Use a vx_uint32 parameter, or the implementation-defined VX_TIMEOUT_WAIT_FOREVER.
  * The implementation shall initially set this attribute to VX_TIMEOUT_WAIT_FOREVER.
  * \note Setting timeout attributes does not in any way change the occurrence of events, it merely prevents the 
@@ -531,13 +545,6 @@ enum vx_event_type_e {
      * does NOT register user events using \ref vxRegisterEvent.
      */
     VX_EVENT_USER = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x4,
-
-    /*! \brief Graph Timeout event.
-     * Indicates that a graph timeout has occurred, in other words, a call to vxWaitGraph would result in the status
-     * VX_ERROR_TIMEOUT being returned. This event type may be enabled for either the context or a graph event queue.
-     * A structure of type vx_event_graph_completed is returned.
-    */
-    VX_EVENT_GRAPH_TIMEOUT = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x5,
 };
 
 /*! \brief Parameter structure returned with event of type VX_EVENT_GRAPH_PARAMETER_CONSUMED
@@ -665,8 +672,11 @@ typedef struct _vx_event {
  * \param do_not_block [in] When value is vx_true_e API does not block and only checks for the condition
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS Event received and event information available in 'event'
- * \retval VX_FAILURE No event is received
+ * \retval VX_SUCCESS         Event received and event information available in 'event'
+ * \retval VX_FAILURE         No event is received
+ * \retval VX_ERROR_TIMEOUT   The attribute VX_CONTEXT_EVENT_TIMEOUT was not set to VX_TIMEOUT_WAIT_FOREVER
+ *                            and the function call has not returned after VX_CONTEXT_EVENT_TIMEOUT
+ *                            milliseconds. No event is received.
  *
  * \ingroup group_event
  */
@@ -744,7 +754,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref, enum vx_eve
  * \brief Registers an event for a specific graph
  *
  * \param [in] graph_or_node the graph or node for which the event will be registered
- * \param [in] type          only [VX_EVENT_GRAPH_PARAMETER_CONSUMED], [VX_EVENT_GRAPH_COMPLETED] and [VX_EVENT_GRAPH_TIME_OUT]
+ * \param [in] type          only [VX_EVENT_GRAPH_PARAMETER_CONSUMED], [VX_EVENT_GRAPH_COMPLETED] and [VX_EVENT_GRAPH_TIMEOUT]
  *                           are supported if graph_or_node is a vx_graph, and [VX_EVENT_NODE_COMPLETED] or
  *                           [VX_EVENT_NODE_ERROR] if graph_or_node is a vx_node
  * \param [in] param         Specifies the graph parameter index when *type* is VX_EVENT_GRAPH_PARAMETER_CONSUMED
@@ -773,6 +783,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterGraphEvent(vx_reference graph_or_no
  * \return a vx_status value.
  * \retval VX_SUCCESS                   an event was received
  * \retval VX_FAILURE                   no event was received
+ * \retval VX_ERROR_TIMEOUT             The attribute VX_GRAPH_EVENT_TIMEOUT was not set to VX_TIMEOUT_WAIT_FOREVER
+ *                                      and the function call has not returned after VX_GRAPH_EVENT_TIMEOUT
+ *                                      milliseconds. No event is received.
  * \retval VX_ERROR_INVALID_REFERENCE   graph was not a valid graph reference or event was NULL
  * 
  */
@@ -947,9 +960,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxStartGraphStreaming(vx_graph graph);
  * \param graph [in] Reference to the graph to stop streaming mode of execution.
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS No errors; any other value indicates failure.
- * \retval VX_FAILURE Graph is not started in streaming execution mode.
- * \retval VX_ERROR_INVALID_REFERENCE graph is not a valid reference.
+ * \retval VX_SUCCESS                   No errors; any other value indicates failure.
+ * \retval VX_FAILURE                   Graph is not started in streaming execution mode.
+ * \retval VX_ERROR_INVALID_REFERENCE   graph is not a valid reference.
+ * \retval VX_ERROR_TIMEOUT             The attribute VX_GRAPH_TIMEOUT was not set to VX_TIMEOUT_WAIT_FOREVER
+ *                                      and the function call has not returned after VX_GRAPH_TIMEOUT
+ *                                      milliseconds. No event is received.
  *
  * \ingroup group_streaming
  */
