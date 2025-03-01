@@ -8198,14 +8198,14 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout2)
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
 
-   /* 4. mixed use case with VX_CONTEXT_EVENT_TIMEOUT < VX_GRAPH_TIMEOUT 
+   /* 4. mixed use case with VX_CONTEXT_EVENT_TIMEOUT < VX_GRAPH_EVENT_TIMEOUT 
          the timeout occurs first on the context event queue, then we get the parameter consumed event 
          because the timeout of the graph is not reach */
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     context_event_timeout_val = 40;
     graph_timeout_val = 1000;
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetContextAttribute(context, VX_CONTEXT_EVENT_TIMEOUT, &context_event_timeout_val, sizeof(context_event_timeout_val)));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphAttribute(graph, VX_GRAPH_TIMEOUT, &graph_timeout_val, sizeof(graph_timeout_val)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphAttribute(graph, VX_GRAPH_EVENT_TIMEOUT, &graph_timeout_val, sizeof(graph_timeout_val)));
     ASSERT_VX_OBJECT(node = tivxCreateNodeByKernelName(graph, "MY_DUMB_WAIT", (vx_reference*)images, 3), VX_TYPE_NODE);
     addParameterToGraph(graph, node, 0);
     addParameterToGraph(graph, node, 1);
@@ -8214,8 +8214,7 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout2)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent(vxCastRefFromGraph(graph), VX_EVENT_GRAPH_PARAMETER_CONSUMED, 2, 123));
     graph_events.type = 0;
     graph_events.app_value = 0;
-    /* disabling the events should have no impact on the timeout */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDisableGraphEvents(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphEvents(graph));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDisableEvents(context));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
     for (int i = 0; i < NB_IMAGES; ++i)
