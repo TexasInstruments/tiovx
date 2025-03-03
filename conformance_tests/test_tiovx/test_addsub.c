@@ -274,7 +274,7 @@ TEST_WITH_ARG(tivxAddSub, testFuzzy, fuzzy_arg, ARITHM_FUZZY_ARGS(Add), ARITHM_F
 #define SUPERNODE_PARAMETERS(func)  \
     FUZZY_ARG(func, SATURATE, 18, 18, U8, U8, U8),      \
     FUZZY_ARG(func, SATURATE, 644, 258, U8, U8, S16),   \
-    FUZZY_ARG(func, SATURATE, 18, 18, U8, S16, S16),\
+    FUZZY_ARG(func, SATURATE, 18, 18, U8, S16, S16),    \
     FUZZY_ARG(func, SATURATE, 1600, 1200, S16, U8, S16),\
     FUZZY_ARG(func, SATURATE, 644, 258, S16, S16, S16)
 

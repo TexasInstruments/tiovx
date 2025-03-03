@@ -418,6 +418,34 @@
 
     The available targets on each core vary depending on the architecture of its SoC. They are listed as follows:
 */
+#if SOC == TDA54
+/*!
+    \page TIOVX_ADD_TARGET Adding New Targets to TIOVX
+
+    \subsection TDA54_M55_CORES M55 Cores
+    |        MCU0         |              MCU1               |              MCU2              |              MCU3               |              MCU4               |
+    |:-------------------:|:-------------------------------:|:------------------------------:|:-------------------------------:|:-------------------------------:|
+    | TIVX_TARGET_ID_MCU0 |       TIVX_TARGET_ID_MCU1       |      TIVX_TARGET_ID_MCU2       |       TIVX_TARGET_ID_MCU3       |       TIVX_TARGET_ID_MCU4       |
+    |          -          |  TIVX_TARGET_ID_CAPTURE[1-16]   |     TIVX_TARGET_ID_VPAC_NF     |     TIVX_TARGET_ID_VPAC2_NF     |     TIVX_TARGET_ID_VPAC3_NF     |
+    |          -          |  TIVX_TARGET_ID_DISPLAY[1-2]    |    TIVX_TARGET_ID_VPAC_LDC1    |    TIVX_TARGET_ID_VPAC2_LDC1    |    TIVX_TARGET_ID_VPAC3_LDC1    |
+    |          -          | TIVX_TARGET_ID_DISPLAY_M2M[1-4] |  TIVX_TARGET_ID_VPAC_MSC[1-2]  | TIVX_TARGET_ID_VPAC2_MSC[1-2]   |  TIVX_TARGET_ID_VPAC3_MSC[1-2]  |
+    |          -          |     TIVX_TARGET_ID_CSITX[2]     |   TIVX_TARGET_ID_VPAC_VISS1    |   TIVX_TARGET_ID_VPAC2_VISS1    |   TIVX_TARGET_ID_VPAC3_VISS1    |
+    |          -          |    TIVX_TARGET_ID_DMPAC_SDE     |               -                |                -                |                -                |
+    |          -          |    TIVX_TARGET_ID_DMPAC_DOF     |               -                |                -                |                -                |
+    \page TIOVX_ADD_TARGET Adding New Targets to TIOVX
+
+    \subsection TDA54_R52P_CORES R52P Cores
+    |        RMCU0_0         |        RMCU0_1         |        RMCU1_0         |        RMCU1_1         |        RMCU2_0         |        RMCU2_1         |
+    |:----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|
+    | TIVX_TARGET_ID_RMCU0_0 | TIVX_TARGET_ID_RMCU0_1 | TIVX_TARGET_ID_RMCU1_0 | TIVX_TARGET_ID_RMCU1_1 | TIVX_TARGET_ID_RMCU2_0 | TIVX_TARGET_ID_RMCU2_1 |
+
+    \subsection TDA54_A720_DSP_CORES A720 and DSP Cores
+    |         A720 MPU         |                DSP1                 |                DSP2                 |                DSP3                 |                DSP4                 |
+    |:------------------------:|:-----------------------------------:|:-----------------------------------:|:-----------------------------------:|:-----------------------------------:|
+    | TIVX_TARGET_ID_MPU_[0-3] |       TIVX_TARGET_ID_DSP_C7_1\n(TIVX_TARGET_ID_DSP_C7_1_PRI_1) | TIVX_TARGET_ID_DSP_C7_2\n(TIVX_TARGET_ID_DSP1)\n(TIVX_TARGET_ID_DSP_C7_2_PRI_1) | TIVX_TARGET_ID_DSP_C7_3\n(TIVX_TARGET_ID_DSP_C7_3_PRI_1) | TIVX_TARGET_ID_DSP_C7_4\n(TIVX_TARGET_ID_DSP_C7_4_PRI_1) |
+    |            -             | TIVX_TARGET_ID_DSP_C7_1_PRI_[2 - 8] | TIVX_TARGET_ID_DSP_C7_2_PRI_[2 - 8] | TIVX_TARGET_ID_DSP_C7_3_PRI_[2 - 8] | TIVX_TARGET_ID_DSP_C7_4_PRI_[2 - 8] |
+*/
+#endif
 #if SOC == J721E
 /*!
     \page TIOVX_ADD_TARGET Adding New Targets to TIOVX

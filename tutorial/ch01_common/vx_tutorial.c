@@ -98,6 +98,11 @@ void vx_tutorial_run_all()
     {
         vx_tutorial_mcu_demo(vx_true_e);
     }
+#elif defined(SOC_TDA54)
+    if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_RMCU0_0)))
+    {
+        vx_tutorial_mcu_demo(vx_true_e);
+    }
 #else
     if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_0)) || (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_1)))
     {
@@ -143,6 +148,15 @@ void vx_tutorial_run_interactive()
                 else
                 {
                     printf("Demo is disabled as MCU1_0 is not enabled\n");
+                }
+#elif defined(SOC_TDA54)
+                if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_RMCU0_0)))
+                {
+                    vx_tutorial_mcu_demo(vx_true_e);
+                }
+                else
+                {
+                    printf("Demo is disabled as RMCU0_0 is not enabled\n");
                 }
 #else
                 if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_0)) || (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_1)))

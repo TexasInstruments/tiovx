@@ -162,8 +162,8 @@ typedef struct {
     CT_EXPAND(macro(__VA_ARGS__, TO_ZERO, ONE_2_15))
 
 #define MUL_FUZZY_ARGS(owp)                                 \
-    APPEND_SCALE(FUZZY_ARG, owp, 18, 18, U8, U8, U8),     \
-    APPEND_SCALE(FUZZY_ARG, owp, 644, 258, U8, U8, S16),    \
+    APPEND_SCALE(FUZZY_ARG, owp, 18, 18, U8, U8, U8),       \
+    APPEND_SCALE(FUZZY_ARG, owp, 644, 258, U8, U8, S16),     \
     APPEND_SCALE(FUZZY_ARG, owp, 1600, 1200, S16, S16, S16)
 
 TESTCASE(tivxMultiply,  CT_VXContext, ct_setup_vx_context, 0)

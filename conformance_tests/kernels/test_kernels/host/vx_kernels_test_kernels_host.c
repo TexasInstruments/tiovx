@@ -157,11 +157,11 @@ void tivxRegisterTestKernelsKernels(void)
 
     void tivxSetSelfCpuId(vx_enum cpu_id);
 
-    #if defined(SOC_AM62A)
+    #if defined(SOC_FAMILY_AM)
     tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
     tivxRegisterCaptureTargetArmKernels();
     tivxRegisterTestKernelsTargetArmKernels();
-    #else
+    #elif defined(SOC_FAMILY_J7)
     tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
     tivxRegisterCaptureTargetArmKernels();
     tivxRegisterTestKernelsTargetArmKernels();
@@ -170,6 +170,10 @@ void tivxRegisterTestKernelsKernels(void)
     tivxRegisterCaptureTargetArmKernels();
     tivxRegisterTestKernelsTargetArmKernels();
     #endif
+    #else
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU0);
+    tivxRegisterCaptureTargetArmKernels();
+    tivxRegisterTestKernelsTargetArmKernels();
     #endif
 
     tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
@@ -205,11 +209,11 @@ void tivxUnRegisterTestKernelsKernels(void)
 
     void tivxSetSelfCpuId(vx_enum cpu_id);
 
-    #if defined(SOC_AM62A)
+    #if defined(SOC_FAMILY_AM)
     tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
     tivxUnRegisterCaptureTargetArmKernels();
     tivxUnRegisterTestKernelsTargetArmKernels();
-    #else
+    #elif defined(SOC_FAMILY_J7)
     tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
     tivxUnRegisterCaptureTargetArmKernels();
     tivxUnRegisterTestKernelsTargetArmKernels();
@@ -218,6 +222,10 @@ void tivxUnRegisterTestKernelsKernels(void)
     tivxUnRegisterCaptureTargetArmKernels();
     tivxUnRegisterTestKernelsTargetArmKernels();
     #endif
+    #else
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU0);
+    tivxUnRegisterCaptureTargetArmKernels();
+    tivxUnRegisterTestKernelsTargetArmKernels();
     #endif
 
     tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);

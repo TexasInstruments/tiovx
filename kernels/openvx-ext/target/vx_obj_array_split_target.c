@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 Texas Instruments Incorporated
+ * Copyright (c) 2022-2026 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -256,6 +256,22 @@ static vx_status tivxObjArraySplitSetTargetName(char target_name[OBJ_ARR_SPLIT_M
     else if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0 )
     {
         strncpy(target_name[0], TIVX_TARGET_MCU1_0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #elif defined(SOC_TDA54)
+    else if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU0 )
+    {
+        strncpy(target_name[0], TIVX_TARGET_MCU0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    else if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU1 )
+    {
+        strncpy(target_name[0], TIVX_TARGET_MCU1, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    else if ( self_cpu == (vx_enum)TIVX_CPU_ID_RMCU0_0 )
+    {
+        strncpy(target_name[0], TIVX_TARGET_RMCU0_0, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
     #else

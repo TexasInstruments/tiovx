@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2025 Texas Instruments Incorporated
+ * Copyright (c) 2025-2026 Texas Instruments Incorporated
  */
 
 #include "test_tiovx.h"
@@ -37,6 +37,8 @@
 
 #if defined(SOC_AM62A)
 #define TIVX_TARGET_MCU TIVX_TARGET_MCU1_0
+#elif defined(SOC_TDA54)
+#define TIVX_TARGET_MCU TIVX_TARGET_MCU0
 #else
 #define TIVX_TARGET_MCU TIVX_TARGET_MCU2_0
 #endif

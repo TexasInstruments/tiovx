@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2025 Texas Instruments Incorporated
+* Copyright (c) 2025-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -177,11 +177,11 @@ static void tivxInitLocal(void)
 
     #ifdef BUILD_CONFORMANCE_TEST
     #if defined(BUILD_TEST_KERNELS)
-    #if defined (R5F)
+    #if defined (R5F) || defined (M55) || defined (R52P)
         tivxRegisterTestKernelsTargetArmKernels();
     #endif
 
-    #if defined (C7X_FAMILY) || defined (C66) || defined (R5F)
+    #if defined (C7X_FAMILY) || defined (C66) || defined (R5F) || defined (M55) || defined (R52P)
     tivxRegisterCaptureTargetArmKernels();
     #endif
 
@@ -191,7 +191,7 @@ static void tivxInitLocal(void)
     #endif /* #if defined(BUILD_TEST_KERNELS) */
     #endif  /* #ifdef BUILD_CONFORMANCE_TEST */
 
-    #if defined (R5F)
+    #if defined (R5F) || defined (R52P)  || defined (M55)
         tivxRegisterExtTargetMPUKernels();
     #endif
 
@@ -250,11 +250,11 @@ static void tivxDeInitLocal(void)
 
         #ifdef BUILD_CONFORMANCE_TEST
         #if defined(BUILD_TEST_KERNELS)
-        #if defined (R5F)
+        #if defined (R5F) || defined(M55)
             tivxUnRegisterTestKernelsTargetArmKernels();
         #endif
 
-        #if defined (C7X_FAMILY) || defined (C66) || defined (R5F)
+        #if defined (C7X_FAMILY) || defined (C66) || defined (R5F) || defined(M55)
         tivxUnRegisterCaptureTargetArmKernels();
         #endif
 
@@ -264,7 +264,7 @@ static void tivxDeInitLocal(void)
         #endif /* #if defined(BUILD_TEST_KERNELS) */
         #endif  /* #ifdef BUILD_CONFORMANCE_TEST */
 
-        #if defined (R5F)
+        #if defined (R5F) || defined (R52P)  || defined (M55)
             tivxUnRegisterExtTargetMPUKernels();
         #endif
 

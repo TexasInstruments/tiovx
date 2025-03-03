@@ -69,7 +69,7 @@
 #include <TI/tivx_capture.h>
 #include "vx_tutorial_mcu_demo.h"
 
-#if defined(SOC_AM62A) || defined(SOC_J722S)
+#if defined(SOC_AM62A) || defined(SOC_J722S) || defined(SOC_TDA54)
 void vx_tutorial_mcu_demo(vx_bool use_mcu1_core)
 #else
 void vx_tutorial_mcu_demo(vx_bool use_mcu3_core)
@@ -120,6 +120,11 @@ void vx_tutorial_mcu_demo(vx_bool use_mcu3_core)
     {
         vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0);
     }
+    #elif defined(SOC_TDA54)
+    if (vx_true_e == use_mcu1_core)
+    {
+        vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_RMCU0_0);
+    }
     #else
     if (vx_true_e == use_mcu3_core)
     {
@@ -153,6 +158,11 @@ void vx_tutorial_mcu_demo(vx_bool use_mcu3_core)
     if (vx_true_e == use_mcu1_core)
     {
         vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0);
+    }
+    #elif defined(SOC_TDA54)
+    if (vx_true_e == use_mcu1_core)
+    {
+        vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_RMCU0_0);
     }
     #else
     if (vx_true_e == use_mcu3_core)

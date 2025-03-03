@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2025 Texas Instruments Incorporated
+* Copyright (c) 2025-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -146,6 +146,28 @@ uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     APP_IPC_CPU_MCU4_0,
     APP_IPC_CPU_MCU4_1,
     APP_IPC_CPU_C7x_3
+};
+#endif
+
+/* TIOVX-2178: Re-align once figured out at app_utils level */
+#if defined (SOC_TDA54)
+uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
+    APP_IPC_CPU_C7x_1,
+    APP_IPC_CPU_INVALID,
+    APP_IPC_CPU_INVALID,
+    APP_IPC_CPU_INVALID,
+    APP_IPC_CPU_MPU1_0,
+    APP_IPC_CPU_RMCU0_0,
+    APP_IPC_CPU_INVALID,
+    APP_IPC_CPU_INVALID,
+    APP_IPC_CPU_INVALID,
+    APP_IPC_CPU_INVALID,
+    APP_IPC_CPU_INVALID,
+    APP_IPC_CPU_MCU0_M55,
+    APP_IPC_CPU_MCU1_M55,
+    APP_IPC_CPU_INVALID,
+    APP_IPC_CPU_INVALID,
+    APP_IPC_CPU_INVALID
 };
 #endif
 

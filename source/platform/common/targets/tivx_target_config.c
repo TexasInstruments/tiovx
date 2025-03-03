@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2025 Texas Instruments Incorporated
+* Copyright (c) 2025-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -64,7 +64,7 @@
 
 #if defined(MPU)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (160U*1024U)
-#elif defined(R5F)
+#elif defined(R5F) || defined(M55) || defined(R52P)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (8U*1024U)
 #elif defined(C7X_FAMILY) || defined(C66)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (64U*1024U)
@@ -73,7 +73,7 @@
 #endif
 
 
-#if defined(C7X_FAMILY) || defined(R5F) || defined(C66)
+#if defined(C7X_FAMILY) || defined(R5F) || defined(C66) || defined(M55) || defined(R52P)
 
 #if defined(SAFERTOS)
 #define TIVX_TARGET_DEFAULT_STACK_ALIGNMENT  TIVX_TARGET_DEFAULT_STACK_SIZE
@@ -85,6 +85,10 @@
 #define TIVX_MAX_TARGET                        8
 #elif defined(R5F)
 #define TIVX_MAX_TARGET                        TIVX_TARGET_R5F_MAX
+#elif defined(M55)
+#define TIVX_MAX_TARGET                        TIVX_TARGET_M55_MAX
+#elif defined(R52P)
+#define TIVX_MAX_TARGET                        TIVX_TARGET_R52P_MAX
 #elif defined(C66)
 #define TIVX_MAX_TARGET                        1
 #endif

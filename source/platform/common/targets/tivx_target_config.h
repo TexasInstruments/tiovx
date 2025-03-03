@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2021 - 2025 Texas Instruments Incorporated
+* Copyright (c) 2021-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -77,8 +77,10 @@
 #include <soc/tivx_target_config_j722s.h>
 #elif defined(SOC_J742S2)
 #include <soc/tivx_target_config_j742s2.h>
+#elif defined(SOC_TDA54)
+#include <soc/tivx_target_config_tda54.h>
 #else
-#error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A, SOC_J722S, SOC_J742S2
+#error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A, SOC_J722S, SOC_J742S2, SOC_TDA54
 #endif
 
 /*! \brief Create target ID.
@@ -105,10 +107,14 @@ void ownPlatformCreateTargetsMpu(void);
 void ownPlatformCreateTargetsC7(void);
 void ownPlatformCreateTargetsR5f(void);
 void ownPlatformCreateTargetsC66(void);
+void ownPlatformCreateTargetsR52P(void);
+void ownPlatformCreateTargetsM55(void);
 
 void ownPlatformDeleteTargetsMpu(void);
 void ownPlatformDeleteTargetsC7(void);
 void ownPlatformDeleteTargetsR5f(void);
 void ownPlatformDeleteTargetsC66(void);
+void ownPlatformDeleteTargetsR52P(void);
+void ownPlatformDeleteTargetsM55(void);
 
 #endif

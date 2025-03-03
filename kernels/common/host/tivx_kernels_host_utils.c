@@ -275,6 +275,11 @@ vx_status tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel)
 vx_status tivxKernelsHostUtilsAddKernelTargetMcu(vx_kernel kernel)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    #ifdef SOC_FAMILY_TDA5
+    status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU0);
+    status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU1);
+    status = tivxAddKernelTarget(kernel, TIVX_TARGET_RMCU0_0);
+    #else
     #ifndef SOC_AM62A
     status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_0);
     #ifndef SOC_J722S
@@ -289,6 +294,7 @@ vx_status tivxKernelsHostUtilsAddKernelTargetMcu(vx_kernel kernel)
     {
         status = tivxAddKernelTarget(kernel, TIVX_TARGET_MCU1_0);
     }
+    #endif
     #endif
     return status;
 }

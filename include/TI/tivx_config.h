@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2023 Texas Instruments Incorporated
+* Copyright (c) 2023-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -75,8 +75,10 @@
 #include <TI/soc/tivx_config_j722s.h>
 #elif defined(SOC_J742S2)
 #include <TI/soc/tivx_config_j742s2.h>
+#elif defined(SOC_TDA54)
+#include <TI/soc/tivx_config_tda54.h>
 #else
-#error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A, SOC_J722S, SOC_J742S2
+#error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A, SOC_J722S, SOC_J742S2, SOC_TDA54
 #endif
 
 #endif

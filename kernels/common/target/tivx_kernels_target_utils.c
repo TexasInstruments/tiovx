@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -291,7 +291,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
     }
     #endif
 
-    #if defined(SOC_J721S2) || defined(SOC_AM62A)
+    #if defined(SOC_J721S2) || defined(SOC_AM62A) || defined(SOC_TDA54)
     if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
     {
         (void)strncpy(target_name, TIVX_TARGET_DSP1,
@@ -345,7 +345,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameC7x(char *target_name)
 vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
 {
     vx_status status = (vx_status)VX_FAILURE;
-#if defined(R5F) || defined(PC)
+#if (defined(R5F) || defined(PC)) && (defined(SOC_FAMILY_J7) || defined(SOC_FAMILY_AM))
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
@@ -384,7 +384,40 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
         status = (vx_status)VX_FAILURE;
     }
     /* LDRA_JUSTIFY_END */
-#endif /* #if defined(R5F) || defined(PC) */
+#elif defined(M55) || defined(PC)
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
+
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU0 )
+    {
+        (void)strncpy(target_name, TIVX_TARGET_MCU0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    else if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU1 )
+    {
+        (void)strncpy(target_name, TIVX_TARGET_MCU1, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    else
+    {
+        status = (vx_status)VX_FAILURE;
+    }
+#elif defined(R52P)
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
+
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_RMCU0_0 )
+    {
+        (void)strncpy(target_name, TIVX_TARGET_RMCU0_0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    else
+    {
+        status = (vx_status)VX_FAILURE;
+    }
+#endif /* #if (defined(R5F) || defined(PC)) && (defined(SOC_FAMILY_J7) || defined(SOC_FAMILY_AM)) */
 
     return status;
 }

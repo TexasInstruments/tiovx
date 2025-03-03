@@ -133,7 +133,6 @@ typedef struct {
     FUZZY_ARG(func, 644, 258),      \
     FUZZY_ARG(func, 1600, 1200)
 
-
 TEST_WITH_ARG(tivxBinOp8u, testFuzzy, fuzzy_arg, BINOP_SIZE_ARGS(AbsDiff), BINOP_SIZE_ARGS(And), BINOP_SIZE_ARGS(Or), BINOP_SIZE_ARGS(Xor))
 {
     vx_image src1, src2, src3, src4, dst, virt1, virt2;

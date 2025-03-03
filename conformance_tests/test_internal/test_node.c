@@ -27,6 +27,8 @@
 
 #if defined(SOC_AM62A)
 #define TIVX_TARGET_MCU TIVX_TARGET_MCU1_0
+#elif defined(SOC_TDA54)
+#define TIVX_TARGET_MCU TIVX_TARGET_MCU0
 #else
 #define TIVX_TARGET_MCU TIVX_TARGET_MCU2_0
 #endif

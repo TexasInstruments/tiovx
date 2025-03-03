@@ -31,6 +31,7 @@
 
 TESTCASE(tivxRpmsgChar, CT_VXContext, ct_setup_vx_context, 0)
 
+#if defined (SOC_FAMILY_J7)
 TEST(tivxRpmsgChar, testappIpcCreateTxCh)
 {
     uint32_t remote_app_cpu_id = APP_IPC_CPU_MCU1_0;
@@ -49,6 +50,7 @@ TEST(tivxRpmsgChar, testappIpcCreateTxCh)
     remote_app_cpu_id = -1u;
     ASSERT((vx_status)VX_FAILURE == appIpcCreateTxCh(remote_app_cpu_id, remote_endpt, &local_endpt, (rpmsg_char_dev_t **)&rcdev, eptdev_name));
 }
+#endif
 
 TEST(tivxRpmsgChar, testappIpcDeleteCh)
 {
@@ -59,7 +61,9 @@ TEST(tivxRpmsgChar, testappIpcDeleteCh)
 
 TESTCASE_TESTS(
     tivxRpmsgChar,
+#if defined (SOC_FAMILY_J7)
     testappIpcCreateTxCh,
+#endif
     testappIpcDeleteCh
     )
 #endif

@@ -140,8 +140,8 @@ typedef struct {
 #define CVT_ARG(w,h,from,to,p) ARG(#p"/"#w"x"#h" "#from"->"#to, w, h, VX_DF_IMAGE_##from, VX_DF_IMAGE_##to, VX_CONVERT_POLICY_##p)
 
 #define PREPEND_SIZE(macro, ...)                \
-    CT_EXPAND(macro(18, 18, __VA_ARGS__)),        \
-    CT_EXPAND(macro(644, 258, __VA_ARGS__)),      \
+    CT_EXPAND(macro(18, 18, __VA_ARGS__)),      \
+    CT_EXPAND(macro(644, 258, __VA_ARGS__)),    \
     CT_EXPAND(macro(1600, 1200, __VA_ARGS__))
 
 #define CVT_ARGS                                \

@@ -61,6 +61,9 @@
 */
 
 #include <tivx_platform_posix.h>
+#if defined(x86_64)
+#include <sys/prctl.h>
+#endif
 
 void init_params(tivx_task_create_params_t ** const params);
 
@@ -95,6 +98,9 @@ static void *tivxTaskMain(void *arg)
     if( task /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR001 */
     && task->task_func) /* TIOVX-1952- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TASK_UBR002 */
     {
+#if defined(x86_64)
+        prctl(PR_SET_NAME, task->task_name);
+#endif
         task->task_func(task->app_var);
     }
 
@@ -127,6 +133,8 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
             task->priority = params->priority;
             task->task_func = params->task_main;
             task->app_var = params->app_var;
+            (void)snprintf(task->task_name, TIVX_TARGET_MAX_TASK_NAME, "%s", params->task_name);
+            task->task_name[TIVX_TARGET_MAX_TASK_NAME-1U] = '\0';
 
             status = pthread_attr_init(&thread_attr);
 

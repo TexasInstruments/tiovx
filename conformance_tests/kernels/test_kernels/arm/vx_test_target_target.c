@@ -128,7 +128,7 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
  * there is probably a cleaner way of obtaining this value
  * with ifdefs, etc.
  * However, it should be greater than the below task values:
- *  - TIVX_TASK_MAX_OBJECTS for A72/A53
+ *  - TIVX_TASK_MAX_OBJECTS for MPU
  *  - OSAL_FREERTOS_CONFIGNUM_TASK for PDK FreeRTOS
  *  - OSAL_SAFERTOS_CONFIGNUM_TASK for PDK SafeRTOS
  *  - APP_RTOS_MAX_TASK_COUNT for MCU+ */
@@ -3438,7 +3438,7 @@ static vx_status tivxTestQueuePut(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"tivxQueuePut() exit with FAILURE\n");
         status = (vx_status)VX_FAILURE;
     }
-    /*For A72 and A53 the below condition for tivxQueuePut create a deadlock due to pthread_cond_wait() */
+    /*For MPU the below condition for tivxQueuePut create a deadlock due to pthread_cond_wait() */
     block_wr_test = test_queue->block_wr;
     test_queue->block_wr =NULL;
     if(VX_FAILURE != tivxQueuePut(test_queue,10,1))
@@ -3485,7 +3485,7 @@ static vx_status tivxTestQueueGet(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"tivxQueueGet() exit with FAILURE\n");
         status = (vx_status)VX_FAILURE;
     }
-    /*For A72 and A53 the below condition for tivxQueueGet create a deadlock due to pthread_cond_wait() */
+    /*For MPU the below condition for tivxQueueGet create a deadlock due to pthread_cond_wait() */
     block_rd_test = test_queue->block_rd;
     test_queue->block_rd =NULL;
     if(VX_FAILURE!= tivxQueueGet(test_queue,&data,1))

@@ -89,7 +89,6 @@ TESTCASE(tivxRpmsgChar)
 
 #if defined(MPU)
 TESTCASE(tivxDmaHeap)
-
 TESTCASE(tivxTimer)
 #endif
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2024-2025 Texas Instruments Incorporated
+ * Copyright (c) 2024-2026 Texas Instruments Incorporated
  */
 #include <vx_internal.h>
 #include <tivx_objects.h>
@@ -30,6 +30,8 @@
 
 #if defined(SOC_AM62A)
 #define TIVX_TARGET_MCU TIVX_TARGET_MCU1_0
+#elif defined(SOC_TDA54)
+#define TIVX_TARGET_MCU TIVX_TARGET_MCU0
 #else
 #define TIVX_TARGET_MCU TIVX_TARGET_MCU2_0
 #endif

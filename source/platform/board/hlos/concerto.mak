@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53))
+ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53 A720))
 	ifeq ($(TARGET_OS),$(filter $(TARGET_OS), LINUX QNX))
 
 		include $(PRELUDE)
@@ -36,7 +36,7 @@ ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53))
 	IDIRS       += $(TIOVX_PATH)/source/include
 	IDIRS       += $(TIOVX_PATH)/source/platform/common/targets
 	IDIRS       += $(TIOVX_PATH)/source/platform/common/os/posix
-	IDIRS       += $(TIOVX_PATH)/source/platform/board/common
+	IDIRS       += $(TIOVX_PATH)/source/platform/common
 	IDIRS       += $(APP_UTILS_PATH)
 
 	DEFS += TARGET_HLOS

@@ -30,7 +30,7 @@ ifeq ($(TARGET_OS), $(filter $(TARGET_OS), FREERTOS SAFERTOS THREADX))
 
 	IDIRS     += $(HOST_ROOT)/source/include
 	IDIRS     += $(HOST_ROOT)/source/platform/common/targets
-	IDIRS     += $(HOST_ROOT)/source/platform/board/common
+	IDIRS     += $(HOST_ROOT)/source/platform/common
 	IDIRS     += $(CUSTOM_KERNEL_PATH)/include
 
 	ifeq ($(RTOS_SDK), mcu_plus_sdk)
@@ -54,7 +54,7 @@ ifeq ($(TARGET_OS), $(filter $(TARGET_OS), FREERTOS SAFERTOS THREADX))
 		endif
 	endif
 
-	ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53))
+	ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53 A720))
 		CSOURCES += $(TARGET_FILES_REL_PATH)/tivx_target_config_mpu1_0.c
 		SKIPBUILD = 0
 	endif
@@ -62,6 +62,16 @@ ifeq ($(TARGET_OS), $(filter $(TARGET_OS), FREERTOS SAFERTOS THREADX))
 	ifeq ($(TARGET_CPU),R5F)
 		CSOURCES += $(TARGET_FILES_REL_PATH)/r5f/tivx_target_config_r5f_${SOC}.c
 		SKIPBUILD = 0
+	endif
+
+	ifeq ($(TARGET_CPU),R52P)
+		CSOURCES += $(TARGET_FILES_REL_PATH)/tivx_target_config_r52p.c
+		SKIPBUILD=0
+	endif
+
+	ifeq ($(TARGET_CPU),M55)
+		CSOURCES += $(TARGET_FILES_REL_PATH)/tivx_target_config_m55.c
+		SKIPBUILD=0
 	endif
 
 	include $(FINALE)

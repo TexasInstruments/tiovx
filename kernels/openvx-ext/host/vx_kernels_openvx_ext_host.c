@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2026 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -107,6 +107,10 @@ void tivxExtLoadKernels(vx_context context)
 
         #if defined(SOC_AM62A)
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
+        #elif defined(SOC_TDA54)
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU0);
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1);
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_RMCU0_0);
         #else
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
         #endif
@@ -138,6 +142,10 @@ void tivxExtUnLoadKernels(vx_context context)
 
             #if defined(SOC_AM62A)
             tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
+            #elif defined(SOC_TDA54)
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU0);
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1);
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_RMCU0_0);
             #else
             tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
             #endif
