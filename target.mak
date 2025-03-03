@@ -34,7 +34,7 @@ ifeq ($(TARGET_PLATFORM),PC)
     SYSLDIRS += $(GCC_WINDOWS_ROOT)/lib
 else
     ifeq ($(TARGET_FAMILY),ARM)
-        ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53))
+        ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53 A720))
             SYSDEFS  += MPU
             ifeq ($(TARGET_OS),QNX)
                 SYSIDIRS += $(GCC_QNX_ARM_ROOT)/../usr/include
@@ -44,12 +44,12 @@ else
                 SYSDEFS  += $(TARGET_PLATFORM)
             endif
         else
-            SYSIDIRS += $(TIARMCGT_LLVM_ROOT)/include
+            SYSIDIRS += $(TIARMCGT_LLVM_ROOT)/include/c
             SYSLDIRS += $(TIARMCGT_LLVM_ROOT)/lib
         endif
     else ifeq ($(TARGET_FAMILY),DSP)
         SYSDEFS += TARGET_DSP
-        ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71 C7120 C7504 C7524))
+        ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71 C7120 C7504 C7524 C7604))
             SYSIDIRS += $(CGT7X_ROOT)/include
             SYSLDIRS += $(CGT7X_ROOT)/lib
             SYSDEFS  += C7X_FAMILY
@@ -68,6 +68,18 @@ else
             SYSIDIRS += $(PDK_PATH)/packages
             SYSIDIRS += $(PDK_PATH)/packages/ti/osal
             SYSIDIRS += $(PDK_PATH)/packages/ti/drv
+        else ifeq ($(RTOS_SDK),mcu_sdk)
+            SYSIDIRS += $(MCU_SDK_PATH)/source
+            SYSIDIRS += $(MCU_SDK_PATH)/source/drivers
+            SYSIDIRS += $(MCU_SDK_PATH)/source/compatibility/dpl/include
+            SYSIDIRS += $(MCU_SDK_PATH)/source/arch/include
+            ifeq ($(TARGET_CPU),M55)
+                SYSIDIRS += $(MCU_SDK_PATH)/source/compiler/m55-ti-arm-clang
+            else ifeq ($(TARGET_CPU),C7604)
+                SYSIDIRS += $(MCU_SDK_PATH)/source/compiler/c76-ti-c7000
+			else
+                SYSIDIRS += $(MCU_SDK_PATH)/source/compiler/r52-ti-arm-clang
+			endif
         else
             SYSIDIRS += $(MCU_PLUS_SDK_PATH)/source
             SYSIDIRS += $(MCU_PLUS_SDK_PATH)/source/drivers
@@ -80,4 +92,6 @@ ifeq ($(RTOS_SDK),mcu_plus_sdk)
     SYSDEFS  += MCU_PLUS_SDK
 else ifeq ($(RTOS_SDK),pdk)
     SYSDEFS  += PDK
+else ifeq ($(RTOS_SDK),mcu_sdk)
+    SYSDEFS  += MCU_SDK
 endif

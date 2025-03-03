@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 A720 R5F R52P M55))
 
 	include $(PRELUDE)
 	TARGET      := vx_vxu

@@ -1,4 +1,4 @@
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 A720 R5F R52P M55))
 
 	include $(PRELUDE)
 	TARGET      := vx_utils
@@ -22,7 +22,7 @@ ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))
 		CSOURCES += tivx_utils_png_rd_wr_null.c
 	endif
 
-	ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53))
+	ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 A720))
 		CSOURCES += tivx_utils_ipc_ref_xfer.c
 	endif
 

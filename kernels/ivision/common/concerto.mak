@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 C66 C71 C7120 C7504 C7524))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 C66 C71 C7120 C7504 C7524 C7604))
 
 
 	include $(PRELUDE)

@@ -1,4 +1,4 @@
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 A720 R5F))
 	ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 
 		include $(PRELUDE)

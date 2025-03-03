@@ -12,6 +12,8 @@ ifeq ($(TARGET_CPU),x86_64)
 
 	ifeq ($(SOC), j722s)
 		STATIC_LIBS += C7524-MMA2_256-host-emulation
+	else ifeq ($(SOC), tda54)
+		STATIC_LIBS += C7604-MMA3_1024-host-emulation
 	else
 		STATIC_LIBS += $(C7X_VERSION)-host-emulation
 	endif
@@ -19,11 +21,34 @@ ifeq ($(TARGET_CPU),x86_64)
 	SYS_SHARED_LIBS += rt dl png z
 
 	LDIRS       += $(CGT7X_ROOT)/host_emulation
-
 	LDIRS       += $(APP_UTILS_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
-	STATIC_LIBS += app_utils_mem
 	LDIRS       += $(VISION_APPS_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
+
+	STATIC_LIBS += app_utils_mem
 	STATIC_LIBS += app_utils_init
+
+	ifeq ($(SOC_FAMILY), SOC_FAMILY_TDA5))
+		STATIC_LIBS += app_utils_init_vdk_stub
+		STATIC_LIBS += app_utils_console_io
+		STATIC_LIBS += app_utils_timer
+		STATIC_LIBS += app_utils_ipc
+		STATIC_LIBS += app_utils_misc
+		STATIC_LIBS += app_utils_pc_osal
+	endif
+
+	ifeq ($(SOC_FAMILY), SOC_FAMILY_TDA5)
+		ifeq ($(TARGET_BUILD),debug)
+			LDIRS += $(MCU_SDK_PATH)/build/$(SOC)/lib/Debug
+		else
+			LDIRS += $(MCU_SDK_PATH)/build/$(SOC)/lib/Release
+		endif
+		ADDITIONAL_STATIC_LIBS += libarch-ti_sdk_cfg_default_hostemu_gcc-linux.a
+		ADDITIONAL_STATIC_LIBS += libdrivers-ti_sdk_cfg_default_hostemu_gcc-linux.a
+		ADDITIONAL_STATIC_LIBS += libhal-ti_sdk_cfg_default_hostemu_gcc-linux.a
+		ADDITIONAL_STATIC_LIBS += libtda54_hostemu_gcc-linux.a
+		ADDITIONAL_STATIC_LIBS += libti_sdk_cfg_default_hostemu_gcc-linux.a
+		ADDITIONAL_STATIC_LIBS += libutils_nortos-ti_sdk_cfg_default_hostemu_gcc-linux.a
+	endif # ifeq ($(SOC_FAMILY), SOC_FAMILY_TDA5)
 
 endif #ifeq ($(TARGET_CPU),x86_64)
 

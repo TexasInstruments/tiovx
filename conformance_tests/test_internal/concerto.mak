@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 A720 R5F))
 	ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 
 		include $(PRELUDE)
@@ -34,8 +34,13 @@ ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))
 
 		ifeq ($(TARGET_OS),QNX)
 			IDIRS   += $(PSDK_PATH)/app_utils/utils/mem/src
-			IDIRS   += $(PSDK_QNX_PATH)/qnx/sharedmemallocator/usr/public
-			IDIRS   += $(PSDK_QNX_PATH)/qnx/sharedmemallocator/resmgr/public
+			ifeq ($(SOC), tda54)
+				IDIRS += $(PSDK_QNX_PATH)/src/resmgrs/sharedmemallocator/usr/public
+				IDIRS += $(PSDK_QNX_PATH)/src/resmgrs/sharedmemallocator/resmgr/public
+			else
+				IDIRS   += $(PSDK_QNX_PATH)/qnx/sharedmemallocator/usr/public
+				IDIRS   += $(PSDK_QNX_PATH)/qnx/sharedmemallocator/resmgr/public
+			endif
 		endif
 
 		ifeq ($(HOST_COMPILER),TIARMCGT)
