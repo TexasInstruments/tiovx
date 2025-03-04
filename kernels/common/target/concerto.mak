@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A72 A53 A15 M4 C66 EVE R5F C71 C7120 C7504 C7524))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 C66 R5F C71 C7120 C7504 C7524))
 
 include $(PRELUDE)
 TARGET      := vx_kernels_target_utils
@@ -22,7 +22,7 @@ IDIRS       += $(ALGFRAMEWORK_PATH)/inc \
                $(EDMA3_LLD_PATH)/packages/ti/sdo/edma3/rm \
                $(EDMA3_LLD_PATH)/packages
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64))
 CFLAGS      += -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION
 
 DEFS += CORE_DSP CORE_C6XX

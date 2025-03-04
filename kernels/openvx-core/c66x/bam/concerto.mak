@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 C66))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 C66))
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_openvx_core_bam
@@ -31,7 +31,7 @@ else
 SKIPBUILD=1
 endif
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64))
 CFLAGS		+= -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION
 endif
 

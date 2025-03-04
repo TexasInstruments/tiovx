@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A72 A53))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53))
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_openvx_ext

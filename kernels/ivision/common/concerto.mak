@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 C66 EVE C71 C7120 C7504 C7524))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 C66 C71 C7120 C7504 C7524))
 
 
 include $(PRELUDE)
@@ -8,12 +8,9 @@ TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 
 IDIRS       += $(HOST_ROOT)/kernels/ivision/include
-IDIRS       += $(XDIAS_PATH)/packages
-IDIRS       += $(EVE_SW_PATH)/
-IDIRS       += $(EVE_SW_PATH)/common
 IDIRS       += $(IVISION_PATH)/
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64))
 CFLAGS      += -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION
 endif
 

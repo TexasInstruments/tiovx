@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 A53 R5F))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))
 ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 
 include $(PRELUDE)
@@ -53,7 +53,7 @@ CFLAGS += -Wno-unused-but-set-variable
 CFLAGS += -Wno-maybe-uninitialized
 endif
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64))
 DEFS += PLATFORM_PC
 endif
 

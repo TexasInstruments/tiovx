@@ -254,22 +254,10 @@ class KernelExportCode :
             return "palegreen"
         if target == Target.DSP2 :
             return "darkturquoise"
-        if target == Target.EVE1 :
-            return "yellow"
-        if target == Target.EVE2 :
-            return "gold"
-        if target == Target.EVE3 :
-            return "orange"
-        if target == Target.EVE4 :
-            return "goldenrod4"
-        if target == Target.A15_0 :
-            return "lightblue"
         if target == Target.MCU2_0 :
             return "grey"
         if target == Target.MCU2_1 :
             return "LightSalmon"
-        if target == Target.IPU2 :
-            return "MediumOrchid"
         return "white"
 
     def outputNode(self, kernel) :
@@ -2122,7 +2110,7 @@ class KernelExportCode :
             print("Creating " + self.module_host_concerto_filename)
             self.module_host_concerto_code = CodeGenerate(self.module_host_concerto_filename, header=False)
             self.module_host_concerto_code.write_newline()
-            self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 A53 R5F))")
+            self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))")
             self.module_host_concerto_code.write_newline()
             self.module_host_concerto_code.write_line("include $(PRELUDE)")
             self.module_host_concerto_code.write_line("TARGET      := vx_kernels_" + self.module)
@@ -2144,23 +2132,19 @@ class KernelExportCode :
             print("Creating " + self.module_target_concerto_filename)
             self.module_target_concerto_code = CodeGenerate(self.module_target_concerto_filename, header=False)
             dspAdded = False
-            eveAdded = False
             armAdded = False
             ipuAdded = False
             c7xAdded = False
-            targetCpuListString = "X86 x86_64 "
+            targetCpuListString = "x86_64 "
             for tar in kernel.targets :
                 if (tar == Target.DSP1 or tar == Target.DSP2) and (dspAdded == False) :
                     targetCpuListString+="C66 "
                     dspAdded = True
-                if (tar == Target.EVE1 or tar == Target.EVE2 or tar == Target.EVE3 or tar == Target.EVE4) and (eveAdded == False) :
-                    targetCpuListString+="EVE "
-                    eveAdded = True
                 if (tar == Target.A15_0) and (armAdded == False) :
-                    targetCpuListString+="A15 A72 "
+                    targetCpuListString+="A72 "
                     armAdded = True
                 if (tar == Target.MCU2_0 or tar == Target.MCU2_1 or tar == Target.IPU2) and (ipuAdded == False) :
-                    targetCpuListString+="M4 R5F "
+                    targetCpuListString+="R5F "
                     ipuAdded = True
                 if (tar == Target.DSP_C7_1) and (c7xAdded == False) :
                     targetCpuListString+="C71 "
@@ -2199,7 +2183,7 @@ class KernelExportCode :
             self.module_target_concerto_code.write_line("DEFS += BUILD_BAM")
             self.module_target_concerto_code.write_line("endif")
             self.module_target_concerto_code.write_newline();
-            self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))")
+            self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64))")
             self.module_target_concerto_code.write_line("DEFS += _HOST_BUILD _TMS320C6600 TMS320C66X HOST_EMULATION")
             self.module_target_concerto_code.write_line("endif")
             self.module_target_concerto_code.write_newline()
@@ -2212,7 +2196,7 @@ class KernelExportCode :
             if not os.path.exists(self.module_target_bam_concerto_filename):
                 print("Creating " + self.module_target_bam_concerto_filename)
                 self.module_target_bam_concerto_code = CodeGenerate(self.module_target_bam_concerto_filename, header=False)
-                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 C66))")
+                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 C66))")
                 self.module_target_bam_concerto_code.write_line("include $(PRELUDE)")
                 if self.env_var == 'CUSTOM_KERNEL_PATH' :
                     self.module_target_bam_concerto_code.write_line("TARGET      := vx_target_kernels_" + self.core + "_bam")
@@ -2249,7 +2233,7 @@ class KernelExportCode :
                 self.module_target_bam_concerto_code.write_line("DEFS += BUILD_BAM")
                 self.module_target_bam_concerto_code.write_line("endif")
                 self.module_target_bam_concerto_code.write_newline();
-                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))")
+                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64))")
                 self.module_target_bam_concerto_code.write_line("DEFS += _HOST_BUILD _TMS320C6600 TMS320C66X HOST_EMULATION")
                 self.module_target_bam_concerto_code.write_line("endif")
                 self.module_target_bam_concerto_code.write_newline();
@@ -2269,7 +2253,7 @@ class KernelExportCode :
             print("Creating " + self.module_test_concerto_filename)
             self.module_test_concerto_code = CodeGenerate(self.module_test_concerto_filename, header=False)
             self.module_test_concerto_code.write_newline()
-            self.module_test_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 R5F))")
+            self.module_test_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))")
             self.module_test_concerto_code.write_newline()
             self.module_test_concerto_code.write_line("include $(PRELUDE)")
             self.module_test_concerto_code.write_line("TARGET      := vx_kernels_" + self.module + "_tests")

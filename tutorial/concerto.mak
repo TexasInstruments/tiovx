@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 A53 R5F))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))
 
 include $(PRELUDE)
 TARGET      := vx_tutorial
@@ -39,8 +39,6 @@ IDIRS       += $(TIOVX_PATH)/conformance_tests/kernels/include
 IDIRS       += $(TIOVX_PATH)/utils/include
 IDIRS       += $(IVISION_PATH)
 IDIRS       += $(TIDL_PATH)/inc
-IDIRS       += $(XDIAS_PATH)/packages
-IDIRS       += $(EVE_SW_PATH)/common
 
 CH05_SOURCES := \
 	ch05_test_mcu/vx_tutorial_mcu_demo.c \

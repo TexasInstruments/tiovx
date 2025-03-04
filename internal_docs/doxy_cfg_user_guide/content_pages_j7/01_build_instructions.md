@@ -59,11 +59,9 @@ BUILD_EMULATION_MODE           | Builds PC emulation mode | yes |
 BUILD_EMULATION_ARCH           | PC emulation architecture. Valid values are: X86 / x86_64 / all | x86_64 |
 BUILD_TARGET_MODE              | Builds for target SoC platform like TDAxx | yes |
 BUILD_CONFORMANCE_TEST  | Builds entire test suite executable  | yes |
-BUILD_IVISION_KERNELS   | Builds iVision kernels (EVE_SW_PATH required to be set for this build)  | no |
-BUILD_BAM               | Builds DMA wrapper (DMAUTILS_PATH and ALGFRAMEWORK_PATH required to be set for this build)  | no |
+BUILD_IVISION_KERNELS   | Builds iVision kernels  | no |
 BUILD_TUTORIAL          | Builds OpenVX tutorial  | yes |
 BUILD_LINUX_MPU         | Builds for A72 Linux target (NOT used in PC HOST emulation mode | yes |
-BUILD_EVE               | Builds for EVE platform (ARP32CGT_ROOT and EVE_SW_PATH required to be set for this build)  | no |
 BUILD_SDK               | Builds for SDK SW platform. Valid values are: psdkra (for Processor SDK RTOS J7) / platform | psdkra |
 BUILD_IGNORE_LIB_ORDER  | When set to yes, it ignores the static library order listed in makefiles when building on the PC. | yes |
 BUILD_CT_KHR  | Builds and includes the Khronos OpenVX 1.1 conformance tests suite.  | yes |
