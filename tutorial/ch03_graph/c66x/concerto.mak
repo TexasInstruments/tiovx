@@ -18,7 +18,7 @@ include $(FINALE)
 
 endif
 
-ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J721S2 J784S4 J742S2 AM62A J722S))
+ifneq ($(TARGET_PLATFORM),J721E)
 
 ifeq ($(TARGET_FAMILY),DSP)
 
@@ -40,4 +40,4 @@ endif # ifneq ($(TARGET_CPU),C66)
 
 endif # ifeq ($(TARGET_FAMILY),DSP)
 
-endif # ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J721S2 J784S4 AM62A J722S))
+endif # ifneq ($(TARGET_PLATFORM),J721E)

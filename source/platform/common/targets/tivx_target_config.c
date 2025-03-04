@@ -103,7 +103,7 @@ static uint8_t gTarget_tskStack[TIVX_MAX_TARGET][TIVX_TARGET_DEFAULT_STACK_SIZE]
 __attribute__ ((section(".bss:taskStackSection")))
 __attribute__ ((aligned(TIVX_TARGET_DEFAULT_STACK_ALIGNMENT)))
     ;
-#endif /* #if defined(C7X_FAMILY) || defined(R5F) || defined(c66) */
+#endif /* #if defined(C7X_FAMILY) || defined(R5F) || defined(C66) */
 
 void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name, uint32_t task_pri)
 {
