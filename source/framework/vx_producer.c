@@ -69,11 +69,21 @@ static vx_status set_buffer_status(vx_reference current_ref, producer_buffer_sta
             }
             else if ((old_status == IN_GRAPH) && (status == FREE))
             {
-                // IN_GRAPH -> FREE: dequeue from graph in wait state OR
-                // it could happen that we have a double enqueue due to a miscommunication, where a buffer is freed by 
-                // a consumer that was not supposed to free it (buffer message overwrite while consumer whas processing it)
-                // to prevent that, query the number of enqueues for the reference, only enqueue if not done already                
-                // enqueue reference into graph from here, do not change its status
+                /*
+                 * IN_GRAPH -> FREE: dequeue from graph in wait state OR
+                 * it could happen that we have a double enqueue due to a miscommunication, where a buffer is freed by 
+                 * a consumer that was not supposed to free it (buffer message overwrite while consumer whas processing it)
+                 * to prevent that, query the number of enqueues for the reference, only enqueue if not done already                
+                 * enqueue reference into graph from here, do not change its status 
+                 *
+                 * Example Usecase: 
+                 * 1. consumer gets new message (e.g. bufID 0, mask 1)
+                 * 2. consumer does time consuming copy of supplementary (during that time, producer overwrites with (e.g. bufID 1, mask 0)
+                 * 3. consumer enqueues bufID 1 (although it shouldn't but it doesn't re evaluate mask flag)
+                 * 4. consumer releases bufID 1 which producer does not expect to be released from that consumer, 
+                 * while it DOESNT release bufID 0 although producer expects that.
+                 */ 
+
                 vx_uint32 num_enqueues = 0;
                 vx_status query_status = vxQueryReference(producer->refs[buffer_id].ovx_ref, VX_REFERENCE_ENQUEUE_COUNT, &num_enqueues, sizeof(num_enqueues));
                 if (query_status == VX_SUCCESS)
@@ -937,6 +947,12 @@ static void handle_clients(void* clientPtr, void* data)
 
 #endif
 
+/* 
+ * every cycle (everytime a new buffer is dequeued) loop through 
+ * all locked buffers and increase locked count for each buffer. if a 
+ * buffer's locked count reaches a threshold, assume that consumer  
+ * has a problem and release buffer back to the producer
+ */
 static void update_locked_state(vx_producer producer)
 {
     uint8_t     buffer_id;

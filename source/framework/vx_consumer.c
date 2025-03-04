@@ -336,7 +336,7 @@ void consumer_msg_handler(const void * consumer_p, const void * data_p, uint8_t 
                     status = consumer->subscriber_cb.storeMetadataCallback(
                         consumer->graph_obj, consumer->refs[l_received_message->buffer_id], &l_received_message->metadata_buffer, l_received_message->metadata_size);
                 }
-                //tivxTaskWaitMsecs(200);
+
                 VX_PRINT(
                     VX_ZONE_INFO,
                     "CONSUMER (%s): enqueue the incoming buffer id: %d with ref: %p into the pipeline as input buffer, last "
