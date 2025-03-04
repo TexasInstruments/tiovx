@@ -91,9 +91,9 @@
 #include <osal_soc.h>
 #endif /* #if defined(MCU_PLUS_SDK) */
 #endif /* #if defined(REMOTE_COVERAGE) */
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 #include <tivx_platform_posix.h>
-#endif /* #if defined(A72) || defined(A53) */
+#endif /* #if defined(MPU) */
 
 /* Maximum length of testcase function name */
 #define MAX_LENGTH 64
@@ -139,11 +139,11 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
 #define TARGET_TEST_MAX_TASKS            150U
 #else
 #define TARGET_TEST_MAX_TASKS            1024U
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 #define TARGET_TEST_TASK_STACK_SIZE      16*1024U*1024U
 #else
 #define TARGET_TEST_TASK_STACK_SIZE      1024U
-#endif /* defined(A72) || defined(A53) */
+#endif /* defined(MPU) */
 #endif /* #if defined(C7X_FAMILY) */
 
 #if defined(REMOTE_COVERAGE)

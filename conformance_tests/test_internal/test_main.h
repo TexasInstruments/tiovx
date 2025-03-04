@@ -77,7 +77,7 @@ TESTCASE(tivxInternalSafeCasts)
 
 TESTCASE(tivxInternalTensor)
 
-#if defined(A72) || defined(A53) || defined(PC)
+#if defined(MPU) || defined(PC)
 TESTCASE(tivxPosixObjects)
 #endif
 
@@ -87,7 +87,7 @@ TESTCASE(tivxInternalUserDataObject)
 TESTCASE(tivxRpmsgChar)
 #endif
 
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 TESTCASE(tivxDmaHeap)
 
 TESTCASE(tivxTimer)

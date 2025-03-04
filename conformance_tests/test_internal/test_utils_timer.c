@@ -26,7 +26,7 @@
 #include <VX/vx_types.h>
 #include <utils/mem/include/app_mem.h>
 
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 #include <utils/timer/include/app_timer.h>
 
 TESTCASE(tivxTimer, CT_VXContext, ct_setup_vx_context, 0)

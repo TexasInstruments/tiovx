@@ -154,7 +154,7 @@ void tivxTestKernelsLoadKernels(vx_context context)
         tivxRegisterTestKernelsKernels();
         vxLoadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
 
-#if defined(A72) || defined(A53) || defined(A15)
+#if defined(MPU)
         tivxRegisterTestKernelsTargetArmKernels();
         tivxRegisterCaptureTargetArmKernels();
 #endif
@@ -170,7 +170,7 @@ void tivxTestKernelsUnLoadKernels(vx_context context)
         vxUnloadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
         tivxUnRegisterTestKernelsKernels();
 
-#if defined(A72) || defined(A53) || defined(A15)
+#if defined(MPU)
         tivxUnRegisterTestKernelsTargetArmKernels();
         tivxUnRegisterCaptureTargetArmKernels();
 #endif

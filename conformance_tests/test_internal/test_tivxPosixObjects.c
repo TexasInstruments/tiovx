@@ -20,7 +20,7 @@
  * Copyright (c) 2024 Texas Instruments Incorporated
  *
  */
-#if defined(A72) || defined(A53) || defined(PC)
+#if defined(MPU) || defined(PC)
 #include "test_tiovx.h"
 #include <TI/tivx_event.h>
 #include <tivx_platform_posix.h>

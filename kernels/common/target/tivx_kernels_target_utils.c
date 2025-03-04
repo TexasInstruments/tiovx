@@ -391,7 +391,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMcu(char *target_name)
 vx_status tivxKernelsTargetUtilsAssignTargetNameMpu(char *target_name)
 {
     vx_status status = (vx_status)VX_FAILURE;
-#if defined(A72) || defined(A53) || defined(PC)
+#if defined(MPU) || defined(PC)
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
@@ -405,7 +405,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameMpu(char *target_name)
         status = (vx_status)VX_SUCCESS;
     }
 /* LDRA_JUSTIFY_END */
-#endif /* #if defined(A72) || defined(A53) || defined(PC) */
+#endif /* #if defined(MPU) || defined(PC) */
 
     return status;
 }

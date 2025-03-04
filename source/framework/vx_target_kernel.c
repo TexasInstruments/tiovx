@@ -117,7 +117,7 @@ void ownTargetKernelDeInit(void)
     vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxMutexDelete(&g_target_kernel_lock);
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TARGET_KERNEL_UM002
@@ -127,7 +127,7 @@ void ownTargetKernelDeInit(void)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex\n");
     }
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 /* LDRA_JUSTIFY_END */
 #endif
 }

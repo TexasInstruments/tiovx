@@ -266,7 +266,7 @@ static void ownTargetNodeDescReleaseParameterInDelay(
                 if((vx_enum)ref_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
                     obj_desc_q_id = next_data_ref_q->release_q_obj_desc_id;
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_ACQUIRE_PARAMS_UBR005
@@ -288,7 +288,7 @@ static void ownTargetNodeDescReleaseParameterInDelay(
                                 blocked_nodes
                                 );
                         }
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 /* LDRA_JUSTIFY_END */
 #endif
                 }

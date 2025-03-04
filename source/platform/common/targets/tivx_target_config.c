@@ -62,7 +62,7 @@
 
 #include <tivx_target_config.h>
 
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (128U*1024U)
 #elif defined(R5F)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (8U*1024U)
@@ -118,7 +118,7 @@ void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name,
 
         ownTargetSetDefaultCreateParams(&target_create_prms);
 
-        #if defined(A72) || defined(A53) || defined(PC)
+        #if defined(MPU) || defined(PC)
         target_create_prms.task_stack_ptr = NULL;
         #else
         target_create_prms.task_stack_ptr = gTarget_tskStack[i];

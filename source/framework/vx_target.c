@@ -341,7 +341,7 @@ static void ownTargetNodeDescNodeExecuteKernel(
 /* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM002 */
     else
     {
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR009
@@ -351,7 +351,7 @@ static void ownTargetNodeDescNodeExecuteKernel(
         {
             g_executeUserKernel_f(node_obj_desc, prm_obj_desc_id);
         }
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 /* LDRA_JUSTIFY_END */
 #endif
     }
@@ -1279,7 +1279,7 @@ static vx_status ownTargetNodeDescNodeControl(
 #endif
 static void ownTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
 {
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR028
@@ -1295,7 +1295,7 @@ static void ownTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
         */
        (void)tivxEventPost((tivx_event)(uintptr_t)cmd_obj_desc->ack_event_handle);
     }
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 /* LDRA_JUSTIFY_END */
 #endif
 }
@@ -1423,7 +1423,7 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
             /* These 2 commands are only executed on the "HOST" target, therefore using function pointer that is registered
                via ownRegisterFunctionsForHost(), which is called from tivxHostInit function, to avoid linking of symbols not needed
                on non-host CPUs */
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR034
@@ -1433,7 +1433,7 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
             {
                 g_target_cmd_desc_handler_for_host_f(cmd_obj_desc);
             }
-#if defined(A72) || defined(A53)
+#if defined(MPU)
 /* LDRA_JUSTIFY_END */
 #endif
             break;
