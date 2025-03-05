@@ -161,9 +161,6 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for MCU2-0 */
     TIVX_TARGET_ID_MCU2_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_0, 0u),
 
-    /*! \brief target ID for IPU1-0 */
-    TIVX_TARGET_ID_IPU1_0 = TIVX_TARGET_ID_MCU2_0,
-
     /*! \brief target ID for LDC1 */
     TIVX_TARGET_ID_VPAC_LDC1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_0, 1u),
 
@@ -235,7 +232,6 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_DSP_C7_2_PRI_7, (vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_7},               \
     {TIVX_TARGET_DSP_C7_2_PRI_8, (vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_8},               \
     {TIVX_TARGET_MCU1_0, (vx_enum)TIVX_TARGET_ID_MCU1_0},                               \
-    {TIVX_TARGET_IPU1_0, (vx_enum)TIVX_TARGET_ID_IPU1_0},                               \
     {TIVX_TARGET_MCU2_0, (vx_enum)TIVX_TARGET_ID_MCU2_0},                               \
     {TIVX_TARGET_MPU_0, (vx_enum)TIVX_TARGET_ID_MPU_0},                                 \
     {TIVX_TARGET_MPU_1, (vx_enum)TIVX_TARGET_ID_MPU_1},                                 \

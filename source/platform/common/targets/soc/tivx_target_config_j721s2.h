@@ -132,9 +132,6 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for MCU2-0 */
     TIVX_TARGET_ID_MCU2_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_0, 0u),
 
-    /*! \brief target ID for IPU1-0 */
-    TIVX_TARGET_ID_IPU1_0 = TIVX_TARGET_ID_MCU2_0,
-
     /*! \brief target ID for NF */
     TIVX_TARGET_ID_VPAC_NF = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_0, 1u),
 
@@ -201,9 +198,6 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for MCU2-1 */
     TIVX_TARGET_ID_MCU2_1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_1, 0u),
 
-    /*! \brief target ID for IPU1-1 */
-    TIVX_TARGET_ID_IPU1_1 = TIVX_TARGET_ID_MCU2_1,
-
     /*! \brief target ID for SDE */
     TIVX_TARGET_ID_DMPAC_SDE = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_1, 1u),
 
@@ -235,7 +229,6 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_DSP_C7_1_PRI_6, (vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_6},               \
     {TIVX_TARGET_DSP_C7_1_PRI_7, (vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_7},               \
     {TIVX_TARGET_DSP_C7_1_PRI_8, (vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_8},               \
-    {TIVX_TARGET_IPU1_0, (vx_enum)TIVX_TARGET_ID_IPU1_0},                               \
     {TIVX_TARGET_MCU2_0, (vx_enum)TIVX_TARGET_ID_MCU2_0},                               \
     {TIVX_TARGET_MPU_0, (vx_enum)TIVX_TARGET_ID_MPU_0},                                 \
     {TIVX_TARGET_MPU_1, (vx_enum)TIVX_TARGET_ID_MPU_1},                                 \
@@ -262,7 +255,6 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_DISPLAY_M2M2, (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M2},                   \
     {TIVX_TARGET_DISPLAY_M2M3, (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M3},                   \
     {TIVX_TARGET_DISPLAY_M2M4, (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4},                   \
-    {TIVX_TARGET_IPU1_1, (vx_enum)TIVX_TARGET_ID_IPU1_1},                               \
     {TIVX_TARGET_MCU2_1, (vx_enum)TIVX_TARGET_ID_MCU2_1},                               \
     {TIVX_TARGET_DMPAC_SDE, (vx_enum)TIVX_TARGET_ID_DMPAC_SDE},                         \
     {TIVX_TARGET_DMPAC_DOF, (vx_enum)TIVX_TARGET_ID_DMPAC_DOF},                         \

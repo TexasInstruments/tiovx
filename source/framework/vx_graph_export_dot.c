@@ -130,31 +130,6 @@ static void getNodeColor(vx_node node, char *node_color_name)
             (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "darkturquoise");
         }
         else
-        if(strncmp(target_name, "EVE-1", TIVX_TARGET_MAX_NAME) == 0)
-        {
-            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "yellow");
-        }
-        else
-        if(strncmp(target_name, "EVE-2", TIVX_TARGET_MAX_NAME) == 0)
-        {
-            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "gold");
-        }
-        else
-        if(strncmp(target_name, "EVE-3", TIVX_TARGET_MAX_NAME) == 0)
-        {
-            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "orange");
-        }
-        else
-        if(strncmp(target_name, "EVE-4", TIVX_TARGET_MAX_NAME) == 0)
-        {
-            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "goldenrod4");
-        }
-        else
-        if(strncmp(target_name, "A15-0", TIVX_TARGET_MAX_NAME) == 0)
-        {
-            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
-        }
-        else
         if(strncmp(target_name, "MCU2-0", TIVX_TARGET_MAX_NAME) == 0)
         {
             (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "grey");
@@ -163,16 +138,6 @@ static void getNodeColor(vx_node node, char *node_color_name)
         if(strncmp(target_name, "MCU2-1", TIVX_TARGET_MAX_NAME) == 0)
         {
             (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "LightSalmon");
-        }
-        else
-        if(strncmp(target_name, "IPU2", TIVX_TARGET_MAX_NAME) == 0)
-        {
-            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
-        }
-        else
-        if(strncmp(target_name, "IPU2", TIVX_TARGET_MAX_NAME) == 0)
-        {
-            (void)snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
         }
         else
         if(strncmp(target_name, "MPU-0", TIVX_TARGET_MAX_NAME) == 0)

@@ -258,14 +258,6 @@ extern "C" {
  */
 #define TIVX_TARGET_MCU2_0      "MCU2-0"
 
-/*! \brief Name for IPU1 target class, core 0
- *
- *   Assigned to IPU1_0 core
- *
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_IPU1_0      "MCU2-0"
-
 /*! \brief Target name for Capture
  * \ingroup group_tivx_ext_targets
  */
@@ -369,9 +361,6 @@ typedef enum _tivx_cpu_id_e {
 
     /*! \brief CPU ID for MCU2_0 */
     TIVX_CPU_ID_MCU2_0 = 3,
-
-    /*! \brief CPU ID for IPU1_0 */
-    TIVX_CPU_ID_IPU1_0 = TIVX_CPU_ID_MCU2_0,
 
     /*! \brief CPU ID for MPU-0 */
     TIVX_CPU_ID_MPU_0 = 4,
