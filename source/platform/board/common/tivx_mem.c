@@ -470,7 +470,7 @@ vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, 
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         int32_t status;
-        #if defined(X86_64) || defined(QNX)
+        #if defined(x86_64) || defined(QNX)
         status = (int32_t)appMemTranslateDmaBufFd(dmaBufFd,
                                          size,
                                          (uint64_t*)virtAddr,
