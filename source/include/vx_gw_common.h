@@ -35,6 +35,10 @@
 /*! \brief max number of consumer for socket or IPPC*/
 #define VX_GW_NUM_CLIENTS (4U)
 
+/*! \brief max number of cycles a client is allowed to 
+lock a buffer until it is returned by the gateway*/
+#define VX_GW_MAX_LOCKED_CNT (10U)
+
 #ifdef IPPC_SHEM_ENABLED
 /*! \brief max number of port configuration for IPPC conatining 1 sender and N receiver*/
   #define IPPC_PORT_COUNT (VX_GW_NUM_CLIENTS + 1U)

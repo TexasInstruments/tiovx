@@ -75,6 +75,9 @@ typedef struct
 
     /*! \brief Indicates the time at which buffer status was set */
     vx_uint64              state_timestamp;
+
+    /*! \brief incremented for every cycle a ref is already locked by a client to keep track of locked duration*/
+    vx_uint8               locked_count;
 } buffer_info_t;
 
 /*! \brief Backchannel information from consumer
