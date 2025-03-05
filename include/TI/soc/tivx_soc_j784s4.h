@@ -546,7 +546,7 @@ extern "C" {
 #define TIVX_TARGET_VPAC1_LDC1    "VPAC_LDC1"
 
 /* This is a compatibility feature used to align
- * the VPAC nodes across J721E/J721S2 and J784S4
+ * the VPAC nodes across SoC's with 1 or more VPAC's
  */
 #define TIVX_TARGET_VPAC_LDC1        TIVX_TARGET_VPAC1_LDC1
 
@@ -561,7 +561,7 @@ extern "C" {
 #define TIVX_TARGET_VPAC1_MSC1    "VPAC_MSC1"
 
 /* This is a compatibility feature used to align
- * the VPAC nodes across J721E/J721S2 and J784S4
+ * the VPAC nodes across SoC's with 1 or more VPAC's
  */
 #define TIVX_TARGET_VPAC_MSC1        TIVX_TARGET_VPAC1_MSC1
 
@@ -571,7 +571,7 @@ extern "C" {
 #define TIVX_TARGET_VPAC1_MSC2    "VPAC_MSC2"
 
 /* This is a compatibility feature used to align
- * the VPAC nodes across J721E/J721S2 and J784S4
+ * the VPAC nodes across SoC's with 1 or more VPAC's
  */
 #define TIVX_TARGET_VPAC_MSC2        TIVX_TARGET_VPAC1_MSC2
 
@@ -591,7 +591,7 @@ extern "C" {
 #define TIVX_TARGET_VPAC1_NF      "VPAC_NF"
 
 /* This is a compatibility feature used to align
- * the VPAC nodes across J721E/J721S2 and J784S4
+ * the VPAC nodes across SoC's with 1 or more VPAC's
  */
 #define TIVX_TARGET_VPAC_NF        TIVX_TARGET_VPAC1_NF
 
@@ -606,7 +606,7 @@ extern "C" {
 #define TIVX_TARGET_VPAC1_VISS1   "VPAC_VISS1"
 
 /* This is a compatibility feature used to align
- * the VPAC nodes across J721E/J721S2 and J784S4
+ * the VPAC nodes across SoC's with 1 or more VPAC's
  */
 #define TIVX_TARGET_VPAC_VISS1        TIVX_TARGET_VPAC1_VISS1
 
