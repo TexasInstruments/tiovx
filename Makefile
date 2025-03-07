@@ -162,24 +162,19 @@ else
 vision_apps_utils:
 endif
 
+SOC_LIST = "j721e" "j721s2" "j784s4" "j742s2" "j722s" "am62a"
+
 doxy_docs:
-	cat internal_docs/doxy_cfg_user_guide/user_guide_$(SOC)_linux.cfg > /tmp/user_guide_$(SOC)_linux.cfg
-	$(PRINT) EXCLUDE = \\ >> /tmp/user_guide_$(SOC)_linux.cfg
-ifeq ($(SOC),j721e)
-	$(PRINT)           include/TI/soc/tivx_soc_j721s2.h \\ >> /tmp/user_guide_j721e_linux.cfg
-	$(PRINT)           include/TI/soc/tivx_soc_j784s4.h \\ >> /tmp/user_guide_j721e_linux.cfg
-endif
-ifeq ($(SOC),j721s2)
-	$(PRINT)           include/TI/soc/tivx_soc_j721e.h  \\ >> /tmp/user_guide_j721s2_linux.cfg
-	$(PRINT)           include/TI/soc/tivx_soc_j784s4.h \\ >> /tmp/user_guide_j721s2_linux.cfg
-endif
-ifeq ($(SOC),j784s4)
-	$(PRINT)           include/TI/soc/tivx_soc_j721e.h  \\ >> /tmp/user_guide_j784s4_linux.cfg
-	$(PRINT)           include/TI/soc/tivx_soc_j721s2.h \\ >> /tmp/user_guide_j784s4_linux.cfg
-endif
-	$(PRINT)           include/TI/tivx_soc_j6.h >> /tmp/user_guide_$(SOC)_linux.cfg
-	$(DOXYGEN) /tmp/user_guide_$(SOC)_linux.cfg 2> internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
-	$(CLEAN) /tmp/user_guide_$(SOC)_linux.cfg
+	cat internal_docs/doxy_cfg_user_guide/user_guide_$(SOC)_linux.cfg > /tmp/user_guide_linux.cfg
+	$(PRINT) EXCLUDE = \\ >> /tmp/user_guide_linux.cfg
+	for tmp_soc in $(SOC_LIST) ; do \
+		tmp=include/TI/soc/tivx_soc_$$tmp_soc.h ; \
+		if [ "$$tmp_soc" != $(SOC) ]; then \
+			echo           $$tmp \\ >> /tmp/user_guide_linux.cfg ; \
+		fi ; \
+	done
+	$(DOXYGEN) /tmp/user_guide_linux.cfg 2> internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
+	$(CLEAN) /tmp/user_guide_linux.cfg
 	$(COPY) tiovx_dev/internal_docs/tiovx_release_notes_psdkra_$(SOC).html $(TIOVX_PATH)/tiovx_release_notes.html
 	-rm $(TIOVX_PATH)/docs/test_reports/* -f
 	$(MKDIR) $(TIOVX_PATH)/docs/test_reports/
