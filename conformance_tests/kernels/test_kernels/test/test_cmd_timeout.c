@@ -324,11 +324,11 @@ int32_t DeleteGraph(TestObjContext *objCntxt)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxReleaseGraph() failed.\n");
 
-            if (vxStatus != (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
+            if (vxStatus != (vx_status)VX_ERROR_TIMEOUT)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                          "vxReleaseGraph() failed. Expected an error code [%d] but "
-                         "received [%d]\n", TIVX_ERROR_EVENT_TIMEOUT, vxStatus);
+                         "received [%d]\n", VX_ERROR_TIMEOUT, vxStatus);
             }
 
             if (status == TIVX_TEST_SUCCESS)
@@ -381,7 +381,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testDefaultTimeout, TestArg, TEST_PARAMS)
     }
 
     /* Query the graph timeout and validate. */
-    vxStatus = vxQueryGraph(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxQueryGraph(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                             &vxTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_SUCCESS)
@@ -512,17 +512,17 @@ TEST_WITH_ARG(tivxCmdTimeout, testInvalidTimeoutSet, TestArg, TEST_PARAMS)
      * attribute should not be modified.
      */
     vxTimeoutVal = TIVX_TEST_INVALID_TIMEOUT;
-    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                                    &vxTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_ERROR_INVALID_PARAMETERS)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(TIVX_GRAPH_TIMEOUT) failed.\n");
+        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(VX_GRAPH_TIMEOUT) failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
     /* Query the graph timeout and validate. */
-    vxStatus = vxQueryGraph(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxQueryGraph(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                             &vxTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_SUCCESS)
@@ -631,17 +631,17 @@ TEST_WITH_ARG(tivxCmdTimeout, testValidTimeoutSet, TestArg, TEST_PARAMS)
     }
 
     /* Set a valid timeout attribute. */
-    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                                    &vxSetTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(TIVX_GRAPH_TIMEOUT) failed.\n");
+        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(VX_GRAPH_TIMEOUT) failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
     /* Query the graph timeout and validate. */
-    vxStatus = vxQueryGraph(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxQueryGraph(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                             &vxTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_SUCCESS)
@@ -778,11 +778,11 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCreateFail, TestArg, TEST_PARAMS)
     /* Verify the graph. */
     vxStatus = vxVerifyGraph(objCntxt.vxGraph);
 
-    if (vxStatus != (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
+    if (vxStatus != (vx_status)VX_ERROR_TIMEOUT)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "vxVerifyGraph() failed. Expected an error code [%d] but "
-                 "received [%d]\n", TIVX_ERROR_EVENT_TIMEOUT, vxStatus);
+                 "received [%d]\n", VX_ERROR_TIMEOUT, vxStatus);
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -1001,11 +1001,11 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCtrlCmdFail, TestArg, TEST_PARAMS)
     vxStatus = tivxNodeSendCommandTimed(objCntxt.vxCmdTestNode, 0, 0,
                                         (vx_reference*)&objCntxt.vxCfg, 1, 1);
 
-    if (vxStatus != (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
+    if (vxStatus != (vx_status)VX_ERROR_TIMEOUT)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "tivxNodeSendCommandTimed() failed. Expected an error code [%d] but "
-                 "received [%d]\n", TIVX_ERROR_EVENT_TIMEOUT, vxStatus);
+                 "received [%d]\n", VX_ERROR_TIMEOUT, vxStatus);
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -1104,12 +1104,12 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutGraph, TestArg, TEST_PARAMS)
     /* Change the timeout attribute of the graph. */
     vxSetTimeoutVal = 5;
 
-    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                                    &vxSetTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(TIVX_GRAPH_TIMEOUT) failed.\n");
+        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(VX_GRAPH_TIMEOUT) failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -1140,11 +1140,11 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutGraph, TestArg, TEST_PARAMS)
 
     vxStatus = vxWaitGraph(objCntxt.vxGraph);
 
-    if (vxStatus != (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
+    if (vxStatus != (vx_status)VX_ERROR_TIMEOUT)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "vxWaitGraph() failed. Expected an error code [%d] but "
-                 "received [%d]\n", TIVX_ERROR_EVENT_TIMEOUT, vxStatus);
+                 "received [%d]\n", VX_ERROR_TIMEOUT, vxStatus);
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -1255,12 +1255,12 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutGraphStream, TestArg, TEST_PARAMS)
     /* Change the timeout attribute of the graph. */
     vxSetTimeoutVal = 5;
 
-    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, TIVX_GRAPH_TIMEOUT,
+    vxStatus = vxSetGraphAttribute(objCntxt.vxGraph, VX_GRAPH_TIMEOUT,
                                    &vxSetTimeoutVal, sizeof(vx_uint32));
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(TIVX_GRAPH_TIMEOUT) failed.\n");
+        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute(VX_GRAPH_TIMEOUT) failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
