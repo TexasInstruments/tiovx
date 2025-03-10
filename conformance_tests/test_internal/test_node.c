@@ -25,6 +25,12 @@
 #include <string.h>
 #include <math.h>
 
+#if defined(SOC_AM62A)
+#define TIVX_TARGET_MCU TIVX_TARGET_MCU1_0
+#else
+#define TIVX_TARGET_MCU TIVX_TARGET_MCU2_0
+#endif
+
 #include <vx_internal.h>
 
 #include "shared_functions.h"
@@ -512,11 +518,7 @@ TEST(tivxInternalNode, negativeTestNodeSendCommand)
     ASSERT_VX_OBJECT(scalar[0] = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
     ASSERT_VX_OBJECT(node[0] = tivxScalarSourceNode(graph, scalar[0]), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(node[0], VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(node[0], VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(node[0], VX_TARGET_STRING, TIVX_TARGET_MCU));
 
     VX_CALL(vxVerifyGraph(graph));
     kernel = node[0]->kernel;

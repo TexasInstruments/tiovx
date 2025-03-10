@@ -28,6 +28,7 @@
 #include <TI/tivx_target_kernel.h>
 #include "math.h"
 #include <limits.h>
+#include <test_kernels_utils.h>
 
 #define MAX_LINE_LEN   (256U)
 #define NUM_CAMERAS    (4U)
@@ -40,74 +41,6 @@
 
 
 TESTCASE(tivxTimestamp,  CT_VXContext, ct_setup_vx_context, 0)
-
-typedef struct {
-    const char* testName;
-    int width, height;
-    int pipe_depth;
-    int num_buf;
-    int loop_count;
-    int measure_perf;
-} Pipeline_Arg;
-
-#define ADD_BUF_1(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/buf=1", __VA_ARGS__, 1))
-
-#define ADD_BUF_2(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/buf=2", __VA_ARGS__, 2))
-
-#define ADD_BUF_3(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/buf=3", __VA_ARGS__, 3))
-
-#define ADD_PIPE_1(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/pipe_depth=1", __VA_ARGS__, 1))
-
-#define ADD_PIPE_3(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/pipe_depth=3", __VA_ARGS__, 3))
-
-#define ADD_PIPE_6(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/pipe_depth=6", __VA_ARGS__, 6))
-
-#define ADD_PIPE_MAX(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/pipe_depth=MAX", __VA_ARGS__, TIVX_GRAPH_MAX_PIPELINE_DEPTH-1))
-
-#define ADD_LOOP_0(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/loop_count=0", __VA_ARGS__, 0))
-
-#define ADD_LOOP_1(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/loop_count=1", __VA_ARGS__, 1))
-
-#define ADD_LOOP_10(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/loop_count=10", __VA_ARGS__, 10))
-
-#define ADD_LOOP_1000(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/loop_count=1000", __VA_ARGS__, 1000))
-
-#define ADD_LOOP_100000(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/loop_count=100000", __VA_ARGS__, 100000))
-
-#define ADD_LOOP_1000000(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/loop_count=1000000", __VA_ARGS__, 1000000))
-
-#define MEASURE_PERF_OFF(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/measure_perf=OFF", __VA_ARGS__, 0))
-
-#define MEASURE_PERF_ON(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/measure_perf=ON", __VA_ARGS__, 1))
-
-#define ADD_SIZE_2048x1024(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/sz=2048x1024", __VA_ARGS__, 2048, 1024))
-
-#define PARAMETERS \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_0, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_0, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_MAX, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_100000, MEASURE_PERF_ON, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_2048x1024, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_ON, ARG), \
 
 /*
  * Utility API to set number of buffers at a node parameter
@@ -173,33 +106,6 @@ static vx_status log_graph_rt_trace(vx_graph graph)
     #endif
     return status;
 }
-
-typedef struct {
-    const char* testName;
-    int stream_time;
-    char *target_string;
-} Arg;
-
-#if defined(SOC_AM62A)
-#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU1_0", __VA_ARGS__, TIVX_TARGET_MCU1_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1))
-#elif defined(SOC_J721E)
-#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU2_0", __VA_ARGS__, TIVX_TARGET_MCU2_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_1))
-#else
-#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU2_0", __VA_ARGS__, TIVX_TARGET_MCU2_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1))
-#endif
-
-#define STREAMING_PARAMETERS \
-    CT_GENERATE_PARAMETERS("streaming", ADD_SET_TARGET_PARAMETERS, ARG, 1000)
 
 /* TIOVX-674 */
 TEST_WITH_ARG(tivxTimestamp, testTimestampPropagation, Arg, STREAMING_PARAMETERS)

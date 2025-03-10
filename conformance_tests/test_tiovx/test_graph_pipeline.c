@@ -25,6 +25,12 @@
 #include <TI/tivx_test_kernels.h>
 #include <TI/tivx_capture.h>
 
+#if defined(SOC_AM62A)
+#define TIVX_TARGET_MCU TIVX_TARGET_MCU1_0
+#else
+#define TIVX_TARGET_MCU TIVX_TARGET_MCU2_0
+#endif
+
 TESTCASE(tivxGraphPipeline,  CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tivxGraphPipelineLdra,  CT_VXContext, ct_setup_vx_context, 0)
 
@@ -6444,11 +6450,7 @@ TEST(tivxGraphPipelineLdra, negativeTestPyramidInconsistentRefs)
 
     ASSERT_VX_OBJECT(n1 = tivxPyramidSourceNode(graph, pyr_1[0]), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU));
 
     /* input @ node index 0, becomes graph parameter 1 */
     add_graph_parameter_by_node_index(graph, n1, 0);

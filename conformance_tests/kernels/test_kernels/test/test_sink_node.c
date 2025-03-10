@@ -22,10 +22,13 @@
 #include <TI/tivx_test_kernels.h>
 #include <TI/tivx_capture_nodes.h>
 #include <TI/tivx_task.h>
+#include <test_kernels_utils.h>
 
 #if !defined(SOC_AM62A)
 
 TESTCASE(tivxTestSinkNode,  CT_VXContext, ct_setup_vx_context, 0)
+
+#define MAX_NUM_BUF               (8u)
 
 typedef struct {
     const char* name;
@@ -34,54 +37,11 @@ typedef struct {
     uint32_t loop_count;
     uint32_t stream_time;
     char *target_string;
-} Arg;
+    char *additional_target_string;
+} Sink_Arg;
 
-#define MAX_NUM_BUF               (8u)
-
-#define ADD_BUF_3(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/buf=3", __VA_ARGS__, 3))
-
-#define ADD_PIPE_3(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/pipe_depth=3", __VA_ARGS__, 3))
-
-#define ADD_LOOP_10(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/loop_count=10", __VA_ARGS__, 10))
-
-#define ADD_LOOP_100(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/loop_count=100", __VA_ARGS__, 100))
-
-#define ADD_LOOP_1000(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/loop_count=1000", __VA_ARGS__, 1000))
-
-#define ADD_STREAM_TIME_100(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/stream_time=100", __VA_ARGS__, 100))
-
-#define ADD_STREAM_TIME_1000(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/stream_time=1000", __VA_ARGS__, 1000))
-
-#define ADD_STREAM_TIME_10000(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/stream_time=10000", __VA_ARGS__, 10000))
-
-#if defined(SOC_AM62A)
-#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU1_0", __VA_ARGS__, TIVX_TARGET_MCU1_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1))
-#elif defined(SOC_J721E)
-#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU2_0", __VA_ARGS__, TIVX_TARGET_MCU2_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_1))
-#else
-#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MPU_0", __VA_ARGS__, TIVX_TARGET_MPU_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_MCU2_0", __VA_ARGS__, TIVX_TARGET_MCU2_0)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP1", __VA_ARGS__, TIVX_TARGET_DSP1))
-#endif
-
-#define PARAMETERS \
-    CT_GENERATE_PARAMETERS("sink_node", ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_10, ADD_STREAM_TIME_100, ADD_SET_TARGET_PARAMETERS, ARG), \
+#define SINK_PARAMETERS \
+    CT_GENERATE_PARAMETERS("sink_node", ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_10, ADD_STREAM_TIME_100, ADD_SET_TARGET_PARAMETERS, ADD_SET_ADDITIONAL_TARGET_PARAMETERS, ARG), \
 
 /*
  * Utility API used to add a graph parameter from a node, node parameter index
@@ -188,7 +148,7 @@ static void printGraphPipelinePerformance(vx_graph graph,
  *      |
  *      |--------------> ScalarSink2Node
  */
-TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Arg, PARAMETERS)
+TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Sink_Arg, SINK_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
@@ -222,11 +182,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar[0]), VX_TYPE_NODE);
 
-    #ifndef SOC_J722S
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_1));
-    #else
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
-    #endif
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->additional_target_string));
 
     /* input @ node index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n1, 0);
@@ -343,7 +299,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Arg, PARAMETERS)
  *                          |----------------> ScalarSink2Node
  */
 
-TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
+TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Sink_Arg, SINK_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
@@ -381,11 +337,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar[0]), VX_TYPE_NODE);
 
-    #ifndef SOC_J722S
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_1));
-    #else
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
-    #endif
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->additional_target_string));
 
     /* explicitly set graph pipeline depth */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
@@ -445,7 +397,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
  *                          |-----------------> ScalarSink2Node
  */
 
-TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode2, Arg, PARAMETERS)
+TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode2, Sink_Arg, SINK_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
@@ -483,11 +435,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode2, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar[0]), VX_TYPE_NODE);
 
-    #ifndef SOC_J722S
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_1));
-    #else
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
-    #endif
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->additional_target_string));
 
     /* explicitly set graph pipeline depth */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));

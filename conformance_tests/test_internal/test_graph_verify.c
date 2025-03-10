@@ -28,6 +28,12 @@
 #include <TI/tivx_capture.h>
 #include <test_utils_mem_operations.h>
 
+#if defined(SOC_AM62A)
+#define TIVX_TARGET_MCU TIVX_TARGET_MCU1_0
+#else
+#define TIVX_TARGET_MCU TIVX_TARGET_MCU2_0
+#endif
+
 TESTCASE(tivxInternalGraphVerify,  CT_VXContext, ct_setup_vx_context, 0)
 
 /* To hit negative portion of vxVerifyGraph, ownNodeCreateUserCallbackCommand */
@@ -319,11 +325,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphInitVirtualNode4)
     with the virtual pyramid object */
     ASSERT_VX_OBJECT(n = tivxPyramidSourceNode(graph, pyr_virt), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n, VX_TARGET_STRING, TIVX_TARGET_MCU));
 
     /* Calling vxVerifyGraph to call the ownGraphInitVirtualNode */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxVerifyGraph(graph));
@@ -395,11 +397,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphInitVirtualNode6)
     with the virtual pyramid object */
     ASSERT_VX_OBJECT(n = tivxPyramidSourceNode(graph, pyr_in), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n, VX_TARGET_STRING, TIVX_TARGET_MCU));
 
     /* Tampering is_virtual parameter of pyramid object */
     vx_reference ref = &(pyr_in->base);
@@ -451,11 +449,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphNodeKernelInit)
     /* Creating a tivxPyramidSourceNode(the actual node is irrelevant) */
     ASSERT_VX_OBJECT(n = tivxPyramidSourceNode(graph, pyr_in), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n, VX_TARGET_STRING, TIVX_TARGET_MCU));
 
     tivx_obj_desc_kernel_name_t* kernel_name_obj_desc[TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST] = {NULL};
 
@@ -571,11 +565,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphAllocateDataObject)
     ASSERT_VX_OBJECT(n = tivxPyramidIntermediateNode(graph, pyr,
                           (vx_pyramid)vxGetReferenceFromDelay(delay, -1)), VX_TYPE_NODE);
 
-    #if defined(SOC_AM62A)
-    VX_CALL(vxSetNodeTarget(n, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-    #else
-    VX_CALL(vxSetNodeTarget(n, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-    #endif
+    VX_CALL(vxSetNodeTarget(n, VX_TARGET_STRING, TIVX_TARGET_MCU));
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_MEMORY, vxVerifyGraph(graph));
 

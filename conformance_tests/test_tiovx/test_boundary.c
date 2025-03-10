@@ -32,6 +32,12 @@
 
 #define MAX_POINTS 100
 
+#if defined(SOC_AM62A)
+#define TIVX_TARGET_MCU TIVX_TARGET_MCU1_0
+#else
+#define TIVX_TARGET_MCU TIVX_TARGET_MCU2_0
+#endif
+
 TESTCASE(tivxBoundary, CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tivxNegativeBoundary, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -3195,11 +3201,7 @@ TEST(tivxBoundary2, testControlCommandsBoundary)
     {
         ASSERT_VX_OBJECT(scalar[i] = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
         ASSERT_VX_OBJECT(nodes[i] = tivxScalarSourceNode(graph, scalar[i]), VX_TYPE_NODE);
-        #if defined(SOC_AM62A)
-        VX_CALL(vxSetNodeTarget(nodes[i], VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-        #else
-        VX_CALL(vxSetNodeTarget(nodes[i], VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-        #endif
+        VX_CALL(vxSetNodeTarget(nodes[i], VX_TARGET_STRING, TIVX_TARGET_MCU));
     }
     
     VX_CALL(vxVerifyGraph(graph));
@@ -3238,11 +3240,7 @@ TEST(tivxNegativeBoundary2, negativeTestControlCommandsBoundary)
     {
         ASSERT_VX_OBJECT(scalar[i] = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
         ASSERT_VX_OBJECT(nodes[i] = tivxScalarSourceNode(graph, scalar[i]), VX_TYPE_NODE);
-        #if defined(SOC_AM62A)
-        VX_CALL(vxSetNodeTarget(nodes[i], VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
-        #else
-        VX_CALL(vxSetNodeTarget(nodes[i], VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
-        #endif
+        VX_CALL(vxSetNodeTarget(nodes[i], VX_TARGET_STRING, TIVX_TARGET_MCU));
     }
     
     VX_CALL(vxVerifyGraph(graph));

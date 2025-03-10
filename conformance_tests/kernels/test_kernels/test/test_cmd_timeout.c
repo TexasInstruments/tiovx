@@ -174,17 +174,10 @@ int32_t CreateGraph(TestObjContext *objCntxt, const char *tgt)
         }
         else
         {
-            #if defined(SOC_AM62A)
-            /* Set the node target to TIVX_TARGET_MCU1_0. */
+            /* Set the node target. */
             vxStatus = vxSetNodeTarget(objCntxt->vxScalarSrcNode,
                                        VX_TARGET_STRING,
-                                       TIVX_TARGET_MCU1_0);
-            #else
-            /* Set the node target to TIVX_TARGET_MCU2_0. */
-            vxStatus = vxSetNodeTarget(objCntxt->vxScalarSrcNode,
-                                       VX_TARGET_STRING,
-                                       TIVX_TARGET_MCU2_0);
-            #endif
+                                       tgt);
 
             if (vxStatus != (vx_status)VX_SUCCESS)
             {
