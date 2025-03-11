@@ -349,8 +349,17 @@ typedef enum _tivx_cpu_id_e {
     /*! \brief CPU ID for MCU2_0 */
     TIVX_CPU_ID_MCU2_0 = 3,
 
+    /*! \brief CPU ID alias for which CPU VPAC1 is used from */
+    TIVX_CPU_ID_VPAC1 = TIVX_CPU_ID_MCU2_0,
+
+    /*! \brief CPU ID alias for which CPU Video IO kernels are used from */
+    TIVX_CPU_ID_VIDEO_IO = TIVX_CPU_ID_MCU2_0,
+
     /*! \brief CPU ID for MCU2_1 */
     TIVX_CPU_ID_MCU2_1 = 4,
+
+    /*! \brief CPU ID alias for which CPU DMPAC is used from */
+    TIVX_CPU_ID_DMPAC = TIVX_CPU_ID_MCU2_1,
 
     /*! \brief CPU ID for MPU-0 */
     TIVX_CPU_ID_MPU_0 = 5,
