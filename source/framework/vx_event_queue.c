@@ -423,7 +423,8 @@ vx_status ownRegisterEvent(vx_reference ref,
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "Invalid event type given\n");
+                    status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid queue type given\n");
                 }
             }
         }
