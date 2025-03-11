@@ -616,6 +616,28 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
                 }
                 break;
 
+            case (vx_enum)VX_GRAPH_PIPELINE_DEPTH:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    if (*(const vx_uint32 *)ptr < TIVX_GRAPH_MAX_PIPELINE_DEPTH)
+                    {
+                        graph->pipeline_depth = *(const vx_uint32 *)ptr;;
+                        ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_PIPELINE_DEPTH", (uint16_t)graph->pipeline_depth+1U);
+                    }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "pipeline depth greater than max allowed pipeline depth\n");
+                        VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_GRAPH_MAX_PIPELINE_DEPTH in tiovx/include/TI/tivx_config.h\n");
+                        status = (vx_status)VX_ERROR_INVALID_VALUE;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Set VX_GRAPH_PIPELINE_DEPTH failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
             default:
                 VX_PRINT(VX_ZONE_ERROR,"Invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
