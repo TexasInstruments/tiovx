@@ -1011,15 +1011,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetKernelParameterConfig(
     vx_kernel_parameter_config_t                parameter_config[]
     );
 
-/*! \brief Returns the graph parameter configuration
+ /*! \brief Returns the graph parameter configuration
  *
- * This API is provided to give information in a more convenient way than is possible by obtaining parameter objects
- * from a graph and querying them.
+ * This API is provided to give information in a more convenient way than is possible by obtaining parameter objects from a graph and querying them.
+ * The function is intended to return data after a graph has been verified. 
+ * If the function is called before a graph is verified, the results are not defined.
+ * The number of references reported for each graph parameter will be the number of references originally 
+ * supplied in the call to vxSetGraphScheduleConfig plus any references that have been 
+ * added by calls to vxAddReferencesToGraphParameterList
  * 
  * \param [in] graph The graph to query
- * \param [in] num_params The number of parameters required by the kernel, as returned by querying the kernel for the attribute VX_KERNEL_PARAMETERS.
+ * \param [in] num_params the number of graph parameters in the graph, returned by querying the graph for the attribute VX_GRAPH_NUMPARAMETERS.
  *  If the value is incorrect, the function will return VX_ERROR_INVALID_PARAMETERS
- * \param [out] An array with the correct number of entries to store the returned data for all the parameters
+ * \param [out] An array with the correct number of entries to store the returned data for all the parameters.
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors; any other value indicates failure.
