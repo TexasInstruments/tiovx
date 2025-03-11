@@ -8624,6 +8624,34 @@ TEST(tivxGraphPipelineLdra, negativeTestGraphParameterDequeueDoneRef)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+TEST(tivxGraphPipelineLdra, negativeTestGraphParameterEnqueueReadyRef)
+{
+    #define NB_IMAGES 3
+    vx_context context = context_->vx_context_;
+    vx_graph graph = simpleGraph(context);
+    vx_image images[NB_IMAGES];
+    for (int i = 0; i < NB_IMAGES; ++i)
+    {
+        images[i] = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+    }
+    vx_graph_parameter_queue_params_t graph_params[3] = 
+    {
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)images, .refs_list_size = 3},
+        {.graph_parameter_index = 1, .refs_list = (vx_reference *)images, .refs_list_size = 3},
+        {.graph_parameter_index = 2, .refs_list = (vx_reference *)images, .refs_list_size = 3}
+    };
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxSetGraphPipelineDepth(graph, 2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_NORMAL,3, graph_params));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    /* try to enqueue */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&images[0], 1));
+    for (int i = 0; i < NB_IMAGES; ++i)
+    {
+        VX_CALL(vxReleaseImage(&images[i]));
+    }
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TEST(tivxGraphPipelineLdra, negativeTestSetGraphPipelineDepth)
 {
     vx_context context = context_->vx_context_;
@@ -8702,6 +8730,7 @@ TESTCASE_TESTS(
     negativeTestSetGraphScheduleConfig,
     negativeTestGraphParameterCheckDoneRef,
     negativeTestGraphParameterDequeueDoneRef,
+    negativeTestGraphParameterEnqueueReadyRef, 
     negativeTestSetGraphPipelineDepth,
     negativeTestImageInconsistentRefs,
     negativeTestObjectArrayInconsistentRefs,

@@ -593,7 +593,7 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                             vx_uint32 i;
                             for (i = 0; i < num_replicas; ++i)
                             {
-                                /* loop over the replicats object descriptor */
+                                /* loop over the replicated object descriptor */
                                 tivx_obj_desc_t const * odi = ref_list[i]->obj_desc;
                                 if (NULL == odi)
                                 {
@@ -791,13 +791,24 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                         {
                             ref = ref->scope;
                         }
+/* Original TI comment: 
+If the ref type is an object array that didn't match the graph parameter type, return ref[0] of obj array */
+/* Note: this assumes it is replicated.  In the future, this assumption could be removed */                        
                         if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                         {
                             vx_object_array object_array = vxCastRefAsObjectArray(ref, NULL);
                             ref_list = object_array->ref;
                             status = ownDecrementEnqueueCount(ref);
                         }
+/* Original TI comment: 
+LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR015
+<justification end> */
+/* If the ref type is a pyramid that didn't match the graph parameter type, return img[0] of pyramid */
+/* Note: this assumes it is replicated.  In the future, this assumption could be removed */                        
                         else if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+/* LDRA_JUSTIFY_END */                     
                         {
                             vx_pyramid pyramid = vxCastRefAsPyramid(ref, NULL);
                             ref_list = (vx_reference *)(uintptr_t)(pyramid->img);
@@ -840,13 +851,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                         {
                             refs[ref_id] = ref;
                         }
-                        /* If the ref type doesn't match graph parameter type, throw an error */
+/* Original TI comment:
+LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT010
+<justification end> */                        
+/* If the ref type doesn't match graph parameter type, throw an error */
                         else
                         {
                             VX_PRINT(VX_ZONE_ERROR,
                                 "Returned reference does not match the expected reference at graph parameter %d\n", graph_parameter_index);
                             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         }
+/* LDRA_JUSTIFY_END */                        
                     }
                 }
                 else if (0U == l_num_refs)
@@ -874,7 +891,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                     exit_loop = (vx_bool)vx_true_e;
                 }
             } while(exit_loop == (vx_bool)vx_false_e);
+/* Original TI comment: 
+LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR014
+<justification end>*/            
             if ((vx_status)VX_SUCCESS != status)
+/* LDRA_JUSTIFY_END */            
             {
                 /* some error in dequeue, dont try to dequeue further,
                  * break from loop with error */
