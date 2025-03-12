@@ -1147,14 +1147,17 @@ void ownSendGraphCompletedEvent(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
     if((graph != NULL) && (graph->base.context != NULL))
     {
-        if( ((vx_bool)vx_true_e == graph->is_enable_send_context_complete_event) ||
-            ((vx_bool)vx_true_e == graph->is_enable_send_graph_complete_event) )
+        if( (((vx_bool)vx_true_e == graph->base.context->event_queue.enable) &&
+             ((vx_bool)vx_true_e == graph->is_enable_send_context_complete_event))  ||
+            (((vx_bool)vx_true_e == graph->event_queue.enable) &&
+             ((vx_bool)vx_true_e == graph->is_enable_send_graph_complete_event) ) )
         {
             uint64_t timestamp;
 
             timestamp = tivxPlatformGetTimeInUsecs()*1000U; /* in nano-secs */
 
-            if ((vx_bool)vx_true_e == graph->is_enable_send_context_complete_event)
+            if ( ((vx_bool)vx_true_e == graph->base.context->event_queue.enable) &&
+                 ((vx_bool)vx_true_e == graph->is_enable_send_context_complete_event) )
             {
                 status = ownEventQueueAddEvent(&graph->base.context->event_queue,
                             (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
@@ -1170,7 +1173,8 @@ void ownSendGraphCompletedEvent(vx_graph graph)
 /* LDRA_JUSTIFY_END */
             }
 
-            if ((vx_bool)vx_true_e == graph->is_enable_send_graph_complete_event)
+            if ( ((vx_bool)vx_true_e == graph->event_queue.enable) &&
+                 ((vx_bool)vx_true_e == graph->is_enable_send_graph_complete_event) )
             {
                 status = ownEventQueueAddEvent(&graph->event_queue,
                             (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,

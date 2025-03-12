@@ -227,13 +227,21 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32
     }
     else
     {
-        uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
+        if ((vx_bool)vx_true_e == context->event_queue.enable)
+        {
+            uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
-        status = ownEventQueueAddEvent(
-                &context->event_queue,
-                (vx_enum)VX_EVENT_USER,
-                timestamp, app_value,
-                (uintptr_t)app_value, (uintptr_t)parameter, (uintptr_t)0);
+            status = ownEventQueueAddEvent(
+                    &context->event_queue,
+                    (vx_enum)VX_EVENT_USER,
+                    timestamp, app_value,
+                    (uintptr_t)app_value, (uintptr_t)parameter, (uintptr_t)0);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"events are disabled\n");
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        }
     }
     return status;
 }
@@ -527,9 +535,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserGraphEvent(vx_graph graph, vx_uint3
     }
     else
     {
-        uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
-        status = ownEventQueueAddEvent(&graph->event_queue, (vx_enum)VX_EVENT_USER, timestamp, 
-                                        app_value, (uintptr_t)app_value, (uintptr_t)parameter, (uintptr_t)0);
+        if ((vx_bool)vx_true_e == graph->event_queue.enable)
+        {
+            uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
+            status = ownEventQueueAddEvent(&graph->event_queue, (vx_enum)VX_EVENT_USER, timestamp,
+                                            app_value, (uintptr_t)app_value, (uintptr_t)parameter, (uintptr_t)0);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"graph events are disabled\n");
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        }
     }
     return status;
 }
