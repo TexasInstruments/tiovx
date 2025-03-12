@@ -1939,14 +1939,14 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming5, Pipeline_Arg, PARAME
  * Error will be shown in a print statement if the scalar sink fails
  *
  */
-TEST_WITH_ARG(tivxGraphStreaming, testStreamingGraphEvents, Pipeline_Arg, PARAMETERS)
+TEST(tivxGraphStreaming, testStreamingGraphEventsNode)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
     vx_node n0, n1, n2;
     vx_event_t graph_events;
 
-    uint32_t pipeline_depth, num_buf, i;
+    uint32_t pipeline_depth = 2, num_buf = 3, i;
     uint64_t exe_time;
     uint32_t num_streams = 0;
     vx_uint8  scalar_val = 0;
@@ -1955,25 +1955,6 @@ TEST_WITH_ARG(tivxGraphStreaming, testStreamingGraphEvents, Pipeline_Arg, PARAME
     tivxTestKernelsLoadKernels(context);
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
-
-    /* Needs to be at least 2 since trigger node is the third node */
-    if (arg_->pipe_depth == 1)
-    {
-        pipeline_depth = 2;
-    }
-    else
-    {
-        pipeline_depth = arg_->pipe_depth;
-    }
-
-    if (arg_->num_buf == 1)
-    {
-        num_buf = 2;
-    }
-    else
-    {
-        num_buf = arg_->num_buf;
-    }
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -1986,10 +1967,6 @@ TEST_WITH_ARG(tivxGraphStreaming, testStreamingGraphEvents, Pipeline_Arg, PARAME
     ASSERT_VX_OBJECT(n1 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSinkNode(graph, scalar_out), VX_TYPE_NODE);
-
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, arg_->target_string));
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
 
     /* explicitly set graph pipeline depth */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
@@ -2013,10 +1990,95 @@ TEST_WITH_ARG(tivxGraphStreaming, testStreamingGraphEvents, Pipeline_Arg, PARAME
 
     for (i = 0; i < 100; i++)
     {
-        //printf("inside for loop\n");
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, &graph_events, vx_false_e));
-        //printf("after wait graph event\n");
         ASSERT_EQ_INT(graph_events.type, VX_EVENT_NODE_COMPLETED);
+        ASSERT_EQ_INT(graph_events.app_value, 222);
+    }
+
+    VX_CALL(vxDisableGraphEvents(graph));
+
+    VX_CALL(vxStopGraphStreaming(graph));
+
+    VX_CALL(vxQueryGraph(graph, TIVX_GRAPH_STREAM_EXECUTIONS, &num_streams, sizeof(num_streams)));
+
+    ASSERT(num_streams != 0);
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseScalar(&scalar_out));
+    VX_CALL(vxReleaseScalar(&scalar));
+    VX_CALL(vxReleaseGraph(&graph));
+    tivxTestKernelsUnLoadKernels(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
+ *       n0         scalar             n1            scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR -- SCALAR_SINK
+ *
+ * Scalar source node connected to scalar sink node with streaming and pipelining enabled
+ * Trigger node is sink node
+ * All nodes are on MCU2_0
+ * Error will be shown in a print statement if the scalar sink fails
+ *
+ */
+TEST(tivxGraphStreaming, testStreamingGraphEventsGraph)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_node n0, n1, n2;
+    vx_event_t graph_events;
+
+    uint32_t pipeline_depth = 2, num_buf = 3, i;
+    uint64_t exe_time;
+    uint32_t num_streams = 0;
+    vx_uint8  scalar_val = 0;
+    vx_scalar scalar, scalar_out;
+
+    tivxTestKernelsLoadKernels(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(scalar_out = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(n0 = tivxScalarSourceNode(graph, scalar), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(n1 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(n2 = tivxScalarSinkNode(graph, scalar_out), VX_TYPE_NODE);
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 0, num_buf));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n2));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent((vx_reference)graph, VX_EVENT_GRAPH_COMPLETED, 0, 222));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphEvents(graph));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_graph_pipeline_streaming5");
+    log_graph_rt_trace(graph);
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    VX_CALL(vxStartGraphStreaming(graph));
+
+    for (i = 0; i < 100; i++)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, &graph_events, vx_false_e));
+        ASSERT_EQ_INT(graph_events.type, VX_EVENT_GRAPH_COMPLETED);
         ASSERT_EQ_INT(graph_events.app_value, 222);
     }
 
@@ -2143,7 +2205,8 @@ TESTCASE_TESTS(tivxGraphStreaming,
                testPipeliningStreaming3,
                testPipeliningStreaming4,
                testPipeliningStreaming5,
-               testStreamingGraphEvents,
+               testStreamingGraphEventsNode,
+               testStreamingGraphEventsGraph,
                testScalar,
                testScalarCtrlCmd,
                negativeTestStreamingState,
