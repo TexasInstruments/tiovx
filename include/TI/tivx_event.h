@@ -84,15 +84,6 @@ extern "C" {
 #define TIVX_EVENT_TIMEOUT_NO_WAIT          (0u)
 
 /*!
- * \brief Constant to indicate tivxEventPend() should only
- *        wait forever for the event to arrive
- *
- * \ingroup group_tivx_event
- */
-#define TIVX_EVENT_TIMEOUT_WAIT_FOREVER     (0xFFFFFFFFu)
-
-
-/*!
  * \brief Typedef for a event
  *
  * \ingroup group_tivx_event
@@ -138,7 +129,7 @@ vx_status tivxEventPost(tivx_event event);
  *
  * \param event [in] event object
  * \param timeout [in] Timeout in units of msecs,
- *                     use TIVX_EVENT_TIMEOUT_WAIT_FOREVER to wait forever
+ *                     use VX_TIMEOUT_WAIT_FOREVER to wait forever
  *
  * \return VX_SUCCESS on success
  *
