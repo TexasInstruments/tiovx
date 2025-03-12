@@ -2564,7 +2564,7 @@ static vx_status tivxTestTargetEventWait(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for timeout value = TIVX_EVENT_TIMEOUT_NO_WAIT\n");
         status = (vx_status)VX_FAILURE;
     }
-/* To hit else condition inside rtos tivxEventWait() by passing different timeout value than TIVX_EVENT_TIMEOUT_WAIT_FOREVER or TIVX_EVENT_TIMEOUT_NO_WAIT */
+/* To hit else condition inside rtos tivxEventWait() by passing different timeout value than VX_TIMEOUT_WAIT_FOREVER or TIVX_EVENT_TIMEOUT_NO_WAIT */
     if((vx_status)VX_ERROR_TIMEOUT != tivxEventWait(event,2))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for timeout value = 2\n");

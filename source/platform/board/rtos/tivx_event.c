@@ -158,7 +158,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 
     if (NULL != event)
     {
-        if (TIVX_EVENT_TIMEOUT_WAIT_FOREVER == timeout)
+        if (VX_TIMEOUT_WAIT_FOREVER == timeout)
         {
             bsp_timeout = APP_RTOS_SEMAPHORE_WAIT_FOREVER;
         }

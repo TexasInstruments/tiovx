@@ -735,7 +735,7 @@ vx_status VX_API_CALL tivxNodeSendCommand(vx_node node,
  *               their usage is completed.
  * \param [in] num_refs Number of valid entries/references in ref[] array
  * \param [in] timeout Timeout in units of msecs, use
- *             TIVX_EVENT_TIMEOUT_WAIT_FOREVER to wait forever
+ *             VX_TIMEOUT_WAIT_FOREVER to wait forever
  *
  *
  * \ingroup group_tivx_ext_host

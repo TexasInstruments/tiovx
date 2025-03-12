@@ -258,7 +258,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                 /* take semaphore and block until timeout occurs or
                  * semaphore is posted */
                 queue->blockedOnPut = (vx_bool)vx_true_e;
-                wait_status = tivxEventWait(queue->block_wr, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+                wait_status = tivxEventWait(queue->block_wr, VX_TIMEOUT_WAIT_FOREVER);
                 queue->blockedOnPut = (vx_bool)vx_false_e;
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -377,7 +377,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                  */
 
                 queue->blockedOnGet = (vx_bool)vx_true_e;
-                wait_status = tivxEventWait(queue->block_rd, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+                wait_status = tivxEventWait(queue->block_rd, VX_TIMEOUT_WAIT_FOREVER);
                 queue->blockedOnGet = (vx_bool)vx_false_e;
                 if ((vx_status)VX_SUCCESS != wait_status)
                 {
