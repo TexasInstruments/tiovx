@@ -342,9 +342,9 @@ int32_t DeleteGraph(TestObjContext *objCntxt)
 
 /* This test checks the following:
  * - Creates a graph with single node which would have default timeout value of
- *   TIVX_EVENT_TIMEOUT_WAIT_FOREVER.
+ *   VX_TIMEOUT_WAIT_FOREVER.
  * - Queries the timeout values from the graph and node contexts to verify that
- *   they are equal to TIVX_EVENT_TIMEOUT_WAIT_FOREVER
+ *   they are equal to VX_TIMEOUT_WAIT_FOREVER
  */
 TEST_WITH_ARG(tivxCmdTimeout, testDefaultTimeout, TestArg, TEST_PARAMS)
 {
@@ -383,8 +383,8 @@ TEST_WITH_ARG(tivxCmdTimeout, testDefaultTimeout, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    /* The default timeout should be TIVX_EVENT_TIMEOUT_WAIT_FOREVER. */
-    if (vxTimeoutVal != TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+    /* The default timeout should be VX_TIMEOUT_WAIT_FOREVER. */
+    if (vxTimeoutVal != VX_TIMEOUT_WAIT_FOREVER)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "Expected default graph time out does not match");
@@ -401,8 +401,8 @@ TEST_WITH_ARG(tivxCmdTimeout, testDefaultTimeout, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    /* The default timeout should be TIVX_EVENT_TIMEOUT_WAIT_FOREVER. */
-    if (vxTimeoutVal != TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+    /* The default timeout should be VX_TIMEOUT_WAIT_FOREVER. */
+    if (vxTimeoutVal != VX_TIMEOUT_WAIT_FOREVER)
     {
         VX_PRINT(VX_ZONE_ERROR,
                 "Expected default graph time out does not match");
@@ -429,8 +429,8 @@ TEST_WITH_ARG(tivxCmdTimeout, testDefaultTimeout, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    /* The default timeout should be TIVX_EVENT_TIMEOUT_WAIT_FOREVER. */
-    if (vxTimeoutVal != TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+    /* The default timeout should be VX_TIMEOUT_WAIT_FOREVER. */
+    if (vxTimeoutVal != VX_TIMEOUT_WAIT_FOREVER)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "Expected default node time out does not match");
@@ -497,11 +497,11 @@ cleanup:
 
 /* This test checks the following:
  * - Creates a graph with single node which would have default timeout value of
- *   TIVX_EVENT_TIMEOUT_WAIT_FOREVER.
+ *   VX_TIMEOUT_WAIT_FOREVER.
  * - Tries to set an invalid value value of 0 (zero) and checkes that the set
  *   attribute for graph and node gets rejected.
  * - The timeout values of the graph and node still remain to be
- *   TIVX_EVENT_TIMEOUT_WAIT_FOREVER
+ *   VX_TIMEOUT_WAIT_FOREVER
  */
 TEST_WITH_ARG(tivxCmdTimeout, testInvalidTimeoutSet, TestArg, TEST_PARAMS)
 {
@@ -552,8 +552,8 @@ TEST_WITH_ARG(tivxCmdTimeout, testInvalidTimeoutSet, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    /* The default timeout should still be TIVX_EVENT_TIMEOUT_WAIT_FOREVER. */
-    if (vxTimeoutVal != TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+    /* The default timeout should still be VX_TIMEOUT_WAIT_FOREVER. */
+    if (vxTimeoutVal != VX_TIMEOUT_WAIT_FOREVER)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "Expected default graph time out does not match");
@@ -583,8 +583,8 @@ TEST_WITH_ARG(tivxCmdTimeout, testInvalidTimeoutSet, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    /* The default timeout should still be TIVX_EVENT_TIMEOUT_WAIT_FOREVER. */
-    if (vxTimeoutVal != TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+    /* The default timeout should still be VX_TIMEOUT_WAIT_FOREVER. */
+    if (vxTimeoutVal != VX_TIMEOUT_WAIT_FOREVER)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "Expected default graph time out does not match");
@@ -614,8 +614,8 @@ TEST_WITH_ARG(tivxCmdTimeout, testInvalidTimeoutSet, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    /* The default timeout should still be TIVX_EVENT_TIMEOUT_WAIT_FOREVER. */
-    if (vxTimeoutVal != TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+    /* The default timeout should still be VX_TIMEOUT_WAIT_FOREVER. */
+    if (vxTimeoutVal != VX_TIMEOUT_WAIT_FOREVER)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "Expected default node time out does not match");
@@ -646,7 +646,7 @@ cleanup:
 
 /* This test checks the following:
  * - Creates a graph with single node which would have default timeout value of
- *   TIVX_EVENT_TIMEOUT_WAIT_FOREVER.
+ *   VX_TIMEOUT_WAIT_FOREVER.
  * - Tries to set a value value of 10 mill-secs and checkes that the set
  *   attribute for graph and node gets through.
  * - The timeout values of the graph and node are queried to check that the
@@ -762,7 +762,7 @@ cleanup:
 
 /* This test checks the following:
  * - Creates a graph with single node which would have default timeout value of
- *   TIVX_EVENT_TIMEOUT_WAIT_FOREVER.
+ *   VX_TIMEOUT_WAIT_FOREVER.
  * - Tries to set a value value of 1 mill-secs and checkes that the set
  *   attribute for node gets through.
  * - The node is configured to wait for 5 milli-sec on create which should
@@ -907,7 +907,7 @@ cleanup:
 
 /* This test checks the following:
  * - Creates a graph with single node which would have default timeout value of
- *   TIVX_EVENT_TIMEOUT_WAIT_FOREVER.
+ *   VX_TIMEOUT_WAIT_FOREVER.
  * - Tries to set a value value of 1 mill-secs and checkes that the set
  *   attribute for graph gets through.
  * - The node is configured to wait for 5 milli-sec on delete which should
@@ -998,7 +998,7 @@ cleanup:
 
 /* This test checks the following:
  * - Creates a graph with single node which would have default timeout value of
- *   TIVX_EVENT_TIMEOUT_WAIT_FOREVER.
+ *   VX_TIMEOUT_WAIT_FOREVER.
  * - The node is configured to wait for 2 milli-sec on control command which should
  *   lead to the control command API to fail.
  */
@@ -1097,7 +1097,7 @@ cleanup:
 
 /* This test checks the following:
  * - Creates a graph with single node which would have default timeout value of
- *   TIVX_EVENT_TIMEOUT_WAIT_FOREVER.
+ *   VX_TIMEOUT_WAIT_FOREVER.
  * - The graph timeout attribute it updated to check the process function behavior.
  */
 TEST_WITH_ARG(tivxCmdTimeout, testTimeoutGraph, TestArg, TEST_PARAMS)
@@ -1218,7 +1218,7 @@ cleanup:
 
 /* This test checks the following:
  * - Creates a graph with single node which would have default timeout value of
- *   TIVX_EVENT_TIMEOUT_WAIT_FOREVER.
+ *   VX_TIMEOUT_WAIT_FOREVER.
  * - Set the graph in streaming mode
  * - The graph timeout attribute it updated to check the process function behavior.
  */

@@ -282,11 +282,11 @@ TEST(tivxInternalContext, negativeTestNullContextAndMisc)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownContextSendCmd(context, 0, 0, TIVX_CMD_MAX_OBJ_DESCS, 0, 0));
 
     uintptr_t obj_id;
-    VX_CALL(tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER));
+    VX_CALL(tivxQueueGet(&context->free_queue, &obj_id, VX_TIMEOUT_WAIT_FOREVER));
     for (i=0; i<=TIVX_MAX_CTRL_CMD_OBJECTS; i++)
     {
-        VX_CALL(tivxQueuePut(&context->free_queue, TIVX_MAX_CTRL_CMD_OBJECTS, TIVX_EVENT_TIMEOUT_WAIT_FOREVER));
-        VX_CALL(tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER));
+        VX_CALL(tivxQueuePut(&context->free_queue, TIVX_MAX_CTRL_CMD_OBJECTS, VX_TIMEOUT_WAIT_FOREVER));
+        VX_CALL(tivxQueueGet(&context->free_queue, &obj_id, VX_TIMEOUT_WAIT_FOREVER));
     }
     ASSERT_EQ_VX_STATUS(VX_FAILURE, ownContextSendControlCmd(context, 0, 0, 0, 0, 0, 0, 0));
     ASSERT_EQ_VX_STATUS(VX_FAILURE, ownContextSendCmd(context, 0, 0, 0, 0, 0));

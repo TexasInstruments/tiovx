@@ -231,7 +231,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
  * \param cmd          [in] command to send
  * \param num_obj_desc [in] number of object descriptors to send
  * \param obj_desc_id  [in] List of object descriptor to send
- * \param timeout      [in] Timeout in units of msecs, use TIVX_EVENT_TIMEOUT_WAIT_FOREVER to wait forever
+ * \param timeout      [in] Timeout in units of msecs, use VX_TIMEOUT_WAIT_FOREVER to wait forever
  *
  * \ingroup group_vx_context
  */
@@ -249,7 +249,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
  * \param node_cmd_id         [in] ID of the command to send to the node
  * \param obj_desc_id[]       [in] Array of IDs of object descriptor
  * \param num_obj_desc        [in] Number of object descriptors in obj_desc_id[] array
- * \param timeout             [in] Timeout in units of msecs, use TIVX_EVENT_TIMEOUT_WAIT_FOREVER to wait forever
+ * \param timeout             [in] Timeout in units of msecs, use VX_TIMEOUT_WAIT_FOREVER to wait forever
  *
  * \ingroup group_vx_context
  */

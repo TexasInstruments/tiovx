@@ -135,7 +135,7 @@ static vx_status VX_CALLBACK tivxCmdTimeoutTestProcess(
         out_desc->data.u08 = in_desc->data.u08;
 
         if ((cfgParams->processCmdTimeout != 0) &&
-            (cfgParams->processCmdTimeout != TIVX_EVENT_TIMEOUT_WAIT_FOREVER))
+            (cfgParams->processCmdTimeout != VX_TIMEOUT_WAIT_FOREVER))
         {
             tivxTaskWaitMsecs(cfgParams->processCmdTimeout);
         }
@@ -184,7 +184,7 @@ static vx_status VX_CALLBACK tivxCmdTimeoutTestCreate(
         cfgParams = (tivx_cmd_timeout_params_t *)cfgTgtPtr;
 
         if ((cfgParams->createCmdTimeout != 0) &&
-            (cfgParams->createCmdTimeout != TIVX_EVENT_TIMEOUT_WAIT_FOREVER))
+            (cfgParams->createCmdTimeout != VX_TIMEOUT_WAIT_FOREVER))
         {
             tivxTaskWaitMsecs(cfgParams->createCmdTimeout);
         }
@@ -233,7 +233,7 @@ static vx_status VX_CALLBACK tivxCmdTimeoutTestDelete(
         cfgParams = (tivx_cmd_timeout_params_t *)cfgTgtPtr;
 
         if ((cfgParams->deleteCmdTimeout != 0) &&
-            (cfgParams->deleteCmdTimeout != TIVX_EVENT_TIMEOUT_WAIT_FOREVER))
+            (cfgParams->deleteCmdTimeout != VX_TIMEOUT_WAIT_FOREVER))
         {
             tivxTaskWaitMsecs(cfgParams->deleteCmdTimeout);
         }
@@ -279,7 +279,7 @@ static vx_status VX_CALLBACK tivxCmdTimeoutTestControl(
         cfgParams = (tivx_cmd_timeout_params_t *)cfgTgtPtr;
 
         if ((cfgParams->controlCmdTimeout != 0) &&
-            (cfgParams->controlCmdTimeout != TIVX_EVENT_TIMEOUT_WAIT_FOREVER))
+            (cfgParams->controlCmdTimeout != VX_TIMEOUT_WAIT_FOREVER))
         {
             tivxTaskWaitMsecs(cfgParams->controlCmdTimeout);
         }
