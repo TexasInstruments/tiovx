@@ -8210,7 +8210,7 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout2)
     context_event_timeout_val = 40;
     graph_timeout_val = 1000;
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetContextAttribute(context, VX_CONTEXT_EVENT_TIMEOUT, &context_event_timeout_val, sizeof(context_event_timeout_val)));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphAttribute(graph, VX_GRAPH_EVENT_TIMEOUT, &graph_timeout_invalid, sizeof(graph_timeout_invalid)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphAttribute(graph, VX_GRAPH_EVENT_TIMEOUT, &graph_timeout_invalid, sizeof(graph_timeout_invalid)));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphAttribute(graph, VX_GRAPH_EVENT_TIMEOUT, &graph_timeout_val, sizeof(graph_timeout_val)));
     ASSERT_VX_OBJECT(node = tivxCreateNodeByKernelName(graph, "MY_DUMB_WAIT", (vx_reference*)images, 3), VX_TYPE_NODE);
     addParameterToGraph(graph, node, 0);
@@ -8441,6 +8441,7 @@ TEST(tivxGraphPipeline2, testAddReferencesToGraphParameterList)
         VX_CALL(vxReleaseImage(&images[i]));
     }
 
+    VX_CALL(vxReleaseScalar(&no_valid_graph));
     VX_CALL(vxReleaseImage(&images_wrong_res));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
@@ -8515,7 +8516,7 @@ TEST(tivxGraphPipeline2, testGetGraphParameterConfig)
     addParameterToGraph(graph, node1, 1);
     addParameterToGraph(graph, node2, 1);
 
-    vx_graph_parameter_config_t parameter_config[3] = {};     
+    vx_graph_parameter_config_t parameter_config[3] = {};
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
 
@@ -8525,7 +8526,7 @@ TEST(tivxGraphPipeline2, testGetGraphParameterConfig)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
     // call without a valid graph, should return error
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_GRAPH, vxGetGraphParameterConfig((vx_graph)not_a_graph, 3, parameter_config));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxGetGraphParameterConfig((vx_graph)not_a_graph, 3, parameter_config));
 
     // give to small amount of graph parameters, should return error
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGetGraphParameterConfig(graph, 2, parameter_config));
@@ -8561,6 +8562,7 @@ TEST(tivxGraphPipeline2, testGetGraphParameterConfig)
         VX_CALL(vxReleaseImage(&images[i]));
     }
     // release all other references created
+    VX_CALL(vxReleaseScalar(&not_a_graph));
     VX_CALL(vxReleaseImage(&tmp_image));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
