@@ -268,7 +268,8 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
             }
 /* LDRA_JUSTIFY_END */
         }
-        if((vx_bool)vx_true_e == ref->is_enable_send_ref_consumed_event)
+        if(  ((vx_bool)vx_true_e == ref->base.context->event_queue.enable) &&
+             ((vx_bool)vx_true_e == ref->is_enable_send_ref_consumed_event) )
         {
             status = ownEventQueueAddEvent(&ref->base.context->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
@@ -283,7 +284,8 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
             }
 /* LDRA_JUSTIFY_END */
         }
-        if ((vx_bool)vx_true_e == ref->is_enable_send_ref_consumed_graph_event)
+        if(  ((vx_bool)vx_true_e == ref->graph->event_queue.enable) &&
+             ((vx_bool)vx_true_e == ref->is_enable_send_ref_consumed_graph_event) )
         {
             status = ownEventQueueAddEvent(&ref->graph->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
