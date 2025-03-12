@@ -754,7 +754,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref, enum vx_eve
  * \brief Registers an event for a specific graph
  *
  * \param [in] graph_or_node the graph or node for which the event will be registered
- * \param [in] type          only [VX_EVENT_GRAPH_PARAMETER_CONSUMED], [VX_EVENT_GRAPH_COMPLETED] and [VX_EVENT_GRAPH_TIMEOUT]
+ * \param [in] type          only [VX_EVENT_GRAPH_PARAMETER_CONSUMED] and [VX_EVENT_GRAPH_COMPLETED]
  *                           are supported if graph_or_node is a vx_graph, and [VX_EVENT_NODE_COMPLETED] or
  *                           [VX_EVENT_NODE_ERROR] if graph_or_node is a vx_node
  * \param [in] param         Specifies the graph parameter index when *type* is VX_EVENT_GRAPH_PARAMETER_CONSUMED
