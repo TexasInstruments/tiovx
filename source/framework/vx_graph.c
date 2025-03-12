@@ -476,7 +476,8 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->is_streaming_enabled   = (vx_bool)vx_false_e;
             graph->is_streaming_alloc = (vx_bool)vx_false_e;
             graph->trigger_node_set   = (vx_bool)vx_false_e;
-            graph->is_enable_send_complete_event = (vx_bool)vx_false_e;
+            graph->is_enable_send_context_complete_event = (vx_bool)vx_false_e;
+            graph->is_enable_send_graph_complete_event = (vx_bool)vx_false_e;
             graph->stop_done = NULL;
             graph->delete_done = NULL;
             graph->schedule_mode = (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL;
@@ -1146,24 +1147,44 @@ void ownSendGraphCompletedEvent(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
     if((graph != NULL) && (graph->base.context != NULL))
     {
-        if(graph->is_enable_send_complete_event != 0)
+        if( ((vx_bool)vx_true_e == graph->is_enable_send_context_complete_event) ||
+            ((vx_bool)vx_true_e == graph->is_enable_send_graph_complete_event) )
         {
             uint64_t timestamp;
 
             timestamp = tivxPlatformGetTimeInUsecs()*1000U; /* in nano-secs */
 
-            status = ownEventQueueAddEvent(&graph->base.context->event_queue,
-                        (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
-                        (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
+            if ((vx_bool)vx_true_e == graph->is_enable_send_context_complete_event)
+            {
+                status = ownEventQueueAddEvent(&graph->base.context->event_queue,
+                            (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
+                            (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM013.
 <justification end> */
-            if((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
-            }
+                if((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
+                }
 /* LDRA_JUSTIFY_END */
+            }
+
+            if ((vx_bool)vx_true_e == graph->is_enable_send_graph_complete_event)
+            {
+                status = ownEventQueueAddEvent(&graph->event_queue,
+                            (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
+                            (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_UM013.
+<justification end> */
+                if((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
+                }
+/* LDRA_JUSTIFY_END */
+            }
         }
     }
 }
@@ -1181,7 +1202,6 @@ vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value)
         }
         else
         {
-            graph->is_enable_send_complete_event = (vx_bool)vx_true_e;
             graph->graph_completed_app_value = app_value;
             VX_PRINT(VX_ZONE_INFO, "Enabling completion event at graph [%s]\n", graph->base.name);
         }

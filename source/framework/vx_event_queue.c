@@ -406,6 +406,22 @@ vx_status ownRegisterEvent(vx_reference ref,
         if((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_COMPLETED)
         {
             status = ownGraphRegisterCompletionEvent(graph, app_value);
+            if (status == (vx_status)VX_SUCCESS)
+            {
+                if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
+                {
+                    graph->is_enable_send_graph_complete_event = (vx_bool)vx_true_e;
+                }
+                else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)
+                {
+                    graph->is_enable_send_context_complete_event = (vx_bool)vx_true_e;
+                }
+                else
+                {
+                    status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid queue type given\n");
+                }
+            }
         }
         else
         if((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED)
@@ -417,7 +433,7 @@ vx_status ownRegisterEvent(vx_reference ref,
                 {
                     graph->parameters[param].is_enable_send_ref_consumed_graph_event = (vx_bool)vx_true_e;
                 }
-                else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)   
+                else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)
                 {
                     graph->parameters[param].is_enable_send_ref_consumed_event = (vx_bool)vx_true_e;
                 }

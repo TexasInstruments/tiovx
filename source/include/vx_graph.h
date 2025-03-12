@@ -207,8 +207,11 @@ typedef struct _vx_graph {
     /*! \brief number of graph schedule's that are requested but not submitted i.e pending */
     uint32_t schedule_pending_count;
 
-    /*! \brief when true a event is sent when a graph execution is completed */
-    vx_bool is_enable_send_complete_event;
+    /*! \brief when true a context event is sent when a graph execution is completed */
+    vx_bool is_enable_send_context_complete_event;
+
+    /*! \brief when true a graph is sent when a graph execution is completed */
+    vx_bool is_enable_send_graph_complete_event;
 
     /*! \brief event to indicate all schedule graphs have finished execution
      *         and none are pending
