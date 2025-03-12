@@ -221,7 +221,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                     done = (bool)vx_true_e;
                 }
                 else
-                if(timeout!=TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+                if(timeout!=VX_TIMEOUT_WAIT_FOREVER)
                 {
                     /* A valid and finite timeout has been specified. */
                     struct timespec ts;
@@ -299,7 +299,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                 }
                 else
                 {
-                    /* timeout == TIVX_EVENT_TIMEOUT_WAIT_FOREVER */
+                    /* timeout == VX_TIMEOUT_WAIT_FOREVER */
                     retVal = pthread_cond_wait(&event->cond, &event->lock);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>

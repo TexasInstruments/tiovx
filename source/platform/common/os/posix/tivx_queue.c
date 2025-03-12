@@ -399,7 +399,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
 
                         queue->blockedOnGet = (vx_bool)vx_true_e;
                         /* block forever */
-                        if (TIVX_EVENT_TIMEOUT_WAIT_FOREVER == timeout)
+                        if (VX_TIMEOUT_WAIT_FOREVER == timeout)
                         {
                             (void)pthread_cond_wait(&context->condGet, &context->lock);
                             queue->blockedOnGet = (vx_bool)vx_false_e;
