@@ -417,12 +417,22 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetKernelParameterConfig(
             }
         }
 
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM005
+<justification end> */
         if(idx == dimof(kernel->base.context->kerneltable))
         {
             VX_PRINT(VX_ZONE_ERROR, "Kernel not part of the context\n");
             status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM005
+<justification end> */
         else
+/* LDRA_JUSTIFY_END */        
         {
             /* check that the number of parameters is valid */
             if (num_params == kernel->signature.num_parameters)
@@ -1032,10 +1042,15 @@ vx_status ownGraphCreateQueues(vx_graph graph)
     vx_status status;
 
     status = tivxQueueCreate(&graph->free_q, TIVX_GRAPH_MAX_PIPELINE_DEPTH, graph->free_q_mem, 0);
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT005
+<justification end> */
     if ((vx_status)VX_SUCCESS == status)
     {
         status = ownEventQueueCreate(&graph->event_queue);
     }
+/* LDRA_JUSTIFY_END */
     return status;
 }
 
@@ -1055,11 +1070,16 @@ vx_status ownGraphDeleteQueues(vx_graph graph)
     }
 /* LDRA_JUSTIFY_END */
     status1 = ownEventQueueDelete(&graph->event_queue);
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UTJT005
+<justification end> */
     if(status1 != (vx_status)VX_SUCCESS)
     {
         status = status1;
         VX_PRINT(VX_ZONE_ERROR,"Failed to delete event queue\n");
     }    
+/* LDRA_JUSTIFY_END */
     return status;
 }
 
