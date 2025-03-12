@@ -7941,6 +7941,7 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout)
     vx_node node;
      vx_image out_img;
     vx_uint32 context_event_timeout_val = 100;
+    vx_uint32 context_event_invalid_timeout_val = 0;
     vx_uint32 graph_event_timeout_val = 50;
     vx_uint64 wrong_timeout = 10;
     vx_event_t graph_events;
@@ -7983,6 +7984,7 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout)
     /* 2. vxWaitEvent timeout: graph and graph event timeouts set to infinite (default value): no event registered so timeout should occur */
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetContextAttribute((vx_context)graph, VX_CONTEXT_EVENT_TIMEOUT, &context_event_timeout_val, sizeof(context_event_timeout_val)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetContextAttribute(context, VX_CONTEXT_EVENT_TIMEOUT, &context_event_invalid_timeout_val, sizeof(context_event_invalid_timeout_val)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetContextAttribute(context, VX_CONTEXT_EVENT_TIMEOUT, &wrong_timeout, sizeof(wrong_timeout)));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetContextAttribute(context, VX_CONTEXT_EVENT_TIMEOUT, &context_event_timeout_val, sizeof(context_event_timeout_val)));
     ASSERT_VX_OBJECT(node = vxAndNode(graph, images[0], images[1], images[2]), VX_TYPE_NODE);
@@ -8060,6 +8062,7 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout2)
     vx_graph graph;
     vx_node node;
     vx_uint32 graph_timeout_val = 500;
+    vx_uint32 graph_timeout_invalid = 0;
     vx_uint32 context_event_timeout_val = 100;
     vx_event_t graph_events;
     vx_uint32 num_refs = 0;
@@ -8207,6 +8210,7 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout2)
     context_event_timeout_val = 40;
     graph_timeout_val = 1000;
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetContextAttribute(context, VX_CONTEXT_EVENT_TIMEOUT, &context_event_timeout_val, sizeof(context_event_timeout_val)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphAttribute(graph, VX_GRAPH_EVENT_TIMEOUT, &graph_timeout_invalid, sizeof(graph_timeout_invalid)));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphAttribute(graph, VX_GRAPH_EVENT_TIMEOUT, &graph_timeout_val, sizeof(graph_timeout_val)));
     ASSERT_VX_OBJECT(node = tivxCreateNodeByKernelName(graph, "MY_DUMB_WAIT", (vx_reference*)images, 3), VX_TYPE_NODE);
     addParameterToGraph(graph, node, 0);
@@ -8373,12 +8377,14 @@ TEST(tivxGraphPipeline2, testAddReferencesToGraphParameterList)
     vx_status status = (vx_status)VX_SUCCESS;
     vx_graph graph;
     vx_node node;
+    vx_uint8  scalar_val = 0;
 
     vx_image images[40] = {};
     for (vx_uint8 i = 0; i < 40; i++)
     {
         images[i] = vxCreateImage(context, 32, 32, VX_DF_IMAGE_U8);
     }
+    vx_scalar no_valid_graph = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val);
 
     vx_image images_wrong_res = vxCreateImage(context, 64, 64, VX_DF_IMAGE_RGB);
     
@@ -8401,6 +8407,9 @@ TEST(tivxGraphPipeline2, testAddReferencesToGraphParameterList)
     
     // call before verify graph, should return error
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_GRAPH, vxAddReferencesToGraphParameterList(graph, 0, 1, (vx_reference *)&images[3]));
+
+    // call without a valid graph, should return error
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_GRAPH, vxAddReferencesToGraphParameterList((vx_graph)no_valid_graph, 0, 1, (vx_reference *)&images[3]));
     
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
@@ -8477,6 +8486,7 @@ TEST(tivxGraphPipeline2, testGetGraphParameterConfig)
     vx_context context = context_->vx_context_;
     vx_status status = (vx_status)VX_SUCCESS;    
     vx_graph graph;
+    vx_scalar not_a_graph = vxCreateScalar(context, VX_TYPE_UINT8, NULL);
     vx_node node1, node2;
 
     vx_image images[4] = 
@@ -8505,13 +8515,23 @@ TEST(tivxGraphPipeline2, testGetGraphParameterConfig)
     addParameterToGraph(graph, node1, 1);
     addParameterToGraph(graph, node2, 1);
 
+    vx_graph_parameter_config_t parameter_config[3] = {};     
+
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+
+    // call before verify graph, should return error
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_GRAPH, vxGetGraphParameterConfig(graph, 3, parameter_config));
+
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    vx_graph_parameter_config_t parameter_config[3] = {}; 
+    // call without a valid graph, should return error
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_GRAPH, vxGetGraphParameterConfig((vx_graph)not_a_graph, 3, parameter_config));
 
     // give to small amount of graph parameters, should return error
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGetGraphParameterConfig(graph, 2, parameter_config));
+
+    // give a nullptr as parameter_config object should return error
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGetGraphParameterConfig(graph, 3, NULL));
 
     // get the right amount of graph parameters, should return success
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetGraphParameterConfig(graph, 3, parameter_config));
