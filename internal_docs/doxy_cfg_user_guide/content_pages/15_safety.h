@@ -291,15 +291,19 @@
 
      \subsection TIOVX_SAFETY_FEATURES_TIMEOUT_GRAPH Graph Timeouts
 
+     The Pipelining 2.0 specification provides the ability to specify a timeout for blocking calls within the standard implementation.
      For the \ref vx_graph API, a timeout can be specified by calling the \ref vxSetGraphAttribute API with the attribute
-     \ref VX_GRAPH_TIMEOUT.  The timeout value can also be queried using the \ref vxQueryGraph API.
+     \ref VX_GRAPH_TIMEOUT.  The timeout value can also be queried using the \ref vxQueryGraph API.  Please refer to this specification
+     for further details on how to implement this feature within an application.
 
-     The following graph related API's may return the \ref TIVX_NODE_TIMEOUT error when enabling timeouts on the graph or
-     nodes within the graph.
-     - \ref vxCreateGraph
+     The blocking calls are considered within the Pipelining 2.0 specification for timeouts; however, there are some additional
+     timeout considerations within the implementation of TIOVX due to the underlying IPC mechanisms within certain non-blocking
+     API's.  Since it is possible for an IPC mechanism to timeout within these non-blocking API's, it is possible to encounter
+     a timeout error within these API's.
+
+     The following graph related API's may return the \ref VX_ERROR_TIMEOUT error when enabling timeouts on the graph or
+     nodes within the graph due to this scenario, even though they are non-blocking.
      - \ref vxVerifyGraph
-     - \ref vxProcessGraph
-     - \ref vxWaitGraph
      - \ref vxReleaseGraph
 
      The documentation section \ref TIOVX_TARGET_KERNEL provides some additional details about how the timeouts interact
@@ -317,7 +321,7 @@
 
      \section TIOVX_SAFETY_FEATURES_EVENT TIOVX Event API
 
-     TIOVX supports the event handling API which is included in the OpenVX Pipelining and Streaming Extension (link found in \ref RESOURCES).
+     TIOVX supports the event handling API which is included in the OpenVX Pipelining 2.0 extension (link found in \ref RESOURCES).
 
      This event handling API can be useful for detecting node level errors by using VX_EVENT_NODE_ERROR within the \ref vx_event_type_e
      enumeration.  This allows an application to use the \ref vxRegisterEvent API to know when an error has occurred within the process
