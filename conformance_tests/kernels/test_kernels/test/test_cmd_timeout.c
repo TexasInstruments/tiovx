@@ -418,7 +418,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testDefaultTimeout, TestArg, TEST_PARAMS)
         VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph() didn't return the expected result.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
-        
+
     /* Query the node timeout and validate. */
     vxStatus = vxQueryNode(objCntxt.vxCmdTestNode, TIVX_NODE_TIMEOUT,
                            &vxTimeoutVal, sizeof(vx_uint32));

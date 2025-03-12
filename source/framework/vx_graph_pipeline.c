@@ -432,7 +432,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetKernelParameterConfig(
 <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM005
 <justification end> */
         else
-/* LDRA_JUSTIFY_END */        
+/* LDRA_JUSTIFY_END */
         {
             /* check that the number of parameters is valid */
             if (num_params == kernel->signature.num_parameters)
