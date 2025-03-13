@@ -106,7 +106,7 @@ typedef struct tivx_platform_info
  */
 static tivx_platform_info_t g_tivx_platform_info =
 {
-    TIVX_TARGET_INFO
+    TIVX_TARGET_INFO, {NULL}, NULL, NULL, NULL
 };
 
 tivx_obj_desc_shm_entry_t *gTivxObjDescShmEntry = NULL;
