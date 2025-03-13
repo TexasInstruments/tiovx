@@ -74,8 +74,9 @@
 extern "C" {
 #endif
 
+#if defined(PC)
 /**
- * \brief Read data from PNG file
+ * \brief Read data from PNG file.  Only available in PC emulation.
  *
  * 'png_file_context' holds the PNG file context including internally
  *  allcoated memory/resource information
@@ -110,7 +111,7 @@ vx_status tivx_utils_png_file_read(
             void **png_file_context);
 
 /**
- * \brief Free memory allocated during png_file_read
+ * \brief Free memory allocated during png_file_read.  Only available in PC emulation.
  *
  *    MUST be called by application after its done using the pixel data returned png_file_read()
  *    The 'png_file_context' returned by the function png_file_read() must be used as input
@@ -126,7 +127,7 @@ vx_status tivx_utils_png_file_read(
 void tivx_utils_png_file_read_release(void *png_file_context);
 
 /**
- * \brief Write data into PNG file
+ * \brief Write data into PNG file.  Only available in PC emulation.
  *
  * \param filename [in] PNG file name. MUST have .png or .PNG extension
  * \param width [in] Width of image in pixels
@@ -148,7 +149,7 @@ int32_t tivx_utils_png_file_write(
             void *data_ptr);
 
 /**
- * \brief Create a image data object given PNG filename as input
+ * \brief Create a image data object given PNG filename as input.  Only available in PC emulation.
  *
  * \param context [in] OpenVX context within which the image object will get created
  * \param filename [in] filename, MUST have extension of .png
@@ -165,7 +166,7 @@ int32_t tivx_utils_png_file_write(
 vx_image  tivx_utils_create_vximage_from_pngfile(vx_context context, char *filename, vx_bool convert_to_gray_scale);
 
 /**
- * \brief Save data from image object to PNG file
+ * \brief Save data from image object to PNG file.  Only available in PC emulation.
  *
  * \param filename [in] filename, MUST have extension of .png
  * \param image [in] Image data object. Image data format MUST be VX_DF_IMAGE_RGB or VX_DF_IMAGE_U8
@@ -177,7 +178,7 @@ vx_image  tivx_utils_create_vximage_from_pngfile(vx_context context, char *filen
 vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image);
 
 /**
- * \brief Load data from PNG file into a previously created vx_image object
+ * \brief Load data from PNG file into a previously created vx_image object.  Only available in PC emulation.
  *
  * This function is same as create_vximage_from_pngfile(). Only difference is
  * that the vx_image object is created outside this function.
@@ -197,6 +198,8 @@ vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image);
  * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, vx_bool convert_to_gray_scale);
+
+#endif
 
 /**
  * \brief Read data from BMP file
@@ -258,7 +261,7 @@ int32_t tivx_utils_bmp_file_write(
 vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, const char *filename, vx_bool convert_to_gray_scale);
 
 /**
- * \brief Save data from image object to PNG file
+ * \brief Save data from image object to BMP file
  *
  * Same as tivx_utils_save_vximage_to_pngfile() but with .bmp file
  *
