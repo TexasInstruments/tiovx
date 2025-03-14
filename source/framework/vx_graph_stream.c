@@ -33,184 +33,7 @@
 
 #define STREAMING_EVENT (0x00000001U)
 
-static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var);
 static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var);
-
-static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
-{
-    vx_graph graph = (vx_graph)app_var;
-    vx_event_t event;
-    vx_bool done = (vx_bool)vx_false_e;
-    vx_uint32 state = IDLE;
-    vx_status status;
-
-    while((vx_bool)vx_false_e == done)
-    {
-        if((vx_status)VX_SUCCESS == ownWaitGraphEvent(graph, &event, (vx_bool)vx_false_e)) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR001 */
-        {
-            switch (state)
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR002
-<justification end> */
-            {
-/* LDRA_JUSTIFY_END */
-                case IDLE:
-                    if(START == event.app_value)
-                    {
-                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
-                        state = RUNNING;
-                        status = ownSendUserGraphEvent(graph, RUN, NULL);
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM001
-<justification end> */
-                        if (status != (vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
-                        }
-/* LDRA_JUSTIFY_END */
-                    }
-
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT001
-<justification end> */
-                    if(STOP == event.app_value)
-                    {
-                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
-                        status = tivxEventPost(graph->stop_done);
-                        if (status != (vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
-                        }
-                    }
-/* LDRA_JUSTIFY_END */
-
-                    if(DELETE == event.app_value)
-                    {
-                        /* Break from loop and exit task */
-                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: DELETE\n");
-                        done = (vx_bool)vx_true_e;
-                    }
-
-                    if(RUN == event.app_value)
-                    {
-                        /* Do nothing, graph is stopped */
-                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: RUN\n");
-                    }
-
-                    break;
-                case RUNNING:
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM002
-<justification end> */
-                    if(START == event.app_value)
-                    {
-                        /* Already running, ignore */
-                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: START\n");
-                    }
-/* LDRA_JUSTIFY_END */
-
-                    if(STOP == event.app_value)
-                    {
-                        /* Change state to IDLE; if any pending RUN events then they get ignored in IDLE state */
-                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: STOP\n");
-                        state = IDLE;
-                        status = tivxEventPost(graph->stop_done);
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM003
-<justification end> */
-                        if (status != (vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
-                        }
-/* LDRA_JUSTIFY_END */
-                    }
-
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT002
-<justification end> */
-                    if(DELETE == event.app_value)
-                    {
-                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
-
-                        status = vxWaitGraph(graph);
-
-                        if (status != (vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
-                        }
-
-                        state = IDLE;
-                        done = (vx_bool)vx_true_e;
-                    }
-/* LDRA_JUSTIFY_END */
-
-                    if(RUN == event.app_value)
-                    {
-                        /* Execute graph then trigger another graph execution */
-                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: RUN\n");
-                        status = ownGraphScheduleGraph(graph, 1);
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM004
-<justification end> */
-                        if (status != (vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraph() failed.\n");
-                        }
-/* LDRA_JUSTIFY_END */
-
-                        status = vxWaitGraph(graph);
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM005
-<justification end> */
-                        if (status != (vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
-                        }
-/* LDRA_JUSTIFY_END */
-
-                        graph->streaming_executions++;
-                        status = ownSendUserGraphEvent(graph, RUN, NULL);
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM006
-<justification end> */
-                        if (status != (vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
-                        }
-/* LDRA_JUSTIFY_END */
-                    }
-
-                    break;
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM007
-<justification end> */
-                default :
-                    break;
-/* LDRA_JUSTIFY_END */
-            }
-        }
-    }
-    status = tivxEventPost(graph->delete_done);
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM008
-<justification end> */
-    if (status != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
-    }
-/* LDRA_JUSTIFY_END */
-}
 
 static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 {
@@ -222,7 +45,9 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 
     while((vx_bool)vx_false_e == done)
     {
-        if((vx_status)VX_SUCCESS == ownWaitGraphEvent(graph, &event, (vx_bool)vx_false_e)) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR003 */
+        status = ownWaitGraphEvent(graph, &event, (vx_bool)vx_false_e);
+
+        if((vx_status)VX_SUCCESS == status) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR003 */
         {
             switch (state)
 /* LDRA_JUSTIFY_START
@@ -232,13 +57,12 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
             {
 /* LDRA_JUSTIFY_END */
                 case IDLE:
-                    if(START == event.app_value)
+                    switch (event.app_value)
                     {
-                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
-                        state = RUNNING;
-                        /* Execute graph then trigger another graph execution */
-                        if ((vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR005 */
-                        {
+                        case START:
+                            VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
+                            state = RUNNING;
+                            /* Execute graph then trigger another graph execution */
                             graph->streaming_executions++;
                             status = ownGraphScheduleGraphWrapper(graph);
 /* LDRA_JUSTIFY_START
@@ -250,121 +74,76 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
                                 VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraphWrapper() failed.\n");
                             }
 /* LDRA_JUSTIFY_END */
-                        }
-                    }
+                            break;
 
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT003
-<justification end> */
-                    if(STOP == event.app_value)
-                    {
-                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
-                        status = tivxEventPost(graph->stop_done);
-                        if (status != (vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
-                        }
-                    }
-/* LDRA_JUSTIFY_END */
-                    if(DELETE == event.app_value)
-                    {
-                        /* Break from loop and exit task */
-                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: DELETE\n");
-                        done = (vx_bool)vx_true_e;
-                    }
+                        case STOP: /* TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT003 */
+                            VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
+                            (void)tivxEventPost(graph->stop_done);
+                            break;
 
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT004
-<justification end> */
-                    if(RUN == event.app_value)
-                    {
-                        /* Do nothing, graph is stopped */
-                        VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: RUN\n");
-                    }
-/* LDRA_JUSTIFY_END */
+                        case DELETE:
+                            /* Break from loop and exit task */
+                            VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: DELETE\n");
+                            done = (vx_bool)vx_true_e;
+                            break;
 
+                        case STREAMING_EVENT:
+                            VX_PRINT(VX_ZONE_INFO, "streaming has stopped, but not yet deleted; ignoring STREAMING_EVENT\n");
+                            break;
+
+                        default:
+                            VX_PRINT(VX_ZONE_ERROR, "Streaming: idle; Unexpected app_value %llx\n", event.app_value);
+                            break;
+                    }
                     break;
                 case RUNNING:
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT005
-<justification end> */
-                    if(START == event.app_value)
-                    {
-                        /* Already running, ignore */
-                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: START\n");
-                    }
-/* LDRA_JUSTIFY_END */
 
-                    if(STOP == event.app_value)
+                    switch (event.app_value)
                     {
-                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: STOP\n");
-                        /* Change state to IDLE; if any pending RUN events then they get ignored in IDLE state */
-                        state = IDLE;
+                        case STOP:
+                            VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: STOP\n");
+                            /* Change state to IDLE; if any pending RUN events then they get ignored in IDLE state */
+                            state = IDLE;
 
-                        status = vxWaitGraph(graph);
+                            status = vxWaitGraph(graph);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM011
 <justification end> */
-                        if (status != (vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
-                        }
+                            if (status != (vx_status)VX_SUCCESS)
+                            {
+                                VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
+                            }
 /* LDRA_JUSTIFY_END */
 
-                        status = tivxEventPost(graph->stop_done);
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM012
-<justification end> */
-                        if (status != (vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
-                        }
-/* LDRA_JUSTIFY_END */
-                    }
+                            (void)tivxEventPost(graph->stop_done);
+                            break;
 
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT006
-<justification end> */
-                    if(DELETE == event.app_value)
-                    {
-                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
-                        state = IDLE;
-                        done = (vx_bool)vx_true_e;
-                    }
-/* LDRA_JUSTIFY_END */
+                        case DELETE: /* TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT006 */
+                            VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
+                            state = IDLE;
+                            done = (vx_bool)vx_true_e;
+                            break;
 
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT007
-<justification end> */
-                    if(RUN == event.app_value)
-                    {
-                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: RUN\n");
-                    }
-/* LDRA_JUSTIFY_END */
-
-                    if(STREAMING_EVENT==event.app_value)
-                    {
-                        VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: NODE COMPLETE\n");
-                        graph->streaming_executions++;
-                        status = ownGraphScheduleGraph(graph, 1);
+                        case STREAMING_EVENT:
+                            VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: NODE COMPLETE\n");
+                            graph->streaming_executions++;
+                            status = ownGraphScheduleGraph(graph, 1);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM013
 <justification end> */
-                        if (status != (vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraph() failed.\n");
-                        }
+                            if (status != (vx_status)VX_SUCCESS)
+                            {
+                                VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraph() failed.\n");
+                            }
 /* LDRA_JUSTIFY_END */
-                    }
+                            break;
 
+                        default :
+                            VX_PRINT(VX_ZONE_ERROR, "Streaming: running; Unexpected app_value %llx\n", event.app_value);
+                            break;
+                    }
                     break;
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -376,16 +155,7 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
             }
         }
     }
-    status = tivxEventPost(graph->delete_done);
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM015
-<justification end> */
-    if (status != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
-    }
-/* LDRA_JUSTIFY_END */
+    (void)tivxEventPost(graph->delete_done);
 }
 
 VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph)
@@ -442,20 +212,25 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxEventClear() failed.\n");
             }
-
-            status = ownSendUserGraphEvent(graph, STOP, NULL);
-            if (status != (vx_status)VX_SUCCESS)
+            else
             {
-                VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
-            }
-            status = tivxEventWait(graph->stop_done, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+                status = ownSendUserGraphEvent(graph, STOP, NULL);
+                if (status != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
+                }
+                else
+                {
+                    status = tivxEventWait(graph->stop_done, graph->timeout_val);
 
-            if (status != (vx_status)VX_SUCCESS)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
-            }
+                    if (status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
+                    }
 
-            graph->is_streaming  = (vx_bool)vx_false_e;
+                    graph->is_streaming  = (vx_bool)vx_false_e;
+                }
+            }
         }
         else
         {
@@ -587,21 +362,17 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                         VX_PRINT(VX_ZONE_ERROR, "trigger node is not set with pipelining\n");
                         (void)ownEventQueueDelete(&graph->streaming_event_queue);
                     }
+                }
 
-                    if ((vx_status)VX_SUCCESS == status)
-                    {
-                        streamingTaskParams.task_main = &ownStreamingPipeliningTask;
-                    }
-                    else
-                    {
-                        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-                        VX_PRINT(VX_ZONE_ERROR, "event could not be registered\n");
-                        (void)ownEventQueueDelete(&graph->streaming_event_queue);
-                    }
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    streamingTaskParams.task_main = &ownStreamingPipeliningTask;
                 }
                 else
                 {
-                    streamingTaskParams.task_main = &ownStreamingNoPipeliningTask;
+                    status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+                    VX_PRINT(VX_ZONE_ERROR, "event could not be registered\n");
+                    (void)ownEventQueueDelete(&graph->streaming_event_queue);
                 }
 
                 if ((vx_status)VX_SUCCESS == status)
