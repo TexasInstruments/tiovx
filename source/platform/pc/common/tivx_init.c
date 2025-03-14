@@ -132,14 +132,6 @@ void tivxInit(void)
         #endif
 
         #ifndef _DISABLE_TIDL
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE1);
-        tivxRegisterTIDLTargetKernels();
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE2);
-        tivxRegisterTIDLTargetKernels();
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE3);
-        tivxRegisterTIDLTargetKernels();
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE4);
-        tivxRegisterTIDLTargetKernels();
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
         tivxRegisterTIDLTargetKernels();
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
