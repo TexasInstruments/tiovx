@@ -120,7 +120,6 @@ extern "C" {
  *
  *         Currently it assumes there are max 16 CPUs in system
  *         and max 256 targets on a given CPU in system
- *         (PC emulation is worst case as all targets are on x86)
  *
  * \ingroup group_tivx_target
  */
@@ -128,7 +127,7 @@ extern "C" {
 
 /*! \brief Get CPU Id from given target
  *
- *         CPU Id is stored in upper nibble of the lower 8bits of the target
+ *         CPU Id is stored in upper bits of the target
  *
  * \ingroup group_tivx_target
  */
@@ -136,7 +135,7 @@ extern "C" {
 
 /*! \brief Get the target instances from target
  *
- *         Target Id is stored in lower nibble of 8bit target
+ *         Target Id is stored in lower bits of the target
  *
  * \ingroup group_tivx_target
  */

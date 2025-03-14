@@ -77,7 +77,7 @@ static inline uint32_t ownIpcPayloadMake(
     vx_enum dst_target_id, uint16_t obj_desc_id)
 {
 
-    /* Keep the desc id in the upper 16bits and target id in lower 8bits */
+    /* Keep the desc id in the upper 16bits and target id in lower 16bits */
     return (uint32_t)(
                 ( ( (uint32_t)obj_desc_id & TIVX_OBJ_DESC_ID_MASK )
                         << TIVX_OBJ_DESC_ID_SHIFT
