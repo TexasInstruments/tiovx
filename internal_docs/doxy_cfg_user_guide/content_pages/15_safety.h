@@ -276,7 +276,7 @@
      safety systems must have a mechanism by which to recover from this issue.
 
      If any of the blocking calls of API's from the following OpenVX objects fail due to a timeout issue, the return value will be
-     \ref TIVX_ERROR_EVENT_TIMEOUT.  More information about how timeouts can be used with these objects is described below.
+     \ref VX_ERROR_TIMEOUT.  More information about how timeouts can be used with these objects is described below.
 
      \subsection TIOVX_SAFETY_FEATURES_TIMEOUT_NODE Node Timeouts
 
@@ -287,12 +287,12 @@
      through the \ref vxVerifyGraph or \ref vxReleaseGraph calls.
 
      The TI extension API \ref tivxNodeSendCommandTimed also allows for specifying a timeout value at which time the API
-     will return the \ref TIVX_ERROR_EVENT_TIMEOUT value.
+     will return the \ref VX_ERROR_TIMEOUT value.
 
      \subsection TIOVX_SAFETY_FEATURES_TIMEOUT_GRAPH Graph Timeouts
 
      For the \ref vx_graph API, a timeout can be specified by calling the \ref vxSetGraphAttribute API with the attribute
-     \ref TIVX_GRAPH_TIMEOUT.  The timeout value can also be queried using the \ref vxQueryGraph API.
+     \ref VX_GRAPH_TIMEOUT.  The timeout value can also be queried using the \ref vxQueryGraph API.
 
      The following graph related API's may return the \ref TIVX_NODE_TIMEOUT error when enabling timeouts on the graph or
      nodes within the graph.

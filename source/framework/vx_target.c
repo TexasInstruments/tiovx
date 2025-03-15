@@ -1468,7 +1468,7 @@ static void VX_CALLBACK ownTargetTaskMain(void *app_var)
 /* LDRA_JUSTIFY_END */
     {
         status = ownTargetDequeueObjDesc(target,
-                    &obj_desc_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+                    &obj_desc_id, VX_TIMEOUT_WAIT_FOREVER);
 #ifdef HOST_ONLY
 /* TIOVX-1671- Host only Id: TIOVX_CODE_COVERAGE_HOST_ONLY_TARGET_UM009 */
         if(    (status != (vx_status)VX_SUCCESS) /* TIOVX-1930- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR035 */
