@@ -60,8 +60,6 @@
 *
 */
 
-
-
 #include <vx_internal.h>
 #include <app_mem_map.h>
 #include <utils/perf_stats/include/app_perf_stats.h>
@@ -126,28 +124,28 @@ void ownPlatformDeInit(void)
 
     ownIpcDeInit();
 
-    for (i = 0; i < (uint32_t)(vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
+    for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
     {
         if (NULL != g_tivx_platform_info.g_platform_lock[i])
         {
-            tivxMutexDelete(&g_tivx_platform_info.g_platform_lock[i]);
+            (void)tivxMutexDelete(&g_tivx_platform_info.g_platform_lock[i]);
         }
     }
 }
 
 void ownPlatformSystemLock(vx_enum lock_id)
 {
-    if ((int32_t)lock_id < (int32_t)(vx_enum)TIVX_PLATFORM_LOCK_MAX)
+    if (lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
-        tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
+        (void)tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
     }
 }
 
 void ownPlatformSystemUnlock(vx_enum lock_id)
 {
-    if ((int32_t)lock_id < (int32_t)(vx_enum)TIVX_PLATFORM_LOCK_MAX)
+    if (lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
-        tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
+        (void)tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
             (uint32_t)lock_id]);
     }
 }
@@ -174,6 +172,22 @@ void ownPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
     }
 }
 
+void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
+{
+    if(shm_base != NULL)
+    {
+        *shm_base = NULL;
+    }
+    if(shm_size != NULL)
+    {
+        *shm_size = 0;
+    }
+}
+
+void ownPlatformTaskInit(void)
+{
+}
+
 void ownPlatformPrintf(const char *format)
 {
     char buf[4*1024];
@@ -191,22 +205,6 @@ void ownPlatformActivate()
 }
 
 void ownPlatformDeactivate()
-{
-}
-
-void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
-{
-    if(shm_base)
-    {
-        *shm_base = NULL;
-    }
-    if(shm_size)
-    {
-        *shm_size = 0;
-    }
-}
-
-void ownPlatformTaskInit()
 {
 }
 

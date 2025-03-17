@@ -167,8 +167,7 @@ void ownPlatformDeInit(void)
 
 void ownPlatformSystemLock(vx_enum lock_id)
 {
-
-    if ((vx_enum)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
+    if (lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
         (void)tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
 
@@ -198,8 +197,7 @@ void ownPlatformSystemLock(vx_enum lock_id)
 
 void ownPlatformSystemUnlock(vx_enum lock_id)
 {
-
-    if ((vx_enum)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
+    if (lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
         if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {

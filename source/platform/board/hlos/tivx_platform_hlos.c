@@ -60,13 +60,14 @@
 *
 */
 
-
 #include <vx_internal.h>
 #include <tivx_platform_common.h>
 #include <utils/ipc/include/app_ipc.h>
 #include <semaphore.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+
+void tivxPlatformResetObjDescTableInfo(void);
 
 /*! \brief Structure for keeping track of platform locks
  * \ingroup group_tivx_platform
@@ -102,8 +103,6 @@ int32_t tivxPlatformGetShmSize(uint32_t * shm_size)
 {
     return appIpcGetTiovxObjDescSharedMemInfo((void**)&gTivxObjDescShmEntry, shm_size);
 }
-
-void tivxPlatformResetObjDescTableInfo(void);
 
 vx_status ownPlatformInit(void)
 {

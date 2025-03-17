@@ -178,7 +178,7 @@ void tivxPlatformDeleteTargetId(vx_enum target_id)
     status = ownTargetDelete(target_id);
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_UBR001
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_CONFIG_UBR001
 <justification end>*/
     if ((vx_status)VX_SUCCESS != status)
     {
@@ -194,7 +194,7 @@ void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
     for (i = 0;
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR003
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_CONFIG_UBR002
 <justification end> */
     i < TIVX_PLATFORM_MAX_TARGETS;
 /* LDRA_JUSTIFY_END */
