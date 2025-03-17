@@ -68,35 +68,34 @@
 
 void tivxPlatformResetObjDescTableInfo(void);
 
-/*! \brief Structure for keeping track of platform information
- *         Currently it is mainly used for mapping target id and target name
+/*! \brief Structure for keeping track of platform locks
  * \ingroup group_tivx_platform
  */
 typedef struct tivx_platform_info
 {
-    struct {
-        /*! \brief Name of the target, defined in tivx.h file
-         */
-        char target_name[TIVX_TARGET_MAX_NAME];
-        /*! \brief Id of the target defined in #tivx_target_id_e in the
-         *   file tivx_platform_vision_sdk.h
-         */
-        vx_enum target_id;
-    } target_info[TIVX_PLATFORM_MAX_TARGETS];
-
     /*! \brief Platform locks to protect access to the descriptor id
      */
     tivx_mutex g_platform_lock[(vx_enum)TIVX_PLATFORM_LOCK_MAX];
 } tivx_platform_info_t;
-
 
 /*! \brief Global instance of platform information
  * \ingroup group_tivx_platform
  */
 static tivx_platform_info_t g_tivx_platform_info =
 {
-    TIVX_TARGET_INFO, {NULL}
+    {NULL}
 };
+
+/*! \brief Global instance of platform information
+ * \ingroup group_tivx_platform
+ */
+static tivx_target_info_t g_tivx_target_info[] = TIVX_TARGET_INFO;
+
+/*! \brief Maximum number of targets and thus targetid supported
+ *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_MAX_TARGETS  dimof(g_tivx_target_info)
 
 tivx_obj_desc_shm_entry_t *gTivxObjDescShmEntry = NULL;
 
@@ -246,11 +245,11 @@ vx_enum ownPlatformGetTargetId(const char *target_name)
     {
         for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
         {
-            if (0 == strncmp(g_tivx_platform_info.target_info[i].target_name,
+            if (0 == strncmp(g_tivx_target_info[i].target_name,
                     target_name,
                     TIVX_TARGET_MAX_NAME))
             {
-                target_id = g_tivx_platform_info.target_info[i].target_id;
+                target_id = g_tivx_target_info[i].target_id;
                 break;
             }
         }
@@ -297,12 +296,12 @@ void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
     i ++)
     {
         if (0 == strncmp(
-                g_tivx_platform_info.target_info[i].target_name,
+                g_tivx_target_info[i].target_name,
                 TIVX_TARGET_HOST,
                 TIVX_TARGET_MAX_NAME))
         {
             /* update target_id for TIVX_TARGET_HOST */
-            g_tivx_platform_info.target_info[i].target_id = (vx_enum)host_target_id;
+            g_tivx_target_info[i].target_id = (vx_enum)host_target_id;
             break;
         }
     }
@@ -318,9 +317,9 @@ void ownPlatformGetTargetName(vx_enum target_id, char *target_name)
     {
         for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
         {
-            if (target_id == g_tivx_platform_info.target_info[i].target_id)
+            if (target_id == g_tivx_target_info[i].target_id)
             {
-                (void)snprintf(target_name, TIVX_TARGET_MAX_NAME, "%s", g_tivx_platform_info.target_info[i].target_name);
+                (void)snprintf(target_name, TIVX_TARGET_MAX_NAME, "%s", g_tivx_target_info[i].target_name);
                 break;
             }
         }

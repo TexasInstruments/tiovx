@@ -81,6 +81,21 @@
 #error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A, SOC_J722S, SOC_J742S2
 #endif
 
+/*! \brief Structure for mapping target id and target name
+ * \ingroup group_tivx_platform
+ */
+typedef struct tivx_target_info
+{
+    /*! \brief Name of the target, defined in include/TI/tivx_soc_<soc>.h file
+     */
+    char target_name[TIVX_TARGET_MAX_NAME];
+    /*! \brief Id of the target defined in #tivx_target_id_e in the
+     *   file soc/tivx_target_config_<soc>.h included above.
+     */
+    vx_enum target_id;
+} tivx_target_info_t;
+
+
 /*! \brief Create target ID.
  *
  * \ingroup group_tivx_platform

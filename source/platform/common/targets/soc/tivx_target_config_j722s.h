@@ -73,12 +73,6 @@ extern "C" {
  * \brief Platform Specific Target Configurations
  */
 
-/*! \brief Maximum number of targets and thus targetid supported
- *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
- * \ingroup group_tivx_platform
- */
-#define TIVX_PLATFORM_MAX_TARGETS            (39u)
-
 /*! \brief Max number of targets on a given R5F
  * \ingroup group_tivx_platform
  */
