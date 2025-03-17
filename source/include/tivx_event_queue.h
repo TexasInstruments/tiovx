@@ -207,7 +207,7 @@ vx_status ownWaitEventQueue(
  */
 vx_status ownRegisterEvent(vx_reference ref,
                 enum tivx_queue_type_e queue_type, enum vx_event_type_e event_type,
-                vx_uint32 param, vx_uint32 app_value);
+                vx_uint32 param, vx_uint32 app_value, vx_bool is_context_event);
 
 #ifdef __cplusplus
 }

@@ -2038,7 +2038,7 @@ TEST(tivxGraphStreaming, testStreamingGraphEventsNode)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_streaming5");
+    export_graph_to_file(graph, "test_streaming_graph_event_node");
     log_graph_rt_trace(graph);
 
     exe_time = tivxPlatformGetTimeInUsecs();
@@ -2125,7 +2125,7 @@ TEST(tivxGraphStreaming, testStreamingGraphEventsGraph)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_streaming5");
+    export_graph_to_file(graph, "test_graph_streaming_graph_event");
     log_graph_rt_trace(graph);
 
     exe_time = tivxPlatformGetTimeInUsecs();

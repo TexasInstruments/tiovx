@@ -272,7 +272,7 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
              ((vx_bool)vx_true_e == ref->is_enable_send_ref_consumed_event) )
         {
             status = ownEventQueueAddEvent(&ref->base.context->event_queue,
-                        (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
+                        (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_context_app_value,
                         (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -280,7 +280,7 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
 <justification end> */
             if((vx_status)VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
+                VX_PRINT(VX_ZONE_ERROR,"Failed to add event to context event queue\n");
             }
 /* LDRA_JUSTIFY_END */
         }
@@ -288,7 +288,7 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
              ((vx_bool)vx_true_e == ref->is_enable_send_ref_consumed_graph_event) )
         {
             status = ownEventQueueAddEvent(&ref->graph->event_queue,
-                        (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
+                        (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_graph_app_value,
                         (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
 #ifdef LDRA_UNTESTABLE_CODE
 /* same deviation as above */

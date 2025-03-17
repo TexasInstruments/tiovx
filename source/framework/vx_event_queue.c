@@ -353,14 +353,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref,
                 enum vx_event_type_e type, vx_uint32 param, vx_uint32 app_value)
 {
     vx_status status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-    status = ownRegisterEvent(ref, TIVX_EVENT_CONTEXT_QUEUE, type, param, app_value);
+    status = ownRegisterEvent(ref, TIVX_EVENT_CONTEXT_QUEUE, type, param, app_value, (vx_bool)vx_true_e);
 
     return status;
 }
 
 vx_status ownRegisterEvent(vx_reference ref,
                 enum tivx_queue_type_e queue_type, enum vx_event_type_e event_type,
-                vx_uint32 param, vx_uint32 app_value)
+                vx_uint32 param, vx_uint32 app_value, vx_bool is_context_event)
 {
     vx_status status = (vx_status)VX_ERROR_NOT_SUPPORTED;
 
@@ -373,31 +373,7 @@ vx_status ownRegisterEvent(vx_reference ref,
         if( ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_COMPLETED) ||
             ((vx_enum)event_type==(vx_enum)VX_EVENT_NODE_ERROR) )
         {
-            /*status set to NULL due to preceding type check*/
-            vx_node node = vxCastRefAsNode(ref, NULL);
-
-            if ((vx_enum)TIVX_EVENT_GRAPH_STREAMING_QUEUE == (vx_enum)queue_type)
-            {
-                node->is_graph_streaming_event = (vx_bool)vx_true_e;
-                /*status set to NULL due to preceding type check*/
-                status = ownNodeRegisterEvent(vxCastRefAsNode(ref, NULL), (vx_enum)event_type, app_value);
-            }
-            else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)
-            {
-                node->is_context_event = (vx_bool)vx_true_e;
-                /*status set to NULL due to preceding type check*/
-                status = ownNodeRegisterEvent(vxCastRefAsNode(ref, NULL), (vx_enum)event_type, app_value);
-            }
-            else if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
-            {
-                node->is_graph_event = (vx_bool)vx_true_e;
-                /*status set to NULL due to preceding type check*/
-                status = ownNodeRegisterEvent(vxCastRefAsNode(ref, NULL), (vx_enum)event_type, app_value);
-            }
-            else
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Invalid queue type given\n");
-            }
+            status = ownNodeRegisterEvent(vxCastRefAsNode(ref, NULL), (vx_enum)event_type, app_value, queue_type);
         }
         else
         {
@@ -413,7 +389,7 @@ vx_status ownRegisterEvent(vx_reference ref,
 
         if((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_COMPLETED)
         {
-            status = ownGraphRegisterCompletionEvent(graph, app_value);
+            status = ownGraphRegisterCompletionEvent(graph, app_value, is_context_event);
             if (status == (vx_status)VX_SUCCESS)
             {
                 if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
@@ -434,7 +410,7 @@ vx_status ownRegisterEvent(vx_reference ref,
         else
         if((vx_enum)event_type==(vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED)
         {
-            status = ownGraphRegisterParameterConsumedEvent(graph, param, app_value);
+            status = ownGraphRegisterParameterConsumedEvent(graph, param, app_value, is_context_event);
             if (status == (vx_status)VX_SUCCESS)
             {
                 if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
@@ -469,7 +445,7 @@ vx_status ownRegisterEvent(vx_reference ref,
 VX_API_ENTRY vx_status VX_API_CALL vxRegisterGraphEvent(vx_reference graph_or_node, enum vx_event_type_e type, vx_uint32 param, vx_uint32 app_value)
 {
     vx_status status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-    status = ownRegisterEvent(graph_or_node, TIVX_EVENT_GRAPH_QUEUE, type, param, app_value);
+    status = ownRegisterEvent(graph_or_node, TIVX_EVENT_GRAPH_QUEUE, type, param, app_value, (vx_bool)vx_false_e);
 
     return status;
 }

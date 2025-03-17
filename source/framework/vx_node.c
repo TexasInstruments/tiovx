@@ -1534,7 +1534,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
             if ((vx_bool)vx_true_e == node->is_context_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->base.context->event_queue,
-                            (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_app_value,
+                            (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_context_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
@@ -1544,7 +1544,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
             if ((vx_bool)vx_true_e == node->is_graph_streaming_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->streaming_event_queue,
-                            (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_app_value,
+                            (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_graph_streaming_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
@@ -1554,7 +1554,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
             if ((vx_bool)vx_true_e == node->is_graph_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
-                            (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_app_value,
+                            (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_graph_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
@@ -1579,7 +1579,7 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
             if ((vx_bool)vx_true_e == node->is_context_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->base.context->event_queue,
-                            (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
+                            (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_context_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to context event queue \n");
@@ -1589,7 +1589,7 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
             if ((vx_bool)vx_true_e == node->is_graph_streaming_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->streaming_event_queue,
-                            (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
+                            (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_graph_streaming_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to streaming event queue \n");
@@ -1598,7 +1598,7 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
             if ((vx_bool)vx_true_e == node->is_graph_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
-                            (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
+                            (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_graph_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to graph event queue \n");
@@ -1663,8 +1663,12 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                         node->is_context_event = (vx_bool)vx_false_e;
                         node->is_graph_event = (vx_bool)vx_false_e;
                         node->is_graph_streaming_event = (vx_bool)vx_false_e;
-                        node->node_completed_app_value = 0;
-                        node->node_error_app_value = 0;
+                        node->node_completed_context_app_value = 0;
+                        node->node_completed_graph_app_value = 0;
+                        node->node_completed_graph_streaming_app_value = 0;
+                        node->node_error_context_app_value = 0;
+                        node->node_error_graph_app_value = 0;
+                        node->node_error_graph_streaming_app_value = 0;
                         node->is_enable_send_complete_event = (vx_bool)vx_false_e;
                         node->is_enable_send_error_event    = (vx_bool)vx_false_e;
                         node->is_super_node = (vx_bool)vx_false_e;
@@ -2561,7 +2565,7 @@ vx_node ownNodeGetNextInNode(vx_node node, vx_uint32 idx)
     return next_node;
 }
 
-vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_value)
+vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_value, enum tivx_queue_type_e queue_type)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -2584,12 +2588,52 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
             if ((vx_enum)VX_EVENT_NODE_COMPLETED == event_type)
             {
                 node->is_enable_send_complete_event = (vx_bool)vx_true_e;
-                node->node_completed_app_value = app_value;
+
+                if ((vx_enum)TIVX_EVENT_GRAPH_STREAMING_QUEUE == (vx_enum)queue_type)
+                {
+                    node->is_graph_streaming_event = (vx_bool)vx_true_e;
+                    node->node_completed_graph_streaming_app_value = app_value;
+                }
+                else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)
+                {
+                    node->is_context_event = (vx_bool)vx_true_e;
+                    node->node_completed_context_app_value = app_value;
+                }
+                else if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
+                {
+                    node->is_graph_event = (vx_bool)vx_true_e;
+                    node->node_completed_graph_app_value = app_value;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid queue type\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
             }
             else if ((vx_enum)VX_EVENT_NODE_ERROR == event_type)
             {
                 node->is_enable_send_error_event = (vx_bool)vx_true_e;
-                node->node_error_app_value = app_value;
+
+                if ((vx_enum)TIVX_EVENT_GRAPH_STREAMING_QUEUE == (vx_enum)queue_type)
+                {
+                    node->is_graph_streaming_event = (vx_bool)vx_true_e;
+                    node->node_error_graph_streaming_app_value = app_value;
+                }
+                else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)
+                {
+                    node->is_context_event = (vx_bool)vx_true_e;
+                    node->node_error_context_app_value = app_value;
+                }
+                else if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
+                {
+                    node->is_graph_event = (vx_bool)vx_true_e;
+                    node->node_error_graph_app_value = app_value;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid queue type\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
             }
             else
             {

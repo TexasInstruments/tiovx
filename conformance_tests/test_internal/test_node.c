@@ -339,11 +339,11 @@ TEST(tivxInternalNode, negativeTestNodeCheckAndSendErrorEvent)
     ownNodeCheckAndSendErrorEvent(node_obj_desc, 0, (vx_status)node_obj_desc->exe_status);
 
     VX_CALL(vxEnableEvents(((&(node->base))->context)));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownRegisterEvent(((vx_reference)node), TIVX_EVENT_GRAPH_STREAMING_QUEUE, VX_EVENT_NODE_ERROR, 0, NODE0_COMPLETED_EVENT));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownRegisterEvent(((vx_reference)node), TIVX_EVENT_GRAPH_STREAMING_QUEUE, VX_EVENT_NODE_ERROR, 0, NODE0_COMPLETED_EVENT, vx_true_e));
     ownEventQueueEnableEvents(&node->graph->streaming_event_queue, (vx_bool)vx_false_e);
     ownNodeCheckAndSendErrorEvent(node_obj_desc, 0, (vx_status)node_obj_desc->exe_status);
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownRegisterEvent(((vx_reference)node), TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_ERROR, 0, NODE0_COMPLETED_EVENT));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownRegisterEvent(((vx_reference)node), TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_ERROR, 0, NODE0_COMPLETED_EVENT, vx_true_e));
     ownEventQueueEnableEvents(&node->graph->event_queue, (vx_bool)vx_false_e);
     ownNodeCheckAndSendErrorEvent(node_obj_desc, 0, (vx_status)node_obj_desc->exe_status);
 
@@ -373,11 +373,11 @@ TEST(tivxInternalNode, negativeTestNodeCheckAndSendCompletionEvent)
     ownNodeCheckAndSendCompletionEvent(node_obj_desc, 0);
 
     VX_CALL(vxEnableEvents(((&(node->base))->context)));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownRegisterEvent(((vx_reference)node), TIVX_EVENT_GRAPH_STREAMING_QUEUE, VX_EVENT_NODE_COMPLETED, 0, NODE0_COMPLETED_EVENT));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownRegisterEvent(((vx_reference)node), TIVX_EVENT_GRAPH_STREAMING_QUEUE, VX_EVENT_NODE_COMPLETED, 0, NODE0_COMPLETED_EVENT, vx_true_e));
     ownEventQueueEnableEvents(&node->graph->streaming_event_queue, (vx_bool)vx_false_e);
     ownNodeCheckAndSendCompletionEvent(node_obj_desc, 0);
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownRegisterEvent(((vx_reference)node), TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0, NODE0_COMPLETED_EVENT));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownRegisterEvent(((vx_reference)node), TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0, NODE0_COMPLETED_EVENT, vx_true_e));
     ownEventQueueEnableEvents(&node->graph->event_queue, (vx_bool)vx_false_e);
     ownNodeCheckAndSendCompletionEvent(node_obj_desc, 0);
 

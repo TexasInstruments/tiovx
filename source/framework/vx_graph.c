@@ -471,7 +471,8 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->num_params = 0;
             graph->pipeline_depth = 1;
             graph->streaming_executions = 0;
-            graph->graph_completed_app_value = 0;
+            graph->graph_completed_graph_app_value = 0;
+            graph->graph_completed_context_app_value = 0;
             graph->is_streaming   = (vx_bool)vx_false_e;
             graph->is_streaming_enabled   = (vx_bool)vx_false_e;
             graph->is_streaming_alloc = (vx_bool)vx_false_e;
@@ -780,7 +781,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].queue_enable = (vx_bool)vx_false_e;
             graph->parameters[graph->num_params].is_enable_send_ref_consumed_event = (vx_bool)vx_false_e;
             graph->parameters[graph->num_params].is_enable_send_ref_consumed_graph_event = (vx_bool)vx_false_e;          
-            graph->parameters[graph->num_params].graph_consumed_app_value = 0U;
+            graph->parameters[graph->num_params].graph_consumed_graph_app_value = 0U;
+            graph->parameters[graph->num_params].graph_consumed_context_app_value = 0U;
             graph->parameters[graph->num_params].data_ref_queue = NULL;
             graph->parameters[graph->num_params].num_buf = 0;
             graph->parameters[graph->num_params].type = (vx_enum)VX_TYPE_PARAMETER;
@@ -1160,7 +1162,7 @@ void ownSendGraphCompletedEvent(vx_graph graph)
                  ((vx_bool)vx_true_e == graph->is_enable_send_context_complete_event) )
             {
                 status = ownEventQueueAddEvent(&graph->base.context->event_queue,
-                            (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
+                            (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_context_app_value,
                             (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -1168,7 +1170,7 @@ void ownSendGraphCompletedEvent(vx_graph graph)
 <justification end> */
                 if((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue \n");
+                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to context event queue \n");
                 }
 /* LDRA_JUSTIFY_END */
             }
@@ -1177,7 +1179,7 @@ void ownSendGraphCompletedEvent(vx_graph graph)
                  ((vx_bool)vx_true_e == graph->is_enable_send_graph_complete_event) )
             {
                 status = ownEventQueueAddEvent(&graph->event_queue,
-                            (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
+                            (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_graph_app_value,
                             (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -1193,7 +1195,7 @@ void ownSendGraphCompletedEvent(vx_graph graph)
     }
 }
 
-vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value)
+vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value, vx_bool is_context_event)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -1206,7 +1208,14 @@ vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value)
         }
         else
         {
-            graph->graph_completed_app_value = app_value;
+            if ((vx_bool)vx_true_e == is_context_event)
+            {
+                graph->graph_completed_context_app_value = app_value;
+            }
+            else
+            {
+                graph->graph_completed_graph_app_value = app_value;
+            }
             VX_PRINT(VX_ZONE_INFO, "Enabling completion event at graph [%s]\n", graph->base.name);
         }
     }
@@ -1218,7 +1227,7 @@ vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value)
     return status;
 }
 
-vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_parameter_index, vx_uint32 app_value)
+vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_parameter_index, vx_uint32 app_value, vx_bool is_context_event)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -1233,7 +1242,14 @@ vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_
         {
             if(graph_parameter_index < graph->num_params)
             {
-                graph->parameters[graph_parameter_index].graph_consumed_app_value = app_value;
+                if ((vx_bool)vx_true_e == is_context_event)
+                {
+                    graph->parameters[graph_parameter_index].graph_consumed_context_app_value = app_value;
+                }
+                else
+                {
+                    graph->parameters[graph_parameter_index].graph_consumed_graph_app_value = app_value;
+                }
                 VX_PRINT(VX_ZONE_INFO, "Enabling parameter ref consumed event at graph [%s], param %d\n",
                     graph->base.name, graph_parameter_index);
             }

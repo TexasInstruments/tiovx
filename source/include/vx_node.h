@@ -111,11 +111,23 @@ typedef struct _vx_node {
      */
     uint32_t parameter_index_num_buf[TIVX_KERNEL_MAX_PARAMS];
 
-    /*! \brief Value returned with node completion event */
-    uint32_t node_completed_app_value;
+    /*! \brief Value returned with node completion event for context events */
+    uint32_t node_completed_context_app_value;
 
-    /*! \brief Value returned with node error event */
-    uint32_t node_error_app_value;
+    /*! \brief Value returned with node completion event for graph events */
+    uint32_t node_completed_graph_app_value;
+
+    /*! \brief Value returned with node completion event for graph streaming events */
+    uint32_t node_completed_graph_streaming_app_value;
+
+    /*! \brief Value returned with node error event for context events */
+    uint32_t node_error_context_app_value;
+
+    /*! \brief Value returned with node error event for graph events */
+    uint32_t node_error_graph_app_value;
+
+    /*! \brief Value returned with node error event for graph streaming events */
+    uint32_t node_error_graph_streaming_app_value;
 
     /*! \brief flag to indicate whether node is a placeholder for a super node */
     vx_bool is_super_node;
@@ -299,7 +311,7 @@ vx_node ownNodeGetNextInNode(vx_node node, vx_uint32 idx);
  *
  * \ingroup group_vx_node
  */
-vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_value);
+vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_value, enum tivx_queue_type_e queue_type);
 
 
 /*! \brief Send node completion event if enabled

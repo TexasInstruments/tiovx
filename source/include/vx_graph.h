@@ -54,8 +54,10 @@ typedef struct {
     vx_bool is_enable_send_ref_consumed_event;
     /*! \brief flags to control graph event send enable/disable */
     vx_bool is_enable_send_ref_consumed_graph_event;
-    /*! Value returned with graph parameter consumed event */
-    uint32_t graph_consumed_app_value;
+    /*! Value returned with graph parameter consumed event for context events */
+    uint32_t graph_consumed_context_app_value;
+    /*! Value returned with graph parameter consumed event for graph events */
+    uint32_t graph_consumed_graph_app_value;
     /*! \brief Set to an enum value in \ref vx_type_e. */
     vx_enum type;
 } tivx_parameters_t;
@@ -242,8 +244,11 @@ typedef struct _vx_graph {
     /*! Streaming task handle */
     tivx_task streaming_task_handle;
 
-    /*! Value returned with graph completion event */
-    uint32_t graph_completed_app_value;
+    /*! Value returned with graph completion event for context events */
+    uint32_t graph_completed_context_app_value;
+
+    /*! Value returned with graph completion event for graph events */
+    uint32_t graph_completed_graph_app_value;
 
     /*! References to supernodes in the graph */
     tivx_super_node supernodes[TIVX_GRAPH_MAX_SUPER_NODES];
@@ -506,13 +511,13 @@ void ownSetGraphState(vx_graph graph, uint32_t pipeline_id, vx_enum state);
  *
  * \ingroup group_vx_graph
  */
-vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value);
+vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value, vx_bool is_context_event);
 
 /*! \brief Register event on graph parameter consumed
  *
  * \ingroup group_vx_graph
  */
-vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_parameter_index, vx_uint32 app_value);
+vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_parameter_index, vx_uint32 app_value, vx_bool is_context_event);
 
 
 /*! \brief Send graph completion event if enabled
