@@ -502,7 +502,7 @@ static vx_status test_user_kernel_register(vx_context context)
         if( status != VX_SUCCESS)
         {
             printf(" ERROR: Test user kernel: vxAddParameterToKernel, vxFinalizeKernel failed (%d)!!!\n", status);
-            vxReleaseKernel(&kernel);
+            vxRemoveKernel(kernel);
             kernel = NULL;
         }
     }
@@ -742,7 +742,7 @@ static vx_status test_user_kernel_objarr_register(vx_context context)
         if( status != VX_SUCCESS)
         {
             printf(" ERROR: Test user kernel: vxAddParameterToKernel, vxFinalizeKernel failed (%d)!!!\n", status);
-            vxReleaseKernel(&kernel);
+            vxRemoveKernel(kernel);
             kernel = NULL;
         }
     }
@@ -7898,6 +7898,7 @@ TEST(tivxGraphPipeline2, testGraphEvent)
     ASSERT_EQ_VX_STATUS(vxQueryReference((vx_reference)images[0], VX_REFERENCE_ENQUEUE_COUNT, &ref_count, sizeof(ref_count)), VX_SUCCESS);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxDisableGraphEvents((vx_graph)node));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDisableGraphEvents(graph));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSendUserGraphEvent(graph, 550, (void *)987UL));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));   
     VX_CALL(vxReleaseImage(&images[0]));
@@ -8240,7 +8241,7 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout2)
     VX_CALL(vxReleaseImage(&images[0]));
     VX_CALL(vxReleaseImage(&images[1]));
     VX_CALL(vxReleaseImage(&images[2]));
-    VX_CALL(vxReleaseKernel(&my_wait_kernel));
+    VX_CALL(vxRemoveKernel(my_wait_kernel));
 }
 
 TEST(tivxGraphPipeline2, testWaitGraphTimeout)
@@ -8288,7 +8289,7 @@ TEST(tivxGraphPipeline2, testWaitGraphTimeout)
     VX_CALL(vxReleaseImage(&images[0]));
     VX_CALL(vxReleaseImage(&images[1]));
     VX_CALL(vxReleaseImage(&images[2]));
-    VX_CALL(vxReleaseKernel(&my_wait_kernel));
+    VX_CALL(vxRemoveKernel(my_wait_kernel));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));    
 }
