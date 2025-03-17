@@ -62,7 +62,6 @@
 
 
 #include <vx_internal.h>
-#include <tivx_target_config.h>
 #include <tivx_platform_common.h>
 #include <utils/ipc/include/app_ipc.h>
 #include <semaphore.h>
@@ -96,17 +95,6 @@ static tivx_platform_info_t g_tivx_platform_info =
 {
     {NULL}, NULL, NULL, NULL
 };
-
-/*! \brief Global instance of platform information
- * \ingroup group_tivx_platform
- */
-static tivx_target_info_t g_tivx_target_info[] = TIVX_TARGET_INFO;
-
-/*! \brief Maximum number of targets and thus targetid supported
- *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
- * \ingroup group_tivx_platform
- */
-#define TIVX_PLATFORM_MAX_TARGETS  dimof(g_tivx_target_info)
 
 tivx_obj_desc_shm_entry_t *gTivxObjDescShmEntry = NULL;
 
@@ -320,28 +308,6 @@ void ownPlatformSystemUnlock(vx_enum lock_id)
     }
 }
 
-vx_enum ownPlatformGetTargetId(const char *target_name)
-{
-    uint32_t i;
-    vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
-
-    if (NULL != target_name)
-    {
-        for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
-        {
-            if (0 == strncmp(g_tivx_target_info[i].target_name,
-                    target_name,
-                    TIVX_TARGET_MAX_NAME))
-            {
-                target_id = g_tivx_target_info[i].target_id;
-                break;
-            }
-        }
-    }
-
-    return (target_id);
-}
-
 /* LDRA_JUSTIFY
 <metric start> statement branch <metric end>
 <function start> void tivxPlatformResetObjDescTableInfo.* <function end>
@@ -368,50 +334,6 @@ void ownPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 
         /* Change this according available entries*/
         table_info->last_alloc_index = 0U;
-    }
-}
-
-void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
-{
-    uint32_t i;
-
-    for (i = 0;
-/* LDRA_JUSTIFY_START
-<metric start> branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR003
-<justification end> */
-    i < TIVX_PLATFORM_MAX_TARGETS;
-/* LDRA_JUSTIFY_END */
-    i ++)
-    {
-        if (0 == strncmp(
-                g_tivx_target_info[i].target_name,
-                TIVX_TARGET_HOST,
-                TIVX_TARGET_MAX_NAME))
-        {
-            /* update target_id for TIVX_TARGET_HOST */
-            g_tivx_target_info[i].target_id = (int32_t)host_target_id;
-            break;
-        }
-    }
-}
-
-void ownPlatformGetTargetName(vx_enum target_id, char *target_name)
-{
-    uint32_t i;
-
-    (void)snprintf(target_name, TIVX_TARGET_MAX_NAME, "UNKNOWN");
-
-    if(target_id!=(vx_enum)TIVX_TARGET_ID_INVALID)
-    {
-        for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
-        {
-            if (target_id == g_tivx_target_info[i].target_id)
-            {
-                (void)snprintf(target_name, TIVX_TARGET_MAX_NAME, "%s", g_tivx_target_info[i].target_name);
-                break;
-            }
-        }
     }
 }
 

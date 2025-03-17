@@ -105,6 +105,35 @@ __attribute__ ((aligned(TIVX_TARGET_DEFAULT_STACK_ALIGNMENT)))
     ;
 #endif /* #if defined(C7X_FAMILY) || defined(R5F) || defined(C66) */
 
+/*! \brief Structure for mapping target id and target name
+ * \ingroup group_tivx_platform
+ */
+typedef struct tivx_target_info
+{
+    /*! \brief Name of the target, defined in include/TI/tivx_soc_<soc>.h file
+     */
+    char target_name[TIVX_TARGET_MAX_NAME];
+    /*! \brief Id of the target defined in #tivx_target_id_e in the
+     *   file soc/tivx_target_config_<soc>.h
+     */
+    vx_enum target_id;
+} tivx_target_info_t;
+
+/*! \brief Global instance of platform information
+ * \ingroup group_tivx_platform
+ */
+static tivx_target_info_t g_tivx_target_info[] = TIVX_TARGET_INFO;
+
+/*! \brief Maximum number of targets and thus targetid supported
+ *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in
+ *         include/TI/soc/tivx_config_<soc>.h
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_MAX_TARGETS  dimof(g_tivx_target_info)
+
+/* Function declarations for these are in source/platform/common/targets/tivx_target_config.h
+ * since they are used inside of platform directory */
+
 void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name, uint32_t task_pri)
 {
     vx_status status;
@@ -156,4 +185,73 @@ void tivxPlatformDeleteTargetId(vx_enum target_id)
         VX_PRINT(VX_ZONE_ERROR, "Could not Delete Target\n");
     }
 /* LDRA_JUSTIFY_END */
+}
+
+void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
+{
+    uint32_t i;
+
+    for (i = 0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR003
+<justification end> */
+    i < TIVX_PLATFORM_MAX_TARGETS;
+/* LDRA_JUSTIFY_END */
+    i ++)
+    {
+        if (0 == strncmp(
+                g_tivx_target_info[i].target_name,
+                TIVX_TARGET_HOST,
+                TIVX_TARGET_MAX_NAME))
+        {
+            /* update target_id for TIVX_TARGET_HOST */
+            g_tivx_target_info[i].target_id = (vx_enum)host_target_id;
+            break;
+        }
+    }
+}
+
+/* Function declarations for these are in source/include/tivx_platform.h
+ * since they are used outside of platform directory */
+
+vx_enum ownPlatformGetTargetId(const char *target_name)
+{
+    uint32_t i;
+    vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
+
+    if (NULL != target_name)
+    {
+        for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
+        {
+            if (0 == strncmp(g_tivx_target_info[i].target_name,
+                    target_name,
+                    TIVX_TARGET_MAX_NAME))
+            {
+                target_id = g_tivx_target_info[i].target_id;
+                break;
+            }
+        }
+    }
+
+    return (target_id);
+}
+
+void ownPlatformGetTargetName(vx_enum target_id, char *target_name)
+{
+    uint32_t i;
+
+    (void)snprintf(target_name, TIVX_TARGET_MAX_NAME, "UNKNOWN");
+
+    if(target_id != (vx_enum)TIVX_TARGET_ID_INVALID)
+    {
+        for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
+        {
+            if (target_id == g_tivx_target_info[i].target_id)
+            {
+                (void)snprintf(target_name, TIVX_TARGET_MAX_NAME, "%s", g_tivx_target_info[i].target_name);
+                break;
+            }
+        }
+    }
 }
