@@ -2599,16 +2599,26 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
                     node->is_context_event = (vx_bool)vx_true_e;
                     node->node_completed_context_app_value = app_value;
                 }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_NODE_UM007
+<justification end> */
                 else if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
                 {
                     node->is_graph_event = (vx_bool)vx_true_e;
                     node->node_completed_graph_app_value = app_value;
                 }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_NODE_UM007
+<justification end> */
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Invalid queue type\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
+/* LDRA_JUSTIFY_END */
             }
             else if ((vx_enum)VX_EVENT_NODE_ERROR == event_type)
             {
@@ -2624,16 +2634,26 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
                     node->is_context_event = (vx_bool)vx_true_e;
                     node->node_error_context_app_value = app_value;
                 }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_NODE_UM007
+<justification end> */
                 else if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
                 {
                     node->is_graph_event = (vx_bool)vx_true_e;
                     node->node_error_graph_app_value = app_value;
                 }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_NODE_UM007
+<justification end> */
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Invalid queue type\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
+/* LDRA_JUSTIFY_END */
             }
             else
             {

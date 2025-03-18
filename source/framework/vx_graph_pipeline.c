@@ -229,11 +229,16 @@ static vx_status ownDecrementEnqueueCount(vx_reference ref)
             uint32_t i;
             for (i = 0; i < num_items; i++)
             {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM022
+<justification end> */
                 if(ref_list[i]->obj_desc->num_enqueues > 0U)
                 {
                     ref_list[i]->obj_desc->flags &= ~TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED;
                     ref_list[i]->obj_desc->num_enqueues = ref_list[i]->obj_desc->num_enqueues - 1U;
                 }
+/* LDRA_JUSTIFY_END */
             }
         }
         else if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
@@ -246,11 +251,16 @@ static vx_status ownDecrementEnqueueCount(vx_reference ref)
             uint32_t i;
             for (i = 0; i < num_items; i++)
             {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM022
+<justification end> */
                 if (ref_list[i]->obj_desc->num_enqueues > 0U)
                 {
                     ref_list[i]->obj_desc->flags &= ~TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED;
                     ref_list[i]->obj_desc->num_enqueues = ref_list[i]->obj_desc->num_enqueues - 1U;
                 }
+/* LDRA_JUSTIFY_END */
             }
         }
         else
@@ -270,15 +280,16 @@ static vx_status ownDecrementEnqueueCount(vx_reference ref)
     }
 /* LDRA_JUSTIFY_END */
 /* LDRA_JUSTIFY_START
-<metric start> branch <metric end>
+<metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM013
 <justification end> */
     else
-/* LDRA_JUSTIFY_END */
     {
         /* for a delay, ignore the count if it was already zero, this is the case for pipelining */
         status = (vx_status)VX_SUCCESS;
     }
+/* LDRA_JUSTIFY_END */
+
     return status;
 }
 
@@ -713,7 +724,7 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                                 }
 /* LDRA_JUSTIFY_END */
                                 else if ((tivxFlagIsBitSet(odi->flags, TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED) == (vx_bool)vx_true_e) ||
-                                    (((vx_bool)vx_false_e == is_input) && (odi->num_enqueues > 0U)))
+                                    (((vx_bool)vx_false_e == is_input) && (odi->num_enqueues > 0U))) /* TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UM017 */
                                 {
                                     can_be_queued = (vx_bool)vx_false_e;
                                     break;

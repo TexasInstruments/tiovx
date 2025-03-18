@@ -44,6 +44,8 @@ TEST(tivxInternalEventQueue, negativeTestownRegisterEvent)
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, ownRegisterEvent(ref2, INVALID_QUEUE_TYPE, VX_EVENT_NODE_COMPLETED, 0, 0, vx_true_e));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownRegisterEvent(ref3, INVALID_QUEUE_TYPE, VX_EVENT_NODE_COMPLETED, 0, 0, vx_true_e));
 
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, ownRegisterEvent(ref2, INVALID_QUEUE_TYPE, VX_EVENT_GRAPH_COMPLETED, 0, 0, vx_true_e));
+
     ownReleaseReferenceInt(&ref2, (vx_enum)VX_TYPE_GRAPH, (vx_enum)VX_EXTERNAL, NULL);
     ownReleaseReferenceInt(&ref3, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
 
