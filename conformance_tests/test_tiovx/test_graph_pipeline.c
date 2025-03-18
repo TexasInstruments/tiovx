@@ -8728,6 +8728,8 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithPyramid)
     VX_CALL(vxReleaseImage(&level0));
     VX_CALL(vxReleaseNode(&pyramid_node));
     VX_CALL(vxReleaseGraph(&graph));
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
 /* Enqueueing a Pyramid as an Output and one of its 
@@ -8784,6 +8786,8 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithPyramidAndEnqueueSingleImage)
     VX_CALL(vxReleaseImage(&not_node_output));
     VX_CALL(vxReleaseImage(&single_image_from_pyr));
     VX_CALL(vxReleaseGraph(&graph));
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
 TEST(tivxGraphPipelineLdra, negativeTestSetGraphScheduleConfig)

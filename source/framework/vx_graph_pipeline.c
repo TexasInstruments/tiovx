@@ -218,7 +218,7 @@ static vx_status ownDecrementEnqueueCount(vx_reference ref)
     {
         ref->obj_desc->num_enqueues = ref->obj_desc->num_enqueues - 1U;
         vx_reference const * ref_list = NULL;
-        // if ref is a container object, then decrement the num_enqueues of all the elements
+        /* if ref is a container object, then decrement the num_enqueues of all the elements */
         if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
         {
             vx_object_array object_array = vxCastRefAsObjectArray(ref, NULL);
@@ -667,7 +667,7 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                             }
 /* LDRA_JUSTIFY_END */
                         }
-                        else // in case there is no replication, but reference is a pyramid or object array
+                        else /* in case there is no replication, but reference is a pyramid or object array */
                         {
                             if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                             {
