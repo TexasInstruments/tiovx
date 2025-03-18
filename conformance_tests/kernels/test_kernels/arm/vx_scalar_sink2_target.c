@@ -150,7 +150,7 @@ static vx_status VX_CALLBACK tivxScalarSink2Process(
             }
         }
 
-        if (prms->old_obj_desc[0]==NULL) // for initial run use the current descriptor to return
+        if ( (prms->old_obj_desc[0]==NULL) && (1 == prms->local_val) )
         {
             VX_PRINT(VX_ZONE_INFO, "initial run, return the incoming descriptor to avoid invalidation\n");
         }
