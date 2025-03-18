@@ -217,6 +217,46 @@ static vx_status ownDecrementEnqueueCount(vx_reference ref)
     if (ref->obj_desc->num_enqueues > 0U)
     {
         ref->obj_desc->num_enqueues = ref->obj_desc->num_enqueues - 1U;
+        vx_reference const * ref_list = NULL;
+        // if ref is a container object, then decrement the num_enqueues of all the elements
+        if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
+        {
+            vx_object_array object_array = vxCastRefAsObjectArray(ref, NULL);
+            tivx_obj_desc_object_array_t *obj_desc =
+            (tivx_obj_desc_object_array_t *)object_array->base.obj_desc;
+            vx_uint32 num_items = obj_desc->num_items;
+            ref_list = object_array->ref;
+            uint32_t i;
+            for (i = 0; i < num_items; i++)
+            {
+                if(ref_list[i]->obj_desc->num_enqueues > 0U)
+                {
+                    ref_list[i]->obj_desc->flags &= ~TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED;
+                    ref_list[i]->obj_desc->num_enqueues = ref_list[i]->obj_desc->num_enqueues - 1U;
+                }
+            }
+        }
+        else if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+        {           
+            vx_pyramid pyramid = vxCastRefAsPyramid(ref, NULL);
+            tivx_obj_desc_pyramid_t *obj_desc = NULL;
+            obj_desc = (tivx_obj_desc_pyramid_t *)pyramid->base.obj_desc;
+            ref_list = (vx_reference *)(uintptr_t)(pyramid->img);
+            vx_uint32 num_items = obj_desc->num_levels;
+            uint32_t i;
+            for (i = 0; i < num_items; i++)
+            {
+                if (ref_list[i]->obj_desc->num_enqueues > 0U)
+                {
+                    ref_list[i]->obj_desc->flags &= ~TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED;
+                    ref_list[i]->obj_desc->num_enqueues = ref_list[i]->obj_desc->num_enqueues - 1U;
+                }
+            }
+        }
+        else
+        {
+            /* do nothing */
+        }
         status = (vx_status)VX_SUCCESS;
     }
 /* LDRA_JUSTIFY_START
@@ -627,6 +667,29 @@ static vx_status ownGraphParameterEnqueueReadyRef(vx_graph graph,
                             }
 /* LDRA_JUSTIFY_END */
                         }
+                        else // in case there is no replication, but reference is a pyramid or object array
+                        {
+                            if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
+                            {
+                                vx_object_array object_array = vxCastRefAsObjectArray(ref, NULL);
+                                tivx_obj_desc_object_array_t *obj_desc =
+                                (tivx_obj_desc_object_array_t *)object_array->base.obj_desc;
+                                ref_list = object_array->ref;
+                                num_replicas = obj_desc->num_items;
+                            }
+                            else if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+                            {
+                                vx_pyramid pyramid = vxCastRefAsPyramid(ref, NULL);
+                                tivx_obj_desc_pyramid_t *obj_desc = NULL;
+                                obj_desc = (tivx_obj_desc_pyramid_t *)pyramid->base.obj_desc;
+                                ref_list = (vx_reference *)(uintptr_t)(pyramid->img);
+                                num_replicas = obj_desc->num_levels;
+                            }
+                            else
+                            {
+                                /* do nothing */
+                            }
+                        }
                         if ((tivxFlagIsBitSet(objd->flags, TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED) == (vx_bool)vx_true_e) ||
                             ( ((vx_bool)vx_false_e == is_input) && (objd->num_enqueues > 0U)))
                         {
@@ -819,7 +882,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
     {
         tivx_obj_desc_node_t const * nobj = graph->parameters[graph_parameter_index].node->obj_desc[0];
         vx_bool is_replicated = tivxFlagIsBitSet(nobj->is_prm_replicated, ((uint32_t)1U<<graph->parameters[graph_parameter_index].index));
-        vx_uint32 num_replicas = ((vx_bool)vx_true_e == is_replicated) ? nobj->num_of_replicas : 0U;
         vx_uint32 ref_id;
         vx_bool exit_loop = (vx_bool)vx_false_e;
         for(ref_id = 0; ref_id < max_refs; ref_id++)
@@ -840,7 +902,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                     ref = ownReferenceGetHandleFromObjDescId(ref_obj_desc_id);
                     if ((vx_bool)vx_true_e == is_replicated)
                     {
-                        vx_uint32 i;
                         vx_reference const * ref_list = NULL;
                         /* We may get here with either the reference of the container,
                            or the reference of the first element of the container.
@@ -894,11 +955,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
 /* LDRA_JUSTIFY_END */
                         {
                             ref = ref_list[0];
-                            for (i = 0; (i < num_replicas) &&
-                                 ((vx_status)VX_SUCCESS == status); ++i)
-                            {
-                                status = ownDecrementEnqueueCount(ref_list[i]);
-                            }
                         }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
