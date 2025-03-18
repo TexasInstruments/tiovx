@@ -194,6 +194,8 @@ TESTCASE(tivxGraphPipeline)
 
 #endif /* #if defined(BUILD_CORE_KERNELS) */
 
+TESTCASE(tivxArray)
+
 TESTCASE(tivxLog)
 
 TESTCASE(tivxMatx)
