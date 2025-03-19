@@ -532,15 +532,11 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
                 VX_PRINT(VX_ZONE_ERROR, "Unable to alloc resources for data ref queue\n");
             }
         }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1868- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT002 */
-        else
+        else /* TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT002 */
         {
             ref = NULL;
             VX_PRINT(VX_ZONE_ERROR, "Unable to create data ref queue\n");
         }
-/* END: TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UTJT002 */
-#endif
     }
     else
     {

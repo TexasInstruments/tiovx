@@ -429,7 +429,12 @@ static void ownTargetNodeDescReleaseParameter(
                                  ref_obj_desc_id
                            );
         }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_ACQUIRE_PARAMS_UM002
+<justification end>*/
         if(do_release_ref != (vx_bool)vx_false_e)
+/* LDRA_JUSTIFY_END */
         {
             tivxFlagBitClear(&flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_REF_ACQUIRED);
             data_ref_q_obj_desc->flags = flags;

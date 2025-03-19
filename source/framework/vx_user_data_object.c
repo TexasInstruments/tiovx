@@ -109,8 +109,13 @@ static vx_status ownDestructUserDataObject(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_USER_DATA_OBJECT_UM001
+<justification end> */
     if(ref->type == VX_TYPE_USER_DATA_OBJECT)
     {
+/* LDRA_JUSTIFY_END */
         if (NULL != ((vx_user_data_object)ref)->parent)
         {
             (void)vxReleaseUserDataObject(&((vx_user_data_object)ref)->parent);
@@ -125,20 +130,19 @@ static vx_status ownDestructUserDataObject(vx_reference ref)
                     status = tivxMemBufferFree(
                         &obj_desc->mem_ptr, obj_desc->mem_size);
                 }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_USER_DATA_OBJECT_UM002
+<justification end> */
                 if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
                 {
                     status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
-#ifdef LDRA_UNTESTABLE_CODE                  
-                    if ((vx_status)VX_SUCCESS != status)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "Object descriptor free failed!\n");
-                    }
-#endif
                 }                
             }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return status;
 }
 
 static void ownInitUserDataObjectCallbacks(vx_user_data_object user_data_object)

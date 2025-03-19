@@ -309,13 +309,11 @@ vx_status ownObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
                 /* target is on remote CPU, send using IPC */
                 status = ownIpcSendMsg(cpu_id, ipc_payload, obj_desc->host_cpu_id, obj_desc->host_port_id[self_cpu_id]);
             }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1703- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJDESC_UM003 */
-            else
+            else /* TIOVX_CODE_COVERAGE_OBJDESC_UM003 */
             {
                 status = (vx_status)VX_FAILURE;
             }
-#endif
+
             if(status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,"ownIpcSendMsg failed\n");
@@ -593,23 +591,35 @@ VX_API_ENTRY vx_status tivxExtendSupplementaryDataObjDesc(const tivx_obj_desc_t 
                 {
                     /* do nothing */
                 }
-                /* The negative condition of the below block is untestable since the failure condition cannot be simulated */
+                /*  */
                 status = tivxMemBufferMap((void *)(uintptr_t)supp->mem_ptr.host_ptr, source_bytes + extra_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_OBJDESC_UM004
+<justification end> */
                 if ((vx_status)VX_SUCCESS == status)
                 {
+/* LDRA_JUSTIFY_END */
                     if (NULL != source)
                     {
-                        /* The negative condition of the below block is untestable since the failure condition cannot be simulated */
                         status = tivxMemBufferMap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_OBJDESC_UM005
+<justification end> */
                         if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
                         {
                             tivx_obj_desc_memcpy((void *)(uintptr_t)supp->mem_ptr.host_ptr, (void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes);
                             tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
                         }
                     }
-                    /* The negative condition of the below block is necessary because we do not want to execute the code if the previous tivxMemBufferMap fails 
-                       but it is untestable since the failure condition cannot be simulated */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_OBJDESC_UM006
+<justification end> */
                     if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
                     {
                         if (extra_bytes > 0U)
                         {

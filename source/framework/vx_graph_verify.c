@@ -1442,13 +1442,10 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
 
                 status = ownObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
             }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM008 */
-            else
+            else /* TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM008 */
             {
                 status = (vx_status)VX_FAILURE;
             }
-#endif
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM009
@@ -1477,13 +1474,10 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
 
                 status = ownObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
             }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM010 */
-            else
+            else /* TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM010 */
             {
                 status = (vx_status)VX_FAILURE;
             }
-#endif
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM011
@@ -1508,13 +1502,10 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
 
                 status = ownObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
             }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM012 */
-            else
+            else /* TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM012 */
             {
                 status = (vx_status)VX_FAILURE;
             }
-#endif
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM013
@@ -1882,21 +1873,15 @@ static vx_status ownGraphUpdateImageRefAfterKernetInit(vx_image exemplar, vx_ima
         {
             tivx_obj_desc_memcpy(&img_ref_obj_desc->valid_roi, &img_exemplar_obj_desc->valid_roi, (uint32_t)sizeof(img_exemplar_obj_desc->valid_roi));
         }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM018 */
-        else
+        else /* TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM018 */
         {
             status = (vx_status)VX_FAILURE;
         }
-#endif
     }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1676- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM019 */
-    else
+    else /* TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM019 */
     {
         status = (vx_status)VX_FAILURE;
     }
-#endif
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UM020

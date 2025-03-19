@@ -130,20 +130,21 @@ static vx_status VX_CALLBACK pyramidKernelCallback(vx_enum kernel_enum, vx_bool 
 /* LDRA_JUSTIFY_END */
             {
                 status = (*kf)(kernel_enum, (vx_bool)vx_false_e, p2[0], p2[1]);
-                /* Not all the condition combinations of the below block are testable since, per definition,  we cannot have a callback 
-                   if the input has no supplementary */                
                 if (((vx_status)VX_SUCCESS == status) &&
                     (NULL != p2[0]->supplementary_data) &&
                     (NULL != p2[1]->supplementary_data) &&
-                    (NULL != p2[0]->supplementary_data->base.kernel_callback))
+                    (NULL != p2[0]->supplementary_data->base.kernel_callback)) /* TIOVX_CODE_COVERAGE_PYRAMID_UM008 */
                 {
                     vx_reference supp_params[2] = {&p2[0]->supplementary_data->base, &p2[1]->supplementary_data->base};
-                    /* The negative condition of the below block is untestable since a negative return value from the callback function
-                       is linked to map/unmap functions contained in the copy generic functions */                    
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_PYRAMID_UM009
+<justification end>*/
                     if ((vx_status)VX_SUCCESS == p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_true_e, supp_params[0], supp_params[1]))
                     {
                         status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_false_e, supp_params[0], supp_params[1]);
                     }
+/* LDRA_JUSTIFY_END */
                 }
                 else
                 {
@@ -575,14 +576,11 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
                         break;
                     }
                 }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1884- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_PYRAMID_UM004 */
-                else
+                else /* TIOVX_CODE_COVERAGE_PYRAMID_UM004 */
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Image level %d is NULL\n", i);
                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                 }
-#endif
             }
 
             if ((vx_status)VX_SUCCESS==status)

@@ -2370,12 +2370,11 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
         /* Destination cannot be supplementary data of another object */
         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
-    /* Not possible to test for virtual source objects since vxCreateVirtualUserDataObject is not implemented */
     else if ((((vx_bool)vx_true_e == destination->is_virtual) &&
              ((vx_bool)vx_false_e == destination->is_accessible)) ||
              ((NULL != source) &&
              ((vx_bool)vx_true_e == source->base.is_virtual) &&
-             ((vx_bool)vx_false_e == source->base.is_accessible)))
+             ((vx_bool)vx_false_e == source->base.is_accessible))) /* TIOVX_CODE_COVERAGE_REFERENCE_UM012 */
     {
         /* Cannot access virtual objects outside of kernel functions */
         status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
@@ -2419,9 +2418,14 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
                 };
                 vx_uint32 i;
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                /* sll the supported type check could be removed, because the unsupported object 
-                are rejected with the check “Objects without object descriptors are not supported”*/
-                for (i = 0; i < dimof(supported_type_table); ++i) 
+                for (i = 0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM013
+<justification end> */
+                    i < dimof(supported_type_table);
+/* LDRA_JUSTIFY_END */
+                    ++i)
                 {
                     if (destination->type == supported_type_table[i])
                     {
@@ -2508,22 +2512,42 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
                     source_offset = 0;
                 }
 
-                status = ownReferenceLock(destination); /*status not success : LDRA untestable code */
+                status = ownReferenceLock(destination);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM014
+<justification end> */
                 if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
                 {
                     tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)dst_obj_desc->mem_ptr.host_ptr, dest_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM015
+<justification end> */
                     if ((vx_status)VX_SUCCESS == status)
                     {
+/* LDRA_JUSTIFY_END */
                         if ((NULL != src_obj_desc) && (0U != l_source_bytes))
                         {
                             tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)(src_obj_desc->mem_ptr.host_ptr + source_offset), l_source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
-                            if ((vx_status)VX_SUCCESS == status)  /*status not success : LDRA untestable code */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM015
+<justification end> */
+                            if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
                             {
                                 tivx_obj_desc_memcpy((void *)(uintptr_t)(dst_obj_desc->mem_ptr.host_ptr + source_offset), (void *)(uintptr_t)(src_obj_desc->mem_ptr.host_ptr + source_offset), l_source_bytes);
                                 tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)(src_obj_desc->mem_ptr.host_ptr + source_offset), l_source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
                             }
                         }
-                        if ((vx_status)VX_SUCCESS == status)  /*status not success : LDRA untestable code */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_REFERENCE_UM015
+<justification end> */
+                        if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
                         {
                             if ((NULL != user_data) && (0U != l_user_bytes))
                             {

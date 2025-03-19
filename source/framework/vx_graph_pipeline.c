@@ -91,8 +91,8 @@ static vx_status ownGraphPipelineValidateRefsList(
         meta_base = ownCreateMetaFormat(graph_parameters_queue_param.refs_list[0]->context);
         status = vxSetMetaFormatFromReference(meta_base, graph_parameters_queue_param.refs_list[0]);
     }
-
 /* LDRA_JUSTIFY_END */
+
     if ( ((vx_status)VX_SUCCESS == status) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR002 */
     && (NULL != meta_base) ) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR003 */
     {

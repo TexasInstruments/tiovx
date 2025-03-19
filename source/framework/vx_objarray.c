@@ -61,25 +61,25 @@ static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_b
                     (NULL != p2[0]->supplementary_data->base.kernel_callback))
                 {
                     vx_reference supp_params[2] = {&p2[0]->supplementary_data->base, &p2[1]->supplementary_data->base};
-                    /* The negative condition of the below block is untestable since a negative return value from the callback function
-                       is linked to map/unmap functions contained in the copy generic functions */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_OBJDESC_UM007
+<justification end> */
                     if ((vx_status)VX_SUCCESS == p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_true_e, supp_params[0], supp_params[1]))
                     {
                         status = p2[0]->supplementary_data->base.kernel_callback(kernel_enum, (vx_bool)vx_false_e, supp_params[0], supp_params[1]);
                     }
+/* LDRA_JUSTIFY_END */
                 }
                 else
                 {
                     VX_PRINT(VX_ZONE_WARNING, "No Supplementary data available, no copy/swap possible.\n");
                 }
             }
-#ifdef LDRA_UNTESTABLE_CODE
-/* TIOVX-1706- LDRA Uncovered Id: TIOVX_CODE_COVERAGE_OBJARRAY_UM006 */
-            else
+            else /* TIOVX_CODE_COVERAGE_OBJARRAY_UM006 */
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             }
-#endif
         }
     }
     return status;

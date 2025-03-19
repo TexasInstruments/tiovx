@@ -76,10 +76,15 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 /* LDRA_JUSTIFY_END */
                             break;
 
-                        case STOP: /* TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT003 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT003
+<justification end> */
+                        case STOP:
                             VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
                             (void)tivxEventPost(graph->stop_done);
                             break;
+/* LDRA_JUSTIFY_END */
 
                         case DELETE:
                             /* Break from loop and exit task */
@@ -119,11 +124,16 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
                             (void)tivxEventPost(graph->stop_done);
                             break;
 
-                        case DELETE: /* TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT006 */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UTJT006
+<justification end> */
+                        case DELETE:
                             VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
                             state = IDLE;
                             done = (vx_bool)vx_true_e;
                             break;
+/* LDRA_JUSTIFY_END */
 
                         case STREAMING_EVENT:
                             VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: NODE COMPLETE\n");
