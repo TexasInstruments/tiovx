@@ -135,6 +135,16 @@ extern "C" {
  */
 #define TIVX_SCALAR_INTERMEDIATE_REPLICATE_QUERY                (0x50000000u)
 
+/*! \brief Scalar intermediate emulate failure in process callback
+ *  \see group_vision_function_capture
+ */
+#define TIVX_SCALAR_INTERMEDIATE_PROCESS_FAIL                   (0x60000000u)
+
+/*! \brief Scalar intermediate emulate failure in delete callback
+ *  \see group_vision_function_capture
+ */
+#define TIVX_SCALAR_INTERMEDIATE_DELETE_FAIL                    (0x70000000u)
+
 /*! End of group_vision_function_capture */
 
 /*!

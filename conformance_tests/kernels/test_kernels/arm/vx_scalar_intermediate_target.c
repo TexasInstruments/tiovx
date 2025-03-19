@@ -70,8 +70,8 @@
 #include "tivx_kernels_target_utils.h"
 
 #define TEST_MODE_CREATE_FAILURE_VAL  10
-#define TEST_MODE_PROCESS_FAILURE_VAL 200
-#define TEST_MODE_DELETE_FAILURE_VAL  30
+static uint8_t process_failure = 0u;
+static uint8_t delete_failure = 0u;
 
 static tivx_target_kernel vx_scalar_intermediate_target_kernel = NULL;
 
@@ -121,7 +121,7 @@ static vx_status VX_CALLBACK tivxScalarIntermediateProcess(
 
         in_value = in_desc->data.u08;
 
-        if (in_value == TEST_MODE_PROCESS_FAILURE_VAL)
+        if (process_failure == 1)
         {
             status = VX_FAILURE;
         }
@@ -158,6 +158,9 @@ static vx_status VX_CALLBACK tivxScalarIntermediateCreate(
     {
         vx_uint8 in_value;
 
+        process_failure = 0;
+        delete_failure = 0;
+
         in_value = in_desc->data.u08;
 
         if (in_value == TEST_MODE_CREATE_FAILURE_VAL)
@@ -175,31 +178,10 @@ static vx_status VX_CALLBACK tivxScalarIntermediateDelete(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    tivx_obj_desc_scalar_t *in_desc;
 
-    if ( (num_params != TIVX_KERNEL_SCALAR_INTERMEDIATE_MAX_PARAMS)
-        || (NULL == obj_desc[TIVX_KERNEL_SCALAR_INTERMEDIATE_IN_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_SCALAR_INTERMEDIATE_OUT_IDX])
-    )
+    if (delete_failure == 1)
     {
         status = VX_FAILURE;
-    }
-
-    if(VX_SUCCESS == status)
-    {
-        in_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_SCALAR_INTERMEDIATE_IN_IDX];
-    }
-
-    if(VX_SUCCESS == status)
-    {
-        vx_uint8 in_value;
-
-        in_value = in_desc->data.u08;
-
-        if (in_value == TEST_MODE_DELETE_FAILURE_VAL)
-        {
-            status = VX_FAILURE;
-        }
     }
 
     return status;
@@ -250,7 +232,20 @@ static vx_status VX_CALLBACK tivxScalarIntermediateControl(
                 VX_PRINT(VX_ZONE_ERROR, "User Data Object is NULL \n");
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
+            break;
         }
+        case TIVX_SCALAR_INTERMEDIATE_PROCESS_FAIL:
+        {
+            process_failure = 1;
+            break;
+        }
+        case TIVX_SCALAR_INTERMEDIATE_DELETE_FAIL:
+        {
+            delete_failure = 1;
+            break;
+        }
+        default:
+            break;
     }
 
     return status;

@@ -2315,11 +2315,15 @@ TEST_WITH_ARG(tivxSourceNode, testIntermediateNodeErrorInject, Arg, STREAMING_PA
     scalar_val = 200;
     VX_CALL(vxCopyScalar(scalar, &scalar_val, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
+    tivxNodeSendCommand(n1, 0,
+        TIVX_SCALAR_INTERMEDIATE_PROCESS_FAIL, NULL, 0u);
+
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    scalar_val = 30;
-    VX_CALL(vxCopyScalar(scalar, &scalar_val, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+    tivxNodeSendCommand(n1, 0,
+        TIVX_SCALAR_INTERMEDIATE_DELETE_FAIL, NULL, 0u);
+
     VX_CALL(vxProcessGraph(graph));
 
     VX_CALL(vxReleaseNode(&n1));
