@@ -7758,7 +7758,6 @@ TEST(tivxGraphPipeline2, testIllegalDoubleEnqueuing)
  */      
 TEST(tivxGraphPipeline2, testMultipleEnqueueSameRef)
 {
-    tivx_set_debug_zone(VX_ZONE_INFO);
     vx_status status;    
     vx_context context = context_->vx_context_;
     vx_graph graph = vxCreateGraph(context);
@@ -7824,12 +7823,12 @@ TEST(tivxGraphPipeline2, testMultipleEnqueueSameRef)
 
     for (i = 0; i < 10; ++i)
     {
-        vxReleaseImage(&images[i]);
+        VX_CALL(vxReleaseImage(&images[i]));
     }
-    vxReleaseNode(&node1);
-    vxReleaseNode(&node2);
-    vxReleaseGraph(&graph);
-    vxReleaseImage(&temp_img); 
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(vxReleaseImage(&temp_img)); 
 }
 
 /* Test the graph event extensions
