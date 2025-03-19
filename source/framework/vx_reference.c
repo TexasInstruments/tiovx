@@ -2313,7 +2313,15 @@ VX_API_ENTRY vx_user_data_object vxGetSupplementaryUserDataObject(vx_reference r
         else
         {
             retref = ownCreateReadOnlyUserDataObject(new_ref->supplementary_data);
-            retref->owner = ref;
+
+            if (vxGetStatus((vx_reference)retref) == (vx_status)VX_SUCCESS)
+            {
+                retref->owner = ref;
+            }
+            else
+            {
+                *statusptr = (vx_status)VX_ERROR_NO_RESOURCES;
+            }
         }
     }
     return retref;

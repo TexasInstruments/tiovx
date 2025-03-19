@@ -27,6 +27,7 @@
 #include <TI/tivx_mutex.h>
 #include <TI/tivx_queue.h>
 #include <TI/tivx_task.h>
+#include <VX/vx_khr_supplementary_data.h>
 
 #include "shared_functions.h"
 
@@ -3162,6 +3163,40 @@ TEST(tivxBoundary2, testUserDataObjectBoundary)
 }
 
 /* TIVX_USER_DATA_OBJECT_MAX_OBJECTS*/
+TEST(tivxBoundary2, testUserDataObjectBoundarySupplementary)
+{
+    vx_context context = context_->vx_context_;
+    vx_user_data_object src_user_data[TIVX_USER_DATA_OBJECT_MAX_OBJECTS-1];
+    vx_uint32 udata = 0;
+    vx_char test_name[] = {'t', 'e', 's', 't', 'i', 'n', 'g'};
+    int i;
+    vx_reference supp_data;
+    vx_status status;
+    vx_image image, subimage;
+    vx_rectangle_t rect = {.start_x = 0, .start_y = 0, .end_x = 9, .end_y = 9};
+
+    for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_OBJECTS-1; i++)
+    {
+        ASSERT_VX_OBJECT(src_user_data[i] = vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
+    }
+
+    /* First, set supplementary data on an object */
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(subimage = vxCreateImageFromROI(image, &rect), VX_TYPE_IMAGE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)image, src_user_data[0]));
+
+    supp_data = (vx_reference)(vxGetSupplementaryUserDataObject((vx_reference)(subimage), NULL, &status));
+    EXPECT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, status);
+
+    for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_OBJECTS-1; i++)
+    {
+        VX_CALL(vxReleaseUserDataObject(&src_user_data[i]));
+    }
+    VX_CALL(vxReleaseImage(&subimage));
+    VX_CALL(vxReleaseImage(&image));
+}
+
+/* TIVX_USER_DATA_OBJECT_MAX_OBJECTS*/
 TEST(tivxNegativeBoundary2, negativeTestUserDataObjectBoundary)
 {
     vx_context context = context_->vx_context_;
@@ -3873,6 +3908,7 @@ TESTCASE_TESTS(tivxBoundary2,
         testTensorBoundary,
         testMapUserDataObjectBoundary,
         testUserDataObjectBoundary,
+        testUserDataObjectBoundarySupplementary,
         testControlCommandsBoundary
         )
 
