@@ -7743,6 +7743,95 @@ TEST(tivxGraphPipeline2, testIllegalDoubleEnqueuing)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+/* Test what happens when enqueueing the same reference on two nodes several times
+ *
+ * images     node1  temp_img       
+ * IMG ------ NOT -- IMG 
+ *  |                 |
+ *  |                 |     
+ *  ---------------  AND -- IMG
+ *                  node2   images
+ * 
+ * Background: 
+ * It was exhibited that due to pipelinig, in_node_done_count was overwritten when the same reference is acquired for the next
+ * pipeline id while the first has not finished yet. This resulted in receiving one too few reference consumed events when dequeuing. 
+ */      
+TEST(tivxGraphPipeline2, testMultipleEnqueueSameRef)
+{
+    tivx_set_debug_zone(VX_ZONE_INFO);
+    vx_status status;    
+    vx_context context = context_->vx_context_;
+    vx_graph graph = vxCreateGraph(context);
+    vx_image images[10] =
+    {
+        vxCreateImage(context, 64, 64, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 64, 64, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 64, 64, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 64, 64, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 64, 64, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 64, 64, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 64, 64, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 64, 64, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 64, 64, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 64, 64, VX_DF_IMAGE_U8)
+    };
+
+    vx_image temp_img = vxCreateImage(context, 64, 64, VX_DF_IMAGE_U8);
+    vx_node node1 = vxNotNode(graph, images[0], temp_img);
+    vx_node node2 = vxAndNode(graph, images[0], temp_img, images[1]); 
+
+    addParameterToGraph(graph, node1, 0); /* Input */
+    addParameterToGraph(graph, node2, 2); /* images[2] output */
+    vx_graph_parameter_queue_params_t graph_params[2] = 
+    {
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)images, .refs_list_size = 10},
+        {.graph_parameter_index = 1, .refs_list = (vx_reference *)images, .refs_list_size = 10},
+    };
+
+    tivxSetGraphPipelineDepth(graph, 2);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 2, graph_params));
+    VX_CALL(vxVerifyGraph(graph)); 
+
+    /* set graph Timeout, if the graph is not able to dequeue the input/output, it will return an error */ 
+    vx_uint32 svcProducerDequeueTimeout = 100U;
+    vxSetGraphAttribute(graph, VX_GRAPH_TIMEOUT, &svcProducerDequeueTimeout, sizeof(svcProducerDequeueTimeout));
+
+    int i;
+    /* enqueue lots of images at the output */ 
+    for (i = 0; i < 9; i++)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference *)&images[i+1], 1));
+    }
+
+    /* enqueue same input several times */ 
+    for (i = 0; i < 9; i++)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&images[0], 1));  
+    }
+
+    vx_reference dequeueinput;
+    vx_reference dequeueoutput; 
+    vx_uint32 num_dequeued_refs; 
+
+    /* try dequeueing inputs/outputs */ 
+    for (i = 0; i < 9; i++)
+    {
+        /* dequeue input */
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 0, &dequeueinput, 1, &num_dequeued_refs)); 
+        /* dequeue same amount of outputs */ 
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 1, &dequeueoutput, 1, &num_dequeued_refs)); 
+    }
+
+    for (i = 0; i < 10; ++i)
+    {
+        vxReleaseImage(&images[i]);
+    }
+    vxReleaseNode(&node1);
+    vxReleaseNode(&node2);
+    vxReleaseGraph(&graph);
+    vxReleaseImage(&temp_img); 
+}
+
 /* Test the graph event extensions
  *
  * Test vxRegisterGraphEvent:
@@ -8406,18 +8495,18 @@ TEST(tivxGraphPipeline2, testAddReferencesToGraphParameterList)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
     
-    // call before verify graph, should return error
+    /* call before verify graph, should return error */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_GRAPH, vxAddReferencesToGraphParameterList(graph, 0, 1, (vx_reference *)&images[3]));
 
-    // call without a valid graph, should return error
+    /* call without a valid graph, should return error */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_GRAPH, vxAddReferencesToGraphParameterList((vx_graph)no_valid_graph, 0, 1, (vx_reference *)&images[3]));
     
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    // call after verify graph, should return success
+    /* call after verify graph, should return success */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxAddReferencesToGraphParameterList(graph, 0, 1, (vx_reference *)&images[3]));
 
-    // graph should accept the reference added via vxAddReferencesToGraphParameterList
+    /* graph should accept the reference added via vxAddReferencesToGraphParameterList */
     VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&images[3], 1));
     VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference *)&images[1], 1));
     VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference *)&images[2], 1));
@@ -8428,13 +8517,13 @@ TEST(tivxGraphPipeline2, testAddReferencesToGraphParameterList)
     vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference *)&dequeue_ref, 1, &num_refs);
     vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference *)&dequeue_ref, 1, &num_refs);
 
-    // call with wrong reference, should return error
+    /* call with wrong reference, should return error */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_TYPE, vxAddReferencesToGraphParameterList(graph, 0, 1, (vx_reference *)&images_wrong_res));
 
-    // call with wrong graph parameter index should return error
+    /* call with wrong graph parameter index should return error */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxAddReferencesToGraphParameterList(graph, 3, 1, (vx_reference *)&images[3]));
 
-    // call with too many additional references should return error
+    /* call with too many additional references should return error */
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxAddReferencesToGraphParameterList(graph, 0, 33, (vx_reference *)&images + 5U));
 
     for (vx_uint8 i = 0; i < 40; i++)
@@ -8456,20 +8545,20 @@ TEST(tivxGraphPipeline2, testGetKernelParameterConfig)
     vx_uint32 num_params = 2;
     vx_kernel_parameter_config_t parameter_config[3];
 
-    // pass a non kernel should return error
+    /* pass a non kernel should return error */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxGetKernelParameterConfig(kernel, 3, parameter_config));
 
 
-    // Create a kernel
+    /* Create a kernel */
     ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
 
-    // testing with too many parameters will result in an error
+    /* testing with too many parameters will result in an error */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGetKernelParameterConfig(kernel, 3, parameter_config));
     
-    // Get the right amount of kernel parameter configuration should return success
+    /* Get the right amount of kernel parameter configuration should return success */ 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetKernelParameterConfig(kernel, num_params, parameter_config));
 
-    // Validate the parameter configuration
+    /* Validate the parameter configuration */
     ASSERT_EQ_INT(parameter_config[0].direction, VX_INPUT);
     ASSERT_EQ_INT(parameter_config[0].type, VX_TYPE_IMAGE);
     ASSERT_EQ_INT(parameter_config[0].state, VX_PARAMETER_STATE_REQUIRED);
@@ -8478,7 +8567,7 @@ TEST(tivxGraphPipeline2, testGetKernelParameterConfig)
     ASSERT_EQ_INT(parameter_config[1].type, VX_TYPE_IMAGE);
     ASSERT_EQ_INT(parameter_config[1].state, VX_PARAMETER_STATE_REQUIRED);
 
-    // Release the kernel
+    /* Release the kernel */
     VX_CALL(vxReleaseKernel(&kernel));
     VX_CALL(vxReleaseImage(&invalid_ref));
 }
@@ -8521,24 +8610,24 @@ TEST(tivxGraphPipeline2, testGetGraphParameterConfig)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
 
-    // call before verify graph, should return error
+    /* call before verify graph, should return error */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_GRAPH, vxGetGraphParameterConfig(graph, 3, parameter_config));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    // call without a valid graph, should return error
+    /* call without a valid graph, should return error */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxGetGraphParameterConfig((vx_graph)not_a_graph, 3, parameter_config));
 
-    // give to small amount of graph parameters, should return error
+    /* give to small amount of graph parameters, should return error */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGetGraphParameterConfig(graph, 2, parameter_config));
 
-    // give a nullptr as parameter_config object should return error
+    /* give a nullptr as parameter_config object should return error */
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGetGraphParameterConfig(graph, 3, NULL));
 
-    // get the right amount of graph parameters, should return success
+    /* get the right amount of graph parameters, should return success */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetGraphParameterConfig(graph, 3, parameter_config));
 
-    // validate the parameter configuration
+    /* validate the parameter configuration */
     ASSERT_EQ_INT(parameter_config[0].index, 0);
     ASSERT_EQ_INT(parameter_config[0].direction, VX_INPUT);
     ASSERT_EQ_INT(parameter_config[0].type, VX_TYPE_IMAGE);
@@ -8557,12 +8646,12 @@ TEST(tivxGraphPipeline2, testGetGraphParameterConfig)
     ASSERT_EQ_INT(parameter_config[2].state, VX_PARAMETER_STATE_REQUIRED);
     ASSERT_EQ_INT(parameter_config[2].refs_list_size, 2);
 
-    // release all references created
+    /* release all references created */
     for (vx_uint8 i = 0; i < 4; i++)
     {
         VX_CALL(vxReleaseImage(&images[i]));
     }
-    // release all other references created
+    /* release all other references created */
     VX_CALL(vxReleaseScalar(&not_a_graph));
     VX_CALL(vxReleaseImage(&tmp_image));
     VX_CALL(vxReleaseNode(&node1));
@@ -8570,15 +8659,14 @@ TEST(tivxGraphPipeline2, testGetGraphParameterConfig)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
-// Define the kernel ID and name
+/* Define the kernel ID and name */
 enum user_kernel_array_e
 {
     USER_KERNEL_ID = VX_KERNEL_BASE(VX_ID_USER, USER_LIBRARY_EXAMPLE) + 0x002,
 };
-//#define USER_KERNEL_ID (VX_KERNEL_BASE(VX_ID_DEFAULT, 0) + 0x100)
 #define USER_KERNEL_NAME "user.kernel.object_array"
 
-// Kernel processing function
+/* Kernel processing function */
 vx_status VX_CALLBACK userKernelProcess(vx_node node, const vx_reference *parameters, vx_uint32 num)
 {
     vx_object_array obj_array = (vx_object_array)parameters[0];
@@ -8588,29 +8676,27 @@ vx_status VX_CALLBACK userKernelProcess(vx_node node, const vx_reference *parame
     for (vx_size i = 0; i < num_items; i++)
     {
         vx_image image = (vx_image)vxGetObjectArrayItem(obj_array, i);
-        // Process each image in the object array
-        // ...
+        /* Process each image in the object array */
         vxReleaseImage(&image);
     }
 
     return VX_SUCCESS;
 }
 
-// Kernel validator function
+/* Kernel validator function */
 vx_status VX_CALLBACK userKernelValidator(vx_node node, const vx_reference parameters[], vx_uint32 num, vx_meta_format metas[])
 {
-    // Validate the input and output parameters
-    // ...
+    /* Validate the input and output parameters */
     return VX_SUCCESS;
 }
 
-// Kernel initialization function
+/* Kernel initialization function */
 vx_status VX_CALLBACK userKernelInitialize(vx_node node, const vx_reference *parameters, vx_uint32 num)
 {
     return VX_SUCCESS;
 }
 
-// Kernel deinitialization function
+/* Kernel deinitialization function */
 vx_status VX_CALLBACK userKernelDeinitialize(vx_node node, const vx_reference *parameters, vx_uint32 num)
 {
     return VX_SUCCESS;
@@ -8636,26 +8722,26 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithKernelAcceptingObjectArrays)
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(node = tivxCreateNodeByKernelName(graph, USER_KERNEL_NAME, (vx_reference*)&input, 1), VX_TYPE_NODE);
 
-    // add graph parameter 
+    /* add graph parameter */
     vx_graph_parameter_queue_params_t graph_params[1] = 
     {
         {.graph_parameter_index = 0, .refs_list = (vx_reference *)&input, .refs_list_size = 1}
     };
 
-    // add graph parameter to the graph, set schedule config and verify
+    /* add graph parameter to the graph, set schedule config and verify */
     addParameterToGraph(graph, node, 0);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 1, graph_params));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    // enqueue input to the graph parameter
+    /* enqueue input to the graph parameter */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&input, 1));
 
-    // check enqueue count for the object array, it should be 1
+    /* check enqueue count for the object array, it should be 1 */
     vx_uint32 enqueue_count = 0;
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryReference((vx_reference)input, VX_REFERENCE_ENQUEUE_COUNT, &enqueue_count, sizeof(enqueue_count)));
     ASSERT_EQ_INT(enqueue_count, 1);
 
-    // check enqueue count for the child reference of the object array, it should be 1
+    /* check enqueue count for the child reference of the object array, it should be 1 */
     vx_reference ref1 = vxGetObjectArrayItem(input, 0);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryReference(ref1, VX_REFERENCE_ENQUEUE_COUNT, &enqueue_count, sizeof(enqueue_count)));
     ASSERT_EQ_INT(enqueue_count, 1);
@@ -8664,17 +8750,17 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithKernelAcceptingObjectArrays)
     vx_uint32 num_refs; 
     vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference *)&dequeue_ref, 1, &num_refs);
 
-    // enqueue count for the object array should be 0
+    /* enqueue count for the object array should be 0 */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryReference((vx_reference)dequeue_ref, VX_REFERENCE_ENQUEUE_COUNT, &enqueue_count, sizeof(enqueue_count)));
     ASSERT_EQ_INT(enqueue_count, 0);
 
-    // enqueue count for the child reference of the object array should be 0
+    /* enqueue count for the child reference of the object array should be 0 */
     vx_reference ref2 = vxGetObjectArrayItem((vx_object_array)dequeue_ref, 0);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryReference((vx_reference)ref2, VX_REFERENCE_ENQUEUE_COUNT, &enqueue_count, sizeof(enqueue_count)));
     ASSERT_EQ_INT(enqueue_count, 0);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
 
-    // release references created 
+    /* release references created  */
     VX_CALL(vxReleaseObjectArray(&input));
     VX_CALL(vxReleaseReference(&ref1));
     VX_CALL(vxReleaseReference(&ref2));
@@ -8694,7 +8780,7 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithPyramid)
     vx_pyramid pyramid = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 640, 480, VX_DF_IMAGE_U8);
     vx_node pyramid_node = vxGaussianPyramidNode(graph, input_image, pyramid);
 
-    // add output of pyramid_node as graph parameter
+    /* add output of pyramid_node as graph parameter */
     vx_graph_parameter_queue_params_t graph_params[1] = 
     {
         {.graph_parameter_index = 0, .refs_list = (vx_reference *)&pyramid, .refs_list_size = 1}
@@ -8702,14 +8788,14 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithPyramid)
     addParameterToGraph(graph, pyramid_node, 1);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 1, graph_params));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-    // enqueue input to the graph parameter
+    /* enqueue input to the graph parameter */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&pyramid, 1));
 
     vx_uint32 enqueue_count = 0;
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryReference((vx_reference)pyramid, VX_REFERENCE_ENQUEUE_COUNT, &enqueue_count, sizeof(enqueue_count)));
     ASSERT_EQ_INT(enqueue_count, 1);
 
-    // get first level of pyramid and check its enqueue count
+    /* get first level of pyramid and check its enqueue count */
     vx_image level0 = vxGetPyramidLevel(pyramid, 0);
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryReference((vx_reference)level0, VX_REFERENCE_ENQUEUE_COUNT, &enqueue_count, sizeof(enqueue_count)));
@@ -8722,7 +8808,7 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithPyramid)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryReference((vx_reference)level0, VX_REFERENCE_ENQUEUE_COUNT, &enqueue_count, sizeof(enqueue_count)));
     ASSERT_EQ_INT(enqueue_count, 0);
 
-    // do all the releases
+    /* do all the releases */
     VX_CALL(vxReleasePyramid(&pyramid));
     VX_CALL(vxReleaseImage(&input_image));
     VX_CALL(vxReleaseImage(&level0));
@@ -8750,12 +8836,12 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithPyramidAndEnqueueSingleImage)
     vx_image single_image_from_pyr = vxGetPyramidLevel(pyramid, 0);
     vx_node single_image_node = vxNotNode(graph, not_node_input, not_node_output);
 
-    addParameterToGraph(graph, pyramid_node, 1); // output of vxGaussianPyramidNode
-    addParameterToGraph(graph, single_image_node, 0); // input to vxNotNode    
+    addParameterToGraph(graph, pyramid_node, 1); /* output of vxGaussianPyramidNode */
+    addParameterToGraph(graph, single_image_node, 0); /* input to vxNotNode */   
 
     vx_reference refs_list_not_node[2] = {(vx_reference)not_node_input, (vx_reference)single_image_from_pyr};
 
-    // add output of pyramid_node as graph parameter
+    /* add output of pyramid_node as graph parameter */
     vx_graph_parameter_queue_params_t graph_params[2] = 
     {
         {.graph_parameter_index = 0, .refs_list = (vx_reference *)&pyramid, .refs_list_size = 1}, 
@@ -8765,11 +8851,11 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithPyramidAndEnqueueSingleImage)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 2, graph_params));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
     
-    // enqueue input to the graph parameters
+    /* enqueue input to the graph parameters */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&pyramid, 1));
     ASSERT_EQ_VX_STATUS(VX_FAILURE, vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference *)&single_image_from_pyr, 1));
 
-    // enqueue an image that the not node is able to take
+    /* enqueue an image that the not node is able to take */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference *)&not_node_input, 1));
 
     vx_reference dequeue_ref;
@@ -8777,7 +8863,7 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithPyramidAndEnqueueSingleImage)
     VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference *)&dequeue_ref, 1, &num_refs)); 
     VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference *)&dequeue_ref, 1, &num_refs));
 
-    // do all the releases
+    /* do all the releases */
     VX_CALL(vxReleasePyramid(&pyramid));
     VX_CALL(vxReleaseImage(&input_image));
     VX_CALL(vxReleaseNode(&pyramid_node));
@@ -8957,6 +9043,7 @@ TESTCASE_TESTS(tivxGraphPipeline2,
     testDoubleInputEnqueue,
     testReplicateNegativeInputoutput,
     testIllegalDoubleEnqueuing,
+    testMultipleEnqueueSameRef,
     testGraphEvent,
     testWaitGraphTimeout,
     testGraphEventTimeout,
