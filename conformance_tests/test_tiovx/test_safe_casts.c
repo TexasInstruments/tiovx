@@ -612,9 +612,39 @@ TEST(tivxSafeCasts, testCastGetAsSomeType)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+TEST(tivxSafeCasts, testSpecificCast)
+{
+  tivx_raw_image raw_image = NULL;
+  vx_reference ref = NULL;
+  vx_context context = context_->vx_context_;
+  tivx_raw_image_create_params_t params;
+  vx_status status = VX_SUCCESS;
+  params.width = 128;
+  params.height = 128;
+  params.num_exposures = 3;
+  params.line_interleaved = vx_false_e;
+  params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+  params.format[0].msb = 12;
+  params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+  params.format[1].msb = 7;
+  params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+  params.format[2].msb = 11;
+  params.meta_height_before = 5;
+  params.meta_height_after = 2;
+
+  ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+  ref = tivxCastRefFromRawImage(raw_image);
+  EXPECT_VX_OBJECT(ref, VX_TYPE_REFERENCE);
+  /* downcast now the reference */
+  tivx_raw_image raw_image_downcast = tivxGetRefAsRawImage(&ref, &status);
+  EXPECT_VX_OBJECT(raw_image, (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+  tivxReleaseRawImage(&raw_image);
+}
+
 TESTCASE_TESTS(
     tivxSafeCasts,
     testCastGetFromSomeType,
-    testCastGetAsSomeType
+    testCastGetAsSomeType,
+    testSpecificCast
 )
 

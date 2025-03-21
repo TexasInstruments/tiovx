@@ -80,6 +80,30 @@ __MAKE_SAFE_CASTS__(producer, Producer)
 __MAKE_SAFE_CASTS__(consumer, Consumer)
 #endif
 
+#define __MAKE_SAFE_TI_DOWNCASTS__(typename, Name)\
+/*! \brief safely get a new vx_reference for the given vx_##typename variable*/\
+VX_API_ENTRY vx_reference tivxGetRefFrom##Name(const tivx_##typename *typename);\
+\
+/*! \brief safe cast a vx##typename to a generic vx_reference*/\
+VX_API_ENTRY vx_reference tivxCastRefFrom##Name(tivx_##typename typename);\
+\
+/*! \brief safe cast a pointer to vx##typename to a pointer to vx_reference */\
+VX_API_ENTRY vx_reference *tivxCastRefFrom##Name##P(tivx_##typename *p_##typename);\
+\
+/*! \brief safe cast a const pointer to vx##typename to a const pointer to vx_reference */\
+VX_API_ENTRY const vx_reference *tivxCastRefFrom##Name##ConstP(const tivx_##typename *p_##typename);
+
+#define __MAKE_SAFE_TI_CASTS__(typename, Name) \
+/*! \brief safely get a new vx_##typename or an error object from a vx_reference*/\
+VX_API_ENTRY tivx_##typename tivxGetRefAs##Name(const vx_reference *ref, vx_status *status); \
+\
+/*! \brief safely upcast a vx_reference to a vx_##typename or an error object */\
+VX_API_ENTRY tivx_##typename tivxCastRefAs##Name(vx_reference ref, vx_status *status);\
+\
+__MAKE_SAFE_TI_DOWNCASTS__(typename, Name)
+
+__MAKE_SAFE_TI_CASTS__(raw_image, RawImage)
+
 #ifdef  __cplusplus
 }
 #endif
