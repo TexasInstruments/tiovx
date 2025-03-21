@@ -89,7 +89,7 @@ TEST(tivxInternalGraph, negativeTestOwnSendGraphCompletedEvent)
 TEST(tivxInternalGraph, negativeTestOwnGraphRegisterCompletionEvent)
 {
     vx_graph graph =NULL;
-    ASSERT(VX_ERROR_INVALID_REFERENCE == ownGraphRegisterCompletionEvent(graph, 1));
+    ASSERT(VX_ERROR_INVALID_REFERENCE == ownGraphRegisterCompletionEvent(graph, 1, vx_true_e));
 }
 
 TEST(tivxInternalGraph, negativeTestOwnGraphRegisterParameterConsumedEvent)
@@ -97,9 +97,9 @@ TEST(tivxInternalGraph, negativeTestOwnGraphRegisterParameterConsumedEvent)
     #define CONSUMED_EVENT_DEFAULT 0
     vx_context context = context_->vx_context_;
     vx_graph graph =NULL;
-    ASSERT(VX_ERROR_INVALID_REFERENCE == ownGraphRegisterParameterConsumedEvent(graph, 0, CONSUMED_EVENT_DEFAULT));
+    ASSERT(VX_ERROR_INVALID_REFERENCE == ownGraphRegisterParameterConsumedEvent(graph, 0, CONSUMED_EVENT_DEFAULT, vx_true_e));
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-    ASSERT(VX_ERROR_INVALID_PARAMETERS == ownGraphRegisterParameterConsumedEvent(graph, 0, CONSUMED_EVENT_DEFAULT));
+    ASSERT(VX_ERROR_INVALID_PARAMETERS == ownGraphRegisterParameterConsumedEvent(graph, 0, CONSUMED_EVENT_DEFAULT, vx_true_e));
     VX_CALL(vxReleaseGraph(&graph));
 }
 

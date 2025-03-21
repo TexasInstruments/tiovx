@@ -37,17 +37,36 @@ TESTCASE(tivxInternalEventQueue, CT_VXContext, ct_setup_vx_context, 0)
 TEST(tivxInternalEventQueue, negativeTestownRegisterEvent)
 {
     vx_context context = context_->vx_context_;
-    vx_reference ref1 = ownCreateReference(context, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_EXTERNAL, &context->base);
     vx_reference ref2 = ownCreateReference(context, (vx_enum)VX_TYPE_GRAPH, (vx_enum)VX_EXTERNAL, &context->base);
     vx_reference ref3 = ownCreateReference(context, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, &context->base);
 
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, ownRegisterEvent(ref1, INVALID_QUEUE_TYPE, VX_EVENT_NODE_COMPLETED, 0, 0));
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, ownRegisterEvent(ref2, INVALID_QUEUE_TYPE, VX_EVENT_NODE_COMPLETED, 0, 0));
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, ownRegisterEvent(ref3, INVALID_QUEUE_TYPE, VX_EVENT_NODE_COMPLETED, 0, 0));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, ownRegisterEvent(ref2, INVALID_QUEUE_TYPE, VX_EVENT_NODE_COMPLETED, 0, 0, vx_true_e));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, ownRegisterEvent(ref2, INVALID_QUEUE_TYPE, VX_EVENT_NODE_COMPLETED, 0, 0, vx_true_e));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownRegisterEvent(ref3, INVALID_QUEUE_TYPE, VX_EVENT_NODE_COMPLETED, 0, 0, vx_true_e));
 
-    ownReleaseReferenceInt(&ref1, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_EXTERNAL, NULL);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, ownRegisterEvent(ref2, INVALID_QUEUE_TYPE, VX_EVENT_GRAPH_COMPLETED, 0, 0, vx_true_e));
+
     ownReleaseReferenceInt(&ref2, (vx_enum)VX_TYPE_GRAPH, (vx_enum)VX_EXTERNAL, NULL);
     ownReleaseReferenceInt(&ref3, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
+
+    vx_graph graph = vxCreateGraph(context);
+    vx_image input  = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+    vx_image output = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8);
+    vx_node node = vxNotNode(graph, input,  output);
+    /* graph param not exisiting at all */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownRegisterEvent((vx_reference)graph, INVALID_QUEUE_TYPE, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, 222, vx_true_e));
+    vx_parameter p = vxGetParameterByIndex(node, 0);
+    vxAddParameterToGraph(graph, p);
+    vxReleaseParameter(&p);   
+    vx_graph_parameter_queue_params_t graph_param = 
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)&output, .refs_list_size = 1};
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 1, &graph_param));
+    /* wrong queue type */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, ownRegisterEvent((vx_reference)graph, INVALID_QUEUE_TYPE, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, 222, vx_true_e));      
+    vxReleaseNode(&node);
+    vxReleaseImage(&input);
+    vxReleaseImage(&output);
+    vxReleaseGraph(&graph);
 }
 
 TEST(tivxInternalEventQueue, negativeTestOwnEventQueueAddEvent)

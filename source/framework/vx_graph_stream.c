@@ -277,11 +277,20 @@ vx_status ownWaitGraphEvent(
                     vx_bool do_not_block)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32 timeout;
 
     if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
+        if((vx_bool)vx_true_e == do_not_block)
+        {
+            timeout = 0U;
+        }
+        else
+        {
+            timeout = graph->timeout_val;
+        }          
         /* Call general wait function */
-        status = ownWaitEventQueue(&graph->streaming_event_queue, event, do_not_block);
+        status = ownWaitEventQueue(&graph->streaming_event_queue, event, timeout);
     }
     else
     {
@@ -364,7 +373,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     if ( ((vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode) &&
                          ((vx_bool)vx_true_e == graph->trigger_node_set) )
                     {
-                        status = ownRegisterEvent(vxCastRefFromNode(graph->nodes[graph->trigger_node_index]), TIVX_EVENT_GRAPH_STREAMING_QUEUE, VX_EVENT_NODE_COMPLETED, 0, STREAMING_EVENT);
+                        status = ownRegisterEvent(vxCastRefFromNode(graph->nodes[graph->trigger_node_index]), TIVX_EVENT_GRAPH_STREAMING_QUEUE, VX_EVENT_NODE_COMPLETED, 0, STREAMING_EVENT, (vx_bool)vx_false_e);
                     }
                     else
                     {

@@ -63,7 +63,7 @@ TEST(tivxInternalApis, negativeTestInternalNode)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownUpdateNodePerf(node,0));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownSetNodeImmTarget(node));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownSetNodeAttributeValidRectReset(node,vx_false_e));
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownNodeRegisterEvent(node, 0, 0));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, ownNodeRegisterEvent(node, 0, 0, TIVX_EVENT_CONTEXT_QUEUE));
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, ownNodeKernelValidate(node, &meta));
 
@@ -75,7 +75,7 @@ TEST(tivxInternalApis, negativeTestInternalNode)
     node->is_kernel_created = (vx_bool)vx_true_e;
     ASSERT_EQ_VX_STATUS(VX_FAILURE, ownNodeUserKernelExecute(node, prm_ref));
     node->is_kernel_created = (vx_bool)vx_false_e;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownNodeRegisterEvent(node, VX_TYPE_EVENT_DEFAULT, app_default));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, ownNodeRegisterEvent(node, VX_TYPE_EVENT_DEFAULT, app_default, TIVX_EVENT_CONTEXT_QUEUE));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));

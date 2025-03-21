@@ -128,6 +128,12 @@ extern "C" {
  */
 #define TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE               (0x00000008u)
 
+/*! \brief Data Ref flag to determine if an object has been enqueued
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+#define TIVX_OBJ_DESC_DATA_REF_GRAPH_PARAM_ENQUEUED                     (0x00000010u)
+
 /*! \brief Shift for storing Object Descriptor id in 32bit variable
  * \ingroup group_tivx_obj_desc_priv
  */
