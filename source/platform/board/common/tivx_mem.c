@@ -239,7 +239,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
                 #if defined(x86_64) || defined(QNX)
                 appMemCloseDmaBufFd((uint64_t)mem_ptr->dma_buf_fd);
                 #else
-                appMemCloseDmaBufFd(mem_ptr->dma_buf_fd);
+                appMemCloseDmaBufFd((uint32_t)mem_ptr->dma_buf_fd);
                 #endif
                 mem_ptr->dma_buf_fd = (int32_t)-1;
                 mem_ptr->dma_buf_fd_offset = (uint32_t)0U;
