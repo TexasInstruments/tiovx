@@ -303,3 +303,23 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTiovxOverheadNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxMultiInOutNode(vx_graph graph,
+                                      vx_scalar            in1_scalar,
+                                      vx_scalar            in2_scalar,
+                                      vx_scalar            out1_scalar,
+                                      vx_scalar            out2_scalar)
+{
+    vx_reference prms[] = {
+            (vx_reference)in1_scalar,
+            (vx_reference)in2_scalar,
+            (vx_reference)out1_scalar,
+            (vx_reference)out2_scalar
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_MULTI_IN_OUT_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
+

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2020 Texas Instruments Incorporated
+ * Copyright (c) 2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,33 +60,26 @@
  *
  */
 
-#include <TI/tivx.h>
-#include <TI/tivx_target_kernel.h>
-#include "tivx_kernels_target_utils.h"
+#ifndef _TIVX_KERNEL_MULTI_IN_OUT_
+#define _TIVX_KERNEL_MULTI_IN_OUT_
 
-void tivxAddTargetKernelCmdTimeoutTest(void);
-void tivxAddTargetKernelNotNot_arm(void);
-void tivxAddTargetKernelTiovxOverhead(void);
-
-void tivxRemoveTargetKernelCmdTimeoutTest(void);
-void tivxRemoveTargetKernelNotNot_arm(void);
-void tivxRemoveTargetKernelTiovxOverhead(void);
-
-static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-    {&tivxAddTargetKernelCmdTimeoutTest, &tivxRemoveTargetKernelCmdTimeoutTest},
-    {&tivxAddTargetKernelTiovxOverhead, &tivxRemoveTargetKernelTiovxOverhead},
-#if defined(LINUX) || defined(QNX)
-    {&tivxAddTargetKernelNotNot_arm, &tivxRemoveTargetKernelNotNot_arm},
+#ifdef __cplusplus
+extern "C" {
 #endif
-};
 
-void tivxRegisterTestKernelsTargetArmKernels(void)
-{
-    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
-}
 
-void tivxUnRegisterTestKernelsTargetArmKernels(void)
-{
-    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+#define TIVX_KERNEL_MULTI_IN_OUT_IN1_SCALAR_IDX (0U)
+#define TIVX_KERNEL_MULTI_IN_OUT_IN2_SCALAR_IDX (1U)
+#define TIVX_KERNEL_MULTI_IN_OUT_OUT1_SCALAR_IDX (2U)
+#define TIVX_KERNEL_MULTI_IN_OUT_OUT2_SCALAR_IDX (3U)
+
+#define TIVX_KERNEL_MULTI_IN_OUT_MAX_PARAMS (4U)
+
+#ifdef __cplusplus
 }
+#endif
+
+
+#endif /* _TIVX_KERNEL_MULTI_IN_OUT_ */
+
 

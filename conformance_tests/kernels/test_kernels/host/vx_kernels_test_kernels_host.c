@@ -88,6 +88,7 @@ vx_status tivxAddKernelCmdTimeoutTest(vx_context context);
 vx_status tivxAddKernelScalarIntermediate2(vx_context context);
 vx_status tivxAddKernelTestTarget(vx_context context);
 vx_status tivxAddKernelTiovxOverhead(vx_context context);
+vx_status tivxAddKernelMultiInOut(vx_context context);
 
 vx_status tivxRemoveKernelScalarSink(vx_context context);
 vx_status tivxRemoveKernelScalarSource(vx_context context);
@@ -106,6 +107,7 @@ vx_status tivxRemoveKernelCmdTimeoutTest(vx_context context);
 vx_status tivxRemoveKernelScalarIntermediate2(vx_context context);
 vx_status tivxRemoveKernelTestTarget(vx_context context);
 vx_status tivxRemoveKernelTiovxOverhead(vx_context context);
+vx_status tivxRemoveKernelMultiInOut(vx_context context);
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelNotNot, &tivxRemoveKernelNotNot},
@@ -125,6 +127,7 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelScalarIntermediate2, &tivxRemoveKernelScalarIntermediate2},
     {&tivxAddKernelTestTarget, &tivxRemoveKernelTestTarget},
     {&tivxAddKernelTiovxOverhead, &tivxRemoveKernelTiovxOverhead},
+    {&tivxAddKernelMultiInOut, &tivxRemoveKernelMultiInOut},
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)

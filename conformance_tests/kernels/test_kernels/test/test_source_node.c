@@ -2631,6 +2631,95 @@ TEST_WITH_ARG(tivxSourceNode, testVirtualImageInitDeinit, Arg, STREAMING_PARAMET
     tivxTestKernelsUnLoadKernels(context);
 }
 
+TEST(tivxSourceNode, testMultiInOutEnqueue)
+{
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_uint8  scalar_val = 0;
+    vx_scalar scalar_in1[MAX_NUM_BUF], scalar_in2[MAX_NUM_BUF], intermediate1, intermediate2, scalar_out1[MAX_NUM_BUF], scalar_out2[MAX_NUM_BUF];
+    vx_node n1, n2;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[4];
+    uint32_t num_buf = 3, buf_id, i;
+
+    tivxTestKernelsLoadKernels(context);
+
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    for (i = 0; i < num_buf; i++)
+    {
+        ASSERT_VX_OBJECT(scalar_in1[i]  = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+        ASSERT_VX_OBJECT(scalar_in2[i]  = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+        ASSERT_VX_OBJECT(scalar_out1[i] = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+        ASSERT_VX_OBJECT(scalar_out2[i] = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+    }
+
+    ASSERT_VX_OBJECT(intermediate1 = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(intermediate2 = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(n1 = tivxMultiInOutNode(graph, scalar_in1[0], scalar_in2[0], intermediate1, intermediate2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n2 = tivxMultiInOutNode(graph, intermediate1, intermediate2, scalar_out1[0], scalar_out2[0]), VX_TYPE_NODE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, num_buf));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n1, 2, 3));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n1, 3, 3));
+
+    add_graph_parameter_by_node_index(graph, n1, 0);
+    add_graph_parameter_by_node_index(graph, n1, 1);
+    add_graph_parameter_by_node_index(graph, n2, 0);
+    add_graph_parameter_by_node_index(graph, n2, 1);
+
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&scalar_in1[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&scalar_in2[0];
+
+    graph_parameters_queue_params_list[2].graph_parameter_index = 2;
+    graph_parameters_queue_params_list[2].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[2].refs_list = (vx_reference*)&scalar_out1[0];
+
+    graph_parameters_queue_params_list[3].graph_parameter_index = 3;
+    graph_parameters_queue_params_list[3].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[3].refs_list = (vx_reference*)&scalar_out2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            4,
+            graph_parameters_queue_params_list
+            );
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    for(buf_id=0; buf_id<num_buf-1; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&scalar_in1[buf_id], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&scalar_out1[buf_id], 1);
+    }
+
+    VX_CALL(vxReleaseScalar(&intermediate2));
+    VX_CALL(vxReleaseScalar(&intermediate1));
+
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseScalar(&scalar_out1[buf_id]));
+        VX_CALL(vxReleaseScalar(&scalar_in1[buf_id]));
+        VX_CALL(vxReleaseScalar(&scalar_out2[buf_id]));
+        VX_CALL(vxReleaseScalar(&scalar_in2[buf_id]));
+
+    }
+
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseGraph(&graph));
+    tivxTestKernelsUnLoadKernels(context);
+}
+
 
 TESTCASE_TESTS(tivxSourceNode,
                testSourceObjArray,
@@ -2663,5 +2752,6 @@ TESTCASE_TESTS(tivxSourceNode,
                testIntermediateNodePyramidReplicate,
                testSourceIntSinkPyramid,
                testContextRelease,
-               testVirtualImageInitDeinit)
+               testVirtualImageInitDeinit,
+               testMultiInOutEnqueue)
 

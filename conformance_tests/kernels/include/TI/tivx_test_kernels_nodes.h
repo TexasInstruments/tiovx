@@ -201,6 +201,23 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTiovxOverheadNode(vx_graph graph,
                                       vx_scalar            input,
                                       vx_scalar            output);
 
+/*! \brief [Graph] Creates a MULTI_IN_OUT Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] in1_scalar
+ * \param [in] in2_scalar
+ * \param [out] out1_scalar
+ * \param [out] out2_scalar
+ * \see <tt>TIVX_KERNEL_MULTI_IN_OUT_NAME</tt>
+ * \ingroup group_vision_function_multi_in_out
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxMultiInOutNode(vx_graph graph,
+                                      vx_scalar            in1_scalar,
+                                      vx_scalar            in2_scalar,
+                                      vx_scalar            out1_scalar,
+                                      vx_scalar            out2_scalar);
+
 #ifdef __cplusplus
 }
 #endif
