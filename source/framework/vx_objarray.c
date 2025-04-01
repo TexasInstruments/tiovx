@@ -522,7 +522,12 @@ static vx_status ownDestructObjArray(vx_reference ref)
 
         status = ownReleaseRefFromObjArray(objarr, obj_desc->num_items);
 
-        if ((vx_status)VX_SUCCESS == status) /* TIOVX-1896- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR005 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_OBJARRAY_UBR005
+<justification end> */
+        if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
         {
             status = ownObjDescFree(&objarr->base.obj_desc);
 /* LDRA_JUSTIFY_START

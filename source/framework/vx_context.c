@@ -369,7 +369,12 @@ vx_status ownContextFlushCmdPendQueue(vx_context context)
                                   &obj_id,
                                   TIVX_EVENT_TIMEOUT_NO_WAIT);
 
-            if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR005 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR005
+<justification end> */
+            if (status == (vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
             {
                 vx_status   status1;
 
@@ -773,7 +778,12 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 
         status = tivxQueueGet(&context->free_queue, &obj_id, VX_TIMEOUT_WAIT_FOREVER);
 
-        if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR010 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR010
+<justification end> */
+        if (status == (vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
         {
             if (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS)
             {
@@ -943,7 +953,12 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
         status = tivxQueueGet(&context->free_queue, &obj_id, VX_TIMEOUT_WAIT_FOREVER);
 
-        if (status == (vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR010 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR010
+<justification end> */
+        if (status == (vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
         {
             if (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS)
             {
@@ -1163,10 +1178,20 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                 status = ownEventQueueCreate(&context->event_queue);
             }
 /* LDRA_JUSTIFY_END */
-            if(status==(vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR018 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR018
+<justification end> */
+            if(status==(vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
             {
                 status = ownInitReference(&context->base, NULL, (vx_enum)VX_TYPE_CONTEXT, NULL);
-                if(status==(vx_status)VX_SUCCESS) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR019 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR019
+<justification end> */
+                if(status==(vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
                 {
                     status = ownContextCreateCmdObj(context);
                     if(status == (vx_status)VX_SUCCESS)
@@ -1382,7 +1407,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 }
 /* LDRA_JUSTIFY_END */
             }
-            if((vx_status)VX_SUCCESS == status) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR021 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR021
+<justification end> */
+            if((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
             {
 
                 ownContextSetKernelRemoveLock(context, (vx_bool)vx_false_e);
@@ -1427,7 +1457,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                         }
 /* LDRA_JUSTIFY_END */
                     }
-                    if((vx_status)VX_SUCCESS == status1) /* TIOVX-1929- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR022 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_CONTEXT_UBR022
+<justification end> */
+                    if((vx_status)VX_SUCCESS == status1)
+/* LDRA_JUSTIFY_END */
                     {
                         if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_KERNEL) ) {
                             VX_PRINT(VX_ZONE_WARNING,"A kernel with name %s has not been removed, possibly due to a kernel module not being unloaded.\n", ref->name);

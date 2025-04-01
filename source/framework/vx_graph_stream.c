@@ -47,7 +47,12 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
     {
         status = ownWaitGraphEvent(graph, &event, (vx_bool)vx_false_e);
 
-        if((vx_status)VX_SUCCESS == status) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR003 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR003
+<justification end> */
+        if((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
         {
             switch (state)
 /* LDRA_JUSTIFY_START
@@ -363,7 +368,12 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
 
             status = ownEventQueueCreate(&graph->streaming_event_queue);
 
-            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1898- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR006 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR006
+<justification end> */
+            if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
             {
                 ownEventQueueEnableEvents(&graph->streaming_event_queue, (vx_bool)vx_true_e);
 

@@ -419,7 +419,12 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
     (void)ownReferenceGetMemAttrsFromObjDesc(input, &ip_mem_ptr, &ip_mem_size);
     (void)ownReferenceGetMemAttrsFromObjDesc(output, &op_mem_ptr, &op_mem_size);
     status = ownReferenceLock(output);
-    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR007 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR007
+<justification end> */
+    if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
     {
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -430,7 +435,12 @@ vx_status ownCopyReferenceGeneric(vx_reference input, vx_reference output)
         {
             tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)ip_mem_ptr->host_ptr, ip_mem_size,
                                                       (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
-            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1926- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR008 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_REFERENCE_UBR008
+<justification end> */
+            if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
             {
                 tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)op_mem_ptr->host_ptr, op_mem_size,
                                                           (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));

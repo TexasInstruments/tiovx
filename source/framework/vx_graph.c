@@ -27,7 +27,12 @@ static vx_status ownDestructGraph(vx_reference ref)
     vx_status status1 = (vx_status)VX_SUCCESS;
     vx_graph graph = NULL;
 
-    if (ref->type == (vx_enum)VX_TYPE_GRAPH) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR001 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR001
+<justification end> */
+    if (ref->type == (vx_enum)VX_TYPE_GRAPH)
+/* LDRA_JUSTIFY_END */
     {
         /* status set to NULL due to preceding type check */
         graph = vxCastRefAsGraph(ref, NULL);
@@ -78,7 +83,12 @@ static vx_status ownDestructGraph(vx_reference ref)
             }
             for(i=0; i<graph->num_data_ref_q; i++)
             {
-                if(graph->data_ref_q_list[i].data_ref_queue != NULL)/* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR002 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR002
+<justification end> */
+                if(graph->data_ref_q_list[i].data_ref_queue != NULL)
+/* LDRA_JUSTIFY_END */
                 {
                     status1 = ownDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue);
 /* LDRA_JUSTIFY_START
@@ -128,7 +138,12 @@ static vx_status ownDestructGraph(vx_reference ref)
             }
             for(i=0; i<graph->num_delay_data_ref_q; i++)
             {
-                if(graph->delay_data_ref_q_list[i].data_ref_queue != NULL) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR003 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR003
+<justification end> */
+                if(graph->delay_data_ref_q_list[i].data_ref_queue != NULL)
+/* LDRA_JUSTIFY_END */
                 {
                     status1 = ownDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue);
 /* LDRA_JUSTIFY_START
@@ -201,7 +216,12 @@ static vx_status ownDestructGraph(vx_reference ref)
             status = status1;
         }
 /* LDRA_JUSTIFY_END */
-        if(NULL != graph->all_graph_completed_event) /* TIOVX-1890- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR004 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR004
+<justification end> */
+        if(NULL != graph->all_graph_completed_event)
+/* LDRA_JUSTIFY_END */
         {
             status1 = tivxEventDelete(&graph->all_graph_completed_event);
 /* LDRA_JUSTIFY_START

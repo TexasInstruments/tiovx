@@ -269,7 +269,12 @@ static vx_status ownGraphDetectSourceSink(vx_graph graph)
     {
         cur_node = graph->nodes[cur_node_idx];
 
-        if (NULL != cur_node) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR003 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR003
+<justification end> */
+        if (NULL != cur_node)
+/* LDRA_JUSTIFY_END */
         {
             if (cur_node->kernel->num_pipeup_bufs > 1U)
             {
@@ -308,7 +313,12 @@ static uint32_t ownGraphGetNumInNodes(vx_graph graph, vx_node node, uint32_t nod
     vx_reference ref;
 
     ref = ownNodeGetParameterRef(node, node_prm_idx);
-    if(ref != NULL) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR005 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR005
+<justification end> */
+    if(ref != NULL)
+/* LDRA_JUSTIFY_END */
     {
         for(i=0;
 /* LDRA_JUSTIFY_START
@@ -429,7 +439,12 @@ static vx_status ownGraphValidRectCallback(
         }
     }
 
-    if(status == (vx_status)VX_SUCCESS) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR008 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR008
+<justification end> */
+    if(status == (vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
     {
         for (i = 0; i < num_params; i ++)
         {
@@ -479,7 +494,12 @@ static vx_status ownGraphValidRectCallback(
                     /* status set to NULL due to preceding type check */
                     tivxCheckStatus(&status, vxQueryPyramid(vxCastRefAsPyramid(ref, NULL), (vx_enum)VX_PYRAMID_LEVELS, &levels, sizeof(levels)));
 
-                    if(status==(vx_status)VX_SUCCESS) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR012 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR012
+<justification end> */
+                    if(status==(vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
                     {
                         for(k=0; k<levels; k++)
                         {
@@ -568,7 +588,12 @@ static vx_status ownGraphInitVirtualNode(
                                 (vx_enum)VX_SCALAR_TYPE, &type, sizeof(type));
                             /* For scalar, just check if type is correct or
                                 not */
-                            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR014 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR014
+<justification end> */
+                            if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
                             {
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
@@ -615,7 +640,12 @@ static vx_status ownGraphInitVirtualNode(
                                 pmd, (vx_enum)VX_PYRAMID_LEVELS, &levels,
                                 sizeof(levels));
 
-                            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR016 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR016
+<justification end> */
+                            if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
                             {
                                 /* Levels must be same even in this case */
                                 if (levels != mf->pmd.levels)
@@ -1710,7 +1740,12 @@ static vx_status ownGraphCreateIntermediateDataReferenceQueues(vx_graph graph)
                 );
         }
 /* LDRA_JUSTIFY_END */
-        if(status==(vx_status)VX_SUCCESS) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR038 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR038
+<justification end> */
+        if(status==(vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
         {
             uint32_t buf_id;
 
@@ -1809,7 +1844,12 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
                     );
             }
 /* LDRA_JUSTIFY_END */
-            if(status==(vx_status)VX_SUCCESS) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR041 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR041
+<justification end> */
+            if(status==(vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
             {
                 uint32_t buf_id;
 
@@ -2197,7 +2237,12 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
             /* if user has requested more than 1 buf at this node, then allocate the additional references */
             num_buf = ownNodeGetParameterNumBuf(node, idx);
 
-            if(num_buf>0U) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR062 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR062
+<justification end> */
+            if(num_buf>0U)
+/* LDRA_JUSTIFY_END */
             {
                 uint32_t buf_id;
                 vx_bool is_replicated;
@@ -2223,7 +2268,12 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
                         VX_PRINT(VX_ZONE_ERROR,"Unable to create references\n");
                     }
 /* LDRA_JUSTIFY_END */
-                    if(status==(vx_status)VX_SUCCESS) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR063 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR063
+<justification end> */
+                    if(status==(vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
                     {
                         if(is_replicated != 0)
                         {
@@ -2367,7 +2417,12 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
         }
     }
 /* LDRA_JUSTIFY_END */
-    if(status==(vx_status)VX_SUCCESS) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR068 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR068
+<justification end> */
+    if(status==(vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
     {
         /* make data references at graph parameter only if graph is in queuing mode */
         if((graph->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
@@ -2447,7 +2502,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     if((ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
         ((vx_status)VX_SUCCESS == status))
     {
-        if((vx_status)VX_SUCCESS == ownReferenceLock(&graph->base)) /* TIOVX-1940- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR069 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR069
+<justification end> */
+        if((vx_status)VX_SUCCESS == ownReferenceLock(&graph->base))
+/* LDRA_JUSTIFY_END */
         {
             graph->verified = (vx_bool)vx_false_e;
 

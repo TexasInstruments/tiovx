@@ -96,7 +96,12 @@ static void ownTargetObjDescSendRefConsumed(
     {
         cmd_obj_desc_id = obj_desc->ref_consumed_cmd_obj_desc_id;
 
-        if((vx_enum)cmd_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID) /* TIOVX-1933- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_ACQUIRE_PARAMS_UBR001 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_ACQUIRE_PARAMS_UBR001
+<justification end> */
+        if((vx_enum)cmd_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID)
+/* LDRA_JUSTIFY_END */
         {
             tivx_obj_desc_cmd_t *cmd_obj_desc = (tivx_obj_desc_cmd_t *)ownObjDescGet(cmd_obj_desc_id);
 /* LDRA_JUSTIFY_START

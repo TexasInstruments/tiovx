@@ -174,13 +174,23 @@ static vx_status ownDestructRawImage(vx_reference ref)
     tivx_raw_image raw_image = (tivx_raw_image)ref;
 #endif
 
-    if(ref->type == TIVX_TYPE_RAW_IMAGE) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR002 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR002
+<justification end> */
+    if(ref->type == TIVX_TYPE_RAW_IMAGE)
+/* LDRA_JUSTIFY_END */
     {
         obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
 
         if(obj_desc!=NULL)
         {
-            if ( (vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_NORMAL ) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR003 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR003
+<justification end> */
+            if ( (vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_NORMAL )
+/* LDRA_JUSTIFY_END */
             {
                 for(exp_idx=0; exp_idx < obj_desc->params.num_exposures; exp_idx++)
                 {
@@ -200,7 +210,12 @@ static vx_status ownDestructRawImage(vx_reference ref)
                     }
                 }
             }
-            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1920- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR004 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_RAW_IMAGE_UBR004
+<justification end> */
+            if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
             {
                 status = ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
 /* LDRA_JUSTIFY_START

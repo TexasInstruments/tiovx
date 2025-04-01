@@ -161,8 +161,13 @@ static vx_status ownGraphPipelineValidateRefsList(
                 }
 /* LDRA_JUSTIFY_END */
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR008
+<justification end> */
                 if (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta), (vx_enum)VX_TYPE_META_FORMAT) == 
-                                                (vx_bool)vx_true_e) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR008 */
+                                                (vx_bool)vx_true_e)
+/* LDRA_JUSTIFY_END */
                 {
                     status1 = ownReleaseMetaFormat(&meta);
 /* LDRA_JUSTIFY_START
@@ -190,8 +195,13 @@ static vx_status ownGraphPipelineValidateRefsList(
         }
     }
 
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR009
+<justification end> */
     if (ownIsValidSpecificReference(vxCastRefFromMetaFormat(meta_base), (vx_enum)VX_TYPE_META_FORMAT) == 
-                                    (vx_bool)vx_true_e) /* TIOVX-1945- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR009 */
+                                    (vx_bool)vx_true_e)
+/* LDRA_JUSTIFY_END */
     {
         status1 = ownReleaseMetaFormat(&meta_base);
 /* LDRA_JUSTIFY_START

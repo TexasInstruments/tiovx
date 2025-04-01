@@ -32,7 +32,12 @@ static vx_status ownDestructNode(vx_reference ref)
     uint32_t p, pipe_id;
     vx_bool put_break = (vx_bool)vx_false_e;
 
-    if(ref->type == (vx_enum)VX_TYPE_NODE) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR001 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR001
+<justification end> */
+    if(ref->type == (vx_enum)VX_TYPE_NODE)
+/* LDRA_JUSTIFY_END */
     {
         /*status set to NULL due to preceding type check*/
         vx_node node = vxCastRefAsNode(ref, NULL);
@@ -383,7 +388,12 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
                     }
                 }
 
-                if((vx_status)VX_SUCCESS == status)/* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR004 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR004
+<justification end> */
+                if((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
                 {
                     status = ownContextSendControlCmd(node->base.context,
                         node->obj_desc[0]->base.obj_desc_id,
@@ -551,7 +561,12 @@ vx_status ownNodeKernelInit(vx_node node)
 
         if ((vx_bool)vx_false_e==node->is_initialized)
         {
-            if(NULL != node->kernel->initialize) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR006 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR006
+<justification end> */
+            if(NULL != node->kernel->initialize)
+/* LDRA_JUSTIFY_END */
             {
                 node->local_data_set_allow = (vx_bool)vx_true_e;
                 tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc[0];
@@ -639,7 +654,12 @@ vx_status ownNodeKernelInit(vx_node node)
             }
         }
 
-        if ((vx_bool)vx_false_e==node->is_kernel_created)/* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR008 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR008
+<justification end> */
+        if ((vx_bool)vx_false_e==node->is_kernel_created)
+/* LDRA_JUSTIFY_END */
         {
             if((vx_status)VX_SUCCESS==status)
             {
@@ -803,7 +823,12 @@ vx_status ownNodeKernelDeinit(vx_node node)
                             if(node->replicated_flags[i] != 0)
 /* LDRA_JUSTIFY_END */
                             {
-                                if(parent_ref[i] != NULL) /* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR016 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR016
+<justification end>*/
+                                if(parent_ref[i] != NULL)
+/* LDRA_JUSTIFY_END */
                                 {
                                     if(parent_ref[i]->type==(vx_enum)VX_TYPE_OBJECT_ARRAY)
                                     {
@@ -997,7 +1022,12 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
                             params[i] = NULL;
                             if(node->replicated_flags[i] != 0)
                             {
-                                if(parent_ref[i] != NULL)/* TIOVX-1900- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR022 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR022
+<justification end>*/
+                                if(parent_ref[i] != NULL)
+/* LDRA_JUSTIFY_END */
                                 {
                                     if(parent_ref[i]->type==(vx_enum)VX_TYPE_OBJECT_ARRAY)
                                     {

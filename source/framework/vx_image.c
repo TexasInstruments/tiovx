@@ -287,7 +287,12 @@ static vx_status ownDestructImage(vx_reference ref)
     vx_image image = NULL;
     uint32_t size = 0;
 
-    if(ref->type == (vx_enum)VX_TYPE_IMAGE) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR005 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR005
+<justification end> */
+    if(ref->type == (vx_enum)VX_TYPE_IMAGE)
+/* LDRA_JUSTIFY_END */
     {
         /* status set to NULL due to preceding type check */
         image = vxCastRefAsImage(ref,NULL);
@@ -543,7 +548,12 @@ static vx_status copyImage(vx_image input, vx_image output)
         {
             tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)ip_objd->mem_ptr[i].host_ptr, ip_objd->mem_size[i], 
                                                       (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
-            if ((vx_status)VX_SUCCESS == status) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR025 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR025
+<justification end> */
+            if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
             {
                 tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)op_objd->mem_ptr[i].host_ptr, ip_objd->mem_size[i], 
                                                           (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
@@ -676,7 +686,12 @@ static vx_status swapImage(const vx_image input, const vx_image output)
         lock only one reference as this is locking the global vx context
     */
     vx_status status = ownReferenceLock(&output->base);
-    if ((vx_status)VX_SUCCESS == status) /* TIOVX-1943- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR029 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR029
+<justification end> */
+    if ((vx_status)VX_SUCCESS == status)
+/* LDRA_JUSTIFY_END */
     {
         tivx_obj_desc_image_t *ip_obj_desc = (tivx_obj_desc_image_t *)input->base.obj_desc;
         tivx_obj_desc_image_t *op_obj_desc = (tivx_obj_desc_image_t *)output->base.obj_desc;

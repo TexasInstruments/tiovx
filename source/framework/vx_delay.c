@@ -479,7 +479,12 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                 ownDelayInit(objarrdelay, count, item_type);
                                 for (i = 0; i < count; i++)
                                 {
-                                    if(delay->refs[i]->type == (vx_enum)VX_TYPE_OBJECT_ARRAY) /* TIOVX-1883- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR021 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_DELAY_UBR021
+<justification end> */
+                                    if(delay->refs[i]->type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
+/* LDRA_JUSTIFY_END */
                                     {
                                         /*status set to NULL due to preceding type check*/
                                         ref = (vx_reference)vxGetObjectArrayItem(vxCastRefAsObjectArray(delay->refs[i], NULL), (vx_uint32)item_idx);

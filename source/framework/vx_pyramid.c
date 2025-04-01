@@ -657,7 +657,12 @@ static vx_status ownDestructPyramid(vx_reference ref)
             }
         }
     }
-    if(prmd->base.type == (vx_enum)VX_TYPE_PYRAMID) /* TIOVX-1894- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR007 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_PYRAMID_UBR007
+<justification end> */
+    if(prmd->base.type == (vx_enum)VX_TYPE_PYRAMID)
+/* LDRA_JUSTIFY_END */
     {
         if(prmd->base.obj_desc!=NULL)
         {
