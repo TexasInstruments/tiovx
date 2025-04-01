@@ -119,7 +119,12 @@ vx_status ownPlatformInit(void)
         status = (vx_status)VX_FAILURE;
     }
 /* LDRA_JUSTIFY_END */
-    if(status==(vx_status)VX_SUCCESS) /* TIOVX-1957- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR001 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_PLATFORM_RTOS_UBR001
+<justification end> */
+    if(status==(vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
     {
         /* init obj desc on RTOS side, it is assumed that linux starts after RTOS, so linux need not init the object descriptors */
         tivxPlatformResetObjDescTableInfo();

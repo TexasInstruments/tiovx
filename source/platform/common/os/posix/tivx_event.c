@@ -199,7 +199,13 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
     if(event != NULL)
     {
         status = pthread_mutex_lock(&event->lock);
-        if(status == 0) /* TIOVX-1944- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_EVENT_UBR002 */
+
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_EVENT_UBR002
+<justification end> */
+        if(status == 0)
+/* LDRA_JUSTIFY_END */
         {
             bool done = (bool)vx_false_e;
 

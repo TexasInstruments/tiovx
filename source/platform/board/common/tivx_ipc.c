@@ -337,7 +337,13 @@ vx_bool tivxIsTargetEnabled(const char target_name[])
         if (target_id != (vx_enum)TIVX_TARGET_ID_INVALID)
         {
             cpu_id = ownTargetGetCpuId(target_id);
-            if( cpu_id < (vx_enum)TIVX_CPU_ID_MAX) /* TIOVX-1948- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR004 */
+
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_IPC_UBR004
+<justification end> */
+            if( cpu_id < (vx_enum)TIVX_CPU_ID_MAX)
+/* LDRA_JUSTIFY_END */
             {
                 vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
 

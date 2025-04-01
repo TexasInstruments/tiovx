@@ -136,7 +136,12 @@ vx_status ownPlatformInit(void)
         status = (vx_status)VX_FAILURE;
     }
 /* LDRA_JUSTIFY_END */
-    if(status==(vx_status)VX_SUCCESS) /* TIOVX-1951- LDRA Uncovered Branch Id: TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR001 */
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_PLATFORM_HLOS_UBR001
+<justification end> */
+    if(status==(vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
     {
         for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
         {
