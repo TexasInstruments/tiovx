@@ -79,6 +79,11 @@ extern "C" {
 #define TIVX_TARGET_R5F_MAX            (5U)
 
 /*! \brief Target ID for supported targets
+ *
+ *         Must be in order of consecutive index numbers per CPU ID.
+ *         If some targets are moved to a different CPU, the order
+ *            and indexing should be updated accordingly.
+ * 
  * \ingroup group_tivx_platform
  */
 typedef enum _tivx_target_id_e {
@@ -113,7 +118,7 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for MPU-0 */
     TIVX_TARGET_ID_MPU_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 0u),
 
-    /*! \brief target ID for MPU-1 */
+    /*! \brief target ID for MPU-0 */
     TIVX_TARGET_ID_MPU_1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 1u),
 
     /*! \brief target ID for MPU-0 */
@@ -121,6 +126,11 @@ typedef enum _tivx_target_id_e {
 
     /*! \brief target ID for MPU-0 */
     TIVX_TARGET_ID_MPU_3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 3u),
+
+    TIVX_TARGET_ID_CAPTURE1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 4u),
+    TIVX_TARGET_ID_CAPTURE2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 5u),
+    TIVX_TARGET_ID_CAPTURE3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 6u),
+    TIVX_TARGET_ID_CAPTURE4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 7u),
 
     /*! \brief target ID for MCU1-0 */
     TIVX_TARGET_ID_MCU1_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU1_0, 0u),
@@ -136,11 +146,6 @@ typedef enum _tivx_target_id_e {
 
     /*! \brief target ID for VISS1 */
     TIVX_TARGET_ID_VPAC_VISS1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU1_0, 4u),
-
-    TIVX_TARGET_ID_CAPTURE1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 4u),
-    TIVX_TARGET_ID_CAPTURE2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 5u),
-    TIVX_TARGET_ID_CAPTURE3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 6u),
-    TIVX_TARGET_ID_CAPTURE4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 7u),
 } tivx_target_id_e;
 
 
@@ -178,6 +183,11 @@ typedef enum _tivx_target_id_e {
      */                                                                        \
     {TIVX_TARGET_HOST, (vx_enum)TIVX_TARGET_ID_INVALID}                                 \
 }
+
+/* Build check to make sure that all of VPAC targets are controlled from the same core */
+BUILD_ASSERT( (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_LDC1)) && \
+              (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_MSC1)) && \
+              (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_MSC2)) ? 1U : 0U );
 
 #ifdef __cplusplus
 }

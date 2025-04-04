@@ -79,6 +79,11 @@ extern "C" {
 #define TIVX_TARGET_R5F_MAX            (26U)
 
 /*! \brief Target ID for supported targets
+ *
+ *         Must be in order of consecutive index numbers per CPU ID.
+ *         If some targets are moved to a different CPU, the order
+ *            and indexing should be updated accordingly.
+ * 
  * \ingroup group_tivx_platform
  */
 typedef enum _tivx_target_id_e {
@@ -362,6 +367,21 @@ typedef enum _tivx_target_id_e {
      */                                                                        \
     {TIVX_TARGET_HOST, (vx_enum)TIVX_TARGET_ID_INVALID}                                 \
 }
+
+/* Build check to make sure that all of VPAC1 targets are controlled from the same core */
+BUILD_ASSERT( (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_LDC1)) && \
+              (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_MSC1)) && \
+              (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_MSC2)) && \
+              (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_NF)) ? 1U : 0U );
+
+/* Build check to make sure that all of VPAC2 targets are controlled from the same core */
+BUILD_ASSERT( (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC2_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC2_LDC1)) && \
+              (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC2_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC2_MSC1)) && \
+              (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC2_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC2_MSC2)) && \
+              (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC2_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC2_NF)) ? 1U : 0U );
+
+/* Build check to make sure that all of DMPAC targets are controlled from the same core */
+BUILD_ASSERT( (TIVX_GET_CPU_ID(TIVX_TARGET_ID_DMPAC_SDE) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_DMPAC_DOF)) ? 1U : 0U );
 
 #ifdef __cplusplus
 }
