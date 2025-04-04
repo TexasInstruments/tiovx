@@ -4216,10 +4216,36 @@ void tivxAddTargetKernelTestTarget(void)
 void tivxRemoveTargetKernelTestTarget(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    char target_name[TIVX_TARGET_MAX_NAME];
+    #if defined(SOC_J721E)
+    vx_enum self_cpu;
 
-    status = tivxRemoveTargetKernel(vx_test_target_target_kernel);
-    if (status == (vx_status)VX_SUCCESS)
+    self_cpu = tivxGetSelfCpuId();
+    #endif /* #if defined(SOC_J721E) */
+
+    if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)))
     {
-        vx_test_target_target_kernel = NULL;
+        status = tivxRemoveTargetKernelByName(vx_test_target_target_kernel,
+            TIVX_KERNEL_TEST_TARGET_NAME,
+            target_name);
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            vx_test_target_target_kernel = NULL;
+        }
     }
+    #if defined(SOC_J721E)
+    else if (self_cpu == TIVX_CPU_ID_DSP_C7_1)
+    {
+        strncpy(target_name, TIVX_TARGET_DSP_C7_1, TIVX_TARGET_MAX_NAME);
+        status = tivxRemoveTargetKernelByName(vx_test_target_target_kernel,
+            TIVX_KERNEL_TEST_TARGET_NAME,
+            target_name);
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            vx_test_target_target_kernel = NULL;
+        }
+    }
+    #endif /* #if defined(SOC_J721E) */
 }

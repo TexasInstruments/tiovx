@@ -186,11 +186,20 @@ void tivxAddTargetKernelScalarIntermediate2(void)
 void tivxRemoveTargetKernelScalarIntermediate2(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    char target_name[TIVX_TARGET_MAX_NAME];
 
-    status = tivxRemoveTargetKernel(vx_scalar_intermediate_2_target_kernel);
-    if (status == (vx_status)VX_SUCCESS)
+    if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
-        vx_scalar_intermediate_2_target_kernel = NULL;
+        status = tivxRemoveTargetKernelByName(vx_scalar_intermediate_2_target_kernel,
+            TIVX_KERNEL_SCALAR_INTERMEDIATE_2_NAME,
+            target_name);
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            vx_scalar_intermediate_2_target_kernel = NULL;
+        }
     }
 }
 

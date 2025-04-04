@@ -326,12 +326,31 @@ void tivxAddTargetKernelCmdTimeoutTest(void)
 
 void tivxRemoveTargetKernelCmdTimeoutTest(void)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status = (vx_status)VX_FAILURE;
+    char target_name[TIVX_TARGET_MAX_NAME];
+    vx_enum self_cpu;
 
-    status = tivxRemoveTargetKernel(vx_cmd_timeout_test_target_kernel);
+    self_cpu = tivxGetSelfCpuId();
+
+    if (self_cpu == TIVX_CPU_ID_MPU_0)
+    {
+        strncpy(target_name, TIVX_TARGET_MPU_0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    else
+    {
+        status = tivxKernelsTargetUtilsAssignTargetNameMcu(target_name);
+    }
+
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_cmd_timeout_test_target_kernel = NULL;
+        status = tivxRemoveTargetKernelByName(vx_cmd_timeout_test_target_kernel,
+                            TIVX_KERNEL_CMD_TIMEOUT_TEST_NAME,
+                            target_name);
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            vx_cmd_timeout_test_target_kernel = NULL;
+        }
     }
 }
 

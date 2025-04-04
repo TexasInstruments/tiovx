@@ -64,6 +64,8 @@
 
 #include <vx_internal.h>
 
+static void ownRemoveKernelIndex(uint32_t i);
+
 static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
                              vx_enum kernel_id,
                              const char *kernel_name,
@@ -130,6 +132,22 @@ void ownTargetKernelDeInit(void)
 #if defined(MPU)
 /* LDRA_JUSTIFY_END */
 #endif
+}
+
+static void ownRemoveKernelIndex(uint32_t i)
+{
+    g_target_kernel_table[i].kernel_id =
+        (vx_int32)TIVX_TARGET_KERNEL_ID_INVALID;
+    g_target_kernel_table[i].target_id =
+        (vx_int32)TIVX_TARGET_KERNEL_ID_INVALID;
+    g_target_kernel_table[i].process_func = NULL;
+    g_target_kernel_table[i].create_func = NULL;
+    g_target_kernel_table[i].delete_func = NULL;
+    g_target_kernel_table[i].control_func = NULL;
+
+    ownLogResourceFree("TIVX_TARGET_KERNEL_MAX", 1);
+
+    g_num_target_kernel--;
 }
 
 static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
@@ -235,6 +253,43 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
                 NULL, target_name, process_func, create_func, delete_func, control_func, priv_arg);
 }
 
+VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernelByName(
+    tivx_target_kernel target_kernel,
+    const char *kernel_name,
+    const char *target_name)
+{
+    vx_status status = (vx_status)VX_FAILURE;
+    vx_status mutex_status = (vx_status)VX_FAILURE;
+    uint32_t i;
+
+    if ( (kernel_name!=NULL) && (target_name!=NULL))
+    {
+        mutex_status = tivxMutexLock(g_target_kernel_lock);
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_KERNEL_UBR002
+<justification end> */
+        if ((vx_status)VX_SUCCESS == mutex_status)
+        {
+            for(i=0; i<dimof(g_target_kernel_table); i++)
+            {
+                if ( (ownPlatformGetTargetId(target_name) == g_target_kernel_table[i].target_id) &&
+                     (strncmp(g_target_kernel_table[i].kernel_name, kernel_name, (VX_MAX_KERNEL_NAME-1)) == 0) )
+                {
+                    ownRemoveKernelIndex(i);
+                    status = (vx_status)VX_SUCCESS;
+                    break;
+                }
+            }
+
+            (void)tivxMutexUnlock(g_target_kernel_lock);
+        }
+/* LDRA_JUSTIFY_END */
+    }
+
+    return (status);
+}
+
 VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
     tivx_target_kernel target_kernel)
 {
@@ -256,19 +311,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
                 if (target_kernel ==
                     &g_target_kernel_table[i])
                 {
-                    g_target_kernel_table[i].kernel_id =
-                        (vx_int32)TIVX_TARGET_KERNEL_ID_INVALID;
-                    g_target_kernel_table[i].target_id =
-                        (vx_int32)TIVX_TARGET_KERNEL_ID_INVALID;
-                    g_target_kernel_table[i].process_func = NULL;
-                    g_target_kernel_table[i].create_func = NULL;
-                    g_target_kernel_table[i].delete_func = NULL;
-                    g_target_kernel_table[i].control_func = NULL;
-
-                    ownLogResourceFree("TIVX_TARGET_KERNEL_MAX", 1);
-
-                    g_num_target_kernel--;
-
+                    ownRemoveKernelIndex(i);
                     status = (vx_status)VX_SUCCESS;
                     break;
                 }

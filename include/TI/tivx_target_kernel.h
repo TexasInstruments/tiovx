@@ -179,6 +179,18 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernelByName(
 VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
     tivx_target_kernel target_kernel);
 
+/*! \brief Allows users to remove native kernels implementation
+ *         to specific targets by providing a kernel name and
+ *         target name
+ *
+ * \ingroup group_tivx_target_kernel
+ *
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernelByName(
+    tivx_target_kernel target_kernel,
+    const char *kernel_name,
+    const char *target_name);
+
 /*! \brief Queries the framework to determine the number of target kernels
  *         on the target from which it is called
  *

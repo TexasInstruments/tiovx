@@ -208,11 +208,20 @@ void tivxAddTargetKernelPyramidSink(void)
 void tivxRemoveTargetKernelPyramidSink(void)
 {
     vx_status status = VX_SUCCESS;
+    char target_name[TIVX_TARGET_MAX_NAME];
 
-    status = tivxRemoveTargetKernel(vx_pyramid_sink_target_kernel);
-    if (status == VX_SUCCESS)
+    if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
+        ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
-        vx_pyramid_sink_target_kernel = NULL;
+        status = tivxRemoveTargetKernelByName(vx_pyramid_sink_target_kernel,
+            TIVX_KERNEL_PYRAMID_SINK_NAME,
+            target_name);
+        if (status == VX_SUCCESS)
+        {
+            vx_pyramid_sink_target_kernel = NULL;
+        }
     }
 }
 
