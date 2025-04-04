@@ -125,6 +125,56 @@ DEFINE_SAFE_CASTS(threshold, Threshold, THRESHOLD)
 DEFINE_SAFE_CASTS(user_data_object, UserDataObject, USER_DATA_OBJECT)
 #endif
 
+/*! \brief safely get a new vx_reference for the given tivx_raw_image variable*/
+VX_API_ENTRY vx_reference vxGetRefFromRawImage(const tivx_raw_image *typename)
+{
+    /* casting to the "base class" is inherently safe */
+    vx_reference lref = ((vx_reference)*typename);
+    (void)ownIncrementReference(lref, (vx_enum)VX_EXTERNAL);
+    return lref;
+}
+
+/*! \brief safe cast a tivx_raw_image to a generic vx_reference*/
+VX_API_ENTRY vx_reference vxCastRefFromRawImage(tivx_raw_image typename)
+{
+    /* casting to the "base class" is inherently safe */
+    return (vx_reference)typename;
+}
+
+/*! \brief safe cast a pointer to tivx_raw_image to a pointer to vx_reference */
+VX_API_ENTRY vx_reference *vxCastRefFromRawImageP(tivx_raw_image *p_raw_image)
+{
+    /* casting to the "base class" is inherently safe */
+    return (vx_reference *)p_raw_image;
+}
+
+/*! \brief safe cast a const pointer to tivx_raw_image to a const pointer to vx_reference */
+VX_API_ENTRY const vx_reference *vxCastRefFromRawImageConstP(const tivx_raw_image *p_raw_image)
+{
+    /* casting to the "base class" is inherently safe */
+    return (const vx_reference *)p_raw_image;
+}
+
+/*! \brief safely get a new tivx_raw_image or an error object from a vx_reference*/
+VX_API_ENTRY tivx_raw_image vxGetRefAsRawImage(const vx_reference *ref, vx_status *status)
+{
+    /* Dynamic cast from base class upwards.
+       Not inherently safe, we need to check RTTI
+       and report an error if incorrect.
+    */
+    return (tivx_raw_image)getRefAs(*ref, (vx_enum)TIVX_TYPE_RAW_IMAGE, status);
+}
+
+/*! \brief safely upcast a vx_reference to a tivx_raw_image or an error object */
+VX_API_ENTRY tivx_raw_image vxCastRefAsRawImage(vx_reference ref, vx_status *status)
+{
+    /* Dynamic cast from base class upwards.
+       Not inherently safe, we need to check RTTI
+       and report an error if incorrect.
+    */
+    return (tivx_raw_image)castRefAs(ref, (vx_enum)TIVX_TYPE_RAW_IMAGE, status);
+}
+
 static vx_reference getRefAs(vx_reference ref, vx_enum type, vx_status *status)
 {
     vx_status local_status = (vx_status)VX_SUCCESS;

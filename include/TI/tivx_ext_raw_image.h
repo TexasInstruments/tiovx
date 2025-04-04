@@ -365,6 +365,62 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(tivx_raw_image raw_image
 VX_API_ENTRY vx_status VX_API_CALL tivxUnmapRawImagePatch(tivx_raw_image raw_image,
                                                           vx_map_id map_id);
 
+/*! \brief safely get a new vx_reference for the given tivx_raw_image variable
+ * 
+ * \param [in] typename The reference to the raw image object to cast.
+ *
+ * \return A <tt>\ref vx_reference</tt>.
+ * \ingroup group_raw_image
+ * */
+VX_API_ENTRY vx_reference vxGetRefFromRawImage(const tivx_raw_image *typename);
+
+/*! \brief safe cast a tivx_raw_image to a generic vx_reference
+ * 
+ * \param [in] typename The reference to the raw image object to cast.
+ *
+ * \return A <tt>\ref vx_reference</tt>.
+ * \ingroup group_raw_image
+ * */
+VX_API_ENTRY vx_reference vxCastRefFromRawImage(tivx_raw_image typename);
+
+/*! \brief safe cast a pointer to tivx_raw_image to a pointer to vx_reference 
+ * 
+ * \param [in] p_raw_image The pointer to the raw image object to cast.
+ *
+ * \return A <tt>\ref vx_reference</tt>.
+ * \ingroup group_raw_image
+ * */
+VX_API_ENTRY vx_reference *vxCastRefFromRawImageP(tivx_raw_image *p_raw_image);
+
+/*! \brief safe cast a const pointer to tivx_raw_image to a const pointer to vx_reference 
+ * 
+ * \param [in] p_raw_image The pointer to the raw image object to cast.
+ *
+ * \return A <tt>\ref vx_reference</tt>.
+ * \ingroup group_raw_image
+ * */
+VX_API_ENTRY const vx_reference *vxCastRefFromRawImageConstP(const tivx_raw_image *p_raw_image);
+
+/*! \brief safely get a new tivx_raw_image or an error object from a vx_reference
+ * 
+ * \param [in] ref The pointer to the reference which needs to be casted.
+ * \param [in] status The status of the operations.
+ *
+ * \return A <tt>\ref tivx_raw_image</tt>.
+ * \ingroup group_raw_image
+ * */
+VX_API_ENTRY tivx_raw_image vxGetRefAsRawImage(const vx_reference *ref, vx_status *status);
+
+/*! \brief safely upcast a vx_reference to a tivx_raw_image or an error object
+ * 
+ * \param [in] ref The pointer to the reference which needs to be casted.
+ * \param [in] status The status of the operations.
+ *
+ * \return A <tt>\ref tivx_raw_image</tt>.
+ * \ingroup group_raw_image
+ * */
+VX_API_ENTRY tivx_raw_image vxCastRefAsRawImage(vx_reference ref, vx_status *status);
+
 #ifdef  __cplusplus
 }
 #endif

@@ -27,6 +27,7 @@ TESTCASE(tivxSafeCasts, CT_VXContext, ct_setup_vx_context, 0)
 #include "TI/tivx.h"
 #include "VX/vx_khr_user_data_object.h"
 #include "VX/vx_khr_safe_casts.h"
+#include <TI/tivx_ext_raw_image.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -73,7 +74,8 @@ static const vx_enum upcast_type_ids[] =
     VX_TYPE_SCALAR,
     VX_TYPE_TENSOR,
     VX_TYPE_THRESHOLD,
-    VX_TYPE_USER_DATA_OBJECT
+    VX_TYPE_USER_DATA_OBJECT,
+    TIVX_TYPE_RAW_IMAGE
 };
 
 #define NUM_TYPES (sizeof(type_ids) / sizeof(vx_enum))
@@ -172,6 +174,24 @@ vx_reference castAsReference(vx_graph graph, vx_enum type)
         case VX_TYPE_THRESHOLD:
             ref = vxCastRefFromThreshold(vxCreateThreshold(context, VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8));
             break;
+        case TIVX_TYPE_RAW_IMAGE:
+        {
+            tivx_raw_image_create_params_t params;
+            params.width = 128;
+            params.height = 128;
+            params.num_exposures = 3;
+            params.line_interleaved = vx_false_e;
+            params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+            params.format[0].msb = 12;
+            params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+            params.format[1].msb = 7;
+            params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+            params.format[2].msb = 11;
+            params.meta_height_before = 5;
+            params.meta_height_after = 0;
+            ref = vxCastRefFromRawImage(tivxCreateRawImage(context, &params));
+            break;
+        }
         case VX_TYPE_USER_DATA_OBJECT:
         default:    /* All other codes treated here, used for making the wrong type */
         {
@@ -324,6 +344,26 @@ vx_reference getAsReference(vx_graph graph, vx_enum type)
             vxReleaseThreshold(&threshold);
             break;
         }
+        case TIVX_TYPE_RAW_IMAGE:
+        {
+            tivx_raw_image_create_params_t params;
+            params.width = 128;
+            params.height = 128;
+            params.num_exposures = 3;
+            params.line_interleaved = vx_false_e;
+            params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+            params.format[0].msb = 12;
+            params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+            params.format[1].msb = 7;
+            params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+            params.format[2].msb = 11;
+            params.meta_height_before = 5;
+            params.meta_height_after = 0;
+            tivx_raw_image raw_image = tivxCreateRawImage(context, &params);
+            ref = vxGetRefFromRawImage(&raw_image);
+            tivxReleaseRawImage(&raw_image);
+            break;
+        }
         default:    /* All other codes treated here, used for making the wrong type */
         case VX_TYPE_USER_DATA_OBJECT:
         {
@@ -345,17 +385,17 @@ vx_enum retTypeOfConstP(const vx_reference *refp)
     return ret;
 }
 
-#define typecase(upper_type, lower_type, case_type) case VX_TYPE_##upper_type: \
+#define typecase(upper_type, lower_type, lower_type_var, case_type) case upper_type: \
         {\
-            vx_##lower_type lower_type = vxGetRefAs##case_type(&ref, &status);\
+            lower_type lower_type_var = vxGetRefAs##case_type(&ref, &status);\
             if (!fail)\
             {\
-                EXPECT_EQ_INT(retTypeOfConstP(vxCastRefFrom##case_type##ConstP(&lower_type)), type); \
-                EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseReference(vxCastRefFrom##case_type##P(& lower_type)));\
+                EXPECT_EQ_INT(retTypeOfConstP(vxCastRefFrom##case_type##ConstP(&lower_type_var)), type); \
+                EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseReference(vxCastRefFrom##case_type##P(&lower_type_var)));\
             }\
             else\
             {\
-                EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus(vxCastRefFrom##case_type(lower_type)));\
+                EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus(vxCastRefFrom##case_type(lower_type_var)));\
             }\
             break;\
         }
@@ -380,24 +420,25 @@ vx_status getAsSomeType(vx_graph graph, vx_enum type, enum failtype fail)
     }
     switch (type)
     {
-        typecase(ARRAY, array, Array)
-        typecase(CONVOLUTION, convolution, Convolution)
-        typecase(DELAY, delay, Delay)
-        typecase(DISTRIBUTION, distribution, Distribution)
-        typecase(GRAPH, graph, Graph)
-        typecase(IMAGE, image, Image)
-        typecase(KERNEL, kernel, Kernel)
-        typecase(LUT, lut, LUT)
-        typecase(MATRIX, matrix, Matrix)
-        typecase (NODE, node, Node)
-        typecase(OBJECT_ARRAY, object_array, ObjectArray)
-        typecase(PARAMETER, parameter, Parameter)
-        typecase(PYRAMID, pyramid, Pyramid)
-        typecase(REMAP, remap, Remap)
-        typecase(SCALAR, scalar, Scalar)
-        typecase(TENSOR, tensor, Tensor)
-        typecase(THRESHOLD, threshold, Threshold)
-        typecase(USER_DATA_OBJECT, user_data_object, UserDataObject)
+        typecase(VX_TYPE_ARRAY, vx_array, array, Array)
+        typecase(VX_TYPE_CONVOLUTION, vx_convolution, convolution, Convolution)
+        typecase(VX_TYPE_DELAY, vx_delay, delay, Delay)
+        typecase(VX_TYPE_DISTRIBUTION, vx_distribution, distribution, Distribution)
+        typecase(VX_TYPE_GRAPH, vx_graph, graph, Graph)
+        typecase(VX_TYPE_IMAGE, vx_image, image, Image)
+        typecase(VX_TYPE_KERNEL, vx_kernel, kernel, Kernel)
+        typecase(VX_TYPE_LUT, vx_lut, lut, LUT)
+        typecase(VX_TYPE_MATRIX, vx_matrix, matrix, Matrix)
+        typecase(VX_TYPE_NODE, vx_node, node, Node)
+        typecase(VX_TYPE_OBJECT_ARRAY, vx_object_array, object_array, ObjectArray)
+        typecase(VX_TYPE_PARAMETER, vx_parameter, parameter, Parameter)
+        typecase(VX_TYPE_PYRAMID, vx_pyramid, pyramid, Pyramid)
+        typecase(VX_TYPE_REMAP, vx_remap, remap, Remap)
+        typecase(VX_TYPE_SCALAR, vx_scalar, scalar, Scalar)
+        typecase(VX_TYPE_TENSOR, vx_tensor, tensor, Tensor)
+        typecase(VX_TYPE_THRESHOLD, vx_threshold, threshold, Threshold)
+        typecase(VX_TYPE_USER_DATA_OBJECT, vx_user_data_object, user_data_object, UserDataObject)
+        typecase(TIVX_TYPE_RAW_IMAGE, tivx_raw_image, raw_image, RawImage)
         default:
             status = VX_ERROR_INVALID_TYPE;
     }
@@ -511,6 +552,11 @@ vx_status castAsSomeType(vx_graph graph, vx_enum type, enum failtype fail)
             vx_threshold threshold = vxCastRefAsThreshold(ref, &status);
             break;
         }
+        case TIVX_TYPE_RAW_IMAGE:
+        {
+            tivx_raw_image raw_image = vxCastRefAsRawImage(ref, &status);
+            break;
+        }
         case VX_TYPE_USER_DATA_OBJECT:
         {
             vx_user_data_object user_data_object = vxCastRefAsUserDataObject(ref, &status);
@@ -547,6 +593,7 @@ vx_bool is_supported(vx_enum type)
         case VX_TYPE_TENSOR:
         case VX_TYPE_THRESHOLD:
         case VX_TYPE_USER_DATA_OBJECT:
+        case TIVX_TYPE_RAW_IMAGE:
             return vx_true_e;
         default:
             return vx_false_e;
