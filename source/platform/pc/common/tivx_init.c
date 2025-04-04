@@ -72,18 +72,6 @@ void tivxUnRegisterOpenVXCoreTargetKernels(void);
 void tivxRegisterTutorialTargetKernels(void);
 void tivxUnRegisterTutorialTargetKernels(void);
 
-void tivxRegisterCaptureTargetArmKernels(void);
-void tivxUnRegisterCaptureTargetArmKernels(void);
-
-void tivxRegisterTestKernelsTargetArmKernels(void);
-void tivxUnRegisterTestKernelsTargetArmKernels(void);
-
-void tivxRegisterTestKernelsTargetDspKernels(void);
-void tivxUnRegisterTestKernelsTargetDspKernels(void);
-
-void tivxRegisterTestKernelsTargetDspKernels(void);
-void tivxUnRegisterTestKernelsTargetDspKernels(void);
-
 /* Mutex for controlling access to Init/De-Init. */
 static pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -91,6 +79,43 @@ static pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
  * guarantee a single init/de-init operation.
  */
 static uint32_t g_init_status = 0U;
+
+void ownRegisterKernels()
+{
+    /* trick target kernel used in DSP emulation mode to think
+     * they are being invoked from a DSP
+     */
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+    tivxRegisterOpenVXCoreTargetKernels();
+    #ifdef BUILD_TUTORIAL
+    tivxRegisterTutorialTargetKernels();
+    #endif
+
+    #if defined (SOC_J721E) || defined (SOC_J722S)
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
+        tivxRegisterOpenVXCoreTargetKernels();
+        #ifdef BUILD_TUTORIAL
+        tivxRegisterTutorialTargetKernels();
+        #endif
+    #endif
+}
+
+void ownUnregisterKernels()
+{
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+    tivxUnRegisterOpenVXCoreTargetKernels();
+    #ifdef BUILD_TUTORIAL
+    tivxUnRegisterTutorialTargetKernels();
+    #endif
+
+    #if defined (SOC_J721E) || defined (SOC_J722S)
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
+        tivxUnRegisterOpenVXCoreTargetKernels();
+        #ifdef BUILD_TUTORIAL
+        tivxUnRegisterTutorialTargetKernels();
+        #endif
+    #endif
+}
 
 void tivxInit(void)
 {
@@ -114,69 +139,11 @@ void tivxInit(void)
         /* Initialize Target */
         ownTargetInit();
 
-        /* trick target kernel used in DSP emulation mode to think
-         * they are being invoked from a DSP
-         */
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
-        tivxRegisterOpenVXCoreTargetKernels();
-        #ifdef BUILD_TUTORIAL
-        tivxRegisterTutorialTargetKernels();
-        #endif
-
-        #if defined (SOC_J721E) || defined (SOC_J722S)
-            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
-            tivxRegisterOpenVXCoreTargetKernels();
-            #ifdef BUILD_TUTORIAL
-            tivxRegisterTutorialTargetKernels();
-            #endif
-        #endif
-
-        #ifndef _DISABLE_TIDL
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
-        tivxRegisterTIDLTargetKernels();
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
-        tivxRegisterTIDLTargetKernels();
-        #endif
-
-        #ifdef BUILD_CONFORMANCE_TEST
-
-        #if defined(SOC_AM62A)
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
-        tivxRegisterCaptureTargetArmKernels();
-        tivxRegisterTestKernelsTargetArmKernels();
-        #else
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
-        tivxRegisterCaptureTargetArmKernels();
-        tivxRegisterTestKernelsTargetArmKernels();
-        #ifndef SOC_J722S
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
-        tivxRegisterCaptureTargetArmKernels();
-        tivxRegisterTestKernelsTargetArmKernels();
-        #endif
-        #endif
-
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
-        tivxRegisterCaptureTargetArmKernels();
-        tivxRegisterTestKernelsTargetArmKernels();
-
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
-        tivxRegisterCaptureTargetArmKernels();
-        tivxRegisterTestKernelsTargetDspKernels();
-
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP_C7_1);
-        tivxRegisterCaptureTargetArmKernels();
-        tivxRegisterTestKernelsTargetDspKernels();
-
-        #if defined (SOC_J721E) || defined (SOC_J722S)
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
-        tivxRegisterTestKernelsTargetDspKernels();
-        #endif
-        #endif
+        /* Register Kernels */
+        ownRegisterKernels();
 
         /* let rest of system think it is running on CPU 0 */
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
-
-        tivxHostInit();
 
         ownObjDescInit();
 
@@ -203,24 +170,11 @@ void tivxDeInit(void)
         {
             ownPlatformDeleteTargets();
 
-            #ifdef BUILD_CONFORMANCE_TEST
-            tivxUnRegisterCaptureTargetArmKernels();
-            tivxUnRegisterTestKernelsTargetDspKernels();
-            tivxUnRegisterTestKernelsTargetArmKernels();
-            #endif
+            /* Unregister Kernels */
+            ownUnregisterKernels();
 
-            /* DeInitialize Host */
-            tivxUnRegisterOpenVXCoreTargetKernels();
-
-            #ifdef BUILD_TUTORIAL
-            tivxUnRegisterTutorialTargetKernels();
-            #endif
-
-            #ifndef _DISABLE_TIDL
-            tivxUnRegisterTIDLTargetKernels();
-            #endif
-
-            tivxHostDeInit();
+            /* let rest of system think it is running on CPU 0 */
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
 
             /* DeInitialize Target */
             ownTargetDeInit();

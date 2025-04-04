@@ -79,6 +79,18 @@ extern "C" {
  */
 void tivxSetSelfCpuId(vx_enum cpu_id);
 
+/*! \brief Function to register a basic set of kernels needed for TIOVX
+ *
+ * \ingroup group_tivx_platform
+ */
+void ownRegisterKernels();
+
+/*! \brief Function to unregister a basic set of kernels needed for TIOVX
+ *
+ * \ingroup group_tivx_platform
+ */
+void ownUnregisterKernels();
+
 #ifdef __cplusplus
 }
 #endif
