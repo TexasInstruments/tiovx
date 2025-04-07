@@ -311,6 +311,20 @@
      The documentation section \ref TIOVX_TARGET_KERNEL provides some additional details about how the timeouts interact
      with the target kernel callback structure.
 
+     \subsubsection TIOVX_SAFETY_FEATURES_TIMEOUT_GRAPH_STREAMING Graph Timeouts Usage with Graph Streaming
+
+     When using the graph streaming feature from the Pipelining and Streaming extension, special considerations need to
+     be made for how to handle various timeout scenarios.  As a quick background on the internal implementation of streaming,
+     the framework creates a separate task which manages the streaming execution of the graph and thus will allow the graph
+     to re-trigger upon completion of the trigger node.  Therefore, a general recommended practice when using graph streaming is
+     to use the \ref vxRegisterGraphEvent to register a \ref VX_EVENT_NODE_ERROR event on the trigger node of the streaming
+     graph.  This way, if an error occurs within the graph as a result of either timeout or any general error, the application
+     will become aware of this issue.  For instance, if a timeout error occurs (for instance, due to a crash on a remote core),
+     the node error event will be triggered and thus allow the application to tear down the graph.  One important note to be aware
+     of is that the internal queue which manages this task will time out if the specified \ref VX_GRAPH_TIMEOUT is exceeded.
+     This decision was made since the timeout for the queue would always be less than or equal to this graph timeout, as new
+     data is enqueued to this queue at the rate of the trigger node completion.
+
      \subsection TIOVX_SAFETY_FEATURES_TIMEOUT_CUSTOM Custom Timeout Configuration in Target Kernel
 
      For a custom target kernel, a timeout can be implemented at the callback level in order to return in the case

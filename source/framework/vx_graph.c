@@ -495,6 +495,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->graph_completed_context_app_value = 0;
             graph->is_streaming   = (vx_bool)vx_false_e;
             graph->is_streaming_enabled   = (vx_bool)vx_false_e;
+            graph->is_streaming_error   = (vx_bool)vx_false_e;
             graph->is_streaming_alloc = (vx_bool)vx_false_e;
             graph->trigger_node_set   = (vx_bool)vx_false_e;
             graph->is_enable_send_context_complete_event = (vx_bool)vx_false_e;

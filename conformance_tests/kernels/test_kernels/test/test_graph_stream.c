@@ -2160,6 +2160,104 @@ TEST(tivxGraphStreaming, testStreamingGraphEventsGraph)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+/*
+ *       n0         scalar             n1            scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR -- SCALAR_SINK
+ *
+ * Scalar source node connected to scalar sink node with streaming and pipelining enabled
+ * Trigger node is sink node
+ * All nodes are on MCU2_0
+ * Error will be shown in a print statement if the scalar sink fails
+ *
+ */
+TEST(tivxGraphStreaming, testStreamingTimeout)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_node n0, n1, n2;
+    vx_uint32 graph_timeout_val = VX_TIMEOUT_WAIT_FOREVER, vxTimeoutVal;
+    vx_event_t event;
+
+    uint32_t pipeline_depth = 2, num_buf = 3, i;
+    uint64_t exe_time;
+    uint32_t num_streams = 0;
+    vx_uint8  scalar_val = 0;
+    vx_scalar scalar, scalar_out;
+
+    tivxTestKernelsLoadKernels(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(scalar_out = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(n0 = tivxScalarSourceNode(graph, scalar), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(n1 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(n2 = tivxScalarSinkNode(graph, scalar_out), VX_TYPE_NODE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphAttribute(graph, VX_GRAPH_TIMEOUT, &graph_timeout_val, sizeof(graph_timeout_val)));
+
+    vxTimeoutVal = 20;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetNodeAttribute(n0, TIVX_NODE_TIMEOUT, &vxTimeoutVal, sizeof(vx_uint32)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetNodeAttribute(n1, TIVX_NODE_TIMEOUT, &vxTimeoutVal, sizeof(vx_uint32)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetNodeAttribute(n2, TIVX_NODE_TIMEOUT, &vxTimeoutVal, sizeof(vx_uint32)));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent((vx_reference)n0, VX_EVENT_NODE_ERROR, 0, NODE1_EVENT));
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 0, num_buf));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n0));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphEvents(graph));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_graph_streaming_timeout");
+    log_graph_rt_trace(graph);
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    VX_CALL(vxStartGraphStreaming(graph));
+
+    tivxTaskWaitMsecs(1000);
+
+    graph_timeout_val = 1;
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphAttribute(graph, VX_GRAPH_TIMEOUT, &graph_timeout_val, sizeof(graph_timeout_val)));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, &event, vx_false_e));
+
+    ASSERT_EQ_INT(event.type, VX_EVENT_NODE_ERROR);
+    ASSERT_EQ_INT(event.app_value, NODE1_EVENT);
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_TIMEOUT, vxStopGraphStreaming(graph));
+
+    VX_CALL(vxQueryGraph(graph, TIVX_GRAPH_STREAM_EXECUTIONS, &num_streams, sizeof(num_streams)));
+
+    ASSERT(num_streams != 0);
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseScalar(&scalar_out));
+    VX_CALL(vxReleaseScalar(&scalar));
+    /* Note: not checking timeout value here, since it is possible that the graph release times out, similar to stop streaming timing out */
+    vxReleaseGraph(&graph);
+    tivxTestKernelsUnLoadKernels(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
 TEST(tivxGraphStreaming, negativeTestEnableGraphStreaming)
 {
     vx_context context = context_->vx_context_;
@@ -2264,6 +2362,7 @@ TESTCASE_TESTS(tivxGraphStreaming,
                testPipeliningStreaming5,
                testStreamingGraphEventsNode,
                testStreamingGraphEventsGraph,
+               testStreamingTimeout,
                testScalar,
                testScalarCtrlCmd,
                negativeTestStreamingState,

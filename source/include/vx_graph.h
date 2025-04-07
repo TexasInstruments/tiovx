@@ -173,6 +173,9 @@ typedef struct _vx_graph {
     /*! \brief is streaming enabled for graph */
     vx_bool is_streaming_enabled;
 
+    /*! \brief is streaming enabled for graph */
+    vx_bool is_streaming_error;
+
     /*! \brief when true, all allocations have occurred properly in order for streaming to occur within a graph */
     vx_bool is_streaming_alloc;
 
