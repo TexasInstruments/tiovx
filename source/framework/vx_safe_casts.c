@@ -126,19 +126,19 @@ DEFINE_SAFE_CASTS(user_data_object, UserDataObject, USER_DATA_OBJECT)
 #endif
 
 /*! \brief safely get a new vx_reference for the given tivx_raw_image variable*/
-VX_API_ENTRY vx_reference vxGetRefFromRawImage(const tivx_raw_image *typename)
+VX_API_ENTRY vx_reference vxGetRefFromRawImage(const tivx_raw_image *type_name)
 {
     /* casting to the "base class" is inherently safe */
-    vx_reference lref = ((vx_reference)*typename);
+    vx_reference lref = ((vx_reference)*type_name);
     (void)ownIncrementReference(lref, (vx_enum)VX_EXTERNAL);
     return lref;
 }
 
 /*! \brief safe cast a tivx_raw_image to a generic vx_reference*/
-VX_API_ENTRY vx_reference vxCastRefFromRawImage(tivx_raw_image typename)
+VX_API_ENTRY vx_reference vxCastRefFromRawImage(tivx_raw_image type_name)
 {
     /* casting to the "base class" is inherently safe */
-    return (vx_reference)typename;
+    return (vx_reference)type_name;
 }
 
 /*! \brief safe cast a pointer to tivx_raw_image to a pointer to vx_reference */

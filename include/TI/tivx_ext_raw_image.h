@@ -367,21 +367,21 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapRawImagePatch(tivx_raw_image raw_ima
 
 /*! \brief safely get a new vx_reference for the given tivx_raw_image variable
  * 
- * \param [in] typename The reference to the raw image object to cast.
+ * \param [in] type_name The reference to the raw image object to cast.
  *
  * \return A <tt>\ref vx_reference</tt>.
  * \ingroup group_raw_image
  * */
-VX_API_ENTRY vx_reference vxGetRefFromRawImage(const tivx_raw_image *typename);
+VX_API_ENTRY vx_reference vxGetRefFromRawImage(const tivx_raw_image *type_name);
 
 /*! \brief safe cast a tivx_raw_image to a generic vx_reference
  * 
- * \param [in] typename The reference to the raw image object to cast.
+ * \param [in] type_name The reference to the raw image object to cast.
  *
  * \return A <tt>\ref vx_reference</tt>.
  * \ingroup group_raw_image
  * */
-VX_API_ENTRY vx_reference vxCastRefFromRawImage(tivx_raw_image typename);
+VX_API_ENTRY vx_reference vxCastRefFromRawImage(tivx_raw_image type_name);
 
 /*! \brief safe cast a pointer to tivx_raw_image to a pointer to vx_reference 
  * 
