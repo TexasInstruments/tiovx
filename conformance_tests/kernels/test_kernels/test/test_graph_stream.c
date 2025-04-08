@@ -2030,7 +2030,7 @@ TEST(tivxGraphStreaming, testStreamingGraphEventsNode)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 0, num_buf));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n0));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent((vx_reference)n0, VX_EVENT_NODE_COMPLETED, 0, 222));
 
@@ -2117,7 +2117,7 @@ TEST(tivxGraphStreaming, testStreamingGraphEventsGraph)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 0, num_buf));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n0));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterGraphEvent((vx_reference)graph, VX_EVENT_GRAPH_COMPLETED, 0, 222));
 
