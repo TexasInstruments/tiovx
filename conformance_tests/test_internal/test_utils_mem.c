@@ -72,6 +72,22 @@ TEST(tivxDmaHeap, testappMemCacheWbInv)
 
     appMemCacheWbInv(ptr, size);
 }
+
+TEST(tivxDmaHeap, testappMemCacheInv)
+{
+    void *ptr = NULL;
+    uint32_t size = 0;
+
+    appMemCacheInv(ptr, size);
+}
+
+TEST(tivxDmaHeap, testappMemCacheWb)
+{
+    void *ptr = NULL;
+    uint32_t size = 0;
+
+    appMemCacheWb(ptr, size);
+}
 #endif
 
 TEST(tivxDmaHeap, testappMemAddTupleToList)
@@ -140,6 +156,8 @@ TESTCASE_TESTS(
 #ifndef PC
     testappMemStats,
     testappMemCacheWbInv,
+    testappMemCacheInv,
+    testappMemCacheWb,
 #endif
 #if defined(QNX)
     testAppMemAlloc,
