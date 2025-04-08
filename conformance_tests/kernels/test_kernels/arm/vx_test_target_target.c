@@ -1878,7 +1878,6 @@ static vx_status tivxNegativeTestTargetTaskCreate(uint8_t id)
     return status;
 }
 
-#if defined(REMOTE_COVERAGE)
 static vx_status tivxAppMemPrintMemAllocInfo(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -1890,6 +1889,7 @@ static vx_status tivxAppMemPrintMemAllocInfo(uint8_t id)
     return status;
 }
 
+#if defined(REMOTE_COVERAGE)
 static vx_status tivxAppMemGetNumAllocs(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -3883,12 +3883,12 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestAppIpcGetIpcCpuId, "",VX_SUCCESS},
     {tivxNegativeTestAppIpcGetAppCpuId, "",VX_SUCCESS},
     {tivxTestAppIpcGetCpuName, "",VX_SUCCESS},
+    {tivxAppMemPrintMemAllocInfo, "", VX_SUCCESS},
     #endif /* #if defined(MPU_COVERAGE) */
     #if defined(REMOTE_COVERAGE)
 #if !defined (MCU_PLUS_SDK)
     {tivxAppIpcGetIpcCpuId, "", VX_SUCCESS},
 #endif /* #if !defined (MCU_PLUS_SDK) */
-    {tivxAppMemPrintMemAllocInfo, "", VX_SUCCESS},
     {tivxAppMemGetNumAllocs, "", VX_SUCCESS},
     {tivxAppMemUnMap, "", VX_SUCCESS},
     {tivxAppIpcGetAppCpuId, "", VX_SUCCESS},
