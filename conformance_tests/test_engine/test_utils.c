@@ -30,6 +30,7 @@ const char* ct_vx_status_to_str(vx_status s)
     switch(s)
     {
         CT_ENUM_TO_STR(VX_STATUS_MIN)
+        CT_ENUM_TO_STR(VX_ERROR_TIMEOUT)
         CT_ENUM_TO_STR(VX_ERROR_REFERENCE_NONZERO)
         CT_ENUM_TO_STR(VX_ERROR_MULTIPLE_WRITERS)
         CT_ENUM_TO_STR(VX_ERROR_GRAPH_ABANDONED)
