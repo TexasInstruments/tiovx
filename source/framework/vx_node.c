@@ -1561,7 +1561,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
     {
         if(node->is_enable_send_complete_event != (vx_bool)vx_false_e)
         {
-            if ((vx_bool)vx_true_e == node->is_context_event)
+            if ((vx_bool)vx_true_e == node->is_context_completion_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->base.context->event_queue,
                             (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_context_app_value,
@@ -1571,7 +1571,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
                 }
             }
 
-            if ((vx_bool)vx_true_e == node->is_graph_streaming_event)
+            if ((vx_bool)vx_true_e == node->is_graph_streaming_node_completion_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->streaming_event_queue,
                             (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_graph_streaming_app_value,
@@ -1581,7 +1581,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
                 }
             }
 
-            if ((vx_bool)vx_true_e == node->is_graph_event)
+            if ((vx_bool)vx_true_e == node->is_graph_node_completion_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
                             (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_graph_app_value,
@@ -1606,7 +1606,7 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR029
 <justification end> */
-            if ((vx_bool)vx_true_e == node->is_context_event)
+            if ((vx_bool)vx_true_e == node->is_context_error_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->base.context->event_queue,
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_context_app_value,
@@ -1616,16 +1616,7 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
                 }
             }
 /* LDRA_JUSTIFY_END */
-            if ((vx_bool)vx_true_e == node->is_graph_streaming_event)
-            {
-                if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->streaming_event_queue,
-                            (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_graph_streaming_app_value,
-                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Failed to add event to streaming event queue \n");
-                }
-            }
-            if ((vx_bool)vx_true_e == node->is_graph_event)
+            if ((vx_bool)vx_true_e == node->is_graph_error_event)
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_graph_app_value,
@@ -1690,9 +1681,11 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                         node->local_data_ptr_is_alloc = (vx_bool)vx_false_e;
                         node->local_data_set_allow = (vx_bool)vx_false_e;
                         node->pipeline_depth = 1;
-                        node->is_context_event = (vx_bool)vx_false_e;
-                        node->is_graph_event = (vx_bool)vx_false_e;
-                        node->is_graph_streaming_event = (vx_bool)vx_false_e;
+                        node->is_context_error_event = (vx_bool)vx_false_e;
+                        node->is_context_completion_event = (vx_bool)vx_false_e;
+                        node->is_graph_error_event = (vx_bool)vx_false_e;
+                        node->is_graph_node_completion_event = (vx_bool)vx_false_e;
+                        node->is_graph_streaming_node_completion_event = (vx_bool)vx_false_e;
                         node->node_completed_context_app_value = 0;
                         node->node_completed_graph_app_value = 0;
                         node->node_completed_graph_streaming_app_value = 0;
@@ -2621,12 +2614,12 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
 
                 if ((vx_enum)TIVX_EVENT_GRAPH_STREAMING_QUEUE == (vx_enum)queue_type)
                 {
-                    node->is_graph_streaming_event = (vx_bool)vx_true_e;
+                    node->is_graph_streaming_node_completion_event = (vx_bool)vx_true_e;
                     node->node_completed_graph_streaming_app_value = app_value;
                 }
                 else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)
                 {
-                    node->is_context_event = (vx_bool)vx_true_e;
+                    node->is_context_completion_event = (vx_bool)vx_true_e;
                     node->node_completed_context_app_value = app_value;
                 }
 /* LDRA_JUSTIFY_START
@@ -2635,7 +2628,7 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
 <justification end> */
                 else if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
                 {
-                    node->is_graph_event = (vx_bool)vx_true_e;
+                    node->is_graph_node_completion_event = (vx_bool)vx_true_e;
                     node->node_completed_graph_app_value = app_value;
                 }
 /* LDRA_JUSTIFY_END */
@@ -2654,14 +2647,9 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
             {
                 node->is_enable_send_error_event = (vx_bool)vx_true_e;
 
-                if ((vx_enum)TIVX_EVENT_GRAPH_STREAMING_QUEUE == (vx_enum)queue_type)
+                if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)
                 {
-                    node->is_graph_streaming_event = (vx_bool)vx_true_e;
-                    node->node_error_graph_streaming_app_value = app_value;
-                }
-                else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)
-                {
-                    node->is_context_event = (vx_bool)vx_true_e;
+                    node->is_context_error_event = (vx_bool)vx_true_e;
                     node->node_error_context_app_value = app_value;
                 }
 /* LDRA_JUSTIFY_START
@@ -2670,7 +2658,7 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
 <justification end> */
                 else if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
                 {
-                    node->is_graph_event = (vx_bool)vx_true_e;
+                    node->is_graph_error_event = (vx_bool)vx_true_e;
                     node->node_error_graph_app_value = app_value;
                 }
 /* LDRA_JUSTIFY_END */

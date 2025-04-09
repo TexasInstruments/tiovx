@@ -89,14 +89,20 @@ typedef struct _vx_node {
     /*! \brief when true a event is sent when a node execution is completed and is an error */
     vx_bool is_enable_send_error_event;
 
-    /*! \brief flag to indicate whether event is using event queue for graph events */
-    vx_bool is_graph_event;
+    /*! \brief flag to indicate whether event is using graph event queue for node error events */
+    vx_bool is_graph_error_event;
 
-    /*! \brief flag to indicate whether event is using event queue for graph streaming */
-    vx_bool is_graph_streaming_event;
+    /*! \brief flag to indicate whether event is using graph event queue for node completion events */
+    vx_bool is_graph_node_completion_event;
 
-    /*! \brief flag to indicate whether event is using context event queue */
-    vx_bool is_context_event;
+    /*! \brief flag to indicate whether event is using streaming event queue for graph streaming */
+    vx_bool is_graph_streaming_node_completion_event;
+
+    /*! \brief flag to indicate whether error event is using context event queue */
+    vx_bool is_context_error_event;
+
+    /*! \brief flag to indicate whether completion event is using context event queue */
+    vx_bool is_context_completion_event;
 
     /*! \brief flag to indicate whether node has timed out */
     vx_bool is_timed_out;
