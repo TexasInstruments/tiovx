@@ -778,7 +778,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterGraphEvent(vx_reference graph_or_no
  *
  * \param [in] graph        the graph from which events are expected
  * \param [out] event       pointer to a data structure that will hold information about the received event
- * \param [in] do_not_block When the value is vx_true_e tha API does not block and only checks for the condition
+ * \param [in] do_not_block When the value is vx_true_e the API does not block and only checks for the condition
  *
  * \return a vx_status value.
  * \retval VX_SUCCESS                   an event was received
