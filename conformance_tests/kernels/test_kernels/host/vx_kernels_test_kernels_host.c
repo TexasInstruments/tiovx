@@ -143,23 +143,11 @@ static vx_status VX_CALLBACK unPublishKernels(vx_context context)
 void tivxRegisterTestKernelsKernels(void)
 {
     tivxRegisterModule(TIVX_MODULE_NAME_TEST_KERNELS, publishKernels, unPublishKernels);
-}
 
-void tivxUnRegisterTestKernelsKernels(void)
-{
-    tivxUnRegisterModule(TIVX_MODULE_NAME_TEST_KERNELS);
-}
-
-void tivxTestKernelsLoadKernels(vx_context context)
-{
-    if ((0 == gIsTestKernelsKernelsLoad) && (NULL != context))
-    {
-        tivxRegisterTestKernelsKernels();
-        vxLoadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
 
 #if defined(MPU)
-        tivxRegisterTestKernelsTargetArmKernels();
-        tivxRegisterCaptureTargetArmKernels();
+    tivxRegisterTestKernelsTargetArmKernels();
+    tivxRegisterCaptureTargetArmKernels();
 #endif
 
 #ifdef x86_64
@@ -198,6 +186,61 @@ void tivxTestKernelsLoadKernels(vx_context context)
     tivxRegisterTestKernelsTargetDspKernels();
     #endif
 #endif
+}
+
+void tivxUnRegisterTestKernelsKernels(void)
+{
+    tivxUnRegisterModule(TIVX_MODULE_NAME_TEST_KERNELS);
+#if defined(MPU)
+    tivxUnRegisterTestKernelsTargetArmKernels();
+    tivxUnRegisterCaptureTargetArmKernels();
+#endif
+
+#ifdef x86_64
+
+    void tivxSetSelfCpuId(vx_enum cpu_id);
+
+    #if defined(SOC_AM62A)
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
+    tivxUnRegisterCaptureTargetArmKernels();
+    tivxUnRegisterTestKernelsTargetArmKernels();
+    #else
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
+    tivxUnRegisterCaptureTargetArmKernels();
+    tivxUnRegisterTestKernelsTargetArmKernels();
+    #ifndef SOC_J722S
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
+    tivxUnRegisterCaptureTargetArmKernels();
+    tivxUnRegisterTestKernelsTargetArmKernels();
+    #endif
+    #endif
+
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
+    tivxUnRegisterCaptureTargetArmKernels();
+    tivxUnRegisterTestKernelsTargetArmKernels();
+
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+    tivxUnRegisterCaptureTargetArmKernels();
+    tivxUnRegisterTestKernelsTargetDspKernels();
+
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP_C7_1);
+    tivxUnRegisterCaptureTargetArmKernels();
+    tivxUnRegisterTestKernelsTargetDspKernels();
+
+    #if defined (SOC_J721E) || defined (SOC_J722S)
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
+    tivxUnRegisterTestKernelsTargetDspKernels();
+    #endif
+#endif
+}
+
+void tivxTestKernelsLoadKernels(vx_context context)
+{
+    if ((0 == gIsTestKernelsKernelsLoad) && (NULL != context))
+    {
+        tivxRegisterTestKernelsKernels();
+        vxLoadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
+
         gIsTestKernelsKernelsLoad = 1U;
     }
 }
@@ -208,48 +251,6 @@ void tivxTestKernelsUnLoadKernels(vx_context context)
     {
         vxUnloadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
         tivxUnRegisterTestKernelsKernels();
-
-#if defined(MPU)
-        tivxUnRegisterTestKernelsTargetArmKernels();
-        tivxUnRegisterCaptureTargetArmKernels();
-#endif
-
-#ifdef x86_64
-
-    void tivxSetSelfCpuId(vx_enum cpu_id);
-
-    #if defined(SOC_AM62A)
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
-    tivxUnRegisterCaptureTargetArmKernels();
-    tivxUnRegisterTestKernelsTargetArmKernels();
-    #else
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
-    tivxUnRegisterCaptureTargetArmKernels();
-    tivxUnRegisterTestKernelsTargetArmKernels();
-    #ifndef SOC_J722S
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
-    tivxUnRegisterCaptureTargetArmKernels();
-    tivxUnRegisterTestKernelsTargetArmKernels();
-    #endif
-    #endif
-
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
-    tivxUnRegisterCaptureTargetArmKernels();
-    tivxUnRegisterTestKernelsTargetArmKernels();
-
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
-    tivxUnRegisterCaptureTargetArmKernels();
-    tivxUnRegisterTestKernelsTargetDspKernels();
-
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP_C7_1);
-    tivxUnRegisterCaptureTargetArmKernels();
-    tivxUnRegisterTestKernelsTargetDspKernels();
-
-    #if defined (SOC_J721E) || defined (SOC_J722S)
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
-    tivxUnRegisterTestKernelsTargetDspKernels();
-    #endif
-#endif
 
         gIsTestKernelsKernelsLoad = 0U;
     }
