@@ -518,7 +518,7 @@ void ownTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
             }
         }
         #if 1
-        if( (0 != *is_node_blocked) && ((vx_bool)vx_false_e == is_pipeup) )
+        if( ((vx_bool)vx_true_e == *is_node_blocked) && ((vx_bool)vx_false_e == is_pipeup) )
         {
             /* node is blocked on some resource, dont acquire more resources */
             VX_PRINT(VX_ZONE_INFO,"Parameter acquire ... ABORTING (node=%d, pipe=%d)\n",
