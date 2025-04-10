@@ -776,7 +776,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
         uintptr_t   obj_id;
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
-        status = tivxQueueGet(&context->free_queue, &obj_id, VX_TIMEOUT_WAIT_FOREVER);
+        status = tivxQueueGet(&context->free_queue, &obj_id, timeout);
 
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
@@ -909,6 +909,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                     }
                 }
 /* LDRA_JUSTIFY_END */
+                ownLogSetResourceUsedValue("TIVX_MAX_CTRL_CMD_OBJECTS", (uint16_t)obj_id);
             }
             else
             {
@@ -917,7 +918,6 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                 status = (vx_status)VX_FAILURE;
             }
         }
-        ownLogSetResourceUsedValue("TIVX_MAX_CTRL_CMD_OBJECTS", (uint16_t)obj_id);
     }
     else
     {
@@ -951,7 +951,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
         uintptr_t   obj_id;
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
-        status = tivxQueueGet(&context->free_queue, &obj_id, VX_TIMEOUT_WAIT_FOREVER);
+        status = tivxQueueGet(&context->free_queue, &obj_id, timeout);
 
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
