@@ -27,7 +27,6 @@
       from the below libraries are also excluded.)
         - utils/ipc
         - utils/mem
-        - utils/misc
         - utils/rtos
         - utils/timer
 
@@ -302,7 +301,10 @@
      a timeout error within these API's.
 
      The following graph related API's may return the \ref VX_ERROR_TIMEOUT error when enabling timeouts on the graph or
-     nodes within the graph due to this scenario, even though they are non-blocking.
+     nodes within the graph due to this scenario, even though they are non-blocking.  It is very important to note that even
+     if the graph timeout is set, the below two API's may still block due to the underlying IPC occurring when calling the create
+     and delete callbacks.  Therefore, to avoid this blocking call, every node in the graph must also have a timeout set
+     via the \ref TIVX_NODE_TIMEOUT attribute.
      - \ref vxVerifyGraph
      - \ref vxReleaseGraph
 
