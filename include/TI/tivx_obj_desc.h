@@ -277,6 +277,20 @@ typedef enum _tivx_image_create_type_e
 } tivx_image_create_type_e;
 
 /*!
+ * \brief Method by which tensor is created
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef enum _tivx_tensor_create_type_e
+{
+    /*! \brief Create using vxCreateTensor() */
+    TIVX_TENSOR_NORMAL,
+    /*! \brief Create using vxCreateTensorFromROI() */
+    TIVX_TENSOR_FROM_ROI
+
+} tivx_tensor_create_type_e;
+
+/*!
  * \brief Remap point in remap table
  *
  * \ingroup group_tivx_obj_desc
@@ -888,6 +902,8 @@ typedef struct _tivx_obj_desc_tensor
     volatile uint32_t number_of_dimensions;
     /*! \brief Data type of tensor */
     volatile uint32_t data_type;
+    /*! \brief method by which tensor was created, see \ref tivx_tensor_create_type_e */
+    volatile uint32_t create_type;    
     /*! \brief Fixed point precision of the tensor */
     volatile uint32_t fixed_point_position;
     /*! \brief each element of the tensor can be divided by this scaling value in order to obtain its real value */
@@ -912,6 +928,8 @@ typedef struct _tivx_obj_desc_tensor
     volatile uint32_t stride[TIVX_CONTEXT_MAX_TENSOR_DIMS];
     /*! \brief Buffer size */
     volatile uint32_t mem_size;
+    /*! \brief object descriptor ID of parent (if any) */
+    volatile uint16_t parent_id;    
     /*! \brief alignment */
     volatile uint16_t align[1];
 } tivx_obj_desc_tensor_t;
