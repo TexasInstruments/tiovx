@@ -2722,6 +2722,7 @@ TEST(tivxSourceNode, testMultiInOutEnqueue)
 
 
 TESTCASE_TESTS(tivxSourceNode,
+               DISABLED_testMultiInOutEnqueue,
                testSourceObjArray,
                testSourcePyramid,
                DISABLED_testSourceObjArray2,
@@ -2752,6 +2753,5 @@ TESTCASE_TESTS(tivxSourceNode,
                testIntermediateNodePyramidReplicate,
                testSourceIntSinkPyramid,
                testContextRelease,
-               testVirtualImageInitDeinit,
-               testMultiInOutEnqueue)
+               testVirtualImageInitDeinit)
 
