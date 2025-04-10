@@ -2722,7 +2722,7 @@ TEST(tivxSourceNode, testMultiInOutEnqueue)
 
 
 TESTCASE_TESTS(tivxSourceNode,
-               DISABLED_testMultiInOutEnqueue,
+               testMultiInOutEnqueue,
                testSourceObjArray,
                testSourcePyramid,
                DISABLED_testSourceObjArray2,
