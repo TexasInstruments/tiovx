@@ -67,8 +67,6 @@
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
 
-static tivx_target_kernel vx_tiovx_overhead_target_kernel = NULL;
-
 static vx_status VX_CALLBACK tivxTiovxOverheadProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -161,7 +159,7 @@ void tivxAddTargetKernelTiovxOverhead(void)
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) )
     {
-        vx_tiovx_overhead_target_kernel = tivxAddTargetKernelByName(
+        tivxAddTargetKernelByName(
                             TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
                             target_name,
                             tivxTiovxOverheadProcess,
@@ -173,7 +171,7 @@ void tivxAddTargetKernelTiovxOverhead(void)
     else if (self_cpu == TIVX_CPU_ID_MPU_0)
     {
         strncpy(target_name, TIVX_TARGET_MPU_0, TIVX_TARGET_MAX_NAME);
-        vx_tiovx_overhead_target_kernel = tivxAddTargetKernelByName(
+        tivxAddTargetKernelByName(
                             TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
                             target_name,
                             tivxTiovxOverheadProcess,
@@ -186,7 +184,7 @@ void tivxAddTargetKernelTiovxOverhead(void)
     else if (self_cpu == TIVX_CPU_ID_DSP_C7_1)
     {
         strncpy(target_name, TIVX_TARGET_DSP_C7_1, TIVX_TARGET_MAX_NAME);
-        vx_tiovx_overhead_target_kernel = tivxAddTargetKernelByName(
+        tivxAddTargetKernelByName(
                             TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
                             target_name,
                             tivxTiovxOverheadProcess,
@@ -200,7 +198,6 @@ void tivxAddTargetKernelTiovxOverhead(void)
 
 void tivxRemoveTargetKernelTiovxOverhead(void)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -209,36 +206,21 @@ void tivxRemoveTargetKernelTiovxOverhead(void)
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) )
     {
-        status = tivxRemoveTargetKernelByName(vx_tiovx_overhead_target_kernel,
-                            TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
+        tivxRemoveTargetKernelByName(TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
                             target_name);
-        if (status == (vx_status)VX_SUCCESS)
-        {
-            vx_tiovx_overhead_target_kernel = NULL;
-        }
     }
     else if (self_cpu == TIVX_CPU_ID_MPU_0)
     {
         strncpy(target_name, TIVX_TARGET_MPU_0, TIVX_TARGET_MAX_NAME);
-        status = tivxRemoveTargetKernelByName(vx_tiovx_overhead_target_kernel,
-                            TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
+        tivxRemoveTargetKernelByName(TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
                             target_name);
-        if (status == (vx_status)VX_SUCCESS)
-        {
-            vx_tiovx_overhead_target_kernel = NULL;
-        }
     }
     #if defined(SOC_J721E)
     else if (self_cpu == TIVX_CPU_ID_DSP_C7_1)
     {
         strncpy(target_name, TIVX_TARGET_DSP_C7_1, TIVX_TARGET_MAX_NAME);
-        status = tivxRemoveTargetKernelByName(vx_tiovx_overhead_target_kernel,
-                            TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
+        tivxRemoveTargetKernelByName(TIVX_KERNEL_TIOVX_OVERHEAD_NAME,
                             target_name);
-        if (status == (vx_status)VX_SUCCESS)
-        {
-            vx_tiovx_overhead_target_kernel = NULL;
-        }
     }
     #endif
 }

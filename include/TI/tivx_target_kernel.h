@@ -187,7 +187,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
  *
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernelByName(
-    tivx_target_kernel target_kernel,
     const char *kernel_name,
     const char *target_name);
 

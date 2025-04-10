@@ -70,8 +70,6 @@
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
 
-static tivx_target_kernel vx_cmd_timeout_test_target_kernel = NULL;
-
 static vx_status VX_CALLBACK tivxCmdTimeoutTestProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -313,7 +311,7 @@ void tivxAddTargetKernelCmdTimeoutTest(void)
 
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_cmd_timeout_test_target_kernel = tivxAddTargetKernelByName(
+        tivxAddTargetKernelByName(
                             TIVX_KERNEL_CMD_TIMEOUT_TEST_NAME,
                             target_name,
                             tivxCmdTimeoutTestProcess,
@@ -344,13 +342,8 @@ void tivxRemoveTargetKernelCmdTimeoutTest(void)
 
     if (status == (vx_status)VX_SUCCESS)
     {
-        status = tivxRemoveTargetKernelByName(vx_cmd_timeout_test_target_kernel,
-                            TIVX_KERNEL_CMD_TIMEOUT_TEST_NAME,
+        status = tivxRemoveTargetKernelByName(TIVX_KERNEL_CMD_TIMEOUT_TEST_NAME,
                             target_name);
-        if (status == (vx_status)VX_SUCCESS)
-        {
-            vx_cmd_timeout_test_target_kernel = NULL;
-        }
     }
 }
 

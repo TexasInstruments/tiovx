@@ -76,8 +76,6 @@ typedef struct
     uint8_t do_error_print;
 } tivxPyramidSinkParams;
 
-static tivx_target_kernel vx_pyramid_sink_target_kernel = NULL;
-
 static vx_status VX_CALLBACK tivxPyramidSinkProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -194,7 +192,7 @@ void tivxAddTargetKernelPyramidSink(void)
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
-        vx_pyramid_sink_target_kernel = tivxAddTargetKernelByName(
+        tivxAddTargetKernelByName(
                             TIVX_KERNEL_PYRAMID_SINK_NAME,
                             target_name,
                             tivxPyramidSinkProcess,
@@ -207,7 +205,6 @@ void tivxAddTargetKernelPyramidSink(void)
 
 void tivxRemoveTargetKernelPyramidSink(void)
 {
-    vx_status status = VX_SUCCESS;
     char target_name[TIVX_TARGET_MAX_NAME];
 
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
@@ -215,13 +212,8 @@ void tivxRemoveTargetKernelPyramidSink(void)
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
-        status = tivxRemoveTargetKernelByName(vx_pyramid_sink_target_kernel,
-            TIVX_KERNEL_PYRAMID_SINK_NAME,
+        tivxRemoveTargetKernelByName(TIVX_KERNEL_PYRAMID_SINK_NAME,
             target_name);
-        if (status == VX_SUCCESS)
-        {
-            vx_pyramid_sink_target_kernel = NULL;
-        }
     }
 }
 

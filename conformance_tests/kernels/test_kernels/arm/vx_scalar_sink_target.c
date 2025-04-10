@@ -75,8 +75,6 @@ typedef struct
     uint8_t do_error_print;
 } tivxScalarSinkParams;
 
-static tivx_target_kernel vx_scalar_sink_target_kernel = NULL;
-
 static vx_status VX_CALLBACK tivxScalarSinkProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -191,7 +189,7 @@ void tivxAddTargetKernelScalarSink(void)
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
-        vx_scalar_sink_target_kernel = tivxAddTargetKernelByName(
+        tivxAddTargetKernelByName(
                             TIVX_KERNEL_SCALAR_SINK_NAME,
                             target_name,
                             tivxScalarSinkProcess,
@@ -204,7 +202,6 @@ void tivxAddTargetKernelScalarSink(void)
 
 void tivxRemoveTargetKernelScalarSink(void)
 {
-    vx_status status = VX_SUCCESS;
     char target_name[TIVX_TARGET_MAX_NAME];
 
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
@@ -212,13 +209,8 @@ void tivxRemoveTargetKernelScalarSink(void)
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
-        status = tivxRemoveTargetKernelByName(vx_scalar_sink_target_kernel,
-            TIVX_KERNEL_SCALAR_SINK_NAME,
+        tivxRemoveTargetKernelByName(TIVX_KERNEL_SCALAR_SINK_NAME,
             target_name);
-        if (status == VX_SUCCESS)
-        {
-            vx_scalar_sink_target_kernel = NULL;
-        }
     }
 }
 

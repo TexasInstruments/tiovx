@@ -270,10 +270,10 @@ typedef enum _tivx_target_id_e {
 }
 
 /* Build check to make sure that all of VPAC targets are controlled from the same core */
-BUILD_ASSERT( (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_LDC1)) && \
+BUILD_ASSERT(((TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_LDC1)) && \
               (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_MSC1)) && \
               (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_MSC2)) && \
-              (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_NF)) ? 1U : 0U );
+              (TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_VISS1) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_VPAC_NF))) ? 1U : 0U );
 
 /* Build check to make sure that all of DMPAC targets are controlled from the same core */
 BUILD_ASSERT( (TIVX_GET_CPU_ID(TIVX_TARGET_ID_DMPAC_SDE) == TIVX_GET_CPU_ID(TIVX_TARGET_ID_DMPAC_DOF)) ? 1U : 0U );

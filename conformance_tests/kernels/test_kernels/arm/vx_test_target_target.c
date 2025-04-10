@@ -105,8 +105,6 @@
 
 #define INVALID_MEM_REGION    APP_MEM_HEAP_MAX + 1
 
-static tivx_target_kernel vx_test_target_target_kernel = NULL;
-
 static vx_status VX_CALLBACK tivxTestTargetProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -4188,7 +4186,7 @@ void tivxAddTargetKernelTestTarget(void)
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)))
     {
-        vx_test_target_target_kernel = tivxAddTargetKernelByName(
+        tivxAddTargetKernelByName(
                             TIVX_KERNEL_TEST_TARGET_NAME,
                             target_name,
                             tivxTestTargetProcess,
@@ -4201,7 +4199,7 @@ void tivxAddTargetKernelTestTarget(void)
     else if (self_cpu == TIVX_CPU_ID_DSP_C7_1)
     {
         strncpy(target_name, TIVX_TARGET_DSP_C7_1, TIVX_TARGET_MAX_NAME);
-        vx_test_target_target_kernel = tivxAddTargetKernelByName(
+        tivxAddTargetKernelByName(
                             TIVX_KERNEL_TEST_TARGET_NAME,
                             target_name,
                             tivxTestTargetProcess,
@@ -4215,7 +4213,6 @@ void tivxAddTargetKernelTestTarget(void)
 
 void tivxRemoveTargetKernelTestTarget(void)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
     char target_name[TIVX_TARGET_MAX_NAME];
     #if defined(SOC_J721E)
     vx_enum self_cpu;
@@ -4227,25 +4224,15 @@ void tivxRemoveTargetKernelTestTarget(void)
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)))
     {
-        status = tivxRemoveTargetKernelByName(vx_test_target_target_kernel,
-            TIVX_KERNEL_TEST_TARGET_NAME,
+        tivxRemoveTargetKernelByName(TIVX_KERNEL_TEST_TARGET_NAME,
             target_name);
-        if (status == (vx_status)VX_SUCCESS)
-        {
-            vx_test_target_target_kernel = NULL;
-        }
     }
     #if defined(SOC_J721E)
     else if (self_cpu == TIVX_CPU_ID_DSP_C7_1)
     {
         strncpy(target_name, TIVX_TARGET_DSP_C7_1, TIVX_TARGET_MAX_NAME);
-        status = tivxRemoveTargetKernelByName(vx_test_target_target_kernel,
-            TIVX_KERNEL_TEST_TARGET_NAME,
+        tivxRemoveTargetKernelByName(TIVX_KERNEL_TEST_TARGET_NAME,
             target_name);
-        if (status == (vx_status)VX_SUCCESS)
-        {
-            vx_test_target_target_kernel = NULL;
-        }
     }
     #endif /* #if defined(SOC_J721E) */
 }

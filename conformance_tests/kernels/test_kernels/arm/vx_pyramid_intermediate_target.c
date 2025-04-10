@@ -68,8 +68,6 @@
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
 
-static tivx_target_kernel vx_pyramid_intermediate_target_kernel = NULL;
-
 static vx_status VX_CALLBACK tivxPyramidIntermediateProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -216,7 +214,7 @@ void tivxAddTargetKernelPyramidIntermediate(void)
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
-        vx_pyramid_intermediate_target_kernel = tivxAddTargetKernelByName(
+        tivxAddTargetKernelByName(
                             TIVX_KERNEL_PYRAMID_INTERMEDIATE_NAME,
                             target_name,
                             tivxPyramidIntermediateProcess,
@@ -229,7 +227,6 @@ void tivxAddTargetKernelPyramidIntermediate(void)
 
 void tivxRemoveTargetKernelPyramidIntermediate(void)
 {
-    vx_status status = VX_SUCCESS;
     char target_name[TIVX_TARGET_MAX_NAME];
 
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
@@ -237,13 +234,8 @@ void tivxRemoveTargetKernelPyramidIntermediate(void)
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
-        status = tivxRemoveTargetKernelByName(vx_pyramid_intermediate_target_kernel,
-            TIVX_KERNEL_PYRAMID_INTERMEDIATE_NAME,
+        tivxRemoveTargetKernelByName(TIVX_KERNEL_PYRAMID_INTERMEDIATE_NAME,
             target_name);
-        if (status == VX_SUCCESS)
-        {
-            vx_pyramid_intermediate_target_kernel = NULL;
-        }
     }
 }
 

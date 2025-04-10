@@ -69,8 +69,6 @@
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
 
-static tivx_target_kernel vx_scalar_source_error_target_kernel = NULL;
-
 static vx_status VX_CALLBACK tivxScalarSourceErrorProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -141,7 +139,7 @@ void tivxAddTargetKernelScalarSourceError(void)
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
-        vx_scalar_source_error_target_kernel = tivxAddTargetKernelByName(
+        tivxAddTargetKernelByName(
                             TIVX_KERNEL_SCALAR_SOURCE_ERROR_NAME,
                             target_name,
                             tivxScalarSourceErrorProcess,
@@ -154,7 +152,6 @@ void tivxAddTargetKernelScalarSourceError(void)
 
 void tivxRemoveTargetKernelScalarSourceError(void)
 {
-    vx_status status = VX_SUCCESS;
     char target_name[TIVX_TARGET_MAX_NAME];
 
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
@@ -162,13 +159,8 @@ void tivxRemoveTargetKernelScalarSourceError(void)
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
-        status = tivxRemoveTargetKernelByName(vx_scalar_source_error_target_kernel,
-            TIVX_KERNEL_SCALAR_SOURCE_ERROR_NAME,
+        tivxRemoveTargetKernelByName(TIVX_KERNEL_SCALAR_SOURCE_ERROR_NAME,
             target_name);
-        if (status == VX_SUCCESS)
-        {
-            vx_scalar_source_error_target_kernel = NULL;
-        }
     }
 }
 

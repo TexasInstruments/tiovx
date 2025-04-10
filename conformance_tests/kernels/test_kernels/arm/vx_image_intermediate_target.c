@@ -73,8 +73,6 @@
 #define TEST_MODE_PROCESS_FAILURE_VAL 200
 #define TEST_MODE_DELETE_FAILURE_VAL  30
 
-static tivx_target_kernel vx_image_intermediate_target_kernel = NULL;
-
 static vx_status VX_CALLBACK tivxImageIntermediateProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -322,7 +320,7 @@ void tivxAddTargetKernelImageIntermediate(void)
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
-        vx_image_intermediate_target_kernel = tivxAddTargetKernelByName(
+        tivxAddTargetKernelByName(
                             TIVX_KERNEL_IMAGE_INTERMEDIATE_NAME,
                             target_name,
                             tivxImageIntermediateProcess,
@@ -335,7 +333,6 @@ void tivxAddTargetKernelImageIntermediate(void)
 
 void tivxRemoveTargetKernelImageIntermediate(void)
 {
-    vx_status status = VX_SUCCESS;
     char target_name[TIVX_TARGET_MAX_NAME];
 
     if( ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMcu(target_name)) ||
@@ -343,13 +340,8 @@ void tivxRemoveTargetKernelImageIntermediate(void)
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameMpu(target_name)) ||
         ((vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameC7x(target_name)))
     {
-        status = tivxRemoveTargetKernelByName(vx_image_intermediate_target_kernel,
-                            TIVX_KERNEL_IMAGE_INTERMEDIATE_NAME,
+        tivxRemoveTargetKernelByName(TIVX_KERNEL_IMAGE_INTERMEDIATE_NAME,
                             target_name);
-        if (status == VX_SUCCESS)
-        {
-            vx_image_intermediate_target_kernel = NULL;
-        }
     }
 }
 
