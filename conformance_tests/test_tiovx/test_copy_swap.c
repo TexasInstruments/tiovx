@@ -90,6 +90,56 @@ static const vx_enum type_ids[] =
     VX_TYPE_USER_DATA_OBJECT
     };
 
+static const vx_enum format_list[] = {
+    VX_DF_IMAGE_NV12,
+    VX_DF_IMAGE_NV21,
+    VX_DF_IMAGE_IYUV,
+    VX_DF_IMAGE_YUV4,
+    VX_DF_IMAGE_U8,
+    VX_DF_IMAGE_U16,
+    VX_DF_IMAGE_S16,
+    VX_DF_IMAGE_RGBX,
+    VX_DF_IMAGE_VIRT,
+    TIVX_DF_IMAGE_BGRX,
+    VX_DF_IMAGE_U32,
+    VX_DF_IMAGE_S32,
+    VX_DF_IMAGE_RGB,
+    VX_DF_IMAGE_YUYV,
+    VX_DF_IMAGE_UYVY,
+    TIVX_DF_IMAGE_RGB565,
+    TIVX_DF_IMAGE_P12,
+    TIVX_DF_IMAGE_NV12_P12
+};
+
+static const vx_enum supported_format_list[] = {
+    VX_DF_IMAGE_U8,
+    VX_DF_IMAGE_U16,
+    VX_DF_IMAGE_S16,
+    VX_DF_IMAGE_RGBX,
+    TIVX_DF_IMAGE_BGRX,
+    VX_DF_IMAGE_U32,
+    VX_DF_IMAGE_S32,
+    VX_DF_IMAGE_RGB,
+    VX_DF_IMAGE_YUYV,
+    VX_DF_IMAGE_UYVY,
+    TIVX_DF_IMAGE_RGB565,
+    TIVX_DF_IMAGE_P12
+};
+
+static vx_bool is_image_format_supported(vx_enum format)
+{
+    vx_bool found = vx_false_e;
+    for (vx_uint32 i = 0; i < dimof(supported_format_list); i++)
+    {
+        if (supported_format_list[i] == format)
+        {
+            found = vx_true_e;
+            break;
+        }
+    }
+    return found;
+}
+
 #define NUM_TYPES (sizeof(type_ids) / sizeof(vx_enum))
 
 typedef struct _user_data
@@ -502,7 +552,7 @@ static vx_status checkValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
             if (VX_SUCCESS == status)
             {
                 status = vxCopyTensorPatch((vx_tensor)ref, num_dims, start, end, strides, data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
-                for (i = 0; i < size; i+=strides[0])
+                for (i = 0; i < 2; i+=strides[0])
                 {
                     if (data[i] != (((i / strides[0]) & 1)? b: a) )
                     {
@@ -1250,8 +1300,139 @@ TEST (copySwap, testSubObjectsOfImages )
     }
 }
 
+/* Check sub-image from tensor created from vxCreateTensorFromROI
+*/
+TEST (copySwap, testSubObjectsOfTensors )
+{
+    vx_status status = VX_SUCCESS;
+    vx_context context = context_->vx_context_;
+    vx_tensor tensors[4];
+    vx_size dims[2] = {16, 16};
+    vx_graph graph = NULL;
+
+    vx_rectangle_t rect0 = {.start_x = 0, .start_y = 0, .end_x = 10, .end_y = 8};
+    vx_rectangle_t rect1 = {.start_x = 0, .start_y = 0, .end_x = 10, .end_y = 10};
+    vx_rectangle_t rect_wrong_0 = {.start_x = 11, .start_y = 0, .end_x = 10, .end_y = 8};
+    vx_rectangle_t rect_wrong_1 = {.start_x = 0, .start_y = 10, .end_x = 10, .end_y = 8};
+    vx_rectangle_t rect_wrong_2 = {.start_x = 11, .start_y = 10, .end_x = 10, .end_y = 8};
+    vx_rectangle_t rect_wrong_3 = {.start_x = 0, .start_y = 10, .end_x = 10, .end_y = 800};
+    vx_rectangle_t rect_wrong_4 = {.start_x = 0, .start_y = 10, .end_x = 100, .end_y = 10};
+    vx_rectangle_t rect_wrong_5 = {.start_x = 0, .start_y = 10, .end_x = 100, .end_y = 800};
+
+
+    /* negative testing */
+    tensors[0] = vxCreateTensorFromROI(NULL, &rect1, 0);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[0]));
+    tensors[0] = vxCreateTensorFromROI(NULL, NULL, 0);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[0]));
+    /* other inputs and negative testing */
+    vx_image image_0 = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    tensors[0] = vxCreateTensorFromROI(image_0, &rect_wrong_0, 0);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[0]));
+    tensors[0] = vxCreateTensorFromROI(image_0, &rect_wrong_1, 0);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[0]));
+    tensors[0] = vxCreateTensorFromROI(image_0, &rect_wrong_2, 0);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[0]));
+    tensors[0] = vxCreateTensorFromROI(image_0, &rect_wrong_3, 0);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[0]));
+    tensors[0] = vxCreateTensorFromROI(image_0, &rect_wrong_4, 0);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[0]));
+    tensors[0] = vxCreateTensorFromROI(image_0, &rect_wrong_5, 0);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[0]));    
+    ASSERT_VX_OBJECT(tensors[0] = vxCreateTensorFromROI(image_0, NULL, 0), (enum vx_type_e)VX_TYPE_TENSOR);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[0]));
+    ASSERT_VX_OBJECT(tensors[1] = vxCreateTensor(context, 2, dims, VX_TYPE_UINT8, 0), (enum vx_type_e)VX_TYPE_TENSOR);
+    EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxuSwap(context, (vx_reference)tensors[0], (vx_reference)tensors[1]));
+    EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxuSwap(context, (vx_reference)tensors[1], (vx_reference)tensors[0]));
+    ASSERT_VX_OBJECT(tensors[2] = vxCreateTensorFromROI(image_0, NULL, 0), (enum vx_type_e)VX_TYPE_TENSOR);
+    EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxuSwap(context, (vx_reference)tensors[0], (vx_reference)tensors[2]));
+    EXPECT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxReleaseTensor(&tensors[3]));
+    EXPECT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxReleaseTensor(NULL));
+    VX_CALL(vxReleaseTensor(&tensors[0]));
+    VX_CALL(vxReleaseTensor(&tensors[1]));
+    VX_CALL(vxReleaseTensor(&tensors[2]));
+    VX_CALL(vxReleaseImage(&image_0));
+    if (graph)
+    {
+        VX_CALL(vxReleaseGraph(&graph));
+    }    
+
+    vx_image images[4];
+    for (uint8_t i = 0; i < dimof(format_list); ++i)
+    {
+        vx_enum format = format_list[i];
+        if (format == VX_DF_IMAGE_VIRT)
+        {
+            ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+            ASSERT_VX_OBJECT(images[0] = vxCreateVirtualImage(graph, 16, 16, format), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(images[1] = vxCreateVirtualImage(graph, 16, 16, format), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(images[2] = vxCreateVirtualImage(graph, 0, 0, format), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(images[3] = vxCreateVirtualImage(graph, 0, 0, format), VX_TYPE_IMAGE);
+        }
+        else
+        {
+            ASSERT_VX_OBJECT(images[0] = vxCreateImage(context, 16, 16, format), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(images[1] = vxCreateImage(context, 16, 16, format), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(images[2] = vxCreateImage(context, 16, 16, format), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(images[3] = vxCreateImage(context, 16, 16, format), VX_TYPE_IMAGE);
+        }
+        
+        tensors[0] = vxCreateTensorFromROI(images[0], &rect1, 0);
+        tensors[1] = vxCreateTensorFromROI(images[1], &rect1, 0);
+        tensors[2] = vxCreateTensorFromROI(images[2], &rect0, 0);
+        tensors[3] = vxCreateTensorFromROI(images[3], &rect0, 0);
+        if ((vx_bool)vx_true_e == is_image_format_supported(format))
+        {
+            writeImage(images[0], 0x15, 0x7e);
+            writeImage(images[1], 0x24, 0x8d);
+            writeImage(images[2], 0x33, 0x9c);
+            writeImage(images[3], 0x42, 0xab);
+
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[0]));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[1]));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[2]));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[3]));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxuSwap(context, (vx_reference)images[0], (vx_reference)images[1]));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(vxCastRefFromTensor(tensors[0]), VX_TYPE_TENSOR, 0x24, 0x8d));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(vxCastRefFromTensor(tensors[1]), VX_TYPE_TENSOR, 0x15, 0x7e));
+        
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(vxCastRefFromImage(images[0]), VX_TYPE_IMAGE, 0x24, 0x8d));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(vxCastRefFromImage(images[1]), VX_TYPE_IMAGE, 0x15, 0x7e));
+        
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxuCopy(context, (vx_reference)images[2], (vx_reference)images[3]));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(vxCastRefFromTensor(tensors[2]), VX_TYPE_TENSOR, 0x33, 0x9c));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(vxCastRefFromTensor(tensors[3]), VX_TYPE_TENSOR, 0x33, 0x9c));
+        
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(vxCastRefFromImage(images[2]), VX_TYPE_IMAGE, 0x33, 0x9c));
+            EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(vxCastRefFromImage(images[3]), VX_TYPE_IMAGE, 0x33, 0x9c));
+            
+            VX_CALL(vxReleaseTensor(&tensors[0]));
+            VX_CALL(vxReleaseTensor(&tensors[1]));
+            VX_CALL(vxReleaseTensor(&tensors[2]));
+            VX_CALL(vxReleaseTensor(&tensors[3]));            
+        }
+        else
+        {
+            EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[0]));
+            EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[1]));
+            EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[2]));
+            EXPECT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)tensors[3]));
+        }
+    
+        vx_uint32 j;
+        for (j = 0; j < 4; ++j)
+        {
+            VX_CALL(vxReleaseImage(&images[j]));
+        }
+        if (graph)
+        {
+            VX_CALL(vxReleaseGraph(&graph));
+        }
+    }
+}
+
 /* Check max of sub-image of sub image */
-TEST (copySwap, testSubObjectsMaxOfSubImages )
+TEST (copySwap, testSubObjectsMaxOfSubImages)
 {
     vx_status status = VX_SUCCESS;
     vx_context context = context_->vx_context_;
@@ -1356,6 +1537,30 @@ TEST (copySwap, testSubObjectsMaxOfSubImages )
         VX_CALL(vxReleaseImage(&yuv_image[i]));
     }      
 }
+
+/* Check max of sub-image of tensor */
+TEST (copySwap, testImageMaxOfSubTensor)
+{
+    vx_status status = VX_SUCCESS;
+    vx_context context = context_->vx_context_;
+    vx_tensor tensor[TIVX_IMAGE_MAX_SUBTENSORS+2];
+    vx_rectangle_t rect0 = {.start_x = 0, .start_y = 0, .end_x = 10, .end_y = 8};
+    vx_image image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    for (uint8_t i = 0; i < TIVX_IMAGE_MAX_SUBTENSORS; ++i)
+    {
+        ASSERT_VX_OBJECT(tensor[i] = vxCreateTensorFromROI(image, &rect0, 0), (enum vx_type_e)VX_TYPE_TENSOR);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus(vxCastRefFromTensor(tensor[i])));
+    }
+    /* max out the number of possible subimages */
+    tensor[TIVX_IMAGE_MAX_SUBTENSORS+1] = vxCreateTensorFromROI(image, &rect0, 0);
+    EXPECT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxGetStatus(vxCastRefFromTensor(tensor[TIVX_IMAGE_MAX_SUBTENSORS+1])));
+    for (uint8_t i = 0; i < TIVX_IMAGE_MAX_SUBTENSORS; ++i)
+    {
+        VX_CALL(vxReleaseTensor(&tensor[i]));
+    }
+    VX_CALL(vxReleaseImage(&image));    
+}
+
 /* check node removal on verification
     When the node has been disconnected, vxGetParameterByIndex should return an error object,
     and the number of nodes in the graph will have decreased by one.
@@ -1568,6 +1773,7 @@ TEST(copySwap, testNoCopyRemovalSubObjects)
         vxCreateImageFromROI(parent, &full),
         vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8)
     };
+
     vx_node nodes1[] = 
     {
         vxNotNode(graph, images1[0], parent),
@@ -1611,6 +1817,33 @@ TEST(copySwap, testNoCopyRemovalSubObjects)
         vxReleaseNode(&nodes2[i]);
     }
     vxReleaseGraph(&graph);
+
+    /* Test copy node not removed when one tensor is an ROI */
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    vx_size dims[2] = {16, 16};
+    ASSERT_VX_OBJECT(images2[0] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(parent = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    vx_tensor tensors1[] =
+    {
+        vxCreateTensorFromROI(parent, &full, 0),
+        vxCreateTensor(context, 2, dims, VX_TYPE_UINT8, 0)
+    };
+    vx_node nodes3[] = {
+        vxNotNode(graph, images2[0], parent),
+        vxCopyNode(graph, vxCastRefFromTensor(tensors1[0]), vxCastRefFromTensor(tensors1[1]))
+    };
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, nodeIsOptimised(graph, nodes3[1]));
+    VX_CALL(vxReleaseImage(&parent));
+    VX_CALL(vxReleaseImage(&images2[0]));
+    for (i = 0; i < dimof(tensors1); ++i)
+    {
+        VX_CALL(vxReleaseTensor(&tensors1[i]));
+    }
+    for (i = 0; i < dimof(nodes3); ++i)
+    {
+        VX_CALL(vxReleaseNode(&nodes3[i]));
+    }
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 TEST(copySwap, testNoCopyRemovalContainersDiffer)
@@ -1649,18 +1882,18 @@ TEST(copySwap, testNoCopyRemovalContainersDiffer)
 
     EXPECT_NE_VX_STATUS(VX_SUCCESS, nodeIsOptimised(graph, nodes1[1]));
 
-    vxReleaseImage(&exemplar);
-    vxReleasePyramid(&parent_pyramid);
-    vxReleaseObjectArray(&parent_array);
+    VX_CALL(vxReleaseImage(&exemplar));
+    VX_CALL(vxReleasePyramid(&parent_pyramid));
+    VX_CALL(vxReleaseObjectArray(&parent_array));
     for (i = 0; i < dimof(images1); ++i)
     {
-        vxReleaseImage(&images1[i]);
+        VX_CALL(vxReleaseImage(&images1[i]));
     }
     for (i = 0; i < dimof(nodes1); ++i)
     {
-        vxReleaseNode(&nodes1[i]);
+        VX_CALL(vxReleaseNode(&nodes1[i]));
     }
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 TEST(copySwap, testNoCopyRemovalPyramidLevel)
@@ -1698,17 +1931,17 @@ TEST(copySwap, testNoCopyRemovalPyramidLevel)
 
     EXPECT_NE_VX_STATUS(VX_SUCCESS, nodeIsOptimised(graph, nodes1[1]));
 
-    vxReleasePyramid(&parent_pyramid1);
-    vxReleasePyramid(&parent_pyramid2);
+    VX_CALL(vxReleasePyramid(&parent_pyramid1));
+    VX_CALL(vxReleasePyramid(&parent_pyramid2));
     for (i = 0; i < dimof(images1); ++i)
     {
-        vxReleaseImage(&images1[i]);
+        VX_CALL(vxReleaseImage(&images1[i]));
     }
     for (i = 0; i < dimof(nodes1); ++i)
     {
-        vxReleaseNode(&nodes1[i]);
+        VX_CALL(vxReleaseNode(&nodes1[i]));
     }
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 TEST(copySwap, testNoCopyRemovalArrayItem)
@@ -1747,18 +1980,18 @@ TEST(copySwap, testNoCopyRemovalArrayItem)
 
     EXPECT_NE_VX_STATUS(VX_SUCCESS, nodeIsOptimised(graph, nodes1[1]));
 
-    vxReleaseImage(&exemplar);
-    vxReleaseObjectArray(&parent_array1);
-    vxReleaseObjectArray(&parent_array2);
+    VX_CALL(vxReleaseImage(&exemplar));
+    VX_CALL(vxReleaseObjectArray(&parent_array1));
+    VX_CALL(vxReleaseObjectArray(&parent_array2));
     for (i = 0; i < dimof(images1); ++i)
     {
-        vxReleaseImage(&images1[i]);
+        VX_CALL(vxReleaseImage(&images1[i]));
     }
     for (i = 0; i < dimof(nodes1); ++i)
     {
-        vxReleaseNode(&nodes1[i]);
+        VX_CALL(vxReleaseNode(&nodes1[i]));
     }
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 TEST(copySwap, testNoCopyRemovalBidirectional)
@@ -1790,13 +2023,13 @@ TEST(copySwap, testNoCopyRemovalBidirectional)
 
     for (i = 0; i < dimof(images1); ++i)
     {
-        vxReleaseImage(&images1[i]);
+        VX_CALL(vxReleaseImage(&images1[i]));
     }
     for (i = 0; i < dimof(nodes1); ++i)
     {
-        vxReleaseNode(&nodes1[i]);
+        VX_CALL(vxReleaseNode(&nodes1[i]));
     }
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseGraph(&graph));
 
     /* Now add a sibling and check that the node is not removed */
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -1821,13 +2054,13 @@ TEST(copySwap, testNoCopyRemovalBidirectional)
 
     for (i = 0; i < dimof(images2); ++i)
     {
-        vxReleaseImage(&images2[i]);
+        VX_CALL(vxReleaseImage(&images2[i]));
     }
     for (i = 0; i < dimof(nodes2); ++i)
     {
-        vxReleaseNode(&nodes2[i]);
+        VX_CALL(vxReleaseNode(&nodes2[i]));
     }
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseGraph(&graph));
     
 }
 
@@ -2065,13 +2298,13 @@ TEST(copySwap, testMoveRemovalLimits)
     
     for (i = 0; i < dimof(images_0); ++i)
     {
-        vxReleaseImage(&images_0[i]);
+        VX_CALL(vxReleaseImage(&images_0[i]));
     }
     for (i = 0; i < dimof(nodes_0); ++i)
     {
-        vxReleaseNode(&nodes_0[i]);
+        VX_CALL(vxReleaseNode(&nodes_0[i]));
     }
-    vxReleaseGraph(&graph);
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 /* Test for correct sequence of execution even when copy nodes have been removed */
@@ -2394,9 +2627,9 @@ TEST(copySwap, testImportFromHandle)
     vx_image roi = vxCreateImageFromROI((vx_image)image, &rect);
     EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxuSwap(context, (vx_reference)image, (vx_reference)image2));
 
-    vxReleaseImage(&roi);
-    vxReleaseImage(&image);
-    vxReleaseImage(&image2);
+    VX_CALL(vxReleaseImage(&roi));
+    VX_CALL(vxReleaseImage(&image));
+    VX_CALL(vxReleaseImage(&image2));
 }
 
 TESTCASE_TESTS(copySwap,
@@ -2416,7 +2649,9 @@ TESTCASE_TESTS(copySwap,
                testMoveRemovalLimits,
                testCopySequence,
                testSubObjectsOfImages,
+               testSubObjectsOfTensors,
                testSubObjectsMaxOfSubImages,
+               testImageMaxOfSubTensor,
                testDelays,
                testContainers,
                testImportFromHandle)

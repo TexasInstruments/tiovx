@@ -2307,6 +2307,15 @@ VX_API_ENTRY vx_user_data_object vxGetSupplementaryUserDataObject(vx_reference r
                 {
                     parent = (vx_reference)((vx_image)new_ref)->parent;
                 }
+                else if ((vx_enum)VX_TYPE_TENSOR == new_ref->type)
+                {
+                    parent = (vx_reference)((vx_tensor)new_ref)->parent;
+                }
+                else
+                {
+                    /* Empty else as required for MISRA-C */
+                }
+
                 if (NULL != parent)
                 {
                     new_ref = parent;

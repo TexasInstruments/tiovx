@@ -28,7 +28,7 @@
 Tensor HELPER FUNCTIONS
 =============================================================================*/
 
-static vx_status isTensorSwappable(vx_reference input, vx_reference output);
+static vx_status isTensorSwappable(vx_tensor input, vx_tensor output);
 static vx_status moveOrSwapTensor(vx_reference input, vx_reference output);
 static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
 static vx_bool ownIsValidTensorFormat(vx_enum data_type);
@@ -36,22 +36,35 @@ static void ownInitTensorObject(
     vx_tensor tensor, const vx_size* dimensions, vx_size number_of_dimensions, vx_enum data_type, vx_int8 fixed_point_position);
 static vx_status ownTensorCheckSizes(const volatile uint32_t *dimensions, const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions);
 static vx_size ownComputePatchSize (const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions);
+static vx_status ownDestructTensor(vx_reference ref);
 static void ownComputePositionsFromIndex(vx_size idx, const vx_size * start, const vx_size * end,
-        const volatile uint32_t * tensor_stride, const vx_size * patch_stride,  vx_size number_of_dimensions,
+        const volatile int32_t * tensor_stride, const vx_size * patch_stride,  vx_size number_of_dimensions,
         vx_size * tensor_pos, vx_size * patch_pos);
-static vx_uint32 ownComputePatchOffset(vx_size num_dims, const vx_size *dim_coordinate, const volatile uint32_t *strides);
+static vx_uint32 ownComputePatchOffset(vx_size num_dims, const vx_size *dim_coordinate, const volatile int32_t *strides);
 
 
 /*! \brief check to see if the tensors may be swapped.
  * They must be copyable, and not sub-tensors
 */
-static vx_status isTensorSwappable(vx_reference input, vx_reference output)
+static vx_status isTensorSwappable(vx_tensor input, vx_tensor output)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if ((vx_bool) vx_true_e ==  tivxIsReferenceMetaFormatEqual(input, output))
+    vx_reference input_ref  = vxCastRefFromTensor(input);
+    vx_reference output_ref = vxCastRefFromTensor(output);
+    if ((NULL != input->parent) ||
+        (NULL != output->parent))
     {
-        tivx_obj_desc_tensor_t * ip_obj_desc = (tivx_obj_desc_tensor_t *)input->obj_desc;
-        tivx_obj_desc_tensor_t * op_obj_desc = (tivx_obj_desc_tensor_t *)output->obj_desc;
+        status =(vx_status) VX_ERROR_NOT_COMPATIBLE;
+    }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR005
+<justification end> */
+    else if ((vx_bool) vx_true_e ==  tivxIsReferenceMetaFormatEqual(input_ref, output_ref))
+/* LDRA_JUSTIFY_END */
+    {
+        tivx_obj_desc_tensor_t * ip_obj_desc = (tivx_obj_desc_tensor_t *)input->base.obj_desc;
+        tivx_obj_desc_tensor_t * op_obj_desc = (tivx_obj_desc_tensor_t *)output->base.obj_desc;
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TENSOR_UM002
@@ -59,13 +72,18 @@ static vx_status isTensorSwappable(vx_reference input, vx_reference output)
         if (ip_obj_desc->mem_size != op_obj_desc->mem_size)
         {
            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-       }
+        }
 /* LDRA_JUSTIFY_END */
     }
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TENSOR_UM004
+<justification end> */
     else
     {
         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
+/* LDRA_JUSTIFY_END */
     return status;
 }
 
@@ -104,7 +122,14 @@ static vx_status moveOrSwapTensor(vx_reference input, vx_reference output)
 static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
     vx_status res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+    vx_status res1 = (vx_status) VX_SUCCESS;
     
+    vx_tensor input_tensor  = NULL;
+    vx_tensor output_tensor = NULL;
+ 
+    input_tensor  = vxCastRefAsTensor(input, &res);
+    output_tensor = vxCastRefAsTensor(output, &res1);
+
     switch (kernel_enum)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -133,7 +158,7 @@ static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool v
         case (vx_enum)VX_KERNEL_MOVE:
             if ((vx_bool)vx_true_e == validate_only)
             {
-                res =  isTensorSwappable(input, output);
+                res =  isTensorSwappable(input_tensor, output_tensor);
             }
             else
             {
@@ -150,6 +175,44 @@ static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool v
 /* LDRA_JUSTIFY_END */
     }
     return (res);
+}
+
+static vx_status ownDestructTensor(vx_reference ref)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_tensor_t *obj_desc = NULL;
+
+    /* look if the tensor was created from image*/
+    vx_tensor tensor = vxCastRefAsTensor(ref, NULL);
+    obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
+    if (NULL != obj_desc)
+    {
+        if ((vx_enum)TIVX_TENSOR_NORMAL == (vx_enum)obj_desc->create_type)
+        {
+            if (obj_desc->mem_ptr.host_ptr != (uint64_t)(uintptr_t)NULL)
+            {
+                (void)tivxMemBufferFree(
+                    &obj_desc->mem_ptr, obj_desc->mem_size);
+            }
+        }
+        (void)ownObjDescFree((tivx_obj_desc_t **)&obj_desc);
+        if (NULL != tensor->parent)
+        {
+           /* decrement the parent's internal reference count */
+           status = ownReleaseReferenceInt(vxCastRefFromImageP(&tensor->parent), tensor->parent->base.type, (vx_enum)VX_INTERNAL, NULL);
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_TENSOR_UM005
+<justification end> */
+           if ((vx_status)VX_SUCCESS != status)
+           {
+               VX_PRINT(VX_ZONE_ERROR, "Image parent object (for tensor) release failed!\n");
+           }
+/* LDRA_JUSTIFY_END */
+        }
+    }
+
+    return status;    
 }
 
 /**
@@ -196,17 +259,17 @@ static void ownInitTensorObject(
 
     /* Stride 0 is simply sizeof(data_type) */
     obj_desc->dimensions[0] = (vx_uint32)dimensions[0];
-    obj_desc->stride[0] = (vx_uint32)ownSizeOfEnumType((vx_int32)obj_desc->data_type);
+    obj_desc->stride[0] = (vx_int32)ownSizeOfEnumType((vx_int32)obj_desc->data_type);
 
     /* Remaining strides are simple equation */
     for (i = 1; i < number_of_dimensions; i++)
     {
         obj_desc->dimensions[i] = (vx_uint32)dimensions[i];
-        obj_desc->stride[i] = obj_desc->stride[i - 1U] * obj_desc->dimensions[i - 1U];
+        obj_desc->stride[i] = obj_desc->stride[i - 1U] * (vx_int32)obj_desc->dimensions[i - 1U];
     }
 
     obj_desc->mem_size =
-        obj_desc->stride[number_of_dimensions - 1U] * obj_desc->dimensions[number_of_dimensions - 1U];
+        (vx_uint32)obj_desc->stride[number_of_dimensions - 1U] * obj_desc->dimensions[number_of_dimensions - 1U];
 
     /* Clear the dimensions beyond what the user is creating */
     for (i = (vx_uint32)number_of_dimensions; i < (vx_uint32)TIVX_CONTEXT_MAX_TENSOR_DIMS; i++)
@@ -224,6 +287,8 @@ static void ownInitTensorObject(
         tensor->maps[i].map_addr = NULL;
         tensor->maps[i].map_size = 0;
     }
+    tensor->parent = NULL;
+    ((tivx_obj_desc_tensor_t *)tensor->base.obj_desc)->parent_id = (vx_uint16)TIVX_OBJ_DESC_INVALID;
 }
 
 static vx_status ownTensorCheckSizes(const volatile uint32_t *dimensions, const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions)
@@ -258,7 +323,7 @@ static vx_size ownComputePatchSize (const vx_size * view_start, const vx_size * 
 
 
 static void ownComputePositionsFromIndex(vx_size idx, const vx_size * start, const vx_size * end,
-        const volatile uint32_t * tensor_stride, const vx_size * patch_stride,  vx_size number_of_dimensions,
+        const volatile int32_t * tensor_stride, const vx_size * patch_stride,  vx_size number_of_dimensions,
         vx_size * tensor_pos, vx_size * patch_pos)
 {
     *tensor_pos = 0;
@@ -270,19 +335,19 @@ static void ownComputePositionsFromIndex(vx_size idx, const vx_size * start, con
     {
         divisor = (int32_t)end[i] - (int32_t)start[i];
         vx_size curr_dim_index = (vx_size)index_leftover%(vx_size)divisor;
-        *tensor_pos += tensor_stride[i] * (curr_dim_index + start[i]);
+        *tensor_pos += (vx_size)tensor_stride[i] * (curr_dim_index + start[i]);
         *patch_pos += patch_stride[i] * curr_dim_index ;
         index_leftover = index_leftover / (vx_uint32)divisor;
     }
 }
 
-static vx_uint32 ownComputePatchOffset(vx_size num_dims, const vx_size *dim_coordinate, const volatile uint32_t *strides)
+static vx_uint32 ownComputePatchOffset(vx_size num_dims, const vx_size *dim_coordinate, const volatile int32_t *strides)
 {
     vx_uint32 offset = 0, i;
 
     for(i=0; i < num_dims; i++)
     {
-        offset += (strides[i] * (vx_uint32)dim_coordinate[i]);
+        offset += ((vx_uint32)strides[i] * (vx_uint32)dim_coordinate[i]);
     }
     return offset;
 }
@@ -326,7 +391,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
                 /* status set to NULL due to preceding type check */
                 tensor = vxCastRefAsTensor(ref, NULL);
                 /* assign reference type specific callback's */
-                tensor->base.destructor_callback = &ownDestructReferenceGeneric;
+                tensor->base.destructor_callback = &ownDestructTensor;
                 tensor->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 tensor->base.release_callback =
                    &ownReleaseReferenceBufferGeneric;
@@ -362,6 +427,38 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseTensor(vx_tensor *tensor)
 {
+    if (tensor != NULL)
+    {
+        vx_tensor this_tensor = tensor[0];
+        vx_reference this_tensor_ref = vxCastRefFromTensor(this_tensor);
+        if (ownIsValidSpecificReference(this_tensor_ref, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_true_e)
+        {        
+            vx_image parent = this_tensor->parent;
+            /* clear this tensor from its parent' subtensor list */
+            if ((NULL != parent) &&
+            (ownIsValidSpecificReference(vxCastRefFromImage(parent), (vx_enum)VX_TYPE_IMAGE) ==
+                (vx_bool)vx_true_e) )
+            {        
+                vx_uint32 subtensor_idx;
+                for (subtensor_idx = 0;
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TENSOR_UBR006
+<justification end> */
+                    subtensor_idx < TIVX_IMAGE_MAX_SUBTENSORS;
+/* LDRA_JUSTIFY_END */
+                    subtensor_idx++)
+                {
+                    if (parent->subtensors[subtensor_idx] == this_tensor)
+                    {
+                        parent->subtensors[subtensor_idx] = NULL;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
     return (ownReleaseReferenceInt(
         vxCastRefFromTensorP(tensor), (vx_enum)VX_TYPE_TENSOR, (vx_enum)VX_EXTERNAL, NULL));
 }
@@ -470,7 +567,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                     /* Use 'for' loop instead of memcpy since interface type size is different from obj_desc size */
                     for(i=0; i<(int32_t)obj_desc->number_of_dimensions; i++)
                     {
-                        p[i] = obj_desc->stride[i];
+                        p[i] = (vx_size)obj_desc->stride[i];
                     }
                 }
                 else
@@ -614,7 +711,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
             }
         }
 
-        if (user_stride[0] != obj_desc->stride[0])
+        if (user_stride[0] != (vx_size)obj_desc->stride[0])
         {
             VX_PRINT(VX_ZONE_ERROR, "user_stride[0] must be equal to sizeof(data_type).\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -633,7 +730,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
         vx_uint8* tensor_ptr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
         vx_size patch_size = ownComputePatchSize (view_start, view_end, number_of_dimensions);
         vx_uint32 elements_per_line = (vx_uint32)view_end[0]-(vx_uint32)view_start[0];
-        vx_uint32 bytes_per_line = obj_desc->stride[0] * elements_per_line;
+        vx_uint32 bytes_per_line = (vx_uint32)obj_desc->stride[0] * elements_per_line;
 
         for (i = 0; i < patch_size; i+=elements_per_line) {
             vx_size patch_pos = 0;
@@ -798,7 +895,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 
                 for(i=0; i < number_of_dims; i++)
                 {
-                    stride[i] = obj_desc->stride[i];
+                    stride[i] = (vx_size)obj_desc->stride[i];
                 }
 
                 end_addr = &(host_addr[map_size]);
