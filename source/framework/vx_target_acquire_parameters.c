@@ -485,6 +485,7 @@ void ownTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
 {
     uint32_t prm_id;
     vx_bool is_prm_data_ref_q_flag;
+    vx_bool are_all_prm_invalid = (vx_bool)vx_true_e;
 
     *is_node_blocked = (vx_bool)vx_false_e;
 
@@ -492,8 +493,10 @@ void ownTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
 
     for(prm_id=0; prm_id<node_obj_desc->num_params; prm_id++)
     {
+        /* This condition is for if the parameter is not a data reference queue (i.e., not using pipelining) */
         if(tivxFlagIsBitSet((uint32_t)is_prm_data_ref_q_flag, ((uint32_t)1U<<prm_id))==(vx_bool)vx_false_e)
         {
+            are_all_prm_invalid = (vx_bool)vx_false_e;
             prm_obj_desc_id[prm_id] = node_obj_desc->data_id[prm_id];
         }
         else
@@ -502,8 +505,10 @@ void ownTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
 
             data_ref_q_obj_desc = (tivx_obj_desc_data_ref_q_t*)ownObjDescGet(node_obj_desc->data_ref_q_id[prm_id]);
 
+            /* This condition is for if the parameter is a data reference queue (i.e., using pipelining) */
             if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
+                are_all_prm_invalid = (vx_bool)vx_false_e;
                 ownTargetNodeDescAcquireParameter(
                     node_obj_desc,
                     data_ref_q_obj_desc, /* data ref q obj desc */
@@ -529,6 +534,21 @@ void ownTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
             break;
         }
         #endif
+    }
+
+    /* This check is to trap for a corner condition.  The condition is for when the
+     * graph is in pipelining mode and multiple executions are triggered such that there
+     * are multiple executions in flight. Simultaneously, the application has released
+     * all objects, making the data reference queues invalid.  In the previous version of
+     * this function, the return valid would indicate that this node is unblocked to execute.
+     * However, since all data reference queues are invalid, this should not have been the case.
+     * Therefore, trapping for this condition and marking the node as blocked.
+     */
+    if ((vx_bool)vx_true_e == are_all_prm_invalid)
+    {
+        *is_node_blocked = (vx_bool)vx_true_e;
+        /* mark current node as blocked, blocked on parameter acquire */
+        node_obj_desc->state = TIVX_NODE_OBJ_DESC_STATE_BLOCKED;
     }
 }
 
