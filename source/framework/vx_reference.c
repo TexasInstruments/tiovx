@@ -332,7 +332,14 @@ vx_status ownAllocReferenceBufferGeneric(vx_reference ref)
                         mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
                     if(ref->type == VX_TYPE_USER_DATA_OBJECT)
                     {
+                        tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)mem_ptr->host_ptr, (uint32_t)mem_size,
+                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+
                         (void)memset((vx_uint8 *)(uintptr_t)mem_ptr->host_ptr, 0, mem_size);
+               
+                        tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)mem_ptr->host_ptr, (uint32_t)mem_size,
+                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+
                     }
                     ref->is_allocated = (vx_bool)vx_true_e;
                 }
