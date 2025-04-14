@@ -173,9 +173,11 @@ void tivxRegisterTestKernelsKernels(void)
     tivxRegisterCaptureTargetArmKernels();
     tivxRegisterTestKernelsTargetArmKernels();
 
+    #if !(defined(SOC_J722S) || defined(SOC_AM62A))
     tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
     tivxRegisterCaptureTargetArmKernels();
     tivxRegisterTestKernelsTargetDspKernels();
+    #endif
 
     tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP_C7_1);
     tivxRegisterCaptureTargetArmKernels();
@@ -219,9 +221,11 @@ void tivxUnRegisterTestKernelsKernels(void)
     tivxUnRegisterCaptureTargetArmKernels();
     tivxUnRegisterTestKernelsTargetArmKernels();
 
+    #if !(defined(SOC_J722S) || defined(SOC_AM62A))
     tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
     tivxUnRegisterCaptureTargetArmKernels();
     tivxUnRegisterTestKernelsTargetDspKernels();
+    #endif
 
     tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP_C7_1);
     tivxUnRegisterCaptureTargetArmKernels();
