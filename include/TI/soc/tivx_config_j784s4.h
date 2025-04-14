@@ -340,6 +340,20 @@ extern "C" {
  */
 #define TIVX_TENSOR_MAX_OBJECTS            (256u)
 
+/*!
+ * \brief Max possible subtensors from a image
+ *
+ * \ingroup group_vx_image_cfg
+ */
+#define TIVX_IMAGE_MAX_SUBTENSORS     (16u)
+
+/*!
+ * \brief Max possible subimages via vxCreateImageObjectArrayFromTensor supported
+ *
+ * \ingroup group_vx_tensor_cfg
+ */
+
+#define TIVX_TENSOR_MAX_SUBIMAGES     (16u)
 
 /*
  * Threshold configuration resources

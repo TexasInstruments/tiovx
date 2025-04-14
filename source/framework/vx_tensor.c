@@ -28,7 +28,7 @@
 Tensor HELPER FUNCTIONS
 =============================================================================*/
 
-static vx_status isTensorSwappable(vx_reference input, vx_reference output);
+static vx_status isTensorSwappable(vx_tensor input, vx_tensor output);
 static vx_status moveOrSwapTensor(vx_reference input, vx_reference output);
 static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
 static vx_bool ownIsValidTensorFormat(vx_enum data_type);
@@ -45,18 +45,37 @@ static vx_uint32 ownComputePatchOffset(vx_size num_dims, const vx_size *dim_coor
 /*! \brief check to see if the tensors may be swapped.
  * They must be copyable, and not sub-tensors
 */
-static vx_status isTensorSwappable(vx_reference input, vx_reference output)
+static vx_status isTensorSwappable(vx_tensor input, vx_tensor output)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if ((vx_bool) vx_true_e ==  tivxIsReferenceMetaFormatEqual(input, output))
+    if ((NULL != input->parent) ||
+        (NULL != output->parent))
     {
-        tivx_obj_desc_tensor_t * ip_obj_desc = (tivx_obj_desc_tensor_t *)input->obj_desc;
-        tivx_obj_desc_tensor_t * op_obj_desc = (tivx_obj_desc_tensor_t *)output->obj_desc;
+        status =(vx_status) VX_ERROR_NOT_COMPATIBLE;
+    }    
+    else if ((vx_bool) vx_true_e ==  tivxIsReferenceMetaFormatEqual(input, output))
+    {
+        tivx_obj_desc_tensor_t * ip_obj_desc = (tivx_obj_desc_tensor_t *)input->base.obj_desc;
+        tivx_obj_desc_tensor_t * op_obj_desc = (tivx_obj_desc_tensor_t *)output->base.obj_desc;
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TENSOR_UM002
 <justification end> */
-        if (ip_obj_desc->mem_size != op_obj_desc->mem_size)
+        if (ip_obj_desc->mem_size == op_obj_desc->mem_size)
+        {
+            vx_uint32 i;
+            for (i = 0; i < TIVX_TENSOR_MAX_SUBIMAGES; ++i)
+            {
+                if ((NULL != input->subimages[i]) ||
+                    (NULL != output->subimages[i]))
+                {
+                    status = VX_ERROR_NOT_SUPPORTED;
+                    VX_PRINT(VX_ZONE_ERROR, "Swapping tensors with sub-images that have differing allocated memory sizes is not supported\n");
+                    break;
+                }
+            }
+        }
+        else
         {
            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
        }
@@ -104,7 +123,14 @@ static vx_status moveOrSwapTensor(vx_reference input, vx_reference output)
 static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
     vx_status res = (vx_status)VX_ERROR_NOT_SUPPORTED;
+    vx_status res1 = (vx_status) VX_SUCCESS;
     
+    vx_tensor input_tensor  = NULL;
+    vx_tensor output_tensor = NULL;
+ 
+    input_tensor  = vxCastRefAsTensor(input, &res);
+    output_tensor = vxCastRefAsTensor(output, &res1);
+
     switch (kernel_enum)
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -133,7 +159,7 @@ static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool v
         case (vx_enum)VX_KERNEL_MOVE:
             if ((vx_bool)vx_true_e == validate_only)
             {
-                res =  isTensorSwappable(input, output);
+                res =  isTensorSwappable(input_tensor, output_tensor);
             }
             else
             {
@@ -224,6 +250,12 @@ static void ownInitTensorObject(
         tensor->maps[i].map_addr = NULL;
         tensor->maps[i].map_size = 0;
     }
+    for (i = 0; TIVX_TENSOR_MAX_SUBIMAGES > i; i++)
+    {
+        tensor->subimages[i] = NULL;
+    }
+    tensor->parent = NULL;
+    ((tivx_obj_desc_tensor_t *)tensor->base.obj_desc)->parent_id = (vx_uint16)TIVX_OBJ_DESC_INVALID;
 }
 
 static vx_status ownTensorCheckSizes(const volatile uint32_t *dimensions, const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions)

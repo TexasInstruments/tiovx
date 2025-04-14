@@ -609,6 +609,7 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
     vx_image stack[TIVX_SUBIMAGE_STACK_SIZE];
     vx_image local_img;
     vx_image *subimages = NULL;
+    vx_tensor *subtensors = NULL;
     vx_uint32 stack_pointer = 0;
     vx_uint32 i;
 
@@ -622,7 +623,8 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
     {
         stack_pointer--;
         local_img = stack[stack_pointer];
-        subimages = local_img->subimages;
+        subimages  = local_img->subimages;
+        subtensors = local_img->subtensors;
         tivx_obj_desc_image_t *obj_desc = (tivx_obj_desc_image_t *)local_img->base.obj_desc;
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -670,6 +672,23 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
 /* LDRA_JUSTIFY_END */
                 {
                     stack[stack_pointer] = subimages[i];
+                    stack_pointer++;
+                }
+            }
+        }
+        for (i = 0; i < TIVX_IMAGE_MAX_SUBTENSORS; ++i)
+        {
+            if (NULL != subtensors[i])
+            {
+                if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Too many sub-tensors, may need to increase the value of TIVX_SUBOBJECT_STACK_SIZE in include/TI/tivx_config.h\n");
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
+                    break;
+                }
+                else
+                {
+                    stack[stack_pointer] = subtensors[i];
                     stack_pointer++;
                 }
             }
@@ -864,7 +883,7 @@ static void ownInitPlane(vx_image image,
 static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_df_image format)
 {
     vx_uint32 size_of_ch;
-    vx_uint16 subimage_idx, map_idx;
+    vx_uint16 subimage_idx, subtensor_idx, map_idx;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
     obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
@@ -875,6 +894,10 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
     {
         image->subimages[subimage_idx] = NULL;
     }
+    for(subtensor_idx=0; subtensor_idx<TIVX_IMAGE_MAX_SUBTENSORS; subtensor_idx++)
+    {
+        image->subtensors[subtensor_idx] = NULL;
+    }    
 
     for(map_idx=0; map_idx<TIVX_IMAGE_MAX_MAPS; map_idx++)
     {
@@ -3176,7 +3199,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const v
                 else
                 {
                     /* In case the parent image hasn't been allocated yet */
-                    status = ownAllocImageBuffer(&image->base);
+                    status = ownAllocImageBuffer(vxCastRefFromImage(image));
                     if ((vx_status)VX_SUCCESS == status)
                     {
                         /* create tensor with the context of the parent image and correct dimensions and data type */
@@ -3192,7 +3215,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const v
                         tensor->base.is_virtual = image->base.is_virtual;
                         tensor->channel_plane = image->channel_plane;
                         /* add the child as a subtensor of the parent */
-                        for (i = 0; TIVX_IMAGE_MAX_SUBTENSORS > i; i++)
+                        for (i = 0; i < TIVX_IMAGE_MAX_SUBTENSORS; i++)
                         {
                             if (NULL == image->subtensors[i])
                             {
@@ -3208,12 +3231,13 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const v
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
                         }
 
-                        /* child is useless without the parent's data, so add an internal reference */
-                        ownIncrementReference(&tensor->parent->base, VX_INTERNAL);
+                        /* child is useless without the parent's data, so add an internal reference
+                           not sure if we can release the parent image without releasing the child */
+                        /* ownIncrementReference(&tensor->parent->base, VX_INTERNAL);*/
 
                         /* stride[1] must match that of the image, not be calculated from the dimensions of the ROI */
                         c_obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
-                        c_obj_desc->create_type = (vx_uint32)TIVX_TENSOR_FROM_ROI; //TODO import create type
+                        c_obj_desc->create_type = (vx_uint32)TIVX_TENSOR_FROM_ROI;
                         c_obj_desc->stride[1] = p_obj_desc->imagepatch_addr[0].stride_y;
 
                         /* calculate tensor host_ptr */

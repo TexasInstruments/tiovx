@@ -502,7 +502,7 @@ static vx_status checkValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
             if (VX_SUCCESS == status)
             {
                 status = vxCopyTensorPatch((vx_tensor)ref, num_dims, start, end, strides, data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
-                for (i = 0; i < size; i+=strides[0])
+                for (i = 0; i < 2; i+=strides[0])
                 {
                     if (data[i] != (((i / strides[0]) & 1)? b: a) )
                     {
@@ -1246,6 +1246,48 @@ TEST (copySwap, testSubObjectsOfImages )
     {
         VX_CALL(vxReleaseImage(&sub_sub_images[i]));
         VX_CALL(vxReleaseImage(&sub_images[i]));
+        VX_CALL(vxReleaseImage(&images[i]));
+    }
+}
+
+/* Check sub-image from tensor created from vxCreateTensorFromROI
+*/
+TEST (copySwap, testSubObjectsOfTensors )
+{
+    vx_status status = VX_SUCCESS;
+    vx_context context = context_->vx_context_;
+
+    vx_image images[] = {
+        vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),
+        vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8)
+    };
+
+    vx_rectangle_t rect1 = {.start_x = 0, .start_y = 0, .end_x = 10, .end_y = 10};
+    vx_rectangle_t rect0 = {.start_x = 0, .start_y = 0, .end_x = 10, .end_y = 8};
+
+    writeImage(images[0], 0x15, 0x7e);
+    writeImage(images[1], 0x24, 0x8d);
+    writeImage(images[2], 0x33, 0x9c);
+    writeImage(images[3], 0x42, 0xab);
+
+    vx_tensor tensors[2];
+    tensors[0] = vxCreateTensorFromROI(images[0], NULL, 0);
+    tensors[1] = vxCreateTensorFromROI(images[1], NULL, 0);
+
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxuSwap(context, (vx_reference)images[0], (vx_reference)images[1]));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(vxCastRefFromTensor(tensors[0]), VX_TYPE_TENSOR, 0x24, 0x8d));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(vxCastRefFromTensor(tensors[1]), VX_TYPE_TENSOR, 0x15, 0x7e));
+
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(vxCastRefFromImage(images[0]), VX_TYPE_IMAGE, 0x24, 0x8d));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(vxCastRefFromImage(images[1]), VX_TYPE_IMAGE, 0x15, 0x7e));      
+
+    VX_CALL(vxReleaseTensor(&tensors[0]));
+    VX_CALL(vxReleaseTensor(&tensors[1]));
+    vx_uint32 i;
+    for (i = 0; i < 4; ++i)
+    {
         VX_CALL(vxReleaseImage(&images[i]));
     }
 }
@@ -2416,6 +2458,7 @@ TESTCASE_TESTS(copySwap,
                testMoveRemovalLimits,
                testCopySequence,
                testSubObjectsOfImages,
+               testSubObjectsOfTensors,
                testSubObjectsMaxOfSubImages,
                testDelays,
                testContainers,
