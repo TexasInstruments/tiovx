@@ -107,7 +107,7 @@ typedef struct _vx_tensor
     /*! \brief Mapping done via vxMapTensorPatch() */
     tivx_tensor_map_info_t maps[TIVX_TENSOR_MAX_MAPS];
     /*! \brief List of this tensor's subimages */
-    vx_image subimages[TIVX_TENSOR_MAX_SUBIMAGES];
+    vx_image subimages[TIVX_IMAGE_MAX_SUBTENSORS];
     /*! \brief channel_plane index of parent in case tensor is created from channel */
     uint32_t channel_plane;    
 

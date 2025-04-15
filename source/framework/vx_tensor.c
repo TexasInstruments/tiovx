@@ -48,12 +48,14 @@ static vx_uint32 ownComputePatchOffset(vx_size num_dims, const vx_size *dim_coor
 static vx_status isTensorSwappable(vx_tensor input, vx_tensor output)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_reference input_ref  = vxCastRefFromTensor(input);
+    vx_reference output_ref = vxCastRefFromTensor(output);
     if ((NULL != input->parent) ||
         (NULL != output->parent))
     {
         status =(vx_status) VX_ERROR_NOT_COMPATIBLE;
     }    
-    else if ((vx_bool) vx_true_e ==  tivxIsReferenceMetaFormatEqual(input, output))
+    else if ((vx_bool) vx_true_e ==  tivxIsReferenceMetaFormatEqual(input_ref, output_ref))
     {
         tivx_obj_desc_tensor_t * ip_obj_desc = (tivx_obj_desc_tensor_t *)input->base.obj_desc;
         tivx_obj_desc_tensor_t * op_obj_desc = (tivx_obj_desc_tensor_t *)output->base.obj_desc;
@@ -61,21 +63,7 @@ static vx_status isTensorSwappable(vx_tensor input, vx_tensor output)
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_TENSOR_UM002
 <justification end> */
-        if (ip_obj_desc->mem_size == op_obj_desc->mem_size)
-        {
-            vx_uint32 i;
-            for (i = 0; i < TIVX_TENSOR_MAX_SUBIMAGES; ++i)
-            {
-                if ((NULL != input->subimages[i]) ||
-                    (NULL != output->subimages[i]))
-                {
-                    status = VX_ERROR_NOT_SUPPORTED;
-                    VX_PRINT(VX_ZONE_ERROR, "Swapping tensors with sub-images that have differing allocated memory sizes is not supported\n");
-                    break;
-                }
-            }
-        }
-        else
+        if (ip_obj_desc->mem_size != op_obj_desc->mem_size)
         {
            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
        }
@@ -249,10 +237,6 @@ static void ownInitTensorObject(
     {
         tensor->maps[i].map_addr = NULL;
         tensor->maps[i].map_size = 0;
-    }
-    for (i = 0; TIVX_TENSOR_MAX_SUBIMAGES > i; i++)
-    {
-        tensor->subimages[i] = NULL;
     }
     tensor->parent = NULL;
     ((tivx_obj_desc_tensor_t *)tensor->base.obj_desc)->parent_id = (vx_uint16)TIVX_OBJ_DESC_INVALID;

@@ -603,10 +603,10 @@ static vx_status copyImage(vx_image input, vx_image output)
  * This involves non-recursively visiting every sub-image
  * and adjusting the memory pointer for that, as well.
  */
-static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MAX_PLANES])
+static vx_status adjustMemoryPointer(vx_reference ref, uint64_t offset[TIVX_IMAGE_MAX_PLANES])
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_image stack[TIVX_SUBIMAGE_STACK_SIZE];
+    vx_reference stack[TIVX_SUBIMAGE_STACK_SIZE];
     vx_image local_img;
     vx_image *subimages = NULL;
     vx_tensor *subtensors = NULL;
@@ -622,7 +622,7 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
     while (0U < stack_pointer)
     {
         stack_pointer--;
-        local_img = stack[stack_pointer];
+        local_img  = vxCastRefAsImage(stack[stack_pointer], NULL);
         subimages  = local_img->subimages;
         subtensors = local_img->subtensors;
         tivx_obj_desc_image_t *obj_desc = (tivx_obj_desc_image_t *)local_img->base.obj_desc;
@@ -671,7 +671,7 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
                 else
 /* LDRA_JUSTIFY_END */
                 {
-                    stack[stack_pointer] = subimages[i];
+                    stack[stack_pointer] = vxGetRefFromImage(subimages[i]);
                     stack_pointer++;
                 }
             }
@@ -688,7 +688,7 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
                 }
                 else
                 {
-                    stack[stack_pointer] = subtensors[i];
+                    stack[stack_pointer] = vxGetRefFromTensor(subtensors[i]);
                     stack_pointer++;
                 }
             }
@@ -3179,19 +3179,19 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const v
                     roi.end_y = rect->end_y;
                 }
                 /* check alignment */
-                if (0 != roi.start_x % rect_align)
+                if (0 != (roi.start_x % rect_align))
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Invalid rectangle alignment\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 /* rectangle sanity check */
-                else if (roi.start_x > roi.end_x || roi.start_y > roi.end_y)
+                else if ((roi.start_x > roi.end_x) || (roi.start_y > roi.end_y))
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Invalid rectangle\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 /* check ROI fits in the image */
-                else if (roi.end_x > p_obj_desc->width || roi.end_y > p_obj_desc->height)
+                else if ((roi.end_x > p_obj_desc->width) || (roi.end_y > p_obj_desc->height))
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Invalid rectangle\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
