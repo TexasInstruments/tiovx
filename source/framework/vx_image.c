@@ -603,7 +603,7 @@ static vx_status copyImage(vx_image input, vx_image output)
  * This involves non-recursively visiting every sub-image
  * and adjusting the memory pointer for that, as well.
  */
-static vx_status adjustMemoryPointer(vx_reference ref, uint64_t offset[TIVX_IMAGE_MAX_PLANES])
+static vx_status adjustMemoryPointer(const vx_reference ref, uint64_t offset[TIVX_IMAGE_MAX_PLANES])
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_reference stack[TIVX_SUBIMAGE_STACK_SIZE];
@@ -671,7 +671,7 @@ static vx_status adjustMemoryPointer(vx_reference ref, uint64_t offset[TIVX_IMAG
                 else
 /* LDRA_JUSTIFY_END */
                 {
-                    stack[stack_pointer] = vxGetRefFromImage(subimages[i]);
+                    stack[stack_pointer] = vxCastRefFromImage(subimages[i]);
                     stack_pointer++;
                 }
             }
@@ -688,7 +688,7 @@ static vx_status adjustMemoryPointer(vx_reference ref, uint64_t offset[TIVX_IMAG
                 }
                 else
                 {
-                    stack[stack_pointer] = vxGetRefFromTensor(subtensors[i]);
+                    stack[stack_pointer] = vxCastRefFromTensor(subtensors[i]);
                     stack_pointer++;
                 }
             }
@@ -739,7 +739,7 @@ static vx_status swapImage(const vx_image input, const vx_image output)
             op_obj_desc->mem_size[i] = ip_obj_desc->mem_size[i];
             ip_obj_desc->mem_size[i] = mem_size;
         }
-        status = adjustMemoryPointer(input, offsets);
+        status = adjustMemoryPointer(vxCastRefFromImage(input), offsets);
 
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -752,7 +752,7 @@ static vx_status swapImage(const vx_image input, const vx_image output)
             {
                 offsets[i] = ~(offsets[i] - 1UL);
             }
-            status = adjustMemoryPointer(output, offsets);
+            status = adjustMemoryPointer(vxCastRefFromImage(output), offsets);
         }
 /* LDRA_JUSTIFY_END */
         (void)ownReferenceUnlock(&output->base);     
