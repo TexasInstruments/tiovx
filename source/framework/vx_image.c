@@ -608,6 +608,7 @@ static vx_status adjustMemoryPointer(const vx_reference ref, uint64_t offset[TIV
     vx_status status = (vx_status)VX_SUCCESS;
     vx_reference stack[TIVX_SUBIMAGE_STACK_SIZE];
     vx_image local_img;
+    vx_reference local_ref;
     vx_image *subimages = NULL;
     vx_tensor *subtensors = NULL;
     vx_uint32 stack_pointer = 0;
@@ -622,74 +623,91 @@ static vx_status adjustMemoryPointer(const vx_reference ref, uint64_t offset[TIV
     while (0U < stack_pointer)
     {
         stack_pointer--;
-        local_img  = vxCastRefAsImage(stack[stack_pointer], NULL);
-        subimages  = local_img->subimages;
-        subtensors = local_img->subtensors;
-        tivx_obj_desc_image_t *obj_desc = (tivx_obj_desc_image_t *)local_img->base.obj_desc;
+        local_ref = stack[stack_pointer];
+        if ((vx_enum)VX_TYPE_IMAGE == local_ref->type)
+        {     
+            local_img  = vxCastRefAsImage(local_ref, NULL);
+            subimages  = local_img->subimages;
+            subtensors = local_img->subtensors;
+            tivx_obj_desc_image_t *obj_desc = (tivx_obj_desc_image_t *)local_img->base.obj_desc;
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR028
 <justification end>*/
-        if (obj_desc->planes > 0U)
+            if (obj_desc->planes > 0U)
 /* LDRA_JUSTIFY_END */
-        {
-            for (i = 0; i < obj_desc->planes; ++i)
             {
-                obj_desc->mem_ptr[i].host_ptr = obj_desc->mem_ptr[i].host_ptr + offset[i];
-                obj_desc->mem_ptr[i].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[i].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                for (i = 0; i < obj_desc->planes; ++i)
+                {
+                    obj_desc->mem_ptr[i].host_ptr = obj_desc->mem_ptr[i].host_ptr + offset[i];
+                    obj_desc->mem_ptr[i].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[i].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                }
             }
-        }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_IMAGE_UM012
 <justification end>*/
-        else
+            else
+            {
+                obj_desc->mem_ptr[0U].host_ptr = obj_desc->mem_ptr[0].host_ptr + offset[local_img->channel_plane];
+                obj_desc->mem_ptr[0U].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[0U].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+            }     
+        }
+        else if ((vx_enum)VX_TYPE_TENSOR == local_ref->type)
         {
-            obj_desc->mem_ptr[0U].host_ptr = obj_desc->mem_ptr[0].host_ptr + offset[local_img->channel_plane];
-            obj_desc->mem_ptr[0U].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[0U].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+            tivx_obj_desc_tensor_t *obj_desc = (tivx_obj_desc_tensor_t *)local_ref->obj_desc;
+            obj_desc->mem_ptr.host_ptr = obj_desc->mem_ptr.host_ptr + offset[((vx_tensor)local_ref)->channel_plane];
+            obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr.host_ptr, TIVX_MEM_EXTERNAL);
+            /* there are no subtensors or subimage for the tensor for now 
+               stop the loop below by setting the null pointer for the subtensor and subimage*/
+            subtensors = NULL;
+            subimages  = NULL;
         }
 /* LDRA_JUSTIFY_END */
+       if ((subimages!=NULL) && (subtensors!=NULL))
+       {
         for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; ++i)
-        {
-            if (NULL != subimages[i])
             {
+                if (NULL != subimages[i])
+                {
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_IMAGE_UM013
 <justification end>*/
-                if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Too many sub-images, may need to increase the value of TIVX_SUBIMAGE_STACK_SIZE\n");
-                    status = (vx_status)VX_ERROR_NO_RESOURCES;
-                    break;
-                }
+                    if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Too many sub-images, may need to increase the value of TIVX_SUBIMAGE_STACK_SIZE\n");
+                        status = (vx_status)VX_ERROR_NO_RESOURCES;
+                        break;
+                    }
 /* LDRA_JUSTIFY_END */
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_IMAGE_UM013
 <justification end>*/
-                else
+                    else
 /* LDRA_JUSTIFY_END */
-                {
-                    stack[stack_pointer] = vxCastRefFromImage(subimages[i]);
-                    stack_pointer++;
+                    {
+                        stack[stack_pointer] = vxCastRefFromImage(subimages[i]);
+                        stack_pointer++;
+                    }
                 }
             }
-        }
-        for (i = 0; i < TIVX_IMAGE_MAX_SUBTENSORS; ++i)
-        {
-            if (NULL != subtensors[i])
+            for (i = 0; i < TIVX_IMAGE_MAX_SUBTENSORS; ++i)
             {
-                if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
+                if (NULL != subtensors[i])
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "Too many sub-tensors, may need to increase the value of TIVX_SUBOBJECT_STACK_SIZE in include/TI/tivx_config.h\n");
-                    status = (vx_status)VX_ERROR_NO_RESOURCES;
-                    break;
-                }
-                else
-                {
-                    stack[stack_pointer] = vxCastRefFromTensor(subtensors[i]);
-                    stack_pointer++;
+                    if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Too many sub-tensors, may need to increase the value of TIVX_SUBOBJECT_STACK_SIZE in include/TI/tivx_config.h\n");
+                        status = (vx_status)VX_ERROR_NO_RESOURCES;
+                        break;
+                    }
+                    else
+                    {
+                        stack[stack_pointer] = vxCastRefFromTensor(subtensors[i]);
+                        stack_pointer++;
+                    }
                 }
             }
         }
