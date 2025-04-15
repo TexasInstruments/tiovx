@@ -36,4 +36,4 @@ CT_RegisterTestCaseFN g_testcase_register_fns[] = {
     NULL
 };
 
-int CT_main(int argc, char* argv[], const char* version_str);
+int CT_main(int argc, char* argv[], const char* version_str, CT_RegisterTestCaseFN register_fns[]);

@@ -388,7 +388,6 @@ static uint64_t fnv1a(const char *str)
     return hval;
 }
 
-extern CT_RegisterTestCaseFN g_testcase_register_fns[];
 static struct CT_TestCaseEntry* g_firstTestCase = NULL;
 static const char* g_test_filter = NULL;
 
@@ -529,7 +528,7 @@ static int run_test(struct CT_TestCaseEntry* testcase, struct CT_TestEntry* test
     return 0; // test is skipped
 }
 
-int CT_main(int argc, char* argv[], const char* version_str)
+int CT_main(int argc, char* argv[], const char* version_str, CT_RegisterTestCaseFN register_fns[])
 {
     const char* testid_str = 0;
     int arg;
@@ -639,9 +638,9 @@ int CT_main(int argc, char* argv[], const char* version_str)
 
     {
         struct CT_TestCaseEntry** ppLastTestCase = &g_firstTestCase;
-        while (g_testcase_register_fns[total_testcases])
+        while (register_fns[total_testcases])
         {
-            *ppLastTestCase = g_testcase_register_fns[total_testcases]();
+            *ppLastTestCase = register_fns[total_testcases]();
             while (*ppLastTestCase)
                 ppLastTestCase = &ppLastTestCase[0]->next_;
             total_testcases++;

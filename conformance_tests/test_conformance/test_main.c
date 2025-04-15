@@ -28,5 +28,5 @@
 int vx_conformance_test_main(int argc, char* argv[])
 {
     /* tivx_clr_debug_zone(VX_ZONE_ERROR); */
-    return CT_main(argc, argv, VERSION_STR);
+    return CT_main(argc, argv, VERSION_STR, g_testcase_register_fns);
 }
