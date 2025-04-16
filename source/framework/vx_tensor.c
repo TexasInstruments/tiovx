@@ -36,6 +36,7 @@ static void ownInitTensorObject(
     vx_tensor tensor, const vx_size* dimensions, vx_size number_of_dimensions, vx_enum data_type, vx_int8 fixed_point_position);
 static vx_status ownTensorCheckSizes(const volatile uint32_t *dimensions, const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions);
 static vx_size ownComputePatchSize (const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions);
+static vx_status ownDestructTensor(vx_reference ref);
 static void ownComputePositionsFromIndex(vx_size idx, const vx_size * start, const vx_size * end,
         const volatile uint32_t * tensor_stride, const vx_size * patch_stride,  vx_size number_of_dimensions,
         vx_size * tensor_pos, vx_size * patch_pos);
@@ -164,6 +165,35 @@ static vx_status VX_CALLBACK tensorKernelCallback(vx_enum kernel_enum, vx_bool v
 /* LDRA_JUSTIFY_END */
     }
     return (res);
+}
+
+static vx_status ownDestructTensor(vx_reference ref)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_obj_desc_tensor_t *obj_desc = NULL;
+    vx_tensor tensor = (vx_tensor)ref;
+    /* look if the tensor was created from image*/
+    if ((vx_enum)VX_TYPE_TENSOR == ref->type)
+    {
+        obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
+        if (NULL != obj_desc)
+        {
+            if (NULL != tensor->parent)
+            {
+               /* decrement the parent's internal reference count */
+               status = ownReleaseReferenceInt((vx_reference *)&(tensor->parent), tensor->parent->base.type, (vx_enum)VX_INTERNAL, NULL);                             
+            }            
+        }
+        /*destruct now the main object */
+        status = ownDestructReferenceGeneric(ref);        
+    }
+    else 
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid reference\n");
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    }    
+
+    return status;    
 }
 
 /**
@@ -342,7 +372,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
                 /* status set to NULL due to preceding type check */
                 tensor = vxCastRefAsTensor(ref, NULL);
                 /* assign reference type specific callback's */
-                tensor->base.destructor_callback = &ownDestructReferenceGeneric;
+                tensor->base.destructor_callback = &ownDestructTensor;
                 tensor->base.mem_alloc_callback = &ownAllocReferenceBufferGeneric;
                 tensor->base.release_callback =
                    &ownReleaseReferenceBufferGeneric;
@@ -378,6 +408,31 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseTensor(vx_tensor *tensor)
 {
+    if (tensor != NULL)
+    {
+        vx_tensor this_tensor = tensor[0];
+        vx_reference this_tensor_ref = vxCastRefFromTensor(this_tensor);
+        if (ownIsValidSpecificReference(this_tensor_ref, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_true_e)
+        {        
+            vx_image parent = this_tensor->parent;
+            /* clear this tensor from its parent' subtensor list */
+            if ((NULL != parent) &&
+            (ownIsValidSpecificReference(vxCastRefFromImage(parent), (vx_enum)VX_TYPE_IMAGE) ==
+                (vx_bool)vx_true_e) )
+            {        
+                vx_uint32 subtensor_idx;
+                for (subtensor_idx = 0; subtensor_idx < TIVX_IMAGE_MAX_SUBTENSORS; subtensor_idx++)
+                {
+                    if (parent->subtensors[subtensor_idx] == this_tensor)
+                    {
+                        parent->subtensors[subtensor_idx] = NULL;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
     return (ownReleaseReferenceInt(
         vxCastRefFromTensorP(tensor), (vx_enum)VX_TYPE_TENSOR, (vx_enum)VX_EXTERNAL, NULL));
 }

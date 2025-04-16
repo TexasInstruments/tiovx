@@ -268,7 +268,7 @@ static vx_bool ownCopyMoveReplaceOutputCompatible(vx_reference new_reference, vx
                     tivx_obj_desc_tensor_t *obj_desc = ( tivx_obj_desc_tensor_t *)old_reference->obj_desc;
                     if ((vx_uint32)TIVX_TENSOR_FROM_ROI == obj_desc->create_type)
                     {
-                        ret = vx_false_e;
+                        ret = (vx_bool)vx_false_e;
                     }
                     break;
                 }       
