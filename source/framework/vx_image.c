@@ -367,6 +367,13 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                     status = tivxMemBufferAlloc(&obj_desc->mem_ptr[0], size, (vx_enum)TIVX_MEM_EXTERNAL);
                     if((vx_status)VX_SUCCESS == status)
                     {
+                        obj_desc->mem_ptr[0].shared_ptr =
+                            tivxMemHost2SharedPtr(
+                                obj_desc->mem_ptr[0].host_ptr,
+                                (vx_enum)TIVX_MEM_EXTERNAL);
+                        tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)obj_desc->mem_ptr[0].host_ptr, (uint32_t)obj_desc->mem_size[0],
+                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE));
+
                         for(plane_idx=1; plane_idx<obj_desc->planes; plane_idx++)
                         {
                             obj_desc->mem_ptr[plane_idx].mem_heap_region =
@@ -383,6 +390,8 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                             obj_desc->mem_ptr[plane_idx].dma_buf_fd_offset =
                                 obj_desc->mem_ptr[plane_idx-(uint16_t)1].dma_buf_fd_offset +
                                 TIVX_IMG_ALIGN(obj_desc->mem_size[plane_idx-(uint16_t)1]);
+                            tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)obj_desc->mem_ptr[plane_idx].host_ptr, (uint32_t)obj_desc->mem_size[plane_idx],
+                                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE));
                         }
                         ref->is_allocated = (vx_bool)vx_true_e;
                     }

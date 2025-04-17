@@ -398,6 +398,8 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                                     obj_desc->mem_ptr[exp_idx].
                                     host_ptr,
                                     (vx_enum)TIVX_MEM_EXTERNAL);
+                            tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)obj_desc->mem_ptr[exp_idx].host_ptr, (uint32_t)obj_desc->mem_size[exp_idx],
+                                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE));
                             ref->is_allocated = (vx_bool)vx_true_e;
                         }
                     }
@@ -1035,7 +1037,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                 alloc_index = 0;
             }
 
-            map_addr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr[alloc_index].host_ptr;;
+            map_addr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr[alloc_index].host_ptr;
             map_size = obj_desc->mem_size[alloc_index];
 
             if(buffer_select == (vx_enum)TIVX_RAW_IMAGE_ALLOC_BUFFER)
