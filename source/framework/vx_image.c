@@ -2594,8 +2594,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
                 user_addr->dim_y = rect->end_y - rect->start_y;
 
                 end_addr = &(host_addr[map_size]);
-                map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)host_addr, 128U);
-                end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
+                map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)host_addr, TIVX_DATA_BUFFER_ALIGNMENT);
+                end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, TIVX_DATA_BUFFER_ALIGNMENT);
                 uintptr_t temp_map_size = (uintptr_t)end_addr - (uintptr_t)host_addr;
                 map_size = (vx_uint32)temp_map_size;
                 tivxCheckStatus(&status, tivxMemBufferMap(map_addr, map_size, mem_type, usage));
@@ -2664,8 +2664,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
             map_size = (uint32_t)image->maps[map_id].map_size;
 
             end_addr = &(map_addr[map_size]);
-            map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128U);
-            end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
+            map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, TIVX_DATA_BUFFER_ALIGNMENT);
+            end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, TIVX_DATA_BUFFER_ALIGNMENT);
             uintptr_t temp_size = (uintptr_t)end_addr - (uintptr_t)map_addr;
             map_size = (uint32_t)temp_size;
 

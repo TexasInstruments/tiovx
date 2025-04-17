@@ -139,6 +139,11 @@ extern "C" {
  */
 #define TIVX_MAGIC            (0xFACEC0DEU)
 
+/*! \brief Used for data buffer alignment within \ref TIVX_ALIGN and \ref TIVX_FLOOR macros.
+ * \ingroup group_vx_utils
+ */
+#define TIVX_DATA_BUFFER_ALIGNMENT            (128U)
+
 /*! \brief A magic value to look for and set in references. Used to indicate a free'ed reference
  * \ingroup group_vx_utils
  */

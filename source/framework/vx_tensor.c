@@ -802,8 +802,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
                 }
 
                 end_addr = &(host_addr[map_size]);
-                map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)host_addr, 128U);
-                end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
+                map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)host_addr, TIVX_DATA_BUFFER_ALIGNMENT);
+                end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, TIVX_DATA_BUFFER_ALIGNMENT);
                 uintptr_t temp_map_size0 = (uintptr_t)end_addr - (uintptr_t)host_addr;
                 map_size = (vx_uint32)temp_map_size0;
                 tivxCheckStatus(&status, tivxMemBufferMap(map_addr, map_size,
@@ -868,8 +868,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map
             map_size = (vx_uint32)tensor->maps[map_id].map_size;
 
             end_addr = &(map_addr[map_size]);
-            map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128U);
-            end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
+            map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, TIVX_DATA_BUFFER_ALIGNMENT);
+            end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, TIVX_DATA_BUFFER_ALIGNMENT);
             uintptr_t temp_map_size1 = (uintptr_t)end_addr - (uintptr_t)map_addr;
             map_size = (vx_uint32)temp_map_size1;
 

@@ -588,8 +588,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapUserDataObject(vx_user_data_object use
             map_size = (uint32_t)user_data_object->maps[map_id].map_size;
 
             end_addr = &(map_addr[map_size]);
-            map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128U);
-            end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
+            map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, TIVX_DATA_BUFFER_ALIGNMENT);
+            end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, TIVX_DATA_BUFFER_ALIGNMENT);
             uintptr_t temp_map_size = (uintptr_t)end_addr - (uintptr_t)map_addr;
             map_size = (uint32_t)temp_map_size;
 
