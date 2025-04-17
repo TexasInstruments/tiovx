@@ -73,6 +73,8 @@ void tivxRegisterTestKernelsTargetDspKernels(void);
 void tivxUnRegisterTestKernelsTargetDspKernels(void);
 void tivxRegisterTestKernelsTargetArmKernels(void);
 void tivxUnRegisterTestKernelsTargetArmKernels(void);
+void tivxRegisterExtTargetMPUKernels(void);
+void tivxUnRegisterExtTargetMPUKernels(void);
 
 static void tivxInitLocal(void);
 static void tivxDeInitLocal(void);
@@ -189,6 +191,10 @@ static void tivxInitLocal(void)
     #endif /* #if defined(BUILD_TEST_KERNELS) */
     #endif  /* #ifdef BUILD_CONFORMANCE_TEST */
 
+    #if defined (R5F)
+        tivxRegisterExtTargetMPUKernels();
+    #endif
+
         ownObjDescInit();
 
         ownPlatformCreateTargets();
@@ -257,6 +263,10 @@ static void tivxDeInitLocal(void)
         #endif
         #endif /* #if defined(BUILD_TEST_KERNELS) */
         #endif  /* #ifdef BUILD_CONFORMANCE_TEST */
+
+        #if defined (R5F)
+            tivxUnRegisterExtTargetMPUKernels();
+        #endif
 
             /* DeInitialize Target */
             ownTargetDeInit();

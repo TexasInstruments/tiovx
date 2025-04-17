@@ -68,8 +68,19 @@
 #include "tivx_kernels_target_utils.h"
 
 #define OBJ_ARR_SPLIT_MAX_KERNELS 4U
+static vx_uint32 target_kernels_per_cpu = 1u;
 
 static tivx_target_kernel vx_obj_array_split_target_kernel[OBJ_ARR_SPLIT_MAX_KERNELS] = {NULL};
+
+static vx_status tivxObjArraySplitSetTargetName(
+    char target_name[OBJ_ARR_SPLIT_MAX_KERNELS][TIVX_TARGET_MAX_NAME]);
+
+static void swapObjArray(
+    tivx_obj_desc_object_array_t *in_desc,
+    tivx_obj_desc_t *in_elem_desc[],
+    tivx_obj_desc_object_array_t *out_desc,
+    tivx_obj_desc_t *out_elem_desc[],
+    uint32_t index);
 
 static void swapObjArray(
     tivx_obj_desc_object_array_t *in_desc,
@@ -225,13 +236,12 @@ static vx_status VX_CALLBACK tivxObjArraySplitControl(
     return status;
 }
 
-void tivxAddTargetKernelObjArraySplit(void)
+static vx_status tivxObjArraySplitSetTargetName(char target_name[OBJ_ARR_SPLIT_MAX_KERNELS][TIVX_TARGET_MAX_NAME])
 {
     vx_status status = (vx_status)VX_FAILURE;
-    char target_name[OBJ_ARR_SPLIT_MAX_KERNELS][TIVX_TARGET_MAX_NAME];
-    vx_enum self_cpu;
+    vx_enum self_cpu = tivxGetSelfCpuId();
 
-    self_cpu = tivxGetSelfCpuId();
+    target_kernels_per_cpu = 1u;
 
     if ( self_cpu == (vx_enum)TIVX_CPU_ID_MPU_0 )
     {
@@ -239,18 +249,43 @@ void tivxAddTargetKernelObjArraySplit(void)
         strncpy(target_name[1], TIVX_TARGET_MPU_1, TIVX_TARGET_MAX_NAME);
         strncpy(target_name[2], TIVX_TARGET_MPU_2, TIVX_TARGET_MAX_NAME);
         strncpy(target_name[3], TIVX_TARGET_MPU_3, TIVX_TARGET_MAX_NAME);
+        target_kernels_per_cpu = OBJ_ARR_SPLIT_MAX_KERNELS;
         status = (vx_status)VX_SUCCESS;
     }
+    #if defined(SOC_AM62A)
+    else if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0 )
+    {
+        strncpy(target_name[0], TIVX_TARGET_MCU1_0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #else
+    else if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0 )
+    {
+        strncpy(target_name[0], TIVX_TARGET_MCU2_0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #endif
     else
     {
         status = (vx_status)VX_FAILURE;
     }
 
+    return status;
+}
+
+
+void tivxAddTargetKernelObjArraySplit(void)
+{
+    vx_status status = (vx_status)VX_FAILURE;
+    char target_name[OBJ_ARR_SPLIT_MAX_KERNELS][TIVX_TARGET_MAX_NAME];
+
+    status = tivxObjArraySplitSetTargetName(target_name);
+
     if (status == (vx_status)VX_SUCCESS)
     {
-        int i;
+        uint32_t i;
 
-        for (i = 0; i < OBJ_ARR_SPLIT_MAX_KERNELS; i++)
+        for (i = 0; i < target_kernels_per_cpu; i++)
         {
             vx_obj_array_split_target_kernel[i] = tivxAddTargetKernelByName(
                                 TIVX_KERNEL_OBJ_ARRAY_SPLIT_NAME,
@@ -267,16 +302,21 @@ void tivxAddTargetKernelObjArraySplit(void)
 void tivxRemoveTargetKernelObjArraySplit(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    int i;
+    char target_name[OBJ_ARR_SPLIT_MAX_KERNELS][TIVX_TARGET_MAX_NAME];
 
-    for (i = 0; i < OBJ_ARR_SPLIT_MAX_KERNELS; i++)
+    status = tivxObjArraySplitSetTargetName(target_name);
+
+    if (status == (vx_status)VX_SUCCESS)
     {
-        status = tivxRemoveTargetKernel(vx_obj_array_split_target_kernel[i]);
-        if (status == (vx_status)VX_SUCCESS)
+        uint32_t i;
+
+        for (i = 0; i < target_kernels_per_cpu; i++)
         {
-            vx_obj_array_split_target_kernel[i] = NULL;
+            status = tivxRemoveTargetKernelByName(TIVX_KERNEL_OBJ_ARRAY_SPLIT_NAME, target_name[i]);
+            if (status == (vx_status)VX_SUCCESS)
+            {
+                vx_obj_array_split_target_kernel[i] = NULL;
+            }
         }
     }
 }
-
-

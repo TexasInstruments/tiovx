@@ -51,7 +51,30 @@ static void fillSequence(CT_Image dst, uint32_t seq_init)
 
 TESTCASE(tivxObjArraySplit, CT_VXContext, ct_setup_vx_context, 0)
 
-TEST(tivxObjArraySplit, testGraph)
+typedef struct
+{
+    const char* name;
+    const char *target_string;
+} TestArg;
+
+#if defined(SOC_AM62A)
+#define TEST_PARAMS \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_MPU_0", ARG, TIVX_TARGET_MPU_0), \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_MPU_1", ARG, TIVX_TARGET_MPU_1), \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_MPU_2", ARG, TIVX_TARGET_MPU_2), \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_MPU_3", ARG, TIVX_TARGET_MPU_3), \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_MCU1_0", ARG, TIVX_TARGET_MCU1_0)
+#else
+#define TEST_PARAMS \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_MPU_0", ARG, TIVX_TARGET_MPU_0), \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_MPU_1", ARG, TIVX_TARGET_MPU_1), \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_MPU_2", ARG, TIVX_TARGET_MPU_2), \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_MPU_3", ARG, TIVX_TARGET_MPU_3), \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_MCU2_0", ARG, TIVX_TARGET_MCU2_0)
+#endif
+
+
+TEST_WITH_ARG(tivxObjArraySplit, testGraph, TestArg, TEST_PARAMS)
 {
     vx_object_array in, out0, out1, out2, out3;
     vx_graph graph;
@@ -123,6 +146,8 @@ TEST(tivxObjArraySplit, testGraph)
     ASSERT_VX_OBJECT(out3 = vxCreateObjectArray(context, (vx_reference)output3_exemplar, output3_num_items), VX_TYPE_OBJECT_ARRAY);
 
     ASSERT_VX_OBJECT(node = tivxObjArraySplitNode(graph, in, out0, out1, out2, out3), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
     /* Pre-loading all of the input/output images */
     {

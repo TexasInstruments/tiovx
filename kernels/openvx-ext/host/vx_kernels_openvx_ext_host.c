@@ -104,8 +104,17 @@ void tivxExtLoadKernels(vx_context context)
         vxLoadKernels(context, TIVX_MODULE_NAME_OPENVX_EXT);
 
         #ifdef x86_64
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
+
+        #if defined(SOC_AM62A)
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
+        #else
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
         #endif
+        tivxRegisterExtTargetMPUKernels();
+
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
+        #endif /* #ifdef x86_64 */
+
         tivxRegisterExtTargetMPUKernels();
     }
     gIsExtKernelsLoad++;
@@ -126,8 +135,17 @@ void tivxExtUnLoadKernels(vx_context context)
             tivxUnRegisterOpenVXExtKernels();
 
             #ifdef x86_64
-            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
+
+            #if defined(SOC_AM62A)
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
+            #else
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
             #endif
+            tivxUnRegisterExtTargetMPUKernels();
+
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
+            #endif /* #ifdef x86_64 */
+
             tivxUnRegisterExtTargetMPUKernels();
         }
     }

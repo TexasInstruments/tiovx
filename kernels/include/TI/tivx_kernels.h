@@ -114,7 +114,7 @@ void tivxExtLoadKernels(vx_context context);
 /*!
  * \brief Used for the Application to unload the OpenVX Extension kernels from the context.
  *
- * This includes Cobject array split kernel
+ * This includes object array split kernel
  *
  * \ingroup group_vision_function_ext
  */

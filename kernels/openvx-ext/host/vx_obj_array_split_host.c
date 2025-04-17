@@ -302,6 +302,11 @@ vx_status tivxAddKernelObjArraySplit(vx_context context)
             tivxAddKernelTarget(kernel, TIVX_TARGET_MPU_1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_MPU_2);
             tivxAddKernelTarget(kernel, TIVX_TARGET_MPU_3);
+            #if defined(SOC_AM62A)
+            tivxAddKernelTarget(kernel, TIVX_TARGET_MCU1_0);
+            #else
+            tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_0);
+            #endif
         }
         if (status == (vx_status)VX_SUCCESS)
         {
