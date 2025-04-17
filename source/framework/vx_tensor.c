@@ -178,14 +178,26 @@ static vx_status ownDestructTensor(vx_reference ref)
         obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
         if (NULL != obj_desc)
         {
+            if ((vx_enum)TIVX_TENSOR_NORMAL == (vx_enum)obj_desc->create_type)
+            {
+                if (obj_desc->mem_ptr.host_ptr != (uint64_t)(uintptr_t)NULL)
+                {
+                    tivxMemBufferFree(
+                        &obj_desc->mem_ptr, obj_desc->mem_size);
+                }
+            }
+            ownObjDescFree((tivx_obj_desc_t **)&obj_desc);
+            
             if (NULL != tensor->parent)
             {
                /* decrement the parent's internal reference count */
-               status = ownReleaseReferenceInt((vx_reference *)&(tensor->parent), tensor->parent->base.type, (vx_enum)VX_INTERNAL, NULL);                             
-            }            
+               status = ownReleaseReferenceInt(vxCastRefFromImageP(&tensor->parent), tensor->parent->base.type, (vx_enum)VX_INTERNAL, NULL);
+               if ((vx_status)VX_SUCCESS != status)
+               {
+                   VX_PRINT(VX_ZONE_ERROR, "Image parent object (for tensor) release failed!\n");
+               }
+            }
         }
-        /*destruct now the main object */
-        status = ownDestructReferenceGeneric(ref);        
     }
     else 
     {

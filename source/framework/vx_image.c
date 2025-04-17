@@ -3253,7 +3253,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const v
                         }
 
                         /* child is useless without the parent's data, so add an internal reference */
-                        ownIncrementReference(&tensor->parent->base, (vx_enum)VX_INTERNAL);
+                        (void)ownIncrementReference(&tensor->parent->base, (vx_enum)VX_INTERNAL);
 
                         /* stride[1] must match that of the image, not be calculated from the dimensions of the ROI */
                         c_obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
