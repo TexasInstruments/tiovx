@@ -273,6 +273,40 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 */
 VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map_id map_id);
 
+/*!  \brief Creates tensor or virtual tensor from an image, given a rectangle.
+ *
+ * The original image may be virtual or non-virtual.
+ *
+ * \param [in] image                the reference to the parent image
+ * \param [in] rect                 the region of interest rectangle.
+ *                                  Must contain points within the parent image pixel space.
+ * \param [in] fixed_point_position Specifies the fixed point position. 
+ *                                  If 0, calculations are performed using integer arithmetic.
+ *
+ * The input image must be a non-virtual or virtual image with width, height and format all defined.
+ * The rectangle rect must be defined within the pixel space of the parent image, or the pointer can
+ * be NULL, in which case the entire image is assumed as the ROI.
+ * For VX_DF_IMAGE_U1-type images there are some restrictions for the rectangle that can be used to
+ * create a tensor using vxCreateTensorFromROI. Namely, the rectangle needs to have its left edge
+ * aligned to a byte boundary in the parent image, i.e., _start_x in the vx_rectangle_t must be a multiple
+ * of 8 (including 0). This is because images of type VX_DF_IMAGE_U1 must start on a byte boundary and
+ * a tensor created by vxCreateTensorFromROI points to data in the original image.
+ *
+ * \return Returns a reference to the tensor; any possible errors preventing a successful
+ *         creation may be checked using vxGetStatus().
+ * Possible causes of errors are:
+ *  -   Invalid input reference
+ *  -   Input reference is not to an image
+ *  -   Input image does not have its width, height or format specified
+ *  -   Input image does not contain the region described by rect or are not supported for the image format
+ *  -   Out of resources
+ * The new reference refers to data in the original image, so that updates to the tensor update the
+ * parent image, and updates to the parent image in the region of interest update the tensor.
+ * If the input image is virtual, the new reference returned is to a virtual tensor.
+ * If the input image is non-virtual, the new reference returned is to a non-virtual tensor.
+  */
+ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const vx_rectangle_t* rect, vx_int8 fixed_point_position);
+
 
 #ifdef __cplusplus
 }

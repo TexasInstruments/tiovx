@@ -603,12 +603,14 @@ static vx_status copyImage(vx_image input, vx_image output)
  * This involves non-recursively visiting every sub-image
  * and adjusting the memory pointer for that, as well.
  */
-static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MAX_PLANES])
+static vx_status adjustMemoryPointer(const vx_reference ref, uint64_t offset[TIVX_IMAGE_MAX_PLANES])
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_image stack[TIVX_SUBIMAGE_STACK_SIZE];
+    vx_reference stack[TIVX_SUBIMAGE_STACK_SIZE];
     vx_image local_img;
+    vx_reference local_ref;
     vx_image *subimages = NULL;
+    vx_tensor *subtensors = NULL;
     vx_uint32 stack_pointer = 0;
     vx_uint32 i;
 
@@ -621,56 +623,95 @@ static vx_status adjustMemoryPointer(vx_image ref, uint64_t offset[TIVX_IMAGE_MA
     while (0U < stack_pointer)
     {
         stack_pointer--;
-        local_img = stack[stack_pointer];
-        subimages = local_img->subimages;
-        tivx_obj_desc_image_t *obj_desc = (tivx_obj_desc_image_t *)local_img->base.obj_desc;
+        local_ref = stack[stack_pointer];
+        if ((vx_enum)VX_TYPE_IMAGE == local_ref->type)
+        {     
+            local_img  = vxCastRefAsImage(local_ref, NULL);
+            subimages  = local_img->subimages;
+            subtensors = local_img->subtensors;
+            tivx_obj_desc_image_t *obj_desc = (tivx_obj_desc_image_t *)local_img->base.obj_desc;
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_IMAGE_UBR028
 <justification end>*/
-        if (obj_desc->planes > 0U)
+            if (obj_desc->planes > 0U)
 /* LDRA_JUSTIFY_END */
-        {
-            for (i = 0; i < obj_desc->planes; ++i)
             {
-                obj_desc->mem_ptr[i].host_ptr = obj_desc->mem_ptr[i].host_ptr + offset[i];
-                obj_desc->mem_ptr[i].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[i].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                for (i = 0; i < obj_desc->planes; ++i)
+                {
+                    obj_desc->mem_ptr[i].host_ptr = obj_desc->mem_ptr[i].host_ptr + offset[i];
+                    obj_desc->mem_ptr[i].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[i].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                }
             }
-        }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_IMAGE_UM012
 <justification end>*/
+            else
+            {
+                obj_desc->mem_ptr[0U].host_ptr = obj_desc->mem_ptr[0].host_ptr + offset[local_img->channel_plane];
+                obj_desc->mem_ptr[0U].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[0U].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+            }     
+        }
+        else if ((vx_enum)VX_TYPE_TENSOR == local_ref->type)
+        {
+            tivx_obj_desc_tensor_t *obj_desc = (tivx_obj_desc_tensor_t *)local_ref->obj_desc;
+            obj_desc->mem_ptr.host_ptr = obj_desc->mem_ptr.host_ptr + offset[((vx_tensor)local_ref)->channel_plane];
+            obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+            /* there are no subtensors or subimage for the tensor for now 
+               stop the loop below by setting the null pointer for the subtensor and subimage*/
+            subtensors = NULL;
+            subimages  = NULL;
+        }
         else
         {
-            obj_desc->mem_ptr[0U].host_ptr = obj_desc->mem_ptr[0].host_ptr + offset[local_img->channel_plane];
-            obj_desc->mem_ptr[0U].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[0U].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+            /* do nothing this should not happen as we only use the function with vximage */
         }
 /* LDRA_JUSTIFY_END */
+       if ((subimages!=NULL) && (subtensors!=NULL))
+       {
         for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; ++i)
-        {
-            if (NULL != subimages[i])
             {
+                if (NULL != subimages[i])
+                {
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_IMAGE_UM013
 <justification end>*/
-                if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Too many sub-images, may need to increase the value of TIVX_SUBIMAGE_STACK_SIZE\n");
-                    status = (vx_status)VX_ERROR_NO_RESOURCES;
-                    break;
+                    if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Too many sub-images, may need to increase the value of TIVX_SUBIMAGE_STACK_SIZE\n");
+                        status = (vx_status)VX_ERROR_NO_RESOURCES;
+                        break;
+                    }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_IMAGE_UM013
+<justification end>*/
+                    else
+/* LDRA_JUSTIFY_END */
+                    {
+                        stack[stack_pointer] = vxCastRefFromImage(subimages[i]);
+                        stack_pointer++;
+                    }
                 }
-/* LDRA_JUSTIFY_END */
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_IMAGE_UM013
-<justification end>*/
-                else
-/* LDRA_JUSTIFY_END */
+            }
+            for (i = 0; i < TIVX_IMAGE_MAX_SUBTENSORS; ++i)
+            {
+                if (NULL != subtensors[i])
                 {
-                    stack[stack_pointer] = subimages[i];
-                    stack_pointer++;
+                    if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Too many sub-tensors, may need to increase the value of TIVX_SUBOBJECT_STACK_SIZE in include/TI/tivx_config.h\n");
+                        status = (vx_status)VX_ERROR_NO_RESOURCES;
+                        break;
+                    }
+                    else
+                    {
+                        stack[stack_pointer] = vxCastRefFromTensor(subtensors[i]);
+                        stack_pointer++;
+                    }
                 }
             }
         }
@@ -720,7 +761,7 @@ static vx_status swapImage(const vx_image input, const vx_image output)
             op_obj_desc->mem_size[i] = ip_obj_desc->mem_size[i];
             ip_obj_desc->mem_size[i] = mem_size;
         }
-        status = adjustMemoryPointer(input, offsets);
+        status = adjustMemoryPointer(vxCastRefFromImage(input), offsets);
 
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -733,7 +774,7 @@ static vx_status swapImage(const vx_image input, const vx_image output)
             {
                 offsets[i] = ~(offsets[i] - 1UL);
             }
-            status = adjustMemoryPointer(output, offsets);
+            status = adjustMemoryPointer(vxCastRefFromImage(output), offsets);
         }
 /* LDRA_JUSTIFY_END */
         (void)ownReferenceUnlock(&output->base);     
@@ -864,7 +905,7 @@ static void ownInitPlane(vx_image image,
 static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_df_image format)
 {
     vx_uint32 size_of_ch;
-    vx_uint16 subimage_idx, map_idx;
+    vx_uint16 subimage_idx, subtensor_idx, map_idx;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
     obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
@@ -875,6 +916,10 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
     {
         image->subimages[subimage_idx] = NULL;
     }
+    for(subtensor_idx=0; subtensor_idx<TIVX_IMAGE_MAX_SUBTENSORS; subtensor_idx++)
+    {
+        image->subtensors[subtensor_idx] = NULL;
+    }    
 
     for(map_idx=0; map_idx<TIVX_IMAGE_MAX_MAPS; map_idx++)
     {
@@ -3046,4 +3091,205 @@ vx_status ownInitVirtualImage(
     }
 
     return (status);
+}
+
+#define NO_ALIGN 1
+#define BYTE_ALIGN 8
+
+#define DEFAULT_MULTIPLIER 1
+#define U1_MULTIPLIER 8
+
+VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const vx_rectangle_t *rect, vx_int8 fixed_point_position)
+{
+    tivx_obj_desc_image_t *p_obj_desc;
+    tivx_obj_desc_tensor_t *c_obj_desc;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_tensor tensor = NULL;
+    vx_uint32 i;
+
+    /* parent image must be a valid image */
+    if (((vx_bool)vx_false_e == ownIsValidSpecificReference(&image->base, (vx_enum)VX_TYPE_IMAGE)) || (NULL == image->base.obj_desc))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    }
+    else
+    {
+        /* image's width and height must be defined */
+        p_obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+        if ((0U == p_obj_desc->width) || (0U == p_obj_desc->height))
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Invalid image dimension\n");
+            status = (vx_status)VX_ERROR_INVALID_DIMENSION;
+        }
+        else
+        {
+            /* check image format and prepare format-appropriate modifiers */
+            vx_enum tensor_type = (vx_enum)VX_TYPE_UINT8;
+            uint16_t rect_align = NO_ALIGN;
+            uint16_t x_multiplier = DEFAULT_MULTIPLIER;
+            uint16_t y_multiplier = DEFAULT_MULTIPLIER;
+
+            switch (p_obj_desc->format)
+            {
+            case (vx_enum)VX_DF_IMAGE_U8:
+                tensor_type = (vx_enum)VX_TYPE_UINT8;
+                break;
+            case (vx_enum)VX_DF_IMAGE_U16:
+                tensor_type = (vx_enum)VX_TYPE_UINT16;
+                break;
+            case (vx_enum)VX_DF_IMAGE_S16:
+                tensor_type = (vx_enum)VX_TYPE_INT16;
+                break;
+            case (vx_enum)VX_DF_IMAGE_U32:
+                tensor_type = (vx_enum)VX_TYPE_UINT32;
+                break;
+            case (vx_enum)VX_DF_IMAGE_S32:
+                tensor_type = (vx_enum)VX_TYPE_INT32;
+                break;
+            case (vx_enum)VX_DF_IMAGE_RGB:
+                tensor_type = (vx_enum)VX_TYPE_UINT32;
+                break;
+            case (vx_enum)VX_DF_IMAGE_RGBX:
+                tensor_type = (vx_enum)VX_TYPE_UINT32;
+                break;
+            case (vx_enum)VX_DF_IMAGE_UYVY:
+                tensor_type = (vx_enum)VX_TYPE_UINT16;
+                break;
+            case (vx_enum)VX_DF_IMAGE_YUYV:
+                tensor_type = (vx_enum)VX_TYPE_UINT16;
+                break;
+            case (vx_enum)TIVX_DF_IMAGE_RGB565:
+                tensor_type = (vx_enum)VX_TYPE_UINT16;
+                break;
+            case (vx_enum)TIVX_DF_IMAGE_BGRX:
+                tensor_type = (vx_enum)VX_TYPE_UINT32;
+                break;
+            case (vx_enum)TIVX_DF_IMAGE_P12:
+                tensor_type = (vx_enum)VX_TYPE_UINT16;
+                break;
+            case (vx_enum)VX_DF_IMAGE_VIRT:
+            case (vx_enum)VX_DF_IMAGE_NV12:
+            case (vx_enum)VX_DF_IMAGE_NV21:
+            case (vx_enum)VX_DF_IMAGE_IYUV:
+            case (vx_enum)VX_DF_IMAGE_YUV4:
+            case (vx_enum)TIVX_DF_IMAGE_NV12_P12:
+                /* Investigate whether these 5 are valid and if so, what tensor data format they need */
+            default:
+                VX_PRINT(VX_ZONE_ERROR, "Invalid image format\n");
+                status = (vx_status)VX_ERROR_INVALID_FORMAT;
+                break;
+            }
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                vx_rectangle_t roi;
+
+                /* a NULL rect pointer indicates that the ROI is the whole image */
+                if (NULL == rect)
+                {
+                    roi.start_x = 0;
+                    roi.start_y = 0;
+                    roi.end_x = p_obj_desc->width;
+                    roi.end_y = p_obj_desc->height;
+                }
+                else
+                {
+                    roi.start_x = rect->start_x;
+                    roi.start_y = rect->start_y;
+                    roi.end_x = rect->end_x;
+                    roi.end_y = rect->end_y;
+                }
+                /* check alignment */
+                if (0U != (roi.start_x % rect_align))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid rectangle alignment\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                /* rectangle sanity check */
+                else if ((roi.start_x > roi.end_x) || (roi.start_y > roi.end_y))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid rectangle\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                /* check ROI fits in the image */
+                else if ((roi.end_x > p_obj_desc->width) || (roi.end_y > p_obj_desc->height))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid rectangle\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                else
+                {
+                    /* In case the parent image hasn't been allocated yet */
+                    status = ownAllocImageBuffer(vxCastRefFromImage(image));
+                    if ((vx_status)VX_SUCCESS == status)
+                    {
+                        /* create tensor with the context of the parent image and correct dimensions and data type */
+                        vx_size dimensions[2];
+                        dimensions[0] = (roi.end_x - roi.start_x + x_multiplier - 1) / x_multiplier;
+                        dimensions[1] = (roi.end_y - roi.start_y + y_multiplier - 1) / y_multiplier;
+                        tensor = vxCreateTensor(image->base.context, 2U, dimensions, tensor_type, fixed_point_position);
+
+                        /* register the image as the tensor's parent */
+                        tensor->base.scope = &image->base;
+                        tensor->parent = image;
+                        ((tivx_obj_desc_tensor_t *)tensor->base.obj_desc)->parent_id = image->base.obj_desc->obj_desc_id;
+                        tensor->base.is_virtual = image->base.is_virtual;
+                        tensor->channel_plane = image->channel_plane;
+                        /* add the child as a subtensor of the parent */
+                        for (i = 0; i < TIVX_IMAGE_MAX_SUBTENSORS; i++)
+                        {
+                            if (NULL == image->subtensors[i])
+                            {
+                                image->subtensors[i] = tensor;
+                                ownLogSetResourceUsedValue("TIVX_IMAGE_MAX_SUBTENSORS", (uint16_t)i + 1U);
+                                break;
+                            }
+                        }
+                        if (TIVX_IMAGE_MAX_SUBTENSORS == i)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "No available subtensor slots\n");
+                            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_IMAGE_MAX_SUBTENSORS in include/TI/tivx_config.h\n");
+                            status = (vx_status)VX_ERROR_NO_RESOURCES;
+                        }
+
+                        /* child is useless without the parent's data, so add an internal reference */
+                        (void)ownIncrementReference(&tensor->parent->base, (vx_enum)VX_INTERNAL);
+
+                        /* stride[1] must match that of the image, not be calculated from the dimensions of the ROI */
+                        c_obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
+                        c_obj_desc->create_type = (vx_uint32)TIVX_TENSOR_FROM_ROI;
+                        c_obj_desc->stride[1] = p_obj_desc->imagepatch_addr[0].stride_y;
+
+                        /* calculate tensor host_ptr */
+                        c_obj_desc->mem_ptr.host_ptr = (uint64_t)((uintptr_t)p_obj_desc->mem_ptr[0].host_ptr + (roi.start_x * c_obj_desc->stride[0]) + (roi.start_y * c_obj_desc->stride[1]));
+
+                        /* calculate shared_ptr */
+                        c_obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(c_obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+
+                        /* use parent supplementary data ID */
+                        if ((vx_uint16)TIVX_OBJ_DESC_INVALID != image->base.obj_desc->supp_data_id)
+                        {
+                            tensor->base.obj_desc->supp_data_id = image->base.obj_desc->supp_data_id; 
+                            tensor->base.supplementary_data = image->base.supplementary_data;
+                            VX_PRINT(VX_ZONE_INFO, "Found parent supplementary data ID %u, setting to child%s", tensor->base.obj_desc->supp_data_id, "\n");
+                        }
+                        else
+                        {
+                            VX_PRINT(VX_ZONE_INFO, "Parent has no supplementary data ID%s", "\n");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if ((vx_status)VX_SUCCESS != status)
+    {
+        if (tensor->base.obj_desc == NULL)
+        {
+            (void)vxReleaseTensor(&tensor);
+        }
+        tensor = (vx_tensor)ownGetErrorObject((vx_context)image->base.context, status);
+    }
+    return tensor;
 }
