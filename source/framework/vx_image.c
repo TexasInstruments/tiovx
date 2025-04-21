@@ -74,6 +74,7 @@ static vx_bool ownIsSupportedFourcc(vx_df_image code)
     {
         case (vx_df_image)VX_DF_IMAGE_RGB:
         case (vx_df_image)VX_DF_IMAGE_RGBX:
+        case (vx_df_image)VX_DF_IMAGE_RGBA:
         case (vx_df_image)VX_DF_IMAGE_NV12:
         case (vx_df_image)VX_DF_IMAGE_NV21:
         case (vx_df_image)VX_DF_IMAGE_UYVY:
@@ -999,6 +1000,7 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
             break;
         case (vx_df_image)TIVX_DF_IMAGE_BGRX:
         case (vx_df_image)VX_DF_IMAGE_RGBX:
+        case (vx_df_image)VX_DF_IMAGE_RGBA:
             obj_desc->planes = 1;
             ownInitPlane(image, 0, size_of_ch, 4, obj_desc->width, obj_desc->height, 1, 1, 0);
             break;
@@ -1758,6 +1760,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                                 }
                                 else if ((format == (vx_df_image)VX_DF_IMAGE_RGB)  ||
                                          (format == (vx_df_image)VX_DF_IMAGE_RGBX) ||
+                                         (format == (vx_df_image)VX_DF_IMAGE_RGBA) ||
                                          (format == (vx_df_image)TIVX_DF_IMAGE_BGRX))
                                 {
                                     vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
@@ -1765,6 +1768,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                                     ptr[1] = value->RGBX[1];
                                     ptr[2] = value->RGBX[2];
                                     if ((format == (vx_df_image)VX_DF_IMAGE_RGBX) ||
+                                        (format == (vx_df_image)VX_DF_IMAGE_RGBA) ||
                                         (format == (vx_df_image)TIVX_DF_IMAGE_BGRX))
                                     {
                                         ptr[3] = value->RGBX[3];

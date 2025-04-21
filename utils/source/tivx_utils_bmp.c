@@ -391,6 +391,7 @@ static uint32_t tivx_utils_bmp_stride_mul_factor(vx_df_image format)
         case VX_DF_IMAGE_U32:
         case VX_DF_IMAGE_S32:
         case VX_DF_IMAGE_RGBX:
+        case VX_DF_IMAGE_RGBA:
             factor = 4;
             break;
 
@@ -747,7 +748,8 @@ static int32_t tivx_utils_get_channels(vx_df_image format)
     {
         channels = 3;
     }
-    else if (format == VX_DF_IMAGE_RGBX)
+    else if ((format == VX_DF_IMAGE_RGBX) ||
+             (format == VX_DF_IMAGE_RGBA))
     {
         channels = 4;
     }

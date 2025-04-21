@@ -130,6 +130,7 @@ void tivxInitBufParams(
                 buf_params[i].data_type = (uint32_t)VXLIB_INT16;
                 break;
             case (vx_df_image)VX_DF_IMAGE_RGBX:
+            case (vx_df_image)VX_DF_IMAGE_RGBA:
             case (vx_df_image)TIVX_DF_IMAGE_BGRX:
             case (vx_df_image)VX_DF_IMAGE_U32:
                 buf_params[i].data_type = (uint32_t)VXLIB_UINT32;

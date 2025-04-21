@@ -663,10 +663,15 @@ enum vx_df_image_e {
      */
     VX_DF_IMAGE_RGB  = VX_DF_IMAGE('R','G','B','2'),
     /*! \brief A single plane of 32-bit pixel as 4 interleaved 8-bit units of
+     * R then G then B then Attribute data.
+     * This uses the BT709 full range by default.
+     */
+    VX_DF_IMAGE_RGBA = VX_DF_IMAGE('R','G','B','A'),
+    /*! \brief A single plane of 32-bit pixel as 4 interleaved 8-bit units of
      * R then G then B data, then a <i>don't care</i> byte.
      * This uses the BT709 full range by default.
      */
-    VX_DF_IMAGE_RGBX = VX_DF_IMAGE('R','G','B','A'),
+    VX_DF_IMAGE_RGBX = VX_DF_IMAGE('R','G','B','X'),
     /*! \brief A 2-plane YUV format of Luma (Y) and interleaved UV data at
      * 4:2:0 sampling. This uses the BT709 full range by default.
      */

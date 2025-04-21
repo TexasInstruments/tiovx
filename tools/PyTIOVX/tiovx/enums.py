@@ -299,6 +299,8 @@ class DfImage(Enum) :
     RGB565 = 17
     ## OpenVX equivalent = \ref TIVX_DF_IMAGE_BGRX
     BGRX = 18
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_RGBA
+    RGBA = 19
 
     def get_vx_enum_name(df_format) :
         if df_format == DfImage.P12 or df_format == DfImage.NV12_P12 or df_format == DfImage.RGB565 or df_format == DfImage.BGRX :
