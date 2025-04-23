@@ -36,6 +36,7 @@
 #include <TI/tivx_debug.h>
 #include <tivx_platform.h>
 #include <tivx_ipc.h>
+#include <tivx_mem.h>
 #include <TI/tivx_mutex.h>
 #include <TI/tivx_event.h>
 #include <TI/tivx_task.h>

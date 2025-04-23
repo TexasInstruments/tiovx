@@ -324,6 +324,18 @@ vx_status tivxMemBufferMap(
     return status;
 }
 
+vx_status ownMemBufferMap(
+    void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    #if defined(QNX)
+    status = tivxMemBufferMap(host_ptr, size, mem_type, maptype);
+    #endif
+
+    return status;
+}
+
 vx_status tivxMemBufferUnmap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
@@ -348,6 +360,18 @@ vx_status tivxMemBufferUnmap(
         status = (vx_status)VX_FAILURE;
         VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferUnmap failed (either pointer is NULL or size is 0)\n");
     }
+
+    return status;
+}
+
+vx_status ownMemBufferUnmap(
+    void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    #if defined(QNX)
+    status = tivxMemBufferUnmap(host_ptr, size, mem_type, maptype);
+    #endif
 
     return status;
 }
