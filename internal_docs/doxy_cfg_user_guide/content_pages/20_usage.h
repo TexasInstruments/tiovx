@@ -86,6 +86,9 @@
           supplementary data, the children objects of the resulting composite object will contain the same supplementary data as the base object (i.e., the vx_pyramid or vx_object_array).
        -  As an example, in the case that a vx_object_array "ABC" is created with supplementary data "XYZ", if an exemplar of object ABC is created, then the resulting object array
           elements will contain supplementary data "XYZ" as well.
+     \section TIOVX_USAGE_TASK TIOVX Task API on MPU Cores
+       -  When used on MPU cores running an HLOS (i.e., Linux or QNX), the priority parameter of the tivx_task API is ignored.  This is left to maintain compatibility with RTOS.
+       -  If a thread needs to be created with a priority, please instead use the native pthread API
 
  */
 

@@ -179,7 +179,11 @@ typedef struct _tivx_task_create_params
      */
     uint32_t core_affinity;
 
-    /*! \brief task priority for task associated with this target
+    /*! \brief task priority for task associated with this target.
+     *         For MPU cores, this priority is ignored, as this parameter is required
+     *         to maintain compatibility with RTOS cores.  The recommendation if
+     *         priority is required for the task API is to call the native OS task
+     *         creation API rather than using the tivx_task API.
      *         TIVX_TASK_PRI_HIGHEST is highest priority,
      *         TIVX_TASK_PRI_LOWEST is lowest priority
      */
