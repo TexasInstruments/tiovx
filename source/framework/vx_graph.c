@@ -201,7 +201,7 @@ static vx_status ownDestructGraph(vx_reference ref)
 <justification end> */
         if((vx_status)VX_SUCCESS != status1)
         {
-            VX_PRINT(VX_ZONE_ERROR,"Failed to delete queues created during ownGraphCreateQueues \n");
+            VX_PRINT(VX_ZONE_ERROR,"Failed to delete queues created during ownGraphDeleteQueues \n");
             status = status1;
         }
 /* LDRA_JUSTIFY_END */

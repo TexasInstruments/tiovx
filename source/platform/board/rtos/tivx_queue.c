@@ -152,6 +152,8 @@ vx_status tivxQueueDelete(tivx_queue *queue)
 
     if (NULL != queue)
     {
+        status = (vx_status)VX_SUCCESS;
+
         if (((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) ==
                 TIVX_QUEUE_FLAG_BLOCK_ON_GET) &&
             (NULL != queue->block_rd))
