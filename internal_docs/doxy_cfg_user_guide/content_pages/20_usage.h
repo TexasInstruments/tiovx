@@ -263,6 +263,10 @@
      ~~~
 
     - __control_func__:
+      - __Data Object Verification Implications__: Since the objects being used with the control callback are not necessarily node parameters, the parameters
+        are not subject to the validate callback checks being done during the call to \ref vxVerifyGraph.  Therefore, if an object is to be used within a control
+        callback, it is necessary for the control callback (or some other mechanism within the application, etc) to perform validation of the parameters being
+        used within the callback.
       - __Thread/blocking Implications__: The control_func callback (if implemented) is triggered from the application by calling \ref tivxNodeSendCommand.
         The call to \ref tivxNodeSendCommand is blocked until the target can complete execution of the corresponding control_func callback.  Note that
         each target has a pending command queue.  If, during the processing of a graph, a target has multiple process_func and control_func commands in flight

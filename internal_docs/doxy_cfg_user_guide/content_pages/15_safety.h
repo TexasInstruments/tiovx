@@ -23,6 +23,7 @@
     What is in scope for TIOVX safety:
     - TI's implementation of the OpenVX framework (source/framework) with few exceptions listed in the "out of scope" section below.
     - The OS platform layer (source/platform)
+    - The kernel wrapper helper functions (kernels/common)
     - The dependent utils of TIOVX within app_utils.  The specific libraries within this component are listed below. (Note: any test functionality
       from the below libraries are also excluded.)
         - utils/ipc
@@ -31,7 +32,7 @@
         - utils/timer
 
     Within the modules which we are in scope for safety, TI will be generating code coverage reports for the safety release during the
-    10.1 release.  As a part of this effort, TI is utilizing macros to remove code from the final report which has approved deviations.
+    11.0 release.  As a part of this effort, TI is utilizing macros to remove code from the final report which has approved deviations.
     Note that these macros are still enabled by default in our build using concerto.  Therefore, if different build systems are being
     used, the below macros should still be defined in these environments:
     - LDRA_UNTESTABLE_CODE
@@ -39,6 +40,8 @@
 
     Please note the following which are out of scope for safety of TIOVX:
     - OpenVX standard kernels and extension kernels
+    - PC emulation mode
+        - tiovx/source/platform/pc/
     - Supernode extension (Note: this is not yet enabled on J7 platforms, but there are still references to it in the framework.
       These are wrapped under the BUILD_BAM macro.)
         - tiovx/source/framework/vx_graph_supernode.c
@@ -48,12 +51,18 @@
     - Debug logging functionality
         - tiovx/source/framework/vx_debug.c
         - tiovx/source/framework/vx_log_resource.c
-        - tiovx/source/platform/psdk_j7/common/tivx_perf.c
+        - tiovx/source/platform/board/common/tivx_perf.c
     - RT logging functionality
         - tiovx/source/framework/vx_log_rt_trace.c
         - tiovx/source/framework/vx_log_rt_trace_host.c
     - Export to dot file functionality
         - tiovx/source/framework/vx_graph_export_dot.c
+
+    To facilitate the exclusion of the portions of the framework which are not safety qualified, an additional compilation option can be used
+    to compile out all of these portions of code.  Please reference the BUILD_TYPE option in the \ref BUILD_OPTIONS section of the documentation
+    for understanding how to enable this.  The "prod" option excludes the non-safety qualified portion of the code while the "dev" is the default
+    option.  Please note that if you try to use these portions of code when using a "prod" build, they will simply return a failure code indicating
+    that it is not enabled.
 
     Important note to how application shall be written using TIOVX that are used for safety: the "vx-" or "tivx-" functions shall only be used
     within a safety application, not the "own-" prefixed functions.  These functions shall only be called within the context of the framework itself,
@@ -62,9 +71,10 @@
      \section TIOVX_SAFETY_SCOPE_OS_SUPPORT TIOVX OS Support
 
      The aspects of TIOVX which are considered under the safety qualification effort are the framework, platform layer and associated utils layers.  For the
-     remote cores supported via TIOVX safety, the safety OS which is supported is SafeRTOS.  For the host side components, given that the Linux and QNX OS
-     layers do not support safety, a safety OS would need to be used in place of Linux and QNX.  Please note though that the generic POSIX platform layer will
-     have safety qualification collateral (e.g., MISRA-C, Code Coverage, Requirement documentation, etc).
+     remote cores supported via TIOVX safety, the safety OS which is supported is SafeRTOS.  For the host side components, the safety OS which is supported
+     is QNX which within the TI SDK has safety qualification support starting in 11.0. While the SDK supports Linux on the A-core and FreeRTOS on the remote cores,
+     these OS's are not safety qualified and thus would not be usable within a safety qualified system. Please note though that the generic platform layer itself has
+     safety qualification collateral (e.g., MISRA-C, Code Coverage, Requirement documentation, etc).
  */
 
 /*!
@@ -269,8 +279,8 @@
 
      \section TIOVX_SAFETY_FEATURES_TIMEOUT TIOVX Timeout
 
-     By default, certain API's within OpenVX allow users to specify timeout values for the API operation.  This can present an
-     issue in the case of a heterogeneous system such as TI's SoC's in the event that a remote processor or OpenVX target
+     By default, certain API's within OpenVX allow users to specify timeout values for the API operation.  This can be useful
+     in the case of a heterogeneous system such as TI's SoC's in the event that a remote processor or OpenVX target
      experiences a fault and thus cannot receive new messages from the host CPU.  Given the plausibility of this event occurring,
      safety systems must have a mechanism by which to recover from this issue.
 
@@ -296,9 +306,9 @@
      for further details on how to implement this feature within an application.
 
      The blocking calls are considered within the Pipelining 2.0 specification for timeouts; however, there are some additional
-     timeout considerations within the implementation of TIOVX due to the underlying IPC mechanisms within certain non-blocking
-     API's.  Since it is possible for an IPC mechanism to timeout within these non-blocking API's, it is possible to encounter
-     a timeout error within these API's.
+     timeout considerations within the implementation of TIOVX due to the underlying IPC mechanisms within certain API's which are
+     typically non-blocking at the OpenVX specification point of view.  Since it is possible for an IPC mechanism to timeout within
+     these non-blocking API's, it is possible to encounter a timeout error within these API's.
 
      The following graph related API's may return the \ref VX_ERROR_TIMEOUT error when enabling timeouts on the graph or
      nodes within the graph due to this scenario, even though they are non-blocking.  It is very important to note that even
@@ -319,7 +329,7 @@
      to re-trigger upon completion of the trigger node.  Therefore, a general recommended practice when using graph streaming is
      to use the \ref vxRegisterGraphEvent to register a \ref VX_EVENT_NODE_ERROR event on the trigger node of the streaming
      graph.  This way, if an error occurs within the graph as a result of either timeout or any general error, the application
-     will become aware of this issue.  For instance, if a timeout error occurs (for instance, due to a crash on a remote core),
+     will become aware of this issue.  As an example, if a timeout error occurs (for instance, due to a crash on a remote core),
      the node error event will be triggered and thus allow the application to tear down the graph.  One important note to be aware
      of is that the internal queue which manages this task will time out if the specified \ref VX_GRAPH_TIMEOUT is exceeded.
      This decision was made since the timeout for the queue would always be less than or equal to this graph timeout, as new
