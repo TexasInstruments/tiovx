@@ -997,7 +997,7 @@ typedef struct _vx_kernel_parameter_config_t {
  * \param [in] kernel The kernel to query
  * \param [in] num_params The number of parameters required by the kernel, as returned by querying the kernel for the attribute VX_KERNEL_PARAMETERS.
  *  If the value is incorrect, the function will return VX_ERROR_INVALID_PARAMETERS
- * \param [out] An array with the correct number of entries to store the returned data for all the parameters
+ * \param [out] parameter_config An array with the correct number of entries to store the returned data for all the parameters
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors; any other value indicates failure.
@@ -1023,7 +1023,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetKernelParameterConfig(
  * \param [in] graph The graph to query
  * \param [in] num_params the number of graph parameters in the graph, returned by querying the graph for the attribute VX_GRAPH_NUMPARAMETERS.
  *  If the value is incorrect, the function will return VX_ERROR_INVALID_PARAMETERS
- * \param [out] An array with the correct number of entries to store the returned data for all the parameters.
+ * \param [out] parameter_config An array with the correct number of entries to store the returned data for all the parameters.
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors; any other value indicates failure.

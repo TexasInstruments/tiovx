@@ -389,14 +389,14 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region);
  *        - allocated using appMemAlloc()/tivxMemAlloc() on ARM
  *        - memory block is contiguous
  *
- * \param virt_addr [in] Virtual address to translate.
+ * \param virtAddr [in] Virtual address to translate.
  *
- * \param fd [out] File descriptor corresponding to 'virt_addr'.
+ * \param fd [out] File descriptor corresponding to 'virtAddr'.
  *
- * \param phys_addr [out] Physical address corresponding to 'virt_addr'.
+ * \param phyAddr [out] Physical address corresponding to 'virtAddr'.
  *
- * \return  - VX_SUCCESS, and the content of 'fd' and 'phys_addr' will be valid
- *          - VX_FAILURE, and the content of 'fd' and 'phys_addr' will be undefined
+ * \return  - VX_SUCCESS, and the content of 'fd' and 'phyAddr' will be valid
+ *          - VX_FAILURE, and the content of 'fd' and 'phyAddr' will be undefined
  *
  * \ingroup group_tivx_mem
  */
@@ -428,12 +428,12 @@ vx_bool tivxMemCompareFd(uint64_t dmaBufFd1, uint64_t dmaBufFd2, uint32_t size1,
  *
  * \param size [in] Size of the memory block corresponding to 'dmaBufFd' in bytes.
  *
- * \param virt_addr [out] File descriptor corresponding to 'dmaBufFd'.
+ * \param virtAddr [out] File descriptor corresponding to 'dmaBufFd'.
  *
- * \param phys_addr [out] Physical address corresponding to 'dmaBufFd'.
+ * \param phyAddr [out] Physical address corresponding to 'dmaBufFd'.
  *
- * \return  - VX_SUCCESS and the content of 'virt_addr' and 'phys_addr' will be valid
- *          - VX_FAILURE, and the content of 'virt_addr' and 'phys_addr' will be
+ * \return  - VX_SUCCESS and the content of 'virtAddr' and 'phyAddr' will be valid
+ *          - VX_FAILURE, and the content of 'virtAddr' and 'phyAddr' will be
  *                undefined
  *
  * \ingroup group_tivx_mem
