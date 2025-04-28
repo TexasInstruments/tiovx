@@ -9,14 +9,14 @@ and other material relevant to TIOVX.
 - <a href="https://www.khronos.org/openvx/" target="_blank">Khronos OpenVX Website</a> - Top level page for the OpenVX standard
 - <a href="https://www.khronos.org/registry/OpenVX/" target="_blank">Khronos OpenVX Registry</a> - Location with all OpenVX related specs.
 
-# Specs
-- <a href="https://registry.khronos.org/OpenVX/specs/1.1/html/index.html" target="_blank">OpenVX 1.1 Spec</a> - Base specification for the version of OpenVX that TIOVX is compliant to
-- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/1.1/html/vx_khr_pipelining_1_1_0.html" target="_blank">OpenVX Pipelining and Streaming Extension</a> - TIOVX implements this extension
-- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_user_data_object/1.1/vx_khr_user_data_object_1_1.html" target="_blank">OpenVX User Data Object Extension</a> - TIOVX implements this extension
-- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_bidirectional_parameters/vx_khr_bidirectional_parameters_1_3_1.html" target="_blank">OpenVX Bidirectional parameters Extension</a> - TIOVX implements this extension
-- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_safe_casts/vx_khr_safe_casts_1_3_1/vx_khr_safe_casts_1_3_1.html" target="_blank">OpenVX Safe Casts Extension</a> - TIOVX implements this extension
-- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_swap_move/vx_khr_swap_move_1_3_1.html" target="_blank">OpenVX Swap and Move kernel Extension</a> - TIOVX implements this extension
-- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_supplementary_data/vx_khr_supplementary_data_1_3_1/vx_khr_supplementary_data_1_3_1.html" target="_blank">OpenVX Supplementary data Extension</a> - TIOVX implements this extension
+# Specifications and Extensions
+- <a href="https://registry.khronos.org/OpenVX/specs/1.1/html/index.html" target="_blank">OpenVX 1.1 Specification</a> - Base specification for the version of OpenVX that TIOVX is compliant to
+- OpenVX Pipelining and Streaming Extension 2.0 (2.0 version yet to be published)
+- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_user_data_object/1.1/vx_khr_user_data_object_1_1.html" target="_blank">OpenVX User Data Object Extension</a>
+- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_bidirectional_parameters/vx_khr_bidirectional_parameters_1_3_1.html" target="_blank">OpenVX Bidirectional parameters Extension</a>
+- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_safe_casts/vx_khr_safe_casts_1_3_1/vx_khr_safe_casts_1_3_1.html" target="_blank">OpenVX Safe Casts Extension</a>
+- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_swap_move/vx_khr_swap_move_1_3_1.html" target="_blank">OpenVX Swap and Move kernel Extension</a>
+- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_supplementary_data/vx_khr_supplementary_data_1_3_1/vx_khr_supplementary_data_1_3_1.html" target="_blank">OpenVX Supplementary data Extension</a>
 
 # Tutorials/Presentations
 - <a href="https://www.youtube.com/watch?v=zIxEod3hUno" target="_blank">Khronos OpenVX Webinar</a> - (1 hr) OpenVX 1.1, June 2016. Videos hosted on YouTube.
