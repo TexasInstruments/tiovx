@@ -74,6 +74,12 @@ extern "C" {
  * \brief Interface to Tensor APIs (modeled after OpenVX 1.2 tensor support)
  */
 
+/*!
+ * \defgroup group_object_tensor Tensor Data Type APIs
+ * \brief APIs creating and using tensor data type (note: this is not included in OpenVX 1.1 and thus added to TI extensions)
+ * \ingroup group_tivx_ext_host
+ */
+
 
  /*! \brief The multidimensional data object (Tensor).
  * \see vxCreateTensor

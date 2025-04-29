@@ -106,7 +106,7 @@ extern "C" {
  *
  *  \param target [in] target handle
  *
- * \ingroup group_tivx_target
+ * \ingroup group_tivx_task
  */
 typedef void (VX_CALLBACK *tivx_task_main_f)(void *app_var);
 

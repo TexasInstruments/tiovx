@@ -65,6 +65,12 @@
  */
 
 /*!
+ * \defgroup group_tivx_log_resource f. Resource Logging APIs
+ * \brief APIs for logging of statically allocated framework data structures
+ * \ingroup group_tivx_ext_top
+ */
+
+/*!
  * \defgroup group_vision_function_tidl TIDL (TI Deep Learning) Kernel APIs
  * \brief TIDL Network Kernels
  * \ingroup group_vision_function_hwa
