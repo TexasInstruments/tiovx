@@ -23,6 +23,12 @@
  */
 
 /*!
+ * \defgroup group_vision_function_vpac_fc TI VPAC FlexConnect Kernel APIs
+ * \brief VPAC FlexConnect Kernels
+ * \ingroup group_vision_function_hwa
+ */
+
+/*!
  * \defgroup group_vision_function_dmpac_dof TI DMPAC DOF (Dense Optical Flow) Kernel APIs
  * \brief DMPAC Dense Optical Flow Kernels
  * \ingroup group_vision_function_hwa
