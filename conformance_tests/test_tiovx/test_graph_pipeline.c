@@ -7820,6 +7820,7 @@ TEST(tivxGraphPipeline2, testMultipleEnqueueSameRef)
         /* dequeue same amount of outputs */ 
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 1, &dequeueoutput, 1, &num_dequeued_refs)); 
     }
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
 
     for (i = 0; i < 10; ++i)
     {
@@ -7987,6 +7988,12 @@ TEST(tivxGraphPipeline2, testGraphEvent)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxDisableGraphEvents((vx_graph)node));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDisableGraphEvents(graph));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSendUserGraphEvent(graph, 550, (void *)987UL));
+
+    VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&images[1], 1, &num_refs));
+    VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&images[0], 1, &num_refs));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
+
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));   
     VX_CALL(vxReleaseImage(&images[0]));
@@ -8098,6 +8105,7 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout)
     {
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, i, (vx_reference *)&out_img, 1, &num_refs));
     }
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
@@ -8128,6 +8136,7 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout)
     {
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, i, (vx_reference *)&out_img, 1, &num_refs));
     }    
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));    
@@ -8322,6 +8331,8 @@ TEST(tivxGraphPipeline2, testGraphEventTimeout2)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraphEvent(graph, &graph_events, vx_false_e));
     ASSERT_EQ_INT(graph_events.type, VX_EVENT_GRAPH_PARAMETER_CONSUMED);
     ASSERT_EQ_INT(graph_events.app_value, 123);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
@@ -8524,6 +8535,8 @@ TEST(tivxGraphPipeline2, testAddReferencesToGraphParameterList)
 
     /* call with too many additional references should return error */
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxAddReferencesToGraphParameterList(graph, 0, 33, (vx_reference *)&images + 5U));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
 
     for (vx_uint8 i = 0; i < 40; i++)
     {
@@ -8806,6 +8819,7 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithPyramid)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryReference((vx_reference)level0, VX_REFERENCE_ENQUEUE_COUNT, &enqueue_count, sizeof(enqueue_count)));
     ASSERT_EQ_INT(enqueue_count, 0);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
 
     /* do all the releases */
     VX_CALL(vxReleasePyramid(&pyramid));
@@ -8861,6 +8875,7 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithPyramidAndEnqueueSingleImage)
     vx_uint32 num_refs; 
     VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference *)&dequeue_ref, 1, &num_refs)); 
     VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference *)&dequeue_ref, 1, &num_refs));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
 
     /* do all the releases */
     VX_CALL(vxReleasePyramid(&pyramid));
