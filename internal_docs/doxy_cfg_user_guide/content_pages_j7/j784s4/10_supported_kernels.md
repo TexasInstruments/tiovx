@@ -81,7 +81,7 @@ Kernel | C7X | HWA | PC Emulation Support |
 Note: the below node implementation locations have changed from the 8.6 to 9.0 releases.  The new locations can be
 referenced in \ref TIOVX_PACKAGE_CONTENTS document.
 
-Kernel                            | Target                  | Remote Core(s)                |PC Emulation Support |
+Kernel                            | Target                  | Remote Core(s)                  | PC Emulation Support |
 ----------------------------------|-------------------------|---------------------------------|----------------------|
 #tivxCaptureNode                  | CSIRX                   | MCU2_0                          | No                   |
 #tivxDisplayNode                  | DSS                     | MCU2_0                          | No                   |
@@ -92,8 +92,9 @@ Kernel                            | Target                  | Remote Core(s)    
 #tivxVpacNfBilateralNode          | VPAC1_NF / VPAC2_NF     | MCU2_0 (VPAC1) / MCU4_0 (VPAC2) | Yes                  |
 #tivxVpacMscScaleNode             | VPAC1_MSC / VPAC2_MSC   | MCU2_0 (VPAC1) / MCU4_0 (VPAC2) | Yes                  |
 #tivxVpacMscPyramidNode           | VPAC1_MSC / VPAC2_MSC   | MCU2_0 (VPAC1) / MCU4_0 (VPAC2) | Yes                  |
+#tivxVpacFcVissMscNode            | VPAC_FC / VPAC2_FC      | MCU2_0 (VPAC1) / MCU4_0 (VPAC2) | Yes                  |
 #tivxDmpacSdeNode                 | DMPAC_SDE               | MCU2_1                          | Yes                  |
 #tivxDmpacDofNode                 | DMPAC_DOF               | MCU2_1                          | Yes                  |
 #tivxCsitxNode                    | CSITX                   | MCU2_0                          | Yes                  |
 #tivxDisplayM2MNode               | DSS                     | MCU2_0                          | Yes                  |
-#tivxObjArraySplitNode            | MPU                     | A72                             | Yes                  |
+#tivxObjArraySplitNode            | MPU / MCU2_0            | A72 / MCU2_0                    | Yes                  |
