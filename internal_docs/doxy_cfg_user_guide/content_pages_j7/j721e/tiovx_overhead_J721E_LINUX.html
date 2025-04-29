@@ -1,11 +1,12 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>TIOVX IPC Overhead Benchmark</title>
+  <title>TIOVX Framework Overhead Benchmark</title>
 </head>
-<p>TIOVX IPC Overhead Benchmark<p><p>100 iterations were performed on each target.<p><body>
+<p>TIOVX Framework Overhead Benchmark<p><p>Average values are reported after performing 100 iterations on each target. Framework overhead is calculated                        by subtracting the execution time of a single node from the total execution time of its graph. Execution                        time is measured by querying each graph and node after calling vxProcessGraph.<p><body>
   <table frame="box" rules="all" cellspacing="0" width="75%" border="1" cellpadding="3">
     <tr bgcolor="lightgrey">
+<td width="10%" align="center"><b>Core</b></td>
 <td width="10%" align="center"><b>Target</b></td>
 <td width="20%" align="center"><b>Average Graph Performance (msec) </b></td>
 <td width="20%" align="center"><b>Average Node Performance (msec) </b></td>
@@ -14,36 +15,40 @@
 <td width="20%" align="center"><b>Minimum Overhead (msec) </b></td>
 </tr>
  <tr align="center">
+<td>A72</td>
 <td>MPU-0</td>
-<td>0.049000</td>
-<td>0.026000</td>
-<td>0.023000</td>
-<td>0.023000</td>
+<td>0.038710</td>
+<td>0.007000</td>
+<td>0.031710</td>
+<td>0.036000</td>
 <td>0.023000</td>
  </tr>
  <tr align="center">
+<td>R5F</td>
 <td>MCU2-0</td>
-<td>0.218440</td>
-<td>0.100530</td>
-<td>0.117910</td>
-<td>0.188000</td>
-<td>0.106000</td>
+<td>0.197980</td>
+<td>0.021000</td>
+<td>0.176980</td>
+<td>0.180000</td>
+<td>0.129000</td>
  </tr>
  <tr align="center">
+<td>C66</td>
 <td>DSP-1</td>
-<td>0.098600</td>
-<td>0.010510</td>
-<td>0.088090</td>
-<td>0.091000</td>
-<td>0.075000</td>
+<td>0.099210</td>
+<td>0.010000</td>
+<td>0.089210</td>
+<td>0.095000</td>
+<td>0.082000</td>
  </tr>
  <tr align="center">
+<td>C7x</td>
 <td>DSP_C7-1</td>
-<td>0.117080</td>
-<td>0.006000</td>
-<td>0.111080</td>
-<td>0.125000</td>
-<td>0.067000</td>
+<td>0.086320</td>
+<td>0.007000</td>
+<td>0.079320</td>
+<td>0.081000</td>
+<td>0.078000</td>
  </tr>
 </table>
 </body>

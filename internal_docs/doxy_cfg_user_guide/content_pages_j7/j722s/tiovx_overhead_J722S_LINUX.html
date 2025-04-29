@@ -1,11 +1,12 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>TIOVX IPC Overhead Benchmark</title>
+  <title>TIOVX Framework Overhead Benchmark</title>
 </head>
-<p>TIOVX IPC Overhead Benchmark<p><p>100 iterations were performed on each target.<p><body>
+<p>TIOVX Framework Overhead Benchmark<p><p>Average values are reported after performing 100 iterations on each target. Framework overhead is calculated                        by subtracting the execution time of a single node from the total execution time of its graph. Execution                        time is measured by querying each graph and node after calling vxProcessGraph.<p><body>
   <table frame="box" rules="all" cellspacing="0" width="75%" border="1" cellpadding="3">
     <tr bgcolor="lightgrey">
+<td width="10%" align="center"><b>Core</b></td>
 <td width="10%" align="center"><b>Target</b></td>
 <td width="20%" align="center"><b>Average Graph Performance (msec) </b></td>
 <td width="20%" align="center"><b>Average Node Performance (msec) </b></td>
@@ -14,28 +15,31 @@
 <td width="20%" align="center"><b>Minimum Overhead (msec) </b></td>
 </tr>
  <tr align="center">
+<td>A72</td>
 <td>MPU-0</td>
-<td>0.048650</td>
+<td>0.045580</td>
 <td>0.008000</td>
-<td>0.040650</td>
-<td>0.082000</td>
+<td>0.037580</td>
+<td>0.050000</td>
 <td>0.032000</td>
  </tr>
  <tr align="center">
+<td>R5F</td>
 <td>MCU2-0</td>
-<td>0.117060</td>
-<td>0.010000</td>
-<td>0.107060</td>
-<td>0.110000</td>
-<td>0.102000</td>
+<td>0.103600</td>
+<td>0.009000</td>
+<td>0.094600</td>
+<td>0.107000</td>
+<td>0.087000</td>
  </tr>
  <tr align="center">
+<td>C7x</td>
 <td>DSP_C7-1</td>
-<td>0.125800</td>
-<td>0.009480</td>
-<td>0.116320</td>
-<td>0.118000</td>
-<td>0.098000</td>
+<td>0.137000</td>
+<td>0.008000</td>
+<td>0.129000</td>
+<td>0.129000</td>
+<td>0.129000</td>
  </tr>
 </table>
 </body>
