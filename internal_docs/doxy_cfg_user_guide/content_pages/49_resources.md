@@ -11,7 +11,7 @@ and other material relevant to TIOVX.
 
 # Specifications and Extensions
 - <a href="https://registry.khronos.org/OpenVX/specs/1.1/html/index.html" target="_blank">OpenVX 1.1 Specification</a> - Base specification for the version of OpenVX that TIOVX is compliant to
-- OpenVX Pipelining and Streaming Extension 2.0 (2.0 version yet to be published)
+- <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/2.0/vx_khr_pipelining_2_0_0/vx_khr_pipelining_2_0_0.html" target="_blank">OpenVX Pipelining and Streaming Extension (v2.0)</a>
 - <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_user_data_object/1.1/vx_khr_user_data_object_1_1.html" target="_blank">OpenVX User Data Object Extension</a>
 - <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_bidirectional_parameters/vx_khr_bidirectional_parameters_1_3_1.html" target="_blank">OpenVX Bidirectional parameters Extension</a>
 - <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_safe_casts/vx_khr_safe_casts_1_3_1/vx_khr_safe_casts_1_3_1.html" target="_blank">OpenVX Safe Casts Extension</a>
