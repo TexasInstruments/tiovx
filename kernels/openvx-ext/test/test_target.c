@@ -21,6 +21,7 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <VX/vx_khr_pipelining.h>
+#include <VX/vx_khr_supplementary_data.h>
 #include <TI/tivx_test_kernels.h>
 #include <TI/tivx_config.h>
 #include <TI/tivx_capture.h>
@@ -51,6 +52,11 @@ TESTCASE(tivxTargetFinal,  CT_VXContext, ct_setup_vx_context, 0)
 
 #define NODE_ERROR_EVENT     (1u)
 
+typedef struct _user_data
+{
+    vx_uint32 numbers[4];
+} user_data_t;
+
 TEST(tivxTargetFinal, testTargetScalar)
 {
     vx_graph graph;
@@ -59,6 +65,10 @@ TEST(tivxTargetFinal, testTargetScalar)
     vx_scalar scalar_in, scalar_out;
     vx_node n0;
     vx_event_t event;
+    vx_user_data_object exemplar, exemplar2;
+    vx_reference test_object, supp_data, supp_data_copy;
+    vx_image img;
+    user_data_t user_data = {.numbers = {1, 2, 3, 4}};
 
     tivxTestKernelsLoadKernels(context);
     VX_CALL(vxEnableEvents(context));
@@ -68,7 +78,17 @@ TEST(tivxTargetFinal, testTargetScalar)
     ASSERT_VX_OBJECT(scalar_in  = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
     ASSERT_VX_OBJECT(scalar_out  = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
 
-    ASSERT_VX_OBJECT(n0 = tivxTestTargetNode(graph, scalar_in, scalar_out), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(exemplar = vxCreateUserDataObject(context, "user_data_t", sizeof(user_data_t), &user_data), VX_TYPE_USER_DATA_OBJECT);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)scalar_out, exemplar));
+    VX_CALL(vxReleaseUserDataObject(&exemplar));
+
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 10, 10, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(exemplar2 = vxCreateUserDataObject(context, "user_data_t", sizeof(user_data_t), &user_data), VX_TYPE_USER_DATA_OBJECT);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)img, exemplar2));
+    VX_CALL(vxReleaseUserDataObject(&exemplar2));
+
+    ASSERT_VX_OBJECT(n0 = tivxTestTargetNode(graph, scalar_in, scalar_out, img), VX_TYPE_NODE);
 
     vxSetReferenceName((vx_reference)n0, "test_target_node");
 
@@ -84,6 +104,7 @@ TEST(tivxTargetFinal, testTargetScalar)
     /* Asserting that no errors were produced when running the application */
     ASSERT_EQ_VX_STATUS(VX_FAILURE, vxWaitEvent(context, &event, vx_true_e));
 
+    VX_CALL(vxReleaseImage(&img));
     VX_CALL(vxReleaseNode(&n0));
     VX_CALL(vxReleaseScalar(&scalar_in));
     VX_CALL(vxReleaseScalar(&scalar_out));

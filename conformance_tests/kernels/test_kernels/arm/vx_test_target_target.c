@@ -159,6 +159,8 @@ __attribute__ ((aligned(TARGET_TEST_TASK_STACK_ALIGNMENT)))
 
 static tivx_target_kernel_instance test_kernel = NULL;
 static tivx_obj_desc_t *test_obj_desc = NULL;
+static tivx_obj_desc_t *test_obj_desc_supp = NULL;
+static tivx_obj_desc_t *test_obj_desc_img = NULL;
 tivx_obj_desc_t *g_obj_desc[TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST] = {NULL};
 
 typedef struct {
@@ -482,6 +484,27 @@ static vx_status tivxNegativeTestAddTargetKernelInternal(uint8_t id)
         }
     }
 
+    if (VX_SUCCESS == status)
+    {
+        #define TIVX_TEST_TARGET_NAME     "com.ti.test_kernels.test_target"
+
+        tivxAddTargetKernelByName(
+                            TIVX_TEST_TARGET_NAME,
+                            tname,
+                            process_function,
+                            create_function,
+                            NULL,
+                            NULL,
+                            (void *)(&priv_arg));
+
+
+        if((vx_status)VX_SUCCESS != tivxRemoveTargetKernelByName(TIVX_TEST_TARGET_NAME, tname))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for tivxRemoveTargetKernelByName'\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
     return status;
@@ -491,6 +514,7 @@ static vx_status tivxNegativeTestRemoveTargetKernel(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 ttkaddress = 0;
+    char target_name[TIVX_TARGET_MAX_NAME];
 
     if((vx_status)VX_FAILURE != tivxRemoveTargetKernel(NULL))
     {
@@ -500,6 +524,21 @@ static vx_status tivxNegativeTestRemoveTargetKernel(uint8_t id)
     if((vx_status)VX_FAILURE != tivxRemoveTargetKernel((tivx_target_kernel)(&ttkaddress)))
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for ARG:'&ttkaddress'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != tivxRemoveTargetKernelByName(NULL, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for tivxRemoveTargetKernelByName'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != tivxRemoveTargetKernelByName(TIVX_KERNEL_TEST_TARGET_NAME, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for tivxRemoveTargetKernelByName'\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    if((vx_status)VX_FAILURE != tivxRemoveTargetKernelByName(NULL, target_name))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for tivxRemoveTargetKernelByName'\n");
         status = (vx_status)VX_FAILURE;
     }
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
@@ -1747,6 +1786,18 @@ static vx_status tivxTestAppIpcGetCpuName(uint8_t id)
     return status;
 
 }
+
+static vx_status tivxAppMemPrintMemAllocInfo(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    appMemPrintMemAllocInfo();
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 #endif /* #if defined(MPU_COVERAGE) */
 
 static vx_status tivxNegativeTestTargetPlatformDeleteTargetId(uint8_t id)
@@ -1870,17 +1921,6 @@ static vx_status tivxNegativeTestTargetTaskCreate(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'NULL' params\n");
         status = (vx_status)VX_FAILURE;
     }
-
-    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
-
-    return status;
-}
-
-static vx_status tivxAppMemPrintMemAllocInfo(uint8_t id)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-
-    appMemPrintMemAllocInfo();
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -3437,6 +3477,14 @@ static vx_status tivxNegativeTestMemBufferMap(uint8_t id)
         status = (vx_status)VX_FAILURE;
     }
 
+    #if !defined(QNX)
+    if(VX_SUCCESS !=ownMemBufferMap(host_ptr_t,1, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ownMemBufferMap returned failure '\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    #endif
+
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
     return status;
@@ -3511,6 +3559,14 @@ static vx_status tivxNegativeTestMemBufferUnmap(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferUnmap not failed with mem_ptr = NULL\n");
         status = (vx_status)VX_FAILURE;
     }
+
+    #if !defined(QNX)
+    if(VX_SUCCESS != ownMemBufferUnmap(NULL, 8,(vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ownMemBufferUnmap returned failure '\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    #endif
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -3872,6 +3928,187 @@ static vx_status tivxTestKernelsAssignTargetNameMpu(uint8_t id)
     return status;
 }
 
+typedef struct _user_data
+{
+    vx_uint32 numbers[4];
+} user_data_t;
+
+static vx_status tivxTestKernelsSupplementaryData(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    user_data_t test_data   = {.numbers = {90, 80, 70, 60}};
+    vx_status tmp_status;
+
+    if (NULL != tivxGetSupplementaryDataObjDesc(NULL, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result for NULL passed to tivxGetSupplementaryDataObjDesc\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if (NULL != tivxGetSupplementaryDataObjDesc(test_obj_desc, "invalid type"))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result when invalid type is passed to tivxGetSupplementaryDataObjDesc\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if (NULL != tivxGetSupplementaryDataObjDesc(test_obj_desc, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result for NULL passed to tivxGetSupplementaryDataObjDesc\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if (NULL != tivxGetSupplementaryDataObjDesc(test_obj_desc_supp, "user_dta_t"))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Expected invalid value from tivxGetSupplementaryDataObjDesc\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if (NULL == tivxGetSupplementaryDataObjDesc(test_obj_desc_supp, "user_data_t"))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Expected valid value from tivxGetSupplementaryDataObjDesc\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if (NULL == tivxGetSupplementaryDataObjDesc(test_obj_desc_img, "user_data_t"))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Expected valid value from tivxGetSupplementaryDataObjDesc\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tmp_status = tivxSetSupplementaryDataObjDesc(test_obj_desc, NULL);
+    if (VX_ERROR_INVALID_REFERENCE != tmp_status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result for NULL passed to tivxSetSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_ERROR_INVALID_REFERENCE, tmp_status);
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tmp_status = tivxSetSupplementaryDataObjDesc(NULL, tivxGetSupplementaryDataObjDesc(NULL, NULL));
+    if (VX_ERROR_INVALID_REFERENCE != tmp_status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result for NULL passed to tivxSetSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_ERROR_INVALID_REFERENCE, tmp_status);
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tmp_status = tivxSetSupplementaryDataObjDesc(test_obj_desc, tivxGetSupplementaryDataObjDesc(NULL, NULL));
+    if (VX_ERROR_INVALID_REFERENCE != tmp_status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result for NULL passed to tivxSetSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_ERROR_INVALID_REFERENCE, tmp_status);
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tmp_status = tivxExtendSupplementaryDataObjDesc(NULL, tivxGetSupplementaryDataObjDesc(NULL, NULL), &test_data, sizeof(test_data));
+    if (VX_ERROR_INVALID_REFERENCE != tmp_status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result for NULL passed to tivxExtendSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_ERROR_INVALID_REFERENCE, tmp_status);
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tmp_status = tivxExtendSupplementaryDataObjDesc(test_obj_desc, tivxGetSupplementaryDataObjDesc(NULL, NULL), &test_data, sizeof(test_data));
+    if (VX_FAILURE != tmp_status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result for NULL passed to tivxExtendSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_FAILURE, tmp_status);
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tmp_status = tivxExtendSupplementaryDataObjDesc(test_obj_desc_supp, NULL, NULL, sizeof(test_data));
+    if (VX_ERROR_INVALID_PARAMETERS != tmp_status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result for NULL passed to tivxExtendSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_ERROR_INVALID_PARAMETERS, tmp_status);
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tmp_status = tivxExtendSupplementaryDataObjDesc(test_obj_desc_supp, NULL, &test_data, sizeof(test_data));
+    if (VX_SUCCESS != tmp_status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result for NULL passed to tivxExtendSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_SUCCESS, tmp_status);
+        status = (vx_status)VX_FAILURE;
+    }
+
+    tivx_obj_desc_user_data_object_t * supp = tivxGetSupplementaryDataObjDesc(test_obj_desc_supp, "user_data_t");
+    if (NULL != supp)
+    {
+        tmp_status = tivxSetSupplementaryDataObjDesc(test_obj_desc, supp);
+        if (VX_FAILURE != tmp_status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid Result for valid params passed to tivxSetSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_FAILURE, tmp_status);
+            status = (vx_status)VX_FAILURE;
+        }
+
+        tmp_status = tivxSetSupplementaryDataObjDesc(test_obj_desc_supp, supp);
+        if (VX_SUCCESS != tmp_status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid Result for valid params passed to tivxSetSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_SUCCESS, tmp_status);
+            status = (vx_status)VX_FAILURE;
+        }
+
+        tmp_status = tivxExtendSupplementaryDataObjDesc(test_obj_desc_supp, supp, &test_data, sizeof(test_data) + 1);
+        if (VX_ERROR_INVALID_VALUE != tmp_status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid Result for incorrect supplementary type size passed to tivxExtendSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_ERROR_INVALID_VALUE, tmp_status);
+            status = (vx_status)VX_FAILURE;
+        }
+
+        tmp_status = tivxExtendSupplementaryDataObjDesc(test_obj_desc, supp, &test_data, sizeof(test_data));
+        if (VX_FAILURE != tmp_status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid Result for incorrect supplementary type size passed to tivxExtendSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_FAILURE, tmp_status);
+            status = (vx_status)VX_FAILURE;
+        }
+
+        tmp_status = tivxExtendSupplementaryDataObjDesc(test_obj_desc_supp, supp, &test_data, sizeof(test_data)-4);
+        if (VX_SUCCESS != tmp_status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid Result for incorrect supplementary type size passed to tivxExtendSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_SUCCESS, tmp_status);
+            status = (vx_status)VX_FAILURE;
+        }
+
+        supp->valid_mem_size = sizeof(test_data) / 2;
+
+        tmp_status = tivxExtendSupplementaryDataObjDesc(test_obj_desc_supp, supp, &test_data, 3 * sizeof(test_data) / 4);
+        if (VX_SUCCESS != tmp_status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid Result for NULL passed to tivxExtendSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_SUCCESS, tmp_status);
+            status = (vx_status)VX_FAILURE;
+        }
+
+        supp->valid_mem_size = sizeof(test_data);
+
+        tivx_obj_desc_user_data_object_t *obj_desc=NULL;
+        tivx_obj_desc_t *obj_desc_img=NULL;
+
+        obj_desc = (tivx_obj_desc_user_data_object_t *)ownObjDescAlloc(TIVX_OBJ_DESC_USER_DATA_OBJECT, NULL);
+
+        tmp_status = tivxExtendSupplementaryDataObjDesc(test_obj_desc_supp, obj_desc, &test_data, sizeof(test_data));
+        if (VX_ERROR_INVALID_TYPE != tmp_status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid Result for NULL passed to tivxExtendSupplementaryDataObjDesc.  Expected %d, got %d\n", VX_ERROR_INVALID_TYPE, tmp_status);
+            status = (vx_status)VX_FAILURE;
+        }
+
+        ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
+
+        obj_desc_img = ownObjDescAlloc(TIVX_OBJ_DESC_IMAGE, NULL);
+
+        if (NULL != tivxGetSupplementaryDataObjDesc(obj_desc_img, NULL))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid Result for invalid image passed to tivxGetSupplementaryDataObjDesc\n");
+            status = (vx_status)VX_FAILURE;
+        }
+
+        ownObjDescFree((tivx_obj_desc_t**)&obj_desc_img);
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Expected valid value from tivxGetSupplementaryDataObjDesc\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+
 FuncInfo arrOfFuncs[] = {
     #if defined(LINUX)
     {tivxNegativeTaskAppIpcGetHostPortId, "", VX_SUCCESS},
@@ -3919,6 +4156,7 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestQueuePut, "", VX_SUCCESS},
     {tivxTestQueueGet, "", VX_SUCCESS},
     #endif /* #if defined(REMOTE_COVERAGE) */
+    {tivxTestKernelsSupplementaryData,"",VX_SUCCESS},
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
     {tivxTestTargetObjDescCmpMemset, "",VX_SUCCESS},
     {tivxTestTargetDebugZone, "",VX_SUCCESS},
@@ -4041,6 +4279,7 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
     if ( (num_params != TIVX_KERNEL_TEST_TARGET_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_TEST_TARGET_INPUT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_TEST_TARGET_OUTPUT_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_TEST_TARGET_IMG_IDX])
     )
     {
         status = (vx_status)VX_FAILURE;
@@ -4071,7 +4310,9 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
         vx_status status1 = (vx_status)VX_SUCCESS;
         uint32_t size= sizeof(arrOfFuncs)/sizeof(arrOfFuncs[0]);
         test_kernel = kernel;
-        test_obj_desc=obj_desc[0];
+        test_obj_desc=obj_desc[TIVX_KERNEL_TEST_TARGET_INPUT_IDX];
+        test_obj_desc_supp=obj_desc[TIVX_KERNEL_TEST_TARGET_OUTPUT_IDX];
+        test_obj_desc_img=obj_desc[TIVX_KERNEL_TEST_TARGET_IMG_IDX];
         tivx_set_debug_zone(VX_ZONE_INFO);
 
         VX_PRINT(VX_ZONE_INFO,"------------------TEST KERNEL PROCESS CALLBACK TESTCASES-------------------------\n");
@@ -4120,6 +4361,10 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
         VX_PRINT(VX_ZONE_INFO,"---------------------------------------------------------------------------------\n");
         tivx_clr_debug_zone(VX_ZONE_INFO);
     }
+
+    /* Waiting 10 seconds to flush all prints from remote cores */
+    tivxTaskWaitMsecs(10000);
+
 #endif /* #if defined(LDRA_COVERAGE_ENABLED) */
 
     return status;
@@ -4135,6 +4380,7 @@ static vx_status VX_CALLBACK tivxTestTargetCreate(
     if ( (num_params != TIVX_KERNEL_TEST_TARGET_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_TEST_TARGET_INPUT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_TEST_TARGET_OUTPUT_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_TEST_TARGET_IMG_IDX])
     )
     {
         status = (vx_status)VX_FAILURE;

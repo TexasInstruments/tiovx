@@ -180,6 +180,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxScalarIntermediate2Node(vx_graph graph,
  * \param [in] graph The reference to the graph.
  * \param [in] input
  * \param [out] output
+ * \param [out] img
  * \see <tt>TIVX_KERNEL_TEST_TARGET_NAME</tt>
  * \ingroup group_vision_function_test_target
  * \return <tt>\ref vx_node</tt>.
@@ -187,7 +188,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxScalarIntermediate2Node(vx_graph graph,
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxTestTargetNode(vx_graph graph,
                                       vx_scalar            input,
-                                      vx_scalar            output);
+                                      vx_scalar            output,
+                                      vx_image             img);
 /*! \brief [Graph] Creates a TIOVX_OVERHEAD Node.
  * \param [in] graph The reference to the graph.
  * \param [in] input

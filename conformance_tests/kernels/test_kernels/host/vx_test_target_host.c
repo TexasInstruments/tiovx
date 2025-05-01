@@ -113,6 +113,8 @@ static vx_status tivxTestKernelsHostUtilsAddKernelTargetDsp(uint8_t id)
 
     vxReleaseImage(&img);
 
+    vxReleaseContext(&context);
+
     snprintf(funcArr[id].funcName, MAX_LENGTH, "%s",__func__);
 
     return status;
@@ -139,6 +141,8 @@ static vx_status tivxTestKernelsHostUtilsAddKernelTargetMcu(uint8_t id)
     }
 
     vxReleaseImage(&img);
+
+    vxReleaseContext(&context);
 
     snprintf(funcArr[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -286,6 +290,7 @@ static vx_status tivxTestCommonKernelConfigValidRect(uint8_t id)
     vxReleaseImage(&img1);
     vxReleaseImage(&prms.in_img[0U]);
     vxReleaseImage(&prms.out_img[0U]);
+    vxReleaseContext(&context);
 
     snprintf(funcArr[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -328,6 +333,8 @@ static vx_status tivxTestKernelValidateParametersNotNull(uint8_t id)
     {
         vxReleaseReference(&prms[i]);
     }
+
+    vxReleaseContext(&context);
 
     snprintf(funcArr[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -382,6 +389,8 @@ static vx_status tivxTestUnPublishKernels(uint8_t id)
         {NULL,NULL}
     };
     tivxUnPublishKernels(context, test_host_kernel_list_null, kernel_list_size);
+
+    vxReleaseContext(&context);
 
     snprintf(funcArr[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -540,6 +549,16 @@ vx_status tivxAddKernelTestTarget(vx_context context)
                         index,
                         (vx_enum)VX_OUTPUT,
                         (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
+            );
+            index++;
+        }
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
                         (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
