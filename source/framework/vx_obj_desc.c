@@ -497,29 +497,32 @@ VX_API_ENTRY tivx_obj_desc_user_data_object_t * tivxGetSupplementaryDataObjDesc(
     {
         tivx_obj_desc_t * new_desc = obj_desc;
         if ((uint16_t)TIVX_OBJ_DESC_IMAGE == new_desc->type)
-        {        
-            while ((uint16_t)TIVX_OBJ_DESC_INVALID == new_desc->supp_data_id)
+        {
+            uint8_t depth = 0U;
+            while (((uint16_t)TIVX_OBJ_DESC_INVALID == new_desc->supp_data_id) && (depth < 2U) )
             {
                 tivx_obj_desc_t * parent = NULL;
                 parent = ownObjDescGet(((tivx_obj_desc_image_t *)new_desc)->parent_id);
                 if (NULL != parent)
                 {
                     new_desc = parent;
+                    depth++;
                 }
                 else
                 {
                     break;
-                }                
+                }
             }
         }
         rod = (tivx_obj_desc_user_data_object_t *)ownObjDescGet(new_desc->supp_data_id);
         if (NULL != rod)
         {
+
             if ((NULL != type_name) &&
                 (tivx_obj_desc_strncmp(rod->type_name, (volatile void*)type_name, VX_MAX_REFERENCE_NAME) != 0)
                )
             {
-                VX_PRINT(VX_ZONE_INFO, "Type mismatch for supplementary data. Expected user type \"%s\"; got \"%s\"\n", type_name, rod->type_name);
+                VX_PRINT(VX_ZONE_INFO, "type_name mismatch for supplementary data.\n");
                 rod = NULL;
             }
         }
@@ -575,6 +578,8 @@ VX_API_ENTRY vx_status tivxExtendSupplementaryDataObjDesc(const tivx_obj_desc_t 
             {
                 vx_uint32 source_bytes = 0;
                 vx_uint32 extra_bytes = 0;
+                void *supp_target_ptr;
+
                 if (NULL != source)
                 {
                     source_bytes = source->valid_mem_size;
@@ -591,8 +596,10 @@ VX_API_ENTRY vx_status tivxExtendSupplementaryDataObjDesc(const tivx_obj_desc_t 
                 {
                     /* do nothing */
                 }
-                /*  */
-                status = tivxMemBufferMap((void *)(uintptr_t)supp->mem_ptr.host_ptr, source_bytes + extra_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+
+                supp_target_ptr   = tivxMemShared2TargetPtr(&supp->mem_ptr);
+
+                status = tivxMemBufferMap(supp_target_ptr, source_bytes + extra_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJDESC_UM004
@@ -602,7 +609,11 @@ VX_API_ENTRY vx_status tivxExtendSupplementaryDataObjDesc(const tivx_obj_desc_t 
 /* LDRA_JUSTIFY_END */
                     if (NULL != source)
                     {
-                        status = tivxMemBufferMap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                        void *source_target_ptr;
+
+                        source_target_ptr = tivxMemShared2TargetPtr(&source->mem_ptr);
+
+                        status = tivxMemBufferMap(source_target_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJDESC_UM005
@@ -610,8 +621,8 @@ VX_API_ENTRY vx_status tivxExtendSupplementaryDataObjDesc(const tivx_obj_desc_t 
                         if ((vx_status)VX_SUCCESS == status)
 /* LDRA_JUSTIFY_END */
                         {
-                            tivx_obj_desc_memcpy((void *)(uintptr_t)supp->mem_ptr.host_ptr, (void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes);
-                            tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)source->mem_ptr.host_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+                            tivx_obj_desc_memcpy(supp_target_ptr, source_target_ptr, source_bytes);
+                            tivxCheckStatus(&status, tivxMemBufferUnmap(source_target_ptr, source_bytes, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
                         }
                     }
 /* LDRA_JUSTIFY_START
@@ -623,10 +634,10 @@ VX_API_ENTRY vx_status tivxExtendSupplementaryDataObjDesc(const tivx_obj_desc_t 
                     {
                         if (extra_bytes > 0U)
                         {
-                            tivx_obj_desc_memcpy((void *)(uintptr_t)(supp->mem_ptr.host_ptr + source_bytes), (void *)((uintptr_t)user_data + source_bytes), extra_bytes);
+                            tivx_obj_desc_memcpy((void *)(uintptr_t)((uint64_t)supp_target_ptr + source_bytes), (void *)((uintptr_t)user_data + source_bytes), extra_bytes);
                         }
                         supp->valid_mem_size = source_bytes + extra_bytes;
-                        tivxCheckStatus(&status, tivxMemBufferUnmap((void *)(uintptr_t)supp->mem_ptr.host_ptr, supp->valid_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+                        tivxCheckStatus(&status, tivxMemBufferUnmap(supp_target_ptr, supp->valid_mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
                     }
                 }
             }
