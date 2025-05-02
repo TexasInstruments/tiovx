@@ -65,7 +65,12 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 /* LDRA_JUSTIFY_END */
                 case IDLE:
                     switch (event.app_value)
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_STREAM_UBR004
+<justification end> */
                     {
+/* LDRA_JUSTIFY_END */
                         case START:
                             VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
                             state = RUNNING;
@@ -116,7 +121,12 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
                 case RUNNING:
 
                     switch (event.app_value)
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM014
+<justification end> */
                     {
+/* LDRA_JUSTIFY_END */
                         case STOP:
                             VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: STOP\n");
                             /* Change state to IDLE; if any pending RUN events then they get ignored in IDLE state */
