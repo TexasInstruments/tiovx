@@ -103,9 +103,14 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
                             VX_PRINT(VX_ZONE_INFO, "streaming has stopped, but not yet deleted; ignoring STREAMING_EVENT\n");
                             break;
 
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM014
+<justification end> */
                         default:
                             VX_PRINT(VX_ZONE_ERROR, "Streaming: idle; Unexpected app_value %llx\n", event.app_value);
                             break;
+/* LDRA_JUSTIFY_END */
                     }
                     break;
                 case RUNNING:
@@ -162,9 +167,14 @@ static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 /* LDRA_JUSTIFY_END */
                             break;
 
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM014
+<justification end> */
                         default :
                             VX_PRINT(VX_ZONE_ERROR, "Streaming: running; Unexpected app_value %llx\n", event.app_value);
                             break;
+/* LDRA_JUSTIFY_END */
                     }
                     break;
 /* LDRA_JUSTIFY_START
@@ -246,7 +256,12 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
             {
                 status = ownSendUserGraphEvent(graph, STOP, NULL);
             }
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM024
+<justification end> */
             if (status == (vx_status)VX_SUCCESS)
+/* LDRA_JUSTIFY_END */
             {
                 status = tivxEventWait(graph->stop_done, graph->timeout_val);
 
@@ -297,11 +312,21 @@ vx_status ownWaitGraphEvent(
 
     if(ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e)
     {
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM025
+<justification end> */
         if((vx_bool)vx_true_e == do_not_block)
         {
             timeout = 0U;
         }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM025
+<justification end> */
         else
+/* LDRA_JUSTIFY_END */
         {
             timeout = graph->timeout_val;
         }          
@@ -540,11 +565,16 @@ static vx_status ownGraphStreamDeleteTask(vx_graph graph)
 /* LDRA_JUSTIFY_END */
 
             tmp_status = ownSendUserGraphEvent(graph, DELETE, NULL);
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM019
+<justification end> */
             if (tmp_status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "ownSendUserGraphEvent() failed.\n");
                 status = tmp_status;
             }
+/* LDRA_JUSTIFY_END */
 
             tmp_status = tivxEventWait(graph->delete_done, graph->timeout_val);
 /* LDRA_JUSTIFY_START
@@ -597,7 +627,7 @@ static vx_status ownGraphStreamDeleteQueues(vx_graph graph)
         tmp_status = tivxEventDelete(&graph->delete_done);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM023
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM022
 <justification end> */
         if (tmp_status != (vx_status)VX_SUCCESS)
         {
@@ -616,10 +646,15 @@ vx_status ownGraphFreeStreaming(vx_graph graph)
     vx_status tmp_status = (vx_status)VX_SUCCESS;
 
     tmp_status = ownGraphStreamDeleteTask(graph);
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_STREAM_UM023
+<justification end> */
     if (tmp_status != (vx_status)VX_SUCCESS)
     {
         status = tmp_status;
     }
+/* LDRA_JUSTIFY_END */
 
     tmp_status = ownGraphStreamDeleteQueues(graph);
     if (tmp_status != (vx_status)VX_SUCCESS)
