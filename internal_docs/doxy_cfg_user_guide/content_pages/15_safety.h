@@ -31,8 +31,8 @@
         - utils/rtos
         - utils/timer
 
-    Within the modules which we are in scope for safety, TI will be generating code coverage reports for the safety release during the
-    11.0 release.  As a part of this effort, TI is utilizing macros to remove code from the final report which has approved deviations.
+    Within the modules which we are in scope for safety, TI will be generating code coverage reports as a part of the safety CSP for
+    each release.  As a part of this effort, TI is utilizing macros to remove code from the final report which has approved deviations.
     Note that these macros are still enabled by default in our build using concerto.  Therefore, if different build systems are being
     used, the below macros should still be defined in these environments:
     - LDRA_UNTESTABLE_CODE
