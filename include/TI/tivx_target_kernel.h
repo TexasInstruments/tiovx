@@ -157,6 +157,10 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
  *         Same as tivxAddTargetKernel except that it take a string name as input
  *         instead of kernel_id
  *
+ *         Important Note: the kernel table which is populated when calling this API
+ *         does not throw an error if duplicate names are entered.  Therefore, the
+ *         user must ensure all kernel names are unique on a given core.
+ *
  * \ingroup group_tivx_target_kernel
  *
  */
