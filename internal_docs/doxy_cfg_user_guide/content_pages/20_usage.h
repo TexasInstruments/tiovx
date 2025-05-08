@@ -32,6 +32,9 @@
        -  If multiple targets are available for a given kernel and the vxSetNodeTarget() is not called, the framework will default
           to the first target added to the kernel via the tivxAddKernelTarget() API, which is called when adding the target kernel
           to the context.
+       -  As per a requirement of the conformance tests, the vxSetNodeTarget API accepts string target values of "any", "aNy" and "ANY"
+          then the behaviour is the same as if the VX_TARGET_ANY enum was passed.  If a legitimate TI-target is required for a given
+          node, that target value must be provided to the API.
      \section TIOVX_USAGE_REC_REMAP vxGetRemapPoint() and vxSetRemapPoint()
        -  The vxGetRemapPoint() and vxSetRemapPoint() API's must always get or set the (0,0) element first prior to any other get or set.  Additionally,
           the element at (remap_width, remap_height) must be set or gotten last.  This is because getting or setting the (0,0) element performs a map of the remap
