@@ -42,14 +42,6 @@ else
 endif
 IDIRS       += $(APP_UTILS_PATH)
 
-ifeq ($(HOST_COMPILER),TIARMCGT)
-CFLAGS += --display_error_number
-endif
-
-ifeq ($(HOST_COMPILER),GCC)
-
-endif
-
 ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), C66))
 CSOURCES += $(TARGET_FILES_REL_PATH)/tivx_target_config_c66.c
 SKIPBUILD=0

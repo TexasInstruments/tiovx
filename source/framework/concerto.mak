@@ -27,14 +27,6 @@ DEFS += HOST_ONLY
 DEFS += LDRA_UNTESTABLE_CODE
 endif
 
-ifeq ($(HOST_COMPILER),TIARMCGT)
-CFLAGS += --display_error_number
-endif
-
-ifeq ($(HOST_COMPILER), $(filter $(HOST_COMPILER), GCC_LINUX_ARM GCC_QNX_ARM))
-CFLAGS += -Wno-sizeof-pointer-memaccess
-endif
-
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 C66))
 ifeq ($(BUILD_BAM),yes)
 
