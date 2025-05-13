@@ -890,6 +890,7 @@ TEST(supplementary_data, testChildren)
 {
     vx_user_data_object exemplar;
     vx_image imageFromROI, grandchildImageFromImage;
+    vx_tensor tensorFromROI_0, tensorFromROI_1;
     vx_context context = context_->vx_context_;
     vx_status status = VX_SUCCESS;
     printf("\nTesting inheritance for images and tensors\n");
@@ -901,19 +902,23 @@ TEST(supplementary_data, testChildren)
     vx_rectangle_t rect = {.start_x = 0, .start_y = 0, .end_x = 9, .end_y = 9};
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     ASSERT_VX_OBJECT(imageFromROI = vxCreateImageFromROI(image, &rect), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(tensorFromROI_0 = vxCreateTensorFromROI(image, &rect, 0), (enum vx_type_e)VX_TYPE_TENSOR);
     ASSERT_VX_OBJECT(grandchildImageFromImage = vxCreateImageFromROI(imageFromROI, &rect), VX_TYPE_IMAGE);
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
     /* That's all the objects created, they do not have supplementary data, add it to the parents */
-    //EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)tensor, exemplar));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxSetSupplementaryUserDataObject((vx_reference)image, exemplar));
     /* Now all children and grand children should have read-only supplementary data from the parent, check it all */
     testParentAndChild((vx_reference)image, (vx_reference)grandchildImageFromImage, "image created from child of image");    
     testParentAndChild((vx_reference)image, (vx_reference)imageFromROI, "image created from image");
+    testParentAndChild((vx_reference)image, (vx_reference)tensorFromROI_0, "tensor created from image");
+    /* inherit from parents during creation */
+    ASSERT_VX_OBJECT(tensorFromROI_1 = vxCreateTensorFromROI(image, &rect, 0), (enum vx_type_e)VX_TYPE_TENSOR);
     VX_CALL(vxReleaseUserDataObject(&exemplar));
     VX_CALL(vxReleaseImage(&image));
     VX_CALL(vxReleaseImage(&grandchildImageFromImage));
     VX_CALL(vxReleaseImage(&imageFromROI));
     VX_CALL(vxReleaseTensor(&tensor));
+    VX_CALL(vxReleaseTensor(&tensorFromROI_0));
+    VX_CALL(vxReleaseTensor(&tensorFromROI_1));
 }
 
 TEST(supplementary_data, testExemplarObjArray)
