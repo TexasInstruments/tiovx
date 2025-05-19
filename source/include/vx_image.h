@@ -61,6 +61,8 @@ typedef struct _vx_image
     vx_image       parent;
     /*! \brief The array of images derived from this image */
     vx_image       subimages[TIVX_IMAGE_MAX_SUBIMAGES];
+    /*! \brief The array of tensors derived from this image */
+    vx_tensor      subtensors[TIVX_IMAGE_MAX_SUBTENSORS];    
     /*! \brief Mapping done via vxMapImagePatch() */
     tivx_image_map_info_t maps[TIVX_IMAGE_MAX_MAPS];
     /*! \brief offset from mem_ptr to reach valid first pixel, in case image is created from ROI */
