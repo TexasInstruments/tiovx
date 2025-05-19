@@ -121,10 +121,10 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
 
             obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
 
-            meta->img.width  = obj_desc->width;
-            meta->img.height = obj_desc->height;
-            meta->img.format = obj_desc->format;
-            meta->img.planes = obj_desc->planes;
+            meta->object.img.width  = obj_desc->width;
+            meta->object.img.height = obj_desc->height;
+            meta->object.img.format = obj_desc->format;
+            meta->object.img.planes = obj_desc->planes;
 
             /* Just translate plane[0] pointer. */
             numEntries = 1;
@@ -136,13 +136,13 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
 
             obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
 
-            meta->tensor.number_of_dimensions = obj_desc->number_of_dimensions;
-            meta->tensor.data_type            = obj_desc->data_type;
-            meta->tensor.fixed_point_position = obj_desc->fixed_point_position;
+            meta->object.tensor.number_of_dimensions = obj_desc->number_of_dimensions;
+            meta->object.tensor.data_type            = obj_desc->data_type;
+            meta->object.tensor.fixed_point_position = obj_desc->fixed_point_position;
 
-            for (k = 0; k < meta->tensor.number_of_dimensions; k++)
+            for (k = 0; k < meta->object.tensor.number_of_dimensions; k++)
             {
-                meta->tensor.dimensions[k] = obj_desc->dimensions[k];
+                meta->object.tensor.dimensions[k] = obj_desc->dimensions[k];
             }
         }
         else if (meta->type == (vx_enum)VX_TYPE_USER_DATA_OBJECT)
@@ -151,9 +151,9 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
 
             obj_desc = (tivx_obj_desc_user_data_object_t *)ref->obj_desc;
 
-            meta->user_data_object.size = obj_desc->mem_size;
+            meta->object.user_data_object.size = obj_desc->mem_size;
 
-            memcpy(meta->user_data_object.type_name,
+            memcpy(meta->object.user_data_object.type_name,
                    (const void *)obj_desc->type_name,
                    sizeof(obj_desc->type_name));
         }
@@ -163,8 +163,8 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
 
             obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
 
-            meta->arr.item_type = obj_desc->item_type;
-            meta->arr.capacity  = obj_desc->capacity;
+            meta->object.arr.item_type = obj_desc->item_type;
+            meta->object.arr.capacity  = obj_desc->capacity;
         }
         else if (meta->type == (vx_enum)VX_TYPE_CONVOLUTION)
         {
@@ -172,8 +172,8 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
 
             obj_desc = (tivx_obj_desc_convolution_t *)ref->obj_desc;
 
-            meta->conv.cols = obj_desc->columns;
-            meta->conv.rows = obj_desc->rows;
+            meta->object.conv.cols = obj_desc->columns;
+            meta->object.conv.rows = obj_desc->rows;
 
         }
         else if (meta->type == (vx_enum)VX_TYPE_MATRIX)
@@ -182,9 +182,9 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
 
             obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
 
-            meta->mat.type = obj_desc->data_type;
-            meta->mat.cols = obj_desc->columns;
-            meta->mat.rows = obj_desc->rows;
+            meta->object.mat.type = obj_desc->data_type;
+            meta->object.mat.cols = obj_desc->columns;
+            meta->object.mat.rows = obj_desc->rows;
         }
         else if (meta->type == (vx_enum)VX_TYPE_DISTRIBUTION)
         {
@@ -219,14 +219,14 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
             img_ref      = (vx_reference)pyramid->img[0];
             img_obj_desc = (tivx_obj_desc_image_t *)img_ref->obj_desc;
 
-            meta->pmd.levels = obj_desc->num_levels;
-            meta->pmd.width  = obj_desc->width;
-            meta->pmd.height = obj_desc->height;
-            meta->pmd.scale  = obj_desc->scale;
-            meta->pmd.format = obj_desc->format;
-            meta->pmd.planes = img_obj_desc->planes;
+            meta->object.pmd.levels = obj_desc->num_levels;
+            meta->object.pmd.width  = obj_desc->width;
+            meta->object.pmd.height = obj_desc->height;
+            meta->object.pmd.scale  = obj_desc->scale;
+            meta->object.pmd.format = obj_desc->format;
+            meta->object.pmd.planes = img_obj_desc->planes;
 
-            numEntries = meta->pmd.levels;
+            numEntries = meta->object.pmd.levels;
         }
         else
         {
@@ -301,9 +301,9 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
             vx_image    obj;
 
             obj = vxCreateImage(context,
-                                meta->img.width,
-                                meta->img.height,
-                                meta->img.format);
+                                meta->object.img.width,
+                                meta->object.img.height,
+                                meta->object.img.format);
 
             if (obj == NULL)
             {
@@ -318,10 +318,10 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
             vx_tensor   obj;
 
             obj = vxCreateTensor(context,
-                                 meta->tensor.number_of_dimensions,
-                                 meta->tensor.dimensions,
-                                 meta->tensor.data_type,
-                                 meta->tensor.fixed_point_position);
+                                 meta->object.tensor.number_of_dimensions,
+                                 meta->object.tensor.dimensions,
+                                 meta->object.tensor.data_type,
+                                 meta->object.tensor.fixed_point_position);
 
             if (obj == NULL)
             {
@@ -336,8 +336,8 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
             vx_user_data_object obj;
 
             obj = vxCreateUserDataObject(context,
-                                         meta->user_data_object.type_name,
-                                         meta->user_data_object.size,
+                                         meta->object.user_data_object.type_name,
+                                         meta->object.user_data_object.size,
                                          NULL);
 
             if (obj == NULL)
@@ -353,8 +353,8 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
             vx_array    obj;
 
             obj = vxCreateArray(context,
-                                meta->arr.item_type,
-                                meta->arr.capacity);
+                                meta->object.arr.item_type,
+                                meta->object.arr.capacity);
 
             if (obj == NULL)
             {
@@ -369,8 +369,8 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
             vx_convolution  obj;
 
             obj = vxCreateConvolution(context,
-                                      meta->conv.cols,
-                                      meta->conv.rows);
+                                      meta->object.conv.cols,
+                                      meta->object.conv.rows);
 
             if (obj == NULL)
             {
@@ -385,9 +385,9 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
             vx_matrix   obj;
 
             obj = vxCreateMatrix(context,
-                                 meta->mat.type,
-                                 meta->mat.cols,
-                                 meta->mat.rows);
+                                 meta->object.mat.type,
+                                 meta->object.mat.cols,
+                                 meta->object.mat.rows);
 
             if (obj == NULL)
             {
@@ -436,11 +436,11 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
             vx_pyramid  obj;
 
             obj = vxCreatePyramid(context,
-                                  meta->pmd.levels,
-                                  meta->pmd.scale,
-                                  meta->pmd.width,
-                                  meta->pmd.height,
-                                  meta->pmd.format);
+                                  meta->object.pmd.levels,
+                                  meta->object.pmd.scale,
+                                  meta->object.pmd.width,
+                                  meta->object.pmd.height,
+                                  meta->object.pmd.format);
 
             if (obj == NULL)
             {
