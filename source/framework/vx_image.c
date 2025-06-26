@@ -3167,7 +3167,7 @@ static vx_enum ownGetTensorTypeFromImage(vx_enum image_format)
     case (vx_enum)VX_DF_IMAGE_IYUV:
     case (vx_enum)VX_DF_IMAGE_YUV4:
     case (vx_enum)TIVX_DF_IMAGE_NV12_P12:
-        /* Investigate whether these 5 are valid and if so, what tensor data format they need */
+        /* vxCreateTensorFromROI only supports single-plane inputs, so these 5 multi-plane inputs are invalid */
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_IMAGE_UM015
