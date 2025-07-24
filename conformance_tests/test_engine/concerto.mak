@@ -17,28 +17,28 @@
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))
 
-include $(PRELUDE)
-TARGET      := vx_conformance_engine
-TARGETTYPE  := library
-CSOURCES    := $(call all-c-files)
-IDIRS       += $(HOST_ROOT)/conformance_tests
-DEFS        += OPENVX_USE_USER_DATA_OBJECT
+	include $(PRELUDE)
+	TARGET     := vx_conformance_engine
+	TARGETTYPE := library
+	CSOURCES   := $(call all-c-files)
+	IDIRS      += $(HOST_ROOT)/conformance_tests
+	DEFS       += OPENVX_USE_USER_DATA_OBJECT
 
-ifeq ($(HOST_COMPILER),TIARMCGT)
-CFLAGS += --display_error_number
-CFLAGS += --diag_suppress=179
-CFLAGS += --diag_suppress=112
-CFLAGS += --diag_suppress=552
-endif
+	ifeq ($(HOST_COMPILER),TIARMCGT)
+		CFLAGS += --display_error_number
+		CFLAGS += --diag_suppress=179
+		CFLAGS += --diag_suppress=112
+		CFLAGS += --diag_suppress=552
+	endif
 
-ifeq ($(HOST_COMPILER),TIARMCGT_LLVM)
-CFLAGS += -Wno-tautological-constant-out-of-range-compare
-endif
+	ifeq ($(HOST_COMPILER),TIARMCGT_LLVM)
+		CFLAGS += -Wno-tautological-constant-out-of-range-compare
+	endif
 
-ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_WINDOWS GCC_LINUX GCC_LINUX_ARM GCC_QNX_ARM))
-CFLAGS += -Wno-unused-function
-endif
+	ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_WINDOWS GCC_LINUX GCC_LINUX_ARM GCC_QNX_ARM))
+		CFLAGS += -Wno-unused-function
+	endif
 
-include $(FINALE)
+	include $(FINALE)
 
 endif

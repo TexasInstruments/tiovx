@@ -18,57 +18,57 @@
 ifeq ($(TARGET_PLATFORM),PC)
 
 
-include $(PRELUDE)
-TARGET      := vx_conformance_tests_exe
-TARGETTYPE  := exe
-CSOURCES    := $(call all-c-files)
+	include $(PRELUDE)
+	TARGET      := vx_conformance_tests_exe
+	TARGETTYPE  := exe
+	CSOURCES    := $(call all-c-files)
 
-LDIRS       := $(TIOVX_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
-# Uncomment the line below if you want have rebuilt TI-DL library in the original package.
-# otherwise the linker will use the libraries located in $(TIOVX_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
-#LDIRS       +=$(TIDL_PATH)/lib/PC/dsp/$(TARGET_BUILD)
+	LDIRS       := $(TIOVX_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
+	# Uncomment the line below if you want have rebuilt TI-DL library in the original package.
+	# otherwise the linker will use the libraries located in $(TIOVX_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
+	#LDIRS       +=$(TIDL_PATH)/lib/PC/dsp/$(TARGET_BUILD)
 
-IDIRS       += $(VISION_APPS_PATH)
+	IDIRS       += $(VISION_APPS_PATH)
 
-STATIC_LIBS := vx_conformance_tests
+	STATIC_LIBS := vx_conformance_tests
 
-STATIC_LIBS += vx_tiovx_tests vx_tiovx_internal_tests
+	STATIC_LIBS += vx_tiovx_tests vx_tiovx_internal_tests
 
-STATIC_LIBS += vx_kernels_openvx_ext_tests
+	STATIC_LIBS += vx_kernels_openvx_ext_tests
 
-STATIC_LIBS += vx_conformance_engine vx_conformance_tests_testmodule
-STATIC_LIBS += vx_vxu vx_framework
-STATIC_LIBS += vx_platform_pc vx_framework
+	STATIC_LIBS += vx_conformance_engine vx_conformance_tests_testmodule
+	STATIC_LIBS += vx_vxu vx_framework
+	STATIC_LIBS += vx_platform_pc vx_framework
 
-STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core
-STATIC_LIBS += vx_kernels_openvx_ext vx_target_kernels_openvx_ext
+	STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core
+	STATIC_LIBS += vx_kernels_openvx_ext vx_target_kernels_openvx_ext
 
-STATIC_LIBS += vx_target_kernels_ivision_common
+	STATIC_LIBS += vx_target_kernels_ivision_common
 
-include $(HOST_ROOT)/kernels/concerto_inc.mak
-include $(HOST_ROOT)/conformance_tests/kernels/concerto_inc.mak
+	include $(HOST_ROOT)/kernels/concerto_inc.mak
+	include $(HOST_ROOT)/conformance_tests/kernels/concerto_inc.mak
 
-ifeq ($(BUILD_TUTORIAL),yes)
-STATIC_LIBS += vx_target_kernels_tutorial
-endif
+	ifeq ($(BUILD_TUTORIAL),yes)
+		STATIC_LIBS += vx_target_kernels_tutorial
+	endif
 
-ifeq ($(BUILD_BAM),yes)
-STATIC_LIBS += vx_target_kernels_openvx_core_bam vx_target_kernels_openvx_core
-endif
-STATIC_LIBS += vx_kernels_host_utils
-STATIC_LIBS += vx_kernels_target_utils
-STATIC_LIBS += vx_framework
-ifeq ($(BUILD_BAM),yes)
-STATIC_LIBS += vxlib_bamplugin_$(TARGET_CPU)
-endif
+	ifeq ($(BUILD_BAM),yes)
+		STATIC_LIBS += vx_target_kernels_openvx_core_bam vx_target_kernels_openvx_core
+	endif
+	STATIC_LIBS += vx_kernels_host_utils
+	STATIC_LIBS += vx_kernels_target_utils
+	STATIC_LIBS += vx_framework
+	ifeq ($(BUILD_BAM),yes)
+		STATIC_LIBS += vxlib_bamplugin_$(TARGET_CPU)
+	endif
 
-STATIC_LIBS += vxlib_$(TARGET_CPU) c6xsim_$(TARGET_CPU)_C66
-ifeq ($(BUILD_BAM),yes)
-STATIC_LIBS += algframework_$(TARGET_CPU) dmautils_$(TARGET_CPU)
-endif
+	STATIC_LIBS += vxlib_$(TARGET_CPU) c6xsim_$(TARGET_CPU)_C66
+	ifeq ($(BUILD_BAM),yes)
+		STATIC_LIBS += algframework_$(TARGET_CPU) dmautils_$(TARGET_CPU)
+	endif
 
-STATIC_LIBS += vx_utils
+	STATIC_LIBS += vx_utils
 
-include $(FINALE)
+	include $(FINALE)
 
 endif

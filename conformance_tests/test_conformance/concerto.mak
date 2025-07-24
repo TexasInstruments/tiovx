@@ -16,80 +16,80 @@
 #
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))
-ifeq ($(BUILD_CONFORMANCE_TEST),yes)
+	ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 
-include $(PRELUDE)
-TARGET      := vx_conformance_tests
-TARGETTYPE  := library
-CSOURCES    := $(call all-c-files)
-IDIRS       += $(HOST_ROOT)
-IDIRS       += $(HOST_ROOT)/conformance_tests
-IDIRS       += $(HOST_ROOT)/conformance_tests/kernels
-IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include
-IDIRS       += $(HOST_ROOT)/kernels
-IDIRS       += $(CUSTOM_KERNEL_PATH)
-IDIRS       += $(CUSTOM_APPLICATION_PATH)
-CFLAGS      += -DHAVE_VERSION_INC
-DEFS        += OPENVX_USE_USER_DATA_OBJECT
+		include $(PRELUDE)
+		TARGET      := vx_conformance_tests
+		TARGETTYPE  := library
+		CSOURCES    := $(call all-c-files)
+		IDIRS       += $(HOST_ROOT)
+		IDIRS       += $(HOST_ROOT)/conformance_tests
+		IDIRS       += $(HOST_ROOT)/conformance_tests/kernels
+		IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include
+		IDIRS       += $(HOST_ROOT)/kernels
+		IDIRS       += $(CUSTOM_KERNEL_PATH)
+		IDIRS       += $(CUSTOM_APPLICATION_PATH)
+		CFLAGS      += -DHAVE_VERSION_INC
+		DEFS        += OPENVX_USE_USER_DATA_OBJECT
 
-ifeq ($(HOST_COMPILER),TIARMCGT)
-CFLAGS += --display_error_number
-CFLAGS += --diag_suppress=179
-CFLAGS += --diag_suppress=112
-CFLAGS += --diag_suppress=552
-endif
+		ifeq ($(HOST_COMPILER),TIARMCGT)
+			CFLAGS += --display_error_number
+			CFLAGS += --diag_suppress=179
+			CFLAGS += --diag_suppress=112
+			CFLAGS += --diag_suppress=552
+		endif
 
-ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_WINDOWS GCC_LINUX GCC_LINUX_ARM GCC_QNX_ARM))
-CFLAGS += -Wno-unused-function
-CFLAGS += -Wno-unused-variable
-CFLAGS += -Wno-format-security
-endif
+		ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_WINDOWS GCC_LINUX GCC_LINUX_ARM GCC_QNX_ARM))
+			CFLAGS += -Wno-unused-function
+			CFLAGS += -Wno-unused-variable
+			CFLAGS += -Wno-format-security
+		endif
 
-ifeq ($(TARGET_CPU),x86_64)
-CFLAGS      += -DTARGET_X86_64
-endif
+		ifeq ($(TARGET_CPU),x86_64)
+			CFLAGS += -DTARGET_X86_64
+		endif
 
-ifeq ($(BUILD_CT_KHR),yes)
-CFLAGS      += -DBUILD_CT_KHR
-endif
+		ifeq ($(BUILD_CT_KHR),yes)
+			CFLAGS += -DBUILD_CT_KHR
+		endif
 
-ifeq ($(BUILD_CT_TIOVX),yes)
-CFLAGS      += -DBUILD_CT_TIOVX
-endif
+		ifeq ($(BUILD_CT_TIOVX),yes)
+			CFLAGS += -DBUILD_CT_TIOVX
+		endif
 
-ifeq ($(BUILD_CT_TIOVX_INTERNAL),yes)
-CFLAGS      += -DBUILD_CT_TIOVX_INTERNAL
-endif
+		ifeq ($(BUILD_CT_TIOVX_INTERNAL),yes)
+			CFLAGS += -DBUILD_CT_TIOVX_INTERNAL
+		endif
 
-ifeq ($(BUILD_CT_TIOVX_TIDL),yes)
-CFLAGS      += -DBUILD_CT_TIOVX_TIDL
-endif
+		ifeq ($(BUILD_CT_TIOVX_TIDL),yes)
+			CFLAGS += -DBUILD_CT_TIOVX_TIDL
+		endif
 
-ifeq ($(BUILD_CT_TIOVX_TVM),yes)
-CFLAGS      += -DBUILD_CT_TIOVX_TVM
-endif
+		ifeq ($(BUILD_CT_TIOVX_TVM),yes)
+			CFLAGS += -DBUILD_CT_TIOVX_TVM
+		endif
 
-ifeq ($(BUILD_CT_TIOVX_IVISION),yes)
-CFLAGS      += -DBUILD_CT_TIOVX_IVISION
-endif
+		ifeq ($(BUILD_CT_TIOVX_IVISION),yes)
+			CFLAGS += -DBUILD_CT_TIOVX_IVISION
+		endif
 
-ifeq ($(BUILD_HWA_KERNELS)$(BUILD_CT_TIOVX_HWA),yesyes)
-CFLAGS      += -DBUILD_CT_TIOVX_HWA
-endif
+		ifeq ($(BUILD_HWA_KERNELS)$(BUILD_CT_TIOVX_HWA),yesyes)
+			CFLAGS += -DBUILD_CT_TIOVX_HWA
+		endif
 
-ifeq ($(BUILD_CT_TIOVX_VIDEO_IO_CAPTURE_TESTS),yes)
-CFLAGS      += -DBUILD_CT_TIOVX_VIDEO_IO_CAPTURE_TESTS
-endif
+		ifeq ($(BUILD_CT_TIOVX_VIDEO_IO_CAPTURE_TESTS),yes)
+			CFLAGS += -DBUILD_CT_TIOVX_VIDEO_IO_CAPTURE_TESTS
+		endif
 
-ifeq ($(BUILD_CT_TIOVX_VIDEO_IO_DISPLAY_TESTS),yes)
-CFLAGS      += -DBUILD_CT_TIOVX_VIDEO_IO_DISPLAY_TESTS
-endif
+		ifeq ($(BUILD_CT_TIOVX_VIDEO_IO_DISPLAY_TESTS),yes)
+			CFLAGS += -DBUILD_CT_TIOVX_VIDEO_IO_DISPLAY_TESTS
+		endif
 
-ifeq ($(BUILD_BAM),yes)
-CFLAGS      += -DBUILD_BAM
-endif
+		ifeq ($(BUILD_BAM),yes)
+			CFLAGS += -DBUILD_BAM
+		endif
 
-include $(FINALE)
+		include $(FINALE)
 
-endif
+	endif
 endif

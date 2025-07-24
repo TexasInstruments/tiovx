@@ -4,28 +4,28 @@ include build_flags.mak
 # Project specific build defs (don't change across different combos):
 BUILD_DEFS :=
 ifneq ($(CUSTOM_KERNEL_PATH),)
-BUILD_DEFS += CUSTOM_KERNEL_PATH
+	BUILD_DEFS += CUSTOM_KERNEL_PATH
 endif
 ifneq ($(CUSTOM_APPLICATION_PATH),)
-BUILD_DEFS += CUSTOM_APPLICATION_PATH
+	BUILD_DEFS += CUSTOM_APPLICATION_PATH
 endif
 ifeq ($(BUILD_TUTORIAL),yes)
-BUILD_DEFS += BUILD_TUTORIAL
+	BUILD_DEFS += BUILD_TUTORIAL
 endif
 ifeq ($(BUILD_CONFORMANCE_TEST),yes)
-BUILD_DEFS += BUILD_CONFORMANCE_TEST
+	BUILD_DEFS += BUILD_CONFORMANCE_TEST
 endif
 ifeq ($(BUILD_TYPE),dev)
-BUILD_DEFS += BUILD_DEV
+	BUILD_DEFS += BUILD_DEV
 endif
 ifeq ($(BUILD_CORE_KERNELS),yes)
-BUILD_DEFS += BUILD_CORE_KERNELS
+	BUILD_DEFS += BUILD_CORE_KERNELS
 endif
 ifeq ($(BUILD_EXT_KERNELS),yes)
-BUILD_DEFS += BUILD_EXT_KERNELS
+	BUILD_DEFS += BUILD_EXT_KERNELS
 endif
 ifeq ($(BUILD_TEST_KERNELS),yes)
-BUILD_DEFS += BUILD_TEST_KERNELS
+	BUILD_DEFS += BUILD_TEST_KERNELS
 endif
 
 BUILD_DEFS += $(SOC_DEF)
@@ -41,14 +41,14 @@ DIRECTORIES += $(CUSTOM_APPLICATION_PATH)
 DIRECTORIES += $(CUSTOM_PLATFORM_PATH)
 
 ifeq ($(BUILD_TUTORIAL),yes)
-DIRECTORIES += conformance_tests/test_engine
-DIRECTORIES += tutorial
+	DIRECTORIES += conformance_tests/test_engine
+	DIRECTORIES += tutorial
 endif
 
 DIRECTORIES += tools/sample_use_cases
 
 ifeq ($(BUILD_CONFORMANCE_TEST),yes)
-  DIRECTORIES += conformance_tests
+	DIRECTORIES += conformance_tests
 endif
 
 # If none of these flags are set, perform a normal build by including all possible cores.
@@ -63,13 +63,13 @@ endif
 TARGET_COMBOS :=
 
 ifeq ($(BUILD_EMULATION_MODE),yes)
-    ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
-        TARGET_COMBOS += PC:LINUX:x86_64:1:debug:GCC_LINUX
-    endif
+	ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
+		TARGET_COMBOS += PC:LINUX:x86_64:1:debug:GCC_LINUX
+	endif
 
-    ifeq ($(PROFILE), $(filter $(PROFILE), release all))
-        TARGET_COMBOS += PC:LINUX:x86_64:1:release:GCC_LINUX
-    endif
+	ifeq ($(PROFILE), $(filter $(PROFILE), release all))
+		TARGET_COMBOS += PC:LINUX:x86_64:1:release:GCC_LINUX
+	endif
 endif
 
 ifeq ($(BUILD_TARGET_MODE),yes)
@@ -119,6 +119,7 @@ ifeq ($(BUILD_TARGET_MODE),yes)
 endif
 
 ERROR_FLAG = 0
+# info statements can't have leading tabs
 ifeq ($(LDRA_COVERAGE_ENABLED), yes)
 	ifeq ($(INSTRUMENT_CORE), )
 $(info ERROR - INSTRUMENT_CORE flag missing (A72 A53 R5F C71 C7120 C7504 C7524 C66))
@@ -149,9 +150,10 @@ BUILD_PLATFORM :=
 .PHONY: all vision_apps_utils doxy_docs doxy_docs_design
 all: vision_apps_utils
 
-# Note: this has to be moved after "all" in order to ensure vision_apps_utils is processed first
+# Note: this has to be moved after "all" in order to ensure expo_utils is processed first
 include $(CONCERTO_ROOT)/rules.mak
 
+# Makefile targets need no leading indent
 ifeq ($(BUILD_EMULATION_MODE),yes)
 vision_apps_utils:
 	BUILD_TARGET_MODE=no $(MAKE) -C $(VISION_APPS_PATH) app_utils_init

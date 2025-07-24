@@ -16,16 +16,16 @@
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))
 
-include $(PRELUDE)
-TARGET      := vx_vxu
-TARGETTYPE  := library
-CSOURCES    := $(call all-c-files)
-IDIRS       += $(HOST_ROOT)/source/include
+	include $(PRELUDE)
+	TARGET      := vx_vxu
+	TARGETTYPE  := library
+	CSOURCES    := $(call all-c-files)
+	IDIRS       += $(HOST_ROOT)/source/include
 
-ifeq ($(HOST_COMPILER),TIARMCGT)
-CFLAGS += --display_error_number
-endif
+	ifeq ($(HOST_COMPILER),TIARMCGT)
+		CFLAGS  += --display_error_number
+	endif
 
-include $(FINALE)
+	include $(FINALE)
 
 endif

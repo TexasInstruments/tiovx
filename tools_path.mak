@@ -10,8 +10,8 @@ CUSTOM_KERNEL_PATH ?=
 CUSTOM_PLATFORM_PATH ?=
 
 ifneq ($(CUSTOM_KERNEL_PATH),)
-include $(CUSTOM_KERNEL_PATH)/custom_tools_path.mak
+	include $(CUSTOM_KERNEL_PATH)/custom_tools_path.mak
 endif
 ifneq ($(CUSTOM_APPLICATION_PATH),)
-include $(CUSTOM_APPLICATION_PATH)/custom_tools_path.mak
+	include $(CUSTOM_APPLICATION_PATH)/custom_tools_path.mak
 endif

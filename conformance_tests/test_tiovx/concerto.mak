@@ -16,46 +16,46 @@
 #
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64 A72 A53 R5F))
-ifeq ($(BUILD_CONFORMANCE_TEST),yes)
+	ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 
-include $(PRELUDE)
-TARGET      := vx_tiovx_tests
-TARGETTYPE  := library
-CSOURCES    := $(call all-c-files)
-IDIRS       += $(HOST_ROOT)/conformance_tests
-IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include
-IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/test_kernels/include
-IDIRS       += $(HOST_ROOT)/conformance_tests/test_tiovx/utils
-IDIRS       += $(HOST_ROOT)/utils/include
-IDIRS		+= $(HOST_ROOT)/include/TI
+		include $(PRELUDE)
+		TARGET     := vx_tiovx_tests
+		TARGETTYPE := library
+		CSOURCES   := $(call all-c-files)
+		IDIRS      += $(HOST_ROOT)/conformance_tests
+		IDIRS      += $(HOST_ROOT)/conformance_tests/kernels/include
+		IDIRS      += $(HOST_ROOT)/conformance_tests/kernels/test_kernels/include
+		IDIRS      += $(HOST_ROOT)/conformance_tests/test_tiovx/utils
+		IDIRS      += $(HOST_ROOT)/utils/include
+		IDIRS	   += $(HOST_ROOT)/include/TI
 
-CSOURCES    += utils/test_utils_file_bmp_rd_wr.c
-CSOURCES    += utils/test_utils_mem_operations.c
+		CSOURCES   += utils/test_utils_file_bmp_rd_wr.c
+		CSOURCES   += utils/test_utils_mem_operations.c
 
-ifeq ($(HOST_COMPILER),TIARMCGT)
-CFLAGS += --display_error_number
-CFLAGS += --diag_suppress=179
-CFLAGS += --diag_suppress=112
-CFLAGS += --diag_suppress=552
-endif
+		ifeq ($(HOST_COMPILER),TIARMCGT)
+			CFLAGS += --display_error_number
+			CFLAGS += --diag_suppress=179
+			CFLAGS += --diag_suppress=112
+			CFLAGS += --diag_suppress=552
+		endif
 
-ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_WINDOWS GCC_LINUX GCC_LINUX_ARM GCC_QNX_ARM))
-CFLAGS += -Wno-unused-function
-CFLAGS += -Wno-unused-variable
-CFLAGS += -Wno-format-security
-CFLAGS += -Wno-unused-but-set-variable
-CFLAGS += -Wno-maybe-uninitialized
-endif
+		ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_WINDOWS GCC_LINUX GCC_LINUX_ARM GCC_QNX_ARM))
+			CFLAGS += -Wno-unused-function
+			CFLAGS += -Wno-unused-variable
+			CFLAGS += -Wno-format-security
+			CFLAGS += -Wno-unused-but-set-variable
+			CFLAGS += -Wno-maybe-uninitialized
+		endif
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64))
-DEFS += PLATFORM_PC
-endif
+		ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64))
+			DEFS += PLATFORM_PC
+		endif
 
-ifeq ($(BUILD_BAM),yes)
-DEFS += BUILD_BAM
-endif
+		ifeq ($(BUILD_BAM),yes)
+			DEFS += BUILD_BAM
+		endif
 
-include $(FINALE)
+	include $(FINALE)
 
-endif
+	endif
 endif
