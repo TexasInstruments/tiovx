@@ -81,6 +81,9 @@ extern "C" {
 /** \brief Max file line size for output */
 #define TIVX_UTILS_MAX_LINE_SIZE     (1024u)
 
+/** \brief Max matched input reference object */
+#define TIVX_UTILS_MAX_MATCHED_INPUT_REF  (32u)
+
 /**
  * \brief Print graph performance information to stdout via 'printf'
  *
@@ -119,6 +122,17 @@ vx_status tivx_utils_graph_perf_export(FILE *fp, vx_graph graph);
  * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_node_perf_print(vx_node node);
+
+/**
+ * \brief Print node memory usage information to stdout via 'printf'
+ *
+ * \param [in] graph  graph handle
+ *
+ * \return VX_SUCCESS on success, else failure
+ *
+ * \ingroup group_tivx_ext_host_utils
+ */
+vx_status tivx_utils_node_mem_print(vx_graph graph);
 
 #ifdef __cplusplus
 }

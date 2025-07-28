@@ -22,6 +22,9 @@ const char * enumToString(vx_enum enum_c)
 {
     switch (enum_c)
     {
+        sconv(VX_INPUT)
+        sconv(VX_OUTPUT)
+        sconv(VX_BIDIRECTIONAL)
         sconv(VX_TYPE_UINT8)
         sconv(VX_TYPE_UINT16)
         sconv(VX_TYPE_UINT32)
@@ -76,8 +79,6 @@ const char * enumToString(vx_enum enum_c)
         sconv(VX_TYPE_TENSOR)
         sconv(VX_TYPE_THRESHOLD)
         sconv(VX_TYPE_USER_DATA_OBJECT)
-        sconv(vx_true_e)
-        sconv(vx_false_e)
         default: return "<enumeration constant>";
     }
 }
