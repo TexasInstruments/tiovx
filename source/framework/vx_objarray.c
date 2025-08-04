@@ -418,13 +418,14 @@ static vx_status ownInitObjArrayFromObject(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UTJT005
 <justification end> */
-        for (; i > 0u; i--)
+        /* Clean up any remaining references in the ObjArray. 
+        * If-statement ensures previous error is propogated. */
+        if (i > 0u)
         {
             status = ownReleaseRefFromObjArray(objarr, i);
             if(status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Releasing reference from object array failed\n");
-                break;
             }
         }
 /* LDRA_JUSTIFY_END */
