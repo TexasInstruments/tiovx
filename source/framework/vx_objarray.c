@@ -391,10 +391,10 @@ static vx_status ownInitObjArrayFromObject(
     vx_reference ref;
     tivx_obj_desc_object_array_t *obj_desc =
         (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
-    vx_uint32 num_items, i;
+    vx_uint32 num_items, index, k;
 
     num_items = obj_desc->num_items;
-    for (i = 0; i < num_items; i ++)
+    for (index = 0; index < num_items; index++)
     {
         ref = tivxCreateReferenceFromExemplar(context, exemplar);
 
@@ -402,7 +402,7 @@ static vx_status ownInitObjArrayFromObject(
 
         if(status == (vx_status)VX_SUCCESS)
         {
-            status = ownAddRefToObjArray(context, objarr, ref, i);
+            status = ownAddRefToObjArray(context, objarr, ref, index);
             ref->is_virtual = objarr->base.is_virtual;
         }
         else
@@ -418,11 +418,10 @@ static vx_status ownInitObjArrayFromObject(
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UTJT005
 <justification end> */
-        /* Clean up any remaining references in the ObjArray. 
-        * If-statement ensures previous error is propogated. */
-        if (i > 0u)
+        /* Clean up partially initialized ObjArray after an error occurs, releasing all references up to the last successful index */
+        for ( k = 0; k < index; k++)
         {
-            status = ownReleaseRefFromObjArray(objarr, i);
+            status = ownReleaseRefFromObjArray(objarr, k);
             if(status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Releasing reference from object array failed\n");
@@ -478,33 +477,28 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
    return status;
 }
 
-static vx_status ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t num_items)
+static vx_status ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t i)
 {
-    uint32_t i;
     vx_status status = (vx_status)VX_SUCCESS;
 
-    for (i = 0; i < num_items; i ++)
+    if (NULL != objarr->ref[i])
     {
-        if (NULL != objarr->ref[i])
-        {
-            /* decrement the internal counter on the object, not the
-             * external one. Setting it as void since the return value
-             * 'count' is not used further.
-             */
-            (void)ownDecrementReference(objarr->ref[i], (vx_enum)VX_INTERNAL);
-
-            status = vxReleaseReference(&objarr->ref[i]);
+        /* decrement the internal counter on the object, not the
+         * external one. Setting it as void since the return value
+         * 'count' is not used further.
+         */
+        (void)ownDecrementReference(objarr->ref[i], (vx_enum)VX_INTERNAL);
+        
+        status = vxReleaseReference(&objarr->ref[i]);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UM002
 <justification end> */
-            if ((vx_status)VX_SUCCESS != status)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Release object array element %d failed!\n", i);
-                break;
-            }
-/* LDRA_JUSTIFY_END */
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Release object array element %d failed!\n", i);
         }
+/* LDRA_JUSTIFY_END */
     }
     return status;
 }
@@ -513,6 +507,7 @@ static vx_status ownDestructObjArray(vx_reference ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_object_array objarr = NULL;
+    uint32_t i;
 
     /* status check set to NULL due to guaranteed type in internal function */
     objarr = vxCastRefAsObjectArray(ref,NULL);
@@ -520,8 +515,10 @@ static vx_status ownDestructObjArray(vx_reference ref)
     {
         tivx_obj_desc_object_array_t *obj_desc =
             (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
-
-        status = ownReleaseRefFromObjArray(objarr, obj_desc->num_items);
+        
+        for ( i = 0; i < obj_desc->num_items; i++){
+            status = ownReleaseRefFromObjArray(objarr, i);
+        }
 
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
