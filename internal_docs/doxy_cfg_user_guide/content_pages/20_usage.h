@@ -1016,22 +1016,34 @@
 /*!
     \page TIOVX_PIPELINING Graph Pipelining in TIOVX
 
-    For general pipelining usage guidelines, please follow the Khronos OpenVX pipelining extension <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/1.1/html/vx_khr_pipelining_1_1_0.html" target="_blank">here</a>
+    For general pipelining usage guidelines, please follow the latest version of the Khronos OpenVX pipelining extension <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/2.0/vx_khr_pipelining_2_0_0/vx_khr_pipelining_2_0_0.html" target="_blank">here.</a>
+
+    This updated version allows for a more robust pipelining implementation than before. Requirements for the pipelining/event handling
+    mechanisms have been separated from those used for streaming, the concept of graph events and additional attributes have been introduced,
+    and retrieval of graph/kernel parameter information has been simplified. Complete details of this migration can be found
+    <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/2.0/vx_khr_pipelining_2_0_0/vx_khr_pipelining_2_0_0.html#_summary_of_changes_from_version_1_1_1_of_the_extension" target="_blank">here.</a>
+
+    Note:
+    When it comes to graph parameters, a graph parameter's list of enqueueable references should match the type of the relevant node's output
+    node parameter and should be registered by the application. When the type of the output parameter is a container object (\ref group_pyramid
+    or \ref group_object_array), the graph parameter should be registered and enqueued from the container's first element rather than the
+    container itself. While previously supported, attempting to enqueue a container object as a graph parameter will now accurately result in
+    a runtime-error.
 
     \section NODE_GRAPH_PARAMETER_DEFINITION Node and Graph Parameter Definitions
 
     Pipelining in OpenVX requires an understanding of graph parameters and node parameters.  The below sections link to the explanation of these
     concepts in the OpenVX spec.
 
-    \ref sub_graph_parameters : Graph parameters are used in the non-<a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/1.1/html/vx_khr_pipelining_1_1_0.html#sec_streaming" target="_blank">streaming</a>,
-    <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/1.1/html/vx_khr_pipelining_1_1_0.html#sec_pipelining" target="_blank">pipelining</a>
+    \ref sub_graph_parameters : Graph parameters are used in the non-<a href="http://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/2.0/vx_khr_pipelining_2_0_0/vx_khr_pipelining_2_0_0.html#sec_streaming" target="_blank">streaming</a>,
+    <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/2.0/vx_khr_pipelining_2_0_0/vx_khr_pipelining_2_0_0.html#sec_pipelining" target="_blank">pipelining</a>
     mode to identify the parameters within a graph that are user-enqueueable.  By creating a graph parameter and explicitly
     enqueue-ing and dequeue-ing this parameter from the graph, the application has the ability to access the object data.
-    Otherwise, when using <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/1.1/html/vx_khr_pipelining_1_1_0.html#sec_pipelining" target="_blank">pipelining</a>,
+    Otherwise, when using <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/2.0/vx_khr_pipelining_2_0_0/vx_khr_pipelining_2_0_0.html#sec_pipelining" target="_blank">pipelining</a>,
     non-graph parameters are not accessible during graph execution.
 
     \ref sub_node_parameters : In the TIOVX implementation, node parameters are used to identify where multiple buffers need
-    to be created in the case of <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/1.1/html/vx_khr_pipelining_1_1_0.html#sec_pipelining" target="_blank">pipelining</a>.
+    to be created in the case of <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_pipelining/2.0/vx_khr_pipelining_2_0_0/vx_khr_pipelining_2_0_0.html#sec_pipelining" target="_blank">pipelining</a>.
     This is explained further in the \ref TIOVX_PIPELINING_PERFORMANCE_OPTIMIZATION_BUFFER_DEPTH section.  If buffer access from the application
     is needed, the parameter in question should be created as a graph parameter given that multiple buffers will be created at that parameter
     and there is not a way of accessing a particular buffer of this buffer queue.
