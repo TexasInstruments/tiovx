@@ -82,7 +82,7 @@ extern "C" {
 #define TIVX_MODULE_NAME_OPENVX_EXT    "openvx-ext"
 
 /*! \brief Object Array Split Kernel Name
- *  \ingroup group_vision_function_ext
+ *  \ingroup group_tivx_ext_host_kernel
  */
 #define TIVX_KERNEL_OBJ_ARRAY_SPLIT_NAME       "com.ti.ext.obj_array_split"
 
@@ -107,7 +107,7 @@ enum tivx_library_e {
  *
  * This includes object array split kernel
  *
- * \ingroup group_vision_function_ext
+ * \ingroup group_tivx_ext_host_kernel
  */
 void tivxExtLoadKernels(vx_context context);
 
@@ -116,7 +116,7 @@ void tivxExtLoadKernels(vx_context context);
  *
  * This includes object array split kernel
  *
- * \ingroup group_vision_function_ext
+ * \ingroup group_tivx_ext_host_kernel
  */
 void tivxExtUnLoadKernels(vx_context context);
 

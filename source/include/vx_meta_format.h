@@ -211,7 +211,7 @@ typedef struct _vx_meta_format
  *
  * \param [in] meta meta format object
  *
- * \ingroup group_int_meta_format
+ * \ingroup group_vx_meta_format
  */
 vx_status ownReleaseMetaFormat(vx_meta_format *meta);
 
@@ -222,7 +222,7 @@ vx_status ownReleaseMetaFormat(vx_meta_format *meta);
  * \return reference to vx_meta_format on success
  *         NULL on error
  *
- * \ingroup group_int_meta_format
+ * \ingroup group_vx_meta_format
  */
 vx_meta_format ownCreateMetaFormat(vx_context context);
 
@@ -240,7 +240,7 @@ vx_meta_format ownCreateMetaFormat(vx_context context);
  *
  * \return vx_true_e in case of equal meta formats, vx_false else
  *
- * \ingroup group_int_meta_format
+ * \ingroup group_vx_meta_format
  */
 vx_bool ownIsMetaFormatEqual(vx_meta_format meta1, vx_meta_format meta2, vx_enum ref_type);
 

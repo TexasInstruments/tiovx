@@ -432,6 +432,7 @@
     <subgroup>group_vision_function_threshold</subgroup>
     <subgroup>group_vision_function_warp_affine</subgroup>
     <subgroup>group_vision_function_warp_perspective</subgroup>
+    <!-- <subgroup>group_vision_function_copy</subgroup> --> <!-- Not in 1.1, uncomment after migration -->
   </compound>
   <compound kind="group">
     <name>group_vision_function_absdiff</name>
@@ -1284,6 +1285,27 @@
       <arglist>(vx_graph graph, vx_image input, vx_matrix matrix, vx_enum type, vx_image output)</arglist>
     </member>
   </compound>
+  <!-- NOTE: Not in 1.1 yet, uncomment after migration
+  <compound kind="group">
+    <name>group_vision_function_copy</name>
+    <title>Data Object Copy</title>
+    <filename>d2/dab/group__group__vision__function__copy.html</filename>
+    <member kind="function">
+      <type>vx_node VX_API_CALL</type>
+      <name>vxCopyNode</name>
+      <anchorfile>d2/dab/group__group__vision__function__copy.html</anchorfile>
+      <anchor>ga8f306bd1e8b9f24f6ee5c55007708114</anchor>
+      <arglist>(vx_graph graph, vx_reference input, vx_reference output)</arglist>
+    </member>
+    <member kind="function">
+      <type>vx_status VX_API_CALL</type>
+      <name>vxuCopy</name>
+      <anchorfile>d2/dab/group__group__vision__function__copy.html</anchorfile>
+      <anchor>ga60518997bad5582f9ee06492d66873dc</anchor>
+      <arglist>(vx_context context, vx_reference input, vx_reference output)</arglist>
+    </member>
+  </compound>
+  -->
   <compound kind="group">
     <name>group_basic_features</name>
     <title>Basic Features</title>

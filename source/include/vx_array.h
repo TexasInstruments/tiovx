@@ -71,7 +71,7 @@ typedef struct _vx_array
  *
  * \return VX_SUCCESS on success
  *
- * \ingroup group_tivx_array
+ * \ingroup group_vx_array
  */
 vx_status ownInitVirtualArray(
     vx_array arr, vx_enum item_type, vx_size capacity);

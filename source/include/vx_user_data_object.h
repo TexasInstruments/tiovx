@@ -110,13 +110,18 @@ typedef struct _vx_user_data_object
     vx_user_data_object parent;
 } tivx_user_data_object_t;
 
-/*! \brief internal creation function for user data object
-*/
+/*! 
+ * \brief internal creation function for user data object
+ * \ingroup group_vx_user_data_object
+ */
 vx_user_data_object ownCreateUserDataObject(vx_context context,
                                             const vx_char *type_name,
                                             vx_size size, const void *ptr);
 
-/*! \brief Internal read-only object creation function */
+/*! 
+ * \brief Internal read-only object creation function 
+ * \ingroup group_vx_user_data_object
+ */
 vx_user_data_object ownCreateReadOnlyUserDataObject(vx_user_data_object parent);
 
 #ifdef __cplusplus

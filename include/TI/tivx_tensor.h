@@ -74,13 +74,6 @@ extern "C" {
  * \brief Interface to Tensor APIs (modeled after OpenVX 1.2 tensor support)
  */
 
-/*!
- * \defgroup group_object_tensor Tensor Data Type APIs
- * \brief APIs creating and using tensor data type (note: this is not included in OpenVX 1.1 and thus added to TI extensions)
- * \ingroup group_tivx_ext_host
- */
-
-
  /*! \brief The multidimensional data object (Tensor).
  * \see vxCreateTensor
  * \ingroup group_object_tensor
@@ -250,7 +243,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseTensor(vx_tensor *tensor);
  * \retval VX_ERROR_INVALID_REFERENCE The tensor reference is not actually an tensor reference.
  * \retval VX_ERROR_INVALID_PARAMETERS An other parameter is incorrect.
  * \retval VX_ERROR_NO_MEMORY Internal memory allocation failed.
- * \ingroup group_tensor
+ * \ingroup group_object_tensor
  * \post <tt>\ref tivxUnmapTensorPatch </tt> with same (*map_id) value.
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(

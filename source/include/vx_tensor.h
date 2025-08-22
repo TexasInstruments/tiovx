@@ -76,9 +76,9 @@ extern "C" {
  */
 
 /*!
- * \brief Information about a image mapping
+ * \brief Information about a tensor mapping
  *
- * \ingroup group_vx_image
+ * \ingroup group_vx_tensor
  */
 typedef struct _tivx_tensor_map_info_t
 {

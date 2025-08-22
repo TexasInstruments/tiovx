@@ -973,6 +973,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxStopGraphStreaming(vx_graph graph);
 
 /* Additional helper API */
 /*! \brief This data structure is used to return information about kernel parameters via the vxGetKernelParameterConfig API.
+ *  \ingroup group_pipelining
  */
 typedef struct _vx_kernel_parameter_config_t {
     vx_uint32         index;        /*!< \brief index of the parameter, starting at zero */
@@ -1004,6 +1005,7 @@ typedef struct _vx_kernel_parameter_config_t {
  * \retval VX_ERROR_INVALID_REFERENCE The kernel was invalid or not finalised 
  * \retval VX_ERROR_INVALID_PARAMETERS The number of parameters is incorrect, or a NULL pointer was passed for parameter_config
  *
+ * \ingroup group_pipelining
  */
 VX_API_ENTRY vx_status VX_API_CALL vxGetKernelParameterConfig(
     vx_kernel                                   kernel,
@@ -1030,6 +1032,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetKernelParameterConfig(
  * \retval VX_ERROR_INVALID_GRAPH The graph was invalid or not verified 
  * \retval VX_ERROR_INVALID_PARAMETERS The number of parameters is incorrect, or a NULL pointer was passed for parameter_config.
  *
+ * \ingroup group_pipelining
  */
 VX_API_ENTRY vx_status VX_API_CALL vxGetGraphParameterConfig(
     vx_graph                                    graph,

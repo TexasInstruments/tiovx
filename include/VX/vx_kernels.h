@@ -289,7 +289,7 @@ enum vx_kernel_e {
     VX_KERNEL_MAX_1_1, /*!< \internal Used for bounds checking in the conformance test. */
 
     /*! \brief The data object copy kernel.
-    * \see group vision_function_copy
+    * \see group_vision_function_copy
     */
     VX_KERNEL_COPY = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x37,
 

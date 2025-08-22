@@ -55,7 +55,7 @@ typedef struct _vx_pyramid
  *
  * \return VX_SUCCESS on success
  *
- * \ingroup group_tivx_array
+ * \ingroup group_vx_pyramid
  */
 vx_status ownInitVirtualPyramid(
     vx_pyramid prmd, vx_uint32 width, vx_uint32 height, vx_df_image format);

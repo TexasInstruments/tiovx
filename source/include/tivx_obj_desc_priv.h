@@ -226,7 +226,7 @@ typedef struct _tivx_obj_desc_kernel_name
 /*!
  * \brief Data structure to get information about node blocked on this object descriptor to be
  *        ready
- * \ingroup group_tivx_obj_desc_priv
+ * \ingroup group_tivx_obj_desc_queue
  */
 typedef struct _tivx_obj_desc_queue_blocked_nodes {
 
@@ -244,7 +244,7 @@ typedef struct _tivx_obj_desc_queue_blocked_nodes {
 /*!
  * \brief Object descriptor queue
  *
- * \ingroup group_tivx_obj_desc_priv
+ * \ingroup group_tivx_obj_desc_queue
  */
 typedef struct _tivx_obj_desc_queue
 {

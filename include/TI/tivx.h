@@ -117,7 +117,7 @@ extern "C" {
  *
  * Currently used as parameter in tivxNodeSendCommand API
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_node
  */
 #define TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES ((uint32_t)-1)
 
@@ -161,12 +161,12 @@ extern "C" {
 #define TIVX_PYRAMID_MAX_LEVELS_ORB        (17u)
 
 /*! \brief Max number of kernel ID's
- * \ingroup group_tivx_target_cfg
+ *  \ingroup group_vx_misc_cfg
  */
 #define TIVX_MAX_KERNEL_ID                 (VX_KERNEL_MASK)
 
 /*! \brief Max number of kernel library ID's
- * \ingroup group_tivx_target_cfg
+ *  \ingroup group_vx_misc_cfg
  */
 #define TIVX_MAX_LIBRARY_ID                (VX_LIBRARY(VX_LIBRARY_MASK))
 
@@ -188,7 +188,7 @@ extern "C" {
 
 /*! \brief TI attribute extensions for the graph object
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_attribute_extension
  */
 typedef enum _tivx_graph_attribute_extensions_e {
 
@@ -199,7 +199,7 @@ typedef enum _tivx_graph_attribute_extensions_e {
 
 /*! \brief TI attribute extensions for the node object
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_attribute_extension
  */
 typedef enum _tivx_node_attribute_extensions_e {
 
@@ -228,7 +228,7 @@ typedef enum _tivx_node_attribute_extensions_e {
 
 /*! \brief TI attribute extensions for the reference object
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_attribute_extension
  */
 typedef enum _tivx_reference_attribute_extensions_e {
 
@@ -250,7 +250,7 @@ typedef enum _tivx_reference_attribute_extensions_e {
 
 /*! \brief TI attribute extensions for the kernel object
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_attribute_extension
  */
 typedef enum _tivx_kernel_attribute_extensions_e {
 
@@ -266,7 +266,7 @@ typedef enum _tivx_kernel_attribute_extensions_e {
 
 /*! \brief TI attribute extensions for the context object
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_attribute_extension
  */
 typedef enum _tivx_context_attribute_extensions_e {
 
@@ -288,7 +288,7 @@ typedef enum _tivx_context_attribute_extensions_e {
 
 /*! \brief TI attribute extensions for the image object
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_attribute_extension
  */
 typedef enum _tivx_image_attribute_extensions_e {
 
@@ -320,7 +320,7 @@ typedef enum _tivx_image_attribute_extensions_e {
 
 /*! \brief TI attribute extensions for the tensor object
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_attribute_extension
  */
 typedef enum _tivx_tensor_attribute_extensions_e {
 
@@ -442,7 +442,7 @@ void tivxHostDeInit(void);
  *        error and graph cannot execute.
  *
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_kernel
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const char *target_name);
 
@@ -456,7 +456,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const c
  * \retval VX_SUCCESS No errors.
  * \retval VX_ERROR_INVALID_REFERENCE kernel is not a valid reference
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_kernel
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelSinkDepth(vx_kernel kernel, uint32_t num_sink_bufs);
 
@@ -521,7 +521,7 @@ vx_enum tivxGetSelfCpuId(void);
  * \returns A node reference <tt>\ref vx_node</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_node
  */
 vx_node tivxCreateNodeByKernelEnum(vx_graph graph,
                                 vx_enum kernelenum,
@@ -539,7 +539,7 @@ vx_node tivxCreateNodeByKernelEnum(vx_graph graph,
  * \returns A node reference <tt>\ref vx_node</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_node
  */
 vx_node tivxCreateNodeByKernelRef(vx_graph graph,
                                 vx_kernel kernel,
@@ -557,7 +557,7 @@ vx_node tivxCreateNodeByKernelRef(vx_graph graph,
  * \returns A node reference <tt>\ref vx_node</tt>. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_node
  */
 vx_node tivxCreateNodeByKernelName(vx_graph graph,
                                 const char *kernel_name,
@@ -573,7 +573,7 @@ vx_node tivxCreateNodeByKernelName(vx_graph graph,
  * \retval vx_true_e The reference is virtual.
  * \retval vx_false_e The reference is not virtual.
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_reference
  */
 vx_bool tivxIsReferenceVirtual(vx_reference ref);
 
@@ -583,7 +583,7 @@ vx_bool tivxIsReferenceVirtual(vx_reference ref);
  * \param [in] child_ref     Child reference to query
  * \return vx_reference in case of success, else NULL
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_reference
  */
 vx_reference tivxGetReferenceParent(vx_reference child_ref);
 
@@ -624,7 +624,7 @@ uint64_t tivxPlatformGetTimeInUsecs(void);
  * \param [in] idx Node parameter index
  * \param [in] num_buf Number of buffers to allocate
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_node
  */
 vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 idx, vx_uint32 num_buf);
 
@@ -647,7 +647,7 @@ vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
  * \param [in]  idx Node parameter index
  * \param [out] num_buf Number of buffers allocated at output parameter
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_node
  */
 vx_status VX_API_CALL tivxGetNodeParameterNumBufByIndex(vx_node node, vx_uint32 idx, vx_uint32 *num_buf);
 
@@ -657,7 +657,7 @@ vx_status VX_API_CALL tivxGetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
  * \param [in] pipeline_depth Pipeline depth; Max value is (TIVX_GRAPH_MAX_PIPELINE_DEPTH-1)
  *                            else it will return an error
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_graph
  */
 vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth);
 
@@ -695,7 +695,7 @@ vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeli
  * \param [in] num_refs Number of valid entries/references in ref[] array
  *
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_node
  */
 vx_status VX_API_CALL tivxNodeSendCommand(vx_node node,
     uint32_t replicate_nodex_idx, uint32_t node_cmd_id,
@@ -738,7 +738,7 @@ vx_status VX_API_CALL tivxNodeSendCommand(vx_node node,
  *             VX_TIMEOUT_WAIT_FOREVER to wait forever
  *
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_node
  */
 vx_status VX_API_CALL tivxNodeSendCommandTimed(vx_node node,
     uint32_t replicate_nodex_idx, uint32_t node_cmd_id,
@@ -756,7 +756,7 @@ vx_status VX_API_CALL tivxNodeSendCommandTimed(vx_node node,
  *
  * \return vx_node in case of success, else NULL
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_graph
  *
  */
 vx_node tivxGraphGetNode(vx_graph graph, uint32_t idx);
@@ -766,7 +766,7 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t idx);
  * \param [in] node  The reference to the <tt>\ref vx_node</tt> object.
  * \param [in] block_width The tile width in pixels.
  * \param [in] block_height The tile height in lines.
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_node
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS if the tile size is set correctly.
  */
@@ -778,7 +778,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetNodeTileSize(vx_node node, vx_uint32 b
  * \param [in] attribute The attribute of the reference to be set.
  * \param [in] ptr       The value of the reference attribute to be set.
  * \param [in] size      The size of the value of the reference attribute to be set.
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_reference
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS if the attribute was set correctly.
  */
@@ -791,7 +791,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetReferenceAttribute(vx_reference ref, v
  *
  * \param [in] ref1 First reference object to be compared.
  * \param [in] ref2 Second reference object to be compared.
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_reference
  * \return A <tt>\ref _vx_bool_e</tt> enumeration.
  * \return vx_true_e in case of equal meta formats, vx_false else
  */
@@ -869,7 +869,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  * \param [in] num_entries Number of valid entries in addr[]. This should match the
  *                         number of handles expected to be maintained internally by 'ref'
  *                         (ex:- for an image object with multiple planes, num_extries > 1).
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_reference
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS if the import operation is successful. The 'ref' object will have the
  * internal handles updated.
@@ -947,7 +947,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReferenceImportHandle(vx_reference ref, c
  * \param [out] num_entries Number of valid entries in addr[]. This should match the
  *                         number of handles expected to be maintained internally by 'ref'
  *                         (ex:- for an image object with multiple planes, num_extries > 1).
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_reference
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS if the export operation is successful. The 'addr' object will be populated
  *  with 'num_entries' handles. size[i] will correspond to the handle addr[i].
@@ -967,7 +967,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReferenceExportHandle(const vx_reference 
  *
  * \param [in] context The reference to the implementation context.
  * \param [in] exemplar The exemplar object.
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_reference
  * \return <tt>\ref vx_reference</tt>. Any possible errors
  * preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  */

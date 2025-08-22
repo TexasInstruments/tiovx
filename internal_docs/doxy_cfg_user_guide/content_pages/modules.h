@@ -65,7 +65,7 @@
  */
 
 /*!
- * \defgroup group_tivx_log_resource f. Resource Logging APIs
+ * \defgroup group_tivx_log_resource f: Resource Logging APIs
  * \brief APIs for logging of statically allocated framework data structures
  * \ingroup group_tivx_ext_top
  */
@@ -510,12 +510,6 @@
  */
 
 /*!
- * \defgroup group_tivx_ext_host_resource_log Resource Logging APIs
- * \brief APIs for resource logging on the host
- * \ingroup group_tivx_ext_host
- */
-
-/*!
  * \defgroup group_tivx_log_rt_trace_target Real-time Trace APIs
  * \brief APIs for real-time event trace operations on the target
  * \ingroup group_tivx_ext_target
@@ -553,3 +547,129 @@
  * \ingroup group_vx_platform
  */
 
+/*!
+ * \defgroup group_object_tensor Tensor Data Type APIs
+ * \brief APIs creating and using tensor data type (note: this is not included in OpenVX 1.1 and thus added to TI extensions)
+ * \ingroup group_tivx_ext_host
+ */
+
+/*!
+ * \defgroup group_raw_image Raw Image Data Type APIs
+ * \brief APIs creating and using raw image data type
+ * \ingroup group_tivx_ext_host
+ */
+
+/*!
+ * \defgroup group_super_node Super Node Framework Type APIs
+ * \brief APIs creating and using super node framework type
+ * \ingroup group_tivx_ext_host
+ */
+
+ /*!
+  * \defgroup group_tivx_node Node APIs
+  * \brief TIOVX APIs for node operations in the processing graph.
+  * \ingroup group_tivx_ext_host
+  */
+
+/*!
+ * \defgroup group_tivx_reference Reference APIs
+ * \brief APIs for handling references, handles, and data pointers.
+ * \ingroup group_tivx_ext_host
+ */
+
+/*!
+ * \defgroup group_tivx_graph Graph APIs
+ * \brief APIs for querying and manipulating the OpenVX graph.
+ * \ingroup group_tivx_ext_host
+ */
+
+/*!
+ * \defgroup group_tivx_kernel Kernel APIs
+ * \brief APIs for working with compute kernels, target selection, and execution control.
+ * \ingroup group_tivx_ext_host
+ */
+
+/*!
+ * \defgroup group_tivx_attribute_extension Attribute Extension APIs
+ * \brief TI attribute extensions for OpenVX objects.
+ * \ingroup group_tivx_ext_host
+ */
+
+ /*!
+  * \defgroup group_pipelining g: Graph Pipelining Extension APIs
+  * \brief The OpenVX Pipelining extension provides APIs for graph execution and streaming in pipelined mode
+  * \ingroup group_tivx_ext_top
+  */
+
+/*!
+ * \defgroup group_event Event Handling APIs
+ * \brief APIs for registering, generating, and handling events for OpenVX Pipelining.
+ * \ingroup group_pipelining
+ */
+
+/*!
+ * \defgroup group_streaming Graph Streaming APIs
+ * \brief APIs for Graph Streaming implemented under the OpenVX Pipelining extension
+ * \ingroup group_pipelining
+ */
+
+/*!
+ * \defgroup group_user_data_object h: User Data Object Extension APIs
+ * \brief APIs for creating and managing user-defined data objects in OpenVX.
+ * \ingroup group_tivx_ext_top
+ */
+
+/*!
+ * \defgroup group_tivx_obj_desc_queue Object Descriptor Queue APIs
+ * \brief APIs for managing queues of TIOVX object descriptors
+ * \ingroup group_tivx_obj_desc_priv
+ */
+
+/*!
+ * \defgroup group_tivx_event_queue Event Queue APIs
+ * \brief APIs for managing queues of framework-generated events
+ * \ingroup group_vx_framework_object
+ */
+
+/*!
+ * \defgroup group_vx_tensor Tensor Data Object APIs
+ * \brief Internal APIs for tensor operations
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_user_data_object User Data Object APIs
+ * \brief Internal APIs for user data object operations
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_tivx_raw_image Raw Image Data Object APIs
+ * \brief Internal APIs for raw image operations
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_meta_format Meta Format Data Object APIs
+ * \brief Internal APIs for meta format operations
+ * \ingroup group_vx_framework_data_object
+ */
+ 
+// NOTE: The swap_move extension is not included in OpenVX but Extension Page is pretty descriptive. After migration, figure out if we want to point to the Khronos Page or list it on own doc page.
+/*!
+ * \defgroup group_swap_move i: Swap and Move Extension API
+ * \brief APIs implementing The OpenVX Swap and Move Kernel Extension
+ * \ingroup group_tivx_ext_top
+ */
+
+/*! 
+ * \defgroup group_vision_function_swap Data Object Swap APIs
+ * \brief APIs implementing Swap from the Swap and Move Kernel Extension
+ * \ingroup group_swap_move
+ */
+
+/*! 
+ * \defgroup group_vision_function_move Data Object Move APIs
+ * \brief APIs implementing Move from the Swap and Move Kernel Extension
+ * \ingroup group_swap_move
+ */

@@ -33,7 +33,7 @@ extern "C" {
  * This is the default timeout value used for all node instances of this kernel
  * when calling the node CREATE and DELETE target kernel functions, which can be
  * overwritten for specific node instances by setting TIVX_NODE_TIMEOUT attribute.
- * \ingroup group_tivx_target_kernel_instance_cfg
+ * \ingroup group_vx_kernel
  */
 #define TIVX_DEFAULT_KERNEL_TIMEOUT        (VX_TIMEOUT_WAIT_FOREVER)
 
