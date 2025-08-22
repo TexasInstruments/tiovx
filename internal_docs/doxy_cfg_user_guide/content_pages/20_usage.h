@@ -92,9 +92,16 @@
      \section TIOVX_USAGE_TASK TIOVX Task API on MPU Cores
        -  When used on MPU cores running an HLOS (i.e., Linux or QNX), the priority parameter of the tivx_task API is ignored.  This is left to maintain compatibility with RTOS.
        -  If a thread needs to be created with a priority, please instead use the native pthread API
-
+     \section TIOVX_USAGE_CACHE_IMPLICATIONS Using TIVX_MEMORY_TYPE_DMA
+       -  For buffers of type VX_MEMORY_TYPE_HOST, the host core will manage the buffer and perform its corresponding cache operations.
+       -  However, a buffer with a memory type of TIVX_MEMORY_TYPE_DMA will not necessarily mean a DMA will be accessing the buffer.
+            - Rather, it simply means cache operations on buffer will be skipped.
+       -  This makes buffers of TIVX_MEMORY_TYPE_DMA faster.
+            -  This comes at the tradeoff of the application ensuring stale data is not created.
+            -  Additionally, each TI SoC has their own cache implementation and validation policies, which using VX_MEMORY_TYPE_HOST would normally abstract from the application.
+       -  A performance optimization could occur when, for example, only small pieces of a buffer are accessed, which would make it ineffective to maintain cache operations on the full buffer.
+            -  In this case the application can use a buffer TIVX_MEMORY_TYPE_DMA which skips the maintenance, and later the developer can perform the maintenance on just the pieces of the buffer accessed.
  */
-
 /*!
     \page TIOVX_SPEC_INTERPRETATIONS OpenVX Standard Specification Interpretations
 
