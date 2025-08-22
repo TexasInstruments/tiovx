@@ -37,6 +37,7 @@ uint32_t ct_image_bits_per_pixel(vx_df_image format)
         case VX_DF_IMAGE_U32:
         case VX_DF_IMAGE_S32:
         case VX_DF_IMAGE_RGBX:
+        case VX_DF_IMAGE_RGBA:
             return 8 * 4;
         case VX_DF_IMAGE_RGB:
         case VX_DF_IMAGE_YUV4:
@@ -62,6 +63,7 @@ int ct_channels(vx_df_image format)
         case VX_DF_IMAGE_S32:
             return 1;
         case VX_DF_IMAGE_RGBX:
+        case VX_DF_IMAGE_RGBA:
             return 4;
         case VX_DF_IMAGE_RGB:
             return 3;
@@ -92,6 +94,7 @@ uint32_t ct_stride_bytes(CT_Image image)
         case VX_DF_IMAGE_U32:
         case VX_DF_IMAGE_S32:
         case VX_DF_IMAGE_RGBX:
+        case VX_DF_IMAGE_RGBA:
             factor = 4;
             break;
         case VX_DF_IMAGE_RGB:
@@ -417,6 +420,7 @@ int own_elem_size(vx_df_image format, vx_uint32 plane)
     case VX_DF_IMAGE_U32:
     case VX_DF_IMAGE_S32:
     case VX_DF_IMAGE_RGBX:
+    case VX_DF_IMAGE_RGBA:
         channel_step_x = 4;
         break;
 
@@ -554,6 +558,7 @@ CT_Image ct_image_from_vx_image_impl(vx_image vximg, const char* func, const cha
                 break;
 
                 case VX_DF_IMAGE_RGBX:
+                case VX_DF_IMAGE_RGBA:
                 {
                     vx_uint8* ct_ptr = (vx_uint8*)((vx_uint8*)p_ct_base + y * ctimg->stride * ct_elem_size + x * ct_elem_size);
                     vx_uint8* vx_ptr = (vx_uint8*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
@@ -773,6 +778,7 @@ vx_image ct_image_copy_impl(CT_Image ctimg, vx_image vximg, CT_ImageCopyDirectio
                 break;
 
                 case VX_DF_IMAGE_RGBX:
+                case VX_DF_IMAGE_RGBA:
                 {
                     vx_uint8* ct_ptr = (vx_uint8*)((vx_uint8*)p_ct_base + y * ctimg->stride * ct_elem_size + x * ct_elem_size);
                     vx_uint8* vx_ptr = (vx_uint8*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
@@ -1215,7 +1221,7 @@ void ct_dump_image_info_ex(CT_Image image, int dump_width, int dump_height)
             printf("%s", strend);
         }
     }
-    else if (image->format == VX_DF_IMAGE_RGBX)
+    else if ((image->format == VX_DF_IMAGE_RGBX) || image->format == VX_DF_IMAGE_RGBA)
     {
         for (y = 0; y < max_y; ++y)
         {
@@ -1249,9 +1255,11 @@ void ct_fill_ct_image_random(CT_Image image, uint64_t* seed, int a, int b)
     uint32_t p, x, y, nplanes=1, width[3] = {image->width, 0, 0}, height[3] = {image->height, 0, 0};
     uint32_t stride[3] = {ct_stride_bytes(image), 0, 0};
 
-    if( format == VX_DF_IMAGE_RGB || format == VX_DF_IMAGE_RGBX || format == VX_DF_IMAGE_YUYV || format == VX_DF_IMAGE_UYVY )
+    if( format == VX_DF_IMAGE_RGB || format == VX_DF_IMAGE_RGBX || 
+        format == VX_DF_IMAGE_RGBA || format == VX_DF_IMAGE_YUYV ||
+        format == VX_DF_IMAGE_UYVY)
     {
-        width[0] *= format == VX_DF_IMAGE_RGB ? 3 : format == VX_DF_IMAGE_RGBX ? 4 : 2;
+        width[0] *= format == VX_DF_IMAGE_RGB ? 3 : (format == VX_DF_IMAGE_RGBX || format == VX_DF_IMAGE_RGBA) ? 4 : 2;
         format = VX_DF_IMAGE_U8;
     }
     else if( format == VX_DF_IMAGE_YUV4 || format == VX_DF_IMAGE_IYUV )
@@ -1329,6 +1337,7 @@ uint32_t ct_get_num_planes(vx_df_image format)
     case VX_DF_IMAGE_S32:
     case VX_DF_IMAGE_RGB:
     case VX_DF_IMAGE_RGBX:
+    case VX_DF_IMAGE_RGBA:
     case VX_DF_IMAGE_YUYV:
     case VX_DF_IMAGE_UYVY: nplanes = 1; break;
 
@@ -1358,6 +1367,7 @@ int ct_get_num_channels(vx_df_image format)
         case VX_DF_IMAGE_S32:
             return 1;
         case VX_DF_IMAGE_RGBX:
+        case VX_DF_IMAGE_RGBA:
             return 4;
         case VX_DF_IMAGE_RGB:
         case VX_DF_IMAGE_YUYV:
@@ -1387,6 +1397,7 @@ int ct_image_get_channel_step_x(CT_Image image, vx_enum channel)
         case VX_DF_IMAGE_U32:
         case VX_DF_IMAGE_S32:
         case VX_DF_IMAGE_RGBX:
+        case VX_DF_IMAGE_RGBA:
             return 4;
         case VX_DF_IMAGE_RGB:
             return 3;
@@ -1423,6 +1434,7 @@ int ct_image_get_channel_step_y(CT_Image image, vx_enum channel)
         case VX_DF_IMAGE_U32:
         case VX_DF_IMAGE_S32:
         case VX_DF_IMAGE_RGBX:
+        case VX_DF_IMAGE_RGBA:
             return image->stride * 4;
         case VX_DF_IMAGE_RGB:
             return image->stride * 3;
@@ -1494,6 +1506,7 @@ int ct_image_get_channel_plane(CT_Image image, vx_enum channel)
     {
         case VX_DF_IMAGE_RGB:
         case VX_DF_IMAGE_RGBX:
+        case VX_DF_IMAGE_RGBA:
             return 0;
         case VX_DF_IMAGE_NV12:
         case VX_DF_IMAGE_NV21:
@@ -1530,6 +1543,7 @@ int ct_image_get_channel_component(CT_Image image, vx_enum channel)
     {
         case VX_DF_IMAGE_RGB:
         case VX_DF_IMAGE_RGBX:
+        case VX_DF_IMAGE_RGBA:
         switch (channel)
         {
         case VX_CHANNEL_R:

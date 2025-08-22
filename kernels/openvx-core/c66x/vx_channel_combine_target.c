@@ -206,6 +206,7 @@ static vx_status VX_CALLBACK tivxChannelCombine(
 
             if (   (dst_desc->format == (vx_df_image)VX_DF_IMAGE_RGB)
                 || (dst_desc->format == (vx_df_image)VX_DF_IMAGE_RGBX)
+                || (dst_desc->format == (vx_df_image)VX_DF_IMAGE_RGBA)
                 || (dst_desc->format == (vx_df_image)VX_DF_IMAGE_YUYV)
                 || (dst_desc->format == (vx_df_image)VX_DF_IMAGE_UYVY)
                 )
@@ -224,7 +225,7 @@ static vx_status VX_CALLBACK tivxChannelCombine(
                         );
                 }
                 else
-                if( dst_desc->format == (vx_df_image)VX_DF_IMAGE_RGBX)
+                if( (dst_desc->format == (vx_df_image)VX_DF_IMAGE_RGBX) || (dst_desc->format == (vx_df_image)VX_DF_IMAGE_RGBA) )
                 {
                     vxlib_dst.data_type = (uint32_t)VXLIB_UINT32;
 

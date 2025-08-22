@@ -84,6 +84,7 @@ static CT_Image channel_combine_create_reference_image(CT_Image src1, CT_Image s
     {
         case VX_DF_IMAGE_RGB:
         case VX_DF_IMAGE_RGBX:
+        case VX_DF_IMAGE_RGBA:
             ASSERT_(return NULL, src1);
             ASSERT_(return NULL, src2);
             ASSERT_(return NULL, src3);
@@ -92,7 +93,7 @@ static CT_Image channel_combine_create_reference_image(CT_Image src1, CT_Image s
             ASSERT_NO_FAILURE_(return NULL, channel_combine_fill_chanel(src1, VX_CHANNEL_R, dst));
             ASSERT_NO_FAILURE_(return NULL, channel_combine_fill_chanel(src2, VX_CHANNEL_G, dst));
             ASSERT_NO_FAILURE_(return NULL, channel_combine_fill_chanel(src3, VX_CHANNEL_B, dst));
-            if (format == VX_DF_IMAGE_RGBX)
+            if ((format == VX_DF_IMAGE_RGBX) || (format == VX_DF_IMAGE_RGBA))
                 ASSERT_NO_FAILURE_(return NULL, channel_combine_fill_chanel(src4, VX_CHANNEL_A, dst));
             return dst;
         case VX_DF_IMAGE_NV12:
@@ -135,6 +136,7 @@ typedef struct {
 #define ADD_CASES(testArgName, nextmacro, ...) \
     ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_RGB, __VA_ARGS__),  \
     ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_RGBX, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_RGBA, __VA_ARGS__), \
     ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_NV12, __VA_ARGS__), \
     ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_NV21, __VA_ARGS__), \
     ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_UYVY, __VA_ARGS__), \
@@ -179,7 +181,8 @@ TEST_WITH_ARG(tivxChannelCombine, testGraphProcessing, Arg,
     ASSERT_NO_FAILURE(dst_dummy = ct_allocate_image(4, 4, arg_->dst_format));
 
     ASSERT_NO_FAILURE(channels = ct_get_num_channels(arg_->dst_format));
-    channel_ref = (arg_->dst_format==VX_DF_IMAGE_RGB)||(arg_->dst_format==VX_DF_IMAGE_RGBX)?VX_CHANNEL_R:VX_CHANNEL_Y;
+    channel_ref = (arg_->dst_format==VX_DF_IMAGE_RGB)||(arg_->dst_format==VX_DF_IMAGE_RGBX)||
+                  (arg_->dst_format==VX_DF_IMAGE_RGBA)?VX_CHANNEL_R:VX_CHANNEL_Y;
     for (i = 0; i < channels; i++)
     {
         int w = arg_->width / ct_image_get_channel_subsampling_x(dst_dummy, channel_ref + i);
@@ -275,7 +278,8 @@ TEST_WITH_ARG(tivxChannelCombine, testChannelCombineSingleSupernode, Arg,
     ASSERT_NO_FAILURE(dst_dummy = ct_allocate_image(4, 4, arg_->dst_format));
 
     ASSERT_NO_FAILURE(channels = ct_get_num_channels(arg_->dst_format));
-    channel_ref = (arg_->dst_format==VX_DF_IMAGE_RGB)||(arg_->dst_format==VX_DF_IMAGE_RGBX)?VX_CHANNEL_R:VX_CHANNEL_Y;
+    channel_ref = (arg_->dst_format==VX_DF_IMAGE_RGB)||(arg_->dst_format==VX_DF_IMAGE_RGBX)||
+                  (arg_->dst_format==VX_DF_IMAGE_RGBA)?VX_CHANNEL_R:VX_CHANNEL_Y;
     for (i = 0; i < channels; i++)
     {
         int w = arg_->width / ct_image_get_channel_subsampling_x(dst_dummy, channel_ref + i);
@@ -344,7 +348,8 @@ TEST_WITH_ARG(tivxChannelCombine, testBasicTest, Arg,
     ASSERT_NO_FAILURE(dst_dummy = ct_allocate_image(4, 4, arg_->dst_format));
 
     ASSERT_NO_FAILURE(channels = ct_get_num_channels(arg_->dst_format));
-    channel_ref = (arg_->dst_format==VX_DF_IMAGE_RGB)||(arg_->dst_format==VX_DF_IMAGE_RGBX)?VX_CHANNEL_R:VX_CHANNEL_Y;
+    channel_ref = (arg_->dst_format==VX_DF_IMAGE_RGB)||(arg_->dst_format==VX_DF_IMAGE_RGBX)||
+                  (arg_->dst_format==VX_DF_IMAGE_RGBA)?VX_CHANNEL_R:VX_CHANNEL_Y;
     for (i = 0; i < channels; i++)
     {
         int w = arg_->width / ct_image_get_channel_subsampling_x(dst_dummy, channel_ref + i);

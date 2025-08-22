@@ -326,7 +326,7 @@ int32_t test_utils_bmp_file_write(
         bpp = 3;
     }
     else
-    if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
+    if( (df == (vx_df_image)VX_DF_IMAGE_RGBX) || (df == (vx_df_image)VX_DF_IMAGE_RGBA) )
     {
         bpp = 4;
     }
@@ -430,7 +430,7 @@ vx_image  test_utils_create_vximage_from_bmpfile(vx_context context, const char 
                 bpp = 3;
             }
             else
-            if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
+            if( (df == (vx_df_image)VX_DF_IMAGE_RGBX) || (df == (vx_df_image)VX_DF_IMAGE_RGBA) )
             {
                 bpp = 4;
             }
@@ -654,7 +654,7 @@ vx_status test_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                 bpp = 3;
             }
             else
-            if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
+            if( (df == (vx_df_image)VX_DF_IMAGE_RGBX) || (df == (vx_df_image)VX_DF_IMAGE_RGBA) )
             {
                 bpp = 4;
             }

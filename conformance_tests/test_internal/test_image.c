@@ -160,6 +160,21 @@ TEST(tivxInternalImage, TestBranchownCopyAndMapCheckParams)
     VX_CALL(vxReleaseImage(&image));
 }
 
+TEST(tivxInternalImage, testRGBACreateUniformImage)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image = NULL;
+    vx_map_id map_id = 0;
+    vx_rectangle_t rect = {0, 0, 1, 1};
+    vx_imagepatch_addressing_t addr = { 0 };
+    vx_uint8* base_ptr = NULL;
+    vx_pixel_value_t pvalue;
+
+    ASSERT_VX_OBJECT(image = vxCreateUniformImage(context,640 , 480, VX_DF_IMAGE_RGBA, &pvalue), VX_TYPE_IMAGE);
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
 TESTCASE_TESTS(
     tivxInternalImage,
     negativeTestGetValidRegionImage,
@@ -167,5 +182,6 @@ TESTCASE_TESTS(
     negativeTestOwnInitVirtualImage,
     negativeTestCopyAndMapCheckParam,
     negativeTestBranchOwnSizeofChannel,
-    TestBranchownCopyAndMapCheckParams
+    TestBranchownCopyAndMapCheckParams,
+    testRGBACreateUniformImage
 )

@@ -213,6 +213,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
         }
 
         if (((vx_df_image)VX_DF_IMAGE_RGBX != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_RGBA != output_fmt) &&
             ((vx_df_image)VX_DF_IMAGE_RGB != output_fmt) &&
             ((vx_df_image)VX_DF_IMAGE_NV12 != output_fmt) &&
             ((vx_df_image)VX_DF_IMAGE_NV21 != output_fmt) &&
@@ -222,7 +223,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
             ((vx_df_image)VX_DF_IMAGE_YUV4 != output_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_RGBX or VX_DF_IMAGE_RGB or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_NV21 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_IYUV or VX_DF_IMAGE_YUV4 \n");
+            VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_RGBX or VX_DF_IMAGE_RGBA or VX_DF_IMAGE_RGB or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_NV21 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_IYUV or VX_DF_IMAGE_YUV4 \n");
         }
     }
 
@@ -233,7 +234,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
     {
         out_channel = 0U;
 
-        if ((vx_df_image)VX_DF_IMAGE_RGBX == output_fmt)
+        if (((vx_df_image)VX_DF_IMAGE_RGBX == output_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_RGBA == output_fmt))
         {
             out_channel = 4U;
         }
@@ -259,7 +261,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if ((vx_df_image)VX_DF_IMAGE_RGBX == output_fmt)
+        if (((vx_df_image)VX_DF_IMAGE_RGBX == output_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_RGBA == output_fmt))
         {
             if ((plane1_w != plane0_w) ||
                 ((NULL != plane2) && (plane2_w != plane0_w)) ||

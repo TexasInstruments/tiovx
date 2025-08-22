@@ -3150,6 +3150,9 @@ static vx_enum ownGetTensorTypeFromImage(vx_enum image_format)
     case (vx_enum)VX_DF_IMAGE_RGBX:
         tensor_type = (vx_enum)VX_TYPE_UINT32;
         break;
+    case (vx_enum)VX_DF_IMAGE_RGBA:
+        tensor_type = (vx_enum)VX_TYPE_UINT32;
+        break;
     case (vx_enum)VX_DF_IMAGE_UYVY:
         tensor_type = (vx_enum)VX_TYPE_UINT16;
         break;

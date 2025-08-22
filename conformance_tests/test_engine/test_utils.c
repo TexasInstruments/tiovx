@@ -298,7 +298,7 @@ void ct_fill_image_random_impl(vx_image image, uint64_t* seed, const char* func,
                 data[1] = (vx_uint8)CT_RNG_NEXT(rng);
                 data[2] = (vx_uint8)CT_RNG_NEXT(rng);
             })
-        else if (format == VX_DF_IMAGE_RGBX) // 1 plane of 32-bit data
+        else if ((format == VX_DF_IMAGE_RGBX) || (format == VX_DF_IMAGE_RGBA)) // 1 plane of 32-bit data
             SET_PIXELS(vx_uint8,
             {
                 data[0] = (vx_uint8)CT_RNG_NEXT(rng);
@@ -537,6 +537,7 @@ vx_image ct_clone_image_impl(vx_image image, vx_graph graph, const char* func, c
                 case VX_DF_IMAGE_S32:
                 case VX_DF_IMAGE_U32:
                 case VX_DF_IMAGE_RGBX:
+                case VX_DF_IMAGE_RGBA:
                     elem_sz = 4;
                     break;
                 case VX_DF_IMAGE_NV12:
