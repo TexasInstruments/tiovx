@@ -128,16 +128,26 @@
        - After graph verification, the valid regions for each kernel have been set.
        - Therefore, following graph verification, changes to the valid region using vxSetImageValidRectangle must not be made.
      \section TIOVX_SPEC_INTERPRETATIONS_OBJ_DATA_MAPPING Data Object Mapping
+       - The OpenVX data objects are opaque:
+           - Access to memory is explicit and temporary
+           - No permanent pointers to internal memory/data
+       - One way this is done is with Map/Unmap APIs
+           - Every mapping must be explicitly unmapped after use
        - The following functions are used for mapping of specific data objects:
-           - vxMapArrayRange
-           - vxMapImagePatch
-           - tivxMapTensorPatch
+           - \ref vxMapArrayRange
+           - \ref vxMapImagePatch
+           - \ref vxMapDistribution
+           - \ref vxMapLUT
+           <!-- This Khronos page is still an asciidoc page so html hyperlinking is used -->
+           - <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_user_data_object/1.1/vx_khr_user_data_object_1_1.html#_vxmapuserdataobjectgit">vxMapUserDataObject</a>
+           - \ref tivxMapTensorPatch
+           - \ref tivxMapRawImagePatch
        - The types of mapping supported for these functions are the following:
            - VX_READ_ONLY
            - VX_READ_AND_WRITE
            - VX_WRITE_ONLY
        - The framework allows multiple mappings of the same region of a given data object.
-       - Therefore, the user must be aware of the regions that have been mapped and the read/write privileges that each mapping has been granted.
+           - Therefore, the user must be aware of the regions that have been mapped and the read/write privileges that each mapping has been granted.
      \section TIOVX_SPEC_INTERPRETATIONS_TENSOR Tensor Object
        - Each tensor is mapped to a single contiguous buffer, of size = stride[number_of_dimensions - 1U] * dimensions[number_of_dimensions - 1U]
      \section TIOVX_SPEC_INTERPRETATIONS_USER_DATA_OBJECT User Data Object
