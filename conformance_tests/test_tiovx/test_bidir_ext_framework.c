@@ -35,7 +35,7 @@ enum user_kernel_e
 TESTCASE(bpExtFramework, CT_VXContext, ct_setup_vx_context, 0)
 
 /* Write some data on an image */
-void writeImage(vx_image image)
+static void writeImage(vx_image image)
 {
     vx_map_id id;
     vx_rectangle_t rect = {.start_x = 0, .end_x = 1, .start_y = 0, .end_y = 2};
