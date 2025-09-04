@@ -92,15 +92,20 @@
      \section TIOVX_USAGE_TASK TIOVX Task API on MPU Cores
        -  When used on MPU cores running an HLOS (i.e., Linux or QNX), the priority parameter of the tivx_task API is ignored.  This is left to maintain compatibility with RTOS.
        -  If a thread needs to be created with a priority, please instead use the native pthread API
-     \section TIOVX_USAGE_CACHE_IMPLICATIONS Using TIVX_MEMORY_TYPE_DMA
-       -  For buffers of type VX_MEMORY_TYPE_HOST, the host core will manage the buffer and perform its corresponding cache operations.
-       -  However, a buffer with a memory type of TIVX_MEMORY_TYPE_DMA will not necessarily mean a DMA will be accessing the buffer.
-            - Rather, it simply means cache operations on buffer will be skipped.
-       -  This makes buffers of TIVX_MEMORY_TYPE_DMA faster.
-            -  This comes at the tradeoff of the application ensuring stale data is not created.
-            -  Additionally, each TI SoC has their own cache implementation and validation policies, which using VX_MEMORY_TYPE_HOST would normally abstract from the application.
-       -  A performance optimization could occur when, for example, only small pieces of a buffer are accessed, which would make it ineffective to maintain cache operations on the full buffer.
-            -  In this case the application can use a buffer TIVX_MEMORY_TYPE_DMA which skips the maintenance, and later the developer can perform the maintenance on just the pieces of the buffer accessed.
+     \section TIOVX_USAGE_CACHE_IMPLICATIONS Using VX_MEMORY_TYPE_HOST vs TIVX_MEMORY_TYPE_DMA for map/unmap APIs
+       -  Use \ref VX_MEMORY_TYPE_HOST for map/unmap operations when you want the calling CPU to access the buffer contents.  When doing this, the map/unmap operation will take
+          care to also call the associated cache maintenance operations on the region specified (if required for the platform and CPU) so that the user doesn't have to.
+       -  Use \ref TIVX_MEMORY_TYPE_DMA for map/unmap operations when you DO NOT intend for the calling CPU to access the buffer contents (perhaps you just need the pointer to pass
+          to a hardware accelerator or DMA engine to access the contents).  When doing this, the map/unmap operation will skip the associated cache maintenance operations since it is
+          not required in this situation, thus performing more optimally.
+       -  Given that using \ref VX_MEMORY_TYPE_HOST may come at an additional cost of cache maintenance operations over the buffer, the application may consider the following performance optimization in certain cases:
+            -  One such case is if the user needs access to a buffer to perform some sparse accesses across the region, then the user may not want to waste the time to do cache maintenance on the whole region.
+               -  In this case, the user can decide to map/unmap the buffer using \ref TIVX_MEMORY_TYPE_DMA to skip the cache maintenance, and then take care of performing cache maintenance operations on just the specific subset
+                  of the buffer before and after access.
+            -  The map/unmap functions of the TIOVX implementation assumes that the buffers are allocated in cacheable write-back memory regions.  If the configuration is changed such that the map/unmap functions are called on a
+               non-cached region, or a cached write-through region, then this assumption no longer applies and the following can be done to skip the unnecessary cache maintenance operation(s):
+               -  Either the \ref tivxMemBufferMap or \ref tivxMemBufferUnmap functions should be altered, or
+               -  The applciation can call one or both the map/unmap functions using memory type \ref TIVX_MEMORY_TYPE_DMA
  */
 /*!
     \page TIOVX_SPEC_INTERPRETATIONS OpenVX Standard Specification Interpretations

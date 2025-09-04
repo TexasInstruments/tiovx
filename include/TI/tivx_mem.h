@@ -176,7 +176,13 @@ typedef enum _tivx_mem_heap_region_e
  * \ingroup group_tivx_mem
  */
 typedef enum _tivx_memory_type_e {
-    /*! \brief Memory type when a DMA will access the memory rather than the HOST. */
+    /*! \brief Memory type to use when the CPU will not be accessing the memory, for example,
+     *  some hardware accelerator or DMA engine.
+     *
+     *  When using this type for a map or unmap operation, the cache maintenance operations
+     *  are skipped, thus performing more optimally, since the CPU will not be accessing
+     *  the memory contents. See \ref TIOVX_USAGE_CACHE_IMPLICATIONS
+     */
     TIVX_MEMORY_TYPE_DMA = VX_ENUM_BASE(VX_ID_TI, VX_ENUM_MEMORY_TYPE) + 0x0,
 } tivx_memory_type_e;
 
