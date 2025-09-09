@@ -997,7 +997,7 @@
     During the scheduling and execution of the OpenVX graphs, the OpenVX data buffers reside in external shared memory and the pointers to each of these data buffers are passed
     along to subsequent nodes in the graph.  Inside each node process callbacks, the node may access the external shared memory via the pointers that have been passed from the
     previous node. The \ref tivxMemBufferMap and \ref tivxMemBufferUnmap encapsulate the mapping and cache maintenance operations necessary for mapping the shared memory to
-    the target core.  After a node completes, the framework handles the trigerring of nodes depending on the data from the output of the current node.
+    the target core.  After a node completes, the framework handles the triggering of nodes depending on the data from the output of the current node.
 
     \section TIOVX_MEMORY_MANAGEMENT_DELETE TIOVX Destroy Phase
 
