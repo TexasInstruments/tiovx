@@ -296,9 +296,9 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
 
             obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
 
-            tivx_obj_desc_memcpy(&meta->raw_image,
-                   &obj_desc->params,
-                   sizeof(tivx_raw_image_create_params_t));
+            tivx_obj_desc_memcpy(&meta->object.raw_image,
+                                 &obj_desc->params,
+                                 sizeof(tivx_raw_image_create_params_t));
         }
         else if (meta->type == (vx_enum)VX_TYPE_PYRAMID)
         {
@@ -616,7 +616,7 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
             tivx_raw_image_create_params_t *p;
             tivx_raw_image                  obj;
 
-            p = (tivx_raw_image_create_params_t *)&meta->raw_image;
+            p = (tivx_raw_image_create_params_t *)&meta->object.raw_image;
 
             obj = tivxCreateRawImage(context, p);
 

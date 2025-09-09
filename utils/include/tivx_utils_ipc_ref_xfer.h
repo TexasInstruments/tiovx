@@ -199,11 +199,11 @@ typedef struct
             vx_enum item_type;
         } object_array;
 
+        /*!< \brief structure containing information about raw image
+                    used when type is set to TIVX_TYPE_RAW_IMAGE */
+        tivx_raw_image_create_params_t raw_image;
+        
     } object; /* Union to hold different types of metadata */
-
-    /*!< \brief structure containing information about raw image
-                used when type is set to TIVX_TYPE_RAW_IMAGE */
-    tivx_raw_image_create_params_t raw_image;
 
 } tivx_utils_meta_format_t;
 
