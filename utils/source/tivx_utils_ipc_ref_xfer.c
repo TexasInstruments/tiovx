@@ -428,15 +428,16 @@ vx_status vx_utils_import_ref_from_ipc_xfer_objarray(vx_context                c
                                                 (const uint32_t *)refDesc->handleSizes,
                                                 ipcMsgArray[i].numFd);
 
+                    VX_PRINT(VX_ZONE_INFO, "Importing item reference %d\n", i);
                     if (vxStatus != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,
                                 "tivxReferenceImportHandle() failed.\n");
+                        break;
                     }
-                }                
-                VX_PRINT(VX_ZONE_INFO, "Importing item reference %d\n", i);
+                }
             }
-            if (vxStatus != (vx_status)VX_SUCCESS)
+            if (vxStatus == (vx_status)VX_SUCCESS)
             {            
                  *ref = vxCastRefFromObjectArray(objArrayRefs);
             }
@@ -444,7 +445,7 @@ vx_status vx_utils_import_ref_from_ipc_xfer_objarray(vx_context                c
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "the imported pbject is not a vx_objarray \n");
+        VX_PRINT(VX_ZONE_ERROR, "the imported pbject is not a vx_object_array \n");
         vxStatus = (vx_status)VX_FAILURE;        
     }
 
