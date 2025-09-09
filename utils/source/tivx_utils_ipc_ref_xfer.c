@@ -360,9 +360,10 @@ vx_status vx_utils_import_ref_from_ipc_xfer_objarray(vx_context                c
     void                           *phyAddr[VX_IPC_MAX_VX_PLANES];    
     tivx_utils_ref_desc_t          *refDesc;
     uint32_t                        numItems;
-    uint32_t                        i;
+    uint32_t                        i,j;
     vx_status                       vxStatus = VX_SUCCESS;
 
+    /* refdesc for the object array itself */
     refDesc = (tivx_utils_ref_desc_t *)&ipcMsgHandle->refDesc;
 
     /* Validate the arguments. */
@@ -389,45 +390,47 @@ vx_status vx_utils_import_ref_from_ipc_xfer_objarray(vx_context                c
 
         if (meta->type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
         {
-            /* Import all the items from the array, gather the references */
+            /* create the obj array based on the type of object contained into it */
             numItems = meta->object.object_array.num_items;
             vx_object_array objArrayRefs;
-            vx_reference exemplarRef = NULL;
-            vxStatus = tivx_utils_import_ref_from_ipc_xfer(context, &ipcMsgArray[0], &exemplarRef);
+            vx_reference itemRef = NULL;
+            vxStatus = tivx_utils_import_ref_from_ipc_xfer(context, &ipcMsgArray[0], &itemRef);
             if (vxStatus != VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Could not import the item reference\n");
-            }                       
-            objArrayRefs = vxCreateObjectArray(context, exemplarRef, numItems);
-            vxReleaseReference(&exemplarRef);
+            }
+            objArrayRefs = vxCreateObjectArray(context, itemRef, numItems);
+            vxReleaseReference(&itemRef);
 
             /* Import the remaining items */
             for(i = 0; i < numItems; i++)
             {
-                for (i = 0; i < ipcMsgArray[i].numFd; i++)
+                refDesc = (tivx_utils_ref_desc_t *)&ipcMsgArray[i].refDesc;
+                for (j = 0; j < ipcMsgArray[i].numFd; j++)
                 {
                     /* Translate FD corresponding to plane[i]. */
-                    vxStatus = tivxMemTranslateFd((uint64_t)ipcMsgArray[i].fd[i],
-                                                refDesc->handleSizes[i],
-                                                &ptrs[i],
-                                                &phyAddr[i]);
+                    vxStatus = tivxMemTranslateFd((uint64_t)ipcMsgArray[i].fd[j],
+                                                refDesc->handleSizes[j],
+                                                &ptrs[j],
+                                                &phyAddr[j]);
 
                     if (vxStatus != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "tivxMemTranslateFd() failed for "
-                                "FD [%d]\n", i);
+                                "FD [%d]\n", j);
                         break;
                     }
                 }
                 if (vxStatus == (vx_status)VX_SUCCESS)
                 {
                     /* Import the reference handles. */
+                    itemRef = vxGetObjectArrayItem(objArrayRefs, i);
                     vxStatus =
-                        tivxReferenceImportHandle(vxGetObjectArrayItem(objArrayRefs, i),
+                        tivxReferenceImportHandle(itemRef,
                                                 (const void **)ptrs,
                                                 (const uint32_t *)refDesc->handleSizes,
                                                 ipcMsgArray[i].numFd);
-
+                    vxReleaseReference(&itemRef);
                     VX_PRINT(VX_ZONE_INFO, "Importing item reference %d\n", i);
                     if (vxStatus != (vx_status)VX_SUCCESS)
                     {
@@ -494,7 +497,6 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
         if (meta->type == (vx_enum)VX_TYPE_IMAGE)
         {
             vx_image    obj;
-
             obj = vxCreateImage(context,
                                 meta->object.img.width,
                                 meta->object.img.height,
