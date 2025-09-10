@@ -1306,7 +1306,7 @@ TEST (copySwap, testSubObjectsOfTensors )
 {
     vx_status status = VX_SUCCESS;
     vx_context context = context_->vx_context_;
-    vx_tensor tensors[4];
+    vx_tensor tensors[4] = {NULL, NULL, NULL, NULL};
     vx_size dims[2] = {16, 16};
     vx_graph graph = NULL;
 
