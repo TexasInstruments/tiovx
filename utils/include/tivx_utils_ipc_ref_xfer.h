@@ -190,8 +190,7 @@ typedef struct
         } user_data_object;
 
         /*!< \brief structure containing information about object array
-                    used when type is set to VX_TYPE_OBJECT_ARRAY
-                    NOTE: assume the underlying type is vx_image */
+                    used when type is set to VX_TYPE_OBJECT_ARRAY */
         struct {
             /*!< \brief The number of image objects */
             vx_uint32 num_items;
