@@ -2377,113 +2377,94 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
         }
     }
 
-/* LDRA_JUSTIFY_START
-<metric start> branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR072
-<justification end> */
-    if (graph->num_nodes < TIVX_GRAPH_MAX_NODES)
-/* LDRA_JUSTIFY_END */
+    for(node_id=0; node_id<graph->num_nodes; node_id++)
     {
-        for(node_id=0; node_id<graph->num_nodes; node_id++)
+        if(graph->nodes[node_id]->kernel->num_pipeup_bufs >= graph->pipeline_depth)
         {
-            if(graph->nodes[node_id]->kernel->num_pipeup_bufs >= graph->pipeline_depth)
-            {
-                graph->pipeline_depth = graph->nodes[node_id]->kernel->num_pipeup_bufs;
-            }
+            graph->pipeline_depth = graph->nodes[node_id]->kernel->num_pipeup_bufs;
         }
+    }
 
-        for(node_id=0; node_id<graph->num_nodes; node_id++)
-        {
-            ownNodeSetObjDescParamDirection(graph->nodes[node_id]);
+    for(node_id=0; node_id<graph->num_nodes; node_id++)
+    {
+        ownNodeSetObjDescParamDirection(graph->nodes[node_id]);
 
-            status = ownNodeAllocObjDescForPipeline(graph->nodes[node_id], graph->pipeline_depth);
+        status = ownNodeAllocObjDescForPipeline(graph->nodes[node_id], graph->pipeline_depth);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT017
 <justification end> */
-            if(status!=(vx_status)VX_SUCCESS)
-            {
-                VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj descriptors at node for pipelining\n");
-                break;
-            }
-/* LDRA_JUSTIFY_END */
+        if(status!=(vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj descriptors at node for pipelining\n");
+            break;
         }
+/* LDRA_JUSTIFY_END */
+    }
 
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_UBR067
 <justification end> */
-        if(status==(vx_status)VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
+    {
+        for(node_id=0; node_id<graph->num_nodes; node_id++)
         {
-            for(node_id=0; node_id<graph->num_nodes; node_id++)
-            {
-                /* update out_node_id[], in_node_id[]
-                 * from 0th obj desc
-                 */
-                ownNodeLinkObjDescForPipeline(graph->nodes[node_id]);
-            }
+            /* update out_node_id[], in_node_id[]
+                * from 0th obj desc
+                */
+            ownNodeLinkObjDescForPipeline(graph->nodes[node_id]);
         }
+    }
 /* LDRA_JUSTIFY_END */
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR068
 <justification end> */
-        if(status==(vx_status)VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
 /* LDRA_JUSTIFY_END */
+    {
+        /* make data references at graph parameter only if graph is in queuing mode */
+        if((graph->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
+            ||
+            (graph->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)
+            ||
+            (graph->pipeline_depth > 1U)
+            )
         {
-            /* make data references at graph parameter only if graph is in queuing mode */
-            if((graph->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
-                ||
-                (graph->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)
-                ||
-                (graph->pipeline_depth > 1U)
-                )
+            for(node_id=0; node_id<graph->num_nodes; node_id++)
             {
-                for(node_id=0; node_id<graph->num_nodes; node_id++)
+                uint32_t prm_id;
+                vx_node node;
+
+                node = graph->nodes[node_id];
+
+                for(prm_id=0; prm_id<ownNodeGetNumParameters(node); prm_id++)
                 {
-                    uint32_t prm_id;
-                    vx_node node;
-
-                    node = graph->nodes[node_id];
-
-                    for(prm_id=0; prm_id<ownNodeGetNumParameters(node); prm_id++)
-                    {
-                        status = ownGraphAddDataRefQ(graph, node, prm_id);
+                    status = ownGraphAddDataRefQ(graph, node, prm_id);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT018
 <justification end> */
-                        if(status!=(vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,"Unable to add data ref q to graph\n");
-                            break;
-                        }
-/* LDRA_JUSTIFY_END */
-                    }
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT019
-<justification end> */
                     if(status!=(vx_status)VX_SUCCESS)
                     {
+                        VX_PRINT(VX_ZONE_ERROR,"Unable to add data ref q to graph\n");
                         break;
                     }
 /* LDRA_JUSTIFY_END */
                 }
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_GRAPH_VERIFY_UTJT019
+<justification end> */
+                if(status!=(vx_status)VX_SUCCESS)
+                {
+                    break;
+                }
+/* LDRA_JUSTIFY_END */
             }
         }
     }
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_VERIFY_UBR072
-<justification end> */
-    else
-    {
-        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-        VX_PRINT(VX_ZONE_ERROR,"Invalid number of nodes in graph\n");
-    }
-/* LDRA_JUSTIFY_END */
-
     return status;
 }
 
