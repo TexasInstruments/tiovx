@@ -71,6 +71,10 @@
 #define VPAC3L
 #endif
 
+#ifndef VPAC_COUNT
+#define VPAC_COUNT  (1)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

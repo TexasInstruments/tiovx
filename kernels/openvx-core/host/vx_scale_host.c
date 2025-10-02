@@ -186,7 +186,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
 
         if ((0 == strncmp(node_target, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_MAX_NAME)) ||
             (0 == strncmp(node_target, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_MAX_NAME))
-#if defined (SOC_J784S4) || defined (SOC_J742S2)
+#if (VPAC_COUNT > 1)
             || (0 == strncmp(node_target, TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_MAX_NAME)) ||
                (0 == strncmp(node_target, TIVX_TARGET_VPAC2_MSC2, TIVX_TARGET_MAX_NAME))
 #endif
@@ -394,7 +394,7 @@ vx_status tivxAddKernelScale(vx_context context)
             tivxKernelsHostUtilsAddKernelTargetDsp(kernel);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC2);
-#if defined (SOC_J784S4) || defined (SOC_J742S2)
+#if (VPAC_COUNT > 1)
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC2_MSC1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC2_MSC2);
 #endif
