@@ -72,7 +72,17 @@
 #endif
 
 #ifndef VPAC_COUNT
-#define VPAC_COUNT  (2)
+#define VPAC_COUNT  (2U)
+#endif
+
+/*! \brief Total number of C7X DSPs in the system (with or without MMAs) */
+#ifndef C7X_COUNT
+#define C7X_COUNT  (3U)
+#endif
+
+/*! Total number of C7X DSPs with MMAs in the system */
+#ifndef C7XMMA_COUNT
+#define C7XMMA_COUNT  (2U)
 #endif
 
 #ifdef __cplusplus
@@ -560,7 +570,7 @@ extern "C" {
  *         CPU ID is defined in platform module since
  *         depending on platform the CPUs could be different
  *
- *         Current CPU IDs are defined assuming J721S2 SoC
+ *         Current CPU IDs are defined assuming J742S2 SoC
  *
  *         Caution: This enum is used as index into the array
  *         #g_ipc_cpu_id_map, so change in this enum will require

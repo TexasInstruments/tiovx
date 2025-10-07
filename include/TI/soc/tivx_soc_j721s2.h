@@ -72,7 +72,17 @@
 #endif
 
 #ifndef VPAC_COUNT
-#define VPAC_COUNT  (1)
+#define VPAC_COUNT  (1U)
+#endif
+
+/*! \brief Total number of C7X DSPs in the system (with or without MMAs) */
+#ifndef C7X_COUNT
+#define C7X_COUNT  (2U)
+#endif
+
+/*! Total number of C7X DSPs with MMAs in the system */
+#ifndef C7XMMA_COUNT
+#define C7XMMA_COUNT  (1U)
 #endif
 
 #ifdef __cplusplus
