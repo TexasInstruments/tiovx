@@ -122,7 +122,7 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(
     vx_status status = (vx_status)VX_SUCCESS;
 
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) &&
-        (NULL != exemplar))
+        (ownIsValidReference(exemplar) == (vx_bool)vx_true_e))
     {
         if (((vx_bool)vx_true_e == ownIsValidObject(exemplar->type)) &&
             (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS))
@@ -194,7 +194,7 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
 
     if ((ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) ==
                 (vx_bool)vx_true_e) &&
-        (NULL != exemplar))
+        (ownIsValidReference(exemplar) == (vx_bool)vx_true_e))
     {
         context = graph->base.context;
 

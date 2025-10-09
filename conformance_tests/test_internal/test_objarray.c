@@ -105,9 +105,24 @@ TEST(tivxInternalObjArray, negativeTestGetObjectArrayItem2)
     VX_CALL(vxReleaseImage(&img));
 }
 
-TESTCASE_TESTS(
-    tivxInternalObjArray,    
-    negativeTestGetObjectArrayItem1,
-    negativeTestGetObjectArrayItem2
-)
+TEST(tivxInternalObjArray, negativeTestCreateObjectArrayBadRef)
+{
+    vx_context context = context_->vx_context_;
 
+    vx_object_array object_array = NULL;
+    vx_image img = NULL;
+
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    img->base.magic = TIVX_BAD_MAGIC;
+    object_array = vxCreateObjectArray(context, (vx_reference)(img), 1);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)object_array));
+    img->base.magic = TIVX_MAGIC;
+    vxReleaseImage(&img);
+}
+
+TESTCASE_TESTS(
+    tivxInternalObjArray,
+    negativeTestGetObjectArrayItem1,
+    negativeTestGetObjectArrayItem2,
+    negativeTestCreateObjectArrayBadRef
+)
