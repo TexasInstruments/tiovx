@@ -55,7 +55,7 @@ void tivx_set_debug_zone(vx_enum zone)
     {
 
         g_debug_zonemask |= ZONE_BIT((vx_uint32)zone);
-        tivx_print_object((vx_enum)VX_ZONE_INFO, ~(0U), "Globally Enabled %s\n", tivx_find_zone_name(zone));
+        tivx_print_object((vx_enum)VX_ZONE_INFO, ZONE_BIT((vx_uint32)VX_ZONE_INFO), "Globally Enabled %s\n", tivx_find_zone_name(zone));
     }
     else
     {
@@ -68,7 +68,7 @@ void tivx_clr_debug_zone(vx_enum zone)
     if ( (0 <= zone) && (zone < (vx_enum)VX_ZONE_MAX) )
     {
         g_debug_zonemask &= ~(ZONE_BIT((vx_uint32)zone));
-        tivx_print_object((vx_enum)VX_ZONE_INFO, ~(0U), "Globally Disabled %s\n", tivx_find_zone_name(zone));
+        tivx_print_object((vx_enum)VX_ZONE_INFO, ZONE_BIT((vx_uint32)VX_ZONE_INFO), "Globally Disabled %s\n", tivx_find_zone_name(zone));
     }
     else
     {
@@ -101,9 +101,9 @@ static void tivx_print(vx_enum zone, vx_uint32 debug_zonemask, const char *forma
     if ((debug_zonemask & ZONE_BIT((vx_uint32)zone)) != 0U)
     {
         uint32_t size;
-        char string[1024];
+        char string[256];
 
-        (void)snprintf(string, sizeof(string), " %s: ", tivx_find_zone_name(zone));
+        (void)snprintf(string, sizeof(string), "%s: ", tivx_find_zone_name(zone));
         size = (uint32_t)strlen(string);
 
         (void)vsnprintf(&string[size], sizeof(string)-size, format, ap);
