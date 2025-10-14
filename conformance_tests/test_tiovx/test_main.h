@@ -209,4 +209,8 @@ TESTCASE(tivxImage)
 
 TESTCASE(tivxImage2)
 
+TESTCASE(ObjectArrayFromList)
+
+TESTCASE(tivxObjArrayFromList)
+
 #endif

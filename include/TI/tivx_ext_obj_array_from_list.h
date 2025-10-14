@@ -103,7 +103,7 @@ enum tivx_object_array_attribute_e
  * \param [in] context              The reference to the overall Context.
  * \param [in] list                 An array of references that are to be stored in the object array. The type of the first
  *                                  reference in the list determines the type that will be enforced by the object array.
- * \param [in] count                Number of references from the references parameter designated for the object array.
+ * \param [in] count                Number of references from the list parameter designated for the object array.
  *                                  Acceptable numbers are greater than 0 and less than TIVX_OBJECT_ARRAY_MAX_ITEMS.
  *
  * \returns An ObjectArray reference <tt>\ref vx_object_array</tt>. Any possible errors preventing a 
@@ -126,7 +126,7 @@ VX_API_ENTRY vx_object_array VX_API_CALL tivxCreateObjectArrayFromList(
  * \param [in] list       An array of references that are to be stored in the object array. The type of the first
  *                        reference in the list determines the type that will be enforced by the object array.
  *                        The references in the list must be virtual in the graph.
- * \param [in] count      Number of references from the references parameter designated for the object array.
+ * \param [in] count      Number of references from the list parameter designated for the object array.
  *                        Acceptable numbers are greater than 0 and less than TIVX_OBJECT_ARRAY_MAX_ITEMS.
  * 
  * \returns An ObjectArray reference <tt>\ref vx_object_array</tt>. Any possible errors preventing a 

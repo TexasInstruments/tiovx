@@ -2373,7 +2373,7 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(vx_context context,
  *                        Only exemplar type of <tt>\ref vx_image</tt>, <tt>\ref vx_array</tt> and 
  *                        <tt>\ref vx_pyramid</tt> are allowed.  
  * \param [in] count      Number of Objects to create in the ObjectArray. 
- * \returns               A ObjectArray reference <tt>\ref vx_object_array</tt>. Any possible errors preventing a 
+ * \returns               An ObjectArray reference <tt>\ref vx_object_array</tt>. Any possible errors preventing a
  *                        successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_object_array
  */

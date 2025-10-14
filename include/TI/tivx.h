@@ -77,6 +77,7 @@
 #include <TI/tivx_ext_super_node.h>
 #include <TI/tivx_soc.h>
 #include <TI/tivx_log_stats.h>
+#include <TI/tivx_ext_obj_array_from_list.h>
 
 #ifdef __cplusplus
 extern "C" {

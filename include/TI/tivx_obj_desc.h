@@ -831,6 +831,8 @@ typedef struct _tivx_obj_desc_object_array
     volatile uint32_t num_items;
     /*! \brief array of descriptor ids of the objects */
     volatile uint16_t obj_desc_id[TIVX_OBJECT_ARRAY_MAX_ITEMS];
+    /*! \brief A flag to indicate if object array is instantiated from a list of references */
+    volatile vx_bool is_from_list;
 
 } tivx_obj_desc_object_array_t;
 

@@ -17,16 +17,22 @@
 
 
 #include <vx_internal.h>
+#include <vx_objarray.h>
 
-static vx_bool ownIsValidObject(vx_enum type);
+static vx_bool ownIsValidObjArrayType(vx_enum type);
 static vx_status ownDestructObjArray(vx_reference ref);
 static vx_status ownInitObjArrayFromObject(
     vx_context context, vx_object_array objarr, vx_reference exemplar);
-static vx_status ownAllocObjectArrayBuffer(vx_reference ref);
+static vx_status ownAllocObjArrayBuffer(vx_reference ref);
 static vx_status ownAddRefToObjArray(vx_context context,
             vx_object_array objarr, vx_reference ref, uint32_t i);
 static vx_status ownReleaseRefFromObjArray(
             vx_object_array objarr, uint32_t num_items);
+
+static vx_object_array ownAllocObjArray(
+    vx_context context);
+static vx_status ownInitObjArrayFromList(
+    vx_context context, vx_object_array objArray, vx_reference list[]);
 
 static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
@@ -96,7 +102,7 @@ static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_b
     return status;
 }
 
-static vx_bool ownIsValidObject(vx_enum type)
+static vx_bool ownIsValidObjArrayType(vx_enum type)
 {
     vx_bool status = (vx_bool)vx_false_e;
 
@@ -119,7 +125,6 @@ static vx_bool ownIsValidObject(vx_enum type)
     return (status);
 }
 
-
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseObjectArray(vx_object_array *arr)
 {
     return (ownReleaseReferenceInt(
@@ -135,23 +140,24 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) &&
         (ownIsValidReference(exemplar) == (vx_bool)vx_true_e))
     {
-        if (((vx_bool)vx_true_e == ownIsValidObject(exemplar->type)) &&
+        if (((vx_bool)vx_true_e == ownIsValidObjArrayType(exemplar->type)) &&
             (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS))
         {
-            vx_reference ref = ownCreateReference(context, (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, &context->base);
-            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
-                (ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY))
+            objarr = ownAllocObjArray(context);
+            if ((vxGetStatus((vx_reference)objarr)) == (vx_status)VX_SUCCESS)
             {
-                /* status set to NULL due to preceding type check */
-                objarr = vxCastRefAsObjectArray(ref,NULL);
-                /* assign reference type specific callback's */
-                objarr->base.destructor_callback = &ownDestructObjArray;
-                objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
-                objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
-                objarr->base.kernel_callback = &objectArrayKernelCallback;
-                objarr->base.obj_desc = ownObjDescAlloc(
-                    (vx_enum)TIVX_OBJ_DESC_OBJARRAY, vxCastRefFromObjectArray(objarr));
-                if(objarr->base.obj_desc==NULL)
+                tivx_obj_desc_object_array_t *obj_desc =
+                    (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
+
+                obj_desc->item_type = exemplar->type;
+                obj_desc->num_items = (uint32_t)count;
+                obj_desc->is_from_list = (vx_bool)vx_false_e;
+
+                ownLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
+
+                status = ownInitObjArrayFromObject(context, objarr, exemplar);
+
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     (void)vxReleaseObjectArray(&objarr);
 
@@ -163,22 +169,96 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(
                     objarr = (vx_object_array)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
-                else
+            }
+        }
+    }
+    return (objarr);
+}
+
+VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
+    vx_graph graph, vx_reference exemplar, vx_size count)
+{
+    vx_object_array objarr = NULL;
+    vx_context context;
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if ((ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) ==
+                (vx_bool)vx_true_e) &&
+        (ownIsValidReference(exemplar) == (vx_bool)vx_true_e))
+    {
+        context = graph->base.context;
+
+        if (((vx_bool)vx_true_e == ownIsValidObjArrayType(exemplar->type)) &&
+            (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS))
+        {
+            objarr = ownAllocObjArray(context);
+            if ((vxGetStatus((vx_reference)objarr)) == (vx_status)VX_SUCCESS)
+            {
+                tivx_obj_desc_object_array_t *obj_desc =
+                    (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
+
+                obj_desc->item_type = exemplar->type;
+                obj_desc->num_items = (uint32_t)count;
+                obj_desc->is_from_list = (vx_bool)vx_false_e;
+
+                ownLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
+
+                objarr->base.is_virtual = (vx_bool)vx_true_e;
+                ownReferenceSetScope(&objarr->base, &graph->base);
+
+                status = ownInitObjArrayFromObject(context, objarr, exemplar);
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UTJT003
+<justification end> */
+                if(status != (vx_status)VX_SUCCESS)
+                {
+                    (void)vxReleaseObjectArray(&objarr);
+
+                    vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
+                        "Could not allocate objarr object descriptor\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+                    objarr = (vx_object_array)ownGetErrorObject(
+                        context, (vx_status)VX_ERROR_NO_RESOURCES);
+                }
+/* LDRA_JUSTIFY_END */
+            }
+        }
+    }
+
+    return (objarr);
+}
+
+// ObjArray From List uses list[0] for the ref_type to enforce
+VX_API_ENTRY vx_object_array VX_API_CALL tivxCreateObjectArrayFromList(
+    vx_context context, vx_reference list[], vx_size count)
+{
+    vx_object_array objarr = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if (ownIsValidContext(context) == (vx_bool)vx_true_e)
+    { 
+        if (list != NULL && (ownIsValidReference(list[0]) == (vx_bool)vx_true_e))
+        {
+            if (((vx_bool)vx_true_e == ownIsValidObjArrayType(list[0]->type)) &&
+                (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS) && (count > 0))
+            {
+                objarr = ownAllocObjArray(context);
+                if ((vxGetStatus((vx_reference)objarr)) == (vx_status)VX_SUCCESS)
                 {
                     tivx_obj_desc_object_array_t *obj_desc =
                         (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
-
-                    obj_desc->item_type = exemplar->type;
+                    obj_desc->item_type = list[0]->type;
                     obj_desc->num_items = (uint32_t)count;
+                    obj_desc->is_from_list = (vx_bool)vx_true_e;
 
-                    ownLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
-
-                    status = ownInitObjArrayFromObject(context, objarr, exemplar);
-
+                    status = ownInitObjArrayFromList(context, objarr, list);
+                    
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         (void)vxReleaseObjectArray(&objarr);
-
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                             "Could not allocate objarr object descriptor\n");
                         VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
@@ -190,73 +270,47 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(
                 }
             }
         }
-    }
-
+    }     
     return (objarr);
 }
 
-VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
-    vx_graph graph, vx_reference exemplar, vx_size count)
+VX_API_ENTRY vx_object_array VX_API_CALL tivxCreateVirtualObjectArrayFromList(
+    vx_graph graph, vx_reference list[], vx_size count)
 {
     vx_object_array objarr = NULL;
-    vx_reference ref = NULL;
     vx_context context;
     vx_status status = (vx_status)VX_SUCCESS;
 
     if ((ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) ==
-                (vx_bool)vx_true_e) &&
-        (ownIsValidReference(exemplar) == (vx_bool)vx_true_e))
+                (vx_bool)vx_true_e))
     {
         context = graph->base.context;
 
-        if (((vx_bool)vx_true_e == ownIsValidObject(exemplar->type)) &&
-            (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS))
+        if (list != NULL && (ownIsValidReference(list[0]) == (vx_bool)vx_true_e))
         {
-            ref = ownCreateReference(
-                context, (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, &context->base);
-
-            if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
-                (ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY))
+            if (((vx_bool)vx_true_e == ownIsValidObjArrayType(list[0]->type)) &&
+                (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS) && (count > 0))
             {
-                /* status set to NULL due to preceding type check */
-                objarr = vxCastRefAsObjectArray(ref,NULL);
-                /* assign reference type specific callback's */
-                objarr->base.destructor_callback = &ownDestructObjArray;
-                objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
-                objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
-                objarr->base.kernel_callback = &objectArrayKernelCallback;
-                objarr->base.obj_desc = ownObjDescAlloc(
-                    (vx_enum)TIVX_OBJ_DESC_OBJARRAY, vxCastRefFromObjectArray(objarr));
-                if(objarr->base.obj_desc==NULL)
-                {
-                    (void)vxReleaseObjectArray(&objarr);
-
-                    vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
-                        "Could not allocate objarr object descriptor\n");
-                    objarr = (vx_object_array)ownGetErrorObject(
-                        context, (vx_status)VX_ERROR_NO_RESOURCES);
-                    VX_PRINT(VX_ZONE_ERROR, "Could not allocate object array object descriptor\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
-                    VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
-                }
-                else
+                objarr = ownAllocObjArray(context);
+                
+                if ((vxGetStatus((vx_reference)objarr)) == (vx_status)VX_SUCCESS)
                 {
                     tivx_obj_desc_object_array_t *obj_desc =
                         (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
-                    obj_desc->item_type = exemplar->type;
+                    obj_desc->item_type = list[0]->type;
                     obj_desc->num_items = (uint32_t)count;
+                    obj_desc->is_from_list = (vx_bool)vx_true_e;
 
                     ownLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
 
                     objarr->base.is_virtual = (vx_bool)vx_true_e;
                     ownReferenceSetScope(&objarr->base, &graph->base);
 
-                    status = ownInitObjArrayFromObject(context, objarr, exemplar);
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UTJT003
-<justification end> */
+                    status = ownInitObjArrayFromList(context, objarr, list);
+
+                    // TODO: LDRA?
+                    // TODO: incorporate new global prints (TIOVX-2138)
                     if(status != (vx_status)VX_SUCCESS)
                     {
                         (void)vxReleaseObjectArray(&objarr);
@@ -269,7 +323,6 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                         objarr = (vx_object_array)ownGetErrorObject(
                             context, (vx_status)VX_ERROR_NO_RESOURCES);
                     }
-/* LDRA_JUSTIFY_END */
                 }
             }
         }
@@ -385,6 +438,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryObjectArray(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case (vx_enum)TIVX_OBJECT_ARRAY_IS_FROM_LIST:
+                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
+                    {
+                        tivx_obj_desc_object_array_t *obj_desc =
+                            (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
+
+                        *(vx_size *)ptr = obj_desc->is_from_list;
+                    }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Query object array is from list failed\n");
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    }
+                    break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid query attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
@@ -402,10 +469,9 @@ static vx_status ownInitObjArrayFromObject(
     vx_reference ref;
     tivx_obj_desc_object_array_t *obj_desc =
         (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
-    vx_uint32 num_items, index, k;
+    vx_uint32 index, k;
 
-    num_items = obj_desc->num_items;
-    for (index = 0; index < num_items; index++)
+    for (index = 0; index < obj_desc->num_items; index++)
     {
         ref = tivxCreateReferenceFromExemplar(context, exemplar);
 
@@ -445,6 +511,72 @@ static vx_status ownInitObjArrayFromObject(
     return (status);
 }
 
+static vx_status ownInitObjArrayFromList(
+    vx_context context, vx_object_array objarr, vx_reference list[])
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_reference ref;
+    tivx_obj_desc_object_array_t *obj_desc =
+        (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
+    vx_uint32 i, k;
+
+    for (i = 0; i < obj_desc->num_items; i++)
+    {
+        ref = (vx_reference)list[i];
+
+        status = vxGetStatus(ref);
+        
+        if(status == (vx_status)VX_SUCCESS)
+        {
+            if (ref->type != ((tivx_obj_desc_object_array_t *)(objarr->base.obj_desc))->item_type)
+            {               
+                VX_PRINT(VX_ZONE_ERROR, "Creation of object array from list failed; reference %d provided in references[] is the wrong type\n", i);
+                status = (vx_status)VX_FAILURE;
+            }
+            if (ref->is_virtual != objarr->base.is_virtual){
+                VX_PRINT(VX_ZONE_ERROR, "Creation of object array from list failed; reference %d provided in references[] of a different virtuality\n", i);
+                status = (vx_status)VX_FAILURE;
+            }
+            if (ref->scope != objarr->base.scope){
+                VX_PRINT(VX_ZONE_ERROR, "Creation of object array from list failed; reference %d provided in references[] has an invalid scope\n", i);
+                status = (vx_status)VX_FAILURE;
+            }
+            if (status == (vx_status)VX_SUCCESS){
+                status = ownAddRefToObjArray(context, objarr, ref, i);
+                if (status != (vx_status)VX_SUCCESS){
+                    VX_PRINT(VX_ZONE_ERROR, "adding of reference %d to the object array failed\n", i);
+                    break;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Creation of object array failed, reference %d provided in references[] is INVALID\n", i);
+            break;
+        }
+    }
+    // Clean up for failures
+    if ((vx_status)VX_SUCCESS != status)
+    {
+        // Use a temp var to propogate the main failure status
+        vx_status release_status;
+        for ( k = 0; k < i; k++)
+        {
+            release_status = ownReleaseRefFromObjArray(objarr, k);
+            if(release_status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Releasing reference from object array failed\n");
+            }
+        }
+/* LDRA_JUSTIFY_END */
+    }
+    return (status);
+}
+
 static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr, vx_reference ref, uint32_t i)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -465,11 +597,26 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
         /* Setting the element index so that we can index into object array */
         ref->obj_desc->element_idx = i;
 
-        /* increment the internal counter on the image, not the
-         * external one. Setting it as void since the return value
-         * 'count' is not used further.
-         */
-        (void)ownIncrementReference(ref, (vx_enum)VX_INTERNAL);
+        if (obj_desc->is_from_list == (vx_bool)vx_false_e){
+            /* increment the internal counter on the image, not the
+            * external one. Setting it as void since the return value
+            * 'count' is not used further.
+            */
+            (void)ownIncrementReference(ref, (vx_enum)VX_INTERNAL);
+        }
+        else
+        {
+            /* increment both internal and external counters on the image.
+            * When creating from an exemplar, the exemplar already carries an external count of 1
+            * Hence, all object array children created from it will correctly have an external count of 1.
+            *
+            * Since the list is an array of objects already with external count 1,
+            * when they are added as children, they will have an external count of 2:
+            * 1. the existing reference in list[]
+            * 2. and the new objectarray from list.
+            */
+            (void)ownIncrementReference(ref, (vx_enum)VX_BOTH);
+        }
 
         ownReferenceSetScope(ref, &objarr->base);
     }
@@ -500,7 +647,7 @@ static vx_status ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t i)
          * 'count' is not used further.
          */
         (void)ownDecrementReference(objarr->ref[i], (vx_enum)VX_INTERNAL);
-        
+
         status = vxReleaseReference(&objarr->ref[i]);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -559,7 +706,7 @@ static vx_status ownDestructObjArray(vx_reference ref)
     return status;
 }
 
-static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
+static vx_status ownAllocObjArrayBuffer(vx_reference objarr_ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i=0;
@@ -652,4 +799,38 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
     }
 /* LDRA_JUSTIFY_END */
     return status;
+}
+
+static vx_object_array ownAllocObjArray(
+    vx_context context)
+{
+    vx_object_array objarr = NULL;
+    vx_reference ref = ownCreateReference(context, (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, &context->base);
+    if ((vxGetStatus(ref) == (vx_status)VX_SUCCESS) &&
+        (ref->type == (vx_enum)VX_TYPE_OBJECT_ARRAY))
+        {
+        /* status set to NULL due to preceding type check */
+        objarr = vxCastRefAsObjectArray(ref,NULL);
+        /* assign reference type specific callback's */
+        objarr->base.destructor_callback = &ownDestructObjArray;
+        objarr->base.mem_alloc_callback = &ownAllocObjArrayBuffer;
+        objarr->base.release_callback = &ownReleaseReferenceBufferGeneric;
+        objarr->base.kernel_callback = &objectArrayKernelCallback;
+        objarr->base.obj_desc = ownObjDescAlloc(
+            (vx_enum)TIVX_OBJ_DESC_OBJARRAY, vxCastRefFromObjectArray(objarr));
+        if(objarr->base.obj_desc==NULL)
+        {
+            (void)vxReleaseObjectArray(&objarr);
+
+            vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
+                "Could not allocate objarr object descriptor\n");
+            VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
+            VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+            VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+
+            objarr = (vx_object_array)ownGetErrorObject(
+                context, (vx_status)VX_ERROR_NO_RESOURCES);
+        }
+    }
+    return objarr;
 }
