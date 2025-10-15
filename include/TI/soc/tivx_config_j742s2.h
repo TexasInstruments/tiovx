@@ -490,6 +490,30 @@ extern "C" {
 
 
 /*
+ * Posix object configuration resources
+ */
+/*! \brief Max number of \ref tivx_event objects
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_EVENT_MAX_OBJECTS           (1024u)
+
+/*! \brief Max number of \ref tivx_mutex objects
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_MUTEX_MAX_OBJECTS           (1024u)
+
+/*! \brief Max number of \ref tivx_queue objects
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_QUEUE_MAX_OBJECTS           (1024u)
+
+/*! \brief Max number of \ref tivx_task objects
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_TASK_MAX_OBJECTS            (1024u)
+
+
+/*
  * FRAMEWORK OBJECTS CONT.
  */
 /*

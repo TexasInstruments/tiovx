@@ -72,6 +72,7 @@ extern "C" {
 
 #include <tivx_obj_desc_priv.h>
 #include <TI/tivx_log_stats.h>
+#include <pthread.h>
 
 /*!
  * \file
@@ -136,6 +137,54 @@ typedef struct _tivx_shm_obj_count_t {
     vx_bool   is_configured; /**< Flag to indicate a resource's max exists in tivx_config.h*/
 
 } tivx_shm_obj_count_t;
+
+/*!
+ * \brief Typedef for an event
+ *
+ * \ingroup group_tivx_platform
+ */
+typedef struct tivx_vx_event_t {
+
+    uint16_t is_set;
+    pthread_mutex_t lock;
+    pthread_cond_t  cond;
+
+} tivx_event_t;
+
+/*!
+ * \brief Typedef for a mutex
+ *
+ * \ingroup group_tivx_platform
+ */
+typedef struct tivx_vx_mutex_t {
+
+  pthread_mutex_t lock;
+
+} tivx_mutex_t;
+
+/*!
+ * \brief Typedef for a queue context
+ *
+ * \ingroup group_tivx_platform
+ */
+typedef struct tivx_vx_queue_context {
+
+  pthread_mutex_t lock;
+  pthread_cond_t  condGet;
+  pthread_cond_t  condPut;
+
+} tivx_queue_context_t;
+
+/*!
+ * \brief Typedef for a task context
+ *
+ * \ingroup group_tivx_platform
+ */
+typedef struct tivx_vx_task_context {
+
+  pthread_t hndl;
+
+} tivx_task_context_t;
 
 /*!
  * \brief Increment count of given resource

@@ -109,6 +109,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 /* LDRA_JUSTIFY_END */
             {
                 *mutex = tmp_mutex;
+                ownLogResourceAlloc("TIVX_MUTEX_MAX_OBJECTS", 1);
             }
             (void)pthread_mutexattr_destroy(&mutex_attr);
         }
@@ -131,6 +132,7 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
         (void)pthread_mutex_destroy(&(*mutex)->lock);
         (void)ownPosixObjectFree((uint8_t *)(*mutex), (vx_enum)TIVX_POSIX_TYPE_MUTEX);
         *mutex = NULL;
+        ownLogResourceFree("TIVX_MUTEX_MAX_OBJECTS", 1);
         status = (vx_status)VX_SUCCESS;
     }
 

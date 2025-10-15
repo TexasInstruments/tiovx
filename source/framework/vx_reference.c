@@ -50,7 +50,7 @@ static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
     {(vx_enum)VX_TYPE_COORDINATES2D, sizeof(vx_coordinates2d_t)},
     {(vx_enum)VX_TYPE_COORDINATES3D, sizeof(vx_coordinates3d_t)},
     {(vx_enum)VX_TYPE_KEYPOINT,      sizeof(vx_keypoint_t)},
-    {(vx_enum)TIVX_TYPE_EVENT,       sizeof(tivx_event)},
+    {(vx_enum)TIVX_TYPE_EVENT_HANDLE, sizeof(tivx_event)},
     /* Pseudo Objects */
     {(vx_enum)VX_TYPE_META_FORMAT,   sizeof(tivx_meta_format_t)},
     /* Framework Objects */
@@ -90,7 +90,12 @@ static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
     {(vx_enum)TIVX_TYPE_CONTEXT_USER_STRUCTS,  sizeof(tivx_user_structs_t)},
     {(vx_enum)TIVX_TYPE_GRAPH_PARAMETERS,  sizeof(tivx_parameters_t)},
     {(vx_enum)TIVX_TYPE_DATA_REF_QUEUE_LIST,  sizeof(tivx_data_ref_q_list_t)},
-    {(vx_enum)TIVX_TYPE_DELAY_DATA_REF_QUEUE_LIST,  sizeof(tivx_delay_data_ref_q_list_t)}
+    {(vx_enum)TIVX_TYPE_DELAY_DATA_REF_QUEUE_LIST,  sizeof(tivx_delay_data_ref_q_list_t)},
+    /* posix objects */
+    {(vx_enum)TIVX_TYPE_EVENT,  sizeof(tivx_event_t)},
+    {(vx_enum)TIVX_TYPE_MUTEX,  sizeof(tivx_mutex_t)},
+    {(vx_enum)TIVX_TYPE_QUEUE,  sizeof(tivx_queue_context_t)},
+    {(vx_enum)TIVX_TYPE_TASK,  sizeof(tivx_task_context_t)}
 };
 
 static vx_bool ownIsGenericAllocReferenceType(vx_enum ref_type);

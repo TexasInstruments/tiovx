@@ -122,6 +122,7 @@ vx_status tivxEventCreate(tivx_event *event)
 /* LDRA_JUSTIFY_END */
             {
                 *event = tmp_event;
+                ownLogResourceAlloc("TIVX_EVENT_MAX_OBJECTS", 1);
             }
 
             (void)pthread_condattr_destroy(&cond_attr);
@@ -146,6 +147,7 @@ vx_status tivxEventDelete(tivx_event *event)
         (void)pthread_mutex_destroy(&(*event)->lock);
         (void)ownPosixObjectFree((uint8_t *)(*event), (vx_enum)TIVX_POSIX_TYPE_EVENT);
         *event = NULL;
+        ownLogResourceFree("TIVX_EVENT_MAX_OBJECTS", 1);
         status = (vx_status)VX_SUCCESS;
     }
 

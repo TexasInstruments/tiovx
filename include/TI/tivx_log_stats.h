@@ -96,11 +96,11 @@ extern "C" {
  */
 #define TIVX_TARGET_RESOURCE_COUNT (4u)
 
-/*! \brief Number of resources of a TIOVX perf stats object
+/*! \brief Size of TIOVX resource statistics table
  *
  * \ingroup group_tivx_log_resource
  */
-#define TIVX_RESOURCE_STATS_TABLE_SIZE (58u)
+#define TIVX_RESOURCE_STATS_TABLE_SIZE (62u)
 
 
 /*! \brief Struct containing config parameters of given static resource. Allows

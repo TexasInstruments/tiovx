@@ -165,12 +165,16 @@ enum tivx_type_e {
     TIVX_TYPE_TARGET_KERNEL_INSTANCE = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 8,  /*! \brief A <tt>\ref tivx_target_kernel_instance</tt>. */
     TIVX_TYPE_TARGET_KERNEL = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 9,  /*! \brief A <tt>\ref tivx_target_kernel</tt>. */
     TIVX_TYPE_DELAY_PARAM = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 10,  /*! \brief A <tt>\ref tivx_delay_param</tt>. */
-    TIVX_TYPE_EVENT = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 11, /*! \brief A <tt>\ref tivx_event</tt>. */
+    TIVX_TYPE_EVENT_HANDLE  = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 11, /*! \brief A <tt>\ref tivx_event</tt>. */
     TIVX_TYPE_UINTPTR = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 12, /*! \brief A <tt>\ref uintptr</tt>. */
     TIVX_TYPE_CONTEXT_USER_STRUCTS = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 13, /*! \brief A <tt>\ref context->user_structs</tt>. */
     TIVX_TYPE_GRAPH_PARAMETERS = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 14, /*! \brief A <tt>\ref graph->parameters</tt>. */
     TIVX_TYPE_DATA_REF_QUEUE_LIST = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 15, /*! \brief A <tt>\ref graph->data_ref_q_list</tt>. */
-    TIVX_TYPE_DELAY_DATA_REF_QUEUE_LIST = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 16 /*! \brief A <tt>\ref graph->delay_data_ref_q_list</tt>. */
+    TIVX_TYPE_DELAY_DATA_REF_QUEUE_LIST = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 16, /*! \brief A <tt>\ref graph->delay_data_ref_q_list</tt>. */
+    TIVX_TYPE_EVENT = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 17, /*! \brief A <tt>\ref tivx_event_t</tt>. */
+    TIVX_TYPE_MUTEX = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 18, /*! \brief A <tt>\ref tivx_mutex_t</tt>. */
+    TIVX_TYPE_QUEUE = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 19, /*! \brief A <tt>\ref tivx_queue_context_t</tt>. */
+    TIVX_TYPE_TASK = (vx_enum)VX_TYPE_VENDOR_STRUCT_START + 20 /*! \brief A <tt>\ref tivx_task_context_t</tt>. */
 };
 
 /*! \brief A parameter checker for size and alignment.

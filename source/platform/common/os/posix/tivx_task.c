@@ -172,6 +172,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
 /* LDRA_JUSTIFY_END */
             {
                 task->tsk_handle = (void *)context;
+                ownLogResourceAlloc("TIVX_TASK_MAX_OBJECTS", 1);
             }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -215,6 +216,10 @@ vx_status tivxTaskDelete(tivx_task *task)
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Task free failed\n");
+        }
+        else
+        {
+            ownLogResourceFree("TIVX_TASK_MAX_OBJECTS", 1);
         }
 /* LDRA_JUSTIFY_END */
 

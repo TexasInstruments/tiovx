@@ -85,26 +85,6 @@ extern "C" {
 #define PRI_MAX  sched_get_priority_max(SCHED_FIFO)
 #define PRI_MIN  sched_get_priority_min(SCHED_FIFO)
 
-/*! \brief Max number of \ref tivx_event objects
- * \ingroup group_tivx_platform
- */
-#define TIVX_EVENT_MAX_OBJECTS           (1024u)
-
-/*! \brief Max number of \ref tivx_mutex objects
- * \ingroup group_tivx_platform
- */
-#define TIVX_MUTEX_MAX_OBJECTS           (1024u)
-
-/*! \brief Max number of \ref tivx_queue objects
- * \ingroup group_tivx_platform
- */
-#define TIVX_QUEUE_MAX_OBJECTS           (1024u)
-
-/*! \brief Max number of \ref tivx_task objects
- * \ingroup group_tivx_platform
- */
-#define TIVX_TASK_MAX_OBJECTS            (1024u)
-
 /*! \brief The posix type enumeration lists all posix types
  *         that can be allocated via \ref ownObjectPosixAlloc.
  * \ingroup group_tivx_platform
@@ -117,65 +97,17 @@ enum tivx_posix_type_e {
     TIVX_POSIX_TYPE_TASK      = 0x004,/*!< \brief A <tt>\ref tivx_task_context_t</tt>. */
 };
 
-/*!
- * \brief Typedef for an event
- *
- * \ingroup group_tivx_platform
- */
-typedef struct tivx_vx_event_t {
-
-    uint16_t is_set;
-    pthread_mutex_t lock;
-    pthread_cond_t  cond;
-
-} tivx_event_t;
-
-/*!
- * \brief Typedef for a mutex
- *
- * \ingroup group_tivx_platform
- */
-typedef struct tivx_vx_mutex_t {
-
-  pthread_mutex_t lock;
-
-} tivx_mutex_t;
-
 /*! \brief Handle to queue context
  *
  * \ingroup group_tivx_platform
  */
 typedef struct tivx_vx_queue_context *tivx_queue_context;
 
-/*!
- * \brief Typedef for a queue context
- *
- * \ingroup group_tivx_platform
- */
-typedef struct tivx_vx_queue_context {
-
-  pthread_mutex_t lock;
-  pthread_cond_t  condGet;
-  pthread_cond_t  condPut;
-
-} tivx_queue_context_t;
-
 /*! \brief Handle to queue task
  *
  * \ingroup group_tivx_platform
  */
 typedef struct tivx_vx_task_context *tivx_task_context;
-
-/*!
- * \brief Typedef for a task context
- *
- * \ingroup group_tivx_platform
- */
-typedef struct tivx_vx_task_context {
-
-  pthread_t hndl;
-
-} tivx_task_context_t;
 
 /*!
  * \brief Structure to hold all posix platform objects

@@ -438,7 +438,7 @@ tivx_resource_stats_t g_tivx_resource_stats_table[] = {
                                                                              (vx_bool)vx_true_e, (vx_bool)vx_true_e
     },
     {
-        TIVX_MAX_CTRL_CMD_OBJECTS, 0, 0, 1, "TIVX_MAX_CTRL_CMD_OBJECTS", { {(uint32_t)TIVX_TYPE_UINTPTR, (uint32_t)TIVX_TYPE_EVENT, \
+        TIVX_MAX_CTRL_CMD_OBJECTS, 0, 0, 1, "TIVX_MAX_CTRL_CMD_OBJECTS", { {(uint32_t)TIVX_TYPE_UINTPTR, (uint32_t)TIVX_TYPE_EVENT_HANDLE, \
                                                                             (uint32_t)TIVX_TYPE_UINTPTR, (uint32_t)TIVX_TYPE_UINTPTR}, \
                                                                            {TIVX_CONTEXT_MAX_OBJECTS, TIVX_CONTEXT_MAX_OBJECTS, \
                                                                             TIVX_CONTEXT_MAX_OBJECTS, TIVX_CONTEXT_MAX_OBJECTS} }, \
@@ -477,6 +477,26 @@ tivx_resource_stats_t g_tivx_resource_stats_table[] = {
         TIVX_TARGET_KERNEL_MAX, 0, 0, 1 , "TIVX_TARGET_KERNEL_MAX", { {(uint32_t)TIVX_TYPE_TARGET_KERNEL}, \
                                                                       {1} }, \
                                                                     (vx_bool)vx_false_e, (vx_bool)vx_false_e
+    },
+    {
+        TIVX_EVENT_MAX_OBJECTS, 0, 0, 1 , "TIVX_EVENT_MAX_OBJECTS", { {(uint32_t)TIVX_TYPE_EVENT}, \
+                                                                      {1} }, \
+                                                                    (vx_bool)vx_false_e, (vx_bool)vx_true_e
+    },
+    {
+        TIVX_MUTEX_MAX_OBJECTS, 0, 0, 1 , "TIVX_MUTEX_MAX_OBJECTS", { {(uint32_t)TIVX_TYPE_MUTEX}, \
+                                                                      {1} }, \
+                                                                    (vx_bool)vx_false_e, (vx_bool)vx_true_e
+    },
+    {
+        TIVX_QUEUE_MAX_OBJECTS, 0, 0, 1 , "TIVX_QUEUE_MAX_OBJECTS", { {(uint32_t)TIVX_TYPE_QUEUE}, \
+                                                                      {1} }, \
+                                                                    (vx_bool)vx_false_e, (vx_bool)vx_true_e
+    },
+    {
+        TIVX_TASK_MAX_OBJECTS, 0, 0, 1 , "TIVX_TASK_MAX_OBJECTS", { {(uint32_t)TIVX_TYPE_TASK}, \
+                                                                      {1} }, \
+                                                                    (vx_bool)vx_false_e, (vx_bool)vx_true_e
     }
 };
 
@@ -1289,6 +1309,45 @@ vx_status tivxExportMemoryConsumption(char * outputFile, const char * unit, vx_e
                 }
                 printOutput(ofp, "|\n");
                 printOutput(ofp, "|              EXTENSIONS              | UNITS |  MAX  |   %%    |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|                                      |  USED | UNITS |  USED  |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|--------------------------------------|-------|-------|--------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, "-");
+                }
+                printOutput(ofp, "|\n");
+            }
+            else if (strncmp(row.name, "TIVX_EVENT_MAX_OBJECTS", TIVX_RESOURCE_NAME_MAX) == 0)
+            {
+                printOutput(ofp, "|--------------------------------------|------------------------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, "-");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|                                      |   FRAMEWORK REQUIRED   |");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|                POSIX                 |------------------------|");
+                for (k = 0; k < char_width; k++)
+                {
+                    printOutput(ofp, " ");
+                }
+                printOutput(ofp, "|\n");
+                printOutput(ofp, "|               OBJECTS                | UNITS |  MAX  |   %%    |");
                 for (k = 0; k < char_width; k++)
                 {
                     printOutput(ofp, " ");

@@ -182,6 +182,7 @@ vx_status tivxQueueCreate(
             {
                 queue->blockedOnGet = (vx_bool)vx_false_e;
                 queue->blockedOnPut = (vx_bool)vx_false_e;
+                ownLogResourceAlloc("TIVX_QUEUE_MAX_OBJECTS", 1);
             }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -228,6 +229,10 @@ vx_status tivxQueueDelete(tivx_queue *queue)
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to free Posix Object\n");
+        }
+        else
+        {
+            ownLogResourceFree("TIVX_QUEUE_MAX_OBJECTS", 1);
         }
 /* LDRA_JUSTIFY_END */
         queue->context = NULL;
