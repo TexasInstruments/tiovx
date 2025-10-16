@@ -414,6 +414,7 @@ static vx_status ownInitObjArrayFromObject(
 
     if ((vx_status)VX_SUCCESS != status)
     {
+        vx_status release_status;
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_OBJARRAY_UTJT005
@@ -421,8 +422,8 @@ static vx_status ownInitObjArrayFromObject(
         /* Clean up partially initialized ObjArray after an error occurs, releasing all references up to the last successful index */
         for ( k = 0; k < index; k++)
         {
-            status = ownReleaseRefFromObjArray(objarr, k);
-            if(status != (vx_status)VX_SUCCESS)
+            release_status = ownReleaseRefFromObjArray(objarr, k);
+            if(release_status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Releasing reference from object array failed\n");
             }
