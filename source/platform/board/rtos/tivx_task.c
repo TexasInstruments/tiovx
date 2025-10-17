@@ -156,6 +156,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
         else
         {
             task->tsk_handle = (void *)tskHndl;
+            ownLogResourceAlloc("TIVX_TASK_MAX_OBJECTS", 1);
         }
     }
     else
@@ -175,6 +176,7 @@ vx_status tivxTaskDelete(tivx_task *task)
     if ((NULL != task) && (NULL != task->tsk_handle))
     {
         ret_status = appRtosTaskDelete((app_rtos_task_handle_t*)&task->tsk_handle);
+        ownLogResourceFree("TIVX_TASK_MAX_OBJECTS", 1);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_RTOS_TASK_UM001

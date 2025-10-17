@@ -90,6 +90,7 @@ vx_status tivxEventCreate(tivx_event *event)
         {
             *event = (tivx_event)handle;
             status = (vx_status)VX_SUCCESS;
+            ownLogResourceAlloc("TIVX_EVENT_MAX_OBJECTS", 1);
         }
     }
 
@@ -114,6 +115,7 @@ vx_status tivxEventDelete(tivx_event *event)
 /* LDRA_JUSTIFY_END */
         {
             *event = NULL;
+            ownLogResourceFree("TIVX_EVENT_MAX_OBJECTS", 1);
         }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>

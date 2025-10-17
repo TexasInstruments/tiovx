@@ -72,7 +72,6 @@ extern "C" {
 
 #include <tivx_obj_desc_priv.h>
 #include <TI/tivx_log_stats.h>
-#include <pthread.h>
 
 /*!
  * \file
@@ -138,53 +137,22 @@ typedef struct _tivx_shm_obj_count_t {
 
 } tivx_shm_obj_count_t;
 
-/*!
- * \brief Typedef for an event
+/*! \brief Struct containing sizes of different OS object types. Allows
+ *         for logging of these OS objects throughout runtime.
  *
  * \ingroup group_tivx_platform
  */
-typedef struct tivx_vx_event_t {
+typedef struct _tivx_os_obj_sizes_t {
 
-    uint16_t is_set;
-    pthread_mutex_t lock;
-    pthread_cond_t  cond;
+    const uint32_t  event_size; /**< Size of an event object */
 
-} tivx_event_t;
+    const uint32_t  mutex_size; /**< Size of a mutex object */
 
-/*!
- * \brief Typedef for a mutex
- *
- * \ingroup group_tivx_platform
- */
-typedef struct tivx_vx_mutex_t {
+    const uint32_t  queue_size; /**< Size of a queue object */
 
-  pthread_mutex_t lock;
+    const uint32_t  task_size;  /**< Size of a task object */
 
-} tivx_mutex_t;
-
-/*!
- * \brief Typedef for a queue context
- *
- * \ingroup group_tivx_platform
- */
-typedef struct tivx_vx_queue_context {
-
-  pthread_mutex_t lock;
-  pthread_cond_t  condGet;
-  pthread_cond_t  condPut;
-
-} tivx_queue_context_t;
-
-/*!
- * \brief Typedef for a task context
- *
- * \ingroup group_tivx_platform
- */
-typedef struct tivx_vx_task_context {
-
-  pthread_t hndl;
-
-} tivx_task_context_t;
+} tivx_os_obj_sizes_t;
 
 /*!
  * \brief Increment count of given resource

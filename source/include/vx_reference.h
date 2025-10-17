@@ -338,6 +338,12 @@ vx_status ownSwapReferenceGeneric(vx_reference input, vx_reference output);
  */
 vx_status VX_CALLBACK ownKernelCallbackGeneric(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output);
 
+/*! \brief This API updates the size of certain enum types like OS objects, etc.
+ *
+ * \ingroup group_vx_reference
+ */
+void ownUpdateEnumTypeSizes(void);
+
 #ifdef __cplusplus
 }
 #endif

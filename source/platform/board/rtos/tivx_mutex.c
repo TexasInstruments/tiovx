@@ -96,6 +96,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
         {
             *mutex = (tivx_mutex)handle;
             status = (vx_status)VX_SUCCESS;
+            ownLogResourceAlloc("TIVX_MUTEX_MAX_OBJECTS", 1);
         }
     }
 
@@ -130,6 +131,7 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
         {
             *mutex = NULL;
             status = (vx_status)VX_SUCCESS;
+            ownLogResourceFree("TIVX_MUTEX_MAX_OBJECTS", 1);
         }
     }
 

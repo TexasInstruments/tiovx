@@ -21,6 +21,8 @@
 /* Constant internal to this file. */
 #define TIOVX_REF_MAX_NUM_MEM_ELEM  (TIVX_PYRAMID_MAX_LEVEL_OBJECTS)
 
+extern const tivx_os_obj_sizes_t g_tivx_os_obj_sizes;
+
 typedef struct _vx_enum_type_size {
     vx_enum item_type;
     vx_size item_size;
@@ -92,10 +94,10 @@ static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
     {(vx_enum)TIVX_TYPE_DATA_REF_QUEUE_LIST,  sizeof(tivx_data_ref_q_list_t)},
     {(vx_enum)TIVX_TYPE_DELAY_DATA_REF_QUEUE_LIST,  sizeof(tivx_delay_data_ref_q_list_t)},
     /* posix objects */
-    {(vx_enum)TIVX_TYPE_EVENT,  sizeof(tivx_event_t)},
-    {(vx_enum)TIVX_TYPE_MUTEX,  sizeof(tivx_mutex_t)},
-    {(vx_enum)TIVX_TYPE_QUEUE,  sizeof(tivx_queue_context_t)},
-    {(vx_enum)TIVX_TYPE_TASK,  sizeof(tivx_task_context_t)}
+    {(vx_enum)TIVX_TYPE_EVENT, 0U},
+    {(vx_enum)TIVX_TYPE_MUTEX, 0U},
+    {(vx_enum)TIVX_TYPE_QUEUE, 0U},
+    {(vx_enum)TIVX_TYPE_TASK, 0U}
 };
 
 static vx_bool ownIsGenericAllocReferenceType(vx_enum ref_type);
@@ -115,6 +117,43 @@ vx_size ownSizeOfEnumType(vx_enum item_type)
     }
 
     return (size);
+}
+
+void ownUpdateEnumTypeSizes(void)
+{
+    uint32_t i;
+
+    for (i = 0U; i < dimof(g_reference_enum_type_sizes); i++)
+    {
+        switch (g_reference_enum_type_sizes[i].item_type)
+        {
+            case (vx_enum)TIVX_TYPE_EVENT:
+            {
+                g_reference_enum_type_sizes[i].item_size = g_tivx_os_obj_sizes.event_size;
+                break;
+            }
+            case (vx_enum)TIVX_TYPE_MUTEX:
+            {
+                g_reference_enum_type_sizes[i].item_size = g_tivx_os_obj_sizes.mutex_size;
+                break;
+            }
+            case (vx_enum)TIVX_TYPE_QUEUE:
+            {
+                g_reference_enum_type_sizes[i].item_size = g_tivx_os_obj_sizes.queue_size;
+                break;
+            }
+            case (vx_enum)TIVX_TYPE_TASK:
+            {
+                g_reference_enum_type_sizes[i].item_size = g_tivx_os_obj_sizes.task_size;
+                break;
+            }
+            default:
+            {
+                /* do nothing */
+                break;
+            }
+        }
+    }
 }
 
 vx_bool ownIsValidReference(vx_reference ref)

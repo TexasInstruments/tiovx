@@ -471,7 +471,8 @@ extern "C" {
 
 
 /*
- * Target kernel configuration resources
+ * Posix object configuration resources. These macros do not affect the maximum
+ * values of RTOS OS objects that are maintained in PDK/MCU_PLUS_SDK.
  */
 /*! \brief Maximum targets a kernel can run on
  * \ingroup group_vx_ti_extensions_cfg

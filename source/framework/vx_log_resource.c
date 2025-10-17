@@ -669,6 +669,10 @@ void ownLogResourceInit(void)
     {
         VX_PRINT(VX_ZONE_ERROR,"Failed to create a mutex\n");
     }
+    else
+    {
+        ownUpdateEnumTypeSizes();
+    }
 #endif
 #endif /* #if defined(BUILD_DEV) */
 }
@@ -1341,13 +1345,13 @@ vx_status tivxExportMemoryConsumption(char * outputFile, const char * unit, vx_e
                     printOutput(ofp, " ");
                 }
                 printOutput(ofp, "|\n");
-                printOutput(ofp, "|                POSIX                 |------------------------|");
+                printOutput(ofp, "|                  OS                  |------------------------|");
                 for (k = 0; k < char_width; k++)
                 {
                     printOutput(ofp, " ");
                 }
                 printOutput(ofp, "|\n");
-                printOutput(ofp, "|               OBJECTS                | UNITS |  MAX  |   %%    |");
+                printOutput(ofp, "|                OBJECTS               | UNITS |  MAX  |   %%    |");
                 for (k = 0; k < char_width; k++)
                 {
                     printOutput(ofp, " ");

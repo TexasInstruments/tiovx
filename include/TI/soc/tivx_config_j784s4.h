@@ -490,7 +490,8 @@ extern "C" {
 
 
 /*
- * Posix object configuration resources
+ * Posix object configuration resources. These macros do not affect the maximum
+ * values of RTOS OS objects that are maintained in PDK/MCU_PLUS_SDK.
  */
 /*! \brief Max number of \ref tivx_event objects
  * \ingroup group_tivx_platform

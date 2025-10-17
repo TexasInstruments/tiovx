@@ -87,6 +87,8 @@ static tivx_platform_info_t g_tivx_platform_info =
 
 tivx_obj_desc_shm_entry_t *gTivxObjDescShmEntry = NULL;
 
+tivx_os_obj_sizes_t const g_tivx_os_obj_sizes = {0};
+
 int32_t tivxPlatformGetShmSize(uint32_t * shm_size)
 {
     return appIpcGetTiovxObjDescSharedMemInfo((void**)&gTivxObjDescShmEntry, shm_size);
