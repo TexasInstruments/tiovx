@@ -110,7 +110,7 @@ __attribute__ ((aligned(TIVX_TARGET_DEFAULT_STACK_ALIGNMENT)))
  */
 typedef struct tivx_target_info
 {
-    /*! \brief Name of the target, defined in include/TI/tivx_soc_<soc>.h file
+    /*! \brief Name of the target, defined in include/TI/soc/tivx_soc_<soc>.h file
      */
     char target_name[TIVX_TARGET_MAX_NAME];
     /*! \brief Id of the target defined in #tivx_target_id_e in the
@@ -187,9 +187,16 @@ void tivxPlatformDeleteTargetId(vx_enum target_id)
 /* LDRA_JUSTIFY_END */
 }
 
-void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
+void tivxPlatformSetHostTargetId(tivx_cpu_id_e host_cpu_id)
 {
     uint32_t i;
+    uint32_t host_target_id;
+
+    /* This assumes the convention that the 0th target on each
+     * core is the one which would receive messages for the host
+     * if the host is enabled for that core.  See #tivx_target_id_e
+     * in the file soc/tivx_target_config_<soc>.h to confirm */
+    host_target_id = TIVX_MAKE_TARGET_ID(host_cpu_id, 0u);
 
     for (i = 0;
 /* LDRA_JUSTIFY_START

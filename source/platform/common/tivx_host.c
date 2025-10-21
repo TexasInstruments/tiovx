@@ -129,41 +129,7 @@ static void tivxHostInitLocal(void)
         (void)ownObjectInit();
         tivxRegisterOpenVXCoreKernels();
         tivxRegisterOpenVXExtKernels();
-
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_TIVX_HOST_UBR001
-<justification end> */
-        if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MPU_0)
-/* LDRA_JUSTIFY_END */
-        {
-            tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MPU_0);
-        }
-        #if defined(SOC_AM62A)
-        else if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MCU1_0)
-        {
-            tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MCU1_0);
-        }
-        #else
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_HOST_UM001
-<justification end> */
-        else if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MCU2_0)
-        {
-            tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MCU2_0);
-        }
-/* LDRA_JUSTIFY_END */
-        #endif
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_HOST_UM002
-<justification end> */
-        else
-        {
-            /* do nothing */
-        }
-/* LDRA_JUSTIFY_END */
+        tivxPlatformSetHostTargetId((tivx_cpu_id_e)tivxGetSelfCpuId());
 
         VX_PRINT(VX_ZONE_INFO, "Initialization Done for HOST !!!\n");
     }
