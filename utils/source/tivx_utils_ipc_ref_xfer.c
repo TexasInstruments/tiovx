@@ -589,11 +589,10 @@ vx_status tivx_utils_import_ref_from_ipc_xfer_objarray(vx_context             co
     /* Check if we have been provided a valid reference to work with. */
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
+         meta = &refDesc->meta;
         if (meta->type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
         {
-            meta = &refDesc->meta;
             numItems = meta->object.object_array.num_items;
-            
             if (*ref == NULL)
             {
                 /* create the obj array based on the type of object contained into it */
@@ -609,8 +608,8 @@ vx_status tivx_utils_import_ref_from_ipc_xfer_objarray(vx_context             co
                 *ref = vxCastRefFromObjectArray(objArrayRefs);
             }
             /* check if the input array items are from the same type of the imported ones */
-            vx_reference item = vxGetObjectArrayItem(*ref, 0);
-            if (item->type != ipcMsgArray[0].refDesc.meta.type)
+            vx_reference itemRef = vxGetObjectArrayItem(vxCastRefAsObjectArray(*ref, NULL), 0);
+            if (itemRef->type != ipcMsgArray[0].refDesc.meta.type)
             {
                 VX_PRINT(VX_ZONE_ERROR, "The input object array items are not of the same type as the exported ones\n");
                 vxStatus = (vx_status)VX_FAILURE;
@@ -639,7 +638,7 @@ vx_status tivx_utils_import_ref_from_ipc_xfer_objarray(vx_context             co
                     if (vxStatus == (vx_status)VX_SUCCESS)
                     {
                         /* Import the reference handles. */
-                        vx_reference item = vxGetObjectArrayItem(*ref, i);
+                        vx_reference item = vxGetObjectArrayItem(vxCastRefAsObjectArray(*ref, NULL), i);
                         vxStatus =
                             tivxReferenceImportHandle(item,
                                                     (const void **)ptrs,
@@ -656,7 +655,7 @@ vx_status tivx_utils_import_ref_from_ipc_xfer_objarray(vx_context             co
                     }
                 }
             }
-            vxReleaseReference(&item);
+            vxReleaseReference(&itemRef);
         }
         else
         {
