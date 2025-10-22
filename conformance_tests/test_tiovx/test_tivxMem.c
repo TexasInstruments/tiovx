@@ -1759,7 +1759,7 @@ cleanup:
     TIVX_TEST_UPDATE_STATUS(testFail);
 }
 
-TEST(tivxMem, testReferenceImportExportIpcArrayObj)
+TEST(tivxMem, testReferenceImportExportIpcNullArrayObj)
 {
     vx_context      context = context_->vx_context_;
     tivx_utils_ref_ipc_msg_t   ipcMsg1, ipcMsg2;
@@ -1880,6 +1880,279 @@ cleanup:
     }
 
     /* Free the objects. */
+    for (i = 0; i < 2; i++)
+    {
+        vxStatus = testTivxMemFreeObject(ref[i], VX_TYPE_OBJECT_ARRAY, 1, 0);
+
+        if (vxStatus != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "testTivxMemFreeObject(%d) failed.\n", i);
+            testFail = 1;
+        }
+    }
+
+    numAllocFinal = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsFinal  = appMemGetNumMaps();
+    numBufsFinal  = appMemGetNumBufElements();
+#endif
+
+    if (numAllocInitial != numAllocFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numAllocInitial [%d] does not equal numAllocFinal [%d]\n", numAllocInitial, numAllocFinal);
+        testFail = 1;
+    }
+
+#if defined(QNX)
+    if (numMapsInitial != numMapsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numMapsInitial [%d] does not equal numMapsFinal [%d]\n", numMapsInitial, numMapsFinal);
+        testFail = 1;
+    }
+
+    if (numBufsInitial != numBufsFinal)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "numBufsInitial [%d] does not equal numBufsFinal [%d]\n", numBufsInitial, numBufsFinal);
+        testFail = 1;
+    }
+#endif
+
+    TIVX_TEST_UPDATE_STATUS(testFail);
+}
+
+TEST(tivxMem, testReferenceImportExportIpcValidArrayObj)
+{
+    vx_context      context = context_->vx_context_;
+    tivx_utils_ref_ipc_msg_t   ipcMsg1, ipcMsg2;
+    tivx_utils_ref_ipc_msg_t   ipcMsg1Array[TIVX_OBJECT_ARRAY_NUM_ITEMS], ipcMsg2Array[TIVX_OBJECT_ARRAY_NUM_ITEMS];
+
+    vx_reference    ref[2] = {NULL};
+    uint32_t        testFail = 0;
+    uint32_t        maxNumAddr;
+    uint32_t        arraySize1;
+    uint32_t        arraySize2;
+    uint32_t        i;
+    vx_status       vxStatus;
+    vx_bool         refCompare;
+    uint32_t        numAllocInitial, numAllocFinal;
+#if defined(QNX)
+    uint32_t    numMapsInitial, numMapsFinal;
+    uint32_t    numBufsInitial, numBufsFinal;
+#endif
+
+    numAllocInitial = appMemGetNumAllocs();
+#if defined(QNX)
+    numMapsInitial  = appMemGetNumMaps();
+    numBufsInitial  = appMemGetNumBufElements();
+#endif
+
+    /* Allocate object. This objects should have
+     * internal memory allocated after the respective data object
+     * map/unmap calls are made within the testTivxMemAllocObject
+     * function.
+     */
+    for (i = 0; i < 2; i++)
+    {    
+        ref[i] = testTivxMemAllocObject(context, VX_TYPE_OBJECT_ARRAY, 1, 1);
+        if (ref[i] == NULL)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "testTivxMemAllocObject() failed.\n");
+            TIVX_TEST_FAIL_CLEANUP(testFail);
+        }
+    }
+
+    /* Create the IPC messages with the object export. */
+    vxStatus = tivx_utils_export_ref_for_ipc_xfer_objarray(ref[0], &arraySize1, &ipcMsg1, ipcMsg1Array);
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivx_utils_export_ref_for_ipc_xfer_objarray() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    vxStatus = tivx_utils_export_ref_for_ipc_xfer_objarray(ref[1], &arraySize2, &ipcMsg2, ipcMsg2Array);
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivx_utils_export_ref_for_ipc_xfer_objarray() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* compare them, they should be different */
+    uint32_t minArraySize = arraySize1 < arraySize2 ? arraySize1 : arraySize2;
+
+    /* compare the content of the array itself */
+    for (i = 0; i < minArraySize; i++)
+    {
+        refCompare = tivx_utils_compare_refs_from_ipc_xfer(&ipcMsg1Array[i], &ipcMsg2Array[i]);
+
+        if (refCompare == (vx_bool)vx_true_e)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivx_utils_compare_refs_from_ipc_xfer() for array item %d failed.\n", i);
+            TIVX_TEST_FAIL_CLEANUP(testFail);
+        }
+    }
+
+    /* Export handle of each object array object to free them prior to import */
+    for (i = 0; i < arraySize2; i++)
+    {
+        void           *virtAddr[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
+        uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
+        uint32_t        numEntries;
+        vx_bool         is_allocated;
+        maxNumAddr        = TIVX_TEST_MAX_NUM_ADDR;        
+        vx_object_array array = (vx_object_array)ref[1];
+        vx_reference lref = vxGetObjectArrayItem(array, i);
+
+        vxStatus = tivxReferenceExportHandle(lref,
+                                             virtAddr,
+                                             size,
+                                             maxNumAddr,
+                                             &numEntries);
+        if (vxStatus != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxReferenceExportHandle() failed.\n");
+            TIVX_TEST_FAIL_CLEANUP(testFail);
+        }
+
+        vx_enum region = TIVX_MEM_EXTERNAL;
+        for (uint32_t j = 0; j < TIVX_TEST_MAX_NUM_ADDR; j++)
+        {
+            if (virtAddr[j] != NULL)
+            {
+                vxStatus = tivxMemFree(virtAddr[j], size[j], region);
+
+                if (vxStatus != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "tivxMemFree() failed.\n");
+                    TIVX_TEST_FAIL_CLEANUP(testFail);
+                }
+            }
+        }
+        vxReleaseReference(&lref);
+    }
+
+    /* import the object in the second object so from ref0 into the empty already exisiting object */
+    vxStatus = tivx_utils_import_ref_from_ipc_xfer_objarray(context, &ipcMsg1, ipcMsg1Array, &ref[1]);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivx_utils_export_ref_for_ipc_xfer_objarray() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* export the newly created object */
+    vxStatus = tivx_utils_export_ref_for_ipc_xfer_objarray(ref[1], &arraySize2, &ipcMsg2, ipcMsg2Array);
+
+    /* Compare the references to a different ipcMsg transfer */
+    refCompare = tivx_utils_compare_refs_from_ipc_xfer(&ipcMsg1, &ipcMsg2);
+
+    if (refCompare != (vx_bool)vx_false_e)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivx_utils_compare_refs_from_ipc_xfer() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+    
+    /* compare the content of the array itself */
+    if (arraySize1 != arraySize2)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "arraySize1 and arraySize2 do not match.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    for (i = 0; i < arraySize1; i++)
+    {
+        refCompare = tivx_utils_compare_refs_from_ipc_xfer(&ipcMsg1Array[i], &ipcMsg2Array[i]);
+
+        if (refCompare != (vx_bool)vx_true_e)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivx_utils_compare_refs_from_ipc_xfer() for array item %d failed.\n", i);
+            TIVX_TEST_FAIL_CLEANUP(testFail);
+        }
+
+        void           *virtAddr1[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
+        void           *virtAddr2[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
+        uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
+        uint32_t        virtAddrEntries1, virtAddrEntries2;
+        vx_reference   lref1 = vxGetObjectArrayItem((vx_object_array)ref[0], i);
+        vx_reference   lref2 = vxGetObjectArrayItem((vx_object_array)ref[1], i);  
+        /* Export the handles from obj[0]. */
+        maxNumAddr = TIVX_TEST_MAX_NUM_ADDR;
+
+        vxStatus = tivxReferenceExportHandle(lref1,
+                                            virtAddr1,
+                                            size,
+                                            maxNumAddr,
+                                            &virtAddrEntries1);
+
+        if (vxStatus != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxReferenceExportHandle() failed.\n");
+            TIVX_TEST_FAIL_CLEANUP(testFail);
+        }        
+        /* Export the handles from obj[1]. */
+        vxStatus = tivxReferenceExportHandle(lref2,
+                                            virtAddr2,
+                                            size,
+                                            maxNumAddr,
+                                            &virtAddrEntries2);
+
+        if (vxStatus != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxReferenceExportHandle() failed.\n");
+            TIVX_TEST_FAIL_CLEANUP(testFail);
+        }
+
+        /* Check the number of entries. These should match. */
+        if (virtAddrEntries1 != virtAddrEntries2)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Number of entries do not match.\n");
+            TIVX_TEST_FAIL_CLEANUP(testFail);
+        }
+
+        /* Compare the addresses exported from the objects. These should match. */
+        for (uint32_t j = 0; j < virtAddrEntries2; j++)
+        {
+            if (virtAddr1[j] != virtAddr2[j])
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Address entry [%d] mis-match.\n", j);
+                TIVX_TEST_FAIL_CLEANUP(testFail);
+            }
+        }
+        vxReleaseReference(&lref1);
+        vxReleaseReference(&lref2);
+    }
+cleanup:
+
+    /* Two objects have the same handles, which will cause issues when the
+     * objects are released. We need to remove the handles from one of the
+     * objects. Let us remove them from obj[0]. We do this by importing NULL
+     * handles.
+     */
+    for (i = 0; i < arraySize1; i++)
+    { 
+        void           *virtAddr[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
+        uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
+        vx_bool         is_allocated;
+        vx_reference lref = vxGetObjectArrayItem((vx_object_array)ref[0], i);
+        /* Import NULL handles into the object indey i */
+        vxStatus = tivxReferenceImportHandle(lref,
+                                             (const void **)virtAddr,
+                                             (const uint32_t *)size,
+                                             1);
+        if (vxStatus != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxReferenceImportHandle(NULL) failed.\n");
+        }
+
+        vxQueryReference(lref, TIVX_REFERENCE_BUFFER_IS_ALLOCATED, &is_allocated, sizeof(is_allocated));
+
+        if (is_allocated!=vx_false_e)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "reference is marked as allocated.\n");
+            vxStatus = VX_FAILURE;
+        }
+        vxReleaseReference(&lref);                                      
+    }
+    /* Free the OVX object arrays */
     for (i = 0; i < 2; i++)
     {
         vxStatus = testTivxMemFreeObject(ref[i], VX_TYPE_OBJECT_ARRAY, 1, 0);
@@ -2233,7 +2506,8 @@ TESTCASE_TESTS(tivxMem,
                testReferenceExportMultipleAddrSameRef,
                testReferenceImportExportIpcNullObj,
                testReferenceImportExportIpcValidObj,
-               testReferenceImportExportIpcArrayObj,
+               testReferenceImportExportIpcNullArrayObj,
+               testReferenceImportExportIpcValidArrayObj,
                testReferenceImportNeg,
                testReferenceExportNeg,
                testSubimageNeg,
