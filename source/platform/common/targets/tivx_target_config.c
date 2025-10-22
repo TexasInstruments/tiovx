@@ -191,6 +191,7 @@ void tivxPlatformSetHostTargetId(tivx_cpu_id_e host_cpu_id)
 {
     uint32_t i;
     uint32_t host_target_id;
+    vx_status status = (vx_status)VX_FAILURE;
 
     /* This assumes the convention that the 0th target on each
      * core is the one which would receive messages for the host
@@ -198,24 +199,45 @@ void tivxPlatformSetHostTargetId(tivx_cpu_id_e host_cpu_id)
      * in the file soc/tivx_target_config_<soc>.h to confirm */
     host_target_id = TIVX_MAKE_TARGET_ID(host_cpu_id, 0u);
 
-    for (i = 0;
+    /* Since the target_id was calculated, check if it is a valid
+       target_id in the system */
+    for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
+    {
+        if ((vx_enum)host_target_id == g_tivx_target_info[i].target_id)
+        {
+            status = (vx_status)VX_SUCCESS;
+            break;
+        }
+    }
+
+    if((vx_status)VX_SUCCESS == status)
+    {
+        status = (vx_status)VX_FAILURE;
+        for (i = 0;
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_CONFIG_UBR002
 <justification end> */
-    i < TIVX_PLATFORM_MAX_TARGETS;
+        i < TIVX_PLATFORM_MAX_TARGETS;
 /* LDRA_JUSTIFY_END */
-    i ++)
-    {
-        if (0 == strncmp(
-                g_tivx_target_info[i].target_name,
-                TIVX_TARGET_HOST,
-                TIVX_TARGET_MAX_NAME))
+        i ++)
         {
-            /* update target_id for TIVX_TARGET_HOST */
-            g_tivx_target_info[i].target_id = (vx_enum)host_target_id;
-            break;
+            if (0 == strncmp(
+                    g_tivx_target_info[i].target_name,
+                    TIVX_TARGET_HOST,
+                    TIVX_TARGET_MAX_NAME))
+            {
+                /* update target_id for TIVX_TARGET_HOST */
+                g_tivx_target_info[i].target_id = (vx_enum)host_target_id;
+                status = (vx_status)VX_SUCCESS;
+                break;
+            }
         }
+    }
+
+    if((vx_status)VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Could not Set Host Target ID\n");
     }
 }
 
