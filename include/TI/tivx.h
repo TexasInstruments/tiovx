@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 - 2019 Texas Instruments Incorporated
+* Copyright (c) 2017-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *

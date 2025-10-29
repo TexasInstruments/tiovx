@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+ * Copyright (c) 2012-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,6 +148,7 @@ vx_meta_format ownCreateMetaFormat(vx_context context)
             /* Initialize object array meta */
             meta->objarr.item_type = (vx_enum)VX_TYPE_INVALID;
             meta->objarr.num_items = 0U;
+            meta->objarr.is_from_list = (vx_bool)vx_false_e;
 
             /* Initialize tensor meta */
             meta->tensor.number_of_dimensions = 0U;
@@ -671,6 +672,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Object array numitems error\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case (vx_enum)TIVX_OBJECT_ARRAY_IS_FROM_LIST:
+                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
+                {
+                    meta->objarr.is_from_list = *(const vx_bool *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Object array is_from_list error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1224,6 +1237,8 @@ static vx_status ownInitMetaFormatWithObjectArray(
         sizeof(meta->objarr.item_type)));
     tivxCheckStatus(&status, vxQueryObjectArray(exemplar, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &meta->objarr.num_items,
         sizeof(meta->objarr.num_items)));
+    tivxCheckStatus(&status, vxQueryObjectArray(exemplar, (vx_enum)TIVX_OBJECT_ARRAY_IS_FROM_LIST, &meta->objarr.is_from_list,
+        sizeof(meta->objarr.is_from_list)));
 
     return status;
 }
@@ -1561,7 +1576,8 @@ static vx_bool ownIsMetaFormatObjectArrayEqual(
 /* LDRA_JUSTIFY_END */
     {
         if ( (meta1->objarr.item_type == meta2->objarr.item_type) &&
-             (meta1->objarr.num_items == meta2->objarr.num_items) )
+             (meta1->objarr.num_items == meta2->objarr.num_items) &&
+             (meta1->objarr.is_from_list == meta2->objarr.is_from_list) )
         {
             is_equal = (vx_bool)vx_true_e;
         }

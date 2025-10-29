@@ -34,7 +34,8 @@
 
 TESTCASE(copySwap, CT_VXContext, ct_setup_vx_context, 0)
 
-#define NUM_TYPES 13
+#define CUSTOM_TEST_ENUM_OAFL (vx_enum)0x0
+#define NUM_TYPES 14
 #define ADD_COPY_SWAP_TEST_TYPES(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/VX_TYPE_IMAGE", __VA_ARGS__, VX_TYPE_IMAGE)), \
     CT_EXPAND(nextmacro(testArgName "/VX_TYPE_ARRAY", __VA_ARGS__, VX_TYPE_ARRAY)), \
@@ -48,7 +49,8 @@ TESTCASE(copySwap, CT_VXContext, ct_setup_vx_context, 0)
     CT_EXPAND(nextmacro(testArgName "/VX_TYPE_CONVOLUTION", __VA_ARGS__, VX_TYPE_CONVOLUTION)), \
     CT_EXPAND(nextmacro(testArgName "/VX_TYPE_OBJECT_ARRAY", __VA_ARGS__, VX_TYPE_OBJECT_ARRAY)), \
     CT_EXPAND(nextmacro(testArgName "/VX_TYPE_TENSOR", __VA_ARGS__, VX_TYPE_TENSOR)), \
-    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_USER_DATA_OBJECT", __VA_ARGS__, VX_TYPE_USER_DATA_OBJECT))
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_USER_DATA_OBJECT", __VA_ARGS__, VX_TYPE_USER_DATA_OBJECT)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TYPE_OBJECT_ARRAY_FROM_LIST", __VA_ARGS__, CUSTOM_TEST_ENUM_OAFL))
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("copy_swap", ADD_COPY_SWAP_TEST_TYPES, ARG, NULL)
@@ -185,6 +187,22 @@ vx_reference createReference(vx_context context, vx_enum type)
             vxReleaseImage(&image);
             break;
         }
+        case CUSTOM_TEST_ENUM_OAFL:
+        {
+            vx_image list1[4];
+            
+            for(int i = 0; i<4; i++)
+            {
+                list1[i] = vxCreateImage(context, 16 + 2*i, 16 + 2*i, VX_DF_IMAGE_U8);
+            }
+            ref = (vx_reference)tivxCreateObjectArrayFromList(context, (vx_reference*)list1, 4);
+            
+            for(int i = 0; i<4; i++)
+            {
+                vxReleaseImage(&list1[i]);
+            }
+            break;
+        }
         case VX_TYPE_PYRAMID:
             ref = (vx_reference)vxCreatePyramid(context, 2, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8);
             break;
@@ -214,6 +232,7 @@ vx_reference createReference(vx_context context, vx_enum type)
             break;
         default:
             /* Should not reach here. ERROR in TEST! Found unknown type */
+            VX_PRINT(VX_ZONE_ERROR, "ERROR: Unknown type %d\n", type);
             break;
     }
     return ref;
@@ -258,6 +277,7 @@ static vx_status writeValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
             status = vxCopyMatrix((vx_matrix)ref, coeffs, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
             break;
         }
+        case CUSTOM_TEST_ENUM_OAFL:
         case VX_TYPE_OBJECT_ARRAY:
         {
             vx_image image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 0);
@@ -469,6 +489,7 @@ static vx_status checkValues(vx_reference ref, vx_enum type, vx_uint8 a, vx_uint
             }
             break;
         }
+        case CUSTOM_TEST_ENUM_OAFL:
         case VX_TYPE_OBJECT_ARRAY:
         {
             vx_image image = (vx_image)vxGetObjectArrayItem((vx_object_array)ref, 0);
@@ -613,6 +634,7 @@ static vx_bool is_supported(vx_enum type)
         case VX_TYPE_SCALAR:
         case VX_TYPE_TENSOR:
         case VX_TYPE_USER_DATA_OBJECT:
+        case CUSTOM_TEST_ENUM_OAFL:
             return vx_true_e;
         case VX_TYPE_REMAP:
         case VX_TYPE_THRESHOLD:
@@ -865,6 +887,23 @@ TEST (copySwap, negativeTestCopy)
     node = vxCopyNode(graph, (vx_reference)objarray_0, (vx_reference)objarray_1);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
     EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxVerifyGraph(graph));
+    /* vx_objarray_from_list : negative test cases 
+    graph = vxCreateGraph(context);
+    objarray_0 = (vx_object_array)createReference(context, CUSTOM_TEST_ENUM_OAFL);
+    vx_image list_img[4];
+    for(int i = 0; i<4; i++)
+    {
+        list_img[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
+    }
+    objarray_1 = tivxCreateObjectArrayFromList(context, (vx_reference*)list_img, 4);
+    for(int i = 0; i<4; i++)
+    {
+        vxReleaseImage(&list_img[i]);
+    }
+    node = vxCopyNode(graph, (vx_reference)objarray_0, (vx_reference)objarray_1);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph)); */
     VX_CALL(vxReleaseObjectArray(&objarray_0));
     VX_CALL(vxReleaseObjectArray(&objarray_1));
     VX_CALL(vxReleaseNode(&node));
@@ -1093,29 +1132,26 @@ TEST(copySwap, negativeTestMove)
 
     vx_node node;
     vx_array example1, example2;     
-    //different types
+    // different types
     graph = vxCreateGraph(context);
     example1 = vxCreateArray(context, VX_TYPE_FLOAT64, 4);
     example2 = vxCreateArray(context, VX_TYPE_UINT8, 4);
-    /* Add copy node to graph */
+    /* Add move node to graph */
     node = vxMoveNode(graph, (vx_reference)example1, (vx_reference)example2);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
-    /* Copy node verified in graph */
+    /* move node verified in graph */
     EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxVerifyGraph(graph));
     VX_CALL(vxReleaseArray(&example1));
     VX_CALL(vxReleaseArray(&example2));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
-
 }
-
 
 /* Test basic performance of vxuCopy kernel for all supported types */
 TEST_WITH_ARG (copySwap, testVxuCopy, Copy_Swap_Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_enum type = arg_->item_type;
-
 
     if (is_supported(type))
     {
@@ -1135,7 +1171,7 @@ TEST_WITH_ARG (copySwap, testVxuCopy, Copy_Swap_Arg, PARAMETERS)
 /* Test vxu functions for images. This can be used to cover the kernel
    callback functions, as they are used for vxu implementation
 */
-TEST(copySwap, testVxu)
+TEST (copySwap, testVxu)
 {
     vx_status status = VX_SUCCESS;
     vx_context context = context_->vx_context_;

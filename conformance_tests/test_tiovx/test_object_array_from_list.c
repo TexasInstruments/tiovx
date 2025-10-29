@@ -39,6 +39,15 @@ vx_enum IMG_FORMATS[3] = {
     (vx_enum)VX_DF_IMAGE_IYUV
 };
 
+static const vx_char user_data_object_name[] = "wb_t";
+
+typedef struct
+{
+    vx_int32 mode;
+    vx_int32 gain[4];
+    vx_int32 offset[4];
+} wb_t;
+
 #define TENSOR_DIMS_NUM 4
 
 static vx_reference own_create_reference(vx_context context, vx_enum item_type, vx_int8 variance)
@@ -59,6 +68,7 @@ static vx_reference own_create_reference(vx_context context, vx_enum item_type, 
     vx_size lut_num_items = 100;
     vx_size m = 5, n = 5;
     vx_size tensor_dims_length = 20;
+    vx_size* dims;
 
     switch (item_type)
     {
@@ -66,7 +76,7 @@ static vx_reference own_create_reference(vx_context context, vx_enum item_type, 
             exemplar = (vx_reference)vxCreateImage(context, obj_width + 2*variance, obj_height + 2*variance, IMG_FORMATS[variance % 3]);
             break;
         case VX_TYPE_ARRAY:
-            exemplar = (vx_reference)vxCreateArray(context, obj_item_type, capacity - variance);
+            exemplar = (vx_reference)vxCreateArray(context, obj_item_type, capacity + variance);
             break;
         case VX_TYPE_PYRAMID:
             exemplar = (vx_reference)vxCreatePyramid(context, levels, scale, obj_width, obj_height, format);
@@ -81,21 +91,24 @@ static vx_reference own_create_reference(vx_context context, vx_enum item_type, 
             exemplar = (vx_reference)vxCreateDistribution(context, bins, offset + variance, range);
             break;
         case VX_TYPE_REMAP:
-            exemplar = (vx_reference)vxCreateRemap(context, obj_width + variance, obj_height + variance, obj_width - variance, obj_height  - variance);
+            exemplar = (vx_reference)vxCreateRemap(context, obj_width + variance, obj_height + variance, obj_width + 2*variance, obj_height + 2*variance);
             break;
         case VX_TYPE_LUT:
-            exemplar = (vx_reference)vxCreateLUT(context, obj_item_type, lut_num_items - variance);
+            exemplar = (vx_reference)vxCreateLUT(context, obj_item_type, lut_num_items + variance);
             break;
         case VX_TYPE_THRESHOLD:
             exemplar = (vx_reference)vxCreateThreshold(context, thresh_types[variance % 2], obj_item_type);
             break;
         case VX_TYPE_TENSOR:
-            vx_size *dims = (vx_size*)ct_alloc_mem(TENSOR_DIMS_NUM * sizeof(vx_size));
-            for(vx_size i = 0; i < TENSOR_DIMS_NUM; i++)
+            dims = (vx_size*)ct_alloc_mem(TENSOR_DIMS_NUM * sizeof(vx_size));
+            for (vx_size i = 0; i < TENSOR_DIMS_NUM; i++)
             {
                 dims[i] = tensor_dims_length + variance;
             }
             exemplar = (vx_reference)vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT8, 0);
+            break;
+        case VX_TYPE_USER_DATA_OBJECT:
+            exemplar = (vx_reference)vxCreateUserDataObject(context, NULL, sizeof(wb_t) + variance, NULL);
             break;
         default:
             break;
@@ -268,12 +281,14 @@ static void own_check_meta(vx_reference item, vx_reference ref)
         }   break;
         case VX_TYPE_TENSOR:
         {
-            vx_size item_num_dims, ref_num_dims; 
+            vx_size item_num_dims, ref_num_dims, i; 
             vx_enum item_data_type, ref_data_type;
             vx_int8 item_fixed, ref_fixed;
 
             vx_size *item_dims = (vx_size*)ct_alloc_mem((TENSOR_DIMS_NUM) * sizeof(vx_size));
             vx_size *ref_dims = (vx_size*)ct_alloc_mem((TENSOR_DIMS_NUM) * sizeof(vx_size));
+            vx_size *item_strides = (vx_size*)ct_alloc_mem((TENSOR_DIMS_NUM) * sizeof(vx_size));
+            vx_size *ref_strides = (vx_size*)ct_alloc_mem((TENSOR_DIMS_NUM) * sizeof(vx_size));
 
             VX_CALL(vxQueryTensor((vx_tensor)ref, VX_TENSOR_DATA_TYPE, &ref_data_type, sizeof(vx_enum)));
             VX_CALL(vxQueryTensor((vx_tensor)item, VX_TENSOR_DATA_TYPE, &item_data_type, sizeof(vx_enum)));
@@ -287,17 +302,24 @@ static void own_check_meta(vx_reference item, vx_reference ref)
             VX_CALL(vxQueryTensor((vx_tensor)item, VX_TENSOR_FIXED_POINT_POSITION, &item_fixed, sizeof(vx_int8)));;
             ASSERT(item_fixed == ref_fixed);
 
-            VX_CALL(vxQueryTensor((vx_tensor)ref, VX_TENSOR_DIMS, item_dims, TENSOR_DIMS_NUM * sizeof(vx_size)));
-            VX_CALL(vxQueryTensor((vx_tensor)item, VX_TENSOR_DIMS, ref_dims, TENSOR_DIMS_NUM * sizeof(vx_size)));
-
-            for(vx_size i = 0; i < TENSOR_DIMS_NUM; i++)
+            VX_CALL(vxQueryTensor((vx_tensor)ref, VX_TENSOR_DIMS, ref_dims, TENSOR_DIMS_NUM * sizeof(vx_size)));
+            VX_CALL(vxQueryTensor((vx_tensor)item, VX_TENSOR_DIMS, item_dims, TENSOR_DIMS_NUM * sizeof(vx_size)));
+            for (i = 0; i < TENSOR_DIMS_NUM; i++)
             {
                 ASSERT(item_dims[i] == ref_dims[i]);
             }
 
-            // TODO: stride test?
+            VX_CALL(vxQueryTensor((vx_tensor)ref, TIVX_TENSOR_STRIDES, ref_strides, TENSOR_DIMS_NUM * sizeof(vx_size)));
+            VX_CALL(vxQueryTensor((vx_tensor)item, TIVX_TENSOR_STRIDES, item_strides, TENSOR_DIMS_NUM * sizeof(vx_size)));
+            for (i = 0; i < TENSOR_DIMS_NUM; i++)
+            {
+                ASSERT(ref_strides[i] == item_strides[i]);
+            }
+
             ct_free_mem(item_dims);
             ct_free_mem(ref_dims);
+            ct_free_mem(item_strides);
+            ct_free_mem(ref_strides);
         }   break;
         default:
             ASSERT(0 == 1);
@@ -306,7 +328,7 @@ static void own_check_meta(vx_reference item, vx_reference ref)
 }
 
 
-#define OBJECT_ARRAY_NUM_ITEMS 10 // Max is 100, see line: 63 capacity - variance
+#define OBJECT_ARRAY_NUM_ITEMS 10
 
 #define ADD_VX_OBJECT_ARRAY_TYPES(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/VX_TYPE_IMAGE", __VA_ARGS__, VX_TYPE_IMAGE)), \
@@ -324,7 +346,7 @@ static void own_check_meta(vx_reference item, vx_reference ref)
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("object_array", ADD_VX_OBJECT_ARRAY_TYPES, ARG, NULL)
 
-TEST_WITH_ARG(ObjectArrayFromList, test_vxCreateObjectArray, Obj_Array_Arg, PARAMETERS)
+TEST_WITH_ARG(ObjectArrayFromList, testTIVXCreateObjectArray, Obj_Array_Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
 
@@ -347,23 +369,23 @@ TEST_WITH_ARG(ObjectArrayFromList, test_vxCreateObjectArray, Obj_Array_Arg, PARA
         actual_items[i] = own_create_reference(context, item_type, i);
     }
 
-    if(item_type != 0)
+    if (item_type != 0)
     {
         // Test data creation check
         ASSERT_VX_OBJECT(actual_items[0], item_type);
 
-        /* 1. check if object array can be created with allowed types*/
+        // 1. check if object array can be created with allowed types
         ASSERT_VX_OBJECT(object_array = tivxCreateObjectArrayFromList(context, actual_items, num_items), VX_TYPE_OBJECT_ARRAY);
 
-        /* 2. check if object array's actual item_type corresponds to requested item_type */
+        // 2. check if object array's actual item_type corresponds to requested item_type
         VX_CALL(vxQueryObjectArray(object_array, VX_OBJECT_ARRAY_ITEMTYPE, &actual_type, sizeof(actual_type)));
         ASSERT_EQ_INT(item_type, actual_type);
 
-        /* 3. check if object array's actual item_size corresponds to requested item_type size */
+        // 3. check if object array's actual item_size corresponds to requested item_type size
         VX_CALL(vxQueryObjectArray(object_array, VX_OBJECT_ARRAY_NUMITEMS, &actual_num_items, sizeof(actual_num_items)));
         ASSERT_EQ_INT(num_items, actual_num_items);
 
-        /* 4. check meta formats of objects in object array */
+        // 4. check meta formats of objects in object array
         for (i = 0u; i < num_items; i++)
         {
             ASSERT_VX_OBJECT(test_item = vxGetObjectArrayItem(object_array, i), (enum vx_type_e)item_type);
@@ -378,11 +400,11 @@ TEST_WITH_ARG(ObjectArrayFromList, test_vxCreateObjectArray, Obj_Array_Arg, PARA
             ASSERT(test_item == 0);
         }
 
-        /* 5. check that we can't get item out of object array's range */
+        // 5. check that we can't get item out of object array's range
         test_item = vxGetObjectArrayItem(object_array, (vx_uint32)num_items);
         ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)test_item));
 
-        /* 6. Double check if object array's attribute is still flexible corresponds to requested item_type size */
+        // 6. Double check if object array's attribute is still flexible corresponds to requested item_type size
         VX_CALL(vxQueryObjectArray(object_array, TIVX_OBJECT_ARRAY_IS_FROM_LIST, &isFromList, sizeof(isFromList)));
         ASSERT_EQ_INT(isFromList, (vx_bool)vx_true_e);
 
@@ -392,28 +414,31 @@ TEST_WITH_ARG(ObjectArrayFromList, test_vxCreateObjectArray, Obj_Array_Arg, PARA
     else // Negative test section
     {
         vx_object_array parent, objArrayFromList;
-        vx_image exemplar;
+        vx_image exemplar, child_img;
     
         // Create an object array of one
         exemplar = (vx_image)own_create_reference(context, VX_TYPE_IMAGE, 0);
         parent = vxCreateObjectArray(context, (vx_reference)exemplar, 1);
         vxReleaseImage(&exemplar);
 
-        // /* 1. Creating with a list with invalid scope - A child from another array */
-        exemplar = (vx_image)vxGetObjectArrayItem(parent, 0);
-        vx_image temp_array_child[1] = {exemplar};
+        // 1. Creating with a list with invalid scope - A child from another array
+        child_img = (vx_image)vxGetObjectArrayItem(parent, 0);
+        vx_image temp_array_child[1] = {child_img};
         objArrayFromList = tivxCreateObjectArrayFromList(context, (vx_reference*)temp_array_child, 1);
         ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference) objArrayFromList));
         VX_CALL(vxReleaseObjectArray(&parent));
+        VX_CALL(vxReleaseImage(&child_img));
+
+        // 2. Creating with illegal num items
+        exemplar = (vx_image)own_create_reference(context, VX_TYPE_IMAGE, 0);
+        vx_image img_array[1] = {exemplar};
+        object_array = tivxCreateObjectArrayFromList(context, (vx_reference*)img_array, 0);
+        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)object_array));
+        object_array = tivxCreateObjectArrayFromList(context, (vx_reference*)img_array, TIVX_OBJ_ARRAY_MAX_OBJECTS + 1);
+        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)object_array));
         VX_CALL(vxReleaseImage(&exemplar));
 
-        /* 2. Creating with illegal num items */
-        object_array = tivxCreateObjectArrayFromList(context, actual_items, 0);
-        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)object_array));
-        object_array = tivxCreateObjectArrayFromList(context, actual_items, TIVX_OBJ_ARRAY_MAX_OBJECTS + 1);
-        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)object_array));
-
-        /* 3. Creating with a bad list parameter*/
+        // 3. Creating with a bad list parameter
         object_array = tivxCreateObjectArrayFromList(context, NULL, 1);
         ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)object_array));
         
@@ -427,6 +452,6 @@ TEST_WITH_ARG(ObjectArrayFromList, test_vxCreateObjectArray, Obj_Array_Arg, PARA
 
 TESTCASE_TESTS(
     ObjectArrayFromList,
-    test_vxCreateObjectArray
+    testTIVXCreateObjectArray
 )
 

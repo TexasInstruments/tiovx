@@ -1,6 +1,6 @@
 /*
 
- * Copyright (c) 2015-2017 The Khronos Group Inc.
+ * Copyright (c) 2015-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated
+ * Copyright (c) 2022-2025 Texas Instruments Incorporated
  */
 
 #include <VX/vx.h>
@@ -247,6 +247,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     vx_size actual_m = 0, actual_n = 0;
     vx_enum matrix_pattern = VX_TYPE_INVALID;
     vx_coordinates2d_t matrix_origin = {0,0};
+    vx_bool is_from_list = (vx_bool)vx_false_e;
 
     // For Tensor
     vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS;
@@ -464,6 +465,15 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
                 return VX_FAILURE;
             }
             if (vxSetMetaFormatAttribute(meta, VX_OBJECT_ARRAY_NUMITEMS, &capacity, sizeofErr) != VX_ERROR_INVALID_PARAMETERS)
+            {
+                return VX_FAILURE;
+            }
+            // TIOVX-2318 - vxSetMetaFormatAttribute TIVX_OBJECT_ARRAY_IS_FROM_LIST positive and negative case
+            if (vxSetMetaFormatAttribute(meta, TIVX_OBJECT_ARRAY_IS_FROM_LIST, &is_from_list, errInject(sizeof(vx_bool))) != VX_ERROR_INVALID_PARAMETERS)
+            {
+                return VX_FAILURE;
+            }
+            if (vxSetMetaFormatAttribute(meta, TIVX_OBJECT_ARRAY_IS_FROM_LIST, &is_from_list, sizeof(vx_bool)) == VX_ERROR_INVALID_PARAMETERS)
             {
                 return VX_FAILURE;
             }

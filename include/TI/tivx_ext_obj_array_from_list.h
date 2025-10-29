@@ -84,7 +84,6 @@ extern "C" {
  * \brief APIs for creating an Object Array from List
  * \ingroup group_tivx_ext_host
  */
-
 enum tivx_object_array_attribute_e
 {
     /*! \brief A flag indicates whether or not the object array is created from a list. Read-only. Use a <tt>\ref vx_bool</tt> parameter.
@@ -134,7 +133,6 @@ VX_API_ENTRY vx_object_array VX_API_CALL tivxCreateObjectArrayFromList(
  
  * \ingroup group_obj_array_from_list
  */
-
 VX_API_ENTRY vx_object_array VX_API_CALL tivxCreateVirtualObjectArrayFromList(
     vx_graph graph, vx_reference list[], vx_size count
 );

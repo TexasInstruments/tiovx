@@ -1,6 +1,6 @@
 /*
 
- * Copyright (c) 2012-2017 The Khronos Group Inc.
+ * Copyright (c) 2012-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,8 @@
 #define MAX_IMAGE_PLANES          (3u)
 #define MAX_NUM_OBJ_ARR_ELEMENTS  (4u)
 
+/* TIOVX-2318: Define to enable Object_Array_From_List tests */
+#define TEST_OBJ_ARR_FROM_LIST    (0u)
 
 TESTCASE(tivxSourceNode,  CT_VXContext, ct_setup_vx_context, 0)
 
@@ -100,11 +102,30 @@ static vx_status log_graph_rt_trace(vx_graph graph)
 {
     vx_status status = VX_SUCCESS;
 
-    #if LOG_RT_TRACE_ENABLE
+#if LOG_RT_TRACE_ENABLE
     /* If run time logging is needed, update to use tivxLogRtTraceEnable,
      * tivxLogRtTraceDisable and tivxLogRtTraceExportToFile */
-    #endif
+#endif
     return status;
+}
+
+/*
+ * Utility API to create an Object Array from a list of scalars
+ */
+static vx_object_array create_obj_array_from_scalar_list(vx_context context, vx_scalar scalar_arr[], vx_uint8 count)
+{
+    vx_object_array obj_array_from_scalar_list;
+
+    for(vx_uint8 i = 0; i < count; i++)
+    {
+        scalar_arr[i] = vxCreateScalar(context, VX_TYPE_UINT8, &i);
+    }
+    obj_array_from_scalar_list = tivxCreateObjectArrayFromList(context, (vx_reference*)scalar_arr, count);
+    for(vx_uint8 i = 0; i < count; i++)
+    {
+        vxReleaseScalar(&scalar_arr[i]);
+    }
+    return obj_array_from_scalar_list;
 }
 
 TEST_WITH_ARG(tivxSourceNode, testSourceObjArray, Arg, STREAMING_PARAMETERS)
@@ -121,11 +142,17 @@ TEST_WITH_ARG(tivxSourceNode, testSourceObjArray, Arg, STREAMING_PARAMETERS)
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
+#ifndef TEST_OBJ_ARR_FROM_LIST
     ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
 
     ASSERT_VX_OBJECT(obj_array_scalar = vxCreateObjectArray(context, (vx_reference)scalar, 4), VX_TYPE_OBJECT_ARRAY);
 
     VX_CALL(vxReleaseScalar(&scalar));
+#else
+    vx_scalar scalar_arr[4];
+
+    ASSERT_VX_OBJECT(obj_array_scalar = create_obj_array_from_scalar_list(context, scalar_arr, 4), VX_TYPE_OBJECT_ARRAY);
+#endif
 
     ASSERT_VX_OBJECT(n1 = tivxScalarSourceObjArrayNode(graph, obj_array_scalar), VX_TYPE_NODE);
 
@@ -283,7 +310,11 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray, Arg, STREAMING_PARAMETERS)
 
     ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
 
+#ifndef TEST_OBJ_ARR_FROM_LIST
     ASSERT_VX_OBJECT(obj_array_scalar = vxCreateObjectArray(context, (vx_reference)scalar, 1), VX_TYPE_OBJECT_ARRAY);
+#else
+    ASSERT_VX_OBJECT(obj_array_scalar = tivxCreateObjectArrayFromList(context, (vx_reference*)&scalar, 1), VX_TYPE_OBJECT_ARRAY);
+#endif
 
     VX_CALL(vxReleaseScalar(&scalar));
 
@@ -335,7 +366,12 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray2, Arg, STREAMING_PARAMETERS)
 
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-         ASSERT_VX_OBJECT(obj_array_source[buf_id] = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
+#ifndef TEST_OBJ_ARR_FROM_LIST
+        ASSERT_VX_OBJECT(obj_array_source[buf_id] = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
+#else
+        vx_scalar scalar_arr[4];
+        ASSERT_VX_OBJECT(obj_array_source[buf_id] = create_obj_array_from_scalar_list(context, scalar_arr, 4), VX_TYPE_OBJECT_ARRAY);
+#endif
     }
 
     ASSERT_VX_OBJECT(obj_array_sink   = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
@@ -456,9 +492,15 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray3, Arg, STREAMING_PARAMETERS)
 
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-         ASSERT_VX_OBJECT(obj_array_source[buf_id] = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
-         ASSERT_VX_OBJECT(obj_array_sink[buf_id]   = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
-         ASSERT_VX_OBJECT(scalar_out[buf_id] = (vx_scalar)vxGetObjectArrayItem(obj_array_sink[buf_id], 0), VX_TYPE_SCALAR);
+#ifndef TEST_OBJ_ARR_FROM_LIST
+        ASSERT_VX_OBJECT(obj_array_source[buf_id] = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
+#else
+        vx_scalar scalar_arr[4];
+        ASSERT_VX_OBJECT(obj_array_source[buf_id] = create_obj_array_from_scalar_list(context, scalar_arr, 4), VX_TYPE_OBJECT_ARRAY);
+#endif
+
+        ASSERT_VX_OBJECT(obj_array_sink[buf_id]   = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
+        ASSERT_VX_OBJECT(scalar_out[buf_id] = (vx_scalar)vxGetObjectArrayItem(obj_array_sink[buf_id], 0), VX_TYPE_SCALAR);
     }
 
 
@@ -587,7 +629,12 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray4, Arg, STREAMING_PARAMETERS)
 
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-         ASSERT_VX_OBJECT(obj_array_source[buf_id] = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
+#ifndef TEST_OBJ_ARR_FROM_LIST
+        ASSERT_VX_OBJECT(obj_array_source[buf_id] = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
+#else
+        vx_scalar scalar_arr[4];
+        ASSERT_VX_OBJECT(obj_array_source[buf_id] = create_obj_array_from_scalar_list(context, scalar_arr, 4), VX_TYPE_OBJECT_ARRAY);
+#endif
     }
     ASSERT_VX_OBJECT(obj_array_sink   = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
 
@@ -718,8 +765,12 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray5, Arg, STREAMING_PARAMETERS)
 
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        ASSERT_VX_OBJECT(obj_array_source[buf_id] = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
+#ifndef TEST_OBJ_ARR_FROM_LIST
         ASSERT_VX_OBJECT(obj_array_sink[buf_id]   = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
+#else
+        vx_scalar scalar_arr[4];
+        ASSERT_VX_OBJECT(obj_array_source[buf_id] = create_obj_array_from_scalar_list(context, scalar_arr, 4), VX_TYPE_OBJECT_ARRAY);
+#endif
     }
 
     VX_CALL(vxReleaseScalar(&scalar_exemplar));
@@ -897,19 +948,25 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray6, Arg, STREAMING_PARAMETERS)
 
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-         ASSERT_VX_OBJECT(obj_array_source[buf_id] = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, num_ch), VX_TYPE_OBJECT_ARRAY);
-         scalar_val = buf_id+1;
-         for (ch_id = 0; ch_id < num_ch; ch_id++)
-         {
+#ifndef TEST_OBJ_ARR_FROM_LIST
+        ASSERT_VX_OBJECT(obj_array_source[buf_id] = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, num_ch), VX_TYPE_OBJECT_ARRAY);
+#else
+        vx_scalar scalar_arr[4];
+        ASSERT_VX_OBJECT(obj_array_source[buf_id] = create_obj_array_from_scalar_list(context, scalar_arr, 4), VX_TYPE_OBJECT_ARRAY);
+#endif
+
+        scalar_val = buf_id+1;
+        for (ch_id = 0; ch_id < num_ch; ch_id++)
+        {
             vx_scalar tmp_scalar;
             ASSERT_VX_OBJECT(tmp_scalar  = (vx_scalar)vxGetObjectArrayItem(obj_array_source[buf_id], ch_id), VX_TYPE_SCALAR);
             VX_CALL(vxCopyScalar(tmp_scalar, &scalar_val, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
             scalar_val++;
             VX_CALL(vxReleaseScalar(&tmp_scalar));
-         }
-         ASSERT_VX_OBJECT(obj_array_sink[buf_id]   = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, num_ch), VX_TYPE_OBJECT_ARRAY);
-         ASSERT_VX_OBJECT(scalar_in[buf_id]  = (vx_scalar)vxGetObjectArrayItem(obj_array_source[buf_id], 0), VX_TYPE_SCALAR);
-         ASSERT_VX_OBJECT(scalar_out[buf_id] = (vx_scalar)vxGetObjectArrayItem(obj_array_sink[buf_id], 0), VX_TYPE_SCALAR);
+        }
+        ASSERT_VX_OBJECT(obj_array_sink[buf_id]   = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, num_ch), VX_TYPE_OBJECT_ARRAY);
+        ASSERT_VX_OBJECT(scalar_in[buf_id]  = (vx_scalar)vxGetObjectArrayItem(obj_array_source[buf_id], 0), VX_TYPE_SCALAR);
+        ASSERT_VX_OBJECT(scalar_out[buf_id] = (vx_scalar)vxGetObjectArrayItem(obj_array_sink[buf_id], 0), VX_TYPE_SCALAR);
     }
 
     VX_CALL(vxReleaseScalar(&scalar_exemplar));

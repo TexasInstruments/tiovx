@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+ * Copyright (c) 2012-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,6 +170,8 @@ typedef struct _vx_meta_format
         vx_enum item_type;
         /*! The number of items in the ObjectArray */
         vx_size num_items;
+        /*! Whether the ObjectArray was instantiated from a list of references */
+        vx_bool is_from_list;
     } objarr;
 
     /*!< \brief structure containing information about tensor

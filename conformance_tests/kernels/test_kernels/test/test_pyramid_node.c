@@ -1,6 +1,6 @@
 /*
 
- * Copyright (c) 2012-2017 The Khronos Group Inc.
+ * Copyright (c) 2012-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -305,6 +305,177 @@ TEST_WITH_ARG(tivxPyramidNode, testObjectArrayPyramidPipeline, Pyramid_Arg, PYRA
 
     /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
     for(i=0; i<(loop_cnt+num_buf); i++)
+    {
+        uint32_t num_refs;
+        vx_size levels, num_items;
+        vx_pyramid out_pyr, out_pyr_2;
+        vx_object_array out_objarr;
+        CT_Image test_image;
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&out_pyr, 1, &num_refs);
+        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_pyr_2, 1, &num_refs);
+
+        ASSERT_VX_OBJECT(out_objarr = (vx_object_array)tivxGetReferenceParent((vx_reference)out_pyr_2), VX_TYPE_OBJECT_ARRAY);
+
+        VX_CALL(vxQueryObjectArray(out_objarr, VX_OBJECT_ARRAY_NUMITEMS, &num_items, sizeof(num_items)));
+
+        VX_CALL(vxQueryPyramid(out_pyr_2, VX_PYRAMID_LEVELS, &levels, sizeof(levels)));
+        if (NULL != out_objarr)
+        {
+            for (j = 0; j < num_items; j++)
+            {
+                vx_pyramid tmp_out_pyr;
+
+                ASSERT_VX_OBJECT(tmp_out_pyr = (vx_pyramid)vxGetObjectArrayItem(out_objarr, j), VX_TYPE_PYRAMID);
+
+                for (k = 0; k < levels; k++)
+                {
+                    CT_Image test_image;
+                    vx_image vx_test_image = vxGetPyramidLevel(tmp_out_pyr, k);
+
+                    test_image = ct_image_from_vx_image(vx_test_image);
+
+                    val = test_image->data.y[0];
+
+                    if (val != reference_val)
+                    {
+                        printf("val = %d\n", val);
+                        printf("reference_val = %d\n", reference_val);
+                        ASSERT(val == reference_val);
+                    }
+
+                    vxReleaseImage(&vx_test_image);
+                }
+
+                vxReleasePyramid(&tmp_out_pyr);
+            }
+        }
+
+        if (255 == reference_val)
+        {
+            reference_val = 0;
+        }
+        else
+        {
+            reference_val++;
+        }
+
+        /* recycles dequeued input and output refs */
+        /* input and output can be enqueued in any order */
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&out_pyr, 1);
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_pyr_2, 1);
+    }
+
+    /* ensure all graph processing is complete */
+    vxWaitGraph(graph);
+
+    for (i = 0; i < num_buf; i++)
+    {
+        VX_CALL(vxReleaseObjectArray(&pyr_1_arr[i]));
+        VX_CALL(vxReleasePyramid(&pyr_1[i]));
+        VX_CALL(vxReleaseObjectArray(&pyr_2_arr[i]));
+        VX_CALL(vxReleasePyramid(&pyr_2[i]));
+    }
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseGraph(&graph));
+    tivxTestKernelsUnLoadKernels(context);
+}
+
+/* TIOVX-2318 */
+TEST_WITH_ARG(tivxPyramidNode, testObjectArrayFromListPyramidPipeline, Pyramid_Arg, PYRAMID_PARAMETERS)
+{
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_node n1, n2;
+    vx_pyramid pyr_1[MAX_NUM_BUF], pyr_2[MAX_NUM_BUF], pyr_exemplar[MAX_NUM_BUF];
+    vx_object_array pyr_1_arr[MAX_NUM_BUF], pyr_2_arr[MAX_NUM_BUF];
+    uint32_t width, height, i, j, k, val;
+    uint32_t pipeline_depth, loop_cnt, num_buf, reference_val = 1;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    vx_bool pyr_source_replicate[] =
+        {vx_true_e};
+    vx_bool pyr_intermediate_replicate[] =
+        {vx_true_e, vx_true_e};
+    width = 16;
+    height = 16;
+
+    pipeline_depth = 3;
+    num_buf = 3;
+    loop_cnt = arg_->stream_time;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    for (i = 0; i < num_buf; i++)
+    {
+        for (vx_int8 count = 0; count < NUM_REPLICAS; count++)
+        {
+            ASSERT_VX_OBJECT(pyr_exemplar[count] = vxCreatePyramid(context, 4 + count, VX_SCALE_PYRAMID_HALF, width + 2*count, height + 2*count, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+        }
+        ASSERT_VX_OBJECT(pyr_1_arr[i] = tivxCreateObjectArrayFromList(context, (vx_reference*)pyr_exemplar, NUM_REPLICAS), VX_TYPE_OBJECT_ARRAY);
+
+        ASSERT_VX_OBJECT(pyr_1[i] = (vx_pyramid)vxGetObjectArrayItem(pyr_1_arr[i], 0), VX_TYPE_PYRAMID);
+        for (vx_int8 count = 0; count < NUM_REPLICAS; count++)
+        {
+            pyr_exemplar[count + 4] = vxCreatePyramid(context, 4 + count, VX_SCALE_PYRAMID_HALF, width + 2*count, height + 2*count, VX_DF_IMAGE_U8);
+        }
+        ASSERT_VX_OBJECT(pyr_2_arr[i] = tivxCreateObjectArrayFromList(context, (vx_reference*)&pyr_exemplar[4], NUM_REPLICAS), VX_TYPE_OBJECT_ARRAY);
+
+        ASSERT_VX_OBJECT(pyr_2[i] = (vx_pyramid)vxGetObjectArrayItem(pyr_2_arr[i], 0), VX_TYPE_PYRAMID);
+        for (vx_int8 count = 0; count < NUM_REPLICAS * 2; count++)
+        {
+            VX_CALL(vxReleasePyramid(&pyr_exemplar[count]));
+        }
+    }
+
+    ASSERT_VX_OBJECT(n1 = tivxPyramidSourceNode(graph, pyr_1[0]), VX_TYPE_NODE);
+    vxReplicateNode(graph, n1, pyr_source_replicate, 1u);
+    ASSERT_VX_OBJECT(n2 = tivxPyramidIntermediateNode(graph, pyr_1[0], pyr_2[0]), VX_TYPE_NODE);
+    vxReplicateNode(graph, n2, pyr_intermediate_replicate, 2u);
+
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, arg_->target_string));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, arg_->target_string));
+
+    /* input @ node index 0, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n1, 0);
+    add_graph_parameter_by_node_index(graph, n2, 1);
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&pyr_1[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&pyr_2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            2,
+            graph_parameters_queue_params_list
+            );
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_obj_arr_pyr_pipeline");
+
+    /* enqueue buf for pipeup but dont trigger graph execution */
+    for (i=0; i<num_buf; i++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&pyr_1[i], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&pyr_2[i], 1);
+    }
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for (i=0; i<(loop_cnt+num_buf); i++)
     {
         uint32_t num_refs;
         vx_size levels, num_items;
@@ -724,6 +895,7 @@ TESTCASE_TESTS(tivxPyramidNode,
                testIntermediateNodeCreation,
                testSourceNodeCreation,
                testObjectArrayPyramidPipeline,
+               testObjectArrayFromListPyramidPipeline,
                testDelayPyramidPipeline,
                testDelayObjectArrayPyramidPipeline)
 
