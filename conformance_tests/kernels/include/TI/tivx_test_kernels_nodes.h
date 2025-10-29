@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -220,6 +220,16 @@ VX_API_ENTRY vx_node VX_API_CALL tivxMultiInOutNode(vx_graph graph,
                                       vx_scalar            out1_scalar,
                                       vx_scalar            out2_scalar);
 
+/*! \brief [Graph] Creates a FILEIO Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] in1
+ * \see <tt>TIVX_KERNEL_FILEIO_NAME</tt>
+ * \ingroup group_vision_function_fileio
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxFileioNode(vx_graph graph,
+                                      vx_user_data_object  in1);
 #ifdef __cplusplus
 }
 #endif

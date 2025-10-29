@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2020 Texas Instruments Incorporated
+ * Copyright (c) 2020-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -319,6 +319,19 @@ VX_API_ENTRY vx_node VX_API_CALL tivxMultiInOutNode(vx_graph graph,
     };
     vx_node node = tivxCreateNodeByKernelName(graph,
                                            TIVX_KERNEL_MULTI_IN_OUT_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
+VX_API_ENTRY vx_node VX_API_CALL tivxFileioNode(vx_graph graph,
+                                      vx_user_data_object  in1)
+{
+    vx_reference prms[] = {
+            (vx_reference)in1
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_FILEIO_NAME,
                                            prms,
                                            dimof(prms));
     return node;

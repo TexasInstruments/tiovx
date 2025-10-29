@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -154,6 +154,11 @@ extern "C" {
  *  \see group_vision_function_test_kernels
  */
 #define TIVX_KERNEL_MULTI_IN_OUT_NAME     "com.ti.test_kernels.multi_in_out"
+
+/*! \brief fileio kernel name
+ *  \see group_vision_function_test_kernels
+ */
+#define TIVX_KERNEL_FILEIO_NAME     "com.ti.test_kernels.fileio"
 
 /*! End of group_vision_function_test_kernels */
 

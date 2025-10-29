@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -80,6 +80,7 @@ void tivxAddTargetKernelPyramidSource(void);
 void tivxAddTargetKernelPyramidSink(void);
 void tivxAddTargetKernelTestTarget(void);
 void tivxAddTargetKernelMultiInOut(void);
+void tivxAddTargetKernelFileio(void);
 
 void tivxRemoveTargetKernelScalarSink(void);
 void tivxRemoveTargetKernelScalarSource(void);
@@ -96,6 +97,7 @@ void tivxRemoveTargetKernelPyramidSource(void);
 void tivxRemoveTargetKernelPyramidSink(void);
 void tivxRemoveTargetKernelTestTarget(void);
 void tivxRemoveTargetKernelMultiInOut(void);
+void tivxRemoveTargetKernelFileio(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelScalarSink, &tivxRemoveTargetKernelScalarSink},
@@ -112,7 +114,8 @@ static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelPyramidSink, &tivxRemoveTargetKernelPyramidSink},
     {&tivxAddTargetKernelTestTarget, &tivxRemoveTargetKernelTestTarget},
     {&tivxAddTargetKernelImageIntermediate, &tivxRemoveTargetKernelImageIntermediate},
-    {&tivxAddTargetKernelMultiInOut, &tivxRemoveTargetKernelMultiInOut}
+    {&tivxAddTargetKernelMultiInOut, &tivxRemoveTargetKernelMultiInOut},
+    {&tivxAddTargetKernelFileio, &tivxRemoveTargetKernelFileio}
 };
 
 void tivxRegisterCaptureTargetArmKernels(void)

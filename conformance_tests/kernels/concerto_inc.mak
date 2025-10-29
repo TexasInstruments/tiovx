@@ -12,5 +12,6 @@ ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 	STATIC_LIBS += vx_conformance_engine
 
 	STATIC_LIBS += vx_target_kernels_source_sink
+	STATIC_LIBS += app_utils_file_io
 endif
 

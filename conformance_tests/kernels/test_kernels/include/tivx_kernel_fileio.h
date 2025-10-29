@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2020-2025 Texas Instruments Incorporated
+ * Copyright (c) 2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,29 +60,21 @@
  *
  */
 
-#if defined(BUILD_TEST_KERNELS)
+#ifndef _TIVX_KERNEL_FILEIO_
+#define _TIVX_KERNEL_FILEIO_
 
-#if defined(BUILD_CORE_KERNELS)
-TESTCASE(tivxTestKernelsNotNot)
-
-TESTCASE(tivxPyramidNode)
-
-#if !defined(SOC_AM62A)
-TESTCASE(tivxTestSinkNode)
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-TESTCASE(tivxSourceNode)
-#endif /* #if defined(BUILD_CORE_KERNELS) */
 
-TESTCASE(tivxCmdTimeout)
+#define TIVX_KERNEL_FILEIO_IN1_IDX (0U)
 
-TESTCASE(tivxGraphStreaming)
+#define TIVX_KERNEL_FILEIO_MAX_PARAMS (1U)
 
-TESTCASE(GraphStreaming)
+#ifdef __cplusplus
+}
+#endif
 
-TESTCASE(tivxTimestamp)
 
-TESTCASE(tivxTiovxOverhead)
-
-TESTCASE(tivxFileio)
-#endif /* #if defined(BUILD_TEST_KERNELS) */
+#endif /* _TIVX_KERNEL_FILEIO_ */
