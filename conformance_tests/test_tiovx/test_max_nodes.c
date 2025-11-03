@@ -455,33 +455,33 @@ static void harris_corner_read_truth_data(const char *file_path, TIVX_TruthData 
 
     memset(truth_data, 0, sizeof(*truth_data)); /* init it to zero */
 
-    f = fopen(file_path, "rb");
+    f = ct_fopen(file_path, "rb");
     ASSERT(f);
-    fseek(f, 0, SEEK_END);
-    sz = ftell(f);
+    ct_fseek(f, 0, SEEK_END);
+    sz = ct_ftell(f);
     if (0 == sz)
     {
-        fclose(f);
+        ct_fclose(f);
         return;
     }
-    fseek(f, 0, SEEK_SET);
+    ct_fseek(f, 0, SEEK_SET);
 
     buf = ct_alloc_mem(sz + 1);
     if (NULL == buf)
     {
-        fclose(f);
+        ct_fclose(f);
 
         return;
     }
-    read_sz = fread(buf, 1, sz, f);
+    read_sz = ct_fread(buf, 1, sz, f);
     if (read_sz != sz)
     {
-        fclose(f);
+        ct_fclose(f);
         ct_free_mem(buf);
         return;
     }
 
-    fclose(f);
+    ct_fclose(f);
 
     ptr = (char *)buf;
     ptr[sz] = 0;
@@ -764,27 +764,27 @@ static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_po
     sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), fileName);
     ASSERT_(return 0, (sz < MAXPATHLENGTH));
 #if 1
-    FILE* f = fopen(file, "rb");
+    FILE* f = ct_fopen(file, "rb");
     ASSERT_(return 0, f);
-    fseek(f, 0, SEEK_END);
+    ct_fseek(f, 0, SEEK_END);
 
-    sz = ftell(f);
-    fseek(f, 0, SEEK_SET);
+    sz = ct_ftell(f);
+    ct_fseek(f, 0, SEEK_SET);
 
     buf = ct_alloc_mem(sz + 1);
     if (NULL == buf)
     {
-        fclose(f);
+        ct_fclose(f);
         return 0;
     }
-    read_sz = fread(buf, 1, sz, f);
+    read_sz = ct_fread(buf, 1, sz, f);
     if (read_sz != sz)
     {
-        fclose(f);
+        ct_fclose(f);
         ct_free_mem(buf);
         return 0;
     }
-    fclose(f); f = NULL;
+    ct_fclose(f); f = NULL;
     ((char*)buf)[sz] = 0;
 #else
     sz = ...

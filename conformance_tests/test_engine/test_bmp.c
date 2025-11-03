@@ -467,7 +467,7 @@ static int writeBMP( const char* filename, const uchar* img, int step, int width
     int  fileSize = fileStep*height + headerSize;
     uchar* buf = 0, *p = 0;
 
-    FILE* f = fopen(filename, "wb");
+    FILE* f = ct_fopen(filename, "wb");
     if(!f)
         return -1;
 
@@ -514,8 +514,8 @@ static int writeBMP( const char* filename, const uchar* img, int step, int width
             ct_memset(p + width3, 0, fileStep - width3);
     }
 
-    fwrite(buf, 1, fileSize, f);
-    fclose(f);
+    ct_fwrite(buf, 1, fileSize, f);
+    ct_fclose(f);
     ct_free_mem(buf);
     return 0;
 }

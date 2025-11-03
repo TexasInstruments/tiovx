@@ -84,35 +84,35 @@ static void harris_corner_read_truth_data(const char *file_path, TIVX_TruthData 
 
     ASSERT(truth_data && file_path);
 
-    f = fopen(file_path, "rb");
+    f = ct_fopen(file_path, "rb");
     if (NULL == f)
     {
         return;
     }
-    fseek(f, 0, SEEK_END);
-    sz = ftell(f);
+    ct_fseek(f, 0, SEEK_END);
+    sz = ct_ftell(f);
     if (0 == sz)
     {
-        fclose(f);
+        ct_fclose(f);
         return;
     }
-    fseek(f, 0, SEEK_SET);
+    ct_fseek(f, 0, SEEK_SET);
 
     buf = ct_alloc_mem(sz + 1);
     if (NULL == buf)
     {
-        fclose(f);
+        ct_fclose(f);
         return;
     }
-    read_sz = fread(buf, 1, sz, f);
+    read_sz = ct_fread(buf, 1, sz, f);
     if (read_sz != sz)
     {
-        fclose(f);
+        ct_fclose(f);
         ct_free_mem(buf);
         return;
     }
 
-    fclose(f);
+    ct_fclose(f);
 
     ptr = (char *)buf;
     ptr[sz] = 0;

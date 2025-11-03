@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2024 Texas Instruments Incorporated
+ * Copyright (c) 2024-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -87,35 +87,35 @@ static void openFile()
         ASSERT(sz < MAXPATHLENGTH);
 
         printf ("Open file: %s\n", filepath);
-        file = fopen(filepath, "wb");
+        file = ct_fopen(filepath, "wb");
         if (!file)
         {
             printf("Cannot open file: %s\n", filepath);
         }
 
         ASSERT(file);
-        fprintf(file, "%s\n", "<html>");
-        fprintf(file, "%s\n", "<head>");
-        fprintf(file, "%s\n", "  <meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">");
-        fprintf(file, "%s\n", "  <title>TIOVX Framework Overhead Benchmark</title>");
-        fprintf(file, "%s\n", "</head>");
+        ct_fprintf(file, "%s\n", "<html>");
+        ct_fprintf(file, "%s\n", "<head>");
+        ct_fprintf(file, "%s\n", "  <meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">");
+        ct_fprintf(file, "%s\n", "  <title>TIOVX Framework Overhead Benchmark</title>");
+        ct_fprintf(file, "%s\n", "</head>");
 
-        fprintf(file, "<p>TIOVX Framework Overhead Benchmark<p>");
-        fprintf(file, "<p>Average values are reported after performing %d iterations on each target. Framework overhead is calculated \
+        ct_fprintf(file, "<p>TIOVX Framework Overhead Benchmark<p>");
+        ct_fprintf(file, "<p>Average values are reported after performing %d iterations on each target. Framework overhead is calculated \
                        by subtracting the execution time of a single node from the total execution time of its graph. Execution \
                        time is measured by querying each graph and node after calling vxProcessGraph.<p>", ITERATIONS);
 
-        fprintf(file, "%s\n", "<body>");
-        fprintf(file, "%s\n", "  <table frame=\"box\" rules=\"all\" cellspacing=\"0\" width=\"75%\" border=\"1\" cellpadding=\"3\">");
-        fprintf(file, "%s\n", "    <tr bgcolor=\"lightgrey\">");
-        fprintf(file, "%s\n", "<td width=\"10%\" align=\"center\"><b>Core</b></td>");
-        fprintf(file, "%s\n", "<td width=\"10%\" align=\"center\"><b>Target</b></td>");
-        fprintf(file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Average Graph Performance (msec) </b></td>");
-        fprintf(file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Average Node Performance (msec) </b></td>");
-        fprintf(file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Average Overhead [Graph - Node] (msec) </b></td>");
-        fprintf(file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Maximum Overhead (msec) </b></td>");
-        fprintf(file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Minimum Overhead (msec) </b></td>");
-        fprintf(file, "%s\n", "</tr>");
+        ct_fprintf(file, "%s\n", "<body>");
+        ct_fprintf(file, "%s\n", "  <table frame=\"box\" rules=\"all\" cellspacing=\"0\" width=\"75%\" border=\"1\" cellpadding=\"3\">");
+        ct_fprintf(file, "%s\n", "    <tr bgcolor=\"lightgrey\">");
+        ct_fprintf(file, "%s\n", "<td width=\"10%\" align=\"center\"><b>Core</b></td>");
+        ct_fprintf(file, "%s\n", "<td width=\"10%\" align=\"center\"><b>Target</b></td>");
+        ct_fprintf(file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Average Graph Performance (msec) </b></td>");
+        ct_fprintf(file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Average Node Performance (msec) </b></td>");
+        ct_fprintf(file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Average Overhead [Graph - Node] (msec) </b></td>");
+        ct_fprintf(file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Maximum Overhead (msec) </b></td>");
+        ct_fprintf(file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Minimum Overhead (msec) </b></td>");
+        ct_fprintf(file, "%s\n", "</tr>");
     }
 }
 
@@ -165,15 +165,15 @@ static void printOverhead(float gMax[], float nMax[], const char* targetName, co
     {
         ASSERT(file);
 
-        fprintf(file, "%s\n", " <tr align=\"center\">");
-        fprintf(file, "%s%s%s\n", "<td>", coreName, "</td>");
-        fprintf(file, "%s%s%s\n", "<td>", targetName, "</td>");
-        fprintf(file, "%s%4.6f%s\n", "<td>", gAvg, "</td>");
-        fprintf(file, "%s%4.6f%s\n", "<td>", nAvg, "</td>");
-        fprintf(file, "%s%4.6f%s\n", "<td>", oAvg, "</td>");
-        fprintf(file, "%s%4.6f%s\n", "<td>", oMax, "</td>");
-        fprintf(file, "%s%4.6f%s\n", "<td>", oMin, "</td>");
-        fprintf(file, "%s\n", " </tr>");
+        ct_fprintf(file, "%s\n", " <tr align=\"center\">");
+        ct_fprintf(file, "%s%s%s\n", "<td>", coreName, "</td>");
+        ct_fprintf(file, "%s%s%s\n", "<td>", targetName, "</td>");
+        ct_fprintf(file, "%s%4.6f%s\n", "<td>", gAvg, "</td>");
+        ct_fprintf(file, "%s%4.6f%s\n", "<td>", nAvg, "</td>");
+        ct_fprintf(file, "%s%4.6f%s\n", "<td>", oAvg, "</td>");
+        ct_fprintf(file, "%s%4.6f%s\n", "<td>", oMax, "</td>");
+        ct_fprintf(file, "%s%4.6f%s\n", "<td>", oMin, "</td>");
+        ct_fprintf(file, "%s\n", " </tr>");
     }
 }
 
@@ -271,10 +271,10 @@ TEST(tivxTiovxOverhead, testCloseFile)
 {
     if (file)
     {
-        fprintf(file, "%s\n", "</table>");
-        fprintf(file, "%s\n", "</body>");
-        fprintf(file, "%s\n", "</html>");
-        fclose(file);
+        ct_fprintf(file, "%s\n", "</table>");
+        ct_fprintf(file, "%s\n", "</body>");
+        ct_fprintf(file, "%s\n", "</html>");
+        ct_fclose(file);
         file = NULL;
     }
 }

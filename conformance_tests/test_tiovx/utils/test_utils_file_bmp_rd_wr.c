@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2020 Texas Instruments Incorporated
+ * Copyright (c) 2020-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -89,7 +89,7 @@ static CT_Image test_utils_load_ct_image_from_bmpfile(const char* fileName, int3
         sz = (uint32_t)snprintf(file, MAXPATHLENGTH, "%s", fileName);
         ASSERT_(return 0, (sz < MAXPATHLENGTH));
 
-        f = fopen(file, "rb");
+        f = ct_fopen(file, "rb");
         if (!f)
         {
             CT_ADD_FAILURE("Can't open image file: %s\n", fileName);
@@ -97,15 +97,15 @@ static CT_Image test_utils_load_ct_image_from_bmpfile(const char* fileName, int3
         }
         else
         {
-            fseek(f, 0, SEEK_END);
+            ct_fseek(f, 0, SEEK_END);
             sz = (size_t)ftell(f);
             if( sz > 0U )
             {
                 buf = (char*)ct_alloc_mem(sz);
-                fseek(f, 0, SEEK_SET);
+                ct_fseek(f, 0, SEEK_SET);
                 if (NULL != buf)
                 {
-                    if( fread(buf, 1, sz, f) == sz )
+                    if( ct_fread(buf, 1, sz, f) == sz )
                     {
                         image = ct_read_bmp((uint8_t*)buf, (int32_t)sz, dcn);
                         returnVal = image;
@@ -113,7 +113,7 @@ static CT_Image test_utils_load_ct_image_from_bmpfile(const char* fileName, int3
                 }
                 else
                 {
-                    fclose(f);
+                    ct_fclose(f);
                     returnVal = NULL;
                 }
             }
@@ -121,7 +121,7 @@ static CT_Image test_utils_load_ct_image_from_bmpfile(const char* fileName, int3
             if (returnVal != NULL)
             {
                 ct_free_mem(buf);
-                fclose(f);
+                ct_fclose(f);
 
                 if(!image)
                 {

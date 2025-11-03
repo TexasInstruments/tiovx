@@ -96,29 +96,29 @@ static void openFile()
         ASSERT(sz < MAXPATHLENGTH);
 
         printf ("Open file: %s\n", filepath);
-        perf_file = fopen(filepath, "wb");
+        perf_file = ct_fopen(filepath, "wb");
         if (!perf_file)
         {
             printf("Cannot open file: %s\n", filepath);
         }
         ASSERT(perf_file);
 
-        fprintf(perf_file, "%s\n", "<html>");
-        fprintf(perf_file, "%s\n", "<head>");
-        fprintf(perf_file, "%s\n", "  <meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">");
-        fprintf(perf_file, "%s\n", "  <title>TIOVX Kernel Performance</title>");
-        fprintf(perf_file, "%s\n", "</head>");
+        ct_fprintf(perf_file, "%s\n", "<html>");
+        ct_fprintf(perf_file, "%s\n", "<head>");
+        ct_fprintf(perf_file, "%s\n", "  <meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">");
+        ct_fprintf(perf_file, "%s\n", "  <title>TIOVX Kernel Performance</title>");
+        ct_fprintf(perf_file, "%s\n", "</head>");
 
-        fprintf(perf_file, "%s\n", "<body>");
-        fprintf(perf_file, "%s\n", "  <table frame=\"box\" rules=\"all\" cellspacing=\"0\" width=\"50%\" border=\"1\" cellpadding=\"3\">");
-        fprintf(perf_file, "%s\n", "    <tr bgcolor=\"lightgrey\">");
-        fprintf(perf_file, "%s\n", "<td width=\"5\" align=\"center\"><b>Index</b></td>");
-        fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Kernel</b></td>");
-        fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Variant</b></td>");
-        fprintf(perf_file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Frame Size (Pixels) </b></td>");
-        fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Graph Performance (msec) </b></td>");
-        fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Node Performance (msec) </b></td>");
-        fprintf(perf_file, "%s\n", "</tr>");
+        ct_fprintf(perf_file, "%s\n", "<body>");
+        ct_fprintf(perf_file, "%s\n", "  <table frame=\"box\" rules=\"all\" cellspacing=\"0\" width=\"50%\" border=\"1\" cellpadding=\"3\">");
+        ct_fprintf(perf_file, "%s\n", "    <tr bgcolor=\"lightgrey\">");
+        ct_fprintf(perf_file, "%s\n", "<td width=\"5\" align=\"center\"><b>Index</b></td>");
+        ct_fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Kernel</b></td>");
+        ct_fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Variant</b></td>");
+        ct_fprintf(perf_file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Frame Size (Pixels) </b></td>");
+        ct_fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Graph Performance (msec) </b></td>");
+        ct_fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Node Performance (msec) </b></td>");
+        ct_fprintf(perf_file, "%s\n", "</tr>");
 
         gTiovxKernIdx = 0;
     }
@@ -128,12 +128,12 @@ TEST(tiovxPerformance2, tiovxPerfCloseFile)
 {
     if (perf_file)
     {
-        fprintf(perf_file, "%s\n", "</table>");
-        fprintf(perf_file, "%s\n", "</body>");
-        fprintf(perf_file, "%s\n", "</html>");
-        fprintf(perf_file, "<p>Footnote 1: All optional parameters for relevant kernels are used<p>");
-        fprintf(perf_file, "<p>Footnote 2: All image sizes are for input parameters unless noted with an asterisk (*) in which case these are the output parameter sizes<p>");
-        fclose(perf_file);
+        ct_fprintf(perf_file, "%s\n", "</table>");
+        ct_fprintf(perf_file, "%s\n", "</body>");
+        ct_fprintf(perf_file, "%s\n", "</html>");
+        ct_fprintf(perf_file, "<p>Footnote 1: All optional parameters for relevant kernels are used<p>");
+        ct_fprintf(perf_file, "<p>Footnote 2: All image sizes are for input parameters unless noted with an asterisk (*) in which case these are the output parameter sizes<p>");
+        ct_fclose(perf_file);
         perf_file = NULL;
     }
 }
@@ -148,17 +148,17 @@ void PrintPerf(vx_perf_t graph, vx_perf_t node, uint32_t width,  uint32_t height
     if(perf_file)
     {
         gTiovxKernIdx ++;
-        fprintf(perf_file, "%s\n", " <tr align=\"center\">");
-        fprintf(perf_file, "%s%d%s\n", "<td>", gTiovxKernIdx, "</td>");
-        fprintf(perf_file, "%s%s%s\n", "<td>", testName, "</td>");
-        fprintf(perf_file, "%s%s%s\n", "<td>", variant, "</td>");
+        ct_fprintf(perf_file, "%s\n", " <tr align=\"center\">");
+        ct_fprintf(perf_file, "%s%d%s\n", "<td>", gTiovxKernIdx, "</td>");
+        ct_fprintf(perf_file, "%s%s%s\n", "<td>", testName, "</td>");
+        ct_fprintf(perf_file, "%s%s%s\n", "<td>", variant, "</td>");
         if (asterisk == 1)
-            fprintf(perf_file, "%s*%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
+            ct_fprintf(perf_file, "%s*%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
         else
-            fprintf(perf_file, "%s%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
-        fprintf(perf_file, "%s%4.6f%s\n", "<td>", graph.max/1000000.0, "</td>");
-        fprintf(perf_file, "%s%4.6f%s\n", "<td>", node.max/1000000.0, "</td>");
-        fprintf(perf_file, "%s\n", " </tr>");
+            ct_fprintf(perf_file, "%s%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
+        ct_fprintf(perf_file, "%s%4.6f%s\n", "<td>", graph.max/1000000.0, "</td>");
+        ct_fprintf(perf_file, "%s%4.6f%s\n", "<td>", node.max/1000000.0, "</td>");
+        ct_fprintf(perf_file, "%s\n", " </tr>");
     }
 }
 
@@ -173,38 +173,38 @@ static void openSupernodeFile()
             SUPERNODE_OFILE);
         ASSERT(sz < MAXPATHLENGTH);
 
-        spernode_perf_file = fopen(filepath, "wb");
+        spernode_perf_file = ct_fopen(filepath, "wb");
 
         if (!spernode_perf_file)
         {
             printf("Cannot open file: %s\n", filepath);
         }
         ASSERT(spernode_perf_file);
-        fprintf(spernode_perf_file, "%s\n", "<html>");
-        fprintf(spernode_perf_file, "%s\n", "<head>");
-        fprintf(spernode_perf_file, "%s\n", "  <meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">");
-        fprintf(spernode_perf_file, "%s\n", "  <title>TIOVX Kernel Performance</title>");
-        fprintf(spernode_perf_file, "%s\n", "</head>");
+        ct_fprintf(spernode_perf_file, "%s\n", "<html>");
+        ct_fprintf(spernode_perf_file, "%s\n", "<head>");
+        ct_fprintf(spernode_perf_file, "%s\n", "  <meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">");
+        ct_fprintf(spernode_perf_file, "%s\n", "  <title>TIOVX Kernel Performance</title>");
+        ct_fprintf(spernode_perf_file, "%s\n", "</head>");
 
-        fprintf(spernode_perf_file, "%s\n", "<body>");
-        fprintf(spernode_perf_file, "%s\n", "  <table frame=\"box\" rules=\"all\" cellspacing=\"0\" width=\"50%\" border=\"1\" cellpadding=\"3\">");
-        fprintf(spernode_perf_file, "%s\n", "    <tr bgcolor=\"lightgrey\">");
-        fprintf(spernode_perf_file, "%s\n", "<td width=\"5\" align=\"center\"><b>Index</b></td>");
-        fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Kernel</b></td>");
-        fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Variant</b></td>");
-        fprintf(spernode_perf_file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Frame Size (Pixels) </b></td>");
-        fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Graph Performance (msec) </b></td>");
+        ct_fprintf(spernode_perf_file, "%s\n", "<body>");
+        ct_fprintf(spernode_perf_file, "%s\n", "  <table frame=\"box\" rules=\"all\" cellspacing=\"0\" width=\"50%\" border=\"1\" cellpadding=\"3\">");
+        ct_fprintf(spernode_perf_file, "%s\n", "    <tr bgcolor=\"lightgrey\">");
+        ct_fprintf(spernode_perf_file, "%s\n", "<td width=\"5\" align=\"center\"><b>Index</b></td>");
+        ct_fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Kernel</b></td>");
+        ct_fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Variant</b></td>");
+        ct_fprintf(spernode_perf_file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Frame Size (Pixels) </b></td>");
+        ct_fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Graph Performance (msec) </b></td>");
         if (ENABLE_SUPERNODE)
         {
-            fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Supernode Performance (msec) </b></td>");
+            ct_fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Supernode Performance (msec) </b></td>");
         }
         else
         {
-            fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Node1 Performance (msec) </b></td>");
-            fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Node2 Performance (msec) </b></td>");
-            fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Node3 Performance (msec) </b></td>");
+            ct_fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Node1 Performance (msec) </b></td>");
+            ct_fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Node2 Performance (msec) </b></td>");
+            ct_fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Node3 Performance (msec) </b></td>");
         }
-        fprintf(spernode_perf_file, "%s\n", "</tr>");
+        ct_fprintf(spernode_perf_file, "%s\n", "</tr>");
 
         sTiovxKernIdx = 0;
     }
@@ -221,12 +221,12 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfCloseFile)
 {
     if (spernode_perf_file)
     {
-        fprintf(spernode_perf_file, "%s\n", "</table>");
-        fprintf(spernode_perf_file, "%s\n", "</body>");
-        fprintf(spernode_perf_file, "%s\n", "</html>");
-        fprintf(spernode_perf_file, "<p>Footnote 1: All optional parameters for relevant kernels are used<p>");
-        fprintf(spernode_perf_file, "<p>Footnote 2: All image sizes are for input parameters unless noted with an asterisk (*) in which case these are the output parameter sizes<p>");
-        fclose(spernode_perf_file);
+        ct_fprintf(spernode_perf_file, "%s\n", "</table>");
+        ct_fprintf(spernode_perf_file, "%s\n", "</body>");
+        ct_fprintf(spernode_perf_file, "%s\n", "</html>");
+        ct_fprintf(spernode_perf_file, "<p>Footnote 1: All optional parameters for relevant kernels are used<p>");
+        ct_fprintf(spernode_perf_file, "<p>Footnote 2: All image sizes are for input parameters unless noted with an asterisk (*) in which case these are the output parameter sizes<p>");
+        ct_fclose(spernode_perf_file);
         spernode_perf_file = NULL;
     }
 }
@@ -242,20 +242,20 @@ void PrintSupernodePerf(vx_perf_t graph, vx_perf_t super_node, vx_perf_t node1, 
     if(spernode_perf_file)
     {
         sTiovxKernIdx ++;
-        fprintf(spernode_perf_file, "%s\n", " <tr align=\"center\">");
-        fprintf(spernode_perf_file, "%s%d%s\n", "<td>", sTiovxKernIdx, "</td>");
-        fprintf(spernode_perf_file, "%s%s%s\n", "<td>", testName, "</td>");
-        fprintf(spernode_perf_file, "%s%s%s\n", "<td>", variant, "</td>");
+        ct_fprintf(spernode_perf_file, "%s\n", " <tr align=\"center\">");
+        ct_fprintf(spernode_perf_file, "%s%d%s\n", "<td>", sTiovxKernIdx, "</td>");
+        ct_fprintf(spernode_perf_file, "%s%s%s\n", "<td>", testName, "</td>");
+        ct_fprintf(spernode_perf_file, "%s%s%s\n", "<td>", variant, "</td>");
         if (asterisk == 1)
-            fprintf(spernode_perf_file, "%s*%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
+            ct_fprintf(spernode_perf_file, "%s*%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
         else
-            fprintf(spernode_perf_file, "%s%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
-        fprintf(spernode_perf_file, "%s%4.6f%s\n", "<td>", graph.max/1000000.0, "</td>");
-        if (ENABLE_SUPERNODE) fprintf(spernode_perf_file, "%s%4.6f%s\n", "<td>", super_node.max/1000000.0, "</td>");
-        if (!ENABLE_SUPERNODE) fprintf(spernode_perf_file, "%s%4.6f%s\n", "<td>", node1.max/1000000.0, "</td>");
-        if (!ENABLE_SUPERNODE) fprintf(spernode_perf_file, "%s%4.6f%s\n", "<td>", node2.max/1000000.0, "</td>");
-        if (!ENABLE_SUPERNODE) fprintf(spernode_perf_file, "%s%4.6f%s\n", "<td>", node3.max/1000000.0, "</td>");
-        fprintf(spernode_perf_file, "%s\n", " </tr>");
+            ct_fprintf(spernode_perf_file, "%s%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
+        ct_fprintf(spernode_perf_file, "%s%4.6f%s\n", "<td>", graph.max/1000000.0, "</td>");
+        if (ENABLE_SUPERNODE) ct_fprintf(spernode_perf_file, "%s%4.6f%s\n", "<td>", super_node.max/1000000.0, "</td>");
+        if (!ENABLE_SUPERNODE) ct_fprintf(spernode_perf_file, "%s%4.6f%s\n", "<td>", node1.max/1000000.0, "</td>");
+        if (!ENABLE_SUPERNODE) ct_fprintf(spernode_perf_file, "%s%4.6f%s\n", "<td>", node2.max/1000000.0, "</td>");
+        if (!ENABLE_SUPERNODE) ct_fprintf(spernode_perf_file, "%s%4.6f%s\n", "<td>", node3.max/1000000.0, "</td>");
+        ct_fprintf(spernode_perf_file, "%s\n", " </tr>");
     }
 }
 
@@ -2222,32 +2222,32 @@ static void harris_corner_read_truth_data(const char *file_path, HarrisC_TruthDa
 
     ASSERT(truth_data && file_path);
 
-    f = fopen(file_path, "rb");
+    f = ct_fopen(file_path, "rb");
     ASSERT(f);
-    fseek(f, 0, SEEK_END);
-    sz = ftell(f);
+    ct_fseek(f, 0, SEEK_END);
+    sz = ct_ftell(f);
     if (0 == sz)
     {
-        fclose(f);
+        ct_fclose(f);
         return;
     }
-    fseek(f, 0, SEEK_SET);
+    ct_fseek(f, 0, SEEK_SET);
 
     buf = ct_alloc_mem(sz + 1);
     if (NULL == buf)
     {
-        fclose(f);
+        ct_fclose(f);
         return;
     }
-    read_sz = fread(buf, 1, sz, f);
+    read_sz = ct_fread(buf, 1, sz, f);
     if (read_sz != sz)
     {
         ct_free_mem(buf);
-        fclose(f);
+        ct_fclose(f);
         return;
     }
 
-    fclose(f);
+    ct_fclose(f);
 
     ptr = (char *)buf;
     ptr[sz] = 0;
@@ -3501,27 +3501,27 @@ static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_po
     sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), fileName);
     ASSERT_(return 0, (sz < MAXPATHLENGTH));
 #if 1
-    FILE* f = fopen(file, "rb");
+    FILE* f = ct_fopen(file, "rb");
     ASSERT_(return 0, f);
-    fseek(f, 0, SEEK_END);
+    ct_fseek(f, 0, SEEK_END);
 
-    sz = ftell(f);
-    fseek(f, 0, SEEK_SET);
+    sz = ct_ftell(f);
+    ct_fseek(f, 0, SEEK_SET);
 
     buf = ct_alloc_mem(sz + 1);
     if (NULL == buf)
     {
-        fclose(f);
+        ct_fclose(f);
         return 0;
     }
-    read_sz = fread(buf, 1, sz, f);
+    read_sz = ct_fread(buf, 1, sz, f);
     if (read_sz != sz)
     {
         ct_free_mem(buf);
-        fclose(f);
+        ct_fclose(f);
         return 0;
     }
-    fclose(f); f = NULL;
+    ct_fclose(f); f = NULL;
     ((char*)buf)[sz] = 0;
 #else
     sz = ...

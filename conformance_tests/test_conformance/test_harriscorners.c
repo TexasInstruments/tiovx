@@ -105,17 +105,17 @@ static void harris_corner_read_truth_data(const char *file_path, TruthData *trut
 
     ASSERT(truth_data && file_path);
 
-    f = fopen(file_path, "rb");
+    f = ct_fopen(file_path, "rb");
     ASSERT(f);
-    fseek(f, 0, SEEK_END);
-    sz = ftell(f);
+    ct_fseek(f, 0, SEEK_END);
+    sz = ct_ftell(f);
     ASSERT(sz);
-    fseek(f, 0, SEEK_SET);
+    ct_fseek(f, 0, SEEK_SET);
 
     ASSERT(buf = ct_alloc_mem(sz + 1));
-    ASSERT(sz == fread(buf, 1, sz, f));
+    ASSERT(sz == ct_fread(buf, 1, sz, f));
 
-    fclose(f);
+    ct_fclose(f);
 
     ptr = (char *)buf;
     ptr[sz] = 0;

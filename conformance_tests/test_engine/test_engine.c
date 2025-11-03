@@ -893,7 +893,7 @@ int CT_main(int argc, char* argv[], const char* version_str, CT_RegisterTestCase
         }
 #endif
         // <identifier> <time and date> <test identifier> <total number of tests> <total tests disabled> <total tests started> <total tests run to completion> <total tests passed> <total tests failed>
-        fprintf(g_context.internal_->g_quiet ? stderr : stdout,
+        ct_fprintf(g_context.internal_->g_quiet ? stderr : stdout,
                 "\n#REPORT: %s %s %d %d %d %d %d %d (version %s)\n",
                 timebuf,
                 testid_str,

@@ -223,4 +223,12 @@ void ct_free_mem(void *ptr);
 void ct_memset(void *ptr, vx_uint8 c, size_t);
 void *ct_calloc(size_t nmemb, size_t size);
 
+FILE *ct_fopen(const char *filename, const char *mode);
+int ct_fclose(FILE *stream);
+size_t ct_fread(void * ptr, size_t size, size_t nmemb, FILE *stream);
+size_t ct_fwrite(const void * ptr, size_t size, size_t nmemb, FILE *stream);
+int ct_fseek(FILE *stream, long int offset, int whence);
+long int ct_ftell(FILE *stream);
+int ct_fprintf(FILE *stream, const char *format, ...);
+
 #endif // __VX_CT_TEST_UTILS_H__

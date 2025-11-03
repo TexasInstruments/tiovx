@@ -60,27 +60,27 @@ static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_po
     sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), fileName);
     ASSERT_(return 0, (sz < MAXPATHLENGTH));
 #if 1
-    FILE* f = fopen(file, "rb");
+    FILE* f = ct_fopen(file, "rb");
     ASSERT_(return 0, f);
-    fseek(f, 0, SEEK_END);
+    ct_fseek(f, 0, SEEK_END);
 
-    sz = ftell(f);
-    fseek(f, 0, SEEK_SET);
+    sz = ct_ftell(f);
+    ct_fseek(f, 0, SEEK_SET);
 
     buf = ct_alloc_mem(sz + 1);
     if (NULL == buf)
     {
-        fclose(f);
+        ct_fclose(f);
         return 0;
     }
-    read_sz = fread(buf, 1, sz, f);
+    read_sz = ct_fread(buf, 1, sz, f);
     if (sz != read_sz)
     {
         ct_free_mem(buf);
-        fclose(f);
+        ct_fclose(f);
         return 0;
     }
-    fclose(f); f = NULL;
+    ct_fclose(f); f = NULL;
     ((char*)buf)[sz] = 0;
 #else
     sz = ...

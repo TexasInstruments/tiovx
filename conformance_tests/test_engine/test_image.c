@@ -347,27 +347,27 @@ CT_Image ct_read_image(const char* fileName, int dcn)
     sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), fileName);
     ASSERT_(return 0, (sz < MAXPATHLENGTH));
 
-    f = fopen(file, "rb");
+    f = ct_fopen(file, "rb");
     if (!f)
     {
         CT_ADD_FAILURE("Can't open image file: %s\n", fileName);
         return 0;
     }
 
-    fseek(f, 0, SEEK_END);
-    sz = ftell(f);
+    ct_fseek(f, 0, SEEK_END);
+    sz = ct_ftell(f);
     if( sz > 0 )
     {
         buf = (char*)ct_alloc_mem(sz);
-        fseek(f, 0, SEEK_SET);
-        if( fread(buf, 1, sz, f) == sz )
+        ct_fseek(f, 0, SEEK_SET);
+        if( ct_fread(buf, 1, sz, f) == sz )
         {
             image = ct_read_bmp((unsigned char*)buf, (int)sz, dcn);
         }
     }
 
     ct_free_mem(buf);
-    fclose(f);
+    ct_fclose(f);
 
     if(!image)
         CT_ADD_FAILURE("Can not read image from \"%s\"", fileName);
