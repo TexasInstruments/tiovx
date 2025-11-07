@@ -31,6 +31,7 @@ static vx_status ownReleaseRefFromObjArray(
 static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_bool validate_only, const vx_reference input, const vx_reference output)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_uint32 i, num_items = ((tivx_obj_desc_object_array_t *)input->obj_desc)->num_items;
     if ((vx_bool)vx_true_e == validate_only)
     {
         if ((vx_bool)vx_true_e == tivxIsReferenceMetaFormatEqual(input, output))
@@ -40,6 +41,16 @@ static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_b
         else
         {
             status =  (vx_status)VX_ERROR_NOT_COMPATIBLE;
+        }
+        for (i = 0U; (i < num_items) && ((vx_status)VX_SUCCESS == status); ++i)
+        {
+            vx_reference p2[2] = {vxCastRefAsObjectArray(input, &status)->ref[i], vxCastRefAsObjectArray(output, &status)->ref[i]};
+            if (tivxIsReferenceMetaFormatEqual(p2[0], p2[1]) != (vx_bool)vx_true_e)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Corresponding children of object array from list have mismatched meta-data, no copy/swap possible.\n");
+                status = (vx_status)VX_ERROR_NOT_COMPATIBLE;
+                break;
+            }
         }
     }
     else    /* dispatch to each sub-object in turn */
