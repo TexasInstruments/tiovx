@@ -1,6 +1,6 @@
 /*
 
- * Copyright (c) 2023 The Khronos Group Inc.
+ * Copyright (c) 2023-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,32 @@
 /**********************************************************/
 
 TESTCASE(copySwap, CT_VXContext, ct_setup_vx_context, 0)
+
+#define NUM_TYPES 13
+#define ADD_COPY_SWAP_TEST_TYPES(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_IMAGE", __VA_ARGS__, VX_TYPE_IMAGE)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_ARRAY", __VA_ARGS__, VX_TYPE_ARRAY)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_PYRAMID", __VA_ARGS__, VX_TYPE_PYRAMID)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_SCALAR", __VA_ARGS__, VX_TYPE_SCALAR)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_MATRIX", __VA_ARGS__, VX_TYPE_MATRIX)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_DISTRIBUTION", __VA_ARGS__, VX_TYPE_DISTRIBUTION)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_REMAP", __VA_ARGS__, VX_TYPE_REMAP)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_LUT", __VA_ARGS__, VX_TYPE_LUT)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_THRESHOLD", __VA_ARGS__, VX_TYPE_THRESHOLD )), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_CONVOLUTION", __VA_ARGS__, VX_TYPE_CONVOLUTION)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_OBJECT_ARRAY", __VA_ARGS__, VX_TYPE_OBJECT_ARRAY)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_TENSOR", __VA_ARGS__, VX_TYPE_TENSOR)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_USER_DATA_OBJECT", __VA_ARGS__, VX_TYPE_USER_DATA_OBJECT))
+
+#define PARAMETERS \
+    CT_GENERATE_PARAMETERS("copy_swap", ADD_COPY_SWAP_TEST_TYPES, ARG, NULL)
+
+typedef struct
+{
+    const char* testName;
+    const char* p;
+    vx_enum item_type;
+} Copy_Swap_Arg;
 
 /* Function to get a parameter, add it to a graph and then release it */
 static void addParameterToGraph(vx_graph graph, vx_node node, vx_uint32 num)
@@ -72,23 +98,6 @@ static vx_status checkImage(vx_image image, vx_uint8 a, vx_uint8 b)
     /* On failure return a non-zero value encoding the pixels, easily readable in decimal */
     return (aa == a) && (bb  == b) ? VX_SUCCESS : aa * 1000 + bb + 1000000;
 }
-
-static const vx_enum type_ids[] =
-{
-    VX_TYPE_ARRAY,
-    VX_TYPE_CONVOLUTION,
-    VX_TYPE_DISTRIBUTION,
-    VX_TYPE_IMAGE,
-    VX_TYPE_LUT,
-    VX_TYPE_MATRIX,
-    VX_TYPE_OBJECT_ARRAY,
-    VX_TYPE_PYRAMID,
-    VX_TYPE_REMAP,
-    VX_TYPE_SCALAR,
-    VX_TYPE_TENSOR,
-    VX_TYPE_THRESHOLD,
-    VX_TYPE_USER_DATA_OBJECT
-    };
 
 static const vx_enum format_list[] = {
     VX_DF_IMAGE_NV12,
@@ -139,8 +148,6 @@ static vx_bool is_image_format_supported(vx_enum format)
     }
     return found;
 }
-
-#define NUM_TYPES (sizeof(type_ids) / sizeof(vx_enum))
 
 typedef struct _user_data
 {
@@ -616,131 +623,218 @@ static vx_bool is_supported(vx_enum type)
    }
 }
 
+/* Test basic performance of Copy kernels for all supported types*/
+TEST_WITH_ARG (copySwap, testCopy, Copy_Swap_Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = vxCreateGraph(context);
+    vx_node copyNode;
+    vx_enum item_type = arg_->item_type;
 
-/* Test basic performance of Copy kernel for all supported types */
-TEST (copySwap, testCopy)
+    vx_reference copyRef1, copyRef2;
+    copyRef1 = createReference(context, item_type);
+    copyRef2 = createReference(context, item_type);
+
+    if (is_supported(item_type))
+    {
+        /* Test Copy Node of item_type */
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(copyRef1, item_type, 4, 3));
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(copyRef2, item_type, 2, 5));
+        /* Add copy node to graph */
+        copyNode = vxCopyNode(graph, copyRef1, copyRef2);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)copyNode));
+        
+        /* Verify and Execute Graph */
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+
+        /* Verify Copy executed correctly */
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(copyRef1, item_type, 4, 3) | checkValues(copyRef2, item_type, 4, 3));
+    }
+    else
+    {
+        EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, writeValues(copyRef1, item_type, 4, 3));
+        copyNode = vxCopyNode(graph, copyRef1, copyRef2);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)copyNode));
+        EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxVerifyGraph(graph));
+    }
+    VX_CALL(vxReleaseNode(&copyNode));
+    VX_CALL(vxReleaseReference(&copyRef1));
+    VX_CALL(vxReleaseReference(&copyRef2));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+/* Test basic performance of Swap kernels for all supported types*/
+TEST_WITH_ARG (copySwap, testSwap, Copy_Swap_Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = vxCreateGraph(context);
+    vx_node swapNode;
+    vx_enum item_type = arg_->item_type;
+
+    vx_reference swapRef1, swapRef2;
+    swapRef1 = createReference(context, item_type);
+    swapRef2 = createReference(context, item_type);
+
+    if (is_supported(item_type))
+    {
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(swapRef1, item_type, 4, 3));
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(swapRef2, item_type, 2, 5));
+        /* Add swap node to graph */
+        swapNode = vxSwapNode(graph, swapRef1, swapRef2);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)swapNode));
+
+        /* Verify and Execute Graph */
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+
+        /* Verify Swap executed correctly */
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(swapRef1, item_type, 2, 5) | checkValues(swapRef2, item_type, 4, 3));
+    }
+    else
+    {
+        EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, writeValues(swapRef1, item_type, 4, 3));
+        swapNode = vxSwapNode(graph, swapRef1, swapRef2);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)swapNode));
+        EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxVerifyGraph(graph));
+    }
+    VX_CALL(vxReleaseNode(&swapNode));
+    VX_CALL(vxReleaseReference(&swapRef1));
+    VX_CALL(vxReleaseReference(&swapRef2));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+/* Test basic performance of Move kernels for all supported types*/
+TEST_WITH_ARG (copySwap, testMove, Copy_Swap_Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = vxCreateGraph(context);
+    vx_node moveNode;
+    vx_enum item_type = arg_->item_type;
+
+    vx_reference moveRef1, moveRef2;
+    moveRef1 = createReference(context, item_type);
+    moveRef2 = createReference(context, item_type);
+
+    if (is_supported(item_type))
+    {
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(moveRef1, item_type, 4, 3));
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(moveRef2, item_type, 2, 5));
+        /* Add swap node to graph */
+        moveNode = vxMoveNode(graph, moveRef1, moveRef2);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)moveNode));
+
+         /* Verify and Execute Graph */
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+
+        /* Verify Swap executed correctly */
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(moveRef2, item_type, 4, 3));
+    }
+    else
+    {
+        EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, writeValues(moveRef1, item_type, 4, 3));
+        moveNode = vxMoveNode(graph, moveRef1, moveRef2);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)moveNode));
+        EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxVerifyGraph(graph));
+    }
+    VX_CALL(vxReleaseNode(&moveNode));
+    VX_CALL(vxReleaseReference(&moveRef1));
+    VX_CALL(vxReleaseReference(&moveRef2));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+/* Negative Tests of Copy kernel */
+TEST (copySwap, negativeTestCopy)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    int i;
-    for (i = 0; i < ( NUM_TYPES); ++i)
-    {
-        vx_enum type = type_ids[i];
 
-        if (is_supported(type))
-        {
-            graph = vxCreateGraph(context);
-            vx_node node;
-            vx_reference example1 = createReference(context, type);
-            vx_reference example2 = createReference(context, type);
-
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example1, type, 4, 3));
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example2, type, 2, 5));
-
-            node = vxCopyNode(graph, example1, example2);
-            /* Add copy node to graph */
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
-            /* Copy node verified in graph */
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-            /* Copy node graph executed */
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
-            /* Copy executed correctly */
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS,checkValues(example1, type, 4, 3) | checkValues(example2, type, 4, 3));
-
-            VX_CALL(vxReleaseReference(&example1));
-            VX_CALL(vxReleaseReference(&example2));
-            VX_CALL(vxReleaseNode(&node));
-            VX_CALL(vxReleaseGraph(&graph));
-        }
-    }
-
-    /* improve test coverage */
     vx_node node;
-    vx_array example1;
+    vx_array array1, array2, array3;
     vx_matrix vxmatrix1;
     /* negative test case for different input and output types */
     /* arrays and matrixes */
     graph = vxCreateGraph(context);
-    example1 = vxCreateArray(context, VX_TYPE_UINT8, 4);
+    array1 = vxCreateArray(context, VX_TYPE_UINT8, 4);
     vxmatrix1 = vxCreateMatrix(context, VX_TYPE_UINT8, 4, 4);
-    node = vxCopyNode(graph, (vx_reference)example1, (vx_reference)vxmatrix1);
+    node = vxCopyNode(graph, (vx_reference)array1, (vx_reference)vxmatrix1);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
     EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxVerifyGraph(graph));
-    VX_CALL(vxReleaseArray(&example1));
+    VX_CALL(vxReleaseArray(&array1));
     VX_CALL(vxReleaseMatrix(&vxmatrix1));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
     /* negative test cases for vx_array */
     /* arrays of different sizes */
-    vx_array example2;
     graph = vxCreateGraph(context);
-    example1 = vxCreateArray(context, VX_TYPE_UINT8, 4);
-    example2 = vxCreateArray(context, VX_TYPE_UINT8, 3);
-    node = vxCopyNode(graph, (vx_reference)example1, (vx_reference)example2);
+    array1 = vxCreateArray(context, VX_TYPE_UINT8, 4);
+    array2 = vxCreateArray(context, VX_TYPE_UINT8, 3);
+    node = vxCopyNode(graph, (vx_reference)array1, (vx_reference)array2);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
     EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxVerifyGraph(graph));
-    VX_CALL(vxReleaseArray(&example1));
-    VX_CALL(vxReleaseArray(&example2));
+    VX_CALL(vxReleaseArray(&array1));
+    VX_CALL(vxReleaseArray(&array2));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
     /* arrays virtual and size 0*/
     graph = vxCreateGraph(context);
-    example1 = vxCreateArray(context, VX_TYPE_UINT8, 3);
-    example2 = vxCreateVirtualArray(graph, VX_TYPE_UINT8, 0);
-    vx_array example3 = vxCreateArray(context, VX_TYPE_UINT8, 3);
-    node = vxCopyNode(graph, (vx_reference)example1, (vx_reference)example2);
+    array1 = vxCreateArray(context, VX_TYPE_UINT8, 3);
+    array2 = vxCreateVirtualArray(graph, VX_TYPE_UINT8, 0);
+    array3 = vxCreateArray(context, VX_TYPE_UINT8, 3);
+    node = vxCopyNode(graph, (vx_reference)array1, (vx_reference)array2);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
-    vx_node node_1 = vxCopyNode(graph, (vx_reference)example2, (vx_reference)example3);
+    vx_node node_1 = vxCopyNode(graph, (vx_reference)array2, (vx_reference)array3);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node_1));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseNode(&node_1));
-    VX_CALL(vxReleaseArray(&example1));
-    VX_CALL(vxReleaseArray(&example2));
-    VX_CALL(vxReleaseArray(&example3));
+    VX_CALL(vxReleaseArray(&array1));
+    VX_CALL(vxReleaseArray(&array2));
+    VX_CALL(vxReleaseArray(&array3));
     VX_CALL(vxReleaseGraph(&graph));
     //array of different types
     graph = vxCreateGraph(context);
-    example1 = vxCreateArray(context, VX_TYPE_FLOAT64, 4);
-    example2 = vxCreateArray(context, VX_TYPE_UINT8, 4);
-    node = vxCopyNode(graph, (vx_reference)example1, (vx_reference)example2);
+    array1 = vxCreateArray(context, VX_TYPE_FLOAT64, 4);
+    array2 = vxCreateArray(context, VX_TYPE_UINT8, 4);
+    node = vxCopyNode(graph, (vx_reference)array1, (vx_reference)array2);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
     EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxVerifyGraph(graph));
-    VX_CALL(vxReleaseArray(&example1));
-    VX_CALL(vxReleaseArray(&example2));
+    VX_CALL(vxReleaseArray(&array1));
+    VX_CALL(vxReleaseArray(&array2));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
     /* negative test cases for vx_array and virtual array*/
     graph = vxCreateGraph(context);
-    example1 = vxCreateArray(context, VX_TYPE_UINT8, 4);
-    example2 = vxCreateVirtualArray(graph, VX_TYPE_UINT8, 0);
-    node = vxCopyNode(graph, (vx_reference)example1, (vx_reference)example2);
+    array1 = vxCreateArray(context, VX_TYPE_UINT8, 4);
+    array2 = vxCreateVirtualArray(graph, VX_TYPE_UINT8, 0);
+    node = vxCopyNode(graph, (vx_reference)array1, (vx_reference)array2);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-    VX_CALL(vxReleaseArray(&example1));
-    VX_CALL(vxReleaseArray(&example2));
+    VX_CALL(vxReleaseArray(&array1));
+    VX_CALL(vxReleaseArray(&array2));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
     /* - negative virtual stuff - different types */
     graph = vxCreateGraph(context);
-    example1 = vxCreateArray(context, VX_TYPE_UINT8, 4);
-    example2 = vxCreateVirtualArray(graph, VX_TYPE_UINT16, 0);
-    node = vxCopyNode(graph, (vx_reference)example1, (vx_reference)example2);
+    array1 = vxCreateArray(context, VX_TYPE_UINT8, 4);
+    array2 = vxCreateVirtualArray(graph, VX_TYPE_UINT16, 0);
+    node = vxCopyNode(graph, (vx_reference)array1, (vx_reference)array2);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
     EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxVerifyGraph(graph));
-    VX_CALL(vxReleaseArray(&example1));
-    VX_CALL(vxReleaseArray(&example2));
+    VX_CALL(vxReleaseArray(&array1));
+    VX_CALL(vxReleaseArray(&array2));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
     /* negative virtual stuff - different capacity */
     graph = vxCreateGraph(context);
-    example1 = vxCreateArray(context, VX_TYPE_UINT16, 4);
-    example2 = vxCreateVirtualArray(graph, VX_TYPE_UINT16, 1);
-    node = vxCopyNode(graph, (vx_reference)example1, (vx_reference)example2);
+    array1 = vxCreateArray(context, VX_TYPE_UINT16, 4);
+    array2 = vxCreateVirtualArray(graph, VX_TYPE_UINT16, 1);
+    node = vxCopyNode(graph, (vx_reference)array1, (vx_reference)array2);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
     EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxVerifyGraph(graph));
-    VX_CALL(vxReleaseArray(&example1));
-    VX_CALL(vxReleaseArray(&example2));
+    VX_CALL(vxReleaseArray(&array1));
+    VX_CALL(vxReleaseArray(&array2));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
 
@@ -760,6 +854,21 @@ TEST (copySwap, testCopy)
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
 
+    /* negative test case for two object arrays with different children metadata*/
+    graph = vxCreateGraph(context);
+    image = vxCreateImage(context, 8, 8, VX_DF_IMAGE_U8);
+    objarray_0 = vxCreateObjectArray(context, (vx_reference)image, 4);
+    VX_CALL(vxReleaseImage(&image));
+    image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U16);
+    objarray_1 = vxCreateObjectArray(context, (vx_reference)image, 4);
+    VX_CALL(vxReleaseImage(&image));
+    node = vxCopyNode(graph, (vx_reference)objarray_0, (vx_reference)objarray_1);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
+    EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxVerifyGraph(graph));
+    VX_CALL(vxReleaseObjectArray(&objarray_0));
+    VX_CALL(vxReleaseObjectArray(&objarray_1));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
 
     /* improve test coverage */
     vx_image image_0, image_1;
@@ -976,88 +1085,11 @@ TEST (copySwap, testCopy)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
-
-/* Test basic performance of Swap kernel for all supported types */
-TEST (copySwap, testSwap)
-{
-    vx_context context = context_->vx_context_;
-
-    int i;
-    for (i = 0; i < ( NUM_TYPES ); ++i)
-    {
-        vx_enum type = type_ids[i];
-
-        if (is_supported(type))
-        {
-            vx_graph graph = vxCreateGraph(context);
-            vx_node node;
-            vx_reference example1 = createReference(context, type);
-            vx_reference example2 = createReference(context, type);
-
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example1, type, 4, 3));
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example2, type, 2, 5));
-
-            node = vxSwapNode(graph, example1, example2);
-
-            /* Add swap node to graph */
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node) );
-            /* Swap node verified in graph */
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-            /* Swap node graph executed */
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
-            /* Swap executed correctly */
-            vx_status status = checkValues(example2, type, 4, 3);
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-            status = checkValues(example1, type, 2, 5);
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
-
-            VX_CALL(vxReleaseReference(&example1));
-            VX_CALL(vxReleaseReference(&example2));
-            VX_CALL(vxReleaseNode(&node));
-            VX_CALL(vxReleaseGraph(&graph));
-        }
-    }
-}
-
-
-/* Test basic performance of Move kernel for all supported types */
-TEST(copySwap, testMove)
+/* Negative tests for Move Kernel*/
+TEST(copySwap, negativeTestMove)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph = NULL;
-
-    int i;
-    for (i = 0; i < ( NUM_TYPES); ++i)
-    {
-        vx_enum type = type_ids[i];
-
-        if (is_supported(type))
-        {
-            ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-            vx_node node;
-            vx_reference example1 = createReference(context, type);
-            vx_reference example2 = createReference(context, type);
-
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example1, type, 4, 3));
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example2, type, 2, 5));
-            node = vxMoveNode(graph, example1, example2);
-
-            /* Add move node to graph */
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
-            /* Move node verified in graph */
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-            /* Move node graph executed */
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
-            /* Move executed correctly */
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, checkValues(example2, type, 4, 3));
-
-            VX_CALL(vxReleaseReference(&example1));
-            VX_CALL(vxReleaseReference(&example2));
-            VX_CALL(vxReleaseNode(&node));
-            VX_CALL(vxReleaseGraph(&graph));
-        }
-    }
 
     vx_node node;
     vx_array example1, example2;     
@@ -1079,28 +1111,24 @@ TEST(copySwap, testMove)
 
 
 /* Test basic performance of vxuCopy kernel for all supported types */
-TEST(copySwap, testVxuCopy)
+TEST_WITH_ARG (copySwap, testVxuCopy, Copy_Swap_Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
+    vx_enum type = arg_->item_type;
 
-    int i;
-    for (i = 0; i < NUM_TYPES; ++i)
+
+    if (is_supported(type))
     {
-        vx_enum type = type_ids[i];
+        vx_reference example1 = createReference(context, type);
+        vx_reference example2 = createReference(context, type);
 
-        if (is_supported(type))
-        {
-            vx_reference example1 = createReference(context, type);
-            vx_reference example2 = createReference(context, type);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example1, type, 4, 3));
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example2, type, 2, 5));
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxuCopy(context, example1, example2));
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, (checkValues(example1, type, 4, 3) + checkValues(example2, type, 4, 3)));
 
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example1, type, 4, 3));
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, writeValues(example2, type, 2, 5));
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxuCopy(context, example1, example2));
-            EXPECT_EQ_VX_STATUS(VX_SUCCESS, (checkValues(example1, type, 4, 3) + checkValues(example2, type, 4, 3)));
-
-            VX_CALL(vxReleaseReference(&example1));
-            VX_CALL(vxReleaseReference(&example2));
-        }
+        VX_CALL(vxReleaseReference(&example1));
+        VX_CALL(vxReleaseReference(&example2));
     }
 }
 
@@ -2636,6 +2664,8 @@ TESTCASE_TESTS(copySwap,
                testCopy,
                testSwap,
                testMove,
+               negativeTestCopy,
+               negativeTestMove,
                testVxu,
                testVxuCopy,
                testCopyRemoval,
