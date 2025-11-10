@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2023 Texas Instruments Incorporated
+* Copyright (c) 2023-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -243,6 +243,12 @@ extern "C" {
 */
 #define TIVX_IMAGE_MAX_SUBIMAGE_DEPTH            (2U)
 
+/*!
+ * \brief Max possible subtensors from a image
+ * \ingroup group_vx_image_cfg
+ */
+#define TIVX_IMAGE_MAX_SUBTENSORS     (16u)
+
 /*! \brief Max number image objects supported
  * \ingroup group_vx_image_cfg
  */
@@ -339,13 +345,6 @@ extern "C" {
  * \ingroup group_vx_tensor_cfg
  */
 #define TIVX_TENSOR_MAX_OBJECTS            (256u)
-
-/*!
- * \brief Max possible subtensors from a image
- *
- * \ingroup group_vx_image_cfg
- */
-#define TIVX_IMAGE_MAX_SUBTENSORS     (16u)
 
 /*
  * Threshold configuration resources

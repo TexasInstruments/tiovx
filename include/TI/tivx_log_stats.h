@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2024 Texas Instruments Incorporated
+* Copyright (c) 2024-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -100,7 +100,7 @@ extern "C" {
  *
  * \ingroup group_tivx_log_resource
  */
-#define TIVX_RESOURCE_STATS_TABLE_SIZE (62u)
+#define TIVX_RESOURCE_STATS_TABLE_SIZE (63u)
 
 
 /*! \brief Struct containing config parameters of given static resource. Allows

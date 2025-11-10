@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2018 Texas Instruments Incorporated
+* Copyright (c) 2018-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -292,6 +292,11 @@ tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
     {
         TIVX_IMAGE_MAX_SUBIMAGES, 0, 0, 1, "TIVX_IMAGE_MAX_SUBIMAGES", { {(uint32_t)TIVX_TYPE_UINTPTR}, \
+                                                                         {TIVX_IMAGE_MAX_OBJECTS} }, \
+                                                                       (vx_bool)vx_false_e, (vx_bool)vx_false_e
+    },
+    {
+        TIVX_IMAGE_MAX_SUBTENSORS, 0, 0, 1, "TIVX_IMAGE_MAX_SUBTENSORS", { {(uint32_t)TIVX_TYPE_UINTPTR}, \
                                                                          {TIVX_IMAGE_MAX_OBJECTS} }, \
                                                                        (vx_bool)vx_false_e, (vx_bool)vx_false_e
     },
@@ -664,6 +669,9 @@ void ownLogResourceInit(void)
 
     /* Subimages can't exceed the defined image object maximum */
     BUILD_ASSERT(((TIVX_IMAGE_MAX_SUBIMAGES <= TIVX_IMAGE_MAX_OBJECTS)? 1 : 0));
+
+    /* Defined structure size should match calculated size */
+    BUILD_ASSERT(((TIVX_RESOURCE_STATS_TABLE_SIZE == dimof(g_tivx_resource_stats_table) ? 1 : 0)));
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     if((vx_status)VX_SUCCESS != tivxMutexCreate(&g_tivx_log_resource_lock))
     {
