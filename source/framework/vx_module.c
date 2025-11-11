@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -139,7 +139,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publi
         if(idx>=dimof(g_module_table))
         {
             VX_PRINT(VX_ZONE_ERROR, "Module table is full\n");
-            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_MODULE_MAX in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT_BOUND_ERROR("TIVX_MODULE_MAX");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }

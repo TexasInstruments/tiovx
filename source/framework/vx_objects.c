@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2018 Texas Instruments Incorporated
+* Copyright (c) 2018-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -770,7 +770,7 @@ static uint8_t *ownAllocObject(
 
     if (obj_ptr == NULL)
     {
-        VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of %s in tiovx/include/TI/tivx_config.h\n", resource_name);
+        VX_PRINT_BOUND_ERROR(resource_name);
     }
 
     return (obj_ptr);

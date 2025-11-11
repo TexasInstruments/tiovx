@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022-2022 Texas Instruments Incorporated
+ * Copyright (c) 2022-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -84,6 +84,9 @@
 #ifndef C7XMMA_COUNT
 #define C7XMMA_COUNT  (1U)
 #endif
+
+/* Name of this SoC */
+#define SOC_NAME "am62a"
 
 #ifdef __cplusplus
 extern "C" {

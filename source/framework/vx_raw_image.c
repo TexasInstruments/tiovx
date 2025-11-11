@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2018 The Khronos Group Inc.
+ * Copyright (c) 2012-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1370,7 +1370,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "No available image maps\n");
-                VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_RAW_IMAGE_MAX_MAPS in tiovx/include/TI/tivx_config.h\n");
+                VX_PRINT_BOUND_ERROR("TIVX_RAW_IMAGE_MAX_MAPS");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
         }

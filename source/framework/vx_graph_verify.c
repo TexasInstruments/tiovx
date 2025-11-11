@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -244,7 +244,7 @@ static vx_status ownGraphAddSingleDataReference(vx_graph graph, vx_reference ref
 <justification end> */
     else if (graph->num_data_ref >= TIVX_GRAPH_MAX_DATA_REF)
     {
-        VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_GRAPH_MAX_DATA_REF in tiovx/include/TI/tivx_config.h\n");
+        VX_PRINT_BOUND_ERROR("TIVX_GRAPH_MAX_DATA_REF");
     }
 /* LDRA_JUSTIFY_END */
 /* LDRA_JUSTIFY_START
@@ -1203,7 +1203,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
                     graph->num_head_nodes = TIVX_GRAPH_MAX_HEAD_NODES;
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
                     VX_PRINT(VX_ZONE_ERROR,"Maximum number of head nodes (%d) exceeded\n", TIVX_GRAPH_MAX_HEAD_NODES);
-                    VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_GRAPH_MAX_HEAD_NODES in tiovx/include/TI/tivx_config.h\n");
+                    VX_PRINT_BOUND_ERROR("TIVX_GRAPH_MAX_HEAD_NODES");
                 }
                 else
                 {
@@ -1219,7 +1219,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
                     graph->num_leaf_nodes = TIVX_GRAPH_MAX_LEAF_NODES;
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
                     VX_PRINT(VX_ZONE_ERROR,"Maximum number of leaf nodes (%d) exceeded\n", TIVX_GRAPH_MAX_LEAF_NODES);
-                    VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_GRAPH_MAX_LEAF_NODES in tiovx/include/TI/tivx_config.h\n");
+                    VX_PRINT_BOUND_ERROR("TIVX_GRAPH_MAX_LEAF_NODES");
                 }
                 else
                 {
@@ -2347,7 +2347,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t idx)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
             VX_PRINT(VX_ZONE_ERROR, "Unable to add data ref q to graph since list is full \n");
-            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_GRAPH_MAX_DATA_REF_QUEUE in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT_BOUND_ERROR("TIVX_GRAPH_MAX_DATA_REF_QUEUE");
         }
 /* LDRA_JUSTIFY_END */
     }

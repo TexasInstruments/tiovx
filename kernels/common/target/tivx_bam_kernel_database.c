@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 - 2019 Texas Instruments Incorporated
+* Copyright (c) 2017 - 2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -276,7 +276,7 @@ vx_status tivxBamRegisterPlugin(tivx_bam_plugin_def *plugin, BAM_KernelId *kerne
             {
                 status = (vx_status)VX_ERROR_NO_MEMORY;
                 VX_PRINT(VX_ZONE_ERROR, "Not enough memory to add new plugin\n");
-                VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_MAX_DSP_BAM_USER_PLUGINS in tiovx/include/TI/tivx_config.h\n");
+                VX_PRINT_BOUND_ERROR("TIVX_MAX_DSP_BAM_USER_PLUGINS");
             }
         }
         else

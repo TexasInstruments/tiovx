@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2019 Texas Instruments Incorporated
+* Copyright (c) 2019-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -77,7 +77,7 @@ static vx_bool ownIsValidCreateParams(vx_graph graph, vx_node nodes[], uint32_t 
     {
         is_valid = (vx_bool)vx_false_e;
         VX_PRINT(VX_ZONE_ERROR, "num_nodes is higher than TIVX_SUPER_NODE_MAX_NODES\n");
-        VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_SUPER_NODE_MAX_NODES in tiovx/include/TI/tivx_config.h\n");
+        VX_PRINT_BOUND_ERROR("TIVX_SUPER_NODE_MAX_NODES");
     }
 
     if( (vx_bool)vx_true_e == is_valid )

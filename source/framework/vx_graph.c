@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+ * Copyright (c) 2012-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -349,7 +349,7 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t idx)
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "invalid graph index\n");
-            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_GRAPH_MAX_NODES in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT_BOUND_ERROR("TIVX_GRAPH_MAX_NODES");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -379,7 +379,7 @@ vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_GRAPH_MAX_SUPER_NODES in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT_BOUND_ERROR("TIVX_GRAPH_MAX_SUPER_NODES");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -650,7 +650,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
                     else
                     {
                         VX_PRINT(VX_ZONE_ERROR, "pipeline depth greater than max allowed pipeline depth\n");
-                        VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_GRAPH_MAX_PIPELINE_DEPTH in tiovx/include/TI/tivx_config.h\n");
+                        VX_PRINT_BOUND_ERROR("TIVX_GRAPH_MAX_PIPELINE_DEPTH");
                         status = (vx_status)VX_ERROR_INVALID_VALUE;
                     }
                 }
@@ -815,7 +815,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "number of graph parameters greater than maximum allowed\n");
-            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_GRAPH_MAX_PARAMS in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT_BOUND_ERROR("TIVX_GRAPH_MAX_PARAMS");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -835,7 +835,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "number of graph parameters greater than maximum allowed\n");
-            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_GRAPH_MAX_PARAMS in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT_BOUND_ERROR("TIVX_GRAPH_MAX_PARAMS");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -960,7 +960,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
                 if (is_full == (vx_bool)vx_true_e)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "no empty slots to register delay\n");
-                    VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_GRAPH_MAX_DELAYS in tiovx/include/TI/tivx_config.h\n");
+                    VX_PRINT_BOUND_ERROR("TIVX_GRAPH_MAX_DELAYS");
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
                 }
             }

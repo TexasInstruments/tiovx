@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+ * Copyright (c) 2012-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1274,7 +1274,7 @@ vx_status ownNodeAddOutNode(vx_node node, vx_node out_node)
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "number of out nodes greater than maximum allowed\n");
-            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_NODE_MAX_OUT_NODES in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT_BOUND_ERROR("TIVX_NODE_MAX_OUT_NODES");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -1361,7 +1361,7 @@ vx_status ownNodeAddInNode(vx_node node, vx_node in_node)
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "number of in nodes greater than maximum allowed\n");
-            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_NODE_MAX_IN_NODES in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT_BOUND_ERROR("TIVX_NODE_MAX_IN_NODES");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -2328,7 +2328,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                                     if (num_of_replicas > TIVX_NODE_MAX_REPLICATE)
                                     {
                                         VX_PRINT(VX_ZONE_ERROR, "Number of replicas is greater than maximum allowed\n");
-                                        VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_NODE_MAX_REPLICATE in tiovx/include/TI/tivx_config.h\n");
+                                        VX_PRINT_BOUND_ERROR("TIVX_NODE_MAX_REPLICATE");
                                         status = (vx_status)VX_FAILURE;
                                     }
 /* LDRA_JUSTIFY_END */

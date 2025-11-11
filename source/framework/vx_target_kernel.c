@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -210,7 +210,7 @@ static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
 
             if ((vx_bool)vx_false_e == resource_added)
             {
-                VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_TARGET_KERNEL_MAX in tiovx/include/TI/tivx_config.h\n");
+                VX_PRINT_BOUND_ERROR("TIVX_TARGET_KERNEL_MAX");
             }
 
             (void)tivxMutexUnlock(g_target_kernel_lock);

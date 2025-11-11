@@ -1,6 +1,6 @@
 /*
 
- * Copyright (c) 2024 The Khronos Group Inc.
+ * Copyright (c) 2024-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,6 @@ static vx_bool ownCopyMoveReplaceInputCompatible(vx_reference old_reference, vx_
 static vx_bool ownCopyMoveReplaceOutputCompatible(vx_reference old_reference, vx_reference new_reference);
 static void ownReassignGraphParameter(vx_graph graph, const vx_node node, const vx_uint32 index, const vx_reference ref, const vx_enum direction);
 static vx_uint16 makeCopyMoveNodeList(vx_graph graph, vx_uint16 copy_move_indices[TIVX_GRAPH_MAX_NODES]);
-
-static vx_status notifyTiovxMaxNodes(const char *in_or_out)
-{
-    VX_PRINT(VX_ZONE_ERROR, "number of %s nodes greater than maximum allowed\n", in_or_out);
-    VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_NODE_MAX_%s_NODES in tiovx/include/TI/tivx_config.h\n", in_or_out);
-    return (vx_status)VX_ERROR_NO_RESOURCES;
-}
 
 static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_index, const vx_reference old_reference, const vx_reference new_reference)
 {
@@ -107,7 +100,8 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
 <justification end>*/
             else
             {
-                status = notifyTiovxMaxNodes("IN");
+                status = VX_ERROR_NO_RESOURCES;
+                VX_PRINT_BOUND_ERROR("TIVX_NODE_MAX_IN_NODES");
                 break;
             }
 /* LDRA_JUSTIFY_END */
@@ -137,7 +131,8 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
             }
             else
             {
-                status = notifyTiovxMaxNodes("OUT");
+                status = VX_ERROR_NO_RESOURCES;
+                VX_PRINT_BOUND_ERROR("TIVX_NODE_MAX_OUT_NODES");
                 break;
             }
         }

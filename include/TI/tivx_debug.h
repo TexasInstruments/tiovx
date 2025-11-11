@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -95,19 +95,30 @@ enum tivx_debug_zone_e {
  * \brief Utility macro to print debug information if specified zone is globally set
  * \ingroup group_vx_debug
  */
-#define VX_PRINT(zone, message, ...) do { tivx_print_global(((vx_enum)zone), "[%s:%u] " message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (1 == 0)
+#define VX_PRINT(zone, message, ...) do { tivx_print_global(((vx_enum)zone), "[%s:%u] " \
+    message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (1 == 0)
 
 /*! \def VX_PRINT_GRAPH
  * \brief Utility macro to print debug information if specified zone is set on a given graph object
  * \ingroup group_vx_debug
  */
-#define VX_PRINT_GRAPH(zone, graph, message, ...) do { tivx_print_object(((vx_enum)zone), tivxGetGraphDebugZonemask(graph), "[ %s ] " message, tivxGetGraphName(graph), ## __VA_ARGS__); } while (1 == 0)
+#define VX_PRINT_GRAPH(zone, graph, message, ...) do { tivx_print_object(((vx_enum)zone), \
+    tivxGetGraphDebugZonemask(graph), "[ %s ] " message, tivxGetGraphName(graph), ## __VA_ARGS__); } while (1 == 0)
 
 /*! \def VX_PRINT_NODE
  * \brief Utility macro to print debug information if specified zone is set on a given node object
  * \ingroup group_vx_debug
  */
-#define VX_PRINT_NODE(zone, node, message, ...) do { tivx_print_object(((vx_enum)zone), tivxGetNodeDebugZonemask(node), "[ %s ] " message, tivxGetNodeName(node), ## __VA_ARGS__); } while (1 == 0)
+#define VX_PRINT_NODE(zone, node, message, ...) do { tivx_print_object(((vx_enum)zone), \
+    tivxGetNodeDebugZonemask(node), "[ %s ] " message, tivxGetNodeName(node), ## __VA_ARGS__); } while (1 == 0)
+
+/*! \def VX_PRINT_BOUND_ERROR
+ * \brief Utility macro to print the standard boundary error for a specified configuration resource
+ * \ingroup group_vx_debug
+ */
+#define VX_PRINT_BOUND_ERROR(resource) tivx_print_global(VX_ZONE_ERROR, \
+    "[%s:%u] May need to increase the value of %s in include/TI/tivx_config_%s.h\n", \
+    __FUNCTION__, __LINE__, resource, SOC_NAME)
 
 #ifdef __cplusplus
 extern "C" {

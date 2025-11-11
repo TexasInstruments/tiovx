@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+ * Copyright (c) 2012-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -244,7 +244,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
 <justification end> */
     if (p == TIVX_IMAGE_MAX_SUBIMAGES)
     {
-        VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_IMAGE_MAX_SUBIMAGES in tiovx/include/TI/tivx_config.h\n");
+        VX_PRINT_BOUND_ERROR("TIVX_IMAGE_MAX_SUBIMAGES");
     }
 /* LDRA_JUSTIFY_END */
     (void)ownIncrementReference(&parent->base, (vx_enum)VX_INTERNAL);
@@ -691,7 +691,7 @@ static vx_status adjustMemoryPointer(const vx_reference ref, uint64_t offset[TIV
 <justification end>*/
                     if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "Too many sub-images, may need to increase the value of TIVX_SUBIMAGE_STACK_SIZE\n");
+                        VX_PRINT_BOUND_ERROR("TIVX_IMAGE_MAX_SUBIMAGES or TIVX_IMAGE_MAX_SUBIMAGE_DEPTH");
                         status = (vx_status)VX_ERROR_NO_RESOURCES;
                         break;
                     }
@@ -718,7 +718,7 @@ static vx_status adjustMemoryPointer(const vx_reference ref, uint64_t offset[TIV
 <justification end>*/
                     if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "Too many sub-tensors, may need to increase the value of TIVX_SUBOBJECT_STACK_SIZE in include/TI/tivx_config.h\n");
+                        VX_PRINT_BOUND_ERROR("TIVX_IMAGE_MAX_SUBIMAGES or TIVX_IMAGE_MAX_SUBIMAGE_DEPTH");
                         status = (vx_status)VX_ERROR_NO_RESOURCES;
                         break;
                     }
@@ -2674,7 +2674,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "No available image maps\n");
-                VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_IMAGE_MAX_MAPS in tiovx/include/TI/tivx_config.h\n");
+                VX_PRINT_BOUND_ERROR("TIVX_IMAGE_MAX_MAPS");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
         }
@@ -2912,7 +2912,7 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
         /* this should not happen as the max depth for subimages is fixed */
         if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Too many sub-images, may need to increase the value of TIVX_SUBIMAGE_STACK_SIZE\n");
+            VX_PRINT_BOUND_ERROR("TIVX_IMAGE_MAX_SUBIMAGES or TIVX_IMAGE_MAX_SUBIMAGE_DEPTH");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
             break;
         }
@@ -2961,7 +2961,7 @@ static vx_status ownSwapSubImage(vx_image image, void* const new_ptrs[])
                         /* this should not happen as the max depth for subimages is fixed */
                         if (TIVX_SUBIMAGE_STACK_SIZE <= stack_pointer)
                         {
-                            VX_PRINT(VX_ZONE_ERROR, "Too many sub-images, may need to increase the value of TIVX_SUBIMAGE_STACK_SIZE\n");
+                            VX_PRINT_BOUND_ERROR("TIVX_IMAGE_MAX_SUBIMAGES or TIVX_IMAGE_MAX_SUBIMAGE_DEPTH");
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
                             break;
                         }
@@ -3286,7 +3286,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const v
                             if (TIVX_IMAGE_MAX_SUBTENSORS == i)
                             {
                                 VX_PRINT(VX_ZONE_ERROR, "No available subtensor slots\n");
-                                VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_IMAGE_MAX_SUBTENSORS in include/TI/tivx_config.h\n");
+                                VX_PRINT_BOUND_ERROR("TIVX_IMAGE_MAX_SUBTENSORS");
                                 status = (vx_status)VX_ERROR_NO_RESOURCES;
                             }
                             else

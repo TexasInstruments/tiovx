@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017-2023 Texas Instruments Incorporated
+* Copyright (c) 2017-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -148,8 +148,8 @@ static tivx_target ownTargetAllocHandle(vx_enum target_id)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "Exceeded max targets in CPU. Modify TIVX_TARGET_MAX_TARGETS_IN_CPU value in tiovx/include/TI/tivx_config.h\n");
-        VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_TARGET_MAX_TARGETS_IN_CPU in tiovx/include/TI/tivx_config.h\n");
+        VX_PRINT(VX_ZONE_ERROR, "Exceeded max targets in CPU.\n");
+        VX_PRINT_BOUND_ERROR("TIVX_TARGET_MAX_TARGETS_IN_CPU");
     }
 
     return target;
@@ -1792,7 +1792,7 @@ vx_status ownTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id)
         {
             VX_PRINT(VX_ZONE_ERROR,"***************************************************************************************************\n");
             VX_PRINT(VX_ZONE_ERROR,"FATAL ERROR: tivxQueuePut failed\n");
-            VX_PRINT(VX_ZONE_ERROR,"May need to increase the value of TIVX_TARGET_MAX_JOB_QUEUE_DEPTH in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT_BOUND_ERROR("TIVX_TARGET_MAX_JOB_QUEUE_DEPTH");
             VX_PRINT(VX_ZONE_ERROR,"***************************************************************************************************\n");
         }
 /* LDRA_JUSTIFY_END */

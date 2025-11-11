@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2023 Texas Instruments Incorporated
+ * Copyright (c) 2017-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -84,6 +84,9 @@
 #ifndef C7XMMA_COUNT
 #define C7XMMA_COUNT  (1U)
 #endif
+
+/* Name of this SoC */
+#define SOC_NAME "j721e"
 
 #ifdef __cplusplus
 extern "C" {

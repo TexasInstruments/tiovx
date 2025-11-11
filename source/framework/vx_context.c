@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+ * Copyright (c) 2012-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -515,7 +515,7 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
             if ((vx_bool)vx_false_e == is_success)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Max context references exceeded or setting Reference name failed\n");
-                VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_CONTEXT_MAX_REFERENCES in tiovx/include/TI/tivx_config.h\n");
+                VX_PRINT_BOUND_ERROR("TIVX_CONTEXT_MAX_REFERENCES");
             }
 
             (void)ownContextUnlock(context);
@@ -626,7 +626,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
             {
                 /* free entry not found */
                 VX_PRINT(VX_ZONE_ERROR,"free entry not found\n");
-                VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_CONTEXT_MAX_KERNELS in tiovx/include/TI/tivx_config.h\n");
+                VX_PRINT_BOUND_ERROR("TIVX_CONTEXT_MAX_KERNELS");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
 /* LDRA_JUSTIFY_END */
@@ -1995,7 +1995,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
 
             if (type == (vx_enum)VX_TYPE_INVALID)
             {
-                VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_CONTEXT_MAX_USER_STRUCTS in tiovx/include/TI/tivx_config.h\n");
+                VX_PRINT_BOUND_ERROR("TIVX_CONTEXT_MAX_USER_STRUCTS");
             }
             (void)ownContextUnlock(context);
         }

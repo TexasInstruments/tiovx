@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+ * Copyright (c) 2012-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ static tivx_delay_param_t *ownAllocDelayPrm(vx_delay delay)
 <justification end> */
     if (prm == NULL)
     {
-        VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_DELAY_MAX_PRM_OBJECT in tiovx/include/TI/tivx_config.h\n");
+        VX_PRINT_BOUND_ERROR("TIVX_DELAY_MAX_PRM_OBJECT");
     }
 /* LDRA_JUSTIFY_END */
     return prm;
@@ -581,7 +581,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "count > TIVX_DELAY_MAX_OBJECT\n");
-            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_DELAY_MAX_OBJECT in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT_BOUND_ERROR("TIVX_DELAY_MAX_OBJECT");
             delay = (vx_delay)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
         }
     }
