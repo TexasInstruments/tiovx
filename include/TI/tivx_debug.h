@@ -116,9 +116,7 @@ enum tivx_debug_zone_e {
  * \brief Utility macro to print the standard boundary error for a specified configuration resource
  * \ingroup group_vx_debug
  */
-#define VX_PRINT_BOUND_ERROR(resource) tivx_print_global(VX_ZONE_ERROR, \
-    "[%s:%u] May need to increase the value of %s in include/TI/tivx_config_%s.h\n", \
-    __FUNCTION__, __LINE__, resource, SOC_NAME)
+#define VX_PRINT_BOUND_ERROR(resource) tivx_bound_error(__FUNCTION__, __LINE__, resource)
 
 #ifdef __cplusplus
 extern "C" {
@@ -208,6 +206,15 @@ const char * tivxGetNodeName(vx_node node);
  * \ingroup group_vx_debug
  */
 const char * tivxGetGraphName(vx_graph graph);
+
+/*! \brief Internal function - prints the common boundary error statement for a given config resource
+ *
+ * \param [in] func Calling function name
+ * \param [in] line Line number of calling function
+ * \param [in] resource Name of specific configuration resource
+ * \ingroup group_tivx_common_prints
+ */
+void tivx_bound_error(const char *func, uint32_t line, const char *resource);
 
 #ifdef __cplusplus
 }
