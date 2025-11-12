@@ -352,9 +352,8 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
             if (num_refs > TIVX_CMD_MAX_OBJ_DESCS)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "num_refs exceeds TIVX_CMD_MAX_OBJ_DESCS\n");
-                VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_CMD_MAX_OBJ_DESCS in tiovx/source/include/tivx_obj_desc_priv.h\n");
+                VX_PRINT(VX_ZONE_ERROR, "num_refs exceeds TIVX_CMD_MAX_OBJ_DESCS\n");
+                VX_PRINT_BOUND_ERROR("TIVX_CMD_MAX_OBJ_DESCS");
             }
             else
             {
@@ -470,8 +469,8 @@ vx_status ownNodeKernelInitKernelName(vx_node node)
     {
         VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed, unable to alloc obj desc for kernel_name\n");
         status=(vx_status)VX_FAILURE;
-        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-        VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
+        VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
     }
     return status;
 }
@@ -1475,8 +1474,8 @@ vx_status ownNodeCreateUserCallbackCommand(vx_node node, uint32_t pipeline_id)
             {
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
                 VX_PRINT(VX_ZONE_ERROR, "Could not allocate object descriptor for user callback\n");
-                VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+                VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
+                VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
             }
         }
     }
@@ -1715,8 +1714,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                             vxAddLogEntry(&graph->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate node object descriptor\n");
                             node = (vx_node)ownGetErrorObject(graph->base.context, (vx_status)VX_ERROR_NO_RESOURCES);
                             VX_PRINT(VX_ZONE_ERROR, "Could not allocate node object descriptor\n");
-                            VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                            VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+                            VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
+                            VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
                         }
                         else
                         {

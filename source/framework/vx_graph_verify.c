@@ -150,7 +150,8 @@ static vx_status ownGraphLinkParameters(vx_graph graph)
                     {
                         if (graph->parameters[p_index].num_other >= TIVX_GRAPH_MAX_PARAM_REFS)
                         {
-                            VX_PRINT(VX_ZONE_ERROR, "Too many linked references for graph parameter %d, increase TIVX_GRAPH_MAX_PARAM_REFS\n", p_index);
+                            VX_PRINT(VX_ZONE_ERROR, "Too many linked references for graph parameter %d\n", p_index);
+                            VX_PRINT_BOUND_ERROR("TIVX_GRAPH_MAX_PARAM_REFS");
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
                             break;
                         }

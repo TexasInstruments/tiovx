@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2018 Texas Instruments Incorporated
+* Copyright (c) 2018-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -96,8 +96,8 @@ vx_status ownObjDescQueueCreate(uint16_t *obj_desc_id)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to alloc queue object descriptor \n");
-        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-        VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
+        VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
     }
     return status;
 }

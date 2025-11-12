@@ -256,8 +256,8 @@ VX_API_ENTRY vx_pyramid VX_API_CALL vxCreatePyramid(
                     prmd = (vx_pyramid)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
                     VX_PRINT(VX_ZONE_ERROR, "Could not allocate pyramid object descriptor\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
+                    VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
                 }
                 else
                 {
@@ -392,8 +392,8 @@ VX_API_ENTRY vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
                 prmd = (vx_pyramid)ownGetErrorObject(
                     context, (vx_status)VX_ERROR_NO_RESOURCES);
                 VX_PRINT(VX_ZONE_ERROR, "Could not allocate pyramid object descriptor\n");
-                VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
+                    VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
             }
             else
             {

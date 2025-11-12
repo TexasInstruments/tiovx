@@ -558,8 +558,8 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate raw image object descriptor\n");
                     raw_image = (tivx_raw_image)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
                     VX_PRINT(VX_ZONE_ERROR, "Could not allocate raw image object descriptor\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
+                    VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
                 }
                 else
                 {

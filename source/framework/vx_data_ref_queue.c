@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2018 Texas Instruments Incorporated
+* Copyright (c) 2018-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -341,8 +341,8 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
                 {
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
                     VX_PRINT(VX_ZONE_ERROR, "Could not allocate data reference queue object descriptor\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
+                    VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
                 }
                 if(status==(vx_status)VX_SUCCESS)
                 {

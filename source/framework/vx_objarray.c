@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+ * Copyright (c) 2012-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,8 +147,8 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
                     VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
+                    VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
                     objarr = (vx_object_array)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
@@ -171,8 +171,8 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateObjectArray(
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                             "Could not allocate objarr object descriptor\n");
                         VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
-                        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                        VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
+                        VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
                         objarr = (vx_object_array)ownGetErrorObject(
                             context, (vx_status)VX_ERROR_NO_RESOURCES);
                     }
@@ -225,8 +225,8 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                     objarr = (vx_object_array)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
                     VX_PRINT(VX_ZONE_ERROR, "Could not allocate object array object descriptor\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
+                    VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
                 }
                 else
                 {
@@ -253,8 +253,8 @@ VX_API_ENTRY vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                             "Could not allocate objarr object descriptor\n");
                         VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
-                        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
-                        VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in include/TI/soc/tivx_config_<soc>.h\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available.\n");
+                        VX_PRINT_BOUND_ERROR("TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST");
                         objarr = (vx_object_array)ownGetErrorObject(
                             context, (vx_status)VX_ERROR_NO_RESOURCES);
                     }
