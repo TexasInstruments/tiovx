@@ -1,6 +1,5 @@
 /*
-
- * Copyright (c) 2012-2025 The Khronos Group Inc.
+ * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */
+/*
+ * Copyright (c) 2025 Texas Instruments Incorporated
  */
 
 #include "test_engine/test.h"
@@ -150,7 +152,6 @@ TEST_WITH_ARG(tivxSourceNode, testSourceObjArray, Arg, STREAMING_PARAMETERS)
     VX_CALL(vxReleaseScalar(&scalar));
 #else
     vx_scalar scalar_arr[4];
-
     ASSERT_VX_OBJECT(obj_array_scalar = create_obj_array_from_scalar_list(context, scalar_arr, 4), VX_TYPE_OBJECT_ARRAY);
 #endif
 

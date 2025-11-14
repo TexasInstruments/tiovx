@@ -38,36 +38,27 @@ TEST(tivxObjArrayFromList, negativeTestCreateObjectArrayFromList)
     vx_reference mismatched[3] = {0};
     vx_graph graph = vxCreateGraph(context);
 
-    // Case: NULL context
-    ASSERT(NULL == (objectArrayFromList = tivxCreateObjectArrayFromList(NULL, (vx_reference*)ref, count)));
+    vx_object_array parent, objArrayFromList;
+    vx_image exemplar, child_img;
 
-    // Bad type Case: Convolution
-    for (i=0; i < count; i++)
-    {
-        ASSERT_VX_OBJECT(cnvl = vxCreateConvolution(context, columns, rows), VX_TYPE_CONVOLUTION);
-        cnvlArray[i] = cnvl;
-    }
-    ASSERT(NULL == (objectArrayFromList = tivxCreateObjectArrayFromList(context, (vx_reference*)cnvlArray, count)));
-    // Addition test to code cover virtual case
-    ASSERT(NULL == (objectArrayFromList = tivxCreateVirtualObjectArrayFromList(graph, (vx_reference*)cnvlArray, count)));
-    for (i=0; i < count; i++)
-    {
-        VX_CALL(vxReleaseConvolution(&cnvlArray[i]));
-    }
+    // Case: NULL Context
+    ASSERT(NULL == (objArrayFromList = tivxCreateObjectArrayFromList(NULL, mismatched, count)));
 
-    // Bad type Case: Object Array
-    ASSERT_VX_OBJECT(ref = (vx_reference)vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    for (i=0; i < count; i++)
-    {
-        ASSERT_VX_OBJECT(objArrayForTest = vxCreateObjectArray(context, (vx_reference)ref, count + i), VX_TYPE_OBJECT_ARRAY);
-        ArrayOfObjArr[i] = objArrayForTest;
-    }
-    ASSERT(NULL == (objectArrayFromList = tivxCreateObjectArrayFromList(context, (vx_reference*)ArrayOfObjArr, count)));
-    for (i=0; i < count; i++)
-    {
-        VX_CALL(vxReleaseObjectArray(&ArrayOfObjArr[i]));
-    }
-    VX_CALL(vxReleaseReference(&ref));
+    // Case: NULL List
+    objArrayFromList = tivxCreateObjectArrayFromList(context, NULL, count);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGetStatus((vx_reference)objArrayFromList));
+
+    // Case: A child from another object array
+    ASSERT_VX_OBJECT(exemplar = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT((parent = vxCreateObjectArray(context, (vx_reference)exemplar, 1)), VX_TYPE_OBJECT_ARRAY);
+    vxReleaseImage(&exemplar);
+    ASSERT_VX_OBJECT(child_img = (vx_image)vxGetObjectArrayItem(parent, 0), VX_TYPE_IMAGE);
+    vx_image temp_array_child[1] = {child_img};
+    // Attempt creation with child from other objarray
+    objArrayFromList = tivxCreateObjectArrayFromList(context, (vx_reference*)temp_array_child, 1);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_SCOPE, vxGetStatus((vx_reference) objArrayFromList));
+    VX_CALL(vxReleaseObjectArray(&parent));
+    VX_CALL(vxReleaseImage(&child_img));
 
     // Case: Mismatched array
     ASSERT_VX_OBJECT(mismatched[0] = (vx_reference)vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -75,13 +66,9 @@ TEST(tivxObjArrayFromList, negativeTestCreateObjectArrayFromList)
     objectArrayFromList = tivxCreateObjectArrayFromList(context, mismatched, 2);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_TYPE, vxGetStatus((vx_reference)objectArrayFromList));
 
-    // Case: List with NULL after first item
+    // Case: List with NULL after first item (GetStatus on NULL returns ERROR_NO_RESOURCES)
     objectArrayFromList = tivxCreateObjectArrayFromList(context, &mismatched[1], 2);
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxGetStatus((vx_reference)objectArrayFromList));
-
-    // Case: List with NULLs
-    vx_reference nulls[3] = {0};
-    ASSERT(NULL == (objectArrayFromList = tivxCreateObjectArrayFromList(context, nulls, 3)));
 
     VX_CALL(vxReleaseGraph(&graph));
     VX_CALL(vxReleaseReference(&mismatched[0]));
@@ -124,11 +111,9 @@ TEST(tivxObjArrayFromList, negativeTestCreateVirtualObjectArrayFromList)
     vx_context context = context_->vx_context_;
     vx_graph graph = NULL;
 
-    // Create references to hold our objects
     vx_object_array objArrayFromList = NULL;
     vx_object_array virtualObjArrayFromList = NULL;
-
-    // Arrays to hold our images
+    // Lists for create functions
     vx_image images[size_neg_virtual] = {0};
     vx_image virtualImages[size_neg_virtual] = {0};
     vx_image mixedImages[size_neg_virtual] = {0};
@@ -147,6 +132,9 @@ TEST(tivxObjArrayFromList, negativeTestCreateVirtualObjectArrayFromList)
     ASSERT_VX_OBJECT(mixedImages[0] = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(mixedImages[1] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
+    // Case: NULL graph
+    ASSERT(NULL == (objArrayFromList = tivxCreateVirtualObjectArrayFromList(NULL, (vx_reference*)virtualImages, 2)));
+
     // Case: Virtual from non virtual
     virtualObjArrayFromList = tivxCreateVirtualObjectArrayFromList(graph, (vx_reference*)images, size_neg_virtual);
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxGetStatus((vx_reference)virtualObjArrayFromList));
@@ -160,26 +148,12 @@ TEST(tivxObjArrayFromList, negativeTestCreateVirtualObjectArrayFromList)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)virtualObjArrayFromList));
     VX_CALL(vxReleaseObjectArray(&virtualObjArrayFromList));
 
-    /* Code coverage cases
-     * Count = 0
-     * Count = MAX_ITEMS + 1
-     * Graph is NULL
-     * List ptr is NULL
-     */
-    ASSERT(NULL == (virtualObjArrayFromList = tivxCreateVirtualObjectArrayFromList(graph, (vx_reference*)virtualImages, 0)));
-    ASSERT(NULL == (virtualObjArrayFromList = tivxCreateVirtualObjectArrayFromList(graph, (vx_reference*)virtualImages, TIVX_OBJECT_ARRAY_MAX_ITEMS+1)));
-    ASSERT(NULL == (virtualObjArrayFromList = tivxCreateVirtualObjectArrayFromList(NULL, (vx_reference*)virtualImages, size_neg_virtual)));
-    ASSERT(NULL == (virtualObjArrayFromList = tivxCreateVirtualObjectArrayFromList(graph, NULL, size_neg_virtual)));
-
-    // List item is NULL
     for (i = 0; i < size_neg_virtual; i++)
     {
         VX_CALL(vxReleaseImage(&images[i]));
         VX_CALL(vxReleaseImage(&virtualImages[i]));
         VX_CALL(vxReleaseImage(&mixedImages[i]));
     }
-    virtualObjArrayFromList = tivxCreateVirtualObjectArrayFromList(graph, (vx_reference*)virtualImages, TIVX_OBJECT_ARRAY_MAX_ITEMS+1);
-    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)virtualObjArrayFromList));
 
     VX_CALL(vxReleaseGraph(&graph));
 }

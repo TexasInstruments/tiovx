@@ -95,7 +95,7 @@ enum tivx_object_array_attribute_e
 /*!
  * \brief Creates a reference to an ObjectArray of count objects which are uniform in type but can have non-uniform metadata. 
  *
- * This methods allows an object array to be instantiated from an array of references passed through list[] parameter.
+ * This function allows an object array to be instantiated from an array of references passed through list[] parameter.
  * It does not alter the references in the list nor keep or release this list.
  * Internally, it modifies the additional attribute added with the extension, <tt>\ref TIVX_OBJECT_ARRAY_IS_FROM_LIST</tt>.
  * 

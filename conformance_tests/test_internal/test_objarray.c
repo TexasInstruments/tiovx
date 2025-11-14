@@ -1,5 +1,4 @@
 /*
-
  * Copyright (c) 2015-2017 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +14,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated
+ * Copyright (c) 2022-2025 Texas Instruments Incorporated
  */
 
 #include "test_tiovx.h"

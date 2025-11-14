@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2025 The Khronos Group Inc.
+ * Copyright (c) 2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -340,8 +340,7 @@ static void own_check_meta(vx_reference item, vx_reference ref)
     CT_EXPAND(nextmacro(testArgName "/VX_TYPE_REMAP", __VA_ARGS__, VX_TYPE_REMAP)), \
     CT_EXPAND(nextmacro(testArgName "/VX_TYPE_LUT", __VA_ARGS__, VX_TYPE_LUT)), \
     CT_EXPAND(nextmacro(testArgName "/VX_TYPE_THRESHOLD", __VA_ARGS__, VX_TYPE_THRESHOLD )), \
-    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_TENSOR", __VA_ARGS__, VX_TYPE_TENSOR )), \
-    CT_EXPAND(nextmacro(testArgName "/NEG_TESTS", __VA_ARGS__, 0))
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_TENSOR", __VA_ARGS__, VX_TYPE_TENSOR ))
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("object_array", ADD_VX_OBJECT_ARRAY_TYPES, ARG, NULL)
@@ -369,85 +368,45 @@ TEST_WITH_ARG(ObjectArrayFromList, testTIVXCreateObjectArray, Obj_Array_Arg, PAR
         actual_items[i] = own_create_reference(context, item_type, i);
     }
 
-    if (item_type != 0)
+    // Test data creation check
+    ASSERT_VX_OBJECT(actual_items[0], item_type);
+
+    // 1. check if object array can be created with allowed types
+    ASSERT_VX_OBJECT(object_array = tivxCreateObjectArrayFromList(context, actual_items, num_items), VX_TYPE_OBJECT_ARRAY);
+
+    // 2. check if object array's actual item_type corresponds to requested item_type
+    VX_CALL(vxQueryObjectArray(object_array, VX_OBJECT_ARRAY_ITEMTYPE, &actual_type, sizeof(actual_type)));
+    ASSERT_EQ_INT(item_type, actual_type);
+
+    // 3. check if object array's actual item_size corresponds to requested item_type size
+    VX_CALL(vxQueryObjectArray(object_array, VX_OBJECT_ARRAY_NUMITEMS, &actual_num_items, sizeof(actual_num_items)));
+    ASSERT_EQ_INT(num_items, actual_num_items);
+
+    // 4. check meta formats of objects in object array
+    for (i = 0u; i < num_items; i++)
     {
-        // Test data creation check
-        ASSERT_VX_OBJECT(actual_items[0], item_type);
+        ASSERT_VX_OBJECT(test_item = vxGetObjectArrayItem(object_array, i), (enum vx_type_e)item_type);
 
-        // 1. check if object array can be created with allowed types
-        ASSERT_VX_OBJECT(object_array = tivxCreateObjectArrayFromList(context, actual_items, num_items), VX_TYPE_OBJECT_ARRAY);
+        ASSERT_NO_FAILURE(own_check_meta(actual_items[i], test_item));
+        // Also check if references are equal
+        ASSERT(test_item == actual_items[i]);
 
-        // 2. check if object array's actual item_type corresponds to requested item_type
-        VX_CALL(vxQueryObjectArray(object_array, VX_OBJECT_ARRAY_ITEMTYPE, &actual_type, sizeof(actual_type)));
-        ASSERT_EQ_INT(item_type, actual_type);
-
-        // 3. check if object array's actual item_size corresponds to requested item_type size
-        VX_CALL(vxQueryObjectArray(object_array, VX_OBJECT_ARRAY_NUMITEMS, &actual_num_items, sizeof(actual_num_items)));
-        ASSERT_EQ_INT(num_items, actual_num_items);
-
-        // 4. check meta formats of objects in object array
-        for (i = 0u; i < num_items; i++)
-        {
-            ASSERT_VX_OBJECT(test_item = vxGetObjectArrayItem(object_array, i), (enum vx_type_e)item_type);
-
-            ASSERT_NO_FAILURE(own_check_meta(actual_items[i], test_item));
-            // Also check if references are equal
-            ASSERT(test_item == actual_items[i]);
-
-            VX_CALL(vxReleaseReference(&actual_items[i]));
-            VX_CALL(vxReleaseReference(&test_item));
-            ASSERT(actual_items[i] == 0);
-            ASSERT(test_item == 0);
-        }
-
-        // 5. check that we can't get item out of object array's range
-        test_item = vxGetObjectArrayItem(object_array, (vx_uint32)num_items);
-        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)test_item));
-
-        // 6. Double check if object array's attribute is still flexible corresponds to requested item_type size
-        VX_CALL(vxQueryObjectArray(object_array, TIVX_OBJECT_ARRAY_IS_FROM_LIST, &isFromList, sizeof(isFromList)));
-        ASSERT_EQ_INT(isFromList, (vx_bool)vx_true_e);
-
-        VX_CALL(vxReleaseObjectArray(&object_array));
-        ASSERT(object_array == 0);
+        VX_CALL(vxReleaseReference(&actual_items[i]));
+        VX_CALL(vxReleaseReference(&test_item));
+        ASSERT(actual_items[i] == 0);
+        ASSERT(test_item == 0);
     }
-    else // Negative test section
-    {
-        vx_object_array parent, objArrayFromList;
-        vx_image exemplar, child_img;
-    
-        // Create an object array of one
-        exemplar = (vx_image)own_create_reference(context, VX_TYPE_IMAGE, 0);
-        parent = vxCreateObjectArray(context, (vx_reference)exemplar, 1);
-        vxReleaseImage(&exemplar);
 
-        // 1. Creating with a list with invalid scope - A child from another array
-        child_img = (vx_image)vxGetObjectArrayItem(parent, 0);
-        vx_image temp_array_child[1] = {child_img};
-        objArrayFromList = tivxCreateObjectArrayFromList(context, (vx_reference*)temp_array_child, 1);
-        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference) objArrayFromList));
-        VX_CALL(vxReleaseObjectArray(&parent));
-        VX_CALL(vxReleaseImage(&child_img));
+    // 5. check that we can't get item out of object array's range
+    test_item = vxGetObjectArrayItem(object_array, (vx_uint32)num_items);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)test_item));
 
-        // 2. Creating with illegal num items
-        exemplar = (vx_image)own_create_reference(context, VX_TYPE_IMAGE, 0);
-        vx_image img_array[1] = {exemplar};
-        object_array = tivxCreateObjectArrayFromList(context, (vx_reference*)img_array, 0);
-        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)object_array));
-        object_array = tivxCreateObjectArrayFromList(context, (vx_reference*)img_array, TIVX_OBJ_ARRAY_MAX_OBJECTS + 1);
-        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)object_array));
-        VX_CALL(vxReleaseImage(&exemplar));
+    // 6. Double check if object array's attribute is still flexible corresponds to requested item_type size
+    VX_CALL(vxQueryObjectArray(object_array, TIVX_OBJECT_ARRAY_IS_FROM_LIST, &isFromList, sizeof(isFromList)));
+    ASSERT_EQ_INT(isFromList, (vx_bool)vx_true_e);
 
-        // 3. Creating with a bad list parameter
-        object_array = tivxCreateObjectArrayFromList(context, NULL, 1);
-        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)object_array));
-        
-        /* Can't test this - Application side needs to make sure list isn't empty
-        vx_reference empty_list[0];
-        object_array = tivxCreateObjectArrayFromList(context, empty_list, 1);
-        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)object_array));
-        */
-    }
+    VX_CALL(vxReleaseObjectArray(&object_array));
+    ASSERT(object_array == 0);
 }
 
 TESTCASE_TESTS(

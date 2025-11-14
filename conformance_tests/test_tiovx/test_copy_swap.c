@@ -1,5 +1,4 @@
 /*
-
  * Copyright (c) 2023-2025 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * Copyright (c) 2025 Texas Instruments Incorporated
+ */
+
 
 /* copy_swap.c
  * Tests for copy/swap/move functionality.
  */
-
 #include "test_engine/test.h"
 #include "VX/vx.h"
 #include "VX/vxu.h"
@@ -191,13 +193,13 @@ vx_reference createReference(vx_context context, vx_enum type)
         {
             vx_image list1[4];
             
-            for(int i = 0; i<4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 list1[i] = vxCreateImage(context, 16 + 2*i, 16 + 2*i, VX_DF_IMAGE_U8);
             }
             ref = (vx_reference)tivxCreateObjectArrayFromList(context, (vx_reference*)list1, 4);
             
-            for(int i = 0; i<4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 vxReleaseImage(&list1[i]);
             }
@@ -232,7 +234,7 @@ vx_reference createReference(vx_context context, vx_enum type)
             break;
         default:
             /* Should not reach here. ERROR in TEST! Found unknown type */
-            VX_PRINT(VX_ZONE_ERROR, "ERROR: Unknown type %d\n", type);
+            VX_PRINT(VX_ZONE_ERROR, "ERROR: Unknown type\n");
             break;
     }
     return ref;
@@ -767,7 +769,7 @@ TEST_WITH_ARG (copySwap, testMove, Copy_Swap_Arg, PARAMETERS)
 }
 
 /* Negative Tests of Copy kernel */
-TEST (copySwap, negativeTestCopy)
+TEST(copySwap, negativeTestCopy)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
@@ -887,23 +889,27 @@ TEST (copySwap, negativeTestCopy)
     node = vxCopyNode(graph, (vx_reference)objarray_0, (vx_reference)objarray_1);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
     EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxVerifyGraph(graph));
-    /* vx_objarray_from_list : negative test cases 
+    VX_CALL(vxReleaseObjectArray(&objarray_0));
+    VX_CALL(vxReleaseObjectArray(&objarray_1));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    /* vx_objarray_from_list : negative test cases */
     graph = vxCreateGraph(context);
     objarray_0 = (vx_object_array)createReference(context, CUSTOM_TEST_ENUM_OAFL);
     vx_image list_img[4];
-    for(int i = 0; i<4; i++)
+    for (int i = 0; i < 4; i++)
     {
         list_img[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8);
     }
     objarray_1 = tivxCreateObjectArrayFromList(context, (vx_reference*)list_img, 4);
-    for(int i = 0; i<4; i++)
+    for (int i = 0; i < 4; i++)
     {
         vxReleaseImage(&list_img[i]);
     }
     node = vxCopyNode(graph, (vx_reference)objarray_0, (vx_reference)objarray_1);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph)); */
+    EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxVerifyGraph(graph));
     VX_CALL(vxReleaseObjectArray(&objarray_0));
     VX_CALL(vxReleaseObjectArray(&objarray_1));
     VX_CALL(vxReleaseNode(&node));
@@ -1136,10 +1142,10 @@ TEST(copySwap, negativeTestMove)
     graph = vxCreateGraph(context);
     example1 = vxCreateArray(context, VX_TYPE_FLOAT64, 4);
     example2 = vxCreateArray(context, VX_TYPE_UINT8, 4);
-    /* Add move node to graph */
+    // Add move node to graph
     node = vxMoveNode(graph, (vx_reference)example1, (vx_reference)example2);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)node));
-    /* move node verified in graph */
+    // Move node verified in graph
     EXPECT_EQ_VX_STATUS(VX_ERROR_NOT_COMPATIBLE, vxVerifyGraph(graph));
     VX_CALL(vxReleaseArray(&example1));
     VX_CALL(vxReleaseArray(&example2));
@@ -1171,7 +1177,7 @@ TEST_WITH_ARG (copySwap, testVxuCopy, Copy_Swap_Arg, PARAMETERS)
 /* Test vxu functions for images. This can be used to cover the kernel
    callback functions, as they are used for vxu implementation
 */
-TEST (copySwap, testVxu)
+TEST(copySwap, testVxu)
 {
     vx_status status = VX_SUCCESS;
     vx_context context = context_->vx_context_;
@@ -1281,7 +1287,7 @@ TEST (copySwap, testVxu)
 /* Check sub-image. This must cover sub-images
    of sub-images as well as covering both from channel and from roi
 */
-TEST (copySwap, testSubObjectsOfImages )
+TEST(copySwap, testSubObjectsOfImages )
 {
     vx_status status = VX_SUCCESS;
     vx_context context = context_->vx_context_;
@@ -1366,7 +1372,7 @@ TEST (copySwap, testSubObjectsOfImages )
 
 /* Check sub-image from tensor created from vxCreateTensorFromROI
 */
-TEST (copySwap, testSubObjectsOfTensors )
+TEST(copySwap, testSubObjectsOfTensors )
 {
     vx_status status = VX_SUCCESS;
     vx_context context = context_->vx_context_;
@@ -1496,7 +1502,7 @@ TEST (copySwap, testSubObjectsOfTensors )
 }
 
 /* Check max of sub-image of sub image */
-TEST (copySwap, testSubObjectsMaxOfSubImages)
+TEST(copySwap, testSubObjectsMaxOfSubImages)
 {
     vx_status status = VX_SUCCESS;
     vx_context context = context_->vx_context_;
@@ -1603,7 +1609,7 @@ TEST (copySwap, testSubObjectsMaxOfSubImages)
 }
 
 /* Check max of sub-image of tensor */
-TEST (copySwap, testImageMaxOfSubTensor)
+TEST(copySwap, testImageMaxOfSubTensor)
 {
     vx_status status = VX_SUCCESS;
     vx_context context = context_->vx_context_;

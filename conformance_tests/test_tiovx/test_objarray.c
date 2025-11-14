@@ -1,5 +1,4 @@
 /*
-
  * Copyright (c) 2015-2017 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +14,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated
+ * Copyright (c) 2022-2025 Texas Instruments Incorporated
  */
 
 #include "test_engine/test.h"
@@ -84,12 +83,17 @@ TEST(tivxObjArray, negativeTestCreateObjectArray)
     vx_object_array vxoa = NULL;
     vx_convolution cnvl = NULL;
     vx_reference exemplar = NULL;
-    vx_size count = 0, columns = 5, rows = 5;
+    vx_size count = 5, columns = 5, rows = 5;
 
+    // Test: NULL context
     ASSERT(NULL == (vxoa = vxCreateObjectArray(NULL, exemplar, count)));
+    
+    // Test: Invalid Type
     ASSERT_VX_OBJECT(cnvl = vxCreateConvolution(context, columns, rows), VX_TYPE_CONVOLUTION);
     exemplar = (vx_reference)(cnvl);
-    ASSERT(NULL == (vxoa = vxCreateObjectArray(context, exemplar, count)));
+    EXPECT_VX_ERROR(vxoa = vxCreateObjectArray(context, exemplar, count), VX_ERROR_INVALID_TYPE);
+    // Test: Count = 0 (after Type: Test because it's checked second) 
+    EXPECT_VX_ERROR(vxoa = vxCreateObjectArray(context, exemplar, 0), VX_ERROR_INVALID_PARAMETERS);
     VX_CALL(vxReleaseConvolution(&cnvl));
 }
 
@@ -99,17 +103,10 @@ TEST(tivxObjArray, negativeTestCreateVirtualObjectArray)
 
     vx_object_array vxoa = NULL;
     vx_graph graph = NULL;
-    vx_convolution cnvl = NULL;
     vx_reference exemplar = NULL;
-    vx_size count = 0, columns = 5, rows = 5;
+    vx_size count = 0;
 
     ASSERT(NULL == (vxoa = vxCreateVirtualObjectArray(graph, exemplar, count)));
-    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-    ASSERT_VX_OBJECT(cnvl = vxCreateConvolution(context, columns, rows), VX_TYPE_CONVOLUTION);
-    exemplar = (vx_reference)(cnvl);
-    ASSERT(NULL == (vxoa = vxCreateVirtualObjectArray(graph, exemplar, count)));
-    VX_CALL(vxReleaseConvolution(&cnvl));
-    VX_CALL(vxReleaseGraph(&graph));
 }
 
 TEST(tivxObjArray, negativeTestGetObjectArrayItem)

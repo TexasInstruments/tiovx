@@ -1,6 +1,5 @@
 /*
-
- * Copyright (c) 2012-2025 The Khronos Group Inc.
+ * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */
+/*
+ * Copyright (c) 2025 Texas Instruments Incorporated
  */
 
 #include "test_tiovx.h"
@@ -179,9 +181,8 @@ TEST(tivxObjDescBoundary, negativeBoundaryThreshold)
     EXPECT_VX_ERROR(vxt = vxCreateThreshold(context, VX_THRESHOLD_TYPE_RANGE, VX_TYPE_UINT8), VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(vxoa = vxCreateObjectArray(context, (vx_reference)img, 2), VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(src_object_array = vxCreateVirtualObjectArray(graph, (vx_reference)img, 32), VX_ERROR_NO_RESOURCES);
-    // TIOVX-2318
-    EXPECT_VX_ERROR(vxoa = tivxCreateObjectArrayFromList(context, (vx_reference*)&img, 1), VX_ERROR_NO_RESOURCES);
-    EXPECT_VX_ERROR(src_object_array = tivxCreateVirtualObjectArrayFromList(graph, (vx_reference*)&img, 1), VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(vxoa = tivxCreateObjectArrayFromList(context, (vx_reference*)&img, 1), VX_ERROR_NO_RESOURCES); // TIOVX-2318
+    EXPECT_VX_ERROR(src_object_array = tivxCreateVirtualObjectArrayFromList(graph, (vx_reference*)&img, 1), VX_ERROR_NO_RESOURCES); // TIOVX-2318
     EXPECT_VX_ERROR(img1 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(dist = vxCreateDistribution(context, num_bins, offset, range), VX_ERROR_NO_RESOURCES);
     EXPECT_VX_ERROR(matrix = vxCreateMatrix(context, data_type, cols, rows), VX_ERROR_NO_RESOURCES);

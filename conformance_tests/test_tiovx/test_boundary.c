@@ -1,5 +1,4 @@
 /*
-
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */
+/*
+ * Copyright (c) 2025 Texas Instruments Incorporated
  */
 
 #include "test_tiovx.h"
@@ -2317,7 +2319,7 @@ TEST(tivxNegativeBoundary, negativeTestObjectArrayItems)
     vx_lut lut = 0;
     ASSERT_VX_OBJECT(lut = vxCreateLUT(context, VX_TYPE_UINT8, 256), VX_TYPE_LUT);
 
-    EXPECT_VX_ERROR(src_object_array = vxCreateObjectArray(context, (vx_reference)lut, TIVX_OBJECT_ARRAY_MAX_ITEMS+1), VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(src_object_array = vxCreateObjectArray(context, (vx_reference)lut, TIVX_OBJECT_ARRAY_MAX_ITEMS+1), VX_ERROR_INVALID_PARAMETERS);
 
     VX_CALL(vxReleaseLUT(&lut));
 }
@@ -2335,7 +2337,7 @@ TEST(tivxNegativeBoundary, negativeTestVirtualObjectArrayItems)
 
     VX_CALL(vxVerifyGraph(graph));
 
-    EXPECT_VX_ERROR(src_object_array = vxCreateVirtualObjectArray(graph, (vx_reference)lut, TIVX_OBJECT_ARRAY_MAX_ITEMS+1), VX_ERROR_NO_RESOURCES);
+    EXPECT_VX_ERROR(src_object_array = vxCreateVirtualObjectArray(graph, (vx_reference)lut, TIVX_OBJECT_ARRAY_MAX_ITEMS+1), VX_ERROR_INVALID_PARAMETERS);
 
     VX_CALL(vxReleaseLUT(&lut));
     VX_CALL(vxReleaseGraph(&graph));
