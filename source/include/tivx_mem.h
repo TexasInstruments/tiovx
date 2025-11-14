@@ -82,6 +82,17 @@ vx_status ownMemBufferMap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_en
  */
 vx_status ownMemBufferUnmap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype);
 
+/**
+ * \brief Convert tivx enumerated memory regions to app memory regions
+ *
+ * \param mem_heap_region [in] See TIVX_MEM_*
+ * \param heap_id         [in] See APP_MEM_HEAP_*
+ *
+ *
+ * \return 0 on success else failure
+ */
+int32_t tivxMemRegionTranslate (uint32_t mem_heap_region, uint32_t *heap_id);
+
 #ifdef __cplusplus
 }
 #endif
