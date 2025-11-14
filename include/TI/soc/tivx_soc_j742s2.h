@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2024 Texas Instruments Incorporated
+ * Copyright (c) 2024-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -84,6 +84,9 @@
 #ifndef C7XMMA_COUNT
 #define C7XMMA_COUNT  (2U)
 #endif
+
+/* Name of this SoC */
+#define SOC_NAME "j742s2"
 
 #ifdef __cplusplus
 extern "C" {
