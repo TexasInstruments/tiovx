@@ -279,7 +279,7 @@ extern "C" {
 /*! \brief Maximum number of objects supported in object array
  * \ingroup group_vx_object_array_cfg
  */
-#define TIVX_OBJECT_ARRAY_MAX_ITEMS        (32u)
+#define TIVX_OBJECT_ARRAY_MAX_ITEMS        (128u)
 
 /*! \brief Max number object arrays supported
  * \ingroup group_vx_object_array_cfg
