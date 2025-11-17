@@ -71,7 +71,7 @@
  */
 #define TIVX_MEM_BUFFER_ALLOC_ALIGN     (1024U)
 
-vx_status tivxMemRegionTranslate (uint32_t mem_heap_region, uint32_t *heap_id)
+vx_status ownMemRegionTranslate (uint32_t mem_heap_region, uint32_t *heap_id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     switch (mem_heap_region)
@@ -115,7 +115,7 @@ vx_bool tivxMemRegionQuery (vx_enum mem_heap_region)
     vx_bool enabled = (vx_bool)vx_false_e;
     uint32_t heap_id = 0U;
     vx_status status = (vx_status)VX_SUCCESS;
-    status = tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
+    status = ownMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
     if (status == (vx_status)VX_SUCCESS)
     {
         enabled = (appMemRegionQuery(heap_id)) ? (vx_bool)vx_true_e : (vx_bool)vx_false_e;
@@ -144,7 +144,7 @@ vx_status tivxMemBufferAlloc(
     }
     else
     {
-        status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
+        status = ownMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
 
         /* Waiver here: leaving in so that if someone adds a new type it gets flagged */
         if ((vx_status)VX_SUCCESS == status)
@@ -177,7 +177,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
     uint32_t heap_id;
     void *ptr = NULL;
 
-    status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
+    status = ownMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
 
     if ((vx_status)VX_SUCCESS == status)
     {
@@ -192,7 +192,7 @@ vx_status tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t heap_id;
 
-    status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
+    status = ownMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
 
     if ((vx_status)VX_SUCCESS == status)
     {
@@ -227,7 +227,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     }
     else
     {
-        status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_ptr->mem_heap_region, &heap_id);
+        status = ownMemRegionTranslate((uint32_t)mem_ptr->mem_heap_region, &heap_id);
 
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -273,7 +273,7 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
         stats->mem_size = 0;
         stats->free_size = 0;
 
-        status = (vx_status)tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
+        status = ownMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
 
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -381,7 +381,7 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
     uint32_t heap_id;
     uint64_t phys = 0;
 
-    if((vx_status)VX_SUCCESS == tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id))
+    if((vx_status)VX_SUCCESS == ownMemRegionTranslate((uint32_t)mem_heap_region, &heap_id))
     {
         phys = appMemGetVirt2PhyBufPtr(host_ptr, heap_id);
     }
@@ -407,7 +407,7 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
     uint32_t heap_id;
     uint64_t phys = 0;
 
-    if((vx_status)VX_SUCCESS == tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id))
+    if((vx_status)VX_SUCCESS == ownMemRegionTranslate((uint32_t)mem_heap_region, &heap_id))
     {
         phys = appMemShared2PhysPtr(shared_ptr, heap_id);
     }

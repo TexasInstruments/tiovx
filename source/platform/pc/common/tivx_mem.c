@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -113,7 +113,7 @@ __attribute__ ((aligned(TIVX_MEM_L2RAM_ALIGN)))
  */
 static vx_uint32 gL2RAM_mem_offset = 0;
 
-vx_status tivxMemRegionTranslate (uint32_t mem_heap_region, uint32_t *heap_id)
+vx_status ownMemRegionTranslate (uint32_t mem_heap_region, uint32_t *heap_id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     switch (mem_heap_region)
@@ -156,7 +156,7 @@ vx_bool tivxMemRegionQuery (vx_enum mem_heap_region)
     vx_bool enabled = (vx_bool)vx_false_e;
     uint32_t heap_id = 0U;
     vx_status status = (vx_status)VX_SUCCESS;
-    status = tivxMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
+    status = ownMemRegionTranslate((uint32_t)mem_heap_region, &heap_id);
     if (status == VX_SUCCESS)
     {
         enabled = (appMemRegionQuery(heap_id)) ? (vx_bool)vx_true_e : (vx_bool)vx_false_e;
