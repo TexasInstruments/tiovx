@@ -670,6 +670,11 @@ void ownLogResourceInit(void)
     /* Subimages can't exceed the defined image object maximum */
     BUILD_ASSERT(((TIVX_IMAGE_MAX_SUBIMAGES <= TIVX_IMAGE_MAX_OBJECTS)? 1 : 0));
 
+    /* There's no reason for the value of max replicate node to be larger than the maximum
+       items allowed within a container object. Attempting to create any additional replicated
+       nodes beyond the size of its respective container would be unsuccessful. */
+    BUILD_ASSERT(((TIVX_NODE_MAX_REPLICATE <= (TIVX_OBJECT_ARRAY_MAX_ITEMS > TIVX_PYRAMID_MAX_LEVEL_OBJECTS ? TIVX_OBJECT_ARRAY_MAX_ITEMS : TIVX_PYRAMID_MAX_LEVEL_OBJECTS) ? 1 : 0)));
+
     /* Defined structure size should match calculated size */
     BUILD_ASSERT(((TIVX_RESOURCE_STATS_TABLE_SIZE == dimof(g_tivx_resource_stats_table) ? 1 : 0)));
 #ifdef TIVX_RESOURCE_LOG_ENABLE
