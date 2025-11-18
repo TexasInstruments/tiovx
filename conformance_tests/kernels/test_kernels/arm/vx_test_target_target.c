@@ -1798,6 +1798,18 @@ static vx_status tivxAppMemPrintMemAllocInfo(uint8_t id)
     return status;
 }
 
+static vx_status tivxAppLogGlobalTimeInit(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    char target_name[TIVX_TARGET_MAX_NAME];
+
+    appLogGlobalTimeInit();
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 #endif /* #if defined(MPU_COVERAGE) */
 
 static vx_status tivxNegativeTestTargetPlatformDeleteTargetId(uint8_t id)
@@ -4119,6 +4131,7 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestAppIpcGetAppCpuId, "",VX_SUCCESS},
     {tivxTestAppIpcGetCpuName, "",VX_SUCCESS},
     {tivxAppMemPrintMemAllocInfo, "", VX_SUCCESS},
+    {tivxAppLogGlobalTimeInit,"",VX_SUCCESS},
     #endif /* #if defined(MPU_COVERAGE) */
     #if defined(REMOTE_COVERAGE)
 #if !defined (MCU_PLUS_SDK)
