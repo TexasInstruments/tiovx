@@ -370,42 +370,68 @@ static vx_reference ownCreateConvolutionFromExemplar(
 static vx_reference ownCreateObjectArrayFromExemplar(
     vx_context context, vx_object_array exemplar)
 {
+    /* There are two types of object arrays: Made from a list of references, and made by duplicating an exemplar reference.
+     * However, this function still treats every object array as an object array from list and copies every child individually.
+     * Loses a little effeciency in the case where the obj array is made from exemplar, but saves checking.
+     * At the end, just update the metadata flag to be a copy of vx_object_array exemplar.
+     */
     vx_size count;
-    vx_reference objarr_item_exemplar, objarr_item;
+    vx_reference objarr_item, ref_list[TIVX_OBJECT_ARRAY_MAX_ITEMS] = {0};
     vx_object_array objarr = NULL;
+    vx_uint32 i;
+    vx_bool is_from_list;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     (void)vxQueryObjectArray(exemplar, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &count, sizeof(count));
 
-    objarr_item_exemplar = vxGetObjectArrayItem(exemplar, 0);
+    for (i = 0U; (i < count) && ((vx_status)VX_SUCCESS == status); ++i)
+    {
+        objarr_item = vxGetObjectArrayItem(exemplar, i);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_EXEMPLER_UM011
 <justification end>*/
-    if(objarr_item_exemplar==NULL)
-    {
-        VX_PRINT(VX_ZONE_ERROR,"Invalid object array reference\n");
-    }
-/* LDRA_JUSTIFY_END */
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_EXEMPLER_UM011
-<justification end>*/
-    else
-/* LDRA_JUSTIFY_END */
-    {
-        vx_uint32 i;
-        vx_status status = (vx_status)VX_SUCCESS;
-        objarr = vxCreateObjectArray(context, objarr_item_exemplar, count);
-        (void)vxReleaseReference(&objarr_item_exemplar);
-        if (NULL != exemplar->base.supplementary_data)
+        if(objarr_item==NULL)
         {
-            for (i = 0U; (i < count) && ((vx_status)VX_SUCCESS == status); ++i)
-            {
-                objarr_item = vxGetObjectArrayItem(objarr, i);
-                status = vxSetSupplementaryUserDataObject(objarr_item, exemplar->base.supplementary_data);
-                (void)vxReleaseReference(&objarr_item);
-            }
+            VX_PRINT(VX_ZONE_ERROR,"Invalid object array reference\n");
         }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EXEMPLER_UM011
+<justification end>*/
+        else
+/* LDRA_JUSTIFY_END */
+        {
+            ref_list[i] = tivxCreateReferenceFromExemplar(context, objarr_item);
+            if (NULL != exemplar->base.supplementary_data)
+            {
+                status = vxSetSupplementaryUserDataObject(ref_list[i], exemplar->base.supplementary_data);
+            }
+            (void)vxReleaseReference(&objarr_item);
+        }
+    }
+
+    objarr = tivxCreateObjectArrayFromList(context, ref_list, count);
+
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EXEMPLER_UM012
+<justification end>*/
+    if (NULL != objarr)
+/* LDRA_JUSTIFY_END */
+    {
+        /* Cast meta data to is/not from list */
+        tivx_obj_desc_object_array_t *obj_desc =
+                        (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
+        (void)vxQueryObjectArray(exemplar, (vx_enum)TIVX_OBJECT_ARRAY_IS_FROM_LIST, &is_from_list, sizeof(is_from_list));
+        obj_desc->is_from_list = is_from_list;
+    }
+    
+    /* Object array copy made, release the reference list */
+    for (i = 0U; (i < count); ++i)
+    {
+        (void)vxReleaseReference(&ref_list[i]);
     }
 
     return vxCastRefFromObjectArray(objarr);

@@ -158,6 +158,73 @@ TEST(tivxObjArrayFromList, negativeTestCreateVirtualObjectArrayFromList)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+// Testing Nested Object Array where the child is made from list
+// Variable convention:
+// (nested_oa) -> (nested_oa_child) -> (child_item)
+//   Obj Arr    Obj Arr From List Item    Image
+TEST(tivxObjArrayFromList, testCreateNestedObjectArrayWithChildFromList)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_reference object_array = NULL, child_object_array_item = NULL, exemplar_object_array_item = NULL, nested_object_array_child = NULL;
+    vx_object_array exemplar_oafl = 0, nested_oa = 0, exemplar_object_array = 0;
+    vx_image exemplar_images[10] = {0};
+    vx_size count = 10, child_object_array_size, exemplar_object_array_size;
+    vx_enum child_object_array_type, exemplar_object_array_type;
+    vx_uint32 i, j, ref_width, exemplar_width, ref_height, exemplar_height;
+    vx_df_image ref_format, exemplar_format;
+
+    /* Create object array from object array made from exemplar */
+    for (i = 0U; i < count; i++)
+        ASSERT_VX_OBJECT(exemplar_images[i] = vxCreateImage(context, 16 + 2*i, 16 + 2*i, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(exemplar_object_array = tivxCreateObjectArrayFromList(context, (vx_reference*)exemplar_images, count), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(nested_oa = vxCreateObjectArray(context, (vx_reference)exemplar_object_array, count), VX_TYPE_OBJECT_ARRAY);
+
+    /* Verify meta format values match between exemplar and object array created from exemplar */
+    for (i = 0U; i < count; i++)
+    {
+        ASSERT_VX_OBJECT(nested_object_array_child = vxGetObjectArrayItem(nested_oa, i), VX_TYPE_OBJECT_ARRAY);
+
+        /* Verify item types match between exemplar and object array created from exemplar */
+        VX_CALL(vxQueryObjectArray(exemplar_object_array, VX_OBJECT_ARRAY_ITEMTYPE, &exemplar_object_array_type, sizeof(exemplar_object_array_type)));
+        VX_CALL(vxQueryObjectArray((vx_object_array)nested_object_array_child, VX_OBJECT_ARRAY_ITEMTYPE, &child_object_array_type, sizeof(child_object_array_type)));
+        ASSERT_EQ_INT(exemplar_object_array_type, child_object_array_type);
+
+        /* Verify item sizes match between exemplar and object array created from exemplar*/
+        VX_CALL(vxQueryObjectArray(exemplar_object_array, VX_OBJECT_ARRAY_NUMITEMS, &exemplar_object_array_size, sizeof(exemplar_object_array_size)));
+        VX_CALL(vxQueryObjectArray((vx_object_array)nested_object_array_child, VX_OBJECT_ARRAY_NUMITEMS, &child_object_array_size, sizeof(child_object_array_size)));
+        ASSERT_EQ_INT(exemplar_object_array_size, child_object_array_size);
+
+        for (j = 0U; j < count; j++)
+        {
+            ASSERT_VX_OBJECT(child_object_array_item = vxGetObjectArrayItem((vx_object_array)nested_object_array_child, j), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(exemplar_object_array_item = vxGetObjectArrayItem(exemplar_object_array, j), VX_TYPE_IMAGE);
+
+            VX_CALL(vxQueryImage((vx_image)exemplar_object_array_item, VX_IMAGE_WIDTH, &exemplar_width, sizeof(exemplar_width)));
+            VX_CALL(vxQueryImage((vx_image)exemplar_object_array_item, VX_IMAGE_HEIGHT, &exemplar_height, sizeof(exemplar_height)));
+            VX_CALL(vxQueryImage((vx_image)exemplar_object_array_item, VX_IMAGE_FORMAT, &exemplar_format, sizeof(exemplar_format)));
+
+            VX_CALL(vxQueryImage((vx_image)child_object_array_item, VX_IMAGE_WIDTH, &ref_width, sizeof(ref_width)));
+            VX_CALL(vxQueryImage((vx_image)child_object_array_item, VX_IMAGE_HEIGHT, &ref_height, sizeof(ref_height)));
+            VX_CALL(vxQueryImage((vx_image)child_object_array_item, VX_IMAGE_FORMAT, &ref_format, sizeof(ref_format)));
+
+            ASSERT(exemplar_width == ref_width);
+            ASSERT(exemplar_height == ref_height);
+            ASSERT(exemplar_format == ref_format);
+
+            VX_CALL(vxReleaseReference(&exemplar_object_array_item));
+            VX_CALL(vxReleaseReference(&child_object_array_item));
+        }
+        VX_CALL(vxReleaseReference(&nested_object_array_child));
+    }
+
+    VX_CALL(vxReleaseObjectArray(&nested_oa));
+    VX_CALL(vxReleaseObjectArray(&exemplar_object_array));
+    for (i = 0U; i < count; i++)
+        VX_CALL(vxReleaseImage(&exemplar_images[i]));
+}
+
 static void fillSequence(CT_Image dst, uint32_t seq_init)
 {
     uint32_t i, j;
@@ -283,7 +350,7 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListSuppData)
     supp_oafl = vxGetSupplementaryUserDataObject((vx_reference)vxoafl, NULL, &status);
     if (status == (vx_status)VX_SUCCESS)
     {
-        printf("Get Supplementary data return success though no data was Set for vxoafl\n");
+        printf("ERROR: Get Supplementary data returned success though no data was Set for vxoafl\n");
     }
     EXPECT_NE_VX_STATUS(VX_SUCCESS, status);
 
@@ -291,14 +358,14 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListSuppData)
     status = vxSetSupplementaryUserDataObject((vx_reference)vxoafl, exemplar);
     if (status != (vx_status)VX_SUCCESS)
     {
-        printf("vxSetSupplementaryUserDataObject failed for vxoafl\n");
+        printf("SET failed! vxSETSupplementaryUserDataObject of vxoafl unsuccessful\n");
     }
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
 
     ASSERT_VX_OBJECT(supp_oafl = vxGetSupplementaryUserDataObject((vx_reference)vxoafl, NULL, &status), VX_TYPE_USER_DATA_OBJECT);
     if (status != (vx_status)VX_SUCCESS)
     {
-        printf("vxGetSupplementaryUserDataObject failed for vxoafl\n");
+        printf("GET failed! vxGetSupplementaryUserDataObject of vxoafl unsuccessful\n");
     }
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, status);
 
@@ -310,7 +377,7 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListSuppData)
         status = (vx_status)VX_FAILURE;
     }
 
-    // Test Object Array [3] (Set earlier)
+    // Test Object Array[3] (Set earlier)
     oafl_item = (vx_image)vxGetObjectArrayItem((vx_object_array)vxoafl, 3);
     supp_item = vxGetSupplementaryUserDataObject((vx_reference)oafl_item, NULL, &status);
     if ( status != (vx_status)VX_SUCCESS)
@@ -355,7 +422,8 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListSuppDataCopySwap)
     user_data_t test1 = {0};
     user_data_t test2 = {0};
 
-    // Now check object arrays of pyramids 
+    // Pyramid test 
+    // Set supp data on both levels of pyramids 
     vx_pyramid pyr_ex1[4];
     for (int i = 0; i < 4; ++i)
     {
@@ -368,28 +436,25 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListSuppDataCopySwap)
             vxReleaseImage(&img);
         }
     }
-
+    // Supp data on object array of pyramids
     ASSERT_VX_OBJECT(oafl1 = tivxCreateObjectArrayFromList(context, (vx_reference*)(pyr_ex1), 4), VX_TYPE_OBJECT_ARRAY);
     EXPECT_EQ_VX_STATUS(vxSetSupplementaryUserDataObject((vx_reference)(oafl1), exemplar1), VX_SUCCESS);
 
+    // "negative" testing one of the supplementary is null
+    // The operation still succeeds - Look for warning messages about missing supp data and inability to swap just the supp data
     vx_pyramid pyr_ex2[4];
     for (int i = 0; i < 4; ++i)
     {
         ASSERT_VX_OBJECT(pyr_ex2[i] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32+2*i, 32+2*i, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID); 
     }
     ASSERT_VX_OBJECT(oafl2 = tivxCreateObjectArrayFromList(context, (vx_reference*)(pyr_ex2), 4), VX_TYPE_OBJECT_ARRAY);
-    // "negative" testing one of the supplementary is null 
     EXPECT_EQ_VX_STATUS(vxuSwap(context, (vx_reference)(oafl1), (vx_reference)(oafl2)), VX_SUCCESS);
     EXPECT_EQ_VX_STATUS(vxuSwap(context, (vx_reference)(oafl2), (vx_reference)(oafl1)), VX_SUCCESS);
     vxReleaseObjectArray(&oafl2);
-    for (int i = 0; i < 4; ++i)
-    {
-        vxReleasePyramid(&pyr_ex2[i]); 
-    }
+
     // now create suppplementary data 
     for (int i = 0; i < 4; ++i)
     {
-        ASSERT_VX_OBJECT(pyr_ex2[i] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32+2*i, 32+2*i, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
         EXPECT_EQ_VX_STATUS(vxSetSupplementaryUserDataObject((vx_reference)(pyr_ex2[i]), exemplar2), VX_SUCCESS);
         for(int j = 0; j < 4; ++j)
         {
@@ -486,6 +551,7 @@ TESTCASE_TESTS(
     negativeTestCreateObjectArrayFromList,
     negativeTestQueryObjectArrayFromList,
     negativeTestCreateVirtualObjectArrayFromList,
+    testCreateNestedObjectArrayWithChildFromList,
     testObjectArrayFromListReplicate,
     testObjectArrayFromListSuppData,
     testObjectArrayFromListSuppDataCopySwap

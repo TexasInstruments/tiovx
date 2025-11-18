@@ -76,18 +76,85 @@ TEST(tivxObjArray, testCreateObjectArrayFromExemplar)
     VX_CALL(vxReleaseImage(&exemplar_image));
 }
 
+// Testing Nested Object Array
+// Variable convention:
+// (nested_oa) -> (nested_oa_child) -> (child_item)
+//   Obj Arr         Obj Arr Item          Image
+TEST(tivxObjArray, testCreateNestedObjectArrayFromExemplar)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_reference object_array = NULL, child_object_array_item = NULL, exemplar_object_array_item = NULL, nested_object_array_child = NULL;
+    vx_object_array exemplar_oafl = 0, nested_oa = 0, exemplar_object_array = 0;
+    vx_image exemplar_image = 0;
+    vx_size count = 10, child_object_array_size, exemplar_object_array_size;
+    vx_enum child_object_array_type, exemplar_object_array_type;
+    vx_uint32 i, j, ref_width, exemplar_width, ref_height, exemplar_height;
+    vx_df_image ref_format, exemplar_format;
+
+    /* Create object array from object array made from exemplar */
+    ASSERT_VX_OBJECT(exemplar_image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(exemplar_object_array = vxCreateObjectArray(context, (vx_reference)exemplar_image, count), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(nested_oa = vxCreateObjectArray(context, (vx_reference)exemplar_object_array, count), VX_TYPE_OBJECT_ARRAY);
+
+    /* Verify meta format values match between exemplar and object array created from exemplar */
+    for (i = 0U; i < count; i++)
+    {
+        ASSERT_VX_OBJECT(nested_object_array_child = vxGetObjectArrayItem(nested_oa, i), VX_TYPE_OBJECT_ARRAY);
+
+        /* Verify item types match between exemplar and object array created from exemplar */
+        VX_CALL(vxQueryObjectArray(exemplar_object_array, VX_OBJECT_ARRAY_ITEMTYPE, &exemplar_object_array_type, sizeof(exemplar_object_array_type)));
+        VX_CALL(vxQueryObjectArray((vx_object_array)nested_object_array_child, VX_OBJECT_ARRAY_ITEMTYPE, &child_object_array_type, sizeof(child_object_array_type)));
+        ASSERT_EQ_INT(exemplar_object_array_type, child_object_array_type);
+
+        /* Verify item sizes match between exemplar and object array created from exemplar*/
+        VX_CALL(vxQueryObjectArray(exemplar_object_array, VX_OBJECT_ARRAY_NUMITEMS, &exemplar_object_array_size, sizeof(exemplar_object_array_size)));
+        VX_CALL(vxQueryObjectArray((vx_object_array)nested_object_array_child, VX_OBJECT_ARRAY_NUMITEMS, &child_object_array_size, sizeof(child_object_array_size)));
+        ASSERT_EQ_INT(exemplar_object_array_size, child_object_array_size);
+
+        for (j = 0U; j < count; j++)
+        {
+            ASSERT_VX_OBJECT(child_object_array_item = vxGetObjectArrayItem((vx_object_array)nested_object_array_child, j), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(exemplar_object_array_item = vxGetObjectArrayItem(exemplar_object_array, j), VX_TYPE_IMAGE);
+
+            VX_CALL(vxQueryImage((vx_image)exemplar_object_array_item, VX_IMAGE_WIDTH, &exemplar_width, sizeof(exemplar_width)));
+            VX_CALL(vxQueryImage((vx_image)exemplar_object_array_item, VX_IMAGE_HEIGHT, &exemplar_height, sizeof(exemplar_height)));
+            VX_CALL(vxQueryImage((vx_image)exemplar_object_array_item, VX_IMAGE_FORMAT, &exemplar_format, sizeof(exemplar_format)));
+
+            VX_CALL(vxQueryImage((vx_image)child_object_array_item, VX_IMAGE_WIDTH, &ref_width, sizeof(ref_width)));
+            VX_CALL(vxQueryImage((vx_image)child_object_array_item, VX_IMAGE_HEIGHT, &ref_height, sizeof(ref_height)));
+            VX_CALL(vxQueryImage((vx_image)child_object_array_item, VX_IMAGE_FORMAT, &ref_format, sizeof(ref_format)));
+
+            ASSERT(exemplar_width == ref_width);
+            ASSERT(exemplar_height == ref_height);
+            ASSERT(exemplar_format == ref_format);
+
+            VX_CALL(vxReleaseReference(&exemplar_object_array_item));
+            VX_CALL(vxReleaseReference(&child_object_array_item));
+        }
+        VX_CALL(vxReleaseReference(&nested_object_array_child));
+    }
+
+    VX_CALL(vxReleaseObjectArray(&nested_oa));
+    VX_CALL(vxReleaseObjectArray(&exemplar_object_array));
+    VX_CALL(vxReleaseImage(&exemplar_image));
+}
+
 TEST(tivxObjArray, negativeTestCreateObjectArray)
 {
     vx_context context = context_->vx_context_;
 
-    vx_object_array vxoa = NULL;
+    vx_object_array vxoa = NULL, nested_vxoa = NULL, double_nested_vxoa = NULL;
     vx_convolution cnvl = NULL;
     vx_reference exemplar = NULL;
     vx_size count = 5, columns = 5, rows = 5;
 
     // Test: NULL context
     ASSERT(NULL == (vxoa = vxCreateObjectArray(NULL, exemplar, count)));
-    
+
+    // Test: NULL Exemplar
+    EXPECT_VX_ERROR(vxoa = vxCreateObjectArray(context, exemplar, count), VX_ERROR_INVALID_PARAMETERS);
+
     // Test: Invalid Type
     ASSERT_VX_OBJECT(cnvl = vxCreateConvolution(context, columns, rows), VX_TYPE_CONVOLUTION);
     exemplar = (vx_reference)(cnvl);
@@ -95,6 +162,15 @@ TEST(tivxObjArray, negativeTestCreateObjectArray)
     // Test: Count = 0 (after Type: Test because it's checked second) 
     EXPECT_VX_ERROR(vxoa = vxCreateObjectArray(context, exemplar, 0), VX_ERROR_INVALID_PARAMETERS);
     VX_CALL(vxReleaseConvolution(&cnvl));
+
+    // Test: creation of two level nested object array (not supported)
+    ASSERT_VX_OBJECT(exemplar = (vx_reference)vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(vxoa = vxCreateObjectArray(context, (vx_reference)exemplar, count), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(nested_vxoa = vxCreateObjectArray(context, (vx_reference)vxoa, count), VX_TYPE_OBJECT_ARRAY);
+    EXPECT_VX_ERROR(double_nested_vxoa = vxCreateObjectArray(context, (vx_reference)nested_vxoa, count), VX_ERROR_INVALID_TYPE);
+    VX_CALL(vxReleaseObjectArray(&vxoa));
+    VX_CALL(vxReleaseObjectArray(&nested_vxoa));
+    VX_CALL(vxReleaseReference(&exemplar));
 }
 
 TEST(tivxObjArray, negativeTestCreateVirtualObjectArray)
@@ -145,6 +221,7 @@ TEST(tivxObjArray, negativeTestQueryObjectArray)
 TESTCASE_TESTS(
     tivxObjArray,
     testCreateObjectArrayFromExemplar,
+    testCreateNestedObjectArrayFromExemplar,
     negativeTestCreateObjectArray,
     negativeTestCreateVirtualObjectArray,
     negativeTestGetObjectArrayItem,

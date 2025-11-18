@@ -82,12 +82,19 @@ extern "C" {
 /*!
  * \defgroup group_obj_array_from_list Object Array From List APIs
  * \brief APIs for creating an Object Array from List
+ * 
  * \ingroup group_tivx_ext_host
+ */
+
+/*! \brief TI attribute extensions for the object array object.
+ * \ingroup group_obj_array_from_list
  */
 enum tivx_object_array_attribute_e
 {
-    /*! \brief A flag indicates whether or not the object array is created from a list. Read-only. Use a <tt>\ref vx_bool</tt> parameter.
-     * \ingroup group_obj_array_from_list */
+    /*! \brief A flag to indicate whether or not the object array is created from a list.
+     * Read-only.
+     * Use a <tt>\ref vx_bool</tt> parameter.
+     */
     TIVX_OBJECT_ARRAY_IS_FROM_LIST = VX_ATTRIBUTE_BASE(VX_ID_TI, VX_TYPE_OBJECT_ARRAY) + 0x0,
 };
 

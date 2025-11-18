@@ -49,6 +49,7 @@ typedef struct
 } wb_t;
 
 #define TENSOR_DIMS_NUM 4
+#define CUSTOM_TEST_ENUM_OAFL (vx_enum)VX_TYPE_OBJECT_ARRAY + 1
 
 static vx_reference own_create_reference(vx_context context, vx_enum item_type, vx_int8 variance)
 {
@@ -69,6 +70,8 @@ static vx_reference own_create_reference(vx_context context, vx_enum item_type, 
     vx_size m = 5, n = 5;
     vx_size tensor_dims_length = 20;
     vx_size* dims;
+    vx_size obj_arr_items = 5;
+    vx_reference ref_list[TIVX_OBJECT_ARRAY_MAX_ITEMS];
 
     switch (item_type)
     {
@@ -110,6 +113,22 @@ static vx_reference own_create_reference(vx_context context, vx_enum item_type, 
         case VX_TYPE_USER_DATA_OBJECT:
             exemplar = (vx_reference)vxCreateUserDataObject(context, NULL, sizeof(wb_t) + variance, NULL);
             break;
+        case VX_TYPE_OBJECT_ARRAY:
+        {
+            vx_reference obj_arr_exemplar = own_create_reference(context, VX_TYPE_IMAGE, variance);
+            exemplar = (vx_reference)vxCreateObjectArray(context, obj_arr_exemplar, obj_arr_items + variance);
+            vxReleaseReference(&obj_arr_exemplar);
+        }   break;
+        case CUSTOM_TEST_ENUM_OAFL:
+        {
+            for (vx_size i = 0; i < obj_arr_items + variance; i++) {
+                ref_list[i] = own_create_reference(context, VX_TYPE_IMAGE, variance);
+            }
+            exemplar = (vx_reference)tivxCreateObjectArrayFromList(context, ref_list, obj_arr_items + variance);
+            for (vx_size i = 0; i < obj_arr_items + variance; i++) {
+                vxReleaseReference(&ref_list[i]);
+            }
+        }   break;
         default:
             break;
     }
@@ -321,6 +340,40 @@ static void own_check_meta(vx_reference item, vx_reference ref)
             ct_free_mem(item_strides);
             ct_free_mem(ref_strides);
         }   break;
+        case VX_TYPE_OBJECT_ARRAY:
+        case CUSTOM_TEST_ENUM_OAFL:
+        {
+            vx_enum ref_data_type, item_data_type;
+            vx_size ref_capacity, item_capacity;
+            vx_bool ref_from_list, item_from_list;
+            vx_reference ref_child, item_child;
+
+            VX_CALL(vxQueryObjectArray((vx_object_array)ref, VX_OBJECT_ARRAY_ITEMTYPE, &ref_data_type, sizeof(vx_enum)));
+            VX_CALL(vxQueryObjectArray((vx_object_array)item, VX_OBJECT_ARRAY_ITEMTYPE, &item_data_type, sizeof(vx_enum)));
+            ASSERT(item_data_type == ref_data_type);
+
+            VX_CALL(vxQueryObjectArray((vx_object_array)ref, VX_OBJECT_ARRAY_NUMITEMS, &ref_capacity, sizeof(vx_size)));
+            VX_CALL(vxQueryObjectArray((vx_object_array)item, VX_OBJECT_ARRAY_NUMITEMS, &item_capacity, sizeof(vx_size)));
+            ASSERT(ref_capacity == item_capacity);
+
+            VX_CALL(vxQueryObjectArray((vx_object_array)ref, TIVX_OBJECT_ARRAY_IS_FROM_LIST, &ref_from_list, sizeof(vx_bool)));
+            VX_CALL(vxQueryObjectArray((vx_object_array)item, TIVX_OBJECT_ARRAY_IS_FROM_LIST, &item_from_list, sizeof(vx_bool)));
+            ASSERT(item_from_list == ref_from_list);
+
+            for (vx_size i = 0u; i < ref_capacity; i++)
+            {
+                ASSERT_VX_OBJECT(ref_child = vxGetObjectArrayItem((vx_object_array)ref, i), (enum vx_type_e)ref_data_type);
+                ASSERT_VX_OBJECT(item_child = vxGetObjectArrayItem((vx_object_array)item, i), (enum vx_type_e)item_data_type);
+
+                ASSERT_NO_FAILURE(own_check_meta(ref_child, item_child));
+
+                VX_CALL(vxReleaseReference(&item_child));
+                VX_CALL(vxReleaseReference(&ref_child));
+                ASSERT(ref_child == 0);
+                ASSERT(item_child == 0);
+            }
+
+        }   break;
         default:
             ASSERT(0 == 1);
             break;
@@ -340,7 +393,9 @@ static void own_check_meta(vx_reference item, vx_reference ref)
     CT_EXPAND(nextmacro(testArgName "/VX_TYPE_REMAP", __VA_ARGS__, VX_TYPE_REMAP)), \
     CT_EXPAND(nextmacro(testArgName "/VX_TYPE_LUT", __VA_ARGS__, VX_TYPE_LUT)), \
     CT_EXPAND(nextmacro(testArgName "/VX_TYPE_THRESHOLD", __VA_ARGS__, VX_TYPE_THRESHOLD )), \
-    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_TENSOR", __VA_ARGS__, VX_TYPE_TENSOR ))
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_TENSOR", __VA_ARGS__, VX_TYPE_TENSOR )), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_OBJECT_ARRAY", __VA_ARGS__, VX_TYPE_OBJECT_ARRAY )), \
+    CT_EXPAND(nextmacro(testArgName "/VX_TYPE_OBJECT_ARRAY_FROM_LIST", __VA_ARGS__, CUSTOM_TEST_ENUM_OAFL))
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("object_array", ADD_VX_OBJECT_ARRAY_TYPES, ARG, NULL)
@@ -368,6 +423,10 @@ TEST_WITH_ARG(ObjectArrayFromList, testTIVXCreateObjectArray, Obj_Array_Arg, PAR
         actual_items[i] = own_create_reference(context, item_type, i);
     }
 
+    // If Object Array From List, run rest of test with same enum as object array
+    if (item_type == CUSTOM_TEST_ENUM_OAFL) {
+        item_type -= 1;
+    }
     // Test data creation check
     ASSERT_VX_OBJECT(actual_items[0], item_type);
 

@@ -21,7 +21,7 @@
 
 #include <vx_internal.h>
 
-static vx_bool ownIsValidObjArrayType(vx_enum type);
+static vx_bool ownIsValidObjArrayType(vx_reference ref);
 static vx_status ownDestructObjArray(vx_reference ref);
 static vx_status ownInitObjArrayFromObject(vx_context context,
             vx_object_array objarr, vx_reference exemplar);
@@ -104,9 +104,11 @@ static vx_status VX_CALLBACK objectArrayKernelCallback(vx_enum kernel_enum, vx_b
     return status;
 }
 
-static vx_bool ownIsValidObjArrayType(vx_enum type)
+static vx_bool ownIsValidObjArrayType(vx_reference ref)
 {
     vx_bool status = (vx_bool)vx_false_e;
+    /* ref is already checked to be non-null in the internal create function */
+    vx_enum type = ref->type;
 
     if (((vx_enum)VX_TYPE_IMAGE == type) ||
         ((vx_enum)VX_TYPE_TENSOR == type) ||
@@ -122,6 +124,12 @@ static vx_bool ownIsValidObjArrayType(vx_enum type)
         ((vx_enum)VX_TYPE_LUT == type))
     {
         status = (vx_bool)vx_true_e;
+    }
+    else if ((vx_enum)VX_TYPE_OBJECT_ARRAY == type) {
+        (void)(vxQueryObjectArray((vx_object_array)ref, VX_OBJECT_ARRAY_ITEMTYPE, &type, sizeof(type)));
+        if (type != (vx_enum)VX_TYPE_OBJECT_ARRAY) {
+            status = (vx_bool)vx_true_e;
+        }
     }
 
     return (status);
@@ -341,7 +349,7 @@ static vx_object_array ownCreateObjArrayInt(vx_context context, vx_reference* sr
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "Invalid count parameter passed to object array creation\n");
     }
-    else if (ownIsValidObjArrayType((*src)->type) != (vx_bool)vx_true_e)
+    else if (ownIsValidObjArrayType(*src) != (vx_bool)vx_true_e)
     {
         status = (vx_status)VX_ERROR_INVALID_TYPE;
         VX_PRINT(VX_ZONE_ERROR, "Source reference passed to object array creation is of invalid type\n");
@@ -624,6 +632,11 @@ static vx_status ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t i)
          * 'count' is not used further.
          */
         (void)ownDecrementReference(objarr->ref[i], (vx_enum)VX_INTERNAL);
+
+        /* Rescope the child to the context if the parent is destroyed.
+         * This way, a list of references can be reused.
+         */
+        objarr->ref[i]->scope = objarr->base.scope;
 
         status = vxReleaseReference(&objarr->ref[i]);
 /* LDRA_JUSTIFY_START

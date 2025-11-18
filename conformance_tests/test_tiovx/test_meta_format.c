@@ -467,11 +467,12 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
             {
                 return VX_FAILURE;
             }
-            // TIOVX-2318 - vxSetMetaFormatAttribute TIVX_OBJECT_ARRAY_IS_FROM_LIST positive and negative case
+            // TIOVX-2318 - vxSetMetaFormatAttribute TIVX_OBJECT_ARRAY_IS_FROM_LIST negative case
             if (vxSetMetaFormatAttribute(meta, TIVX_OBJECT_ARRAY_IS_FROM_LIST, &is_from_list, errInject(sizeof(vx_bool))) != VX_ERROR_INVALID_PARAMETERS)
             {
                 return VX_FAILURE;
             }
+            // TIOVX-2318 - vxSetMetaFormatAttribute TIVX_OBJECT_ARRAY_IS_FROM_LIST positive case
             if (vxSetMetaFormatAttribute(meta, TIVX_OBJECT_ARRAY_IS_FROM_LIST, &is_from_list, sizeof(vx_bool)) == VX_ERROR_INVALID_PARAMETERS)
             {
                 return VX_FAILURE;
