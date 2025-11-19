@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017-2021 Texas Instruments Incorporated
+* Copyright (c) 2017-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -403,7 +403,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                     /* no elements or not enough element in queue to extract */
                     if (timeout == TIVX_EVENT_TIMEOUT_NO_WAIT)
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "no elements found in que\n");
+                        VX_PRINT(VX_ZONE_INFO, "no elements found in queue\n");
                         status = (vx_status)VX_FAILURE;
                         do_break = (vx_bool)vx_true_e; /* non-blocking, exit with error */
                     }
