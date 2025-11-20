@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017-2019 Texas Instruments Incorporated
+* Copyright (c) 2017-2025 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -85,10 +85,11 @@ extern "C" {
  */
 typedef enum _tivx_mem_heap_region_e
 {
-    /*! \brief External memory.
+    /*! \brief External local memory.
      *
-     *  Typically large in size and can be used by kernels.
-     *  as well as applications.
+     *  Typically large in size and can be used by kernels. These buffers
+     *  are allocated in cached external memory that is meant to be for
+     *  dedicated use by the local core.
      */
     TIVX_MEM_EXTERNAL,
 
@@ -141,26 +142,51 @@ typedef enum _tivx_mem_heap_region_e
 
     /*! \brief External scratch memory.
      *
-     *  Typically large in size and can be used by kernels.
-     *  as well as applications.  Must be reset and allocated
-     *  each time it is used.
+     *  Typically local to CPU, and large in size.
+     *  Typically used by kernels.
+     *
+     *  This is used as scratch memory by kernels, i.e
+     *  memory contents are not preserved across kernel function calls
+     *
+     *  tivxMemAlloc() API will linearly allocate from this memory
+     *  segment. After each allocation an internal
+     *  offset will be incremented.
+     *
+     *  tivxMemFree() resets this offset to zero.
+     *  i.e tivxMemAlloc() and tivxMemFree() are not heap like memory
+     *  alloc and free functions.
+     *
+     *  NOT to be used by applications.
      */
     TIVX_MEM_EXTERNAL_SCRATCH,
 
     /*! \brief External persistent non cacheable memory
      *
-     *  Typically large in size and can be used by kernels.
-     *  as well as applications.  Must be reset and allocated
-     *  each time it is used.
+     *  Typically large in size and can be used by kernels,
+     *  as well as applications that need non-cached buffers.
      */
     TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE,
+
     /*! \brief External scratch non cacheable memory
      *
-     *  Typically large in size and can be used by kernels.
-     *  as well as applications.  Must be reset and allocated
-     *  each time it is used.
+     *  Typically local to CPU, and large in size.
+     *  Typically used by kernels.
+     *
+     *  This is used as scratch memory by kernels, i.e
+     *  memory contents are not preserved across kernel function calls
+     *
+     *  tivxMemAlloc() API will linearly allocate from this memory
+     *  segment. After each allocation an internal
+     *  offset will be incremented.
+     *
+     *  tivxMemFree() resets this offset to zero.
+     *  i.e tivxMemAlloc() and tivxMemFree() are not heap like memory
+     *  alloc and free functions.
+     *
+     *  NOT to be used by applications.
      */
     TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE,
+
     /*! \brief External cacheable memory with write through policy
      *
      *  Typically used when only one core needs to RW the memory,
@@ -168,7 +194,15 @@ typedef enum _tivx_mem_heap_region_e
      *  time is saved by avoiding a cache write back operation before
      *  triggering a DMA read of the memory.
      */
-    TIVX_MEM_EXTERNAL_CACHEABLE_WT
+    TIVX_MEM_EXTERNAL_CACHEABLE_WT,
+
+    /*! \brief External shared memory.
+     *
+     *  Typically used to allocate buffers on a CPU running an OpenVX host. These
+     *  buffers are allocated in cached external memory that is meant to be shared
+     *  between cores.
+     */
+    TIVX_MEM_EXTERNAL_SHARED,
 
 } tivx_mem_heap_region_e;
 

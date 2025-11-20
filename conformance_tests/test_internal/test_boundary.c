@@ -381,10 +381,10 @@ TEST(tivxObjDescBoundary, negativeTestOwnEventQueueCreate)
     /* Allocate max possible number of event queues */
     for (i=0; i <=TIVX_QUEUE_MAX_OBJECTS; i++ )
     {
-        event_q[i] = tivxMemAlloc(sizeof(tivx_event_queue_t), TIVX_MEM_EXTERNAL);
+        event_q[i] = tivxMemAlloc(sizeof(tivx_event_queue_t), TIVX_MEM_EXTERNAL_SHARED);
         if (VX_SUCCESS != ownEventQueueCreate(event_q[i]))
         {
-            VX_CALL(tivxMemFree(event_q[i], sizeof(tivx_event_queue_t), TIVX_MEM_EXTERNAL));
+            VX_CALL(tivxMemFree(event_q[i], sizeof(tivx_event_queue_t), TIVX_MEM_EXTERNAL_SHARED));
             i--;
             break;
         }
@@ -392,7 +392,7 @@ TEST(tivxObjDescBoundary, negativeTestOwnEventQueueCreate)
 
     /* Delete the last succesfully created event queue to release 2 queues (Each event queue consists of 2 queues) */
     VX_CALL(ownEventQueueDelete(event_q[i]));
-    VX_CALL(tivxMemFree(event_q[i], sizeof(tivx_event_queue_t), TIVX_MEM_EXTERNAL));
+    VX_CALL(tivxMemFree(event_q[i], sizeof(tivx_event_queue_t), TIVX_MEM_EXTERNAL_SHARED));
 
     /* Allocate 1 Queue */
     VX_CALL(tivxQueueCreate(&tmp_queue, TIVX_EVENT_QUEUE_MAX_SIZE, temp_queue_memory, 0));
@@ -400,7 +400,7 @@ TEST(tivxObjDescBoundary, negativeTestOwnEventQueueCreate)
     /* Again allocate event queues until max limit */
     for (; i <=TIVX_QUEUE_MAX_OBJECTS; i++ )
     {
-        event_q[i] = tivxMemAlloc(sizeof(tivx_event_queue_t), TIVX_MEM_EXTERNAL);
+        event_q[i] = tivxMemAlloc(sizeof(tivx_event_queue_t), TIVX_MEM_EXTERNAL_SHARED);
         if (VX_SUCCESS != ownEventQueueCreate(event_q[i]))
         {
             break;
@@ -412,10 +412,10 @@ TEST(tivxObjDescBoundary, negativeTestOwnEventQueueCreate)
     {
         if (VX_SUCCESS != ownEventQueueDelete(event_q[j]))
         {
-            VX_CALL(tivxMemFree(event_q[j], sizeof(tivx_event_queue_t), TIVX_MEM_EXTERNAL));
+            VX_CALL(tivxMemFree(event_q[j], sizeof(tivx_event_queue_t), TIVX_MEM_EXTERNAL_SHARED));
             break;
         }
-        VX_CALL(tivxMemFree(event_q[j], sizeof(tivx_event_queue_t), TIVX_MEM_EXTERNAL));
+        VX_CALL(tivxMemFree(event_q[j], sizeof(tivx_event_queue_t), TIVX_MEM_EXTERNAL_SHARED));
     }
     VX_CALL(tivxQueueDelete(&tmp_queue));
 }

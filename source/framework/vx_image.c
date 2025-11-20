@@ -366,13 +366,13 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                     /* Two conditions may fail inside function mem pointer null and size zero
                      * to handle that put a status check here
                      */
-                    status = tivxMemBufferAlloc(&obj_desc->mem_ptr[0], size, (vx_enum)TIVX_MEM_EXTERNAL);
+                    status = tivxMemBufferAlloc(&obj_desc->mem_ptr[0], size, (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
                     if((vx_status)VX_SUCCESS == status)
                     {
                         obj_desc->mem_ptr[0].shared_ptr =
                             tivxMemHost2SharedPtr(
                                 obj_desc->mem_ptr[0].host_ptr,
-                                (vx_enum)TIVX_MEM_EXTERNAL);
+                                (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
                         tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)obj_desc->mem_ptr[0].host_ptr, (uint32_t)obj_desc->mem_size[0],
                             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE));
 
@@ -386,7 +386,7 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                             obj_desc->mem_ptr[plane_idx].shared_ptr =
                                 tivxMemHost2SharedPtr(
                                     obj_desc->mem_ptr[plane_idx].host_ptr,
-                                    (vx_enum)TIVX_MEM_EXTERNAL);
+                                    (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
                             obj_desc->mem_ptr[plane_idx].dma_buf_fd =
                                 obj_desc->mem_ptr[plane_idx-(uint16_t)1].dma_buf_fd;
                             obj_desc->mem_ptr[plane_idx].dma_buf_fd_offset =
@@ -651,7 +651,7 @@ static vx_status adjustMemoryPointer(const vx_reference ref, uint64_t offset[TIV
                 for (i = 0; i < obj_desc->planes; ++i)
                 {
                     obj_desc->mem_ptr[i].host_ptr = obj_desc->mem_ptr[i].host_ptr + offset[i];
-                    obj_desc->mem_ptr[i].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[i].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                    obj_desc->mem_ptr[i].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[i].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
                 }
             }
 /* LDRA_JUSTIFY_START
@@ -661,14 +661,14 @@ static vx_status adjustMemoryPointer(const vx_reference ref, uint64_t offset[TIV
             else
             {
                 obj_desc->mem_ptr[0U].host_ptr = obj_desc->mem_ptr[0].host_ptr + offset[local_img->channel_plane];
-                obj_desc->mem_ptr[0U].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[0U].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                obj_desc->mem_ptr[0U].shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr[0U].host_ptr, (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
             }     
         }
         else if ((vx_enum)VX_TYPE_TENSOR == local_ref->type)
         {
             tivx_obj_desc_tensor_t *obj_desc = (tivx_obj_desc_tensor_t *)local_ref->obj_desc;
             obj_desc->mem_ptr.host_ptr = obj_desc->mem_ptr.host_ptr + offset[((vx_tensor)local_ref)->channel_plane];
-            obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+            obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
             /* there are no subtensors or subimage for the tensor for now 
                stop the loop below by setting the null pointer for the subtensor and subimage*/
             subtensors = NULL;
@@ -914,7 +914,7 @@ static void ownInitPlane(vx_image image,
 
         obj_desc->mem_size[idx] = mem_size;
 
-        obj_desc->mem_ptr[idx].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+        obj_desc->mem_ptr[idx].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
         obj_desc->mem_ptr[idx].host_ptr = (uint64_t)0;
         obj_desc->mem_ptr[idx].shared_ptr = (uint64_t)0;
 
@@ -1309,15 +1309,15 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
 
                     obj_desc->mem_size[plane_idx] = ((vx_uint32)imagepatch_addr->stride_y*imagepatch_addr->dim_y)/imagepatch_addr->step_y;
 
-                    mem_ptr->mem_heap_region =  (vx_enum)TIVX_MEM_EXTERNAL;
+                    mem_ptr->mem_heap_region =  (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
                     mem_ptr->host_ptr = (uint64_t)(uintptr_t)ptrs[plane_idx];
                     if(mem_ptr->host_ptr!=(uint64_t)0)
                     {
                         /* ptrs[plane_idx] can be NULL */
-                        mem_ptr->shared_ptr = tivxMemHost2SharedPtr(mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                        mem_ptr->shared_ptr = tivxMemHost2SharedPtr(mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
 
                         tivxCheckStatus(&status, tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr->host_ptr,
-                            obj_desc->mem_size[plane_idx], (vx_enum)TIVX_MEM_EXTERNAL,
+                            obj_desc->mem_size[plane_idx], (vx_enum)TIVX_MEM_EXTERNAL_SHARED,
                             (vx_enum)VX_WRITE_ONLY));
                     }
                 }
@@ -3309,7 +3309,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromROI(vx_image image, const v
                                 c_obj_desc->mem_ptr.host_ptr = p_obj_desc->mem_ptr[0].host_ptr + 
                                                             (uint64_t)(((uint64_t)roi.start_x * (uint64_t)c_obj_desc->stride[0]) + ((uint64_t)roi.start_y * (uint64_t)c_obj_desc->stride[1]));
                                 /* calculate shared_ptr */
-                                c_obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(c_obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                                c_obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(c_obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
 
                                 /* use parent supplementary data ID */
                                 if ((vx_uint16)TIVX_OBJ_DESC_INVALID != image->base.obj_desc->supp_data_id)

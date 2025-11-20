@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2024 Texas Instruments Incorporated
+ * Copyright (c) 2024-2025 Texas Instruments Incorporated
  */
 
 #include <math.h>
@@ -32,7 +32,7 @@ TEST(tivxMemBoundary, negativeTestMemBufferAllocBoundary)
     vx_context context = context_->vx_context_;
     tivx_shared_mem_info_t *tivx_shared_mem_info_array;
     uint32_t num_chunks;
-    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
+    vx_enum mheap_region = TIVX_MEM_EXTERNAL_SHARED;
     vx_status status = VX_SUCCESS;
 
     vx_distribution dist = NULL;
@@ -102,7 +102,7 @@ TEST(tivxMemBoundary, negativeTestMemBufferAllocBoundary)
     ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
-    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL using test-utils mem api*/
+    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL_SHARED using test-utils mem api*/
     VX_CALL(test_utils_max_out_heap_mem(&tivx_shared_mem_info_array, &num_chunks, mheap_region));
 
     /* Below APIs should fail due to tivxMemBufferAlloc failure */

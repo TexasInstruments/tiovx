@@ -449,13 +449,13 @@ TEST(tivxReference, negativeTesttivxReferenceImportHandle2)
 
     for ( i = 0; i < TIVX_REF_TEST_MAX_NUM_ADDR; i++) {
 
-        addr[i] = tivxMemAlloc(block_size, TIVX_MEM_EXTERNAL);
-        addr1[i] = tivxMemAlloc(block_size, TIVX_MEM_EXTERNAL);
-        addr2[i] = tivxMemAlloc(block_size, TIVX_MEM_EXTERNAL);
+        addr[i] = tivxMemAlloc(block_size, TIVX_MEM_EXTERNAL_SHARED);
+        addr1[i] = tivxMemAlloc(block_size, TIVX_MEM_EXTERNAL_SHARED);
+        addr2[i] = tivxMemAlloc(block_size, TIVX_MEM_EXTERNAL_SHARED);
     }
 
 
-        ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)image, (const void **)addr, (const uint32_t *)size, num_entries)));
     ASSERT_VX_OBJECT(pyr_in = vxCreatePyramid(context, 4, 0.5f, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
     ASSERT_EQ_VX_STATUS(VX_FAILURE,(tivxReferenceImportHandle((vx_reference)pyr_in, (const void **)addr1, (const uint32_t *)size, num_entries)));

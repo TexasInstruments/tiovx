@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated
+ * Copyright (c) 2022-2025 Texas Instruments Incorporated
  */
 
 #include <math.h>
@@ -652,9 +652,9 @@ TEST(tivxImage, negativeTestCreateUniformImage1)
 
     tivx_shared_mem_info_t *tivx_shared_mem_info_array;
     uint32_t num_chunks;
-    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
+    vx_enum mheap_region = TIVX_MEM_EXTERNAL_SHARED;
 
-    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL using test-utils mem api*/
+    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL_SHARED using test-utils mem api*/
     VX_CALL(test_utils_max_out_heap_mem(&tivx_shared_mem_info_array, &num_chunks, mheap_region));
 
     /* vxCreateUniformImage should fail due to tivxMemBufferAlloc failure */

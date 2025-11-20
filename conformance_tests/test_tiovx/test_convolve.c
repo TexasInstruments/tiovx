@@ -568,7 +568,7 @@ TEST(tivxConvolve, negativeTestCreateConvolution)
 TEST(tivxConvolve, negativeTestMemBufferAlloc)
 {
     vx_context context = context_->vx_context_;
-    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
+    vx_enum mheap_region = TIVX_MEM_EXTERNAL_SHARED;
     vx_status status = VX_SUCCESS;
 
     tivx_shared_mem_info_t *tivx_shared_mem_info_array;
@@ -589,7 +589,7 @@ TEST(tivxConvolve, negativeTestQueryConvolution1)
     vx_size rows = 3, cols = 3;
     vx_size actual_n = 1;
 
-    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
+    vx_enum mheap_region = TIVX_MEM_EXTERNAL_SHARED;
     vx_status status = VX_SUCCESS;
 
     tivx_shared_mem_info_t *tivx_shared_mem_info_array;
@@ -598,7 +598,7 @@ TEST(tivxConvolve, negativeTestQueryConvolution1)
 
     ASSERT_VX_OBJECT(conv = vxCreateConvolution(context, cols, rows), VX_TYPE_CONVOLUTION);
 
-    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL using test-utils mem api*/
+    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL_SHARED using test-utils mem api*/
     VX_CALL(test_utils_max_out_heap_mem(&tivx_shared_mem_info_array, &num_chunks, mheap_region));
 
     /* vxQueryConvolution should fail due to tivxMemBufferAlloc failure */
@@ -629,12 +629,12 @@ TEST(tivxConvolve, negativeTestCopyConvolutionCoefficients1)
     tivx_shared_mem_info_t *tivx_shared_mem_info_array;
     uint32_t num_chunks;
 
-    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
+    vx_enum mheap_region = TIVX_MEM_EXTERNAL_SHARED;
     vx_status status = VX_SUCCESS;
 
     ASSERT_VX_OBJECT(conv = vxCreateConvolution(context, cols, rows), VX_TYPE_CONVOLUTION);
 
-    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL using test-utils mem api*/
+    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL_SHARED using test-utils mem api*/
     VX_CALL(test_utils_max_out_heap_mem(&tivx_shared_mem_info_array, &num_chunks, mheap_region));
 
     /* vxCopyConvolutionCoefficients should fail due to tivxMemBufferAlloc failure */

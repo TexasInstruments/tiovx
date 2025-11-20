@@ -368,12 +368,12 @@ vx_status ownAllocReferenceBufferGeneric(vx_reference ref)
             {
                 status = tivxMemBufferAlloc(
                     mem_ptr, mem_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
 
                 if ((vx_status)VX_SUCCESS == status)
                 {
                     mem_ptr->shared_ptr = tivxMemHost2SharedPtr(
-                        mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                        mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
 
                     tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)mem_ptr->host_ptr, (uint32_t)mem_size,
                         (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE));
@@ -1800,7 +1800,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                     /* Check if the memory allocated can be translated. */
                     shared_ptr[i] =
                         tivxMemHost2SharedPtr((uint64_t)(uintptr_t)addr[i],
-                                              (vx_enum)TIVX_MEM_EXTERNAL);
+                                              (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
 
                     if (shared_ptr[i] == 0U)
                     {
@@ -1932,7 +1932,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
 
                     mem_ptr[0].host_ptr        = (uint64_t)(uintptr_t)addr[i];
                     mem_ptr[0].shared_ptr      = shared_ptr[i];
-                    mem_ptr[0].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+                    mem_ptr[0].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
 
                     for (j = 1; j < num_planes[i]; j++)
                     {
@@ -1941,7 +1941,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                             mem_ptr[j].host_ptr        = mem_ptr[(int32_t)j-1].host_ptr + mem_size[(int32_t)j-1];
                             mem_ptr[j].shared_ptr      = tivxMemHost2SharedPtr(
                                     mem_ptr[j].host_ptr,
-                                    (vx_enum)TIVX_MEM_EXTERNAL);
+                                    (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
                         }
                         else
                         {
@@ -1949,7 +1949,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                             mem_ptr[j].shared_ptr      = (uint64_t)0;
                         }
 
-                        mem_ptr[j].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+                        mem_ptr[j].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
                     } /* for (j = 1; j < num_planes[i]; j++) */
 
                 } /* for (i = 0; i < num_levels; i++) */
@@ -1964,7 +1964,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                 {
                     for (i = 0; i < numMemElem; i++)
                     {
-                        mem_ptr[i].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+                        mem_ptr[i].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
 
                         if (mem_ptr[i].host_ptr != (uint64_t)0)
                         {
@@ -1992,7 +1992,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                                     mem_ptr[j].host_ptr        = mem_ptr[(int32_t)j-1].host_ptr + mem_size[(int32_t)j-1];
                                     mem_ptr[j].shared_ptr      = tivxMemHost2SharedPtr(
                                             mem_ptr[j].host_ptr,
-                                            (vx_enum)TIVX_MEM_EXTERNAL);
+                                            (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
                                 }
                                 else
                                 {

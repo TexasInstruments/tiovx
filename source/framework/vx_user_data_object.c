@@ -95,7 +95,7 @@ static void ownInitUserDataObjectObject(
 
     obj_desc->mem_ptr.host_ptr = (uint64_t)0;
     obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
-    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
 
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i ++)
     {

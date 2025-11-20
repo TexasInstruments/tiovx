@@ -71,7 +71,7 @@ VX_API_ENTRY vx_convolution VX_API_CALL vxCreateConvolution(
                     obj_desc->mem_size = (uint32_t)columns*(uint32_t)rows*(uint32_t)sizeof(vx_int16);
                     obj_desc->mem_ptr.host_ptr = (uint64_t)0;
                     obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
-                    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+                    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
                     cnvl->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }

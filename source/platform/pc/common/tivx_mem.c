@@ -142,6 +142,9 @@ vx_status ownMemRegionTranslate (uint32_t mem_heap_region, uint32_t *heap_id)
             case (vx_enum)TIVX_MEM_EXTERNAL_CACHEABLE_WT:
                 *heap_id = APP_MEM_HEAP_DDR_WT_CACHE;
                 break;
+            case (vx_enum)TIVX_MEM_EXTERNAL_SHARED:
+                *heap_id = APP_MEM_HEAP_DDR_SHARED;
+                break;
 
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
@@ -187,7 +190,7 @@ vx_status tivxMemBufferAlloc(
     {
         mem_ptr->mem_heap_region = mem_heap_region;
 
-        mem_ptr->host_ptr = (uint64_t)(uintptr_t)tivxMemAlloc(alloc_size, (vx_enum)TIVX_MEM_EXTERNAL);
+        mem_ptr->host_ptr = (uint64_t)(uintptr_t)tivxMemAlloc(alloc_size, (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
 
         mem_ptr->shared_ptr = mem_ptr->host_ptr;
 
@@ -205,9 +208,9 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 {
     void *ptr = NULL;
 
-    if( ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL != mem_heap_region) && ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL_SCRATCH != mem_heap_region) &&
-        ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE != mem_heap_region) &&
-        ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE != mem_heap_region) )
+    if( ((vx_enum)TIVX_MEM_INTERNAL_L1 == mem_heap_region) ||
+        ((vx_enum)TIVX_MEM_INTERNAL_L2 == mem_heap_region) ||
+        ((vx_enum)TIVX_MEM_INTERNAL_L3 == mem_heap_region))
     {
         uint32_t mem_offset;
 
@@ -245,7 +248,9 @@ vx_status tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 {
     vx_status status = VX_SUCCESS;
 
-    if( ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL != mem_heap_region) && ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL_SCRATCH != mem_heap_region) )
+    if( ((vx_enum)TIVX_MEM_INTERNAL_L1 == mem_heap_region) ||
+        ((vx_enum)TIVX_MEM_INTERNAL_L2 == mem_heap_region) ||
+        ((vx_enum)TIVX_MEM_INTERNAL_L3 == mem_heap_region))
     {
         /* L2RAM is used as scratch memory and allocation is linear offset based allocation
          * Free in this case resets the offset to 0
@@ -288,7 +293,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     {
         if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
         {
-            status = tivxMemFree((void*)(uintptr_t)mem_ptr->host_ptr, alloc_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            status = tivxMemFree((void*)(uintptr_t)mem_ptr->host_ptr, alloc_size, (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
         }
     }
 
@@ -309,7 +314,9 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
         stats->mem_size = 0;
         stats->free_size = 0;
 
-        if( ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL != mem_heap_region) && ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL_SCRATCH != mem_heap_region) )
+        if( ((vx_enum)TIVX_MEM_INTERNAL_L1 == mem_heap_region) ||
+            ((vx_enum)TIVX_MEM_INTERNAL_L2 == mem_heap_region) ||
+            ((vx_enum)TIVX_MEM_INTERNAL_L3 == mem_heap_region))
         {
             stats->mem_size = TIVX_MEM_L2RAM_SIZE;
             stats->free_size = (uint32_t)TIVX_MEM_L2RAM_SIZE - gL2RAM_mem_offset;
@@ -436,7 +443,7 @@ vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **ph
 
         *fd = appMemGetDmaBufFd((void*)virtAddr, &dmaBufFdOffset);
         *phyAddr = (void *)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)virtAddr,
-                                                            TIVX_MEM_EXTERNAL);
+                                                            TIVX_MEM_EXTERNAL_SHARED);
 
         if ((*fd == (uint32_t)-1) || (*phyAddr == 0))
         {

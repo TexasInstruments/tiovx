@@ -805,9 +805,9 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  * <tt>\ref tivxReferenceExportHandle</tt> for retrieving the current handles before invoking this function.
  *
  * The following conditions regarding 'addr' must be TRUE:
- * - allocated using appMemAlloc or \ref tivxMemAlloc on ARM using the APP_MEM_HEAP_DDR or \ref TIVX_MEM_EXTERNAL memory region respectively
+ * - allocated using appMemAlloc or \ref tivxMemAlloc on OpenVX Host core using the APP_MEM_HEAP_DDR_SHARED or \ref TIVX_MEM_EXTERNAL_SHARED memory region respectively
  *   - This API ensures that the memory is allocated in the necessary shared memory region which can be used by OpenVX
- * - freed using appMemFree or \ref tivxMemFree on ARM
+ * - freed using appMemFree or \ref tivxMemFree on OpenVX Host core
  * - memory block is contiguous
  *
  * Only the following reference object types are supported:

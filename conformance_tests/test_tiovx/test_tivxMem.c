@@ -17,7 +17,7 @@
 
 /*
  *
- * Copyright (c) 2020 Texas Instruments Incorporated
+ * Copyright (c) 2020-2025 Texas Instruments Incorporated
  *
  */
 
@@ -527,7 +527,7 @@ TEST(tivxMem, testTranslateAddrMemAlloc)
 #endif
 
     size   = 1024;
-    region = TIVX_MEM_EXTERNAL;
+    region = TIVX_MEM_EXTERNAL_SHARED;
     ptr = tivxMemAlloc(size, region);
 
     if (ptr == NULL)
@@ -730,7 +730,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    region = TIVX_MEM_EXTERNAL;
+    region = TIVX_MEM_EXTERNAL_SHARED;
 
     for (i = 0; i < maxNumAddr; i++)
     {
@@ -1597,7 +1597,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcValidObj, TestArg, TEST_PARAM
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    region = TIVX_MEM_EXTERNAL;
+    region = TIVX_MEM_EXTERNAL_SHARED;
 
     for (i = 0; i < maxNumAddr; i++)
     {
@@ -2018,7 +2018,7 @@ TEST(tivxMem, testSubimageNeg)
 /* Positive and negative tests function as expected since ran on A-cores, isn't ran on RTOS cores */
 TEST(tivxMem, testMemRegionQuery)
 {
-    vx_enum region = TIVX_MEM_EXTERNAL;
+    vx_enum region = TIVX_MEM_EXTERNAL_SHARED;
     ASSERT(tivxMemRegionQuery(region) == (vx_bool)vx_true_e);
 
     region = TIVX_MEM_EXTERNAL_CACHEABLE_WT;

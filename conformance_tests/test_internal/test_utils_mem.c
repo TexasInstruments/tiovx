@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated
+ * Copyright (c) 2022-2025 Texas Instruments Incorporated
  */
 
 #include "test_engine/test.h"
@@ -50,7 +50,7 @@ TEST(tivxDmaHeap, testappMemFree)
    void *virPtr = NULL;
    uint32_t size = 0;
 
-   ASSERT((vx_status)VX_FAILURE == appMemFree(block, virPtr, size));
+   ASSERT((int32_t)-1 == appMemFree(block, virPtr, size));
 }
 
 #ifndef PC
@@ -60,7 +60,7 @@ TEST(tivxDmaHeap, testappMemStats)
     vx_enum cpu_id;
 
     cpu_id = tivxGetSelfCpuId();
-    ASSERT((uint32_t)0 == appMemStats(APP_MEM_HEAP_DDR, &stats));
+    ASSERT((uint32_t)0 == appMemStats(APP_MEM_HEAP_DDR_SHARED, &stats));
     ASSERT((uint32_t)0 == appMemStats(-1, &stats));
     ASSERT((uint32_t)0 == appMemStats(1,NULL));
 }

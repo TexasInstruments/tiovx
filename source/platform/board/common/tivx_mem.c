@@ -100,6 +100,9 @@ vx_status ownMemRegionTranslate (uint32_t mem_heap_region, uint32_t *heap_id)
             case (vx_enum)TIVX_MEM_EXTERNAL_CACHEABLE_WT:
                 *heap_id = APP_MEM_HEAP_DDR_WT_CACHE;
                 break;
+            case (vx_enum)TIVX_MEM_EXTERNAL_SHARED:
+                *heap_id = APP_MEM_HEAP_DDR_SHARED;
+                break;
 
             /* Waiver here: leaving in so that if someone adds a new type it gets flagged */
             default:

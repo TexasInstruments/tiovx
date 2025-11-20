@@ -382,7 +382,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                          * obj_desc->mem_ptr[exp_idx].host_ptr is NULL or not
                          * and status is set according to that.
                          */
-                        (void)tivxMemBufferAlloc(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx], (vx_enum)TIVX_MEM_EXTERNAL);
+                        (void)tivxMemBufferAlloc(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx], (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
 
                         if(obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)0)
                         {
@@ -397,7 +397,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                                 tivxMemHost2SharedPtr(
                                     obj_desc->mem_ptr[exp_idx].
                                     host_ptr,
-                                    (vx_enum)TIVX_MEM_EXTERNAL);
+                                    (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
                             tivxCheckStatus(&status, tivxMemBufferMap((void *)(uintptr_t)obj_desc->mem_ptr[exp_idx].host_ptr, (uint32_t)obj_desc->mem_size[exp_idx],
                                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE));
                             ref->is_allocated = (vx_bool)vx_true_e;
@@ -516,7 +516,7 @@ static void ownInitRawImage(tivx_raw_image image, tivx_raw_image_create_params_t
             obj_desc->mem_size[exp_idx] = mem_size;
         }
 
-        obj_desc->mem_ptr[exp_idx].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+        obj_desc->mem_ptr[exp_idx].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
         obj_desc->mem_ptr[exp_idx].host_ptr = (uint64_t)0;
         obj_desc->mem_ptr[exp_idx].shared_ptr = (uint64_t)0;
 

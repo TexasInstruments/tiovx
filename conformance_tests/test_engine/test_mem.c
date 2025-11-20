@@ -14,6 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * Copyright (c) 2025 Texas Instruments Incorporated
+ */
 
 #include <stdlib.h>
 #include <string.h>
@@ -36,7 +39,7 @@ void *ct_alloc_mem(size_t size)
         #else
         size = (size + CT_MEM_HEADER_SIZE + CT_MEM_ALLOC_ALIGN) &
             ~(CT_MEM_ALLOC_ALIGN);
-        ptr = tivxMemAlloc(size, TIVX_MEM_EXTERNAL);
+        ptr = tivxMemAlloc(size, TIVX_MEM_EXTERNAL_SHARED);
 
         if (NULL != ptr)
         {
@@ -61,7 +64,7 @@ void ct_free_mem(void *ptr)
         
         ptr = (void *)((uintptr_t)ptr - CT_MEM_HEADER_SIZE);
         size = *(uint32_t*)ptr;
-        tivxMemFree(ptr, size, TIVX_MEM_EXTERNAL);
+        tivxMemFree(ptr, size, TIVX_MEM_EXTERNAL_SHARED);
         #endif
     }
 }
@@ -88,7 +91,7 @@ void *ct_calloc(size_t nmemb, size_t size)
         new_size = size * nmemb;
         new_size = (new_size + CT_MEM_HEADER_SIZE + CT_MEM_ALLOC_ALIGN) &
             ~(CT_MEM_ALLOC_ALIGN);
-        ptr = tivxMemAlloc(new_size, TIVX_MEM_EXTERNAL);
+        ptr = tivxMemAlloc(new_size, TIVX_MEM_EXTERNAL_SHARED);
 
         if (NULL != ptr)
         {

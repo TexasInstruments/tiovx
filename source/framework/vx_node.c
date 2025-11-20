@@ -500,7 +500,7 @@ vx_status ownNodeKernelInit(vx_node node)
             /* allocate memory for user kernel */
             node->local_data_size = node->kernel->local_data_size;
             node->local_data_ptr = tivxMemAlloc((uint32_t)node->local_data_size,
-                (vx_enum)TIVX_MEM_EXTERNAL);
+                (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_NODE_UTJT003
@@ -772,7 +772,7 @@ vx_status ownNodeKernelDeinit(vx_node node)
             )
         {
             status = tivxMemFree(node->local_data_ptr, (uint32_t)node->local_data_size,
-                (vx_enum)TIVX_MEM_EXTERNAL);
+                (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
             node->local_data_ptr = NULL;
             node->local_data_size = 0;
             node->local_data_ptr_is_alloc = (vx_bool)vx_false_e;

@@ -98,7 +98,7 @@ VX_API_ENTRY vx_lut VX_API_CALL vxCreateLUT(vx_context context, vx_enum data_typ
                     obj_desc->mem_size = (uint32_t)dim * (uint32_t)count;
                     obj_desc->mem_ptr.host_ptr = (uint64_t)0;
                     obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
-                    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+                    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
                     lut->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }

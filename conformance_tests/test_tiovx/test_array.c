@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2020 Texas Instruments Incorporated
+ * Copyright (c) 2020-2025 Texas Instruments Incorporated
  */
 
 #include <math.h>
@@ -370,7 +370,7 @@ TEST(tivxArray, negativeTestOwnAllocArrayBuffer)
     int i = 0;
     vx_keypoint_t keypoint_array[KA];
     vx_enum item_type = VX_TYPE_KEYPOINT;
-    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
+    vx_enum mheap_region = TIVX_MEM_EXTERNAL_SHARED;
     uint32_t size = 1024U;
     vx_status status = VX_SUCCESS;
     tivx_shared_mem_ptr_t tsmp[2048];

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2024 Texas Instruments Incorporated
+ * Copyright (c) 2024-2025 Texas Instruments Incorporated
  */
 #include <vx_internal.h>
 #include <tivx_objects.h>
@@ -502,7 +502,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphAddSingleDataReference)
 
     tivx_shared_mem_info_t *shared_mem_info_array;
     uint32_t num_chunks;
-    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
+    vx_enum mheap_region = TIVX_MEM_EXTERNAL_SHARED;
     vx_status status = VX_SUCCESS;
 
     tivxTestKernelsLoadKernels(context);
@@ -515,7 +515,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphAddSingleDataReference)
 
 
 
-    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL */
+    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL_SHARED */
     VX_CALL(test_utils_max_out_heap_mem(&shared_mem_info_array, &num_chunks, mheap_region));
 
     ASSERT_VX_OBJECT(color_convert_node = vxColorConvertNode(graph, input, output), VX_TYPE_NODE);
@@ -548,7 +548,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphAllocateDataObject)
 
     tivx_shared_mem_info_t *shared_mem_info_array;
     uint32_t num_chunks;
-    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
+    vx_enum mheap_region = TIVX_MEM_EXTERNAL_SHARED;
     vx_status status = VX_SUCCESS;
 
 
@@ -559,7 +559,7 @@ TEST(tivxInternalGraphVerify, negativeTestOwnGraphAllocateDataObject)
     ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
     ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)(pyr), 2), VX_TYPE_DELAY);
 
-    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL */
+    /* Allocating all the memory under heap region TIVX_MEM_EXTERNAL_SHARED */
     VX_CALL(test_utils_max_out_heap_mem(&shared_mem_info_array, &num_chunks, mheap_region));
 
     ASSERT_VX_OBJECT(n = tivxPyramidIntermediateNode(graph, pyr,

@@ -65,7 +65,7 @@ VX_API_ENTRY vx_distribution VX_API_CALL vxCreateDistribution(vx_context context
                     obj_desc->mem_size = (vx_uint32)num_bins * (vx_uint32)sizeof(vx_int32);
                     obj_desc->mem_ptr.host_ptr = (uint64_t)0;
                     obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
-                    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+                    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
                     dist->base.obj_desc = (tivx_obj_desc_t*)obj_desc;
                 }
             }

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2024 Texas Instruments Incorporated
+ * Copyright (c) 2024-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -102,7 +102,7 @@ static vx_status pushback_link(tivx_shared_mem_info_t ** head, tivx_shared_mem_p
 static vx_status create_link(tivx_shared_mem_info_t ** head)
 {
     vx_status status = VX_FAILURE;
-    tivx_shared_mem_info_t * newLink = tivxMemAlloc(sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL);
+    tivx_shared_mem_info_t * newLink = tivxMemAlloc(sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL_SHARED);
     if (newLink == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "Cannot alloc new link for the shared mem info linked list!\n");
@@ -138,7 +138,7 @@ static vx_status create_link(tivx_shared_mem_info_t ** head)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Last link is not used. No need to create new link!\n");
                 /* Free the temp link */
-                status = tivxMemFree(newLink, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL);
+                status = tivxMemFree(newLink, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL_SHARED);
                 if (status != VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Temporary link buffer cannot be freed!\n");
@@ -169,7 +169,7 @@ static vx_status pop_head(tivx_shared_mem_info_t * head)
         head = (*current).next;
 
         /* Free the popped element's memory */
-        status = tivxMemFree(current, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL);
+        status = tivxMemFree(current, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL_SHARED);
         if (status != VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "Cannot free link from the shared mem info linked list!\n");
@@ -201,7 +201,7 @@ static vx_status pop_tail(tivx_shared_mem_info_t ** head)
         {
             /* Only the head remains */
             VX_PRINT(VX_ZONE_INFO, "Only the head remains!\n");
-            status = tivxMemFree(tail, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL);
+            status = tivxMemFree(tail, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL_SHARED);
             tail = NULL;
             *head = NULL;
         }
@@ -209,7 +209,7 @@ static vx_status pop_tail(tivx_shared_mem_info_t ** head)
         {
             /* Set the previous node as tail */
             previous->next = NULL;
-            status = tivxMemFree(tail, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL);
+            status = tivxMemFree(tail, sizeof(tivx_shared_mem_info_t), TIVX_MEM_EXTERNAL_SHARED);
         }
 
         /* Free the popped element's memory */
@@ -238,7 +238,7 @@ vx_status test_utils_max_out_heap_mem(tivx_shared_mem_info_t** shared_mem_info_a
         status = create_link(&head);
         if (status == VX_FAILURE)
         {
-            /* Memory might be exhausted if memory region is TIVX_MEM_EXTERNAL */
+            /* Memory might be exhausted if memory region is TIVX_MEM_EXTERNAL_SHARED */
             break;
         }
         status = tivxMemBufferAlloc(&temp_tivx_shared_mem_ptr,

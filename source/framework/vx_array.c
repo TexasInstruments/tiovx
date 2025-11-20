@@ -814,7 +814,7 @@ static void ownInitArrayObject(
         obj_desc->item_size * (uint32_t)capacity;
     obj_desc->mem_ptr.host_ptr = (uint64_t)0;
     obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
-    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
 
     arr->base.is_virtual = is_virtual;
 

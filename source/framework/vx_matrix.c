@@ -93,7 +93,7 @@ VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrix(vx_context context, vx_enum da
                     obj_desc->mem_size = (uint32_t)columns*(uint32_t)rows*(uint32_t)dim;
                     obj_desc->mem_ptr.host_ptr = (uint64_t)0;
                     obj_desc->mem_ptr.shared_ptr = (uint64_t)0;
-                    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+                    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
                     matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
@@ -195,7 +195,7 @@ VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 obj_desc->origin_y = (uint32_t)rows/2U;
                 obj_desc->pattern = pattern;
                 obj_desc->mem_size = (uint32_t)columns*(uint32_t)rows*(uint32_t)dim;
-                obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+                obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL_SHARED;
                 matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
 
                 obj_desc->mem_ptr.host_ptr = (uint64_t)0;
@@ -228,7 +228,7 @@ VX_API_ENTRY vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                     obj_desc->mem_ptr.shared_ptr =
                         tivxMemHost2SharedPtr(
                             obj_desc->mem_ptr.host_ptr,
-                            (vx_enum)TIVX_MEM_EXTERNAL);
+                            (vx_enum)TIVX_MEM_EXTERNAL_SHARED);
                 }
             }
         }
