@@ -187,7 +187,7 @@ void tivxPlatformDeleteTargetId(vx_enum target_id)
 /* LDRA_JUSTIFY_END */
 }
 
-void tivxPlatformSetHostTargetId(tivx_cpu_id_e host_cpu_id)
+void tivxPlatformSetHostTargetId(vx_enum host_cpu_id)
 {
     uint32_t i;
     uint32_t host_target_id;
@@ -197,7 +197,7 @@ void tivxPlatformSetHostTargetId(tivx_cpu_id_e host_cpu_id)
      * core is the one which would receive messages for the host
      * if the host is enabled for that core.  See #tivx_target_id_e
      * in the file soc/tivx_target_config_<soc>.h to confirm */
-    host_target_id = TIVX_MAKE_TARGET_ID(host_cpu_id, 0u);
+    host_target_id = TIVX_MAKE_TARGET_ID((uint32_t)host_cpu_id, 0u);
 
     /* Since the target_id was calculated, check if it is a valid
        target_id in the system */

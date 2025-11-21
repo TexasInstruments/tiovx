@@ -100,7 +100,7 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
 <justification end>*/
             else
             {
-                status = VX_ERROR_NO_RESOURCES;
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
                 VX_PRINT_BOUND_ERROR("TIVX_NODE_MAX_IN_NODES");
                 break;
             }
@@ -131,7 +131,7 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
             }
             else
             {
-                status = VX_ERROR_NO_RESOURCES;
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
                 VX_PRINT_BOUND_ERROR("TIVX_NODE_MAX_OUT_NODES");
                 break;
             }

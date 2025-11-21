@@ -302,7 +302,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryObjectArray(
                         tivx_obj_desc_object_array_t *obj_desc =
                             (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
-                        *(vx_size *)ptr = obj_desc->is_from_list;
+                        *(vx_bool *)ptr = obj_desc->is_from_list;
                     }
                     else
                     {
@@ -336,7 +336,7 @@ static vx_object_array ownCreateObjArrayInt(vx_context context, vx_reference* sr
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "Invalid source reference passed to object array creation\n");
     }
-    else if ((count > TIVX_OBJECT_ARRAY_MAX_ITEMS) || (count <= 0))
+    else if ((count > TIVX_OBJECT_ARRAY_MAX_ITEMS) || (count <= 0U))
     {
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "Invalid count parameter passed to object array creation\n");
@@ -345,6 +345,10 @@ static vx_object_array ownCreateObjArrayInt(vx_context context, vx_reference* sr
     {
         status = (vx_status)VX_ERROR_INVALID_TYPE;
         VX_PRINT(VX_ZONE_ERROR, "Source reference passed to object array creation is of invalid type\n");
+    }
+    else
+    {
+        /* do nothing */
     }
 
     if (status != (vx_status)VX_SUCCESS)
@@ -704,7 +708,7 @@ static vx_status ownAllocObjArrayBuffer(vx_reference objarr_ref)
 /* LDRA_JUSTIFY_END */
         {
             obj_desc = (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
-            for (i = 0u; i < obj_desc->num_items; i++)
+            for (i = 0U; i < obj_desc->num_items; i++)
             {
                 ref = objarr->ref[i];
 /* LDRA_JUSTIFY_START

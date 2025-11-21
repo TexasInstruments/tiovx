@@ -99,7 +99,7 @@ void tivxPlatformDeleteTargetId(vx_enum target_id);
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformSetHostTargetId(tivx_cpu_id_e host_cpu_id);
+void tivxPlatformSetHostTargetId(vx_enum host_cpu_id);
 
 void ownPlatformCreateTargetsMpu(void);
 void ownPlatformCreateTargetsC7(void);

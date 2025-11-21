@@ -129,7 +129,7 @@ static void tivxHostInitLocal(void)
         (void)ownObjectInit();
         tivxRegisterOpenVXCoreKernels();
         tivxRegisterOpenVXExtKernels();
-        tivxPlatformSetHostTargetId((tivx_cpu_id_e)tivxGetSelfCpuId());
+        tivxPlatformSetHostTargetId(tivxGetSelfCpuId());
 
         VX_PRINT(VX_ZONE_INFO, "Initialization Done for HOST !!!\n");
     }

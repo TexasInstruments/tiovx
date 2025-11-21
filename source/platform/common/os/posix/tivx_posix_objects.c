@@ -64,10 +64,10 @@
 #include <tivx_objects.h>
 
 const tivx_os_obj_sizes_t g_tivx_os_obj_sizes = {
-    .event_size = sizeof(tivx_event_t),
-    .mutex_size = sizeof(tivx_mutex_t),
-    .queue_size = sizeof(tivx_queue_context_t),
-    .task_size = sizeof(tivx_task_context_t)
+    .event_size = (uint32_t)sizeof(tivx_event_t),
+    .mutex_size = (uint32_t)sizeof(tivx_mutex_t),
+    .queue_size = (uint32_t)sizeof(tivx_queue_context_t),
+    .task_size  = (uint32_t)sizeof(tivx_task_context_t)
 };
 
 static tivx_platform_posix_t g_tivx_posix_objects;
