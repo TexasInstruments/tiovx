@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -108,6 +108,7 @@ static vx_status test_init_buf_params(
         VX_DF_IMAGE_U16,
         VX_DF_IMAGE_S16,
         VX_DF_IMAGE_RGBX,
+        VX_DF_IMAGE_RGBA,
         TIVX_DF_IMAGE_BGRX,
         VX_DF_IMAGE_U32,
         VX_DF_IMAGE_S32,
@@ -125,6 +126,7 @@ static vx_status test_init_buf_params(
         VXLIB_UINT8,
         VXLIB_UINT16,
         VXLIB_INT16,
+        VXLIB_UINT32,
         VXLIB_UINT32,
         VXLIB_UINT32,
         VXLIB_UINT32,

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2024 Texas Instruments Incorporated
+ * Copyright (c) 2024-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -77,6 +77,7 @@
 #include <tivx_target_kernel_instance.h>
 #include <tivx_target.h>
 #include <utils/mem/include/app_mem.h>
+#include <utils/timer/include/app_timer.h>
 
 #ifndef PC
 #include <tivx_target_config.h>
@@ -1787,21 +1788,9 @@ static vx_status tivxTestAppIpcGetCpuName(uint8_t id)
 
 }
 
-static vx_status tivxAppMemPrintMemAllocInfo(uint8_t id)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-
-    appMemPrintMemAllocInfo();
-
-    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
-
-    return status;
-}
-
 static vx_status tivxAppLogGlobalTimeInit(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    char target_name[TIVX_TARGET_MAX_NAME];
 
     appLogGlobalTimeInit();
 
@@ -2449,6 +2438,39 @@ static vx_status tivxAppRtosTaskYield(uint8_t id)
 
     return status;
 }
+
+static vx_status tivxNegativeAppMemInitPrmSetDefault(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    appMemInitPrmSetDefault(NULL);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppMemInit(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    appMemInit(NULL);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestTargetPlatformSetHostTargetId(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivxPlatformSetHostTargetId(TIVX_CPU_ID_MPU_0);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
 #endif /* #if defined(REMOTE_COVERAGE) */
 
 static vx_status tivxNegativeTestTargetEventCreate(uint8_t id)
@@ -2625,17 +2647,6 @@ static vx_status tivxTestTargetEventWait(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid result: Failed to delete event\n");
         status = (vx_status)VX_FAILURE;
     }
-    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
-
-    return status;
-}
-
-static vx_status tivxTestTargetPlatformSetHostTargetId(uint8_t id)
-{
-    vx_status status = (vx_status)VX_SUCCESS;
-
-    tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MPU_0);
-
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
     return status;
@@ -4120,6 +4131,17 @@ static vx_status tivxTestKernelsSupplementaryData(uint8_t id)
     return status;
 }
 
+static vx_status tivxAppMemPrintMemAllocInfo(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    appMemPrintMemAllocInfo();
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 
 FuncInfo arrOfFuncs[] = {
     #if defined(LINUX)
@@ -4130,7 +4152,6 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestAppIpcGetIpcCpuId, "",VX_SUCCESS},
     {tivxNegativeTestAppIpcGetAppCpuId, "",VX_SUCCESS},
     {tivxTestAppIpcGetCpuName, "",VX_SUCCESS},
-    {tivxAppMemPrintMemAllocInfo, "", VX_SUCCESS},
     {tivxAppLogGlobalTimeInit,"",VX_SUCCESS},
     #endif /* #if defined(MPU_COVERAGE) */
     #if defined(REMOTE_COVERAGE)
@@ -4168,6 +4189,9 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestQueuePutGetDelete, "", VX_SUCCESS},
     {tivxTestQueuePut, "", VX_SUCCESS},
     {tivxTestQueueGet, "", VX_SUCCESS},
+    {tivxNegativeAppMemInit, "", VX_SUCCESS},
+    {tivxNegativeAppMemInitPrmSetDefault,"",VX_SUCCESS},
+    {tivxTestTargetPlatformSetHostTargetId, "",VX_SUCCESS},
     #endif /* #if defined(REMOTE_COVERAGE) */
     {tivxTestKernelsSupplementaryData,"",VX_SUCCESS},
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
@@ -4260,7 +4284,6 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTaskAppIpcSendNotifyPort, "", VX_SUCCESS},
     {tivxNegativeTaskAppIpcSendNotify, "", VX_SUCCESS},
     {tivxNegativeTestTargetIpcSendMsg, "",VX_SUCCESS},
-    {tivxTestTargetPlatformSetHostTargetId, "",VX_SUCCESS},
     {tivxTestTargetEnabled, "",VX_SUCCESS},
     {tivxNegativeTestTargetPlatformDeleteTargetId, "", VX_SUCCESS},
     {tivxNegativeTestTargetPlatformCreateTargetId, "", VX_SUCCESS},
@@ -4272,10 +4295,11 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestTargetGetHandle,"",VX_SUCCESS},
     {tivxTestRegisterTargetKernels,"",VX_SUCCESS},
     {tivxTestUnRegisterTargetKernels,"",VX_SUCCESS},
-    {tivxTestKernelsAssignTargetNameC7x,"",VX_SUCCESS},
     {tivxTestKernelsAssignTargetNameDsp,"",VX_SUCCESS},
     {tivxTestKernelsAssignTargetNameMcu,"",VX_SUCCESS},
-    {tivxTestKernelsAssignTargetNameMpu,"",VX_SUCCESS}
+    {tivxTestKernelsAssignTargetNameMpu,"",VX_SUCCESS},
+    {tivxTestKernelsAssignTargetNameC7x,"",VX_SUCCESS},
+    {tivxAppMemPrintMemAllocInfo,"",VX_SUCCESS}
 };
 #endif /* #ifndef PC*/
 #endif /* #if defined(LDRA_COVERAGE_ENABLED) */
