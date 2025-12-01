@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2025 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -196,7 +196,7 @@ static vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec
             break;
         }
     }
-/* Free the records that ahs SCRATCH attribute and that are in L2 so their space can be re-used for another iVision algorithm */
+/* Free the records that have SCRATCH attribute and that are in L2 so their space can be re-used for another iVision algorithm */
 #ifndef HOST_EMULATION
     if(status==(vx_status)VX_SUCCESS)
     {
