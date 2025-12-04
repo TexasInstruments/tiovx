@@ -88,10 +88,18 @@ class Core(Enum):
     VPAC_MSC = "vpac_msc"
     ## Target is an VPAC_VISS HWA
     VPAC_VISS = "vpac_viss"
+    ## Target is an VPAC_FC HWA
+    VPAC_FC = "vpac_fc"
     ## Target is an DMPAC_DOF HWA
     DMPAC_DOF = "dmpac_dof"
     ## Target is a C7X DSP
     C7X = "c7x"
     ## Target is an MPU
     MPU = "mpu"
+    ## Target is an CSIRX
+    CSIRX = "csirx"
+    ## Target is an CSITX
+    CSITX = "csitx"
+    ## Target is an DSS
+    DSS = "dss"
     ## Above are J7 cores

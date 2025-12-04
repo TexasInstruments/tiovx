@@ -381,6 +381,7 @@ class Channel(Enum) :
         return "vx_channel_e"
 
 class Cpu(Enum) :
+    '''Legacy Enums'''
     INVALID  = 1
     DSP1     = 2
     DSP2     = 3
@@ -389,17 +390,31 @@ class Cpu(Enum) :
     EVE3     = 6
     EVE4     = 7
     A15_0    = 8
+    IPU2     = 11
+    '''Legacy Enums END'''
     MCU2_0   = 9
     MCU2_1   = 10
-    IPU2     = 11
     DSP_C7_1 = 12
     MPU_0    = 13
+    MCU3_0   = 14
+    MCU3_1   = 15
+    MCU4_0   = 16
+    MCU4_1   = 17
+    DSP_C7_2 = 18
+    DSP_C7_3 = 19
+    DSP_C7_4 = 20
 
     def get_vx_enum_name(type) :
         if type.name == "IPU2" :
             return "TIVX_CPU_ID_IPU2_0"
         else :
             return "TIVX_CPU_ID_" + type.name
+
+class _targetInfo:
+    def __init__(self, cpu: Cpu = Cpu.INVALID, folder_name: str = "", is_j6_target:bool = False):
+        self.cpu = cpu
+        self.folder_name = folder_name
+        self.is_j6_target = is_j6_target
 
 
 ## Target on which to execute a node (TIOVX equivalent = TIVX_TARGET_xxxx)
@@ -413,166 +428,152 @@ class Cpu(Enum) :
 # \endcode
 # \ingroup ENUMS
 #
-class Target(Enum) :
+class Target(Enum):
     ## Placeholder for invalid target ID
-    INVALID = 1
+    INVALID = (1, _targetInfo(Cpu.INVALID, None, False))
+    '''Legacy Enums'''
     ## TIOVX equivalent = \ref TIVX_TARGET_DSP1
-    DSP1    = 2
+    DSP1 = (2, _targetInfo(Cpu.DSP1, "c66", True))
     ## TIOVX equivalent = \ref TIVX_TARGET_DSP2
-    DSP2    = 3
+    DSP2 = (3, _targetInfo(Cpu.DSP2, "c66", True))
     ## TIOVX equivalent = \ref TIVX_TARGET_EVE1
-    EVE1    = 4
+    EVE1 = (4, _targetInfo(Cpu.EVE1, "eve", True))
     ## TIOVX equivalent = \ref TIVX_TARGET_EVE2
-    EVE2    = 5
+    EVE2 = (5, _targetInfo(Cpu.EVE2, "eve", True))
     ## TIOVX equivalent = \ref TIVX_TARGET_EVE3
-    EVE3    = 6
+    EVE3 = (6, _targetInfo(Cpu.EVE3, "eve", True))
     ## TIOVX equivalent = \ref TIVX_TARGET_EVE4
-    EVE4    = 7
+    EVE4 = (7, _targetInfo(Cpu.EVE4, "eve", True))
     ## TIOVX equivalent = \ref TIVX_TARGET_A15_0
-    A15_0   = 8
-    ## TIOVX equivalent = \ref TIVX_TARGET_MCU2_0
-    MCU2_0  = 9
-    ## TIOVX equivalent = \ref TIVX_TARGET_MCU2_1
-    MCU2_1  = 10
+    A15_0 = (8, _targetInfo(Cpu.A15_0, "a15", True))
     ## TIOVX equivalent = \ref TIVX_TARGET_IPU2
-    IPU2    = 11
-    ## Below are J7 targets
-    ## TIOVX equivalent = TIVX_TARGET_VPAC_NF
-    VPAC_NF      = 12
-    ## TIOVX equivalent = TIVX_TARGET_VPAC_LDC1
-    VPAC_LDC1    = 13
-    ## TIOVX equivalent = TIVX_TARGET_VPAC_LDC2
-    VPAC_LDC2    = 14
-    ## TIOVX equivalent = TIVX_TARGET_VPAC_MSC1
-    VPAC_MSC1    = 15
-    ## TIOVX equivalent = TIVX_TARGET_VPAC_MSC2
-    VPAC_MSC2    = 16
-    ## TIOVX equivalent = TIVX_TARGET_DMPAC_SDE
-    DMPAC_SDE    = 17
-    ## TIOVX equivalent = TIVX_TARGET_DMPAC_DOF
-    DMPAC_DOF    = 18
-    ## TIOVX equivalent = TIVX_TARGET_VPAC_VISS1
-    VPAC_VISS1   = 19
-    ## TIOVX equivalent = TIVX_TARGET_DSP_C7_1
-    DSP_C7_1     = 24
-    ## TIOVX equivalent = TIVX_TARGET_MPU_0
-    MPU_0        = 25
-    ## Above are J7 targets
+    IPU2 = (11, _targetInfo(Cpu.IPU2, "ipu", True))
+    '''Legacy Enums END'''
+    
+    ## TIOVX equivalent = \ref TIVX_TARGET_MCU2_0
+    MCU2_0 = (9, _targetInfo(Cpu.MCU2_0, "ipu", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_MCU2_1
+    MCU2_1 = (10, _targetInfo(Cpu.MCU2_1, "ipu", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_MCU3_0
+    MCU3_0 = (12, _targetInfo(Cpu.MCU3_0, "arm", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_MCU3_1
+    MCU3_1 = (13, _targetInfo(Cpu.MCU3_1, "arm", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_MCU4_0
+    MCU4_0 = (14, _targetInfo(Cpu.MCU4_0, "arm", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_MCU4_1
+    MCU4_1 = (15, _targetInfo(Cpu.MCU4_1, "arm", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_MPU_0
+    MPU_0 = (16, _targetInfo(Cpu.MPU_0, "mpu", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_MPU_1
+    MPU_1 = (17, _targetInfo(Cpu.MPU_0, "mpu", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_MPU_2
+    MPU_2 = (18, _targetInfo(Cpu.MPU_0, "mpu", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_MPU_3
+    MPU_3 = (19, _targetInfo(Cpu.MPU_0, "mpu", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_VPAC_NF
+    VPAC_NF = (20, _targetInfo(Cpu.MCU2_0, "vpac_nf", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_VPAC2_NF
+    VPAC2_NF = (21, _targetInfo(Cpu.MCU4_0, "vpac_nf", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_VPAC_LDC1
+    VPAC_LDC1 = (22, _targetInfo(Cpu.MCU2_0, "vpac_ldc", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_VPAC2_LDC1
+    VPAC2_LDC1 = (23, _targetInfo(Cpu.MCU4_0, "vpac_ldc", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_VPAC_MSC1
+    VPAC_MSC1 = (24, _targetInfo(Cpu.MCU2_0, "vpac_msc", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_VPAC2_MSC1
+    VPAC2_MSC1 = (25, _targetInfo(Cpu.MCU4_0, "vpac_msc", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_VPAC_MSC2
+    VPAC_MSC2 = (26, _targetInfo(Cpu.MCU2_0, "vpac_msc", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_VPAC2_MSC2
+    VPAC2_MSC2 = (27, _targetInfo(Cpu.MCU4_0, "vpac_msc", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_VPAC_VISS1
+    VPAC_VISS1 = (28, _targetInfo(Cpu.MCU2_0, "vpac_viss", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_VPAC2_VISS1
+    VPAC2_VISS1 = (29, _targetInfo(Cpu.MCU4_0, "vpac_viss", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_VPAC_FC
+    VPAC_FC = (30, _targetInfo(Cpu.MCU2_0, "vpac_fc", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_VPAC2_FC
+    VPAC2_FC = (31, _targetInfo(Cpu.MCU4_0, "vpac_fc", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CAPTURE1
+    CAPTURE1 = (32, _targetInfo(Cpu.MCU2_0, "csirx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CAPTURE2
+    CAPTURE2 = (33, _targetInfo(Cpu.MCU2_0, "csirx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CAPTURE3
+    CAPTURE3 = (34, _targetInfo(Cpu.MCU2_0, "csirx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CAPTURE4
+    CAPTURE4 = (35, _targetInfo(Cpu.MCU2_0, "csirx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CAPTURE5
+    CAPTURE5 = (36, _targetInfo(Cpu.MCU2_0, "csirx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CAPTURE6
+    CAPTURE6 = (37, _targetInfo(Cpu.MCU2_0, "csirx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CAPTURE7
+    CAPTURE7 = (38, _targetInfo(Cpu.MCU2_0, "csirx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CAPTURE8
+    CAPTURE8 = (39, _targetInfo(Cpu.MCU2_0, "csirx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CAPTURE9
+    CAPTURE9 = (40, _targetInfo(Cpu.MCU2_0, "csirx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CAPTURE10
+    CAPTURE10 = (41, _targetInfo(Cpu.MCU2_0, "csirx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CAPTURE11
+    CAPTURE11 = (42, _targetInfo(Cpu.MCU2_0, "csirx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CAPTURE12
+    CAPTURE12 = (43, _targetInfo(Cpu.MCU2_0, "csirx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_DISPLAY_M2M1
+    DISPLAY_M2M1 = (44, _targetInfo(Cpu.MCU2_0, "dss", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_DISPLAY_M2M2
+    DISPLAY_M2M2 = (45, _targetInfo(Cpu.MCU2_0, "dss", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_DISPLAY_M2M3
+    DISPLAY_M2M3 = (46, _targetInfo(Cpu.MCU2_0, "dss", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_DISPLAY_M2M4
+    DISPLAY_M2M4 = (47, _targetInfo(Cpu.MCU2_0, "dss", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_DISPLAY1
+    DISPLAY1 = (48, _targetInfo(Cpu.MCU2_0, "dss", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_DISPLAY2
+    DISPLAY2 = (49, _targetInfo(Cpu.MCU2_0, "dss", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CSITX
+    CSITX = (50, _targetInfo(Cpu.MCU2_0, "csitx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_CSITX2
+    CSITX2 = (51, _targetInfo(Cpu.MCU2_0, "csitx", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_DMPAC_SDE
+    DMPAC_SDE = (52, _targetInfo(Cpu.MCU2_1, "dmpac_sde", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_DMPAC_DOF
+    DMPAC_DOF = (53, _targetInfo(Cpu.MCU2_1, "dmpac_sde", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_DSP_C7_1
+    DSP_C7_1 = (54, _targetInfo(Cpu.DSP_C7_1, "c7x", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_DSP_C7_2
+    DSP_C7_2 = (55, _targetInfo(Cpu.DSP_C7_2, "c7x", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_DSP_C7_3
+    DSP_C7_3 = (56, _targetInfo(Cpu.DSP_C7_3, "c7x", False))
+    ## TIOVX equivalent = \ref TIVX_TARGET_DSP_C7_4
+    DSP_C7_4 = (57, _targetInfo(Cpu.DSP_C7_4, "c7x", False))
+        
     ## Used internally by the tool
     DEFAULT = DSP1
 
-    def get_vx_enum_name(type) :
-        return "TIVX_TARGET_" + type.name
-
-    def get_target_folder_name(type) :
-        if target == Target.DSP1 :
-            return c66
-        if target == Target.DSP2 :
-            return c66
-        if target == Target.EVE1 :
-            return eve
-        if target == Target.EVE2 :
-            return eve
-        if target == Target.EVE3 :
-            return eve
-        if target == Target.EVE4 :
-            return eve
-        if target == Target.A15_0 :
-            return a15
-        if target == Target.MCU2_0 :
-            return ipu
-        if target == Target.MCU2_1 :
-            return ipu
-        if target == Target.IPU2 :
-            return ipu
-        if target == Target.VPAC_NF :
-            return "vpac_nf"
-        if target == Target.VPAC_LDC1 :
-            return "vpac_ldc"
-        if target == Target.VPAC_LDC2 :
-            return "vpac_ldc"
-        if target == Target.VPAC_MSC1 :
-            return "vpac_msc"
-        if target == Target.VPAC_MSC2 :
-            return "vpac_msc"
-        if target == Target.DMPAC_SDE :
-            return "dmpac_sde"
-        if target == Target.DMPAC_DOF :
-            return "dmpac_sde"
-        if target == Target.VPAC_VISS1 :
-            return "vpac_viss"
-        if target == Target.DSP_C7_1 :
-            return "c7x"
-        if target == Target.MPU_0 :
-            return "mpu"
-        return None
-
-    def is_j6_target(target) :
-        if target == Target.DSP1 :
-            return True
-        if target == Target.DSP2 :
-            return True
-        if target == Target.EVE1 :
-            return True
-        if target == Target.EVE2 :
-            return True
-        if target == Target.EVE3 :
-            return True
-        if target == Target.EVE4 :
-            return True
-        if target == Target.A15_0 :
-            return True
-        if target == Target.MCU2_0 :
-            return True
-        if target == Target.MCU2_1 :
-            return True
-        if target == Target.IPU2 :
-            return True
-
-        return False
-
-    def get_cpu(target) :
-        if target == Target.DSP1 :
-            return Cpu.DSP1
-        if target == Target.DSP2 :
-            return Cpu.DSP2
-        if target == Target.EVE1 :
-            return Cpu.EVE1
-        if target == Target.EVE2 :
-            return Cpu.EVE2
-        if target == Target.EVE3 :
-            return Cpu.EVE3
-        if target == Target.EVE4 :
-            return Cpu.EVE4
-        if target == Target.A15_0 :
-            return Cpu.A15_0
-        if target == Target.MCU2_0 :
-            return Cpu.MCU2_0
-        if target == Target.MCU2_1 :
-            return Cpu.MCU2_1
-        if target == Target.IPU2 :
-            return Cpu.IPU2
-        if target == Target.VPAC_NF :
-            return Cpu.MCU2_0
-        if target == Target.VPAC_LDC1 :
-            return Cpu.MCU2_0
-        if target == Target.VPAC_LDC2 :
-            return Cpu.MCU2_0
-        if target == Target.VPAC_MSC1 :
-            return Cpu.MCU2_0
-        if target == Target.VPAC_MSC2 :
-            return Cpu.MCU2_0
-        if target == Target.DMPAC_SDE :
-            return Cpu.MCU2_0
-        if target == Target.DMPAC_DOF :
-            return Cpu.MCU2_0
-        if target == Target.VPAC_VISS1 :
-            return Cpu.MCU2_0
-        if target == Target.DSP_C7_1 :
-            return Cpu.DSP_C7_1
-        if target == Target.MPU_0 :
-            return Cpu.MPU_0
-        return Cpu.INVALID
+    def __init__(self, id_value, targetinfo):
+        self._id = id_value
+        self._info_dict = targetinfo
+    
+    @property
+    def id(self):
+        """Get the numeric ID of the target"""
+        return self._id
+    
+    def get_vx_enum_name(self):
+        """Get the TIOVX enum name for this target"""
+        return f"TIVX_TARGET_{self.name}"
+    
+    def get_target_folder_name(self):
+        """Get the folder name associated with this target"""
+        return self._info_dict.folder_name
+    
+    def is_j6_target(self):
+        """Check if this is a J6 (legacy) target"""
+        return self._info_dict.is_j6_target
+    
+    def get_cpu(self):
+        """Get the CPU associated with this target"""
+        return self._info_dict.cpu
 
 ## Conversion Policy (OpenVX equivalent = \ref vx_convert_policy_e)
 #

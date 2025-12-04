@@ -64,8 +64,8 @@ import os
 
 for file in os.listdir("."):
     if file.endswith(".py"):
-        if  file != __file__ :
+        if  file not in  __file__:
             print('### Executing test case [%s]' % file)
-            subprocess.call('python ' + file)
+            subprocess.call(['python', file])
             print('### Executing test case [%s] ... DONE !!!' % file)
             print('')
