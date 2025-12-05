@@ -12,7 +12,7 @@ Reference                            | Description
 [OpenVX Resources][openvx_res]       | [External] Additional OpenVX resource from Khronos
 \subpage SUPPORTED_KERNELS           | OpenVX Kernels and additional TI Kernels supported in TIOVX
 \subpage TIOVX_PERFORMANCE           | Performance Report
-\subpage TIOVX_SAFETY                | TIOVX Safety Manual
+\subpage TIOVX_SAFETY                | TIOVX Safety Considerations
 \subpage TIOVX_USAGE                 | API Reference and TI Vendor Specific Implementation Details
 \subpage PYTIOVX                     | Python based tool for developing OpenVX Graphs and Kernel Wrappers
 \subpage TUTORIALS                   | Guide to tutorial for developing OpenVX applications

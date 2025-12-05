@@ -1,5 +1,5 @@
 /*!
-    \page TIOVX_SAFETY TIOVX Safety Manual
+    \page TIOVX_SAFETY TIOVX Safety Considerations
 
     This section of the user guide describes relevant safety recommendations required for the ASIL-B certification
     of the TI OpenVX framework.  This activity is planned to be finalized in July 2024.
