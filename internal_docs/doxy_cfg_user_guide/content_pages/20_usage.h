@@ -85,10 +85,8 @@
        -  Particularly if using pipelining, this API shall not be used for sending/receiving data from a node for every execution of the node.  If that is the requirement of a
           given use case, the node API should be changed to encapsulate this parameter.
      \section TIOVX_USAGE_SUPPL_DATA Supplementary Data with Composite Objects from Exemplar
-       -  For the specific scenario of creating a composite object (i.e., a vx_pyramid or a vx_object_array) from exemplar when the composite object used as the exemplar contains
-          supplementary data, the children objects of the resulting composite object will contain the same supplementary data as the base object (i.e., the vx_pyramid or vx_object_array).
-       -  As an example, in the case that a vx_object_array "ABC" is created with supplementary data "XYZ", if an exemplar of object ABC is created, then the resulting object array
-          elements will contain supplementary data "XYZ" as well.
+       -  Please see the Khronos Supplementary Data Specification for more detail.
+       -  <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_supplementary_data/vx_khr_supplementary_data_1_3_1/vx_khr_supplementary_data_1_3_1.html#_objects_created_from_exemplars_objects_created_automatically">Supplementary Data of Objects Created from Exemplars</a>
      \section TIOVX_USAGE_TASK TIOVX Task API on MPU Cores
        -  When used on MPU cores running an HLOS (i.e., Linux or QNX), the priority parameter of the tivx_task API is ignored.  This is left to maintain compatibility with RTOS.
        -  If a thread needs to be created with a priority, please instead use the native pthread API
@@ -200,6 +198,11 @@
        - Similarly, objects created through calls to \ref vxCreateVirtualObjectArray and \ref vxCreateVirtualPyramid are accessible by the user
          directly. Calling \ref vxGetObjectArrayItem and \ref vxGetPyramidLevel on these virtual objects will return a valid reference
          regardless of whether they are virtual or not.
+     \section TIOVX_SPEC_INTERPRETATIONS_COPY_SWAP Swap and Move Extension: Swap and Move of Composite Objects
+       -  Section 2.2.4: Additional requirements and restrictions
+          -  [REQ-SWP17] from Khronos Swap and Move Kernel Extension states, "If a reference Ref1 is taken from a container object and the container is swapped or moved with another, then the data pointed to by Ref1 will be changed to the data of the new container."
+          -  In TIOVX, this is implemented by swapping the buffers of the references within a container object rather than swapping which parent the reference points to.
+          -  For reference, please see <a href="https://registry.khronos.org/OpenVX/extensions/vx_khr_swap_move/vx_khr_swap_move_1_3_1.html#_additional_requirements_and_restrictions">the official spec.</a>
  */
 
 /*!
@@ -1199,9 +1202,9 @@
     the application, a workaround is available when the object array is the output of the producing node and the object array elements are the input of the
     consumer node.  This workaround requires a slight modification of the kernel that is consuming the object array.
 
-    Within the OpenVX graph, the vxGetObjectArrayItem() API is called to extract the 0th element of the object array output of the producer node.  This element is then passed
-    to the input of the consumer node.  In order to extract the appropriate object array item within the kernel consuming the element, the
-    tivxGetObjDescElement() API can be called with the arguments being the object descriptor of the object array element and the appropriate element
+    First, the vxGetObjectArrayItem() API is called to extract the 0th element of the object array output of the producer node within the OpenVX graph.  This element is then passed
+    to the input of the consumer node.  Though the 0th element is passed, the Nth object array item can be extracted within the kernel consuming the element. This is done by 
+    calling the tivxGetObjDescElement() API with the arguments being the object descriptor of the object array element and the appropriate element
     ID of the object array.  This API will then return the object descriptor of the element given as the elem_idx argument. This elem_idx can be provided
     via a config parameter or sent via the tivxNodeSendCommand() API depending on the requirements of the kernel.  Internally, this API has logic to determine
     whether or not the input object descriptor is in fact an object array element.  If it is not an object array element, it will return the original object
