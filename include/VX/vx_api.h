@@ -1185,6 +1185,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
  * vx_false_e for the parameters that should be the same across replicated nodes and for optional 
  * parameters that are not used. Should be vx_true_e for all output and bidirectional parameters.
  * \param [in] number_of_parameters number of elements in the replicate array
+ * \note vxReplicateNode is not supported for user kernels, only for target kernels
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors.
  * \retval VX_ERROR_INVALID_REFERENCE If the first_node is not a <tt>\ref vx_node</tt>, or it is not the first child of a vx_pyramid.

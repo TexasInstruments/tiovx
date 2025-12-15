@@ -104,6 +104,20 @@
                non-cached region, or a cached write-through region, then this assumption no longer applies and the following can be done to skip the unnecessary cache maintenance operation(s):
                -  Either the \ref tivxMemBufferMap or \ref tivxMemBufferUnmap functions should be altered, or
                -  The applciation can call one or both the map/unmap functions using memory type \ref TIVX_MEMORY_TYPE_DMA
+     \section TIOVX_USAGE_OBJECT_ARRAY_FROM_LIST The Object Array From List Extension
+       -  The ObjectArrayFromList Extension introduces additional APIs and modifications that permit new functionalities for the Object Array data type.
+     \subsection TIOVX_OAFL_API Object Array From List APIs
+       -  \ref tivxCreateObjectArrayFromList() and its virtual counterpart are new creation APIs for an Object Array to take a list of references rather than an exemplar.
+            -  This allows an Object Array to hold references with different metadata rather than references of identical metadata to an exemplar.
+       -  Example: \image html ObjArrFromList_Comparison.drawio.svg
+       -  This is useful for data types such as tensors and images, because it eliminates the need for nodes to accept many individual data objects as node parameters, as only an object array is now required.
+            -  (Note: References in the instantiation list must still be of the same type to maintain an object array's strong-typeness).
+     \subsection TIOVX_OAFL_Nested_Object_Arrays Object Array Nesting
+       -  Object Arrays now permit one level of nesting:
+            -  The children data type of object arrays can now be object arrays as well.
+            -  Object Arrays holding object arrays can no longer be child objects, restricting the nesting level to one.
+       -  Example use case: \image html Nested_Object_Array.drawio.svg
+       -  If a Nested \ref vx_object_array is attempted to be used as the child of a new object array, the creation method will return an error.
  */
 /*!
     \page TIOVX_SPEC_INTERPRETATIONS OpenVX Standard Specification Interpretations
@@ -188,7 +202,6 @@
          the vx_object_array element and the vx_object_array itself must be released in order to avoid having a dangling reference when releasing the
          OpenVX context.
        - The order in which the vx_object_array and the vx_object_array elements are to be released is not mandated by the framework
-       - A \ref vx_object_array cannot have a \ref vx_object_array as an exemplar.  If this is attempted, the creation of the object array will return an error
      \section TIOVX_VIRTUAL_OBJECTS Virtual Objects
        - For TI's implementation of OpenVX 1.1, virtual objects are treated as regular objects in most cases. For example, creating a \ref vx_image
          object by calling into \ref vxCreateVirtualImage and then passing it to \ref vxMapImagePatch would typically return an error as noted in
