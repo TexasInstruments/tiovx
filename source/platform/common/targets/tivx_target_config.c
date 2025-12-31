@@ -63,7 +63,7 @@
 #include <tivx_target_config.h>
 
 #if defined(MPU)
-#define TIVX_TARGET_DEFAULT_STACK_SIZE  (128U*1024U)
+#define TIVX_TARGET_DEFAULT_STACK_SIZE  (160U*1024U)
 #elif defined(R5F)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (8U*1024U)
 #elif defined(C7X_FAMILY) || defined(C66)
