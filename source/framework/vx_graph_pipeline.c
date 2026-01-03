@@ -921,79 +921,88 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                 {
                     /* Decrement the queue counter, make reference accessible again */
                     ref = ownReferenceGetHandleFromObjDescId(ref_obj_desc_id);
-                    if ((vx_bool)vx_true_e == is_replicated)
+                    if(ref == NULL)
                     {
-                        vx_reference const * ref_list = NULL;
-                        /* We may get here with either the reference of the container,
-                           or the reference of the first element of the container.
-                           Notice that because we can't have object arrays of object
-                           arrays, we can distinguish with the following test.
-                           Note we only call ownDecrementEnqueueCount when we know
-                           we have a valid container, otherwise we might be calling it
-                           on a context or graph.
-                           For a valid dequeued reference on a replicated node, we decrement
-                           the counts on the container and all the references in it. */
-                        if (ref->type == graph->parameters[graph_parameter_index].type)
-                        {
-                            ref = ref->scope;
-                        }
-/* If the ref type is an object array that didn't match the graph parameter type, return ref[0] of obj array */
-/* Note: this assumes it is replicated.  In the future, this assumption could be removed */                        
-                        if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
-                        {
-                            vx_object_array object_array = vxCastRefAsObjectArray(ref, NULL);
-                            ref_list = object_array->ref;
-                            status = ownDecrementEnqueueCount(ref);
-                        }
-/* LDRA_JUSTIFY_START
-<metric start> branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR015
-<justification end> */
-                        /* If the ref type is a pyramid that didn't match the graph parameter type, return img[0] of pyramid */
-                        /* Note: this assumes it is replicated.  In the future, this assumption could be removed */                        
-                        else if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
-/* LDRA_JUSTIFY_END */                     
-                        {
-                            vx_pyramid pyramid = vxCastRefAsPyramid(ref, NULL);
-                            ref_list = (vx_reference *)(uintptr_t)(pyramid->img);
-                            status = ownDecrementEnqueueCount(ref);
-                        }
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM007
-<justification end> */
-                        else 
-                        {
-                            /* do nothing */
-                        }
-/* LDRA_JUSTIFY_END */
-
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM018
-<justification end> */
-                        if (NULL != ref_list)
-/* LDRA_JUSTIFY_END */
-                        {
-                            ref = ref_list[0];
-                        }
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM018
-<justification end> */
-                        else
-                        {
-                            /* There is no other container, so this suggests we have the wrong type
-                            of parameter, or that the container didn't have ref_list initialised */
-                            status = (vx_status)VX_FAILURE;
-                            VX_PRINT(VX_ZONE_ERROR, "Invalid reference list for replicated object\n");
-                        }
-/* LDRA_JUSTIFY_END */
+                       VX_PRINT(VX_ZONE_ERROR,
+                           "Invalid reference handle for obj_desc_id %d\n", ref_obj_desc_id);
+                       status = (vx_status)VX_ERROR_INVALID_PARAMETERS;     
                     }
                     else
                     {
-                        /* Node not replicated */
-                        status = ownDecrementEnqueueCount(ref);
+                        if ((vx_bool)vx_true_e == is_replicated)
+                        {
+                            vx_reference const * ref_list = NULL;
+                            /* We may get here with either the reference of the container,
+                               or the reference of the first element of the container.
+                               Notice that because we can't have object arrays of object
+                               arrays, we can distinguish with the following test.
+                               Note we only call ownDecrementEnqueueCount when we know
+                               we have a valid container, otherwise we might be calling it
+                               on a context or graph.
+                               For a valid dequeued reference on a replicated node, we decrement
+                               the counts on the container and all the references in it. */
+                            if (ref->type == graph->parameters[graph_parameter_index].type)
+                            {
+                                ref = ref->scope;
+                            }
+    /* If the ref type is an object array that didn't match the graph parameter type, return ref[0] of obj array */
+    /* Note: this assumes it is replicated.  In the future, this assumption could be removed */                        
+                            if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
+                            {
+                                vx_object_array object_array = vxCastRefAsObjectArray(ref, NULL);
+                                ref_list = object_array->ref;
+                                status = ownDecrementEnqueueCount(ref);
+                            }
+    /* LDRA_JUSTIFY_START
+    <metric start> branch <metric end>
+    <justification start> TIOVX_BRANCH_COVERAGE_TIVX_GRAPH_PIPELINE_UBR015
+    <justification end> */
+                            /* If the ref type is a pyramid that didn't match the graph parameter type, return img[0] of pyramid */
+                            /* Note: this assumes it is replicated.  In the future, this assumption could be removed */                        
+                            else if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+    /* LDRA_JUSTIFY_END */                     
+                            {
+                                vx_pyramid pyramid = vxCastRefAsPyramid(ref, NULL);
+                                ref_list = (vx_reference *)(uintptr_t)(pyramid->img);
+                                status = ownDecrementEnqueueCount(ref);
+                            }
+    /* LDRA_JUSTIFY_START
+    <metric start> statement branch <metric end>
+    <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM007
+    <justification end> */
+                            else 
+                            {
+                                /* do nothing */
+                            }
+    /* LDRA_JUSTIFY_END */
+
+    /* LDRA_JUSTIFY_START
+    <metric start> statement branch <metric end>
+    <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM018
+    <justification end> */
+                            if (NULL != ref_list)
+    /* LDRA_JUSTIFY_END */
+                            {
+                                ref = ref_list[0];
+                            }
+    /* LDRA_JUSTIFY_START
+    <metric start> statement branch <metric end>
+    <justification start> TIOVX_CODE_COVERAGE_PIPELINE_UM018
+    <justification end> */
+                            else
+                            {
+                                /* There is no other container, so this suggests we have the wrong type
+                                of parameter, or that the container didn't have ref_list initialised */
+                                status = (vx_status)VX_FAILURE;
+                                VX_PRINT(VX_ZONE_ERROR, "Invalid reference list for replicated object\n");
+                            }
+    /* LDRA_JUSTIFY_END */
+                        }
+                        else
+                        {
+                            /* Node not replicated */
+                            status = ownDecrementEnqueueCount(ref);
+                        }
                     }
                     ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
                     VX_PRINT(VX_ZONE_INFO,"DQ (queue=%d, ref=%d, num enqueues left = %d)\n", queue_obj_desc_id, ref_obj_desc_id, ref->obj_desc->num_enqueues);
