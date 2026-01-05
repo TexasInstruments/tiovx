@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2025 Texas Instruments Incorporated
+* Copyright (c) 2025-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -309,12 +309,8 @@ vx_status tivxMemBufferMap(
     {
         if ((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type)
         {
-            #if defined(SOC_AM62A)
-            appMemCacheInv(host_ptr, size);
-            #else
             #ifndef A72
             appMemCacheInv(host_ptr, size);
-            #endif
             #endif
         }
     }
@@ -332,7 +328,12 @@ vx_status ownMemBufferMap(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    #if defined(QNX)
+    /* This function is called in specific situations as an optimization to
+     * skip cache maintenance operations when running on LINUX since LINUX
+     * cache maintains the full file descriptor buffer each time only when
+     * a small portion is needed. Cache maintenance should still be done
+     * for all OS's other than LINUX. */
+    #ifndef LINUX
     status = tivxMemBufferMap(host_ptr, size, mem_type, maptype);
     #endif
 
@@ -349,12 +350,8 @@ vx_status tivxMemBufferUnmap(
         if (((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type) &&
             (((vx_enum)VX_WRITE_ONLY == maptype) || ((vx_enum)VX_READ_AND_WRITE == maptype)))
         {
-            #if defined(SOC_AM62A)
-            appMemCacheWb(host_ptr, size);
-            #else
             #ifndef A72
             appMemCacheWb(host_ptr, size);
-            #endif
             #endif
         }
     }
@@ -372,7 +369,12 @@ vx_status ownMemBufferUnmap(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    #if defined(QNX)
+    /* This function is called in specific situations as an optimization to
+     * skip cache maintenance operations when running on LINUX since LINUX
+     * cache maintains the full file descriptor buffer each time only when
+     * a small portion is needed. Cache maintenance should still be done
+     * for all OS's other than LINUX. */
+    #ifndef LINUX
     status = tivxMemBufferUnmap(host_ptr, size, mem_type, maptype);
     #endif
 
