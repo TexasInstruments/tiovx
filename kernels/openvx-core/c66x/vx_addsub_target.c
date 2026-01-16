@@ -95,6 +95,48 @@ static vx_status VX_CALLBACK tivxKernelSubDelete(
 static vx_status VX_CALLBACK tivxKernelSubProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+static void tivxAlignImageObjDescROI(
+    tivx_obj_desc_image_t *obj_desc[], VXLIB_bufParams2D_t *buf_params[],
+    uint16_t num_bufs);
+
+static void tivxAlignImageObjDescROI(
+    tivx_obj_desc_image_t *obj_desc[], VXLIB_bufParams2D_t *buf_params[],
+    uint16_t num_bufs)
+{
+    vx_rectangle_t int_rect, roi_rect = obj_desc[0]->valid_roi;
+    uint32_t i;
+
+    for (i = 1; i < num_bufs; i++)
+    {
+        int_rect = obj_desc[i]->valid_roi;
+
+        if (int_rect.start_x > roi_rect.start_x)
+        {
+            roi_rect.start_x = int_rect.start_x;
+        }
+
+        if (int_rect.start_y > roi_rect.start_y)
+        {
+            roi_rect.start_y = int_rect.start_y;
+        }
+
+        if (int_rect.end_x < roi_rect.end_x)
+        {
+            roi_rect.end_x = int_rect.end_x;
+        }
+
+        if (int_rect.end_y < roi_rect.end_y)
+        {
+            roi_rect.end_y = int_rect.end_y;
+        }
+    }
+
+    for (i = 0; i < num_bufs; i++)
+    {
+        buf_params[i]->dim_x = roi_rect.end_x - roi_rect.start_x;
+        buf_params[i]->dim_y = roi_rect.end_y - roi_rect.start_y;
+    }
+}
 
 static vx_status tivxKernelAddSub(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -177,6 +219,11 @@ static vx_status tivxKernelAddSub(
         tivxInitBufParams(src0_desc, &vxlib_src0);
         tivxInitBufParams(src1_desc, &vxlib_src1);
         tivxInitBufParams(dst_desc, &vxlib_dst);
+
+        tivx_obj_desc_image_t *obj_desc_list[] = {src0_desc, src1_desc, dst_desc};
+        VXLIB_bufParams2D_t *buf_params_list[] = {&vxlib_src0, &vxlib_src1, &vxlib_dst};
+
+        tivxAlignImageObjDescROI(obj_desc_list, buf_params_list, dimof(obj_desc_list));
 
         if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
         {
