@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated
+ * Copyright (c) 2022-2026 Texas Instruments Incorporated
  */
 
 #include "test_engine/test.h"
