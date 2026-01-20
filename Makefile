@@ -30,6 +30,11 @@ endif
 
 BUILD_DEFS += $(SOC_DEF)
 
+#Project specific build defs for adas and edgeai image
+ifeq ($(SOC), am62a)
+	BUILD_DEFS += $(TISDK_IMAGE)
+endif
+
 DIRECTORIES :=
 DIRECTORIES += source/platform
 DIRECTORIES += source/framework

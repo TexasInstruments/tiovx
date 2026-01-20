@@ -75,8 +75,14 @@ extern "C" {
 
 /*! \brief Max number of targets on a given R5F
  * \ingroup group_tivx_platform
+ * \max target as 10U only for adas use case
+ * \max target as 6U only for edgeai use case (QNX only) 
  */
+#if defined (edgeai)
 #define TIVX_TARGET_R5F_MAX            (6U)
+#else
+#define TIVX_TARGET_R5F_MAX            (10U)
+#endif
 
 /*! \brief Target ID for supported targets
  *
@@ -127,10 +133,17 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for MPU-0 */
     TIVX_TARGET_ID_MPU_3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 3u),
 
+    /*! \brief enable capture on MPU_0 for edgeai, applicable only for QNX */
+#if defined (edgeai)
+    /*! \brief target ID for CAPTURE1 */
     TIVX_TARGET_ID_CAPTURE1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 4u),
+    /*! \brief target ID for CAPTURE2 */
     TIVX_TARGET_ID_CAPTURE2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 5u),
+    /*! \brief target ID for CAPTURE3 */
     TIVX_TARGET_ID_CAPTURE3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 6u),
+    /*! \brief target ID for CAPTURE4 */
     TIVX_TARGET_ID_CAPTURE4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MPU_0, 7u),
+#endif
 
     /*! \brief target ID for MCU1-0 */
     TIVX_TARGET_ID_MCU1_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU1_0, 0u),
@@ -149,6 +162,18 @@ typedef enum _tivx_target_id_e {
 
     /*! \brief target ID for FC */
     TIVX_TARGET_ID_VPAC_FC = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU1_0, 5u),
+
+    /*! \brief enable the capture on MCU1_0 for adas use case only */
+#if defined (adas)
+    /*! \brief target ID for CAPTURE1 */
+    TIVX_TARGET_ID_CAPTURE1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU1_0, 6u),
+    /*! \brief target ID for CAPTURE2 */
+    TIVX_TARGET_ID_CAPTURE2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU1_0, 7u),
+    /*! \brief target ID for CAPTURE3 */
+    TIVX_TARGET_ID_CAPTURE3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU1_0, 8u),
+    /*! \brief target ID for CAPTURE4 */
+    TIVX_TARGET_ID_CAPTURE4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU1_0, 9u),
+#endif
 
 } tivx_target_id_e;
 
