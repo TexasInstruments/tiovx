@@ -381,7 +381,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                  */
 
                 queue->blockedOnGet = (vx_bool)vx_true_e;
-                wait_status = tivxEventWait(queue->block_rd, VX_TIMEOUT_WAIT_FOREVER);
+                wait_status = tivxEventWait(queue->block_rd, timeout);
                 queue->blockedOnGet = (vx_bool)vx_false_e;
                 if ((vx_status)VX_SUCCESS != wait_status)
                 {
