@@ -252,7 +252,7 @@ TEST_WITH_ARG(tivxTiovxOverhead, testTiovxOverhead, SetTarget_Arg, SET_NODE_TARG
         }
     }
 
-    VX_CALL(vxCopyScalar(scalar_in, &out_scalar_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+    VX_CALL(vxCopyScalar(scalar_out, &out_scalar_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
     ASSERT(in_scalar_val == out_scalar_val);
 
