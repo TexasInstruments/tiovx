@@ -1542,6 +1542,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
     volatile uint32_t       num_planes[TIOVX_REF_MAX_NUM_MEM_ELEM];
     uint32_t                i;
     uint32_t                j;
+    uint32_t                subimage_idx;
 
     status = (vx_status)VX_SUCCESS;
 
@@ -2000,6 +2001,54 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                                     mem_ptr[j].shared_ptr      = (uint64_t)0;
                                 }
                             } /* for (j = 1; j < numPlanes; j++) */
+
+                            /* Propagate to subimages */
+                            vx_image image = vxCastRefAsImage(ref,NULL);
+
+                            for (subimage_idx = 0; ((subimage_idx < TIVX_IMAGE_MAX_SUBIMAGES) &&
+                                        (image->subimages[subimage_idx] != NULL) && 
+                                        (status == (vx_status)VX_SUCCESS)); 
+                                subimage_idx++)
+                            {
+                                tivx_obj_desc_image_t *si_obj_desc;
+                                si_obj_desc = (tivx_obj_desc_image_t *)image->subimages[subimage_idx]->base.obj_desc;
+
+                                if (si_obj_desc == NULL)
+                                {
+                                    VX_PRINT(VX_ZONE_ERROR, "Importee image's subimage #%d 'obj_desc' is NULL.\n", subimage_idx);
+                                    status = (vx_status)VX_FAILURE;
+                                }
+                                else
+                                {
+                                    tivx_shared_mem_ptr_t *subimage_mem_ptr;
+
+                                    if ((vx_enum)si_obj_desc->create_type==(vx_enum)TIVX_IMAGE_FROM_CHANNEL)
+                                    {
+                                        vx_uint32 channel = image->subimages[subimage_idx]->channel_plane;
+                                        subimage_mem_ptr = &si_obj_desc->mem_ptr[0];
+                                        subimage_mem_ptr->shared_ptr = mem_ptr[channel].shared_ptr + image->subimages[subimage_idx]->mem_offset[0];
+                                        subimage_mem_ptr->host_ptr   = mem_ptr[channel].host_ptr   + image->subimages[subimage_idx]->mem_offset[0];
+                                    }
+                                    else if ((vx_enum)si_obj_desc->create_type==(vx_enum)TIVX_IMAGE_FROM_ROI)
+                                    {
+                                        /* Recalculate pointers for each subimage's planes with offsets from the newly imported parent shared & host ptrs. */
+                                        for (j = 0; j < si_obj_desc->planes; j++)
+                                        {
+                                            subimage_mem_ptr = &si_obj_desc->mem_ptr[j];
+                                            subimage_mem_ptr->shared_ptr =
+                                                (uint64_t)((uint64_t)mem_ptr[j].shared_ptr + image->subimages[subimage_idx]->mem_offset[j]);
+                                            subimage_mem_ptr->host_ptr =
+                                                (uint64_t)((uint64_t)mem_ptr[j].host_ptr + image->subimages[subimage_idx]->mem_offset[j]);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        /* Should not hit this condition */
+                                        VX_PRINT(VX_ZONE_ERROR, "Invalid subimage create type\n");
+                                        status = (vx_status)VX_FAILURE;
+                                    }
+                                }
+                            }
                         } /* for (i = 0; i < numMemElem; i++) */
                     }
                 }
