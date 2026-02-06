@@ -198,7 +198,8 @@ tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, vola
                 }
             }
 
-            if(tmp_kernel_instance->kernel_id == (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID)
+            /* Last entry was reached which means no free entry found */
+            if(i >= dimof(g_target_kernel_instance_table))
             {
                 VX_PRINT_BOUND_ERROR("TIVX_TARGET_KERNEL_INSTANCE_MAX");
             }
