@@ -151,7 +151,7 @@ vx_status tivxQueueDelete(tivx_queue *queue)
 {
     vx_status status = (vx_status)VX_FAILURE;
 
-    if (NULL != queue)
+    if ((NULL != queue) && (NULL != queue->queue))
     {
         status = (vx_status)VX_SUCCESS;
 
@@ -198,117 +198,133 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
     uint32_t cookie;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
 
+    if (queue != NULL)
+    {
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004
 <justification end> */
-    for(;;)
+        for(;;)
 /* LDRA_JUSTIFY_END */
-    {
-        /* disable interrupts */
-        cookie = (uint32_t)HwiP_disable();
-
-        if (queue->count < queue->max_ele)
         {
-            /* insert element */
-            queue->queue[queue->cur_wr] = data;
+            /* disable interrupts */
+            cookie = (uint32_t)HwiP_disable();
 
-            /* increment put pointer */
-            queue->cur_wr = (queue->cur_wr + 1U) % queue->max_ele;
-
-            /* increment count of number element in que */
-            queue->count++;
-
-            /* restore interrupts */
-            HwiP_restore(cookie);
-
-            /* mark status as success */
-            status = (vx_status)VX_SUCCESS;
-
-            if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != 0U)
+            if (queue->count < queue->max_ele)
             {
-                /* blocking on que get enabled */
-
-                /* post semaphore to unblock, blocked tasks */
-                ret_status = tivxEventPost(queue->block_rd);
-                if (ret_status != (vx_status)VX_SUCCESS)
+                if (queue->queue != NULL)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
-                    status = ret_status;
+                    /* insert element */
+                    queue->queue[queue->cur_wr] = data;
+
+                    /* increment put pointer */
+                    queue->cur_wr = (queue->cur_wr + 1U) % queue->max_ele;
+
+                    /* increment count of number element in que */
+                    queue->count++;
+
+                    /* restore interrupts */
+                    HwiP_restore(cookie);
+
+                    /* mark status as success */
+                    status = (vx_status)VX_SUCCESS;
+
+                    if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != 0U)
+                    {
+                        /* blocking on que get enabled */
+
+                        /* post semaphore to unblock, blocked tasks */
+                        ret_status = tivxEventPost(queue->block_rd);
+                        if (ret_status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
+                            status = ret_status;
+                        }
+                    }
+
+                    /* exit, with success */
+                    do_break = (vx_bool)vx_true_e;
+                }
+                else
+                {
+                    /* queue->queue is NULL, restore interrupts and exit with error */
+                    HwiP_restore(cookie);
+
+                    VX_PRINT(VX_ZONE_ERROR, "queue->queue is NULL.\n");
+
+                    /* exit with error */
+                    do_break = (vx_bool)vx_true_e;
                 }
             }
-
-            /* exit, with success */
-            do_break = (vx_bool)vx_true_e;
-
-        }
-        else
-        {
-            /* que is full */
-
-            /* restore interrupts */
-            HwiP_restore(cookie);
-
-            if (timeout == TIVX_EVENT_TIMEOUT_NO_WAIT)
+            else
             {
-                do_break = (vx_bool)vx_true_e; /* non-blocking, so exit with error */
-            }
-            else if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != 0U)
-            {
-                vx_status wait_status;
+                /* que is full */
 
-                /* blocking on que put enabled */
+                /* restore interrupts */
+                HwiP_restore(cookie);
 
-                /* take semaphore and block until timeout occurs or
-                 * semaphore is posted */
-                queue->blockedOnPut = (vx_bool)vx_true_e;
-                wait_status = tivxEventWait(queue->block_wr, VX_TIMEOUT_WAIT_FOREVER);
-                queue->blockedOnPut = (vx_bool)vx_false_e;
-/* LDRA_JUSTIFY_START
+                if (timeout == TIVX_EVENT_TIMEOUT_NO_WAIT)
+                {
+                    do_break = (vx_bool)vx_true_e; /* non-blocking, so exit with error */
+                }
+                else if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != 0U)
+                {
+                    vx_status wait_status;
+
+                    /* blocking on que put enabled */
+
+                    /* take semaphore and block until timeout occurs or
+                    * semaphore is posted */
+                    queue->blockedOnPut = (vx_bool)vx_true_e;
+                    wait_status = tivxEventWait(queue->block_wr, VX_TIMEOUT_WAIT_FOREVER);
+                    queue->blockedOnPut = (vx_bool)vx_false_e;
+    /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_RTOS_TIVX_QUEUE_UBR002
 <justification end> */
-                if ((vx_status)VX_SUCCESS != wait_status)
+                    if ((vx_status)VX_SUCCESS != wait_status)
 /* LDRA_JUSTIFY_END */                             
-                {
-                    do_break = (vx_bool)vx_true_e;
-                    /* error, exit with error */
-                }
+                    {
+                        do_break = (vx_bool)vx_true_e;
+                        /* error, exit with error */
+                    }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM003
 <justification end> */
-                else
-                {
-                    do_break = (vx_bool)vx_false_e;
-                }
+                    else
+                    {
+                        do_break = (vx_bool)vx_false_e;
+                    }
 /* LDRA_JUSTIFY_END */
                 /* received semaphore, recheck for available space in the que */
+                }
+                else
+                {
+                    /* blocking on que put disabled */
+
+                    /* exit with error */
+                    do_break = (vx_bool)vx_true_e;
+                }
             }
-            else
+
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004
+<justification end> */
+            if ((vx_bool)vx_true_e == do_break)
             {
-                /* blocking on que put disabled */
-
-                /* exit with error */
-                do_break = (vx_bool)vx_true_e;
+                break;
             }
+/* LDRA_JUSTIFY_END */
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004
+<justification end> */
         }
+/* LDRA_JUSTIFY_END */
 
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004
-<justification end> */
-        if ((vx_bool)vx_true_e == do_break)
-        {
-            break;
-        }
-/* LDRA_JUSTIFY_END */
-/* LDRA_JUSTIFY_START
-<metric start> statement branch <metric end>
-<justification start> TIOVX_CODE_COVERAGE_QUEUE_RTOS_UM004
-<justification end> */
     }
-/* LDRA_JUSTIFY_END */
 
     return (status);
 }
@@ -320,113 +336,139 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
     volatile vx_bool do_break = (vx_bool)vx_false_e;
     vx_status ret_status = (vx_status)VX_SUCCESS;
 
-    for(;;)
+    if (queue != NULL)
     {
-        /* disable interrupts */
-        cookie = (uint32_t)HwiP_disable();
-
-        if (queue->count > 0U)
+        for(;;)
         {
-            /* extract the element */
-            *data = queue->queue[queue->cur_rd];
+            /* disable interrupts */
+            cookie = (uint32_t)HwiP_disable();
 
-            /* increment get pointer */
-            queue->cur_rd = (queue->cur_rd + 1U) % queue->max_ele;
-
-            /* decrmeent number of elements in que */
-            queue->count--;
-
-            /* restore interrupts */
-            HwiP_restore(cookie);
-
-            /* set status as success */
-            status = (vx_status)VX_SUCCESS;
-
-            if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != 0U)
+            if (queue->count > 0U)
             {
-                /* blocking on que put enabled,
-                 * post semaphore to unblock, blocked tasks
-                 */
-                ret_status = tivxEventPost(queue->block_wr);
-                if (ret_status != (vx_status)VX_SUCCESS)
+                if ((data != NULL) && (queue->queue != NULL))
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
-                    status = ret_status;
-                }
-            }
+                    /* extract the element */
+                    *data = queue->queue[queue->cur_rd];
 
-            /* exit with success */
-            do_break = (vx_bool)vx_true_e;
-        }
-        else
-        {
-            /* no elements or not enough element in que to extract */
+                    /* increment get pointer */
+                    queue->cur_rd = (queue->cur_rd + 1U) % queue->max_ele;
 
-            /* restore interrupts */
-            HwiP_restore(cookie);
+                    /* decrmeent number of elements in que */
+                    queue->count--;
 
-            if (timeout == TIVX_EVENT_TIMEOUT_NO_WAIT)
-            {
-                do_break = (vx_bool)vx_true_e; /* non-blocking, exit with error */
-            }
-            else
-            if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != 0U)
-            {
-                vx_status wait_status;
+                    /* restore interrupts */
+                    HwiP_restore(cookie);
 
-                /* blocking on que get enabled */
+                    /* set status as success */
+                    status = (vx_status)VX_SUCCESS;
 
-                /* take semaphore and block until timeout occurs or
-                 * semaphore is posted
-                 */
+                    if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != 0U)
+                    {
+                        /* blocking on que put enabled,
+                        * post semaphore to unblock, blocked tasks
+                        */
+                        ret_status = tivxEventPost(queue->block_wr);
+                        if (ret_status != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "tivxEventPost() failed.\n");
+                            status = ret_status;
+                        }
+                    }
 
-                queue->blockedOnGet = (vx_bool)vx_true_e;
-                wait_status = tivxEventWait(queue->block_rd, timeout);
-                queue->blockedOnGet = (vx_bool)vx_false_e;
-                if ((vx_status)VX_SUCCESS != wait_status)
-                {
-                    do_break = (vx_bool)vx_true_e; /* exit with error */
+                    /* exit with success */
+                    do_break = (vx_bool)vx_true_e;
                 }
                 else
                 {
-                    do_break = (vx_bool)vx_false_e;
+                    /* data or queue->queue is NULL, restore interrupts and exit with error */
+                    HwiP_restore(cookie);
+
+                    if (data == NULL)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "data pointer is NULL.\n");
+                    }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "queue->queue is NULL.\n");
+                    }
+
+                    /* exit with error */
+                    do_break = (vx_bool)vx_true_e;
                 }
-                /* received semaphore, check que again */
             }
             else
             {
-                /* blocking on que get disabled */
+                /* no elements or not enough element in que to extract */
 
-                /* exit with error */
-                do_break = (vx_bool)vx_true_e;
+                /* restore interrupts */
+                HwiP_restore(cookie);
+
+                if (timeout == TIVX_EVENT_TIMEOUT_NO_WAIT)
+                {
+                    do_break = (vx_bool)vx_true_e; /* non-blocking, exit with error */
+                }
+                else
+                if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != 0U)
+                {
+                    vx_status wait_status;
+
+                    /* blocking on que get enabled */
+
+                    /* take semaphore and block until timeout occurs or
+                    * semaphore is posted
+                    */
+
+                    queue->blockedOnGet = (vx_bool)vx_true_e;
+                    wait_status = tivxEventWait(queue->block_rd, timeout);
+                    queue->blockedOnGet = (vx_bool)vx_false_e;
+                    if ((vx_status)VX_SUCCESS != wait_status)
+                    {
+                        do_break = (vx_bool)vx_true_e; /* exit with error */
+                    }
+                    else
+                    {
+                        do_break = (vx_bool)vx_false_e;
+                    }
+                    /* received semaphore, check que again */
+                }
+                else
+                {
+                    /* blocking on que get disabled */
+
+                    /* exit with error */
+                    do_break = (vx_bool)vx_true_e;
+                }
+            }
+
+            if ((vx_bool)vx_true_e == do_break)
+            {
+                break;
             }
         }
-
-        if ((vx_bool)vx_true_e == do_break)
-        {
-            break;
-        }
-    }
     
+    }
 
     return (status);
 }
 
 vx_bool tivxQueueIsEmpty(const tivx_queue *queue)
 {
-    vx_bool is_empty = (vx_bool)vx_false_e;
+    vx_bool is_empty = (vx_bool)vx_true_e;
     uint32_t cookie;
 
-    /* disable interrupts */
-    cookie = (uint32_t)HwiP_disable();
-
-    if (queue->count == 0U)
+    if (queue != NULL)
     {
-        is_empty = (vx_bool)vx_true_e;
-    }
+        /* disable interrupts */
+        cookie = (uint32_t)HwiP_disable();
 
-    /* restore interrupts */
-    HwiP_restore(cookie);
+        if (queue->count > 0U)
+        {
+            is_empty = (vx_bool)vx_false_e;
+        }
+
+        /* restore interrupts */
+        HwiP_restore(cookie);
+    }
 
     return is_empty;
 }
@@ -434,23 +476,28 @@ vx_bool tivxQueueIsEmpty(const tivx_queue *queue)
 vx_status tivxQueuePeek(const tivx_queue *queue, uintptr_t *data)
 {
     vx_status status = (vx_status)VX_FAILURE;/* init status to error */
-
     uint32_t cookie;
 
-    /* disable interrupts */
-    cookie = (uint32_t)HwiP_disable();
-
-    if (queue->count > 0U)
+    if ((queue != NULL) && (data != NULL))
     {
-        /* 'peek' the element but dont extract it */
-        *data = queue->queue[queue->cur_rd];
+        /* disable interrupts */
+        cookie = (uint32_t)HwiP_disable();
 
-        /* set status as success */
-        status = (vx_status)VX_SUCCESS;
+        if (queue->count > 0U)
+        {
+            if (queue->queue != NULL)
+            {
+                /* 'peek' the element but dont extract it */
+                *data = queue->queue[queue->cur_rd];
+
+                /* set status as success */
+                status = (vx_status)VX_SUCCESS;
+            }
+        }
+
+        /* restore interrupts */
+        HwiP_restore(cookie);
     }
-
-    /* restore interrupts */
-    HwiP_restore(cookie);
 
     return status;
 }
