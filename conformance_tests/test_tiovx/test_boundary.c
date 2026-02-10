@@ -3254,7 +3254,7 @@ TEST(tivxNegativeBoundary2, negativeTestControlCommandsBoundary)
     vx_context context = context_->vx_context_;
     vx_uint8  scalar_val = 33;
     vx_scalar scalar[TIVX_MAX_CTRL_CMD_OBJECTS];
-    vx_node nodes[TIVX_MAX_CTRL_CMD_OBJECTS+1];
+    vx_node nodes[TIVX_MAX_CTRL_CMD_OBJECTS+1] = {NULL};
     int i;
     
     tivxTestKernelsLoadKernels(context);
