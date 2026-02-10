@@ -476,7 +476,7 @@ TEST(tivxImage, negativeTestSetImageStride)
 
     vx_image image = NULL;
     vx_uint32 stride_y_alignment;
-    vx_size set_stride_y_alignment = TEST_STRIDE_Y_ALIGNMENT;
+    vx_uint16 set_stride_y_alignment = TEST_STRIDE_Y_ALIGNMENT;
     vx_uint32 invalid_set_stride_y_alignment = 17;
 
     vx_pixel_value_t val = {{ 0xAB }};
