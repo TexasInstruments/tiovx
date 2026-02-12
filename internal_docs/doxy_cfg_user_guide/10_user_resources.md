@@ -10,6 +10,8 @@ Reference                            | Description
 -------------------------------------|------------
 [OpenVX API Reference][openvx_spec]  | [External] Khronos OpenVX Specification and API Reference
 [OpenVX Resources][openvx_res]       | [External] Additional OpenVX resource from Khronos
+\subpage BUILD_INSTRUCTIONS          | Build and Run Instructions for TIOVX
+\subpage BUILD_EXAMPLES              | Build Configuration Examples and Workflows
 \subpage SUPPORTED_KERNELS           | OpenVX Kernels and additional TI Kernels supported in TIOVX
 \subpage TIOVX_PERFORMANCE           | Performance Report
 \subpage TIOVX_SAFETY                | TIOVX Safety Considerations
