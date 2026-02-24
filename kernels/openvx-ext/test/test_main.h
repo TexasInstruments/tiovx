@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2023 Texas Instruments Incorporated
+ * Copyright (c) 2023-2026 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -64,7 +64,7 @@
 TESTCASE(tivxObjArraySplit)
 #endif /* #if defined(BUILD_EXT_KERNELS) */
 
-#if !defined(SOC_J722S) && !defined(SOC_AM62A)
+#if !defined(SOC_AM62A)
 #if defined(BUILD_TEST_KERNELS)
 TESTCASE(tivxTargetFinal)
 #endif /* #if defined(BUILD_TEST_KERNELS) */
