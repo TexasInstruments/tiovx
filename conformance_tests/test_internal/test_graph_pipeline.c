@@ -201,6 +201,129 @@ TEST(tivxInternalGraphPipeline, negativeTestownGraphGetNumSchedule1)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+TEST(tivxInternalGraphPipeline, negativeTestGraphParameterDequeueDoneRefNullHostRef)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_node node = NULL;
+    vx_image input = NULL, output = NULL;
+    vx_image input_images[2], output_images[2];
+    vx_uint32 num_buf = 2;
+    vx_uint32 buf_id;
+    vx_uint32 num_refs;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    uint64_t original_host_ref = 0;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(input = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(node = vxNotNode(graph, input, output), VX_TYPE_NODE);
+
+    for(buf_id = 0; buf_id < num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(input_images[buf_id] = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(output_images[buf_id] = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+
+    vx_parameter input_param = vxGetParameterByIndex(node, 0);
+    vx_parameter output_param = vxGetParameterByIndex(node, 1);
+    vxAddParameterToGraph(graph, input_param);
+    vxAddParameterToGraph(graph, output_param);
+    vxReleaseParameter(&input_param);
+    vxReleaseParameter(&output_param);
+
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&input_images[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&output_images[0];
+
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+        VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+        2,
+        graph_parameters_queue_params_list));
+
+    VX_CALL(tivxSetGraphPipelineDepth(graph, 2));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    for(buf_id = 0; buf_id < num_buf; buf_id++)
+    {
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0,
+            (vx_reference*)&input_images[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1,
+            (vx_reference*)&output_images[buf_id], 1));
+    }
+
+    {
+        vx_uint32 max_wait_iterations = 1000;
+        vx_uint32 wait_iteration = 0;
+        vx_bool ref_available = vx_false_e;
+
+        while((wait_iteration < max_wait_iterations) && (ref_available == vx_false_e))
+        {
+            vx_status check_status = vxGraphParameterCheckDoneRef(graph, 1, &num_refs);
+            if((check_status == VX_SUCCESS) && (num_refs > 0))
+            {
+                ref_available = vx_true_e;
+            }
+            else
+            {
+                tivxTaskWaitMsecs(1);
+                wait_iteration++;
+            }
+        }
+
+        ASSERT(ref_available == vx_true_e);
+    }
+
+    if(output_images[0]->base.obj_desc != NULL)
+    {
+        tivx_obj_desc_t *obj_desc = (tivx_obj_desc_t*)output_images[0]->base.obj_desc;
+
+        original_host_ref = obj_desc->host_ref;
+
+        obj_desc->host_ref = 0;
+
+        ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&output, 1, &num_refs));
+
+        obj_desc->host_ref = original_host_ref;
+    }
+
+    for(buf_id = 0; buf_id < (num_buf - 1); buf_id++)
+    {
+        vx_image out_img, in_img;
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1,
+            (vx_reference*)&out_img, 1, &num_refs));
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0,
+            (vx_reference*)&in_img, 1, &num_refs));
+    }
+
+    {
+        vx_image in_img;
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0,
+            (vx_reference*)&in_img, 1, &num_refs));
+    }
+
+    VX_CALL(vxWaitGraph(graph));
+
+    VX_CALL(vxReleaseImage(&input));
+    VX_CALL(vxReleaseImage(&output));
+
+    for(buf_id = 0; buf_id < num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseImage(&input_images[buf_id]));
+        VX_CALL(vxReleaseImage(&output_images[buf_id]));
+    }
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxInternalGraphPipeline,
     negativeTestownCheckGraphCompleted,
     negativeTestownGraphAllocAndEnqueueObjDescForPipeline,
@@ -210,5 +333,6 @@ TESTCASE_TESTS(tivxInternalGraphPipeline,
     negativeTestownCheckGraphCompleted1,
     negativeTestownGraphScheduleGraph,
     negativeTestownGraphDoScheduleGraphAfterEnqueue,
-    negativeTestownGraphGetNumSchedule1
+    negativeTestownGraphGetNumSchedule1,
+    negativeTestGraphParameterDequeueDoneRefNullHostRef
     )

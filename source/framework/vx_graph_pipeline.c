@@ -1003,9 +1003,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                             /* Node not replicated */
                             status = ownDecrementEnqueueCount(ref);
                         }
+
+                        VX_PRINT(VX_ZONE_INFO,"DQ (queue=%d, ref=%d, num enqueues left = %d)\n", queue_obj_desc_id, ref_obj_desc_id, ref->obj_desc->num_enqueues);
                     }
                     ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
-                    VX_PRINT(VX_ZONE_INFO,"DQ (queue=%d, ref=%d, num enqueues left = %d)\n", queue_obj_desc_id, ref_obj_desc_id, ref->obj_desc->num_enqueues);
                     exit_loop = (vx_bool)vx_true_e;
                     ++l_num_refs;
                     if((vx_status)VX_SUCCESS == status) /* TIOVX_CODE_COVERAGE_GRAPH_PIPELINE_UM020 */
