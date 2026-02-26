@@ -949,6 +949,51 @@ static vx_status tivxBranchTestTargetKernelInstanceAllocate(uint8_t id)
     return status;
 }
 
+static vx_status tivxBoundaryTestTargetKernelInstanceAllocate(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_target_kernel_instance instances[TIVX_TARGET_KERNEL_INSTANCE_MAX];
+    uint16_t i;
+    vx_enum target_id = 0;
+
+    if((NULL == test_kernel) || (NULL == test_kernel->kernel))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"test_kernel or test_kernel->kernel is NULL, cannot run boundary test\n");
+        status = (vx_status)VX_FAILURE;
+        snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+        return status;
+    }
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    target_id = test_kernel->kernel->target_id;
+
+    for(i = 0; i < TIVX_TARGET_KERNEL_INSTANCE_MAX; i++)
+    {
+        instances[i] = NULL;
+    }
+
+    /* to hit i >= dimof(g_target_kernel_instance_table) */
+    for(i = 0; i < TIVX_TARGET_KERNEL_INSTANCE_MAX; i++)
+    {
+        instances[i] = ownTargetKernelInstanceAlloc(test_kernel->kernel_id, TIVX_KERNEL_TEST_TARGET_NAME, target_id);
+    }
+
+    for(i = 0; i < TIVX_TARGET_KERNEL_INSTANCE_MAX; i++)
+    {
+        if(NULL != instances[i])
+        {
+            (void)ownTargetKernelInstanceFree(&instances[i]);
+        }
+    }
+
+    tivx_set_debug_zone(VX_ZONE_INFO);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 static vx_status tivxBranchTestTargetKernelInstanceGet(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -4222,6 +4267,7 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeTestTargetKernelInstanceAllocate,"",VX_SUCCESS},
     {tivxBranchTestTargetKernelInstanceAlloc,"",VX_SUCCESS},
     {tivxBranchTestTargetKernelInstanceAllocate,"",VX_SUCCESS},
+    {tivxBoundaryTestTargetKernelInstanceAllocate,"",VX_SUCCESS},
     {tivxBranchTestTargetKernelInstanceGet,"",VX_SUCCESS},
     {tivxBranchTestTargetKernel, "",VX_SUCCESS},
     {tivxBranchTestTargetKernelFunc, "",VX_SUCCESS},
