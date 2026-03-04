@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2024-2025 Texas Instruments Incorporated
+ * Copyright (c) 2024-2026 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -88,6 +88,7 @@
 #include <utils/rtos/include/app_rtos.h>
 #if defined(MCU_PLUS_SDK)
 #include <app_rtos_mcu_plus_priv.h>
+#include <kernel/dpl/SemaphoreP.h>
 #else
 #include <osal_soc.h>
 #endif /* #if defined(MCU_PLUS_SDK) */
@@ -134,13 +135,22 @@ static vx_status VX_CALLBACK tivxTestTargetControl(
 #if defined(LDRA_COVERAGE_ENABLED)
 #ifndef PC
 #if defined(C7X_FAMILY)
+#if defined(SOC_J722S)
+#define TARGET_TEST_TASK_STACK_SIZE      64*512U
+#define TARGET_TEST_MAX_TASKS            20U
+#else /* #if defined(SOC_J722S) */
 #define TARGET_TEST_TASK_STACK_SIZE      64*1024U
 #define TARGET_TEST_MAX_TASKS            150U
-#else
+#endif /* #if defined(SOC_J722S) */
+#else /* #if defined(C7X_FAMILY) */
+#if defined(MCU_PLUS_SDK)
+#define TARGET_TEST_MAX_TASKS            30U
+#else /* #if defined(MCU_PLUS_SDK) */
 #define TARGET_TEST_MAX_TASKS            1024U
+#endif /* #if defined(MCU_PLUS_SDK) */
 #if defined(MPU)
 #define TARGET_TEST_TASK_STACK_SIZE      16*1024U*1024U
-#else
+#else /* #if defined(MPU) */
 #define TARGET_TEST_TASK_STACK_SIZE      1024U
 #endif /* defined(MPU) */
 #endif /* #if defined(C7X_FAMILY) */
@@ -235,7 +245,7 @@ static vx_status tivxTestTargetTaskBoundary(uint8_t id)
 
     for (i = 0; i < j; i++)
     {
-        #if defined(REMOTE_COVERAGE)
+        #if defined(REMOTE_COVERAGE) && !defined(MCU_PLUS_SDK)
         /* Test case to cover "appRtosTaskIsTerminated" API */
         if (TASK_IS_NOT_TERMINATED != appRtosTaskIsTerminated((app_rtos_task_handle_t *)taskHandle[i].tsk_handle))
         {
@@ -1429,7 +1439,7 @@ static vx_status tivxNegativeTestObjDescAlloc(uint8_t id)
     switch (cpu_id)
     {
         case TIVX_CPU_ID_DSP1:
-            #if defined (SOC_J721E) || defined (SOC_J721S2)
+            #if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J722S)
             target_id = (vx_enum)TIVX_TARGET_ID_DSP1;
             #else
             target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_2;
@@ -2113,6 +2123,28 @@ static vx_status tivxNegativeAppIpcGetIpcCpuId(uint8_t id)
     return status;
 }
 
+static vx_status tivxTestAppIpcGetIpcCpuIdValidRange(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t app_cpu_id;
+    uint32_t ipc_cpu_id;
+
+    for (app_cpu_id = 0; app_cpu_id < APP_IPC_CPU_MAX; app_cpu_id++)
+    {
+        ipc_cpu_id = appIpcGetIpcCpuId(app_cpu_id);
+        if (ipc_cpu_id == IPC_MP_INVALID_ID)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid IPC CPU ID returned for valid app_cpu_id %d\n", app_cpu_id);
+            status = (vx_status)VX_FAILURE;
+            break;
+        }
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 static vx_status tivxNegativeAppIpcGetAppCpuId(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -2330,12 +2362,39 @@ static vx_status tivxNegativeAppRtosSemaphoreDelete(uint8_t id)
     return status;
 }
 
+static vx_status tivxNegativeAppRtosSemaphoreDeleteNotInPool(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+#if defined(MCU_PLUS_SDK)
+    SemaphoreP_Object fake_semaphore_obj;
+    app_rtos_semaphore_handle_t fake_handle = (app_rtos_semaphore_handle_t)&fake_semaphore_obj;
+
+    SemaphoreP_constructBinary(&fake_semaphore_obj, 0);
+
+    if ((app_rtos_status_t)APP_RTOS_STATUS_FAILURE != appRtosSemaphoreDelete(&fake_handle))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for semaphore not in managed pool\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    SemaphoreP_destruct(&fake_semaphore_obj);
+#endif
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
 static vx_status tivxNegativeAppRtosSemaphorePost(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     app_rtos_semaphore_handle_t semhandle = NULL;
 
+    #if defined(MCU_PLUS_SDK)
+    if ((app_rtos_status_t)APP_RTOS_STATUS_FAILURE != appRtosSemaphorePost(semhandle))
+    #else
     if ((app_rtos_status_t)APP_RTOS_STATUS_SUCCESS != appRtosSemaphorePost(semhandle))
+    #endif /* #if defined(MCU_PLUS_SDK) */
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid Result returned for NULL\n");
         status = (vx_status)VX_FAILURE;
@@ -2511,6 +2570,23 @@ static vx_status tivxTestTargetPlatformSetHostTargetId(uint8_t id)
     vx_status status = (vx_status)VX_SUCCESS;
 
     tivxPlatformSetHostTargetId(TIVX_CPU_ID_MPU_0);
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxAppIpcSendNotify(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t dest_cpu_id = APP_IPC_CPU_MPU1_0;
+    uint32_t payload = 0U;
+
+    if((vx_status)VX_SUCCESS != appIpcSendNotify(dest_cpu_id, payload))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for 'APP_IPC_CPU_MPU1_0' dest_cpu_id\n");
+        status = (vx_status)VX_FAILURE;
+    }
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -2774,6 +2850,7 @@ static vx_status tivxNegativeTestTargetInitHost(uint8_t id)
 static vx_status tivxNegativeAppRtosSemaphoreCreate(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    #if !defined(MCU_PLUS_SDK)
     app_rtos_semaphore_handle_t handle;
     app_rtos_semaphore_params_t Params;
 
@@ -2786,6 +2863,58 @@ static vx_status tivxNegativeAppRtosSemaphoreCreate(uint8_t id)
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG: 'Params.initValue' = '-1u'\n");
         status = (vx_status)VX_FAILURE;
+    }
+    #endif /* #if !defined(MCU_PLUS_SDK) */
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestAppRtosSemaphoreCreateMutex(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_semaphore_handle_t handle;
+    app_rtos_semaphore_params_t params;
+
+    appRtosSemaphoreParamsInit(&params);
+    params.mode = APP_RTOS_SEMAPHORE_MODE_MUTEX;
+
+    handle = appRtosSemaphoreCreate(params);
+    if (NULL == handle)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Failed to create semaphore with mode: APP_RTOS_SEMAPHORE_MODE_MUTEX\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        if ((vx_status)VX_SUCCESS != appRtosSemaphoreDelete(&handle))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Failed to delete mutex semaphore\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeAppRtosSemaphoreCreateInvalidMode(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    app_rtos_semaphore_handle_t handle;
+    app_rtos_semaphore_params_t params;
+
+    appRtosSemaphoreParamsInit(&params);
+    params.mode = 0xFFU;
+
+    handle = appRtosSemaphoreCreate(params);
+    if (NULL != handle)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for invalid semaphore mode\n");
+        status = (vx_status)VX_FAILURE;
+        appRtosSemaphoreDelete(&handle);
     }
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
@@ -2811,6 +2940,50 @@ static vx_status tivxNegativeTestMemStats(uint8_t id)
             }
         }
     }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxTestTargetIpcSendMsgRemoteCore(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    #if defined (MCU_PLUS_SDK)
+    vx_enum self_cpu_id;
+    vx_enum dest_cpu_id;
+    uint32_t host_cpu_id;
+    uint32_t host_port_id = 1;
+    uint32_t payload = 0;
+
+    self_cpu_id = tivxGetSelfCpuId();
+
+    switch (self_cpu_id)
+    {
+        #if defined(SOC_J722S)
+        case TIVX_CPU_ID_MCU2_0:
+            dest_cpu_id = TIVX_CPU_ID_DSP1;
+            break;
+        #else
+        case TIVX_CPU_ID_MCU1_0:
+            dest_cpu_id = TIVX_CPU_ID_DSP1;
+            break;
+        #endif
+        default:
+            dest_cpu_id = TIVX_CPU_ID_MPU_0;
+            break;
+    }
+
+    host_cpu_id = (uint32_t)self_cpu_id;
+
+    status = ownIpcSendMsg(dest_cpu_id, payload, host_cpu_id, host_port_id);
+
+    if(status != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ownIpcSendMsg failed for remote core communication\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    #endif /* #if defined (MCU_PLUS_SDK) */
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -3545,13 +3718,17 @@ static vx_status tivxNegativeTestMemBufferMap(uint8_t id)
         status = (vx_status)VX_FAILURE;
     }
 
-    #if !defined(QNX)
+    #if defined(LINUX)
+    /* The LINUX implementation of this fxn returns SUCCESS regardless of params */
     if(VX_SUCCESS !=ownMemBufferMap(host_ptr_t,1, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY))
+    #else
+    /* The QNX implementation of this fxn returns FAILURE when passing an invalid host pointer */
+    if(VX_FAILURE !=ownMemBufferMap(host_ptr_t,1, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY))
+    #endif /* #if defined(LINUX) */
     {
         VX_PRINT(VX_ZONE_ERROR,"ownMemBufferMap returned failure '\n");
         status = (vx_status)VX_FAILURE;
     }
-    #endif
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -3628,13 +3805,15 @@ static vx_status tivxNegativeTestMemBufferUnmap(uint8_t id)
         status = (vx_status)VX_FAILURE;
     }
 
-    #if !defined(QNX)
+    #if defined(LINUX)
     if(VX_SUCCESS != ownMemBufferUnmap(NULL, 8,(vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY))
+    #else
+    if(VX_FAILURE != ownMemBufferUnmap(NULL, 8,(vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY))
+    #endif /* #if defined(LINUX) */
     {
         VX_PRINT(VX_ZONE_ERROR,"ownMemBufferUnmap returned failure '\n");
         status = (vx_status)VX_FAILURE;
     }
-    #endif
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -4004,7 +4183,7 @@ typedef struct _user_data
 static vx_status tivxTestKernelsSupplementaryData(uint8_t id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    user_data_t test_data   = {.numbers = {90, 80, 70, 60}};
+    static user_data_t test_data __attribute__((aligned(128))) = {.numbers = {90, 80, 70, 60}};
     vx_status tmp_status;
 
     if (NULL != tivxGetSupplementaryDataObjDesc(NULL, NULL))
@@ -4187,7 +4366,6 @@ static vx_status tivxAppMemPrintMemAllocInfo(uint8_t id)
     return status;
 }
 
-
 FuncInfo arrOfFuncs[] = {
     #if defined(LINUX)
     {tivxNegativeTaskAppIpcGetHostPortId, "", VX_SUCCESS},
@@ -4210,6 +4388,7 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeAppIpcHwLockAcquire, "", VX_SUCCESS},
     {tivxNegativeAppIpcHwLockRelease, "", VX_SUCCESS},
     {tivxNegativeAppIpcGetIpcCpuId, "", VX_SUCCESS},
+    {tivxTestAppIpcGetIpcCpuIdValidRange, "", VX_SUCCESS},
     {tivxNegativeAppIpcGetAppCpuId, "", VX_SUCCESS},
     {tivxNegativeAppIpcGetCpuName, "", VX_SUCCESS},
     {tivxNegativeAppIpcSendNotifyPort, "", VX_SUCCESS},
@@ -4220,6 +4399,7 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeAppMemStats, "", VX_SUCCESS},
     {tivxNegativeAppRtosSemaphoreParamsInit, "", VX_SUCCESS},
     {tivxNegativeAppRtosSemaphoreDelete, "", VX_SUCCESS},
+    {tivxNegativeAppRtosSemaphoreDeleteNotInPool, "", VX_SUCCESS},
     {tivxNegativeAppRtosSemaphorePost, "", VX_SUCCESS},
     {tivxNegativeAppRtosTaskParamsInit, "", VX_SUCCESS},
     {tivxNegativeAppRtosTaskDelete, "", VX_SUCCESS},
@@ -4229,6 +4409,8 @@ FuncInfo arrOfFuncs[] = {
     {tivxAppRtosTaskSleep, "", VX_SUCCESS},
     {tivxAppRtosTaskYield, "", VX_SUCCESS},
     {tivxNegativeAppRtosSemaphoreCreate, "",VX_SUCCESS},
+    {tivxTestAppRtosSemaphoreCreateMutex, "",VX_SUCCESS},
+    {tivxNegativeAppRtosSemaphoreCreateInvalidMode, "",VX_SUCCESS},
     {tivxNegativeTestMemStats, "", VX_SUCCESS},
     {tivxTestQueueCreateDelete, "", VX_SUCCESS},
     {tivxTestQueuePutGetDelete, "", VX_SUCCESS},
@@ -4237,6 +4419,8 @@ FuncInfo arrOfFuncs[] = {
     {tivxNegativeAppMemInit, "", VX_SUCCESS},
     {tivxNegativeAppMemInitPrmSetDefault,"",VX_SUCCESS},
     {tivxTestTargetPlatformSetHostTargetId, "",VX_SUCCESS},
+    {tivxTestTargetIpcSendMsgRemoteCore, "",VX_SUCCESS},
+    {tivxAppIpcSendNotify,"",VX_SUCCESS},
     #endif /* #if defined(REMOTE_COVERAGE) */
     {tivxTestKernelsSupplementaryData,"",VX_SUCCESS},
     {tivxTestTargetTaskBoundary, "",VX_SUCCESS},
@@ -4407,6 +4591,11 @@ static vx_status VX_CALLBACK tivxTestTargetProcess(
             for(i=0;i<size;i++)
             {
                 status1 = arrOfFuncs[i].funcPtr(i);
+
+                #if defined REMOTE_COVERAGE
+                appRtosTaskSleepInMsecs(100);
+                #endif /* #if defined REMOTE_COVERAGE*/
+
                 if((vx_status)VX_SUCCESS != status1)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"[ !FAILED! ] TARGET TESTCASE: %s\n",arrOfFuncs[i].funcName);
