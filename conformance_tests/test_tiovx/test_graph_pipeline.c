@@ -8892,6 +8892,152 @@ TEST(tivxGraphPipeline2, testEnqueuecountWithPyramidAndEnqueueSingleImage)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+/* Test that vxSetGraphScheduleConfig properly handles non-sequential
+ * graph parameter indices in the vx_graph_parameter_queue_params_t array.
+ */
+TEST(tivxGraphPipeline2, testNonSequentialGraphParameterIndices)
+{
+    #define NUM_BUFFERS 2
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_node node;
+    vx_image input_images[NUM_BUFFERS];
+    vx_image temp_images[NUM_BUFFERS];
+    vx_image output_images[NUM_BUFFERS];
+    vx_uint32 i;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    for (i = 0; i < NUM_BUFFERS; i++)
+    {
+        ASSERT_VX_OBJECT(input_images[i] = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(temp_images[i] = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(output_images[i] = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+
+    ASSERT_VX_OBJECT(node = vxAndNode(graph, input_images[0], temp_images[0], output_images[0]), VX_TYPE_NODE);
+
+    /* input @ node index 0, becomes graph parameter 0 */
+    addParameterToGraph(graph, node, 0);
+    /* input @ node index 1, becomes graph parameter 1 */
+    addParameterToGraph(graph, node, 1);
+    /* output @ node index 2, becomes graph parameter 2 */
+    addParameterToGraph(graph, node, 2);
+
+    /* set graph schedule config with non-sequential graph parameter indices
+     * array index 0 maps to graph parameter 2, array index 1 maps to graph parameter 0,
+     * array index 2 maps to graph parameter 1
+     */
+    vx_graph_parameter_queue_params_t graph_params[3] =
+    {
+        {.graph_parameter_index = 2, .refs_list = (vx_reference *)output_images, .refs_list_size = NUM_BUFFERS},
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)input_images, .refs_list_size = NUM_BUFFERS},
+        {.graph_parameter_index = 1, .refs_list = (vx_reference *)temp_images, .refs_list_size = NUM_BUFFERS}
+    };
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxSetGraphPipelineDepth(graph, 2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 3, graph_params));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    /* enqueue input and output references */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference *)&input_images[0], 1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference *)&temp_images[0], 1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference *)&output_images[0], 1));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
+
+    vx_reference dequeue_ref;
+    vx_uint32 num_refs;
+
+    /* check that processing is complete before dequeueing */
+    VX_CALL(vxGraphParameterCheckDoneRef(graph, 0, &num_refs));
+    ASSERT(num_refs == 1);
+    VX_CALL(vxGraphParameterCheckDoneRef(graph, 1, &num_refs));
+    ASSERT(num_refs == 1);
+    VX_CALL(vxGraphParameterCheckDoneRef(graph, 2, &num_refs));
+    ASSERT(num_refs == 1);
+
+    /* dequeue and verify correct references are returned */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 0, &dequeue_ref, 1, &num_refs));
+    ASSERT_EQ_INT(num_refs, 1);
+    ASSERT_EQ_PTR(dequeue_ref, (vx_reference)input_images[0]);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 1, &dequeue_ref, 1, &num_refs));
+    ASSERT_EQ_INT(num_refs, 1);
+    ASSERT_EQ_PTR(dequeue_ref, (vx_reference)temp_images[0]);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGraphParameterDequeueDoneRef(graph, 2, &dequeue_ref, 1, &num_refs));
+    ASSERT_EQ_INT(num_refs, 1);
+    ASSERT_EQ_PTR(dequeue_ref, (vx_reference)output_images[0]);
+    for (i = 0; i < NUM_BUFFERS; i++)
+    {
+        VX_CALL(vxReleaseImage(&input_images[i]));
+        VX_CALL(vxReleaseImage(&temp_images[i]));
+        VX_CALL(vxReleaseImage(&output_images[i]));
+    }
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    #undef NUM_BUFFERS
+}
+
+/* Tests that vxSetGraphScheduleConfig rejects duplicate graph_parameter_index
+ * values in the graph_parameters_queue_params_list array
+ */
+TEST(tivxGraphPipeline2, testDuplicateGraphParameterIndices)
+{
+    #define NUM_BUFFERS 2
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_node node;
+    vx_image input_images[NUM_BUFFERS];
+    vx_image temp_images[NUM_BUFFERS];
+    vx_image output_images[NUM_BUFFERS];
+    vx_uint32 i;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    for (i = 0; i < NUM_BUFFERS; i++)
+    {
+        ASSERT_VX_OBJECT(input_images[i] = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(temp_images[i] = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(output_images[i] = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+
+    ASSERT_VX_OBJECT(node = vxAndNode(graph, input_images[0], temp_images[0], output_images[0]), VX_TYPE_NODE);
+
+    /* input @ node index 0, becomes graph parameter 0 */
+    addParameterToGraph(graph, node, 0);
+    /* input @ node index 1, becomes graph parameter 1 */
+    addParameterToGraph(graph, node, 1);
+    /* output @ node index 2, becomes graph parameter 2 */
+    addParameterToGraph(graph, node, 2);
+
+    /* attempt to configure with duplicate graph_parameter_index values
+     * array index 0 and 1 both map to graph parameter 0
+     */
+    vx_graph_parameter_queue_params_t graph_params[2] =
+    {
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)input_images, .refs_list_size = NUM_BUFFERS},
+        {.graph_parameter_index = 0, .refs_list = (vx_reference *)temp_images, .refs_list_size = NUM_BUFFERS}
+    };
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxSetGraphPipelineDepth(graph, 2));
+
+    /* this should fail with VX_ERROR_INVALID_PARAMETERS due to duplicate index */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphScheduleConfig(graph, VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO, 2, graph_params));
+
+    for (i = 0; i < NUM_BUFFERS; i++)
+    {
+        VX_CALL(vxReleaseImage(&input_images[i]));
+        VX_CALL(vxReleaseImage(&temp_images[i]));
+        VX_CALL(vxReleaseImage(&output_images[i]));
+    }
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    #undef NUM_BUFFERS
+}
+
 TEST(tivxGraphPipelineLdra, negativeTestSetGraphScheduleConfig)
 {
     #define VX_GRAPH_SCHEDULE_MODE_DEFAULT 0
@@ -9063,14 +9209,16 @@ TESTCASE_TESTS(tivxGraphPipeline2,
     testGraphEvent,
     testWaitGraphTimeout,
     testGraphEventTimeout,
-    testGraphEventTimeout2, 
+    testGraphEventTimeout2,
     testGetGraphParameterRefsList,
     testAddReferencesToGraphParameterList,
     testGetKernelParameterConfig,
     testGetGraphParameterConfig,
     testEnqueuecountWithKernelAcceptingObjectArrays,
     testEnqueuecountWithPyramid,
-    testEnqueuecountWithPyramidAndEnqueueSingleImage
+    testEnqueuecountWithPyramidAndEnqueueSingleImage,
+    testNonSequentialGraphParameterIndices,
+    testDuplicateGraphParameterIndices
 )
 
 TESTCASE_TESTS(

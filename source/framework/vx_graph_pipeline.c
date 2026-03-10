@@ -311,6 +311,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
     )
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t param_idx;
 
     if (ownIsValidSpecificReference(vxCastRefFromGraph(graph), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
@@ -354,25 +355,37 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                         }
                         else
                         {
-                            graph->parameters[i].queue_enable = (vx_bool)vx_true_e;
-                            graph->parameters[i].num_buf = graph_parameters_queue_params_list[i].refs_list_size;
-                            graph->parameters[i].type = graph_parameters_queue_params_list[i].refs_list[0]->type;
+                            param_idx = graph_parameters_queue_params_list[i].graph_parameter_index;
 
-                            status = ownGraphPipelineValidateRefsList(graph_parameters_queue_params_list[i]);
-
-                            if ((vx_status)VX_SUCCESS == status)
+                            /* check if this graph parameter index has already been configured */
+                            if (graph->parameters[param_idx].queue_enable == (vx_bool)vx_true_e)
                             {
-                                uint32_t buf_id;
-
-                                for(buf_id=0; buf_id<graph->parameters[i].num_buf; buf_id++)
-                                {
-                                    graph->parameters[i].refs_list[buf_id] = graph_parameters_queue_params_list[i].refs_list[buf_id];
-                                }
+                                VX_PRINT(VX_ZONE_ERROR, "Duplicate graph_parameter_index %d at array index %d\n",
+                                    param_idx, i);
+                                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                             }
                             else
                             {
-                                VX_PRINT(VX_ZONE_ERROR,
-                                    "Graph parameter refs list at index %d contains inconsistent meta data. Please ensure that all buffers in list contain the same meta data\n", i);
+                                graph->parameters[param_idx].queue_enable = (vx_bool)vx_true_e;
+                                graph->parameters[param_idx].num_buf = graph_parameters_queue_params_list[i].refs_list_size;
+                                graph->parameters[param_idx].type = graph_parameters_queue_params_list[i].refs_list[0]->type;
+
+                                status = ownGraphPipelineValidateRefsList(graph_parameters_queue_params_list[i]);
+
+                                if ((vx_status)VX_SUCCESS == status)
+                                {
+                                    uint32_t buf_id;
+
+                                    for(buf_id=0; buf_id<graph->parameters[param_idx].num_buf; buf_id++)
+                                    {
+                                        graph->parameters[param_idx].refs_list[buf_id] = graph_parameters_queue_params_list[i].refs_list[buf_id];
+                                    }
+                                }
+                                else
+                                {
+                                    VX_PRINT(VX_ZONE_ERROR,
+                                        "Graph parameter refs list at index %d contains inconsistent meta data. Please ensure that all buffers in list contain the same meta data\n", param_idx);
+                                }
                             }
                         }
                     }
