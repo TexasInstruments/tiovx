@@ -91,6 +91,7 @@ vx_status tivxAddKernelTiovxOverhead(vx_context context);
 vx_status tivxAddKernelMultiInOut(vx_context context);
 vx_status tivxAddKernelFileio(vx_context context);
 vx_status tivxAddKernelTestNot(vx_context context);
+vx_status tivxAddKernelMultiDSPNotNot(vx_context context);
 
 vx_status tivxRemoveKernelScalarSink(vx_context context);
 vx_status tivxRemoveKernelScalarSource(vx_context context);
@@ -112,6 +113,7 @@ vx_status tivxRemoveKernelTiovxOverhead(vx_context context);
 vx_status tivxRemoveKernelMultiInOut(vx_context context);
 vx_status tivxRemoveKernelFileio(vx_context context);
 vx_status tivxRemoveKernelTestNot(vx_context context);
+vx_status tivxRemoveKernelMultiDSPNotNot(vx_context context);
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelNotNot, &tivxRemoveKernelNotNot},
@@ -134,6 +136,7 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelMultiInOut, &tivxRemoveKernelMultiInOut},
     {&tivxAddKernelFileio, &tivxRemoveKernelFileio},
     {&tivxAddKernelTestNot, &tivxRemoveKernelTestNot},
+    {&tivxAddKernelMultiDSPNotNot, &tivxRemoveKernelMultiDSPNotNot},
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)
@@ -197,6 +200,16 @@ void tivxRegisterTestKernelsKernels(void)
     tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
     tivxRegisterTestKernelsTargetDspKernels();
     #endif
+
+    #if (C7X_COUNT > 2)
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP_C7_3);
+    tivxRegisterTestKernelsTargetDspKernels();
+    #endif
+
+    #if (C7X_COUNT > 3)
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP_C7_4);
+    tivxRegisterTestKernelsTargetDspKernels();
+    #endif
 #endif
 }
 
@@ -247,6 +260,16 @@ void tivxUnRegisterTestKernelsKernels(void)
 
     #if defined (SOC_J721E) || defined (SOC_J722S)
     tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
+    tivxUnRegisterTestKernelsTargetDspKernels();
+    #endif
+
+    #if (C7X_COUNT > 2)
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP_C7_3);
+    tivxUnRegisterTestKernelsTargetDspKernels();
+    #endif
+
+    #if (C7X_COUNT > 3)
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP_C7_4);
     tivxUnRegisterTestKernelsTargetDspKernels();
     #endif
 #endif

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2020-2025 Texas Instruments Incorporated
+ * Copyright (c) 2020-2026 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -87,4 +87,6 @@ TESTCASE(tivxTiovxOverhead)
 TESTCASE(tivxFileio)
 
 TESTCASE(tivxTestKernelNot)
+
+TESTCASE(tivxTestKernelsMCNotNot)
 #endif /* #if defined(BUILD_TEST_KERNELS) */

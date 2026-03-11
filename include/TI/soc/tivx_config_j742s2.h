@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2024-2025 Texas Instruments Incorporated
+* Copyright (c) 2024-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -480,7 +480,7 @@ extern "C" {
 /*! \brief Max target kernel instances that will be active on a CPU at the same time
  * \ingroup group_vx_ti_extensions_cfg
  */
-#define TIVX_TARGET_KERNEL_INSTANCE_MAX    (64u)
+#define TIVX_TARGET_KERNEL_INSTANCE_MAX    (90u)
 
 /*! \brief Max target kernel that will be active on a CPU at the same time
  * \ingroup group_vx_ti_extensions_cfg

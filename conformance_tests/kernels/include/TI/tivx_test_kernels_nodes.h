@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2025 Texas Instruments Incorporated
+ * Copyright (c) 2017-2026 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -241,6 +241,19 @@ VX_API_ENTRY vx_node VX_API_CALL tivxFileioNode(vx_graph graph,
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxTestNotNode(vx_graph graph,
+                                      vx_image            input,
+                                      vx_image            output);
+
+/*! \brief [Graph] Creates a MULTI_DSP_NOT_NOT Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] input
+ * \param [out] output
+ * \see <tt>TIVX_KERNEL_MULTI_DSP_NOT_NOT_NAME</tt>
+ * \ingroup group_vision_function_multi_dsp_not_not
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxMultiDSPNotNotNode(vx_graph graph,
                                       vx_image            input,
                                       vx_image            output);
 

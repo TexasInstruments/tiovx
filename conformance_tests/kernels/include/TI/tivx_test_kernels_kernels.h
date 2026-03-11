@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2025 Texas Instruments Incorporated
+ * Copyright (c) 2017-2026 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -164,6 +164,11 @@ extern "C" {
  *  \see group_vision_function_test_kernels
  */
 #define TIVX_KERNEL_TEST_NOT_NAME     "com.ti.test_kernels.test_not"
+
+/*! \brief multi_dsp_not_not kernel name
+ *  \see group_vision_function_test_kernels
+ */
+#define TIVX_KERNEL_MULTI_DSP_NOT_NOT_NAME     "com.ti.test_kernels.multi_dsp_not_not"
 
 /*! End of group_vision_function_test_kernels */
 
