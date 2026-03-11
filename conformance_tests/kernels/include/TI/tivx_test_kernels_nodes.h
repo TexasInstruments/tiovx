@@ -230,6 +230,20 @@ VX_API_ENTRY vx_node VX_API_CALL tivxMultiInOutNode(vx_graph graph,
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxFileioNode(vx_graph graph,
                                       vx_user_data_object  in1);
+
+/*! \brief [Graph] Creates a TEST_NOT Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] input
+ * \param [out] output
+ * \see <tt>TIVX_KERNEL_TEST_NOT_NAME</tt>
+ * \ingroup group_vision_function_test_not
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxTestNotNode(vx_graph graph,
+                                      vx_image            input,
+                                      vx_image            output);
+
 #ifdef __cplusplus
 }
 #endif

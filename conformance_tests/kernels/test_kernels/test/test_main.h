@@ -85,4 +85,6 @@ TESTCASE(tivxTimestamp)
 TESTCASE(tivxTiovxOverhead)
 
 TESTCASE(tivxFileio)
+
+TESTCASE(tivxTestKernelNot)
 #endif /* #if defined(BUILD_TEST_KERNELS) */

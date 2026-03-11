@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2026 Texas Instruments Incorporated
+ * Copyright (c) 2026 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,32 +60,24 @@
  *
  */
 
-#include <TI/tivx.h>
-#include <TI/tivx_target_kernel.h>
-#include "tivx_test_kernels_kernels.h"
-#include "tivx_kernels_target_utils.h"
+#ifndef _TIVX_KERNEL_TEST_NOT_
+#define _TIVX_KERNEL_TEST_NOT_
 
-void tivxAddTargetKernelTiovxOverhead(void);
-void tivxAddTargetKernelTestTarget(void);
-void tivxAddTargetKernelTestNot(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void tivxRemoveTargetKernelTiovxOverhead(void);
-void tivxRemoveTargetKernelTestTarget(void);
-void tivxRemoveTargetKernelTestNot(void);
 
-static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-    {&tivxAddTargetKernelTestTarget, &tivxRemoveTargetKernelTestTarget},
-    {&tivxAddTargetKernelTiovxOverhead, &tivxRemoveTargetKernelTiovxOverhead},
-    {&tivxAddTargetKernelTestNot, &tivxRemoveTargetKernelTestNot}
-};
+#define TIVX_KERNEL_TEST_NOT_INPUT_IDX (0U)
+#define TIVX_KERNEL_TEST_NOT_OUTPUT_IDX (1U)
 
-void tivxRegisterTestKernelsTargetDspKernels(void)
-{
-    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+#define TIVX_KERNEL_TEST_NOT_MAX_PARAMS (2U)
+
+#ifdef __cplusplus
 }
+#endif
 
-void tivxUnRegisterTestKernelsTargetDspKernels(void)
-{
-    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
-}
+
+#endif /* _TIVX_KERNEL_TEST_NOT_ */
+
 

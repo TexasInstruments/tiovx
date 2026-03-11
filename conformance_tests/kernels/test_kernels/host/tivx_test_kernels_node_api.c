@@ -337,4 +337,17 @@ VX_API_ENTRY vx_node VX_API_CALL tivxFileioNode(vx_graph graph,
     return node;
 }
 
-
+VX_API_ENTRY vx_node VX_API_CALL tivxTestNotNode(vx_graph graph,
+                                      vx_image            input,
+                                      vx_image            output)
+{
+    vx_reference prms[] = {
+            (vx_reference)input,
+            (vx_reference)output
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_TEST_NOT_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
