@@ -285,8 +285,9 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                     if ((vx_status)VX_SUCCESS != wait_status)
 /* LDRA_JUSTIFY_END */                             
                     {
-                        do_break = (vx_bool)vx_true_e;
                         /* error, exit with error */
+                        do_break = (vx_bool)vx_true_e;
+                        status = (vx_status)wait_status;
                     }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
@@ -423,7 +424,9 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                     queue->blockedOnGet = (vx_bool)vx_false_e;
                     if ((vx_status)VX_SUCCESS != wait_status)
                     {
-                        do_break = (vx_bool)vx_true_e; /* exit with error */
+                        /* error, exit with error */
+                        do_break = (vx_bool)vx_true_e;
+                        status = (vx_status)wait_status;
                     }
                     else
                     {
