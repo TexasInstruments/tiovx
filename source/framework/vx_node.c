@@ -560,78 +560,145 @@ vx_status ownNodeKernelInit(vx_node node)
 
         if ((vx_bool)vx_false_e==node->is_initialized)
         {
-/* LDRA_JUSTIFY_START
-<metric start> branch <metric end>
-<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR006
-<justification end> */
-            if(NULL != node->kernel->initialize)
-/* LDRA_JUSTIFY_END */
+            node->local_data_set_allow = (vx_bool)vx_true_e;
+            tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc[0];
+            uint32_t num_params = node->kernel->signature.num_parameters;
+
+            if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == (vx_bool)vx_true_e )
             {
-                node->local_data_set_allow = (vx_bool)vx_true_e;
-                tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc[0];
-                uint32_t num_params = node->kernel->signature.num_parameters;
+                vx_reference params[TIVX_KERNEL_MAX_PARAMS];
+                vx_reference parent_ref[TIVX_KERNEL_MAX_PARAMS];
+                uint32_t i, n;
+                vx_bool is_parent_from_list = (vx_bool)vx_false_e;
+                vx_meta_format meta[TIVX_KERNEL_MAX_PARAMS] = {NULL};
 
-                if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == (vx_bool)vx_true_e )
+                for(i=0; i<num_params ; i++)
                 {
-                    vx_reference params[TIVX_KERNEL_MAX_PARAMS];
-                    vx_reference parent_ref[TIVX_KERNEL_MAX_PARAMS];
-                    uint32_t i, n;
+                    parent_ref[i] = NULL;
 
-                    for(i=0; i<num_params ; i++)
+                    if((0 != node->replicated_flags[i]) &&
+                        (NULL != node->parameters[i]))
                     {
-                        parent_ref[i] = NULL;
-
-                        if((0 != node->replicated_flags[i]) &&
-                           (NULL != node->parameters[i]))
-                        {
-                            parent_ref[i] = node->parameters[i]->scope;
-                        }
-                    }
-
-                    for(n=0; n<node_obj_desc->num_of_replicas; n++)
-                    {
-                        for(i=0; i<num_params ; i++)
-                        {
-                            params[i] = NULL;
-                            if(node->replicated_flags[i] != 0)
-                            {
+                        parent_ref[i] = node->parameters[i]->scope;
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR007
 <justification end> */
-                                if(parent_ref[i] != NULL)
-                                {
-                                    if(parent_ref[i]->type==(vx_enum)VX_TYPE_OBJECT_ARRAY)
-                                    {
-                                        /*status set to NULL due to preceding type check*/
-                                        params[i] = (vxCastRefAsObjectArray(parent_ref[i], NULL))->ref[n];
-                                    }
-                                    else if(parent_ref[i]->type==(vx_enum)VX_TYPE_PYRAMID)
-                                    {
-                                        /*status set to NULL due to preceding type check*/
-                                        params[i] = vxCastRefFromImage((vxCastRefAsPyramid(parent_ref[i], NULL))->img[n]);
-                                    }
-                                    else
-                                    {
-                                        params[i] = NULL;
-                                    }
-                                }
+                        if((parent_ref[i] != NULL) && (parent_ref[i]->type==(vx_enum)VX_TYPE_OBJECT_ARRAY))
 /* LDRA_JUSTIFY_END */
-                            }
-                            else
-                            {
-                                params[i] = node->parameters[i];
-                            }
+                        {
+                            /* Set flag that there is a parameter whose parent is from list */
+                            if (((tivx_obj_desc_object_array_t*)((vxCastRefAsObjectArray(parent_ref[i], NULL)
+                                )->base.obj_desc))->is_from_list == vx_true_e)
+                                is_parent_from_list = (vx_bool)vx_true_e;
                         }
-
-                        ownNodeSetAccessibility(node, num_params, (vx_bool)vx_true_e);
-
-                        tivxCheckStatus(&status, node->kernel->initialize(node, params, num_params));
-
-                        ownNodeSetAccessibility(node, num_params, (vx_bool)vx_false_e);
                     }
                 }
-                else
+
+                if (is_parent_from_list == (vx_bool)vx_true_e)
+                {
+                    for(i=0; i<num_params && ((vx_status)VX_SUCCESS == status); i++)
+                    {
+                        /* Initialize meta-format array for revalidation */
+                        meta[i] = ownCreateMetaFormat(node->graph->base.context);
+                        /* This should not fail at all */ 
+                        if (vxGetStatus(vxCastRefFromMetaFormat(meta[i])) != (vx_status)VX_SUCCESS)
+                        {
+                            VX_PRINT_GRAPH(VX_ZONE_ERROR, node->graph, "Unable to create meta format object\n");
+                            status = (vx_status)VX_ERROR_NO_RESOURCES;
+                        }
+                        if (status == (vx_status)VX_SUCCESS)
+                        {
+                            meta[i]->type = node->kernel->signature.types[i];
+                        }
+                    }
+                }
+
+                for(n=0; n<node_obj_desc->num_of_replicas; n++)
+                {
+                    for(i=0; i<num_params ; i++)
+                    {
+                        params[i] = NULL;
+                        if(node->replicated_flags[i] != 0)
+                        {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR007
+<justification end> */
+                            if(parent_ref[i] != NULL)
+                            {
+                                if(parent_ref[i]->type==(vx_enum)VX_TYPE_OBJECT_ARRAY)
+                                {
+                                    /*status set to NULL due to preceding type check*/
+                                    params[i] = (vxCastRefAsObjectArray(parent_ref[i], NULL))->ref[n];
+                                }
+                                else if(parent_ref[i]->type==(vx_enum)VX_TYPE_PYRAMID)
+                                {
+                                    /* status set to NULL due to preceding type check */
+                                    params[i] = vxCastRefFromImage((vxCastRefAsPyramid(parent_ref[i], NULL))->img[n]);
+                                }
+                                else
+                                {
+                                    params[i] = NULL;
+                                }
+                            }
+/* LDRA_JUSTIFY_END */
+                        }
+                        else
+                        {
+                            params[i] = node->parameters[i];
+                        }
+                    }
+                    /* Run validate call back if parent was object array from list */
+                    if ((node->kernel->validate != NULL) && 
+                        (is_parent_from_list) &&
+                        (status == (vx_status)VX_SUCCESS))
+                    {
+                        ownNodeSetAccessibility(node, num_params, (vx_bool)vx_true_e);
+                        status = node->kernel->validate(node, params, num_params, meta);
+                        ownNodeSetAccessibility(node, num_params, (vx_bool)vx_false_e);
+                    }
+                    if (status == VX_SUCCESS)
+                    {
+                        /* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR006
+<justification end> */
+                        if(NULL != node->kernel->initialize)
+/* LDRA_JUSTIFY_END */
+                        {
+                            ownNodeSetAccessibility(node, num_params, (vx_bool)vx_true_e);
+
+                            tivxCheckStatus(&status, node->kernel->initialize(node, params, num_params));
+
+                            ownNodeSetAccessibility(node, num_params, (vx_bool)vx_false_e);
+                        }
+                    }
+                }
+                if (is_parent_from_list == (vx_bool)vx_true_e)
+                {
+                    /* Free meta-format data allocated earlier for potential revalidation */
+                    for (i = 0; i < TIVX_KERNEL_MAX_PARAMS; i ++)
+                    {
+                        if (NULL != meta[i])
+                        {
+                            tivxCheckStatus(&status, ownReleaseMetaFormat(&meta[i]));
+                            if (status != (vx_status)VX_SUCCESS)
+                            {
+                                VX_PRINT_GRAPH(VX_ZONE_ERROR, node->graph, "Failed to release meta-format object\n");
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                /* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_NODE_UBR006
+<justification end> */
+                if(NULL != node->kernel->initialize)
+/* LDRA_JUSTIFY_END */
                 {
                     ownNodeSetAccessibility(node, node->kernel->signature.num_parameters, (vx_bool)vx_true_e);
 
@@ -641,15 +708,15 @@ vx_status ownNodeKernelInit(vx_node node)
 
                     ownNodeSetAccessibility(node, node->kernel->signature.num_parameters, (vx_bool)vx_false_e);
                 }
+            }
 
-                if(status!=(vx_status)VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Target kernel, kernel init callback failed\n");
-                }
-                else
-                {
-                    node->is_initialized = (vx_bool)vx_true_e;
-                }
+            if(status!=(vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Target kernel, kernel init callback failed\n");
+            }
+            else
+            {
+                node->is_initialized = (vx_bool)vx_true_e;
             }
         }
 
@@ -2468,6 +2535,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
                     {
                         vx_enum target_id;
 
+                        /* target name is "any" target; use default */
                         if ((0 == strncmp(target_string, "any",
                                 TIVX_TARGET_MAX_NAME)) ||
                             (0 == strncmp(target_string, "aNy",

@@ -112,7 +112,7 @@ TEST(tivxObjArray, testCreateNestedObjectArrayFromExemplar)
         VX_CALL(vxQueryObjectArray((vx_object_array)nested_object_array_child, VX_OBJECT_ARRAY_NUMITEMS, &child_object_array_size, sizeof(child_object_array_size)));
         ASSERT_EQ_INT(exemplar_object_array_size, child_object_array_size);
 
-        for (j = 0U; j < count; j++)
+        for (j = 0U; j < child_object_array_size; j++)
         {
             ASSERT_VX_OBJECT(child_object_array_item = vxGetObjectArrayItem((vx_object_array)nested_object_array_child, j), VX_TYPE_IMAGE);
             ASSERT_VX_OBJECT(exemplar_object_array_item = vxGetObjectArrayItem(exemplar_object_array, j), VX_TYPE_IMAGE);

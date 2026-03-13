@@ -69,9 +69,9 @@
 #include <vx_internal.h>
 
 static vx_status ownGraphValidRectCallback(
-    vx_graph graph, vx_node node, vx_meta_format meta[]);
+    vx_graph graph, vx_node node, const vx_meta_format meta[]);
 static vx_status ownGraphInitVirtualNode(
-    vx_graph graph, vx_node node, vx_meta_format meta[]);
+    vx_graph graph, vx_node node, const vx_meta_format meta[]);
 static vx_status ownGraphNodeKernelValidate(
     vx_graph graph, vx_meta_format meta[]);
 static vx_status ownGraphNodeKernelInit(vx_graph graph);
@@ -412,7 +412,7 @@ static vx_status ownGraphFindAndAddDataReferences(vx_graph graph)
 }
 
 static vx_status ownGraphValidRectCallback(
-    vx_graph graph, vx_node node, vx_meta_format meta[])
+    vx_graph graph, vx_node node, const vx_meta_format meta[])
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 num_in_image = 0, num_params, i;
@@ -547,7 +547,7 @@ static vx_status ownGraphValidRectCallback(
 }
 
 static vx_status ownGraphInitVirtualNode(
-    vx_graph graph, vx_node node, vx_meta_format meta[])
+    vx_graph graph, vx_node node, const vx_meta_format meta[])
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i, num_params;
@@ -2821,7 +2821,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
         {
             if((vx_status)VX_SUCCESS != ownReleaseMetaFormat(&meta[i]))
             {
-                VX_PRINT_GRAPH(VX_ZONE_ERROR, graph, "Failed to release met-format object\n");
+                VX_PRINT_GRAPH(VX_ZONE_ERROR, graph, "Failed to release meta-format object\n");
             }
         }
     }

@@ -771,6 +771,157 @@ TEST(tivxInternalGraphVerify, negativeTestownGraphCheckIsRefMatch)
     ASSERT((vx_bool)vx_false_e == ownGraphCheckIsRefMatch(graph, ref1, ref2));
 }
 
+/* [TIOVX-2520]: Test to hit revalidate portion ownNodeKernelInit,
+ *               which happens when replicate is used with an object array from list.
+ * Test made to hit the if(kernel validate callback != NULL) branch.
+ */
+TEST(tivxInternalGraphVerify, testCoverageReplicateRevalidate)
+{
+    vx_context context = context_->vx_context_;
+    vx_reference exemplar, src_ref_list[3] = {0}, dst_ref_list[3] = {0};
+    vx_object_array src = 0, dst = 0;
+    vx_graph graph = 0;
+    vx_kernel user_kernel = 0;
+    vx_node node = 0;
+
+    vx_uint32 width = 128, height = 128;
+    vx_enum format = VX_DF_IMAGE_U8;
+    vx_size capacity = 3;
+
+    ASSERT_VX_OBJECT(exemplar = (vx_reference)vxCreateImage(context, width, height, format), VX_TYPE_IMAGE);
+
+    for (int i = 0; i < capacity; i++)
+    {
+        ASSERT_VX_OBJECT(src_ref_list[i] = (vx_reference)vxCreateObjectArray(context, exemplar, capacity), VX_TYPE_OBJECT_ARRAY);
+        ASSERT_VX_OBJECT(dst_ref_list[i] = (vx_reference)vxCreateObjectArray(context, exemplar, capacity), VX_TYPE_OBJECT_ARRAY);
+    }
+
+    ASSERT_VX_OBJECT(src = tivxCreateObjectArrayFromList(context, src_ref_list, capacity), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(dst = tivxCreateObjectArrayFromList(context, dst_ref_list, capacity), VX_TYPE_OBJECT_ARRAY);
+
+    ASSERT_NO_FAILURE(own_register_kernel(context));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(user_kernel = vxGetKernelByName(context, VX_KERNEL_CONFORMANCE_TEST_OWN_USER_NAME), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, user_kernel), VX_TYPE_NODE);
+
+    VX_CALL(vxSetParameterByIndex(node, 0, (vx_reference)src_ref_list[0]));
+    VX_CALL(vxSetParameterByIndex(node, 1, (vx_reference)dst_ref_list[0]));
+
+    vx_bool replicate[] = { vx_true_e, vx_true_e };
+    VX_CALL(vxReplicateNode(graph, node, replicate, 2));
+
+    node->kernel->is_target_kernel = vx_true_e;
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    VX_CALL(vxReleaseNode(&node));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxReleaseGraph(&graph));
+
+    /* user kernel should be removed only after all references to it released */
+    /* Note, vxRemoveKernel doesn't zeroing kernel ref */
+    VX_CALL(vxRemoveKernel(user_kernel));
+
+    VX_CALL(vxReleaseObjectArray(&dst));
+    VX_CALL(vxReleaseObjectArray(&src));
+    for (int i = 0; i < capacity; i++)
+    {
+        vxReleaseReference(&src_ref_list[i]);
+        vxReleaseReference(&dst_ref_list[i]);
+    }
+    VX_CALL(vxReleaseReference(&exemplar));
+
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+    ASSERT(dst == 0);
+    ASSERT(src == 0);
+    ASSERT(exemplar == 0);
+}
+
+/* [TIOVX-2520]: Test to hit Revalidate portion ownNodeKernelInit,
+ *               which happens when replicate is used with an object array from list.
+ * Test to hit negative portion corresponding to ownCreateMetaFormat failure.
+ */
+TEST(tivxInternalGraphVerify, testCoverageReplicateMetaFormat)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph;
+
+    vx_meta_format meta[TIVX_META_FORMAT_MAX_OBJECTS];
+
+    int i, j;
+    uint32_t width = 640, height = 480;
+    vx_image input_list[3], output_list[3];
+    vx_object_array input_oa, output_oa;
+    vx_node color_convert_node;
+    vx_size size = 3;
+
+    tivx_obj_desc_t *obj_desc[TIVX_META_FORMAT_MAX_OBJECTS] = {NULL};
+
+    /* Creating graph */
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* Creating input and output images */
+    for (i = 0; i < size; i++)
+    {
+        ASSERT_VX_OBJECT(input_list[i] = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(output_list[i] = vxCreateImage(context, width, height, VX_DF_IMAGE_YUV4), VX_TYPE_IMAGE);
+    }
+
+    /* Creating the object arrays from list*/
+    ASSERT_VX_OBJECT(input_oa = tivxCreateObjectArrayFromList(context, (vx_reference *)input_list, size), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(output_oa = tivxCreateObjectArrayFromList(context, (vx_reference *)output_list, size), VX_TYPE_OBJECT_ARRAY);
+
+    /* Creating and Replicating color convert node */
+    ASSERT_VX_OBJECT(color_convert_node = vxColorConvertNode(graph, input_list[0], output_list[0]), VX_TYPE_NODE);
+    VX_CALL(vxReplicateNode(graph, color_convert_node, (vx_bool[]){vx_true_e, vx_true_e}, 2));
+
+    /* Maxing out the Meta Format Objects - 3
+     * 3 guaranteed to be used for the meta format of ColorConvertNode to pass initial vxVerifyGraph validate  */
+    for (i = 0; i < TIVX_META_FORMAT_MAX_OBJECTS - 3; i++)
+    {
+        meta[i] = ownCreateMetaFormat(context);
+        if (NULL == meta[i])
+        {
+            break;
+        }
+    }
+
+    while (color_convert_node->is_initialized == vx_false_e && i > 0){
+        vxVerifyGraph(graph);
+        VX_CALL(ownReleaseMetaFormat(&meta[i-1]));
+        i -= 1;
+    }
+    /* Ensuring the last Graph verify had enough meta format objects to pass */
+    VX_CALL(vxGetStatus((vx_reference)graph));
+
+    /* Cleanup */
+    for (j = 0; j < i; j++)
+    {
+        if (NULL == meta[j])
+        {
+            continue;
+        }
+        VX_CALL(ownReleaseMetaFormat(&meta[j]));
+    }
+
+    /* Releasing images */
+    for (i = 0; i < size; i++)
+    {
+        VX_CALL(vxReleaseImage(&input_list[i]));
+        VX_CALL(vxReleaseImage(&output_list[i]));
+    }
+    VX_CALL(vxReleaseObjectArray(&input_oa));
+    VX_CALL(vxReleaseObjectArray(&output_oa));
+
+    VX_CALL(vxReleaseNode(&color_convert_node));
+
+    /* Releasing graph */
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxInternalGraphVerify,
                negativeBoundaryTestVerifyGraph,
                negativeBoundaryTestOwnGraphCreateNodeCallbackCommands,
@@ -785,5 +936,7 @@ TESTCASE_TESTS(tivxInternalGraphVerify,
                negativeTestOwnGraphAllocateDataObject,
                testOwnGraphCheckIsRefMatch,
                negativeTestUserKernelDeinitializeFailure,
+               testCoverageReplicateRevalidate,
+               testCoverageReplicateMetaFormat,
                negativeTestownGraphCheckIsRefMatch
 )

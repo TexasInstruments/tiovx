@@ -231,7 +231,7 @@ static void fillSequence(CT_Image dst, uint32_t seq_init)
     uint32_t val = seq_init;
 
     ASSERT(dst);
-    ASSERT(dst->format == VX_DF_IMAGE_U8);
+    ASSERT(dst->format == VX_DF_IMAGE_U8 || dst->format == VX_DF_IMAGE_S16);
 
     for (i = 0; i < dst->height; ++i)
         for (j = 0; j < dst->width; ++j)
@@ -254,16 +254,16 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListReplicate)
     vx_context context = context_->vx_context_;
     vx_graph graph;
     vx_object_array inOAFL = NULL, intermediateOAFL = NULL, outOAFL;
-    vx_image inArray[NUM_IMAGES] = {0}, intArray[NUM_IMAGES] = {0}, outArray[NUM_IMAGES] = {0};
+    vx_reference inArray[NUM_IMAGES] = {0}, intArray[NUM_IMAGES] = {0}, outArray[NUM_IMAGES] = {0};
     vx_image temp_output = NULL;
     vx_node node1 = NULL, node2 = NULL;
 
     // Init vars
-    for(vx_size i=0; i<NUM_IMAGES; i++)
+    for(vx_size i=0; i< NUM_IMAGES; i++)
     {
-        ASSERT_VX_OBJECT(inArray[i] = vxCreateImage(context, imagedims[i][0], imagedims[i][1], VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(intArray[i] = vxCreateImage(context, imagedims[i][0], imagedims[i][1], VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(outArray[i] = vxCreateImage(context, imagedims[i][0], imagedims[i][1], VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(inArray[i] = (vx_reference)vxCreateImage(context, imagedims[i][0], imagedims[i][1], VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(intArray[i] = (vx_reference)vxCreateImage(context, imagedims[i][0], imagedims[i][1], VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(outArray[i] = (vx_reference)vxCreateImage(context, imagedims[i][0], imagedims[i][1], VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
         // fill input img with sample ref data
         ASSERT_NO_FAILURE({
@@ -271,7 +271,7 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListReplicate)
             fillSequence(CT_input_array[i], (uint32_t)(1+i*10));
         });
 
-        ASSERT_NO_FAILURE(ct_image_copyto_vx_image(inArray[i], CT_input_array[i]));
+        ASSERT_NO_FAILURE(ct_image_copyto_vx_image((vx_image)inArray[i], CT_input_array[i]));
     }
 
     // make object arrays from lists
@@ -283,9 +283,9 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListReplicate)
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     vx_bool replicate[] = { vx_true_e, vx_true_e };
     // 0th element of each array is also first element of its corresponding object array
-    ASSERT_VX_OBJECT(node1 = vxNotNode(graph, inArray[0], intArray[0]), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node1 = vxNotNode(graph, (vx_image)inArray[0], (vx_image)intArray[0]), VX_TYPE_NODE);
     VX_CALL(vxReplicateNode(graph, node1, replicate, 2));
-    ASSERT_VX_OBJECT(node2 = vxNotNode(graph, intArray[0], outArray[0]), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxNotNode(graph, (vx_image)intArray[0], (vx_image)outArray[0]), VX_TYPE_NODE);
     VX_CALL(vxReplicateNode(graph, node2, replicate, 2));
 
     VX_CALL(vxVerifyGraph(graph));
@@ -304,19 +304,86 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListReplicate)
     // Clean up
     for (vx_size i = 0; i < NUM_IMAGES; i++)
     {
-        VX_CALL(vxReleaseImage(&inArray[i]));
-        VX_CALL(vxReleaseImage(&intArray[i]));
-        VX_CALL(vxReleaseImage(&outArray[i]));
+        VX_CALL(vxReleaseReference(&inArray[i]));
+        VX_CALL(vxReleaseReference(&intArray[i]));
+        VX_CALL(vxReleaseReference(&outArray[i]));
     }
+
     VX_CALL(vxReleaseObjectArray(&inOAFL));
     VX_CALL(vxReleaseObjectArray(&intermediateOAFL));
     VX_CALL(vxReleaseObjectArray(&outOAFL));
-
-    VX_CALL(vxReleaseNode(&node1));
-    VX_CALL(vxReleaseNode(&node2));
     VX_CALL(vxReleaseGraph(&graph));
+}
 
-    return;
+/* [TIOVX-2520]: Test that the validate call back is called for every set of parameters
+ *               with a replicate node and object array from list.
+ *               This is done with the Not node, which in the validate call only accepts VX_DF_IMAGE_U8.
+ */
+TEST(tivxObjArrayFromList, negativeTestObjectArrayFromListReplicate)
+{
+
+    #define NUM_IMAGES 3
+
+    vx_uint32 *imagedims[3] =
+    {
+        (vx_uint32[]){256, 128},
+        (vx_uint32[]){128, 64},
+        (vx_uint32[]){64, 32},
+    };
+
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_object_array inOAFL, inOAFL2, outOAFL, outOAFL2;
+    vx_reference inArray[NUM_IMAGES] = {0}, outArray[NUM_IMAGES] = {0},
+                 inArray2[NUM_IMAGES] = {0}, outArray2[NUM_IMAGES] = {0};
+    vx_node node1 = NULL, node2 = NULL;
+    vx_df_image img_format1 = VX_DF_IMAGE_U8, img_format2 = VX_DF_IMAGE_U8;
+
+    // Init vars
+    for(vx_size i=0; i< NUM_IMAGES; i++)
+    {
+        if (i == NUM_IMAGES - 1)
+        {
+            img_format1 = VX_DF_IMAGE_U16;
+        }
+        ASSERT_VX_OBJECT(inArray[i] = (vx_reference)vxCreateImage(context, imagedims[i][0], imagedims[i][1], img_format1), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(inArray2[i] = (vx_reference)vxCreateImage(context, imagedims[i][0], imagedims[i][1], img_format2), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(outArray[i] = (vx_reference)vxCreateImage(context, imagedims[i][0], imagedims[i][1], img_format1), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(outArray2[i] = (vx_reference)vxCreateImage(context, imagedims[i][0], imagedims[i][1], img_format2), VX_TYPE_IMAGE);
+    }
+
+    // make object arrays from lists
+    ASSERT_VX_OBJECT(inOAFL = tivxCreateObjectArrayFromList(context, (vx_reference*)(inArray), NUM_IMAGES), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(inOAFL2 = tivxCreateObjectArrayFromList(context, (vx_reference*)(inArray2), NUM_IMAGES), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(outOAFL = tivxCreateObjectArrayFromList(context, (vx_reference*)(outArray), NUM_IMAGES), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(outOAFL2 = tivxCreateObjectArrayFromList(context, (vx_reference*)(outArray2), NUM_IMAGES), VX_TYPE_OBJECT_ARRAY);
+
+    // create graph & nodes
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    vx_bool replicate[] = { vx_true_e, vx_true_e };
+    // 0th element of each array is also first element of its corresponding object array
+    ASSERT_VX_OBJECT(node1 = vxNotNode(graph, (vx_image)inArray[0], (vx_image)outArray[0]), VX_TYPE_NODE);
+    VX_CALL(vxReplicateNode(graph, node1, replicate, 2));
+    ASSERT_VX_OBJECT(node2 = vxNotNode(graph, (vx_image)inArray2[0], (vx_image)outArray2[0]), VX_TYPE_NODE);
+    VX_CALL(vxReplicateNode(graph, node2, replicate, 2));
+
+    /* Should fail on the first NotNode because its validate callback rejects any image not U8 format */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxVerifyGraph(graph));
+
+    // Clean up
+    for (vx_size i = 0; i < NUM_IMAGES; i++)
+    {
+        VX_CALL(vxReleaseReference(&inArray[i]));
+        VX_CALL(vxReleaseReference(&inArray2[i]));
+        VX_CALL(vxReleaseReference(&outArray[i]));
+        VX_CALL(vxReleaseReference(&outArray2[i]));
+    }
+
+    VX_CALL(vxReleaseObjectArray(&inOAFL));
+    VX_CALL(vxReleaseObjectArray(&inOAFL2));
+    VX_CALL(vxReleaseObjectArray(&outOAFL));
+    VX_CALL(vxReleaseObjectArray(&outOAFL2));
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 typedef struct _user_data
@@ -422,12 +489,12 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListSuppDataCopySwap)
     user_data_t test1 = {0};
     user_data_t test2 = {0};
 
-    // Pyramid test 
-    // Set supp data on both levels of pyramids 
+    // Pyramid test
+    // Set supp data on both levels of pyramids
     vx_pyramid pyr_ex1[4];
     for (int i = 0; i < 4; ++i)
     {
-        ASSERT_VX_OBJECT(pyr_ex1[i] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32+2*i, 32+2*i, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID); 
+        ASSERT_VX_OBJECT(pyr_ex1[i] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32+2*i, 32+2*i, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
         EXPECT_EQ_VX_STATUS(vxSetSupplementaryUserDataObject((vx_reference)(pyr_ex1[i]), exemplar1), VX_SUCCESS);
         for (int j = 0; j < 4; ++j)
         {
@@ -445,14 +512,14 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListSuppDataCopySwap)
     vx_pyramid pyr_ex2[4];
     for (int i = 0; i < 4; ++i)
     {
-        ASSERT_VX_OBJECT(pyr_ex2[i] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32+2*i, 32+2*i, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID); 
+        ASSERT_VX_OBJECT(pyr_ex2[i] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 32+2*i, 32+2*i, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
     }
     ASSERT_VX_OBJECT(oafl2 = tivxCreateObjectArrayFromList(context, (vx_reference*)(pyr_ex2), 4), VX_TYPE_OBJECT_ARRAY);
     EXPECT_EQ_VX_STATUS(vxuSwap(context, (vx_reference)(oafl1), (vx_reference)(oafl2)), VX_SUCCESS);
     EXPECT_EQ_VX_STATUS(vxuSwap(context, (vx_reference)(oafl2), (vx_reference)(oafl1)), VX_SUCCESS);
     vxReleaseObjectArray(&oafl2);
 
-    // now create suppplementary data 
+    // now create suppplementary data
     for (int i = 0; i < 4; ++i)
     {
         EXPECT_EQ_VX_STATUS(vxSetSupplementaryUserDataObject((vx_reference)(pyr_ex2[i]), exemplar2), VX_SUCCESS);
@@ -469,9 +536,9 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListSuppDataCopySwap)
     EXPECT_EQ_VX_STATUS(status , VX_SUCCESS);
     supp2 = vxGetSupplementaryUserDataObject((vx_reference)(oafl2), NULL, &status);
     EXPECT_EQ_VX_STATUS(status , VX_SUCCESS);
-    // Now try a swap 
+    // Now try a swap
     EXPECT_EQ_VX_STATUS(vxuSwap(context, (vx_reference)(oafl1), (vx_reference)(oafl2)), VX_SUCCESS);
-    // Now if we look at the supplementary data it should be the other way around 
+    // Now if we look at the supplementary data it should be the other way around
     EXPECT_EQ_VX_STATUS(vxCopyUserDataObject(supp1, 0, sizeof(user_data_t), &test1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), VX_SUCCESS);
     EXPECT_EQ_VX_STATUS(vxCopyUserDataObject(supp2, 0, sizeof(user_data_t), &test2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST), VX_SUCCESS);
     status = VX_SUCCESS;
@@ -483,9 +550,9 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListSuppDataCopySwap)
             break;
         }
     }
-    EXPECT_EQ_VX_STATUS(status, VX_SUCCESS); 
+    EXPECT_EQ_VX_STATUS(status, VX_SUCCESS);
 
-    // now check the supplementary data of an object in the array 
+    // now check the supplementary data of an object in the array
     vx_reference ref1 = vxGetObjectArrayItem(oafl1, 2);
     vx_reference ref2 = vxGetObjectArrayItem(oafl2, 2);
     EXPECT_EQ_VX_STATUS(vxReleaseUserDataObject(&supp1), VX_SUCCESS);
@@ -507,7 +574,7 @@ TEST(tivxObjArrayFromList, testObjectArrayFromListSuppDataCopySwap)
     }
     EXPECT_EQ_VX_STATUS(status, VX_SUCCESS);
 
-    // now check the supplementary data of a level of a pyramid in the array 
+    // now check the supplementary data of a level of a pyramid in the array
     EXPECT_EQ_VX_STATUS(vxReleaseUserDataObject(&supp1), VX_SUCCESS);
     EXPECT_EQ_VX_STATUS(vxReleaseUserDataObject(&supp2), VX_SUCCESS);
     vx_reference ref3 = (vx_reference)(vxGetPyramidLevel((vx_pyramid)ref1, 2));
@@ -553,6 +620,7 @@ TESTCASE_TESTS(
     negativeTestCreateVirtualObjectArrayFromList,
     testCreateNestedObjectArrayWithChildFromList,
     testObjectArrayFromListReplicate,
+    negativeTestObjectArrayFromListReplicate,
     testObjectArrayFromListSuppData,
     testObjectArrayFromListSuppDataCopySwap
 )

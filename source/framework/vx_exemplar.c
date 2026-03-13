@@ -427,11 +427,17 @@ static vx_reference ownCreateObjectArrayFromExemplar(
         (void)vxQueryObjectArray(exemplar, (vx_enum)TIVX_OBJECT_ARRAY_IS_FROM_LIST, &is_from_list, sizeof(is_from_list));
         obj_desc->is_from_list = is_from_list;
     }
-    
+
     /* Object array copy made, release the reference list */
     for (i = 0U; (i < count); ++i)
     {
-        (void)vxReleaseReference(&ref_list[i]);
+/* LDRA_JUSTIFY_START
+<metric start> statement branch <metric end>
+<justification start> TIOVX_CODE_COVERAGE_EXEMPLER_UM013
+<justification end>*/
+        if (ref_list[i] != NULL)
+/* LDRA_JUSTIFY_END */
+            (void)vxReleaseReference(&ref_list[i]);
     }
 
     return vxCastRefFromObjectArray(objarr);
