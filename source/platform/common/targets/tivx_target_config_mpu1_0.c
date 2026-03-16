@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2025 Texas Instruments Incorporated
+* Copyright (c) 2025-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -69,22 +69,10 @@ void ownPlatformCreateTargetsMpu(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MPU_1, 1u, "TIVX_CPU1", 8U);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MPU_2, 2u, "TIVX_CPU2", 8U);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MPU_3, 3u, "TIVX_CPU3", 8U);
-    #if defined(SOC_AM62A) && defined(QNX)
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE1, 4u, "TIVX_CAPT1", 8U);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE2, 5u, "TIVX_CAPT2", 8U);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE3, 6u, "TIVX_CAPT3", 8U);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE4, 7u, "TIVX_CAPT4", 8U);
-    #endif
 }
 
 void ownPlatformDeleteTargetsMpu(void)
 {
-    #if defined(SOC_AM62A) && defined(QNX)
-    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE1);
-    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE2);
-    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE3);
-    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE4);
-    #endif
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MPU_0);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MPU_1);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MPU_2);

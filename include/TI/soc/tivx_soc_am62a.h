@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022-2025 Texas Instruments Incorporated
+ * Copyright (c) 2022-2026 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -279,13 +279,8 @@ typedef enum _tivx_cpu_id_e {
     TIVX_CPU_ID_MPU_0 = 2,
 
     /*! \brief CPU ID alias for which CPU Video IO kernels are used from */
-#if defined(edgeai)
-    /*! \brief QNX runs Video IO kernels on A53 (MPU_0) for edgeai use case */
-    TIVX_CPU_ID_VIDEO_IO = TIVX_CPU_ID_MPU_0,
-#else
     /*! \brief Linux & QNX runs Video_io kernels on DM R5F for adas use case */
     TIVX_CPU_ID_VIDEO_IO = TIVX_CPU_ID_MCU1_0,
-#endif
 
     /*! \brief Max value of CPU ID  */
     TIVX_CPU_ID_MAX = 3,
