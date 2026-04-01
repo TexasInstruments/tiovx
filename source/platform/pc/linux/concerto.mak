@@ -56,20 +56,20 @@ ifeq ($(TARGET_PLATFORM),PC)
 		IDIRS += $(TIOVX_PATH)/source/platform/common/targets
 		IDIRS += $(TIOVX_PATH)/source/platform/common
 
-		ifeq ($(RTOS_SDK), mcu_plus_sdk)
-			IDIRS += $(MCU_PLUS_SDK_PATH)/source
-			DEFS  += MCU_PLUS_SDK
-		endif
-
 		ifeq ($(RTOS_SDK), mcu_sdk)
-			IDIRS += $(MCU_SDK_PATH)/source/device/tda54/ti_sdk_config/default/Hal_Cfg
+			IDIRS += $(MCU_SDK_PATH)/ti_sdk_config/$(SOC)/default/Hal_Cfg
+			IDIRS += $(MCU_SDK_PATH)/ti_sdk_config/$(SOC)/default/device_support/include
+			IDIRS += $(MCU_SDK_PATH)/source/device/$(SOC)/ti_sdk_config/default/Hal_Cfg
 			IDIRS += $(MCU_SDK_PATH)/source/compiler/hostemu-gcc-linux
 			IDIRS += $(MCU_SDK_PATH)/source/drivers/Ipc_Notify/v0/include
+			IDIRS += $(MCU_SDK_PATH)/source/drivers/Ipc_Notify/v0/src
 			IDIRS += $(MCU_SDK_PATH)/source/drivers/Ipc_Notify/vPC/include
 			IDIRS += $(MCU_SDK_PATH)/source/hal/Ipc_Notify/v0/include
+			IDIRS += $(MCU_SDK_PATH)/source/hal/Ipc_Notify/v0/src
 			IDIRS += $(MCU_SDK_PATH)/source/hal/Ipc_Notify/vPC/include
 			IDIRS += $(MCU_SDK_PATH)/source/compatibility/dpl/include
 			IDIRS += $(MCU_SDK_PATH)/source/arch/include
+			IDIRS += $(MCU_SDK_PATH)/source/device/$(SOC)/include/hw
 			DEFS  += MCU_SDK
 		endif
 

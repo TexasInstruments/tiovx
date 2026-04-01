@@ -68,52 +68,9 @@
 #include <sys/prctl.h>
 #include <stdio.h>
 
-#if defined(MCU_PLUS_SDK)
-#include <drivers/soc.h>
-#endif
-
 #if defined (SOC_FAMILY_TDA5)
+#include <Std_Types.h>
 #include <Ipc_Notify_Hal_Defaults.h>
-
-#if defined (SOC_TDA54)
-uint32_t g_csl_ipc_id_map[CSL_CORE_ID_MAX] = {
-    TIVX_CPU_ID_INVALID,
-    TIVX_CPU_ID_MCU0,
-    TIVX_CPU_ID_DSP_C7_1,
-    TIVX_CPU_ID_DSP_C7_2,
-    TIVX_CPU_ID_MPU_0,
-    TIVX_CPU_ID_RMCU0_0,
-    TIVX_CPU_ID_MCU1,
-    TIVX_CPU_ID_MCU2,
-    TIVX_CPU_ID_MCU3,
-    TIVX_CPU_ID_MCU4,
-    TIVX_CPU_ID_RMCU0_1,
-    TIVX_CPU_ID_RMCU1_0,
-    TIVX_CPU_ID_RMCU1_1,
-    TIVX_CPU_ID_RMCU2_0,
-    TIVX_CPU_ID_RMCU2_1,
-    TIVX_CPU_ID_DSP_C7_3,
-    TIVX_CPU_ID_DSP_C7_4
-};
-
-uint32_t g_ipc_csl_id_map[TIVX_CPU_ID_MAX] = {
-    CSL_CORE_ID_DSP0,
-    CSL_CORE_ID_DSP1,
-    CSL_CORE_ID_DSP2,
-    CSL_CORE_ID_DSP3,
-    CSL_CORE_ID_A720_0,
-    CSL_CORE_ID_RMCU0_0,
-    CSL_CORE_ID_RMCU0_1,
-    CSL_CORE_ID_RMCU1_0,
-    CSL_CORE_ID_RMCU1_1,
-    CSL_CORE_ID_RMCU2_0,
-    CSL_CORE_ID_RMCU2_1,
-    CSL_CORE_ID_MCU0,
-    CSL_CORE_ID_MCU1,
-    CSL_CORE_ID_MCU2,
-    CSL_CORE_ID_MCU3,
-    CSL_CORE_ID_MCU4
-};
 
 uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     APP_IPC_CPU_C7x_1,
@@ -134,47 +91,68 @@ uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     APP_IPC_CPU_MCU4_M55
 };
 
-static char* g_app_ipc_to_cpu_name[APP_IPC_CPU_MAX] =
-{
-    "INVALID\0",
-    "TIVX_MCU0\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "TIVX_C71\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
+uint32_t g_ipc_csl_id_map[TIVX_CPU_ID_MAX] = {
+    CORE_ID_DSP0,
+    CORE_ID_DSP1,
+    CORE_ID_DSP2,
+    CORE_ID_DSP3,
+    CORE_ID_A720_0,
+    CORE_ID_RMCU0_0,
+    CORE_ID_RMCU0_1,
+    CORE_ID_RMCU1_0,
+    CORE_ID_RMCU1_1,
+    CORE_ID_RMCU2_0,
+    CORE_ID_RMCU2_1,
+    CORE_ID_MCU0,
+    CORE_ID_MCU1,
+    CORE_ID_MCU2,
+    CORE_ID_MCU3,
+    CORE_ID_MCU4
 };
 
-static char* g_ipc_to_cpu_name[CSL_CORE_ID_MAX] =
+static char* g_app_ipc_name_map[APP_IPC_CPU_MAX] =
 {
     "INVALID\0",
     "TIVX_MCU0\0",
+    "TIVX_MCU1\0",
+    "TIVX_MCU2\0",
+    "TIVX_MCU3\0",
+    "TIVX_MCU4\0",
+    "TIVX_R52P0\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
+    "INVALID\0",
     "TIVX_C71\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
-    "INVALID\0",
+    "TIVX_C72\0",
+    "TIVX_C73\0",
+    "TIVX_C74\0",
 };
-#endif
+
+
+static char* g_ipc_csl_name_map[CORE_ID_MAX] = {
+    "INVALID",
+    "TIVX_MCU0",
+    "TIVX_MCU1",
+    "TIVX_MCU2",
+    "TIVX_MCU3",
+    "TIVX_MCU4",
+    "TIVX_C71",
+    "TIVX_C72",
+    "TIVX_C73",
+    "TIVX_C74",
+    "INVALID",
+    "INVALID",
+    "INVALID",
+    "INVALID",
+    "TIVX_R52P0",
+    "INVALID",
+    "INVALID",
+    "INVALID",
+    "INVALID",
+    "INVALID",
+};
 
 static tivx_vdk_ipc_send_mbox_f gVdkIpcSendMbox = NULL;
 
@@ -370,6 +348,7 @@ int16_t tivxVdkGetSelfAppIpcCpuId(void)
             else
             {
                 cpu_id = g_ipc_cpu_id_map[TIVX_CPU_ID_MCU0];
+
             }
         }
     }
@@ -402,6 +381,7 @@ int16_t tivxVdkGetSelfCslIpcCpuId(void)
             else
             {
                 cpu_id = g_ipc_csl_id_map[TIVX_CPU_ID_MCU0];
+
             }
         }
     }

@@ -83,7 +83,7 @@ static tivx_vdk_get_host_ptr_from_symbol_f gVdkGetHostPtrFromSymbol = NULL;
 static tivx_vdk_get_host_ptr_from_phy_ptr_f gVdkGetHostPtrFromPhyPtr = NULL;
 
 #if defined(SOC_FAMILY_TDA5)
-extern IpcNotify_Hal_MailboxConfig IpcNotifyMailboxConfig[CSL_CORE_ID_MAX][CSL_CORE_ID_MAX];
+extern IpcNotify_Hal_MailboxConfigType IpcNotifyMailboxConfig[CORE_ID_MAX][CORE_ID_MAX];
 
 int32_t tivxVdkRegisterCallbacks(
                              tivx_vdk_print_log_f print_log,
@@ -114,26 +114,24 @@ int32_t tivxVdkGetMboxConfiguration(uint32_t cpu_bitmask, tivx_mbox_config_t *mb
     uint32_t dst_core, i, src_core, cluster;
     uint16_t fifo_bitmask, user_bitmask;
 
-    IpcNotify_Hal_MailboxConfig (*MailboxConfig)[CSL_CORE_ID_MAX] = IpcNotifyMailboxConfig;
-
     for (i = 0; i < MAX_NUM_MBOX_CLUSTERS; i++)
     {
         mbox_config->user_idx_bitmask[i/4] = 0U;
         mbox_config->fifo_id_bitmask[i] = 0U;
     }
 
-    for (dst_core = 0; dst_core <= CSL_CORE_ID_MCU1; dst_core++)
+    for (dst_core = 0; dst_core < CORE_ID_MAX; dst_core++)
     {
         if (cpu_bitmask & (1U << dst_core))
         {
             emulated_cores |= (1U << dst_core);
-            for (src_core = 0; src_core <= CSL_CORE_ID_MCU1; src_core++)
+            for (src_core = 0; src_core < CORE_ID_MAX; src_core++)
             {
-                cluster = MailboxConfig[src_core][dst_core].MailboxId;
+                cluster = IpcNotifyMailboxConfig[src_core][dst_core].MailboxId;
                 if (cluster != 0xFFU)
                 {
-                    fifo_bitmask = (1U << MailboxConfig[src_core][dst_core].HwFifoId);
-                    user_bitmask = ((1U << MailboxConfig[src_core][dst_core].UserId) << (4U * (cluster % 4U)));
+                    fifo_bitmask = (1U << IpcNotifyMailboxConfig[src_core][dst_core].HwFifoId);
+                    user_bitmask = ((1U << IpcNotifyMailboxConfig[src_core][dst_core].UserId) << (4U * (cluster % 4U)));
                     mbox_config->fifo_id_bitmask[cluster] |= fifo_bitmask;
                     mbox_config->user_idx_bitmask[cluster/4] |= user_bitmask;
                 }
