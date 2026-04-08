@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2025 The Khronos Group Inc.
+ * Copyright (c) 2012-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -2246,7 +2246,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
     {
         for (p = 0; p < number_of_parameters; p++)
         {
-            vx_parameter param = NULL;
+            vx_parameter param;
             vx_reference ref = NULL;
             vx_enum type = 0;
             vx_enum state = 0;

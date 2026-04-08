@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2025 Texas Instruments Incorporated
+* Copyright (c) 2025-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -63,6 +63,6 @@
 #include <vx_internal.h>
 
 void tivx_bound_error(const char *func, uint32_t line, const char *resource) {
-    tivx_print_global(VX_ZONE_ERROR, \
+    tivx_print_global((vx_enum)VX_ZONE_ERROR, \
     "[%s:%u] May need to increase the value of %s in include/TI/soc/tivx_config_%s.h\n", func, line, resource, SOC_NAME);
 }

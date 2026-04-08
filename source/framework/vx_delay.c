@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2025 The Khronos Group Inc.
+ * Copyright (c) 2012-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -725,7 +725,7 @@ static vx_status ownAgeDelay(vx_delay delay)
         /* then reassign the parameters */
         for (i = 0; i < (vx_int32)delay->count; i++)
         {
-            tivx_delay_param_t *param = NULL;
+            tivx_delay_param_t *param;
 
             j = ((vx_int32)delay->index + i) % (vx_int32)delay->count;
             param = &delay->set[i];

@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017-2025 Texas Instruments Incorporated
+* Copyright (c) 2017-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -111,7 +111,7 @@ static vx_status ownGraphValidateParameters(vx_graph graph)
     vx_uint32  param_idx;
     for (param_idx = 1; param_idx < graph->num_params; ++param_idx)
     {
-        vx_uint32 nxt_idx = 0U;
+        vx_uint32 nxt_idx;
         vx_reference param_ref = graph->parameters[param_idx-1U].node->parameters[graph->parameters[param_idx-1U].index];
 
         for (nxt_idx = param_idx; nxt_idx < graph->num_params; ++nxt_idx)
@@ -2811,7 +2811,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     }
     else
     {
-        VX_PRINT_GRAPH(VX_ZONE_ERROR, graph, "Invalid graph reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 

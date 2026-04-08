@@ -1,6 +1,6 @@
 /*
 
- * Copyright (c) 2024-2025 The Khronos Group Inc.
+ * Copyright (c) 2024-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,39 +72,50 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
     {
         vx_uint16 out_node_id = old_obj->out_node_id[i];
         vx_node out_node = (vx_node)ownReferenceGetHandleFromObjDescId(out_node_id);
-        tivx_obj_desc_node_t *out_objd = out_node->obj_desc[0];
+        tivx_obj_desc_node_t *out_objd;
         vx_uint32 j = 0;
-        /* remove old node from in nodes of the out node */
-        while (old_node_id != out_objd->in_node_id[j])
+
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_COPY_SWAP_UBR012
+<justification end> */
+        if (out_node != NULL)
+/* LDRA_JUSTIFY_END */
         {
-            j++;
-        }
-        out_objd->in_node_id[j] = out_objd->in_node_id[out_objd->num_in_nodes - 1U];
-        out_objd->num_in_nodes = out_objd->num_in_nodes - 1U;
-        /* add all in nodes of old_node to out_node */
-        for (j = 0; j < old_obj->num_in_nodes; ++j)
-        {
+            out_objd = out_node->obj_desc[0];
+
+            /* remove old node from in nodes of the out node */
+            while (old_node_id != out_objd->in_node_id[j])
+            {
+                j++;
+            }
+            out_objd->in_node_id[j] = out_objd->in_node_id[out_objd->num_in_nodes - 1U];
+            out_objd->num_in_nodes = out_objd->num_in_nodes - 1U;
+            /* add all in nodes of old_node to out_node */
+            for (j = 0; j < old_obj->num_in_nodes; ++j)
+            {
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_COPY_SWAP_UBR001
 <justification end>*/
-            if (TIVX_NODE_MAX_IN_NODES > out_objd->num_in_nodes)
+                if (TIVX_NODE_MAX_IN_NODES > out_objd->num_in_nodes)
 /* LDRA_JUSTIFY_END */
-            {
-                out_objd->in_node_id[out_objd->num_in_nodes] = old_obj->in_node_id[j];
-                out_objd->num_in_nodes = out_objd->num_in_nodes + 1U;
-            }
+                {
+                    out_objd->in_node_id[out_objd->num_in_nodes] = old_obj->in_node_id[j];
+                    out_objd->num_in_nodes = out_objd->num_in_nodes + 1U;
+                }
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_COPY_SWAP_UTJT002
 <justification end>*/
-            else
-            {
-                status = (vx_status)VX_ERROR_NO_RESOURCES;
-                VX_PRINT_BOUND_ERROR("TIVX_NODE_MAX_IN_NODES");
-                break;
-            }
+                else
+                {
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
+                    VX_PRINT_BOUND_ERROR("TIVX_NODE_MAX_IN_NODES");
+                    break;
+                }
 /* LDRA_JUSTIFY_END */
+            }
         }
 
     }
@@ -112,28 +123,39 @@ static vx_status ownCopyMoveRemoveNode(vx_graph graph, const vx_uint32 node_inde
     {
         vx_uint16 in_node_id = old_obj->in_node_id[i];
         vx_node in_node = (vx_node)ownReferenceGetHandleFromObjDescId(in_node_id);
-        tivx_obj_desc_node_t *in_objd = in_node->obj_desc[0];
+        tivx_obj_desc_node_t *in_objd;
         vx_uint32 j = 0;
-        /* remove old node from out nodes of the in node */
-        while (old_node_id != in_objd->out_node_id[j])
+
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_COPY_SWAP_UBR013
+<justification end> */
+        if (in_node != NULL)
+/* LDRA_JUSTIFY_END */
         {
-            j++;
-        }
-        in_objd->out_node_id[j] = in_objd->out_node_id[in_objd->num_out_nodes - 1U];
-        in_objd->num_out_nodes = in_objd->num_out_nodes - 1U;
-        /* add all out nodes of old_node to in_node */
-        for (j = 0; j < old_obj->num_out_nodes; ++j)
-        {
-            if (TIVX_NODE_MAX_OUT_NODES > in_objd->num_out_nodes)
+            in_objd = in_node->obj_desc[0];
+
+            /* remove old node from out nodes of the in node */
+            while (old_node_id != in_objd->out_node_id[j])
             {
-                in_objd->out_node_id[in_objd->num_out_nodes] = old_obj->out_node_id[j];
-                in_objd->num_out_nodes = in_objd->num_out_nodes + 1U;
+                j++;
             }
-            else
+            in_objd->out_node_id[j] = in_objd->out_node_id[in_objd->num_out_nodes - 1U];
+            in_objd->num_out_nodes = in_objd->num_out_nodes - 1U;
+            /* add all out nodes of old_node to in_node */
+            for (j = 0; j < old_obj->num_out_nodes; ++j)
             {
-                status = (vx_status)VX_ERROR_NO_RESOURCES;
-                VX_PRINT_BOUND_ERROR("TIVX_NODE_MAX_OUT_NODES");
-                break;
+                if (TIVX_NODE_MAX_OUT_NODES > in_objd->num_out_nodes)
+                {
+                    in_objd->out_node_id[in_objd->num_out_nodes] = old_obj->out_node_id[j];
+                    in_objd->num_out_nodes = in_objd->num_out_nodes + 1U;
+                }
+                else
+                {
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
+                    VX_PRINT_BOUND_ERROR("TIVX_NODE_MAX_OUT_NODES");
+                    break;
+                }
             }
         }
     }

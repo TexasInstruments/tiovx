@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2018-2025 Texas Instruments Incorporated
+* Copyright (c) 2018-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -422,7 +422,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddReferencesToGraphParameterList(
                 {
                     /* locally create queue params list consisting of the new to be added ref and 1st ref of the existing graph params list */
                     vx_reference reference_list[2] = {graph->parameters[graph_parameter_index].refs_list[0], new_references[i]};
-                    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1] = {{.graph_parameter_index = graph_parameter_index, .refs_list = reference_list, .refs_list_size = 2}};
+                    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
+
+                    graph_parameters_queue_params_list[0].graph_parameter_index = graph_parameter_index;
+                    graph_parameters_queue_params_list[0].refs_list = reference_list;
+                    graph_parameters_queue_params_list[0].refs_list_size = 2;
+
                     status = ownGraphPipelineValidateRefsList(graph_parameters_queue_params_list[0]);
                     
                     /* if check succeeds, new_references[i] is added to the graph parameter list */ 

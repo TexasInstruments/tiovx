@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -501,7 +501,7 @@ VX_API_ENTRY tivx_obj_desc_user_data_object_t * tivxGetSupplementaryDataObjDesc(
             uint8_t depth = 0U;
             while (((uint16_t)TIVX_OBJ_DESC_INVALID == new_desc->supp_data_id) && (depth < 2U) )
             {
-                tivx_obj_desc_t * parent = NULL;
+                tivx_obj_desc_t * parent;
                 parent = ownObjDescGet(((tivx_obj_desc_image_t *)new_desc)->parent_id);
                 if (NULL != parent)
                 {
