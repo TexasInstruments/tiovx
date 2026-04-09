@@ -560,30 +560,33 @@ static void ownTargetNodeDescNodeExecuteTargetKernel(
                  */
                 if((is_prm_data_ref_q_flag & ((uint32_t)1U << i)) != 0U)
                 {
-                    parent_obj_desc[i] = ownObjDescGet(params[i]->scope_obj_desc_id);
-
-                    if(NULL != parent_obj_desc[i])
+                    if(NULL != params[i])
                     {
-                        tivx_obj_desc_t *tmp_node_param;
+                        parent_obj_desc[i] = ownObjDescGet(params[i]->scope_obj_desc_id);
 
-                        tmp_node_param = ownObjDescGet(node_obj_desc->data_id[i]);
+                        if(NULL != parent_obj_desc[i])
+                        {
+                            tivx_obj_desc_t *tmp_node_param;
+
+                            tmp_node_param = ownObjDescGet(node_obj_desc->data_id[i]);
 
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR016
 <justification end> */
-                        if (NULL != tmp_node_param)
+                            if (NULL != tmp_node_param)
 /* LDRA_JUSTIFY_END */
-                        {
+                            {
 /* LDRA_JUSTIFY_START
 <metric start> branch <metric end>
 <justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR017
 <justification end> */
-                            if (parent_obj_desc[i]->type == tmp_node_param->type)
-                            {
-                                params[i] = parent_obj_desc[i];
-                            }
+                                if (parent_obj_desc[i]->type == tmp_node_param->type)
+                                {
+                                    params[i] = parent_obj_desc[i];
+                                }
 /* LDRA_JUSTIFY_END */
+                            }
                         }
                     }
                 }
