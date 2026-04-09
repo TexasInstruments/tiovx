@@ -2724,8 +2724,8 @@ TEST(tivxSourceNode, testMultiInOutEnqueue)
 
     add_graph_parameter_by_node_index(graph, n1, 0);
     add_graph_parameter_by_node_index(graph, n1, 1);
-    add_graph_parameter_by_node_index(graph, n2, 0);
-    add_graph_parameter_by_node_index(graph, n2, 1);
+    add_graph_parameter_by_node_index(graph, n2, 2);
+    add_graph_parameter_by_node_index(graph, n2, 3);
 
     graph_parameters_queue_params_list[0].graph_parameter_index = 0;
     graph_parameters_queue_params_list[0].refs_list_size = num_buf;

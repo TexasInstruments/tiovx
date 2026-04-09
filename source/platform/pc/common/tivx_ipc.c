@@ -267,7 +267,20 @@ uint16_t ownIpcGetHostPortId(uint16_t cpu_id)
 
 vx_enum tivxGetSelfCpuId(void)
 {
-    return (g_cpu_id);
+    vx_enum self_cpu_id;
+
+    #if defined (SOC_FAMILY_TDA5)
+    if (NULL != gVdkIpcSendMbox)
+    {
+        self_cpu_id = (vx_enum)tivxVdkGetSelfOvxIpcCpuId();
+    }
+    else
+    #endif /* #if defined (SOC_FAMILY_TDA5) */
+    {
+        self_cpu_id = g_cpu_id;
+    }
+
+    return self_cpu_id;
 }
 
 vx_bool ownIsCpuEnabled(uint32_t app_cpu_id)
