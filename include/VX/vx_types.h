@@ -916,6 +916,10 @@ enum vx_image_attribute_e {
     /*! \brief Queries memory type if created using vxCreateImageFromHandle. If vx_image was not created using
         vxCreateImageFromHandle, VX_MEMORY_TYPE_NONE is returned. Use a <tt>\ref vx_memory_type_e</tt> parameter. */
     VX_IMAGE_MEMORY_TYPE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0x7,
+    /*! \brief Queries if an image is uniform. Read-only. Use a <tt>\ref vx_bool</tt> parameter. */
+    VX_IMAGE_IS_UNIFORM = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0x8,
+    /*! \brief Queries the image uniform value if any. Read-only. Use a <tt>\ref vx_pixel_value_t</tt> parameter. */
+    VX_IMAGE_UNIFORM_VALUE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0x9,
 };
 
 /*! \brief The scalar attributes list.

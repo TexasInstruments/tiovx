@@ -254,6 +254,8 @@ TEST(tivxImage, negativeTestQueryImage)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_RANGE, &size, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_SIZE, &size, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_MEMORY_TYPE, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_IS_UNIFORM, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_UNIFORM_VALUE, &size, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryImage(img, attribute, &size, size));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(img, VX_IMAGE_SIZE, &size, sizeof(vx_size)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, TIVX_IMAGE_STRIDE_Y_ALIGNMENT, &size, size));

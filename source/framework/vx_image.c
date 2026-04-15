@@ -950,7 +950,8 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
     image->channel_plane = 0;
     image->stride_y_alignment = TIVX_DEFAULT_STRIDE_Y_ALIGN;
 
-    obj_desc->uniform_image_pixel_value = 0;
+    obj_desc->uniform_image_pixel_value = (vx_pixel_value_t){0};
+
     obj_desc->width = width;
     obj_desc->height = height;
     obj_desc->format = format;
@@ -1865,6 +1866,8 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                 /* lock the image from being modified again! */
                 ((tivx_obj_desc_image_t *)image->base.obj_desc)->create_type =
                     (vx_enum)TIVX_IMAGE_UNIFORM;
+                ((tivx_obj_desc_image_t *)image->base.obj_desc)->uniform_image_pixel_value =
+                    *value;
             }
         }
     }
@@ -2198,6 +2201,37 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "query image memory type failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case (vx_enum)VX_IMAGE_IS_UNIFORM:
+                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
+                {
+                    *(vx_bool *)ptr = (obj_desc->create_type == (uint32_t)TIVX_IMAGE_UNIFORM) ? 
+                        (vx_bool)vx_true_e : (vx_bool)vx_false_e;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "query image is uniform failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case (vx_enum)VX_IMAGE_UNIFORM_VALUE:
+                if (VX_CHECK_PARAM(ptr, size, vx_pixel_value_t, 0x3U))
+                {
+                    if (obj_desc->create_type != (uint32_t)TIVX_IMAGE_UNIFORM)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Attribute VX_IMAGE_UNIFORM_VALUE not supported for non-uniform images\n");
+                        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                    } 
+                    else
+                    {
+                        *(vx_pixel_value_t *)ptr = obj_desc->uniform_image_pixel_value;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "query image uniform value failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;

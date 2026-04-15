@@ -556,17 +556,8 @@ typedef struct _tivx_obj_desc_image
     volatile uint16_t parent_id;
     /*! \brief reserved for 64b alignment */
     volatile uint16_t rsv[1];
-    /*! \brief the value to use to fill for a uniform image.
-     *
-     * bit 0.. 7 - Component 0 - R or Y or U8.
-     * bit 8..15 - Component 1 - G or U.
-     * bit16..23 - Component 2 - B or V.
-     * bit24..31 - Component 3 - X.
-     *
-     * bit0..15 - U16, S16.
-     * bit0..31 - U32, S32.
-     */
-    volatile uint32_t uniform_image_pixel_value;
+    /*! \brief Value of the pixel in a uniform image (uniform only) */
+    volatile vx_pixel_value_t uniform_image_pixel_value;
     /*! \brief method by which image was created, see \ref tivx_image_create_type_e */
     volatile uint32_t create_type;
     /*! \brief image plane addressing parameters */

@@ -88,6 +88,10 @@ class ImageAttribute(Enum) :
     SIZE        = ('size', 'vx_size')
     ## OpenVX equivalent = \ref VX_IMAGE_MEMORY_TYPE
     MEMORY_TYPE = ('memory_type', 'vx_enum')
+    ## OpenVX equivalent = \ref VX_IMAGE_IS_UNIFORM
+    IS_UNIFORM = ('is_uniform', 'vx_bool')
+    ## OpenVX equivalent = \ref VX_IMAGE_UNIFORM_VALUE
+    UNIFORM_VALUE = ('uniform_value', 'vx_pixel_value_t')
 
     def vx_enum_name(attr) :
         return "VX_IMAGE_" + attr.name
