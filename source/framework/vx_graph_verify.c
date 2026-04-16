@@ -2821,7 +2821,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
         {
             if((vx_status)VX_SUCCESS != ownReleaseMetaFormat(&meta[i]))
             {
-                VX_PRINT_GRAPH(VX_ZONE_ERROR, graph, "Failed to release meta-format object\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to release meta-format object\n");
             }
         }
     }
