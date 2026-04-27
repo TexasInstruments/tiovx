@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+ * Copyright (c) 2012-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,21 +89,21 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseRemap(vx_remap *table)
     return ownReleaseReferenceInt(vxCastRefFromRemapP(table), (vx_enum)VX_TYPE_REMAP, (vx_enum)VX_EXTERNAL, NULL);
 }
 
-VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribute, void *ptr, vx_size size)
+VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap table, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_remap_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(vxCastRefFromRemap(remap), (vx_enum)VX_TYPE_REMAP) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(vxCastRefFromRemap(table), (vx_enum)VX_TYPE_REMAP) == (vx_bool)vx_false_e)
         ||
-        (remap->base.obj_desc == NULL))
+        (table->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR, "Reference is not valid\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;
+        obj_desc = (tivx_obj_desc_remap_t *)table->base.obj_desc;
         switch (attribute)
         {
             case (vx_enum)VX_REMAP_SOURCE_WIDTH:

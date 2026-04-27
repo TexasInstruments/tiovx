@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+ * Copyright (c) 2012-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -571,7 +571,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(vx_image image, const vx_rect
 * \ingroup group_image
 * \pre <tt>\ref vxMapImagePatch</tt> with same map_id value
 */
-VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id map_id);
+VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, const vx_map_id map_id);
 
 /*! \brief Create a sub-image from a single plane channel of another image.
  *
@@ -1242,14 +1242,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByReference(vx_parameter parameter, vx_reference value);
 
 /*! \brief Allows the client to query a parameter to determine its meta-information.
- * \param [in] param The reference to the parameter.
+ * \param [in] parameter The reference to the parameter.
  * \param [in] attribute The attribute to query. Use a <tt>\ref vx_parameter_attribute_e</tt>.
  * \param [out] ptr The location at which to store the resulting value.
  * \param [in] size The size in bytes of the container to which \a ptr points.
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \ingroup group_parameter
  */
-VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter param, vx_enum attribute, void *ptr, vx_size size);
+VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_enum attribute, void *ptr, vx_size size);
 
 /*==============================================================================
  SCALAR
@@ -1604,7 +1604,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapLUT(vx_lut lut, vx_map_id *map_id, void 
  * \ingroup group_lut
  * \pre <tt>\ref vxMapLUT</tt> returning the same map_id value
  */
-VX_API_ENTRY vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id);
+VX_API_ENTRY vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, const vx_map_id map_id);
 
 /*==============================================================================
  DISTRIBUTION
@@ -1721,7 +1721,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapDistribution(vx_distribution distributio
 * \ingroup group_distribution
 * \pre <tt>\ref vxMapDistribution</tt> returning the same map_id value
 */
-VX_API_ENTRY vx_status VX_API_CALL vxUnmapDistribution(vx_distribution distribution, vx_map_id map_id);
+VX_API_ENTRY vx_status VX_API_CALL vxUnmapDistribution(vx_distribution distribution, const vx_map_id map_id);
 
 
 /*==============================================================================
@@ -2076,14 +2076,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetRemapPoint(vx_remap table,
                                  vx_float32 *src_x, vx_float32 *src_y);
 
 /*! \brief Queries attributes from a Remap table.
- * \param [in] r The remap to query.
+ * \param [in] table The remap to query.
  * \param [in] attribute The attribute to query. Use a <tt>\ref vx_remap_attribute_e</tt> enumeration.
  * \param [out] ptr The location at which to store the resulting value.
  * \param [in] size The size in bytes of the container to which \a ptr points.
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \ingroup group_remap
  */
-VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap r, vx_enum attribute, void *ptr, vx_size size);
+VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap table, vx_enum attribute, void *ptr, vx_size size);
 
 /*==============================================================================
  ARRAY
@@ -2315,7 +2315,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapArrayRange(vx_array array, vx_size range
 * \ingroup group_array
 * \pre <tt>\ref vxMapArrayRange</tt> returning the same map_id value
 */
-VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array array, vx_map_id map_id); 
+VX_API_ENTRY vx_status VX_API_CALL vxUnmapArrayRange(vx_array array, const vx_map_id map_id); 
 
 /*!
  * \brief Accesses a specific indexed element in an array.

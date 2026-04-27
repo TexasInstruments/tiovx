@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2018 Texas Instruments Incorporated
+* Copyright (c) 2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -135,7 +135,7 @@ enum vx_tensor_attribute_e
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_object_tensor
  */
-VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(vx_context context, vx_size number_of_dims, const vx_size * dims, vx_enum data_type,vx_int8 fixed_point_position);
+VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(vx_context context, vx_size number_of_dims, const vx_size * dims, vx_enum data_type, vx_int8 fixed_point_position);
 
 /*! \brief Allows the application to copy a view patch from/into an tensor object .
  * \param [in] tensor The reference to the tensor object that is the source or the
@@ -270,7 +270,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 * \ingroup group_object_tensor
 * \pre <tt>\ref tivxMapTensorPatch</tt> with same map_id value
 */
-VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map_id map_id);
+VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, const vx_map_id map_id);
 
 /*!  \brief Creates tensor or virtual tensor from an image, given a rectangle.
  *

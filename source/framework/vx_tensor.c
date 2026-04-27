@@ -1,6 +1,6 @@
 /*
 
- * Copyright (c) 2012-2025 The Khronos Group Inc.
+ * Copyright (c) 2012-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -930,7 +930,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map_id map_id)
+VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, const vx_map_id map_id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
