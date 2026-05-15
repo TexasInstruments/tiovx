@@ -555,7 +555,7 @@ typedef struct _tivx_obj_desc_image
     /*! \brief object descriptor ID of parent (if any) */
     volatile uint16_t parent_id;
     /*! \brief reserved for 64b alignment */
-    volatile uint16_t rsv[1];
+    volatile uint16_t rsv[3];
     /*! \brief Value of the pixel in a uniform image (uniform only) */
     volatile vx_pixel_value_t uniform_image_pixel_value;
     /*! \brief method by which image was created, see \ref tivx_image_create_type_e */

@@ -1864,10 +1864,9 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
             if (vxGetStatus(vxCastRefFromImage(image)) == (vx_status)VX_SUCCESS)
             {
                 /* lock the image from being modified again! */
-                ((tivx_obj_desc_image_t *)image->base.obj_desc)->create_type =
-                    (vx_enum)TIVX_IMAGE_UNIFORM;
-                ((tivx_obj_desc_image_t *)image->base.obj_desc)->uniform_image_pixel_value =
-                    *value;
+                tivx_obj_desc_image_t *uni_img_obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+                uni_img_obj_desc->create_type = (vx_enum)TIVX_IMAGE_UNIFORM;
+                tivx_obj_desc_memcpy(&uni_img_obj_desc->uniform_image_pixel_value, (volatile void *) value, (uint32_t)sizeof(vx_pixel_value_t));
             }
         }
     }
