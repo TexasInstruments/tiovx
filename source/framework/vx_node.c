@@ -597,7 +597,7 @@ vx_status ownNodeKernelInit(vx_node node)
 
                 if (is_parent_from_list == (vx_bool)vx_true_e)
                 {
-                    for(i=0; i<num_params && ((vx_status)VX_SUCCESS == status); i++)
+                    for(i=0; (i < num_params) && (((vx_status)VX_SUCCESS == status)); i++)
                     {
                         /* Initialize meta-format array for revalidation */
                         meta[i] = ownCreateMetaFormat(node->graph->base.context);
