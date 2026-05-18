@@ -131,6 +131,9 @@ static vx_bool ownIsValidObjArrayType(vx_reference ref)
             status = (vx_bool)vx_true_e;
         }
     }
+    else {
+        status = (vx_bool)vx_false_e;
+    }
 
     return (status);
 }

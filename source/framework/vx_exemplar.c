@@ -436,8 +436,10 @@ static vx_reference ownCreateObjectArrayFromExemplar(
 <justification start> TIOVX_CODE_COVERAGE_EXEMPLER_UM013
 <justification end>*/
         if (ref_list[i] != NULL)
-/* LDRA_JUSTIFY_END */
+        /* LDRA_JUSTIFY_END */
+        {
             (void)vxReleaseReference(&ref_list[i]);
+        }
     }
 
     return vxCastRefFromObjectArray(objarr);

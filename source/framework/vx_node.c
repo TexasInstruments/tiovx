@@ -590,7 +590,9 @@ vx_status ownNodeKernelInit(vx_node node)
                             /* Set flag that there is a parameter whose parent is from list */
                             if (((tivx_obj_desc_object_array_t*)((vxCastRefAsObjectArray(parent_ref[i], NULL)
                                 )->base.obj_desc))->is_from_list == vx_true_e)
+                            {
                                 is_parent_from_list = (vx_bool)vx_true_e;
+                            }
                         }
                     }
                 }
