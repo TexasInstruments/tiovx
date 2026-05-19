@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2025 The Khronos Group Inc.
+ * Copyright (c) 2012-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,6 +109,7 @@ static vx_bool ownIsValidObjArrayType(vx_reference ref)
     vx_bool status = (vx_bool)vx_false_e;
     /* ref is already checked to be non-null in the internal create function */
     vx_enum type = ref->type;
+    vx_enum item_type;
 
     if (((vx_enum)VX_TYPE_IMAGE == type) ||
         ((vx_enum)VX_TYPE_TENSOR == type) ||
@@ -126,8 +127,8 @@ static vx_bool ownIsValidObjArrayType(vx_reference ref)
         status = (vx_bool)vx_true_e;
     }
     else if ((vx_enum)VX_TYPE_OBJECT_ARRAY == type) {
-        (void)(vxQueryObjectArray((vx_object_array)ref, VX_OBJECT_ARRAY_ITEMTYPE, &type, sizeof(type)));
-        if (type != (vx_enum)VX_TYPE_OBJECT_ARRAY) {
+        (void)(vxQueryObjectArray((vx_object_array)ref, VX_OBJECT_ARRAY_ITEMTYPE, &item_type, sizeof(item_type)));
+        if (item_type != (vx_enum)VX_TYPE_OBJECT_ARRAY) {
             status = (vx_bool)vx_true_e;
         }
     }

@@ -589,7 +589,7 @@ vx_status ownNodeKernelInit(vx_node node)
                         {
                             /* Set flag that there is a parameter whose parent is from list */
                             if (((tivx_obj_desc_object_array_t*)((vxCastRefAsObjectArray(parent_ref[i], NULL)
-                                )->base.obj_desc))->is_from_list == vx_true_e)
+                                )->base.obj_desc))->is_from_list == (vx_bool)vx_true_e)
                             {
                                 is_parent_from_list = (vx_bool)vx_true_e;
                             }
@@ -652,8 +652,8 @@ vx_status ownNodeKernelInit(vx_node node)
                         }
                     }
                     /* Run validate call back if parent was object array from list */
-                    if ((node->kernel->validate != NULL) && 
-                        (is_parent_from_list) &&
+                    if ((node->kernel->validate != NULL) &&
+                        (is_parent_from_list == (vx_bool)vx_true_e) &&
                         (status == (vx_status)VX_SUCCESS))
                     {
                         ownNodeSetAccessibility(node, num_params, (vx_bool)vx_true_e);
