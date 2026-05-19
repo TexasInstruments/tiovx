@@ -1829,7 +1829,7 @@ void ownTargetInit(void)
     uint16_t i;
     tivx_target_t *tmp_target_table = &g_target_table[0][0];
 
-    for(i=0; i<dimof(g_target_table); i++)
+    for(i=0; i<(sizeof(g_target_table)/sizeof(g_target_table[0][0])); i++)
     {
         tmp_target_table->target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
         tmp_target_table++;
