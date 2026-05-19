@@ -1903,11 +1903,14 @@ TEST(tivxGraph, testGraphPipelineDepth)
     vx_context context = context_->vx_context_;
     vx_graph graph = NULL;
     vx_uint32 pipeline_depth = 2U, invalid_size_pipeline_depth = TIVX_GRAPH_MAX_PIPELINE_DEPTH, pipeline_depth_query;
-    vx_int8 invalid_pipeline_depth = 2U;
+
+    /* Align buffer to 4-byte boundary to guarantee &buffer[1] is misaligned for vx_uint32 */
+    __attribute__((aligned(4))) vx_uint8 buffer[8];
+    vx_uint8 *invalid_ptr = &buffer[1];
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphAttribute(graph, VX_GRAPH_PIPELINE_DEPTH, &invalid_pipeline_depth, sizeof(vx_uint32)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphAttribute(graph, VX_GRAPH_PIPELINE_DEPTH, invalid_ptr, sizeof(vx_uint32)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetGraphAttribute(graph, VX_GRAPH_PIPELINE_DEPTH, &invalid_size_pipeline_depth, sizeof(vx_uint32)));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphAttribute(graph, VX_GRAPH_PIPELINE_DEPTH, &pipeline_depth, sizeof(vx_uint32)));
 
