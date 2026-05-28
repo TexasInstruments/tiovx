@@ -169,7 +169,7 @@ void ownUpdateIpcSendMboxFunctionPtr(tivx_vdk_ipc_send_mbox_f ptr)
 static tivx_ipc_handler_f g_ipc_handler = NULL;
 static vx_enum g_cpu_id = (vx_enum)TIVX_CPU_ID_DSP1;
 
-#if defined (SOC_FAMILY_TDA5) && defined (VDK)
+#if defined (SOC_FAMILY_TDA5)
 static void tivxIpcHandler(uint32_t src_cpu_id, uint32_t payload)
 {
 /* LDRA_JUSTIFY_START
@@ -191,9 +191,12 @@ void ownIpcRegisterHandler(tivx_ipc_handler_f notifyCb)
 
 void ownIpcInit(void)
 {
-#if defined (SOC_FAMILY_TDA5) && defined (VDK)
-    /* Register IPC Handler */
-    (void)appIpcRegisterNotifyHandler(tivxIpcHandler);
+#if defined (SOC_FAMILY_TDA5)
+    if (NULL != gVdkIpcSendMbox)
+    {
+        /* Register IPC Handler */
+        (void)appIpcRegisterNotifyHandler(tivxIpcHandler);
+    }
 #endif
 }
 
@@ -206,9 +209,12 @@ void ownIpcInit(void)
 #endif
 void ownIpcDeInit(void)
 {
-#if defined (SOC_FAMILY_TDA5) && defined (VDK)
-    /* Un-Register IPC Handler */
-    (void)appIpcRegisterNotifyHandler(NULL);
+#if defined (SOC_FAMILY_TDA5)
+    if(NULL != gVdkIpcSendMbox)
+    {
+        /* Un-Register IPC Handler */
+        (void)appIpcRegisterNotifyHandler(NULL);
+    }
 #endif
 }
 
