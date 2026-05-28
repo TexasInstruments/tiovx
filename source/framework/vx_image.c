@@ -950,7 +950,7 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
     image->channel_plane = 0;
     image->stride_y_alignment = TIVX_DEFAULT_STRIDE_Y_ALIGN;
 
-    obj_desc->uniform_image_pixel_value = (vx_pixel_value_t){0};
+    tivx_obj_desc_memset(&obj_desc->uniform_image_pixel_value, 0, (uint32_t)sizeof(vx_pixel_value_t));
 
     obj_desc->width = width;
     obj_desc->height = height;
