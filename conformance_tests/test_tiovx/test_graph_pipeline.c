@@ -3337,7 +3337,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
         graph_parameters_queue_params_list[1].refs_list_size = num_buf;
         graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&input2_0[0];
 
-        graph_parameters_queue_params_list[2].graph_parameter_index = 1;
+        graph_parameters_queue_params_list[2].graph_parameter_index = 2;
         graph_parameters_queue_params_list[2].refs_list_size = num_buf;
         graph_parameters_queue_params_list[2].refs_list = (vx_reference*)&pyr_dst[0];
 
@@ -3563,7 +3563,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testScalarOutput, Arg, PARAMETERS)
     graph_parameters_queue_params_list[1].refs_list_size = num_buf;
     graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&mean_s[0];
 
-    graph_parameters_queue_params_list[2].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[2].graph_parameter_index = 2;
     graph_parameters_queue_params_list[2].refs_list_size = num_buf;
     graph_parameters_queue_params_list[2].refs_list = (vx_reference*)&stddev_s[0];
 
