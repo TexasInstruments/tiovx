@@ -2906,6 +2906,7 @@ static vx_status tivxNegativeAppRtosSemaphoreCreateInvalidMode(uint8_t id)
     app_rtos_semaphore_handle_t handle;
     app_rtos_semaphore_params_t params;
 
+    #if defined(MCU_PLUS_SDK)
     appRtosSemaphoreParamsInit(&params);
     params.mode = 0xFFU;
 
@@ -2916,6 +2917,7 @@ static vx_status tivxNegativeAppRtosSemaphoreCreateInvalidMode(uint8_t id)
         status = (vx_status)VX_FAILURE;
         appRtosSemaphoreDelete(&handle);
     }
+    #endif /* #if defined(MCU_PLUS_SDK) */
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 
@@ -3714,22 +3716,22 @@ static vx_status tivxNegativeTestMemBufferMap(uint8_t id)
 
     if(VX_FAILURE !=tivxMemBufferMap(host_ptr_t,1, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY))
     {
-        VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferMap not failed with 'host pointer = NULL '\n");
+        VX_PRINT(VX_ZONE_ERROR,"tivxMemBufferMap not failed with host pointer = NULL\n");
         status = (vx_status)VX_FAILURE;
     }
 
-    #if !defined(QNX)
-    /* The LINUX/RTOS implementation of this fxn returns SUCCESS regardless of params */
+    #if defined(LINUX)
+    /* The LINUX implementation of this fxn returns SUCCESS regardless of params */
     if(VX_SUCCESS !=ownMemBufferMap(host_ptr_t,1, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY))
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownMemBufferMap returned failure '\n");
+        VX_PRINT(VX_ZONE_ERROR,"ownMemBufferMap returned failure\n");
         status = (vx_status)VX_FAILURE;
     }
     #else
-    /* The QNX implementation of this fxn returns FAILURE when passing an invalid host pointer */
+    /* The QNX/RTOS implementation of this fxn returns FAILURE when passing an invalid host pointer */
     if(VX_FAILURE !=ownMemBufferMap(host_ptr_t,1, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY))
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownMemBufferMap not failed with mem_ptr = NULL '\n");
+        VX_PRINT(VX_ZONE_ERROR,"ownMemBufferMap not failed with mem_ptr = NULL\n");
         status = (vx_status)VX_FAILURE;
     }
     #endif /* #if !defined(QNX) */
@@ -3809,18 +3811,18 @@ static vx_status tivxNegativeTestMemBufferUnmap(uint8_t id)
         status = (vx_status)VX_FAILURE;
     }
 
-    #if !defined(QNX)
-    /* The LINUX/RTOS implementation of this fxn returns SUCCESS regardless of params */
+    #if defined(LINUX)
+    /* The LINUX implementation of this fxn returns SUCCESS regardless of params */
     if(VX_SUCCESS != ownMemBufferUnmap(NULL, 8,(vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY))
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownMemBufferUnmap returned failure '\n");
+        VX_PRINT(VX_ZONE_ERROR,"ownMemBufferUnmap returned failure\n");
         status = (vx_status)VX_FAILURE;
     }
     #else
-    /* The QNX implementation of this fxn returns FAILURE when passing an invalid host pointer */
+    /* The QNX/RTOS implementation of this fxn returns FAILURE when passing an invalid host pointer */
     if(VX_FAILURE != ownMemBufferUnmap(NULL, 8,(vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY))
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownMemBufferUnmap not failed with mem_ptr = NULL '\n");
+        VX_PRINT(VX_ZONE_ERROR,"ownMemBufferUnmap not failed with mem_ptr = NULL\n");
         status = (vx_status)VX_FAILURE;
     }
     #endif /* #if !defined(QNX) */
