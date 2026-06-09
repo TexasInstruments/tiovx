@@ -97,7 +97,7 @@ static vx_status test_init_buf_params(
 {
     vx_status status = (vx_status)VX_SUCCESS;
     VXLIB_bufParams2D_t buf_params;
-    vx_uint32 format_count = 15U, i, base_scale;
+    vx_uint32 format_count = 16U, i, base_scale;
     vx_enum base_format;
     vx_enum format_list[] = {
         VX_DF_IMAGE_NV12,
@@ -115,8 +115,7 @@ static vx_status test_init_buf_params(
         VX_DF_IMAGE_RGB,
         VX_DF_IMAGE_YUYV,
         VX_DF_IMAGE_UYVY,
-        TIVX_DF_IMAGE_RGB565,
-        VX_DF_IMAGE_VIRT
+        TIVX_DF_IMAGE_RGB565
     };
     uint32_t type_list[] = {
         VXLIB_UINT8,
@@ -153,7 +152,7 @@ static vx_status test_init_buf_params(
     }
 
     /* Set format of obj desc to invalid value*/
-    obj_desc->format = format_list[format_count];
+    obj_desc->format = VX_DF_IMAGE_VIRT;
     tivxInitBufParams(obj_desc, &buf_params);
 
     /* Reset format and scale_x of obj desc*/

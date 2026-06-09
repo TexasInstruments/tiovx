@@ -560,7 +560,12 @@ static void ownTargetNodeDescNodeExecuteTargetKernel(
                  */
                 if((is_prm_data_ref_q_flag & ((uint32_t)1U << i)) != 0U)
                 {
+/* LDRA_JUSTIFY_START
+<metric start> branch <metric end>
+<justification start> TIOVX_BRANCH_COVERAGE_TIVX_TARGET_UBR048
+<justification end> */
                     if(NULL != params[i])
+/* LDRA_JUSTIFY_END */
                     {
                         parent_obj_desc[i] = ownObjDescGet(params[i]->scope_obj_desc_id);
 

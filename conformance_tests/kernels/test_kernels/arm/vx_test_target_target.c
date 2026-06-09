@@ -97,6 +97,14 @@
 #include <tivx_platform_posix.h>
 #endif /* #if defined(MPU) */
 
+#if defined(LINUX)
+#include <sys/mman.h>
+#include <unistd.h>
+#ifndef MFD_CLOEXEC
+#define MFD_CLOEXEC 0x0001U
+#endif
+#endif /* #if defined(LINUX) */
+
 /* Maximum length of testcase function name */
 #define MAX_LENGTH 64
 #define INVALID_ARG -1
@@ -3175,6 +3183,45 @@ static vx_status tivxNegativeTaskAppIpcGetHostPortId(uint8_t id)
 
     return status;
 }
+
+static vx_status tivxNegativeTestMemTranslateFdIoctlFailure(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    int memfd;
+    uint32_t size = 4096;
+    void *virtAddr = NULL;
+    void *phyAddr = NULL;
+
+    memfd = memfd_create("test_mem", MFD_CLOEXEC);
+
+    if(memfd < 0)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"memfd_create failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        if(ftruncate(memfd, size) < 0)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"ftruncate failed\n");
+            status = (vx_status)VX_FAILURE;
+        }
+        else
+        {
+            if(VX_FAILURE != tivxMemTranslateFd((uint64_t)memfd, size, &virtAddr, &phyAddr))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"tivxMemTranslateFd() failed to return error for non-DMA buffer fd\n");
+                status = (vx_status)VX_FAILURE;
+            }
+        }
+
+        close(memfd);
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
 #endif /* #if defined(LINUX) */
 
 static vx_status tivxNegativeTaskAppIpcGetIpcCpuId(uint8_t id)
@@ -3505,6 +3552,193 @@ static vx_status tivxTestQueueGet(uint8_t id)
     {
         VX_PRINT(VX_ZONE_ERROR,"Queue Delete failed\n");
         status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestQueuePutNullParams(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_queue que[10];
+    tivx_queue *test_queue = &que[0];
+    uintptr_t mem[10];
+    uintptr_t *queue_memory = &mem[0];
+    uint32_t max_elements = 1;
+    uintptr_t *original_queue_ptr;
+
+    if(VX_FAILURE != tivxQueuePut(NULL, 10, 1))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueuePut() failed for NULL queue pointer\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if(VX_SUCCESS != tivxQueueCreate(test_queue, max_elements, queue_memory, 0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueueCreate failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        original_queue_ptr = test_queue->queue;
+        test_queue->queue = NULL;
+        test_queue->count = 0;
+
+        if(VX_FAILURE != tivxQueuePut(test_queue, 10, TIVX_EVENT_TIMEOUT_NO_WAIT))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxQueuePut() failed when queue->queue is NULL\n");
+            status = (vx_status)VX_FAILURE;
+        }
+
+        test_queue->queue = original_queue_ptr;
+
+        if(VX_SUCCESS != tivxQueueDelete(test_queue))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxQueueDelete failed\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestQueueGetNullParams(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_queue que[10];
+    tivx_queue *test_queue = &que[0];
+    uintptr_t mem[10];
+    uintptr_t *queue_memory = &mem[0];
+    uint32_t max_elements = 1;
+    uintptr_t data;
+    uintptr_t *original_queue_ptr;
+
+    if(VX_FAILURE != tivxQueueGet(NULL, &data, TIVX_EVENT_TIMEOUT_NO_WAIT))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueueGet() failed for NULL queue pointer\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if(VX_SUCCESS != tivxQueueCreate(test_queue, max_elements, queue_memory, 0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueueCreate failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        if(VX_SUCCESS != tivxQueuePut(test_queue, 42, TIVX_EVENT_TIMEOUT_NO_WAIT))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxQueuePut failed\n");
+            status = (vx_status)VX_FAILURE;
+        }
+        else
+        {
+            if(VX_FAILURE != tivxQueueGet(test_queue, NULL, TIVX_EVENT_TIMEOUT_NO_WAIT))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"tivxQueueGet() failed for NULL data pointer\n");
+                status = (vx_status)VX_FAILURE;
+            }
+
+            original_queue_ptr = test_queue->queue;
+            test_queue->queue = NULL;
+
+            if(VX_FAILURE != tivxQueueGet(test_queue, &data, TIVX_EVENT_TIMEOUT_NO_WAIT))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"tivxQueueGet() failed when queue->queue is NULL\n");
+                status = (vx_status)VX_FAILURE;
+            }
+
+            test_queue->queue = original_queue_ptr;
+        }
+
+        if(VX_SUCCESS != tivxQueueDelete(test_queue))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxQueueDelete failed\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestQueueIsEmpty(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_bool is_empty;
+
+    is_empty = tivxQueueIsEmpty(NULL);
+
+    if((vx_bool)vx_true_e != is_empty)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueueIsEmpty() failed for NULL queue pointer\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
+
+    return status;
+}
+
+static vx_status tivxNegativeTestQueuePeekNullParams(uint8_t id)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    tivx_queue que[10];
+    tivx_queue *test_queue = &que[0];
+    uintptr_t mem[10];
+    uintptr_t *queue_memory = &mem[0];
+    uint32_t max_elements = 1;
+    uintptr_t data;
+    uintptr_t *original_queue_ptr;
+
+    if(VX_FAILURE != tivxQueuePeek(NULL, &data))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueuePeek() failed for NULL queue pointer\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if(VX_FAILURE != tivxQueuePeek(test_queue, NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueuePeek() failed for NULL data pointer\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if(VX_SUCCESS != tivxQueueCreate(test_queue, max_elements, queue_memory, 0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxQueueCreate failed\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        if(VX_SUCCESS != tivxQueuePut(test_queue, 42, TIVX_EVENT_TIMEOUT_NO_WAIT))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxQueuePut failed\n");
+            status = (vx_status)VX_FAILURE;
+        }
+        else
+        {
+            original_queue_ptr = test_queue->queue;
+            test_queue->queue = NULL;
+
+            if(VX_FAILURE != tivxQueuePeek(test_queue, &data))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"tivxQueuePeek() failed when queue->queue is NULL\n");
+                status = (vx_status)VX_FAILURE;
+            }
+
+            test_queue->queue = original_queue_ptr;
+        }
+
+        if(VX_SUCCESS != tivxQueueDelete(test_queue))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxQueueDelete failed\n");
+            status = (vx_status)VX_FAILURE;
+        }
     }
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
@@ -4386,6 +4620,7 @@ static vx_status tivxAppMemPrintMemAllocInfo(uint8_t id)
 FuncInfo arrOfFuncs[] = {
     #if defined(LINUX)
     {tivxNegativeTaskAppIpcGetHostPortId, "", VX_SUCCESS},
+    {tivxNegativeTestMemTranslateFdIoctlFailure,"",VX_SUCCESS},
     #endif /* #if defined(LINUX) */
     #if defined(MPU_COVERAGE)
     {tivxTestTargetPlatformGetEnv, "",VX_SUCCESS},
@@ -4433,6 +4668,10 @@ FuncInfo arrOfFuncs[] = {
     {tivxTestQueuePutGetDelete, "", VX_SUCCESS},
     {tivxTestQueuePut, "", VX_SUCCESS},
     {tivxTestQueueGet, "", VX_SUCCESS},
+    {tivxNegativeTestQueuePutNullParams, "", VX_SUCCESS},
+    {tivxNegativeTestQueueGetNullParams, "", VX_SUCCESS},
+    {tivxNegativeTestQueueIsEmpty, "", VX_SUCCESS},
+    {tivxNegativeTestQueuePeekNullParams, "", VX_SUCCESS},
     {tivxNegativeAppMemInit, "", VX_SUCCESS},
     {tivxNegativeAppMemInitPrmSetDefault,"",VX_SUCCESS},
     {tivxTestTargetPlatformSetHostTargetId, "",VX_SUCCESS},
