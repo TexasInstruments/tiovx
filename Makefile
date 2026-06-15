@@ -175,7 +175,7 @@ doxy_docs:
 	$(MKDIR) $(TIOVX_PATH)/docs/manifest/
 	$(MKDIR) $(TIOVX_PATH)/docs/user_guide/
 	$(MKDIR) $(TIOVX_PATH)/docs/patches/
-	$(COPY) tiovx_dev/internal_docs/test_reports/$(SOC)/* $(TIOVX_PATH)/docs/test_reports/.
+	$(COPY) tiovx_dev/internal_docs/test_reports/test_reports_archive/$(SOC)/* $(TIOVX_PATH)/docs/test_reports/.
 	$(COPY) internal_docs/doxy_cfg_user_guide/images/*.pdf $(TIOVX_PATH)/docs/user_guide/.
 	$(COPY) tiovx_dev/internal_docs/static_analysis_tiovx.xlsx $(TIOVX_PATH)/docs/static_analysis/.
 	$(COPY) tiovx_dev/internal_docs/bidi_report_tiovx.xlsx $(TIOVX_PATH)/docs/bidi/.
