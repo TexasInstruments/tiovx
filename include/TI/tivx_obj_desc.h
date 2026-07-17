@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017-2025 Texas Instruments Incorporated
+* Copyright (c) 2017-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -524,6 +524,11 @@ typedef struct _tivx_obj_desc_node
     /*! \brief Debug zonemask of a given object descriptor node.
      */
     volatile vx_uint32 debug_zonemask;
+
+    /*! \brief Extra bits for additional information in the case of an error.
+     *         Provides the application additional diagnostic context beyond vx_status alone.
+     */
+    volatile vx_uint64 error_info;
 
 } tivx_obj_desc_node_t;
 

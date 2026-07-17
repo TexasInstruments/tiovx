@@ -370,6 +370,11 @@ static vx_status tivxNegativeTestTargetKernelInstance(uint8_t id)
         VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' target kernel instance\n");
         status = (vx_status)VX_FAILURE;
     }
+    if((vx_status)VX_ERROR_INVALID_PARAMETERS != tivxSetTargetKernelInstanceErrorInfo(NULL,0))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid result returned for ARG:'NULL' target kernel instance\n");
+        status = (vx_status)VX_FAILURE;
+    }
 
     snprintf(arrOfFuncs[id].funcName, MAX_LENGTH, "%s",__func__);
 

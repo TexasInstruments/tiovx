@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017-2025 Texas Instruments Incorporated
+* Copyright (c) 2017-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -390,4 +390,24 @@ VX_API_ENTRY vx_bool tivxIsTargetKernelInstanceReplicated(tivx_target_kernel_ins
     }
 
     return retVal;
+}
+
+/* NOTE: May need a user kernel counterpart if it becomes necessary to error info on those */
+VX_API_ENTRY vx_status VX_API_CALL tivxSetTargetKernelInstanceErrorInfo(
+            tivx_target_kernel_instance target_kernel_instance,
+            vx_uint64 error_info)
+{
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+
+    if(NULL != target_kernel_instance)
+    {
+        target_kernel_instance->node_obj_desc->error_info = error_info;
+
+        status = (vx_status)VX_SUCCESS;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "target kernel instance is NULL\n");
+    }
+    return status;
 }

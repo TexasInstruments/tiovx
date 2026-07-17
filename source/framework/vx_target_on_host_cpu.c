@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017-2023 Texas Instruments Incorporated
+* Copyright (c) 2017-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -187,6 +187,7 @@ static vx_action ownTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_o
 
     /* Clearing node status now that it has been sent as an error event */
     node_obj_desc->exe_status = 0;
+    node_obj_desc->error_info = 0;
 
     /* first we let any node events to go thru before sending graph events */
     if(is_send_graph_complete_event!= 0)

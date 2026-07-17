@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2025 The Khronos Group Inc.
+ * Copyright (c) 2012-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1184,7 +1184,7 @@ void ownSendGraphCompletedEvent(vx_graph graph)
             {
                 status = ownEventQueueAddEvent(&graph->base.context->event_queue,
                             (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_context_app_value,
-                            (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
+                            (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0, (uint64_t)0);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM013.
@@ -1201,7 +1201,7 @@ void ownSendGraphCompletedEvent(vx_graph graph)
             {
                 status = ownEventQueueAddEvent(&graph->event_queue,
                             (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_graph_app_value,
-                            (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
+                            (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0, (uint64_t)0);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_GRAPH_UM013.

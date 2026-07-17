@@ -356,6 +356,52 @@ TEST(tivxInternalNode, negativeTestNodeCheckAndSendErrorEvent)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+/* tivxSetTargetKernelIntanceErrorInfo() is an API reserved for target kernels.
+ * Its validation on whether it properly writes occurs on the host (event object processing):
+ *  - To avoid making a custom test target kernel, a dummy target kernel instance is made on the host.
+ *  - However, this undercuts testing the IPC that would normally occur during the reception of a target kernel.
+ */
+TEST(tivxInternalNode, testTivxSetTargetKernelInstanceErrorInfo)
+{
+    #define CUSTOM_TEST_APP_VALUE (5u)
+    vx_context context = context_->vx_context_;
+    vx_graph graph = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+    tivx_target_kernel_instance_t dummy_kernel_instance = {0};
+    vx_event_t event;
+    const vx_uint64 error_info_val = 0x1122334455667788ULL;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_NOT), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+
+    /* Register error event */
+    VX_CALL(vxRegisterEvent((vx_reference)node, VX_EVENT_NODE_ERROR, 0, CUSTOM_TEST_APP_VALUE));
+
+    /* Attach dummy node to dummy target kernel instance */
+    tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc[0];
+    dummy_kernel_instance.node_obj_desc = node_obj_desc;
+
+    /* Set error_info attr on dummy node */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxSetTargetKernelInstanceErrorInfo(&dummy_kernel_instance, error_info_val));
+    /* Simulate kernel failure, otherwise error event not raised */
+    node_obj_desc->exe_status = (uint32_t)VX_FAILURE;
+    /* Host side internal function within kernel return callback,
+     * which receives failed kernels and pushes error events to queue */
+    ownNodeCheckAndSendErrorEvent(node_obj_desc, 0, (vx_status)node_obj_desc->exe_status);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, &event, vx_false_e));
+    ASSERT_EQ_INT(event.type, VX_EVENT_NODE_ERROR);
+    ASSERT_EQ_INT(event.app_value, CUSTOM_TEST_APP_VALUE);
+    ASSERT(event.event_info.node_error.error_info == error_info_val);
+
+    node_obj_desc->exe_status = 0;
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TEST(tivxInternalNode, negativeTestNodeCheckAndSendCompletionEvent)
 {
     #define NODE0_COMPLETED_EVENT     (2u)
@@ -885,6 +931,7 @@ TESTCASE_TESTS(tivxInternalNode,
     negativeTestNodeCreateUserCallbackCommand,
     negativeTestNodeSetParameter,
     negativeTestNodeCheckAndSendErrorEvent,
+    testTivxSetTargetKernelInstanceErrorInfo,
     negativeTestNodeCheckAndSendCompletionEvent,
     negativeTestNodeReplaceOut,
     negativeTestNodeReplaceIn,

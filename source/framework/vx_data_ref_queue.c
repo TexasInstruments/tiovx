@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2018-2025 Texas Instruments Incorporated
+* Copyright (c) 2018-2026 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -161,7 +161,7 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
         {
             status = ownEventQueueAddEvent(&ref->base.context->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_context_app_value,
-                        (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
+                        (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0, (uint64_t)0);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM002
@@ -177,7 +177,7 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
         {
             status = ownEventQueueAddEvent(&ref->graph->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_graph_app_value,
-                        (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
+                        (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0, (uint64_t)0);
 /* LDRA_JUSTIFY_START
 <metric start> statement branch <metric end>
 <justification start> TIOVX_CODE_COVERAGE_DATA_REF_QUEUE_UM002

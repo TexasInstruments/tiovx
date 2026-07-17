@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2018 The Khronos Group Inc.
+ * Copyright (c) 2012-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -308,7 +308,7 @@ vx_status ownSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void 
                 &graph->streaming_event_queue,
                 (vx_enum)VX_EVENT_USER,
                 timestamp, app_value,
-                (uintptr_t)app_value, (uintptr_t)parameter, (uintptr_t)0);
+                (uintptr_t)app_value, (uintptr_t)parameter, (uintptr_t)0, (uint64_t)0);
 
     return status;
 }

@@ -73,7 +73,7 @@ TEST(tivxInternalEventQueue, negativeTestOwnEventQueueAddEvent)
 {
     tivx_event_queue_t *event_q = NULL;
 
-    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownEventQueueAddEvent(event_q, 0, 0, 0, 0, 0, 0));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, ownEventQueueAddEvent(event_q, 0, 0, 0, 0, 0, 0, 0));
 }
 
 TESTCASE_TESTS(tivxInternalEventQueue,

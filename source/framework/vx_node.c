@@ -162,6 +162,7 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pip
 
     obj_desc->target_kernel_index[0] = 0;
     obj_desc->exe_status = 0;
+    obj_desc->error_info = 0;
     obj_desc->num_params = kernel->signature.num_parameters;
 
     for(idx=0; idx<kernel->signature.num_parameters; idx++)
@@ -1633,7 +1634,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->base.context->event_queue,
                             (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_context_app_value,
-                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0))
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0, (uint64_t)0))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
                 }
@@ -1643,7 +1644,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->streaming_event_queue,
                             (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_graph_streaming_app_value,
-                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0))
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0, (uint64_t)0))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
                 }
@@ -1653,7 +1654,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
                             (vx_enum)VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_graph_app_value,
-                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0))
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0, (uint64_t)0))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to event queue\n");
                 }
@@ -1665,6 +1666,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
 void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp, vx_status status)
 {
     vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
+    vx_uint64 error_info = (vx_uint64)node_obj_desc->error_info;
 
     if((node!=NULL) && (node->base.context!=NULL))
     {
@@ -1678,7 +1680,7 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->base.context->event_queue,
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_context_app_value,
-                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status, error_info))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to context event queue \n");
                 }
@@ -1688,7 +1690,7 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
             {
                 if((vx_status)VX_SUCCESS != ownEventQueueAddEvent(&node->graph->event_queue,
                             (vx_enum)VX_EVENT_NODE_ERROR, timestamp, node->node_error_graph_app_value,
-                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status))
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status, error_info))
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Failed to add event to graph event queue \n");
                 }
@@ -2825,6 +2827,7 @@ vx_status ownNodeAllocObjDescForPipeline(vx_node node, uint32_t pipeline_depth)
                 obj_desc->node_complete_cmd_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID; /* obj_desc->node_complete_cmd_obj_desc_id, allocated later during graph verify */
                 /* obj_desc->target_kernel_index[], updated after kernel init */
                 obj_desc->exe_status = 0;
+                obj_desc->error_info = 0;
                 obj_desc->exe_time_beg_h = 0;
                 obj_desc->exe_time_beg_l = 0;
                 obj_desc->exe_time_end_h = 0;

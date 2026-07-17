@@ -597,6 +597,9 @@ typedef struct _vx_event_node_error {
 
     vx_status status;
     /*!< \brief error condition of node */
+
+    vx_uint64 error_info;
+    /*!< \brief Kernel specific error info of node error */
 } vx_event_node_error;
 
 /*! \brief Parameter structure returned with event of type VX_EVENT_USER_EVENT
