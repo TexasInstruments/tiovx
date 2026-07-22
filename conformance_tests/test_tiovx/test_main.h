@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /*
- * Copyright (c) 2025 Texas Instruments Incorporated
+ * Copyright (c) 2025-2026 Texas Instruments Incorporated
  */
 
 #if defined(BUILD_CT_TIOVX)
@@ -115,9 +115,7 @@ TESTCASE(tivxModule)
 
 TESTCASE(tivxMultiply)
 
-#if !defined(SOC_AM62A)
 TESTCASE(tivxNestedUserNode)
-#endif
 
 TESTCASE(tivxNode)
 
